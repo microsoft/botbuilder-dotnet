@@ -346,10 +346,21 @@ namespace Microsoft.Bot.Builder
                 // Add audience to TurnContext.TurnState
                 context.TurnState.Add<string>(OAuthScopeKey, audience);
 
-                // Add the channel service URL to the trusted services list so we can send messages back.
+                var appIdFromClaims = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+
+                // If we receive a valid app id in the incoming token claims, add the 
+                // channel service URL to the trusted services list so we can send messages back.
                 // the service URL for skills is trusted because it is applied by the SkillHandler based on the original request
                 // received by the root bot
-                AppCredentials.TrustServiceUrl(reference.ServiceUrl);
+                if (!string.IsNullOrEmpty(appIdFromClaims))
+                {
+                    var isValidApp = await CredentialProvider.IsValidAppIdAsync(appIdFromClaims).ConfigureAwait(false);
+
+                    if (isValidApp)
+                    {
+                        AppCredentials.TrustServiceUrl(reference.ServiceUrl);
+                    }
+                }
 
                 var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
