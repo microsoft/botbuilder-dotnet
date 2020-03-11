@@ -175,7 +175,18 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             if (slackPayload.Actions != null && (slackPayload.Type == "block_actions" || slackPayload.Type == "interactive_message"))
             {
                 activity.Type = ActivityTypes.Message;
-                activity.Text = slackPayload.Actions[0].Value;
+
+                switch (slackPayload.Actions[0].Type)
+                {
+                    case "button":
+                        activity.Text = slackPayload.Actions[0].Value;
+                        break;
+                    case "select":
+                        activity.Text = slackPayload.Actions[0].SelectedOptions[0].Value;
+                        break;
+                    default:
+                        break;
+                }
             }
 
             return activity;

@@ -650,8 +650,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             Assert.True(callback);
         }
 
-        [Fact]
-        public async Task ProcessAsyncShouldSucceedOnInteractiveMessage()
+        [Theory]
+        [InlineData(@"/Files/InteractiveMessageBodyButton.txt")]
+        [InlineData(@"/Files/InteractiveMessageBodySelect.txt")]
+        public async Task ProcessAsyncShouldSucceedOnInteractiveMessage(string input)
         {
             var callback = false;
 
@@ -661,7 +663,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var slackAdapter = new SlackAdapter(slackApi.Object);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/InteractiveMessageBody.txt");
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + input);
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
             var httpRequest = new Mock<HttpRequest>();

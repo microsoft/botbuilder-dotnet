@@ -207,6 +207,18 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             Assert.Throws<ArgumentNullException>(() => SlackHelper.PayloadToActivity(null));
         }
 
+        [Theory]
+        [InlineData(@"/Files/InteractiveMessageBodyButton.txt")]
+        [InlineData(@"/Files/InteractiveMessageBodySelect.txt")]
+        public void PayloadToActivityShouldReturnText(string input)
+        {
+            var body = File.ReadAllText(Directory.GetCurrentDirectory() + input);
+            var slackBody = SlackHelper.DeserializeBody(body);
+            var activity = SlackHelper.PayloadToActivity(slackBody.Payload);
+
+            Assert.Equal("recommend", activity.Text);
+        }
+
         [Fact]
         public void QueryStringToDictionaryShouldReturnEmptyDictionary()
         {

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
@@ -24,5 +25,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
         [JsonProperty(PropertyName = "action_ts")]
         public string ActionTs { get; set; }
+
+        [JsonProperty(PropertyName = "selected_options")]
+        public List<SlackSelectOption> SelectedOptions { get; } = new List<SlackSelectOption>();
     }
 }
