@@ -1,0 +1,98 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$schema": "../../app.schema",
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "CancelIntent",
+                    "pattern": "(?i)cancel|never mind"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$schema": "../../app.schema",
+                        "$kind": "Microsoft.AdaptiveDialog",
+                        "recognizer": {
+                            "$kind": "Microsoft.RegexRecognizer",
+                            "intents": [
+                                {
+                                    "intent": "CancelIntent",
+                                    "pattern": "(?i)cancel|never mind"
+                                }
+                            ]
+                        },
+                        "triggers": [
+                            {
+                                "$kind": "Microsoft.OnBeginDialog",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Why did the chicken cross the road?"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.EndTurn"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "To get to the other side"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.OnIntent",
+                                "intent": "CancelIntent",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Canceled"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.CancelAllDialogs"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "What am I doing here?"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Why did the chicken cross the road?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "cancel"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Canceled"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Why did the chicken cross the road?"
+        }
+    ]
+}
