@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
@@ -22,7 +20,7 @@ namespace Microsoft.BotBuilderSamples
         private readonly BotAdapter _botAdapter;
         private readonly IExtendedUserTokenProvider _tokenExchangeProvider;
         private readonly string _parentConnectionName;
-        private readonly Uri _callbackUri = new Uri("blah");
+        private readonly Uri _callbackUri;
 
         public SkillsHelper(IConfiguration configuration, SkillHttpClient skillHttpClient, BotAdapter botAdapter)
         {
@@ -34,11 +32,13 @@ namespace Microsoft.BotBuilderSamples
             _botAdapter = botAdapter;
             _tokenExchangeProvider = botAdapter as IExtendedUserTokenProvider;
             _parentConnectionName = configuration.GetSection("ConnectionName")?.Value;
+            _callbackUri = new Uri(configuration.GetSection("CallbackUri")?.Value);
         }
 
-        public async Task<InvokeResponse> PostActivityAsync(Activity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<InvokeResponse<ExpectedReplies>> PostActivityAsync(Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await _skillHttpClient.PostActivityAsync(_botId, _botFrameworkSkill, _callbackUri, activity, cancellationToken);
+            var response = await _skillHttpClient.PostActivityAsync<ExpectedReplies>(_botId, _botFrameworkSkill, _callbackUri, activity, cancellationToken);
+            return response;
         }
 
         public async Task<bool> InterceptOAuthCards(Activity[] activities, CancellationToken cancellationToken)

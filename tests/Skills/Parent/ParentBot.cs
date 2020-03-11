@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
@@ -29,7 +30,7 @@ namespace Microsoft.BotBuilderSamples
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
 
-        public ParentBot(BotFrameworkHttpClient client, IConfiguration configuration, MainDialog dialog, ConversationState conversationState, UserState userState, SkillsHelper skillsHelper)
+        public ParentBot(SkillHttpClient client, IConfiguration configuration, MainDialog dialog, ConversationState conversationState, UserState userState, SkillsHelper skillsHelper)
         {
             _client = client;
             _dialog = dialog;
@@ -76,7 +77,7 @@ namespace Microsoft.BotBuilderSamples
                     cloneActivity.DeliveryMode = DeliveryModes.ExpectReplies;
                     var response1 = await _skillsHelper.PostActivityAsync(cloneActivity, cancellationToken) as InvokeResponse<ExpectedReplies>;
 
-                    if (response1.Status == (int)HttpStatusCode.OK && response1.Body?.Activities != null)
+                    if (response1 != null && response1.Status == (int)HttpStatusCode.OK && response1.Body?.Activities != null)
                     {
                         var activities = response1.Body.Activities.ToArray();
                         if (!(await _skillsHelper.InterceptOAuthCards(activities, cancellationToken)))

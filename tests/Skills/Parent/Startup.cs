@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +38,7 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
             services.AddSingleton(s => s.GetService<IBotFrameworkHttpAdapter>() as BotAdapter);
             services.AddHttpClient<SkillHttpClient>();
-            services.AddSingleton<SkillConversationIdFactory>();
+            services.AddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
             services.AddSingleton<SkillsHelper>();
             services.AddSingleton<IStorage, MemoryStorage>();
             services.AddSingleton<UserState>();
