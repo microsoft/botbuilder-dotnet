@@ -48,6 +48,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_CancelAllDialogs()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task Action_ChoiceInput()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
