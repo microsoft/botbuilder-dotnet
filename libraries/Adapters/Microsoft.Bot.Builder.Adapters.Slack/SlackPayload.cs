@@ -18,6 +18,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         [JsonProperty(PropertyName = "channel")]
         public Channel Channel { get; set; }
 
+        [JsonProperty(PropertyName = "callback_id")]
+        public string CallbackId { get; set; }
+
         [JsonProperty(PropertyName = "thread_ts")]
         public string ThreadTs { get; set; }
 
