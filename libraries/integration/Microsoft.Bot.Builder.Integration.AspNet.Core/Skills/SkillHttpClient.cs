@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <summary>
         /// Uses the SkillConversationIdFactory to create or retrieve a Skill Conversation Id, and sends the activity.
         /// </summary>
+        /// <typeparam name="T">The type of body in the InvokeResponse.</typeparam>
         /// <param name="originatingAudience">The oauth audience scope, used during token retrieval. (Either https://api.botframework.com or bot app id.)</param>
         /// <param name="fromBotId">The MicrosoftAppId of the bot sending the activity.</param>
         /// <param name="toSkill">The skill to create the conversation Id for.</param>
@@ -35,7 +36,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <param name="activity">The activity to send.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>Async task with invokeResponse.</returns>
-        public async Task<InvokeResponse> PostActivityAsync(string originatingAudience, string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
+        public async Task<InvokeResponse<T>> PostActivityAsync<T>(string originatingAudience, string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
             string skillConversationId;
             try
@@ -57,13 +58,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 #pragma warning restore 618
             }
 
-            return await PostActivityAsync(fromBotId, toSkill.AppId, toSkill.SkillEndpoint, callbackUrl, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
+            return await PostActivityAsync<T>(fromBotId, toSkill.AppId, toSkill.SkillEndpoint, callbackUrl, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<InvokeResponse> PostActivityAsync(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
+            return await PostActivityAsync<object>(fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
+        {
             var originatingAudience = ChannelProvider != null && ChannelProvider.IsGovernment() ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope : AuthenticationConstants.ToChannelFromBotOAuthScope;
-            return await PostActivityAsync(originatingAudience, fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
+            return await PostActivityAsync<T>(originatingAudience, fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
         }
     }
 }
