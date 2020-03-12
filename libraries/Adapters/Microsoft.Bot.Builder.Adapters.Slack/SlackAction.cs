@@ -17,6 +17,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         [JsonProperty(PropertyName = "text")]
         public object Text { get; set; }
 
+        [JsonProperty(PropertyName = "name")]
+        public string Name { get; set; }
+
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
 
