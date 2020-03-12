@@ -7,17 +7,35 @@
         "triggers": [
             {
                 "$kind": "Microsoft.OnBeginDialog",
-                "actions": [
+              "actions": [
+                {
+                  "$type": "Microsoft.SetProperties",
+                  "assignments": [
                     {
-                        "$kind": "Microsoft.SetProperty",
-                        "property": "$p1",
-                        "value": "='val1'"
+                      "property": "user.lists",
+                      "value": "={}"
                     },
                     {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "${$p1}"
+                      "property": "user.lists.todo",
+                      "value": "todo"
+                    },
+                    {
+                      "property": "$mylist",
+                      "value": "lists"
                     }
-                ]
+
+                  ]
+                },
+                {
+                  "$kind": "Microsoft.SetProperty",
+                  "property": "user[$mylist].todo",
+                  "value": "newtodo"
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "${user[$mylist].todo}"
+                }
+              ]
             }
         ]
     },
@@ -27,7 +45,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "val1"
+            "text": "newtodo"
         }
     ]
 }

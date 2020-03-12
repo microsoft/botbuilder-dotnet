@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
                 }
 
                 // $xxx -> path.xxx
-                return $"{this.prefix}{path.Substring(start + alias.Length)}{this.postfix}".TrimEnd('.');
+                return $"{path.Substring(0, start)}{this.prefix}{path.Substring(start + alias.Length)}{this.postfix}".TrimEnd('.');
             }
 
             return path;
