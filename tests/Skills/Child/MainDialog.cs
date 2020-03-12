@@ -38,6 +38,11 @@ namespace Microsoft.BotBuilderSamples
 
         private async Task<DialogTurnResult> ShowTokenResponseAsync(WaterfallStepContext context, CancellationToken cancellationToken)
         {
+            if (context.Context.Activity.DeliveryMode == DeliveryModes.ExpectReplies)
+            {
+                context.Context.Activity.DeliveryMode = null;
+            }
+
             var result = context.Result as TokenResponse;
             if (result == null)
             {

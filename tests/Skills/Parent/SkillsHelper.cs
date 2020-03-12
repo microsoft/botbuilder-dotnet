@@ -15,6 +15,7 @@ namespace Microsoft.BotBuilderSamples
     public class SkillsHelper
     {
         private readonly BotFrameworkSkill _botFrameworkSkill;
+        private readonly SkillConversationIdFactoryBase _conversationIdFactory;
         private readonly string _botId;
         private readonly SkillHttpClient _skillHttpClient;
         private readonly BotAdapter _botAdapter;
@@ -22,7 +23,7 @@ namespace Microsoft.BotBuilderSamples
         private readonly string _parentConnectionName;
         private readonly Uri _callbackUri;
 
-        public SkillsHelper(IConfiguration configuration, SkillHttpClient skillHttpClient, BotAdapter botAdapter)
+        public SkillsHelper(IConfiguration configuration, SkillHttpClient skillHttpClient, BotAdapter botAdapter, SkillConversationIdFactoryBase conversationIdFactory)
         {
             // We use a single skill in this example.
             var section = configuration.GetSection("BotFrameworkSkill");
@@ -33,6 +34,7 @@ namespace Microsoft.BotBuilderSamples
             _tokenExchangeProvider = botAdapter as IExtendedUserTokenProvider;
             _parentConnectionName = configuration.GetSection("ConnectionName")?.Value;
             _callbackUri = new Uri(configuration.GetSection("CallbackUri")?.Value);
+            _conversationIdFactory = conversationIdFactory;
         }
 
         public async Task<InvokeResponse<ExpectedReplies>> PostActivityAsync(Activity activity, CancellationToken cancellationToken = default(CancellationToken))
@@ -41,18 +43,18 @@ namespace Microsoft.BotBuilderSamples
             return response;
         }
 
-        public async Task<bool> InterceptOAuthCards(Activity[] activities, CancellationToken cancellationToken)
+        public async Task<bool> InterceptOAuthCards(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
-            var activity = activities.FirstOrDefault();
+            var activity = activities.FirstOrDefault(a => a.Type == ActivityTypes.Message);
             if (activity != null)
             {
-                return await InterceptOAuthCards(activity, cancellationToken);
+                return await InterceptOAuthCards(turnContext, activity, cancellationToken);
             }
 
             return false;
         }
 
-        public async Task<bool> InterceptOAuthCards(Activity activity, CancellationToken cancellationToken)
+        public async Task<bool> InterceptOAuthCards(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             if (activity.Attachments != null)
             {
@@ -62,23 +64,20 @@ namespace Microsoft.BotBuilderSamples
 
                     if (oauthCard.TokenExchangeResource != null)
                     {
-                        using (var context = new TurnContext(_botAdapter, activity))
+                        // AAD token exchange
+                        var result = await _tokenExchangeProvider.ExchangeTokenAsync(
+                            turnContext,
+                            _parentConnectionName,
+                            activity.Recipient.Id,
+                            new TokenExchangeRequest() { Uri = oauthCard.TokenExchangeResource.Uri }).ConfigureAwait(false);
+
+                        if (!string.IsNullOrEmpty(result.Token))
                         {
-                            // AAD token exchange
-                            var result = await _tokenExchangeProvider.ExchangeTokenAsync(
-                                context,
-                                _parentConnectionName,
-                                context.Activity.Recipient.Id,
-                                new TokenExchangeRequest() { Uri = oauthCard.TokenExchangeResource.Uri }).ConfigureAwait(false);
-
-                            if (!string.IsNullOrEmpty(result.Token))
-                            {
-                                // Send an Invoke back to the Skill
-                                return await SendTokenExchangeInvokeToSkill(activity, result.Token, oauthCard.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
-                            }
-
-                            return false;
+                            // Send an Invoke back to the Skill
+                            return await SendTokenExchangeInvokeToSkill(activity, result.Token, oauthCard.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
                         }
+
+                        return false;
                     }
                 }
             }
@@ -97,8 +96,8 @@ namespace Microsoft.BotBuilderSamples
                 ConnectionName = connectionName,
             };
 
-            //var conversationReference = await _conversationIdFactory.GetConversationReferenceAsync(incomingActivity.Conversation.Id, cancellationToken).ConfigureAwait(false);
-            //activity.Conversation = conversationReference.Conversation;
+            var skillConversationReference = await _conversationIdFactory.GetSkillConversationReferenceAsync(incomingActivity.Conversation.Id, cancellationToken).ConfigureAwait(false);
+            activity.Conversation = skillConversationReference.ConversationReference.Conversation;
 
             // route the activity to the skill
             var response = await PostActivityAsync(activity, cancellationToken);

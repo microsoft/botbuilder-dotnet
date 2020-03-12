@@ -44,6 +44,9 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<UserState>();
             services.AddSingleton<ConversationState>();
             services.AddSingleton<MainDialog>();
+            services.AddSingleton<AllowedSkillClaimsValidator>();
+            services.AddSingleton(sp => new AuthenticationConfiguration() { ClaimsValidator = sp.GetRequiredService<AllowedSkillClaimsValidator>() });
+            services.AddSingleton<ChannelServiceHandler, TokenExchangeSkillHandler>();
             services.AddTransient<IBot, ParentBot>();
         }
 

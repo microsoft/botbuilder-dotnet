@@ -80,7 +80,7 @@ namespace Microsoft.BotBuilderSamples
                     if (response1 != null && response1.Status == (int)HttpStatusCode.OK && response1.Body?.Activities != null)
                     {
                         var activities = response1.Body.Activities.ToArray();
-                        if (!(await _skillsHelper.InterceptOAuthCards(activities, cancellationToken)))
+                        if (!(await _skillsHelper.InterceptOAuthCards(turnContext, activities, cancellationToken)))
                         {
                             await turnContext.SendActivitiesAsync(activities, cancellationToken);
                         }

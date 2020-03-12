@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
@@ -43,9 +44,14 @@ namespace Microsoft.BotBuilderSamples
 
         protected override async Task<ResourceResponse> OnSendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (await _skillsHelper.InterceptOAuthCards(activity, cancellationToken))
+            using (var turnContext = new TurnContext(_adapter, activity))
             {
-                return new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                turnContext.TurnState.Add<IIdentity>("BotIdentity", claimsIdentity);
+
+                if (await _skillsHelper.InterceptOAuthCards(turnContext, activity, cancellationToken))
+                {
+                    return new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                }
             }
 
             return await base.OnSendToConversationAsync(claimsIdentity, conversationId, activity, cancellationToken).ConfigureAwait(false);
@@ -53,9 +59,14 @@ namespace Microsoft.BotBuilderSamples
 
         protected override async Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (await _skillsHelper.InterceptOAuthCards(activity, cancellationToken))
+            using (var turnContext = new TurnContext(_adapter, activity))
             {
-                return new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                turnContext.TurnState.Add<IIdentity>("BotIdentity", claimsIdentity);
+
+                if (await _skillsHelper.InterceptOAuthCards(turnContext, activity, cancellationToken))
+                {
+                    return new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+                }
             }
 
             return await base.OnReplyToActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
