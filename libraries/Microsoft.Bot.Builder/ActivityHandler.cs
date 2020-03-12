@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -45,7 +46,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnUnrecognizedActivityTypeAsync(ITurnContext, CancellationToken)"/>
         /// <seealso cref="Activity.Type"/>
         /// <seealso cref="ActivityTypes"/>
-        public virtual Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -65,26 +66,49 @@ namespace Microsoft.Bot.Builder
             switch (turnContext.Activity.Type)
             {
                 case ActivityTypes.Message:
-                    return OnMessageActivityAsync(new DelegatingTurnContext<IMessageActivity>(turnContext), cancellationToken);
+                    await OnMessageActivityAsync(new DelegatingTurnContext<IMessageActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
 
                 case ActivityTypes.ConversationUpdate:
-                    return OnConversationUpdateActivityAsync(new DelegatingTurnContext<IConversationUpdateActivity>(turnContext), cancellationToken);
+                    await OnConversationUpdateActivityAsync(new DelegatingTurnContext<IConversationUpdateActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
 
                 case ActivityTypes.MessageReaction:
-                    return OnMessageReactionActivityAsync(new DelegatingTurnContext<IMessageReactionActivity>(turnContext), cancellationToken);
+                    await OnMessageReactionActivityAsync(new DelegatingTurnContext<IMessageReactionActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
 
                 case ActivityTypes.Event:
-                    return OnEventActivityAsync(new DelegatingTurnContext<IEventActivity>(turnContext), cancellationToken);
+                    await OnEventActivityAsync(new DelegatingTurnContext<IEventActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
+
+                case ActivityTypes.Invoke:
+                    var invokeResponse = await OnInvokeActivityAsync(new DelegatingTurnContext<IInvokeActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+
+                    // If OnInvokeActivityAsync has already sent an InvokeResponse, do not send another one.
+                    if (invokeResponse != null && turnContext.TurnState.Get<Activity>(BotFrameworkAdapter.InvokeResponseKey) == null)
+                    {
+                        await turnContext.SendActivityAsync(new Activity { Value = invokeResponse, Type = ActivityTypesEx.InvokeResponse }, cancellationToken).ConfigureAwait(false);
+                    }
+
+                    break;
 
                 case ActivityTypes.EndOfConversation:
-                    return OnEndOfConversationActivityAsync(new DelegatingTurnContext<IEndOfConversationActivity>(turnContext), cancellationToken);
+                    await OnEndOfConversationActivityAsync(new DelegatingTurnContext<IEndOfConversationActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
 
                 case ActivityTypes.Typing:
-                    return OnTypingActivityAsync(new DelegatingTurnContext<ITypingActivity>(turnContext), cancellationToken);
+                    await OnTypingActivityAsync(new DelegatingTurnContext<ITypingActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
 
                 default:
-                    return OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
+                    await OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                    break;
             }
+        }
+
+        protected static InvokeResponse CreateInvokeResponse(object body = null)
+        {
+            return new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = body };
         }
 
         /// <summary>
@@ -328,7 +352,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/>
         protected virtual Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Name == "tokens/response")
+            if (turnContext.Activity.Name == SignInConstants.TokenResponseEventName)
             {
                 return OnTokenResponseEventAsync(turnContext, cancellationToken);
             }
@@ -381,6 +405,71 @@ namespace Microsoft.Bot.Builder
         protected virtual Task OnEventAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when an invoke activity is received from the connector when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
+        /// Invoke activities can be used to communicate many different things.
+        /// By default, this method will call <see cref="OnSignInInvokeAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/> if the
+        /// activity's name is <c>signin/verifyState</c> or <c>signin/tokenExchange</c>.
+        /// A <c>signin/verifyState</c> or <c>signin/tokenExchange</c> invoke can be triggered by an <see cref="OAuthCard"/>.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives an invoke activity, it calls this method.
+        /// If the event <see cref="IInvokeActivity.Name"/> is `signin/verifyState` or `signin/tokenExchange`, it calls
+        /// <see cref="OnSignInInvokeAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        /// Invoke activities communicate programmatic commands from a client or channel to a bot.
+        /// The meaning of an invoke activity is defined by the <see cref="IInvokeActivity.Name"/> property,
+        /// which is meaningful within the scope of a channel.
+        /// A `signin/verifyState` or `signin/tokenExchange` invoke can be triggered by an <see cref="OAuthCard"/> or an OAuth prompt.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        protected virtual async Task<InvokeResponse> OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (turnContext.Activity.Name == SignInConstants.VerifyStateOperationName || turnContext.Activity.Name == SignInConstants.TokenExchangeOperationName)
+                {
+                    await OnSignInInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                    return CreateInvokeResponse();
+                }
+
+                throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+            }
+            catch (InvokeResponseException e)
+            {
+                return e.CreateInvokeResponse();
+            }
+        }
+
+        /// <summary>
+        /// Invoked when a <c>signin/verifyState</c> or <c>signin/tokenExchange</c> event is received when the base behavior of
+        /// <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/> is used.
+        /// If using an <c>OAuthPrompt</c>, override this method to forward this <see cref="Activity"/> to the current dialog.
+        /// By default, this method does nothing.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        /// method receives an Invoke with a <see cref="IInvokeActivity.Name"/> of `tokens/response`,
+        /// it calls this method.
+        ///
+        /// If your bot uses the <c>OAuthPrompt</c>, forward the incoming <see cref="Activity"/> to
+        /// the current dialog.
+        /// </remarks>
+        /// <seealso cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        protected virtual Task OnSignInInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         /// <summary>
@@ -445,6 +534,23 @@ namespace Microsoft.Bot.Builder
         protected virtual Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+
+        protected class InvokeResponseException : Exception
+        {
+            private HttpStatusCode _statusCode;
+            private object _body;
+
+            public InvokeResponseException(HttpStatusCode statusCode, object body = null)
+            {
+                _statusCode = statusCode;
+                _body = body;
+            }
+
+            public InvokeResponse CreateInvokeResponse()
+            {
+                return new InvokeResponse { Status = (int)_statusCode, Body = _body };
+            }
         }
     }
 }

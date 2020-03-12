@@ -7,13 +7,13 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.BotBuilderSamples.EchoSkillBot31.Authentication;
-using Microsoft.BotBuilderSamples.EchoSkillBot31.Bots;
+using Microsoft.BotBuilderSamples.EchoSkillBot.Authentication;
+using Microsoft.BotBuilderSamples.EchoSkillBot.Bots;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.BotBuilderSamples.EchoSkillBot31
+namespace Microsoft.BotBuilderSamples.EchoSkillBot
 {
     public class Startup
     {

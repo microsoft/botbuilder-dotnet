@@ -11,7 +11,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Builder.Skills.Dialogs;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +23,8 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
     /// </summary>
     public class MainDialog : ComponentDialog
     {
+        public static readonly string ActiveSkillPropertyName = $"{typeof(MainDialog).FullName}.ActiveSkillProperty";
+        private readonly IStatePropertyAccessor<BotFrameworkSkill> _activeSkillProperty;
         private readonly string _selectedSkillKey = $"{typeof(MainDialog).FullName}.SelectedSkillKey";
         private readonly SkillsConfiguration _skillsConfig;
 
@@ -52,15 +53,24 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             // ChoicePrompt to render available skills and skill actions
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
 
-            // SkillDialog used to wrap interaction with the selected skill
-            var skillDialogOptions = new SkillDialogOptions
+            // Register the tangent
+            AddDialog(new TangentDialog());
+
+            // Create SkillDialog instances for the configured skills
+            foreach (var skillInfo in _skillsConfig.Skills.Values)
             {
-                BotId = botId,
-                ConversationIdFactory = conversationIdFactory,
-                SkillClient = skillClient,
-                SkillHostEndpoint = skillsConfig.SkillHostEndpoint
-            };
-            AddDialog(new SkillDialog(skillDialogOptions, conversationState));
+                // SkillDialog used to wrap interaction with the selected skill
+                var skillDialogOptions = new SkillDialogOptions
+                {
+                    BotId = botId,
+                    ConversationIdFactory = conversationIdFactory,
+                    SkillClient = skillClient,
+                    SkillHostEndpoint = skillsConfig.SkillHostEndpoint,
+                    ConversationState = conversationState,
+                    Skill = skillInfo
+                };
+                AddDialog(new SkillDialog(skillDialogOptions, skillInfo.Id));
+            }
 
             // Main waterfall dialog for this bot
             var waterfallSteps = new WaterfallStep[]
@@ -72,8 +82,32 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             };
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), waterfallSteps));
 
+            // Create state property to track the active skill
+            _activeSkillProperty = conversationState.CreateProperty<BotFrameworkSkill>(ActiveSkillPropertyName);
+
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
+        }
+
+        protected override async Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default)
+        {
+            // This is an example on how to cancel a SkillDialog that is currently in progress from the parent bot
+            var activeSkill = await _activeSkillProperty.GetAsync(innerDc.Context, () => null, cancellationToken);
+            var activity = innerDc.Context.Activity;
+            if (activeSkill != null && activity.Type == ActivityTypes.Message && activity.Text.Equals("abort", StringComparison.CurrentCultureIgnoreCase))
+            {
+                // Cancel all dialog when the user says abort.
+                await innerDc.CancelAllDialogsAsync(cancellationToken);
+                return await innerDc.ReplaceDialogAsync(InitialDialogId, "Canceled! \n\n What skill would you like to call?", cancellationToken);
+            }
+
+            if (activeSkill != null && activity.Type == ActivityTypes.Message && activity.Text.Equals("tangent", StringComparison.CurrentCultureIgnoreCase))
+            {
+                // Start tangent.
+                return await innerDc.BeginDialogAsync(nameof(TangentDialog), cancellationToken: cancellationToken);
+            }
+
+            return await base.OnContinueDialogAsync(innerDc, cancellationToken);
         }
 
         // Render a prompt to select the skill to call.
@@ -82,7 +116,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             // Create the PromptOptions from the skill configuration which contain the list of configured skills.
             var options = new PromptOptions
             {
-                Prompt = MessageFactory.Text("What skill would you like to call?"),
+                Prompt = MessageFactory.Text(stepContext.Options?.ToString() ?? "What skill would you like to call?"),
                 RetryPrompt = MessageFactory.Text("That was not a valid choice, please select a valid skill."),
                 Choices = _skillsConfig.Skills.Select(skill => new Choice(skill.Value.Id)).ToList()
             };
@@ -119,7 +153,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
         {
             var selectedSkill = (BotFrameworkSkill)stepContext.Values[_selectedSkillKey];
 
-            Activity skillActivity = null;
+            Activity skillActivity;
             switch (selectedSkill.Id)
             {
                 case "EchoSkillBot":
@@ -128,18 +162,14 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
                     skillActivity.Text = "Start echo skill";
                     break;
                 case "DialogSkillBot":
-                    skillActivity = GetDialogSkillBotActivity(((FoundChoice)stepContext.Result).Value);
+                    skillActivity = CreateDialogSkillBotActivity(((FoundChoice)stepContext.Result).Value);
                     break;
                 default:
                     throw new Exception($"Unknown target skill id: {selectedSkill.Id}.");
             }
 
-            // Create the SkillDialogArgs
-            var skillDialogArgs = new SkillDialogArgs
-            {
-                Skill = selectedSkill,
-                Activity = skillActivity
-            };
+            // Create the BeginSkillDialogOptions
+            var skillDialogArgs = new BeginSkillDialogOptions { Activity = skillActivity };
 
             // We are manually creating the activity to send to the skill, ensure we add the ChannelData and Properties 
             // from the original activity so the skill gets them.
@@ -147,28 +177,42 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             skillDialogArgs.Activity.ChannelData = stepContext.Context.Activity.ChannelData;
             skillDialogArgs.Activity.Properties = stepContext.Context.Activity.Properties;
 
-            // Start the skillDialog with the arguments. 
-            return await stepContext.BeginDialogAsync(nameof(SkillDialog), skillDialogArgs, cancellationToken);
+            // Comment or uncomment this line if you need to enable or disabled buffered replies.
+            skillDialogArgs.Activity.DeliveryMode = DeliveryModes.ExpectReplies;
+
+            // Save active skill in state
+            await _activeSkillProperty.SetAsync(stepContext.Context, selectedSkill, cancellationToken);
+
+            // Start the skillDialog instance with the arguments. 
+            return await stepContext.BeginDialogAsync(selectedSkill.Id, skillDialogArgs, cancellationToken);
         }
 
         // The SkillDialog has ended, render the results (if any) and restart MainDialog.
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var activeSkill = await _activeSkillProperty.GetAsync(stepContext.Context, () => null, cancellationToken);
+
             if (stepContext.Result != null)
             {
-                var message = "Skill invocation complete.";
+                var message = $"Skill \"{activeSkill.Id}\" invocation complete.";
                 message += $" Result: {JsonConvert.SerializeObject(stepContext.Result)}";
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(message, inputHint: InputHints.IgnoringInput), cancellationToken: cancellationToken);
             }
 
+            // Clear the skill selected by the user.
+            stepContext.Values[_selectedSkillKey] = null;
+
+            // Clear active skill in state
+            await _activeSkillProperty.DeleteAsync(stepContext.Context, cancellationToken);
+
             // Restart the main dialog with a different message the second time around
-            return await stepContext.ReplaceDialogAsync(InitialDialogId, "What else can I do for you?", cancellationToken);
+            return await stepContext.ReplaceDialogAsync(InitialDialogId, $"Done with \"{activeSkill.Id}\". \n\n What skill would you like to call?", cancellationToken);
         }
 
         // Helper method to create Choice elements for the actions supported by the skill
         private IList<Choice> GetSkillActions(BotFrameworkSkill skill)
         {
-            // Note: the bot would probably render this by readying the skill manifest
+            // Note: the bot would probably render this by reading the skill manifest
             // we are just using hardcoded skill actions here for simplicity.
 
             var choices = new List<Choice>();
@@ -190,11 +234,11 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             return choices;
         }
 
-        // Helper method to create the activity to be sent to the DialogSkillBot
-        private Activity GetDialogSkillBotActivity(string selectedOption)
+        // Helper method to create the activity to be sent to the DialogSkillBot using selected type and values
+        private Activity CreateDialogSkillBotActivity(string selectedOption)
         {
             // Note: in a real bot, the dialogArgs will be created dynamically based on the conversation
-            // and what each action requires, this code hardcodes the values to make things simpler.
+            // and what each action requires, here we hardcode the values to make things simpler.
 
             // Send a message activity to the skill.
             if (selectedOption.StartsWith("m:", StringComparison.CurrentCultureIgnoreCase))

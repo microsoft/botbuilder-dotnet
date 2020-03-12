@@ -51,11 +51,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Read event queues from memory.
         /// </summary>
-        /// <param name="context">Context for memory.</param>
+        /// <param name="actionContext">Context for memory.</param>
         /// <returns>Event queues.</returns>
-        public static EntityEvents Read(SequenceContext context)
+        public static EntityEvents Read(ActionContext actionContext)
         {
-            var dcState = context.GetState();
+            var dcState = actionContext.GetState();
 
             if (!dcState.TryGetValue<EntityEvents>(Events, out var queues))
             {
@@ -68,9 +68,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Write state into memory.
         /// </summary>
-        /// <param name="context">Memory context.</param>
-        public void Write(SequenceContext context)
-            => context.GetState().SetValue(Events, this);
+        /// <param name="actionContext">Memory context.</param>
+        public void Write(ActionContext actionContext)
+            => actionContext.GetState().SetValue(Events, this);
 
         /// <summary>
         /// Remove an event result from queues.

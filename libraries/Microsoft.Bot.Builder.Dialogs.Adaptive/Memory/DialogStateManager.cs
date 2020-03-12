@@ -31,10 +31,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         private readonly DialogContext dialogContext;
         private int version = 0;
 
-        public DialogStateManager(DialogContext dc)
+        public DialogStateManager(DialogContext dc, DialogStateManagerConfiguration configuration = null)
         {
             dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
-            this.Configuration = dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
+            this.Configuration = configuration ?? dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
             if (this.Configuration == null)
             {
                 this.Configuration = new DialogStateManagerConfiguration();
@@ -56,10 +56,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                         this.Configuration.PathResolvers.Add(pathResolver);
                     }
                 }
-
-                // cache for any other new dialogStatemanager instances in this turn.  
-                dc.Context.TurnState.Set<DialogStateManagerConfiguration>(this.Configuration);
             }
+
+            // cache for any other new dialogStatemanager instances in this turn.  
+            dc.Context.TurnState.Set<DialogStateManagerConfiguration>(this.Configuration);
         }
 
         public DialogStateManagerConfiguration Configuration { get; set; }
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 {
                     // Root is handled by SetMemory rather than SetValue
                     var scope = GetMemoryScope(key) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(key));
-                    scope.SetMemory(this.dialogContext, value);
+                    scope.SetMemory(this.dialogContext, JToken.FromObject(value));
                 }
                 else
                 {
@@ -123,14 +123,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public virtual MemoryScope ResolveMemoryScope(string path, out string remainingPath)
         {
             var scope = path;
+            var sepIndex = -1;
             var dot = path.IndexOf(".");
-            if (dot > 0)
+            var openSquareBracket = path.IndexOf("[");
+
+            if (dot > 0 && openSquareBracket > 0)
             {
-                scope = path.Substring(0, dot);
+                sepIndex = Math.Min(dot, openSquareBracket);
+            }
+            else if (dot > 0)
+            {
+                sepIndex = dot;
+            }
+            else if (openSquareBracket > 0)
+            {
+                sepIndex = openSquareBracket;
+            }
+
+            if (sepIndex > 0)
+            {
+                scope = path.Substring(0, sepIndex);
                 var memoryScope = GetMemoryScope(scope);
                 if (memoryScope != null)
                 {
-                    remainingPath = path.Substring(dot + 1);
+                    remainingPath = path.Substring(sepIndex + 1);
                     return memoryScope;
                 }
             }
@@ -190,16 +206,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             var iFirst = path.ToLower().LastIndexOf(first);
             if (iFirst >= 0)
             {
+                object entity = null;
                 remainingPath = path.Substring(iFirst + first.Length);
                 path = path.Substring(0, iFirst);
-                if (TryGetFirstNestedValue(ref value, ref path, this))
+                if (TryGetFirstNestedValue(ref entity, ref path, this))
                 {
                     if (string.IsNullOrEmpty(remainingPath))
                     {
+                        value = ObjectPath.MapValueTo<T>(entity);
                         return true;
                     }
 
-                    return ObjectPath.TryGetPathValue(value, remainingPath, out value);
+                    return ObjectPath.TryGetPathValue(entity, remainingPath, out value);
                 }
 
                 return false;
@@ -268,6 +286,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             if (value is Task)
             {
                 throw new Exception($"{path} = You can't pass an unresolved Task to SetValue");
+            }
+
+            if (value != null)
+            {
+                value = JToken.FromObject(value);
             }
 
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
@@ -503,12 +526,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                     if (value is object obj)
                     {
                         // For an object we need to see if any children path are being tracked
-                        void CheckChildren(string property, object value)
+                        void CheckChildren(string property, object instance)
                         {
                             // Add new child segment
                             trackedPath += "_" + property.ToLower();
                             Update();
-                            if (value is object child)
+                            if (instance is object child)
                             {
                                 ObjectPath.ForEachProperty(child, CheckChildren);
                             }

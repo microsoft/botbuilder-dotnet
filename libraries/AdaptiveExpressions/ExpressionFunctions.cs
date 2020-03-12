@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
 using System.Linq;
@@ -37,6 +38,11 @@ namespace AdaptiveExpressions
     public static class ExpressionFunctions
     {
         /// <summary>
+        /// Read only Dictionary of built in functions.
+        /// </summary>
+        public static readonly IDictionary<string, ExpressionEvaluator> StandardFunctions = GetStandardFunctions();
+
+        /// <summary>
         /// Random number generator used for expressions.
         /// </summary>
         /// <remarks>This is exposed so that you can explicitly seed the random number generator for tests.</remarks>
@@ -46,11 +52,6 @@ namespace AdaptiveExpressions
         /// The default date time format string.
         /// </summary>
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
-
-        /// <summary>
-        /// Dictionary of function => ExpressionEvaluator.
-        /// </summary>
-        public static readonly Dictionary<string, ExpressionEvaluator> Functions = GetExpressionFunctions();
 
         /// <summary>
         /// Object used to lock Randomizer.
@@ -799,21 +800,6 @@ namespace AdaptiveExpressions
                 },
                 ReturnType.String,
                 expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String, ReturnType.Number));
-
-        /// <summary>
-        /// Lookup a built-in function information by type.
-        /// </summary>
-        /// <param name="type">Type to look up.</param>
-        /// <returns>Information about expression type.</returns>
-        public static ExpressionEvaluator Lookup(string type)
-        {
-            if (!Functions.TryGetValue(type, out var eval))
-            {
-                throw new SyntaxErrorException($"{type} does not have an evaluator, it's not a built-in function or a customized function");
-            }
-
-            return eval;
-        }
 
         /// <summary>
         /// Lookup an index property of instance.
@@ -2437,15 +2423,27 @@ namespace AdaptiveExpressions
                return (result, error);
            };
 
+        // TODO we should uniform the list format
+        private static List<object> Object2List(JObject jobj)
+        {
+            var tempList = new List<object>();
+            foreach (var item in jobj)
+            {
+                tempList.Add(new { index = item.Key, value = item.Value });
+            }
+
+            return tempList;
+        }
+
         private static (object, string) IndicesAndValues(Expression expression, object state)
         {
             object result = null;
             string error;
-            object arr;
-            (arr, error) = expression.Children[0].TryEvaluate(state);
+            object instance;
+            (instance, error) = expression.Children[0].TryEvaluate(state);
             if (error == null)
             {
-                if (TryParseList(arr, out var list))
+                if (TryParseList(instance, out var list))
                 {
                     var tempList = new List<object>();
                     for (var i = 0; i < list.Count; i++)
@@ -2455,9 +2453,17 @@ namespace AdaptiveExpressions
 
                     result = tempList;
                 }
+                else if (instance is JObject jobj)
+                {
+                    result = Object2List(jobj);
+                }
+                else if (JToken.FromObject(instance) is JObject jobject)
+                {
+                    result = Object2List(jobject);
+                }
                 else
                 {
-                    error = $"{expression.Children[0]} is not array.";
+                    error = $"{expression.Children[0]} is not array or object..";
                 }
             }
 
@@ -2517,7 +2523,47 @@ namespace AdaptiveExpressions
             return -1;
         }
 
-        private static Dictionary<string, ExpressionEvaluator> GetExpressionFunctions()
+        private static IEnumerable<object> Flatten(IEnumerable<object> list, int dept)
+        {
+            var result = list.ToList();
+            if (dept < 1)
+            {
+                dept = 1;
+            }
+
+            for (var i = 0; i < dept; i++)
+            {
+                var hasArray = result.Any(u => TryParseList(u, out var _));
+                if (hasArray)
+                {
+                    var tempList = new List<object>();
+                    foreach (var item in result)
+                    {
+                        if (TryParseList(item, out var itemList))
+                        {
+                            foreach (var childItem in itemList)
+                            {
+                                tempList.Add(childItem);
+                            }
+                        }
+                        else
+                        {
+                            tempList.Add(item);
+                        }
+                    }
+
+                    result = tempList.ToList();
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        private static IDictionary<string, ExpressionEvaluator> GetStandardFunctions()
         {
             var functions = new List<ExpressionEvaluator>
             {
@@ -2784,6 +2830,27 @@ namespace AdaptiveExpressions
                     ReturnType.Object,
                     (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.Flatten,
+                    Apply(
+                        args =>
+                        {
+                            IEnumerable<object> result = args[0];
+                            var depth = args.Count > 1 ? args[1] : 100;
+                            return ExpressionFunctions.Flatten(result, depth);
+                        }),
+                    ReturnType.Object,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.Unique,
+                    Apply(
+                        args =>
+                        {
+                            IEnumerable<object> result = args[0];
+                            return result.Distinct().ToList();
+                        }, VerifyList),
+                    ReturnType.Object,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Object)),
 
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
@@ -3103,15 +3170,37 @@ namespace AdaptiveExpressions
                     (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.LastIndexOf,
-                    Apply(
-                        args =>
+                    (expression, state) =>
+                    {
+                        object result = -1;
+                        var (args, error) = EvaluateChildren(expression, state);
+                        if (error == null)
                         {
-                            string rawStr = ParseStringOrNull(args[0]);
-                            string seekStr = ParseStringOrNull(args[1]);
-                            return rawStr.LastIndexOf(seekStr);
-                        }, VerifyStringOrNull),
+                            if (args[0] is string || args[0] == null)
+                            {
+                                if (args[1] is string || args[1] == null)
+                                {
+                                    result = ParseStringOrNull(args[0]).LastIndexOf(ParseStringOrNull(args[1]));
+                                }
+                                else
+                                {
+                                    error = $"Can only look for indexof string in {expression}";
+                                }
+                            }
+                            else if (TryParseList(args[0], out IList list))
+                            {
+                                result = ResolveListValue(list).OfType<object>().ToList().LastIndexOf(args[1]);
+                            }
+                            else
+                            {
+                                error = $"{expression} works only on string or list.";
+                            }
+                        }
+
+                        return (result, error);
+                    },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String)),
+                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),
@@ -3859,7 +3948,7 @@ namespace AdaptiveExpressions
             lookup.Add("or", lookup[ExpressionType.Or]);
 
             lookup.Add("&", lookup[ExpressionType.Concat]);
-            return lookup;
+            return new ReadOnlyDictionary<string, ExpressionEvaluator>(lookup);
         }
     }
 }

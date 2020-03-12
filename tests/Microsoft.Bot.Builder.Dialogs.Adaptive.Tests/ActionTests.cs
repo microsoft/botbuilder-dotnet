@@ -2,18 +2,9 @@
 // Licensed under the MIT License.
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -33,6 +24,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_AttachmentInput()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task Action_BeginDialog()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
@@ -46,6 +43,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [TestMethod]
         public async Task Action_BeginDialogWithoutActivity()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_CancelAllDialogs()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }

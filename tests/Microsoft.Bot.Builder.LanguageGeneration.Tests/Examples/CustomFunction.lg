@@ -1,0 +1,7 @@
+﻿# template
+- ${custom(1, 2)}
+
+# callRef
+- ${refSub()}
+
+[import](./CustomFunctionSub.lg)

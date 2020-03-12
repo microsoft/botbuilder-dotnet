@@ -42,6 +42,8 @@
     <None Remove="Examples\StringInterpolation.lg" />
     <None Remove="Examples\ReExecute.lg" />
     <None Remove="Examples\NullTolerant.lg" />
+    <None Remove="Examples\CustomFunction.lg" />
+    <None Remove="Examples\CustomFunctionSub.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
@@ -61,6 +63,8 @@
     <None Remove="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg" />
     <None Remove="ExceptionExamples\RunTimeErrors.lg" />
     <None Remove="ExceptionExamples\ExpressionFormatError.lg" />
+    <None Remove="MultiLanguage\a.lg" />
+    <None Remove="MultiLanguage\a.en.lg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -160,6 +164,12 @@
     <Content Include="Examples\NullTolerant.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Examples\CustomFunction.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\CustomFunctionSub.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ExceptionExamples\ConditionFormatError.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -215,6 +225,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\ExpressionFormatError.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MultiLanguage\a.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MultiLanguage\a.en.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

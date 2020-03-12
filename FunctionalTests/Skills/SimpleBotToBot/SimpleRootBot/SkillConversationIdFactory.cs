@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.BotBuilderSamples.SimpleRootBot31
+namespace Microsoft.BotBuilderSamples.SimpleRootBot
 {
     /// <summary>
     /// A <see cref="SkillConversationIdFactory"/> that uses an in memory <see cref="ConcurrentDictionary{TKey,TValue}"/>
@@ -18,17 +18,21 @@ namespace Microsoft.BotBuilderSamples.SimpleRootBot31
     {
         private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
 
-        public override Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
+        public override Task<string> CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions options, CancellationToken cancellationToken)
         {
-            var crJson = JsonConvert.SerializeObject(conversationReference);
-            var key = $"{conversationReference.Conversation.Id}-{conversationReference.ChannelId}-skillconvo";
-            _conversationRefs.GetOrAdd(key, crJson);
+            var skillConversationReference = new SkillConversationReference
+            {
+                ConversationReference = options.Activity.GetConversationReference(),
+                OAuthScope = options.FromBotOAuthScope
+            };
+            var key = $"{options.FromBotId}-{options.BotFrameworkSkill.AppId}-{skillConversationReference.ConversationReference.Conversation.Id}-{skillConversationReference.ConversationReference.ChannelId}-skillconvo";
+            _conversationRefs.GetOrAdd(key, JsonConvert.SerializeObject(skillConversationReference));
             return Task.FromResult(key);
         }
 
-        public override Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        public override Task<SkillConversationReference> GetSkillConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
         {
-            var conversationReference = JsonConvert.DeserializeObject<ConversationReference>(_conversationRefs[skillConversationId]);
+            var conversationReference = JsonConvert.DeserializeObject<SkillConversationReference>(_conversationRefs[skillConversationId]);
             return Task.FromResult(conversationReference);
         }
 

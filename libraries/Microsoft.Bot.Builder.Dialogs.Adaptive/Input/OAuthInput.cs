@@ -238,6 +238,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         if (this.DefaultValueResponse != null)
                         {
                             var response = await this.DefaultValueResponse.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                            var properties = new Dictionary<string, string>()
+                            {
+                                { "template", JsonConvert.SerializeObject(this.DefaultValueResponse) },
+                                { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                            };
+                            TelemetryClient.TrackEvent("GeneratorResult", properties);
                             await dc.Context.SendActivityAsync(response).ConfigureAwait(false);
                         }
 
@@ -449,13 +455,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         private bool IsTokenResponseEvent(ITurnContext turnContext)
         {
             var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Event && activity.Name == "tokens/response";
+            return activity.Type == ActivityTypes.Event && activity.Name == SignInConstants.TokenResponseEventName;
         }
 
         private bool IsTeamsVerificationInvoke(ITurnContext turnContext)
         {
             var activity = turnContext.Activity;
-            return activity.Type == ActivityTypes.Invoke && activity.Name == "signin/verifyState";
+            return activity.Type == ActivityTypes.Invoke && activity.Name == SignInConstants.VerifyStateOperationName;
         }
 
         private bool ChannelSupportsOAuthCard(string channelId)

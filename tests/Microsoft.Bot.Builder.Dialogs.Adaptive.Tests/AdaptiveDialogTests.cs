@@ -12,9 +12,9 @@ using System.Threading;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using System.IO;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -238,6 +238,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [TestMethod]
         public async Task AdaptiveDialog_EmitEventActivityReceived()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_NestedMemoryAccess()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }
