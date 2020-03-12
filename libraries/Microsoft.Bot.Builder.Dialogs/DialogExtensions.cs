@@ -38,12 +38,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims))
             {
                 // The bot is running as a skill.
-                if (turnContext.Activity.Type == ActivityTypes.EndOfConversation && dialogContext.Stack.Any())
+                if (turnContext.Activity.Type == ActivityTypes.EndOfConversation && dialogContext.Stack.Any() && IsEocComingFromParent(turnContext))
                 {
-                    // Handle remote cancellation request if we have something in the stack.
+                    // Handle remote cancellation request from parent.
                     var activeDialogContext = GetActiveDialogContext(dialogContext);
 
-                    var remoteCancelText = "Skill was canceled by a request from the host.";
+                    var remoteCancelText = "Skill was canceled through an EndOfConversation activity from the parent.";
                     await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{remoteCancelText}", cancellationToken: cancellationToken).ConfigureAwait(false);
 
                     // Send cancellation message to the top dialog in the stack to ensure all the parents are canceled in the right order. 
@@ -88,6 +88,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                     await dialogContext.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
                 }
             }
+        }
+
+        // We should only cancel the current dialog stack if the EoC activity is coming from a parent (a root bot or another skill).
+        // When the EoC is coming back from a child, we should just process that EoC normally through the 
+        // dialog stack and let the child dialogs handle that.
+        private static bool IsEocComingFromParent(ITurnContext turnContext)
+        {
+            // To determine the direction we check callerId property which is set to the parent bot
+            // by the BotFrameworkHttpClient on outgoing requests.
+            return !string.IsNullOrWhiteSpace(turnContext.Activity.CallerId);
         }
 
         // Recursively walk up the DC stack to find the active DC.
