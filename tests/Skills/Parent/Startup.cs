@@ -48,6 +48,7 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton(sp => new AuthenticationConfiguration() { ClaimsValidator = sp.GetRequiredService<AllowedSkillClaimsValidator>() });
             services.AddSingleton<ChannelServiceHandler, TokenExchangeSkillHandler>();
             services.AddTransient<IBot, ParentBot>();
+            services.AddMvc().AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

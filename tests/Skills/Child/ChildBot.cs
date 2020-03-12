@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
@@ -16,6 +17,9 @@ namespace Microsoft.BotBuilderSamples
         private readonly ConversationState _conversationState;
         private readonly UserState _userState;
         private readonly string _connectionName;
+        
+        // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
+        private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
 
         public ChildBot(IConfiguration configuration, MainDialog dialog, ConversationState conversationState, UserState userState)
         {
@@ -44,7 +48,7 @@ namespace Microsoft.BotBuilderSamples
         {
             if (turnContext.Activity.ChannelId != "emulator")
             {
-                if (turnContext.Activity.Text == "skill login")
+                if (turnContext.Activity.Text == "skill login" || _magicCodeRegex.IsMatch(turnContext.Activity.Text))
                 {
                     await _conversationState.LoadAsync(turnContext, true, cancellationToken);
                     await _userState.LoadAsync(turnContext, true, cancellationToken);

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -26,6 +27,8 @@ namespace Microsoft.BotBuilderSamples
         private readonly string _fromBotId;
         private readonly string _connectionName;
         private readonly SkillsHelper _skillsHelper;
+
+        private readonly HashSet<string> userinput = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { "login", "skill login", "skill logout" };
 
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
@@ -56,7 +59,7 @@ namespace Microsoft.BotBuilderSamples
             // also ensure that the channelId is not emulator
             if (turnContext.Activity.ChannelId != "emulator")
             {
-                if (_magicCodeRegex.IsMatch(turnContext.Activity.Text) || turnContext.Activity.Text == "login")
+                if (_magicCodeRegex.IsMatch(turnContext.Activity.Text) || userinput.Contains(turnContext.Activity.Text))
                 {
                     // start an oauth prompt
                     await _conversationState.LoadAsync(turnContext, true, cancellationToken);
@@ -68,23 +71,6 @@ namespace Microsoft.BotBuilderSamples
                     var adapter = turnContext.Adapter as IExtendedUserTokenProvider;
                     await adapter.SignOutUserAsync(turnContext, _connectionName, turnContext.Activity.From.Id, cancellationToken);
                     await turnContext.SendActivityAsync(MessageFactory.Text("logout from parent bot successful"), cancellationToken);
-                }
-                else if (turnContext.Activity.Text == "skill login" || turnContext.Activity.Text == "skill logout")
-                {
-                    // incoming activity needs to be cloned for buffered replies
-                    var cloneActivity = MessageFactory.Text(turnContext.Activity.Text);
-                    cloneActivity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
-                    cloneActivity.DeliveryMode = DeliveryModes.ExpectReplies;
-                    var response1 = await _skillsHelper.PostActivityAsync(cloneActivity, cancellationToken) as InvokeResponse<ExpectedReplies>;
-
-                    if (response1 != null && response1.Status == (int)HttpStatusCode.OK && response1.Body?.Activities != null)
-                    {
-                        var activities = response1.Body.Activities.ToArray();
-                        if (!(await _skillsHelper.InterceptOAuthCards(turnContext, activities, cancellationToken)))
-                        {
-                            await turnContext.SendActivitiesAsync(activities, cancellationToken);
-                        }
-                    }
                 }
 
                 return;

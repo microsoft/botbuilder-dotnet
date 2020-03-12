@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
@@ -10,10 +12,13 @@ namespace Microsoft.BotBuilderSamples
 {
     public class MainDialog : ComponentDialog
     {
-        public MainDialog(IConfiguration configuration)
+        private readonly SkillsHelper _skillsHelper;
+
+        public MainDialog(IConfiguration configuration, SkillsHelper skillsHelper)
             : base(nameof(MainDialog))
         {
             var connectionName = configuration.GetSection("ConnectionName")?.Value ?? throw new ArgumentNullException("Connection name is needed in configuration");
+            _skillsHelper = skillsHelper;
 
             var steps = new WaterfallStep[]
                 {
@@ -33,7 +38,30 @@ namespace Microsoft.BotBuilderSamples
 
         private async Task<DialogTurnResult> SignInStepAsync(WaterfallStepContext context, CancellationToken cancellationToken)
         {
-            return await context.BeginDialogAsync(nameof(OAuthPrompt), null, cancellationToken).ConfigureAwait(false);
+            if (context.Context.Activity.Text == "login")
+            {
+                return await context.BeginDialogAsync(nameof(OAuthPrompt), null, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                // it's not meant for oauthprompt of parent, so proxy to skill
+                var turnContext = context.Context;
+                var cloneActivity = MessageFactory.Text(turnContext.Activity.Text);
+                cloneActivity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
+                cloneActivity.DeliveryMode = DeliveryModes.ExpectReplies;
+                var response1 = await _skillsHelper.PostActivityAsync(cloneActivity, cancellationToken) as InvokeResponse<ExpectedReplies>;
+
+                if (response1 != null && response1.Status == (int)HttpStatusCode.OK && response1.Body?.Activities != null)
+                {
+                    var activities = response1.Body.Activities.ToArray();
+                    if (!(await _skillsHelper.InterceptOAuthCards(turnContext, activities, cancellationToken)))
+                    {
+                        await turnContext.SendActivitiesAsync(activities, cancellationToken);
+                    }
+                }
+            }
+
+            return new DialogTurnResult(DialogTurnStatus.Complete);
         }
 
         private async Task<DialogTurnResult> ShowTokenResponseAsync(WaterfallStepContext context, CancellationToken cancellationToken)

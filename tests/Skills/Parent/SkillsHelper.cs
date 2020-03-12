@@ -64,20 +64,25 @@ namespace Microsoft.BotBuilderSamples
 
                     if (oauthCard.TokenExchangeResource != null)
                     {
-                        // AAD token exchange
-                        var result = await _tokenExchangeProvider.ExchangeTokenAsync(
-                            turnContext,
-                            _parentConnectionName,
-                            activity.Recipient.Id,
-                            new TokenExchangeRequest() { Uri = oauthCard.TokenExchangeResource.Uri }).ConfigureAwait(false);
-
-                        if (!string.IsNullOrEmpty(result.Token))
+                        try
                         {
-                            // Send an Invoke back to the Skill
-                            return await SendTokenExchangeInvokeToSkill(activity, result.Token, oauthCard.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
-                        }
+                            // AAD token exchange
+                            var result = await _tokenExchangeProvider.ExchangeTokenAsync(
+                                turnContext,
+                                _parentConnectionName,
+                                activity.Recipient.Id,
+                                new TokenExchangeRequest() { Uri = oauthCard.TokenExchangeResource.Uri }).ConfigureAwait(false);
 
-                        return false;
+                            if (!string.IsNullOrEmpty(result.Token))
+                            {
+                                // Send an Invoke back to the Skill
+                                return await SendTokenExchangeInvokeToSkill(turnContext, activity, result.Token, oauthCard.ConnectionName, default(CancellationToken)).ConfigureAwait(false);
+                            }
+                        }
+                        catch
+                        {
+                            return false;
+                        }
                     }
                 }
             }
@@ -85,7 +90,7 @@ namespace Microsoft.BotBuilderSamples
             return false;
         }
 
-        private async Task<bool> SendTokenExchangeInvokeToSkill(Activity incomingActivity, string token, string connectionName, CancellationToken cancellationToken)
+        private async Task<bool> SendTokenExchangeInvokeToSkill(ITurnContext turnContext, Activity incomingActivity, string token, string connectionName, CancellationToken cancellationToken)
         {
             var activity = incomingActivity.CreateReply() as Activity;
             activity.Type = ActivityTypes.Invoke;
@@ -98,12 +103,23 @@ namespace Microsoft.BotBuilderSamples
 
             var skillConversationReference = await _conversationIdFactory.GetSkillConversationReferenceAsync(incomingActivity.Conversation.Id, cancellationToken).ConfigureAwait(false);
             activity.Conversation = skillConversationReference.ConversationReference.Conversation;
+            activity.ServiceUrl = skillConversationReference.ConversationReference.ServiceUrl;
 
             // route the activity to the skill
             var response = await PostActivityAsync(activity, cancellationToken);
 
             // Check response status: true if success, false if failure
-            return IsSucessStatusCode(response.Status);
+            var success = IsSucessStatusCode(response.Status);
+            if (success)
+            {
+                await turnContext.SendActivityAsync("token exchange successful");
+            }
+            else
+            {
+                await turnContext.SendActivityAsync("token exchange failed");
+            }
+
+            return success;
         }
 
         private bool IsSucessStatusCode(int statusCode)
