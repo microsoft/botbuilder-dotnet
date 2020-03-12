@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             // use bindingOptions to bind to the bound options
             var boundOptions = BindOptions(dc, options);
-            dcState.SetValue(ThisPath.OPTIONS, boundOptions);
+            dcState.SetValue(ThisPath.Options, boundOptions);
 
             var engine = new Engine();
             foreach (var scope in dcState.Where(ms => ms.Key != "this"))

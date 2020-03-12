@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             var expressions = new List<Expression> { base.GetExpression() };
             if (this.Property != null)
             {
-                expressions.Add(Expression.Parse($"{TurnPath.DIALOGEVENT}.value.property == '{this.Property}'"));
+                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.property == '{this.Property}'"));
             }
 
             return Expression.AndExpression(expressions.ToArray());

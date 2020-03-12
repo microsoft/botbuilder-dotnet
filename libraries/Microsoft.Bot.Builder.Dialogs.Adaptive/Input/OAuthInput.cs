@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             var op = OnInitializeOptions(dc, options);
-            dcState.SetValue(ThisPath.OPTIONS, op);
+            dcState.SetValue(ThisPath.Options, op);
             dcState.SetValue(TURN_COUNT_PROPERTY, 0);
 
             // If AlwaysPrompt is set to true, then clear Property value for turn 0.
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             var dcState = dc.GetState();
-            var interrupted = dcState.GetValue<bool>(TurnPath.INTERRUPTED, () => false);
+            var interrupted = dcState.GetValue<bool>(TurnPath.Interrupted, () => false);
             var turnCount = dcState.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Recognize token

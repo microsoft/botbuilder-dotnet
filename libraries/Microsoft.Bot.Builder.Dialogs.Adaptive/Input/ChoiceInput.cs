@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var dcState = dc.GetState();
 
             var input = dcState.GetValue<object>(VALUE_PROPERTY);
-            var options = dcState.GetValue<ChoiceInputOptions>(ThisPath.OPTIONS);
+            var options = dcState.GetValue<ChoiceInputOptions>(ThisPath.Options);
 
             var choices = options.Choices;
 

@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 retries = 0;
             }
 
-            dcState.TryGetValue(TurnPath.DIALOGEVENT, out DialogEvent trigger);
+            dcState.TryGetValue(TurnPath.DialogEvent, out DialogEvent trigger);
 
             var expected = this.ExpectedProperties?.GetValue(dcState);
             if (expected != null

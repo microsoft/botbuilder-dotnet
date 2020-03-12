@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
 
-            ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.ACTIVITY, Context.Activity);
+            ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.Activity, Context.Activity);
         }
 
         /// <summary>
@@ -561,7 +561,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Stack.RemoveAt(0);
 
                 // set Turn.LastResult to result
-                ObjectPath.SetPathValue(this.Context.TurnState, TurnPath.LASTRESULT, result);
+                ObjectPath.SetPathValue(this.Context.TurnState, TurnPath.LastResult, result);
             }
         }
     }

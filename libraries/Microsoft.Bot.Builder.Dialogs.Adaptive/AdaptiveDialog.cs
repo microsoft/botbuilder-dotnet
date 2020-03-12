@@ -321,9 +321,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var dcState = actionContext.GetState();
 
             // Save into turn
-            dcState.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+            dcState.SetValue(TurnPath.DialogEvent, dialogEvent);
 
-            var activity = dcState.GetValue<Activity>(TurnPath.ACTIVITY);
+            var activity = dcState.GetValue<Activity>(TurnPath.Activity);
 
             // some dialogevents get promoted into turn state for general access outside of the dialogevent.
             // This allows events to be fired (in the case of ChooseIntent), or in interruption (Activity) 
@@ -335,11 +335,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         // we have received a RecognizedIntent event
                         // get the value and promote to turn.recognized, topintent,topscore and lastintent
-                        var recognizedResult = dcState.GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
+                        var recognizedResult = dcState.GetValue<RecognizerResult>($"{TurnPath.DialogEvent}.value");
                         var (name, score) = recognizedResult.GetTopScoringIntent();
-                        dcState.SetValue(TurnPath.RECOGNIZED, recognizedResult);
-                        dcState.SetValue(TurnPath.TOPINTENT, name);
-                        dcState.SetValue(TurnPath.TOPSCORE, score);
+                        dcState.SetValue(TurnPath.Recognized, recognizedResult);
+                        dcState.SetValue(TurnPath.TopIntent, name);
+                        dcState.SetValue(TurnPath.TopScore, score);
                         dcState.SetValue(DialogPath.LastIntent, name);
 
                         // process entities for ambiguity processing (We do this regardless of who handles the event)
@@ -350,7 +350,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 case AdaptiveEvents.ActivityReceived:
                     {
                         // We received an ActivityReceived event, promote the activity into turn.activity
-                        dcState.SetValue(TurnPath.ACTIVITY, dialogEvent.Value);
+                        dcState.SetValue(TurnPath.Activity, dialogEvent.Value);
                         activity = ObjectPath.GetPathValue<Activity>(dialogEvent, "Value");
                         break;
                     }
@@ -376,7 +376,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        if (dcState.GetBoolValue(TurnPath.ACTIVITYPROCESSED) == false)
+                        if (dcState.GetBoolValue(TurnPath.ActivityProcessed) == false)
                         {
                             // Emit leading ActivityReceived event
                             var activityReceivedEvent = new DialogEvent()
@@ -404,7 +404,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             await ProcessEventAsync(actionContext, dialogEvent: recognizeUtteranceEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                             // Emit leading RecognizedIntent event
-                            var recognized = dcState.GetValue<RecognizerResult>(TurnPath.RECOGNIZED);
+                            var recognized = dcState.GetValue<RecognizerResult>(TurnPath.Recognized);
                             var recognizedIntentEvent = new DialogEvent
                             {
                                 Name = AdaptiveEvents.RecognizedIntent,
@@ -420,7 +420,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         //   process the users uterrance when its continued.
                         if (handled)
                         {
-                            dcState.SetValue(TurnPath.INTERRUPTED, true);
+                            dcState.SetValue(TurnPath.Interrupted, true);
                         }
 
                         break;
@@ -433,7 +433,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 var recognized = await OnRecognize(actionContext, activity, cancellationToken).ConfigureAwait(false);
 
                                 // TODO figure out way to not use turn state to pass this value back to caller.
-                                dcState.SetValue(TurnPath.RECOGNIZED, recognized);
+                                dcState.SetValue(TurnPath.Recognized, recognized);
 
                                 if (Recognizer != null)
                                 {
@@ -452,7 +452,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        if (dcState.GetBoolValue(TurnPath.ACTIVITYPROCESSED) == false)
+                        if (dcState.GetBoolValue(TurnPath.ActivityProcessed) == false)
                         {
                             var activityReceivedEvent = new DialogEvent
                             {
@@ -492,7 +492,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         //   process the users uterrance when its continued.
                         if (handled)
                         {
-                            dcState.SetValue(TurnPath.INTERRUPTED, true);
+                            dcState.SetValue(TurnPath.Interrupted, true);
                         }
 
                         break;
@@ -687,7 +687,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     entity = new object[] { entity };
                 }
 
-                dcState.SetValue($"{TurnPath.RECOGNIZED}.entities.{val.Entity.Name}", entity);
+                dcState.SetValue($"{TurnPath.Recognized}.entities.{val.Entity.Name}", entity);
                 changed = true;
             }
             else if (queues.ChooseProperties.Any())
@@ -890,8 +890,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var unrecognized = SplitUtterance(utterance, recognized);
 
                 // TODO: Is this actually useful information?
-                dcState.SetValue(TurnPath.UNRECOGNIZEDTEXT, unrecognized);
-                dcState.SetValue(TurnPath.RECOGNIZEDENTITIES, recognized);
+                dcState.SetValue(TurnPath.UnrecognizedText, unrecognized);
+                dcState.SetValue(TurnPath.RecognizedEntities, recognized);
                 var turn = dcState.GetValue<uint>(DialogPath.EventCounter);
                 CombineOldEntityToProperties(queues, turn);
                 queues.Write(context);
@@ -932,8 +932,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             var dcState = context.GetState();
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
-            var text = dcState.GetValue<string>(TurnPath.RECOGNIZED + ".text");
-            if (dcState.TryGetValue<dynamic>(TurnPath.RECOGNIZED + ".entities", out var entities))
+            var text = dcState.GetValue<string>(TurnPath.Recognized + ".text");
+            if (dcState.TryGetValue<dynamic>(TurnPath.Recognized + ".entities", out var entities))
             {
                 var turn = dcState.GetValue<uint>(DialogPath.EventCounter);
                 var metaData = entities["$instance"];

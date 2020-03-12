@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     public class DialogClassMemoryScope : MemoryScope
     {
         public DialogClassMemoryScope()
-            : base(ScopePath.DIALOGCLASS)
+            : base(ScopePath.DialogClass)
         {
             this.IncludeInSnapshot = false;
         }

@@ -2,13 +2,44 @@
 {
     public class ScopePath
     {
-        public const string USER = "user";
-        public const string CONVERSATION = "conversation";
-        public const string DIALOG = "dialog";
-        public const string DIALOGCLASS = "dialogclass";
-        public const string THIS = "this";
-        public const string CLASS = "class";
-        public const string SETTINGS = "settings";
-        public const string TURN = "turn";
+        /// <summary>
+        /// User memory scope root path.
+        /// </summary>
+        public const string User = "user";
+
+        /// <summary>
+        /// Conversation memory scope root path.
+        /// </summary>
+        public const string Conversation = "conversation";
+
+        /// <summary>
+        /// Dialog memory scope root path.
+        /// </summary>
+        public const string Dialog = "dialog";
+
+        /// <summary>
+        /// DialogClass memory scope root path.
+        /// </summary>
+        public const string DialogClass = "dialogclass";
+
+        /// <summary>
+        /// This memory scope root path.
+        /// </summary>
+        public const string This = "this";
+
+        /// <summary>
+        /// Class memory scope root path.
+        /// </summary>
+        public const string Class = "class";
+
+        /// <summary>
+        /// Settings memory scope root path.
+        /// </summary>
+        public const string Settings = "settings";
+
+        /// <summary>
+        /// Turn memory scope root path.
+        /// </summary>
+        public const string Turn = "turn";
     }
 }
