@@ -135,6 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // @ test
             Assert.AreEqual("turn.recognized.entities.foo.first()", new AtPathResolver().TransformPath("@foo"));
+            Assert.AreEqual("turn.recognized.entities.foo.first().bar", new AtPathResolver().TransformPath("@foo.bar"));
 
             // @@ teest
             Assert.AreEqual("turn.recognized.entities.foo", new AtAtPathResolver().TransformPath("@@foo"));
@@ -207,6 +208,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual("testx", dc.GetState().GetValue<string>("@double"));
                 Assert.AreEqual("test1", dc.GetState().GetValue<string>("turn.recognized.entities.single.First()"));
                 Assert.AreEqual("testx", dc.GetState().GetValue<string>("turn.recognized.entities.double.First()"));
+
+                arrayarray = new JArray();
+                array = new JArray();
+                array.Add(JObject.Parse("{'name':'test1'}"));
+                array.Add(JObject.Parse("{'name':'test2'}"));
+                array.Add(JObject.Parse("{'name':'test2'}"));
+
+                array2 = new JArray();
+                array2.Add(JObject.Parse("{'name':'testx'}"));
+                array2.Add(JObject.Parse("{'name':'testy'}"));
+                array2.Add(JObject.Parse("{'name':'testz'}"));
+                arrayarray.Add(array2);
+                arrayarray.Add(array);
+                dc.GetState().SetValue("turn.recognized.entities.single", array);
+                dc.GetState().SetValue("turn.recognized.entities.double", arrayarray);
+
+                Assert.AreEqual("test1", dc.GetState().GetValue<string>("@single.name"));
+                Assert.AreEqual("testx", dc.GetState().GetValue<string>("@double.name"));
+                Assert.AreEqual("test1", dc.GetState().GetValue<string>("turn.recognized.entities.single.First().name"));
+                Assert.AreEqual("testx", dc.GetState().GetValue<string>("turn.recognized.entities.double.First().name"));
             }).StartTestAsync();
         }
 
@@ -334,9 +355,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     dc.GetState().RemoveValue("user");
                     Assert.Fail("Should have thrown with known root memory scope");
                 }
-                catch (ArgumentNullException err)
+                catch (NotSupportedException err)
                 {
-                    Assert.IsTrue(err.Message.Contains("cannot be null"));
                 }
 
                 try
@@ -344,9 +364,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     dc.GetState().RemoveValue("xxx");
                     Assert.Fail("Should have thrown with unknown memory scope");
                 }
-                catch (ArgumentOutOfRangeException err)
+                catch (NotSupportedException err)
                 {
-                    Assert.IsTrue(err.Message.Contains("does not match memory scope"));
                 }
             }).StartTestAsync();
         }

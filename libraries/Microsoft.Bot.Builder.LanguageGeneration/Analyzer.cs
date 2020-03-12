@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class Analyzer : LGFileParserBaseVisitor<AnalyzerResult>
     {
-        private readonly Dictionary<string, LGTemplate> templateMap;
+        private readonly Dictionary<string, Template> templateMap;
 
         private readonly IExpressionParser _expressionParser;
 
@@ -24,15 +24,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="Analyzer"/> class.
         /// </summary>
         /// <param name="templates">template list.</param>
-        /// <param name="expressionEngine">expression engine.</param>
-        public Analyzer(List<LGTemplate> templates, ExpressionEngine expressionEngine)
+        /// <param name="expressionParser">expression parser.</param>
+        public Analyzer(List<Template> templates, ExpressionParser expressionParser)
         {
             Templates = templates;
             templateMap = templates.ToDictionary(t => t.Name);
 
             // create an evaluator to leverage it's customized function look up for checking
-            var evaluator = new Evaluator(Templates, expressionEngine);
-            this._expressionParser = evaluator.ExpressionEngine;
+            var evaluator = new Evaluator(Templates, expressionParser);
+            this._expressionParser = evaluator.ExpressionParser;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Templates.
         /// </value>
-        public List<LGTemplate> Templates { get; }
+        public List<Template> Templates { get; }
 
         /// <summary>
         /// Analyzer a template to get the static analyzer results.
@@ -52,12 +52,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!templateMap.ContainsKey(templateName))
             {
-                throw new Exception(LGErrors.TemplateNotExist(templateName));
+                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"{LGErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evaluation trace

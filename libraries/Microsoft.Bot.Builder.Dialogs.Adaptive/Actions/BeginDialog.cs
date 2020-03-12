@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var boundOptions = BindOptions(dc, options);
 
             // set the activity processed state (default is true)
-            dcState.SetValue(TurnPath.ACTIVITYPROCESSED, this.ActivityProcessed);
+            dcState.SetValue(TurnPath.ACTIVITYPROCESSED, this.ActivityProcessed.GetValue(dcState));
 
             // start dialog with bound options passed in as the options
             return await dc.BeginDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);

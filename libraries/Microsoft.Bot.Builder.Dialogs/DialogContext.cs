@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Initializes a new instance of the <see cref="DialogContext"/> class.
         /// </summary>
         /// <param name="dialogs">Parent dialog set.</param>
-        /// <param name="parentDialogContext">Parent dialog state.</param>
+        /// <param name="parentDialogContext">Parent dialog context.</param>
         /// <param name="state">Current dialog state.</param>
         public DialogContext(
             DialogSet dialogs,

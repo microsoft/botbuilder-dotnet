@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Authenticator abstraction used to obtain tokens through the Client Credentials OAuth 2.0 flow.
         /// </summary>
-        private readonly Lazy<AdalAuthenticator> authenticator;
+        private readonly Lazy<IAuthenticator> authenticator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppCredentials"/> class.
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Connector.Authentication
         public AppCredentials(string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
         {
             OAuthScope = string.IsNullOrWhiteSpace(oAuthScope) ? AuthenticationConstants.ToChannelFromBotOAuthScope : oAuthScope;
-            authenticator = BuildAuthenticator();
+            authenticator = BuildIAuthenticator();
             ChannelAuthTenant = channelAuthTenant;
             CustomHttpClient = customHttpClient;
             Logger = logger;
@@ -209,6 +209,21 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <returns>A lazy <see cref="AdalAuthenticator"/>.</returns>
         protected abstract Lazy<AdalAuthenticator> BuildAuthenticator();
+
+        /// <summary>
+        /// Builds the lazy <see cref="IAuthenticator" /> to be used for token acquisition.
+        /// </summary>
+        /// <returns>A lazy <see cref="IAuthenticator"/>.</returns>
+        protected virtual Lazy<IAuthenticator> BuildIAuthenticator()
+        {
+            return new Lazy<IAuthenticator>(
+                () =>
+                {
+                    var lazyAuthenticator = BuildAuthenticator();
+                    return lazyAuthenticator.Value;
+                },
+                LazyThreadSafetyMode.ExecutionAndPublication);
+        }
 
         private static bool IsTrustedUrl(Uri uri)
         {

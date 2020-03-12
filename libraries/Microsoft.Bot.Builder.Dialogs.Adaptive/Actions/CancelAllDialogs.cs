@@ -71,11 +71,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (dc.Parent == null)
             {
-                return await dc.CancelAllDialogsAsync(true, EventName.GetValue(dcState), this.EventValue.GetValue(dcState), cancellationToken).ConfigureAwait(false);
+                return await dc.CancelAllDialogsAsync(true, EventName?.GetValue(dcState), this.EventValue?.GetValue(dcState), cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var turnResult = await dc.Parent.CancelAllDialogsAsync(true, EventName.GetValue(dcState), this.EventValue.GetValue(dcState), cancellationToken).ConfigureAwait(false);
+                var turnResult = await dc.Parent.CancelAllDialogsAsync(true, EventName?.GetValue(dcState), this.EventValue?.GetValue(dcState), cancellationToken).ConfigureAwait(false);
                 turnResult.ParentEnded = true;
                 return turnResult;
             }

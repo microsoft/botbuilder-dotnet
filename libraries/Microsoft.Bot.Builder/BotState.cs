@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task is successful, the result contains the property value.</remarks>
+        /// <remarks>If the task is successful, the result contains the property value, otherwise it will be default(T).</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
         protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
@@ -247,20 +247,40 @@ namespace Microsoft.Bot.Builder
 
             var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
 
-            // If types are not used by storage serialization, and Newtonsoft is the serializer,
-            // use Newtonsoft to convert the object to the type expected.
-            if (cachedState.State[propertyName] is JObject obj)
+            if (cachedState.State.TryGetValue(propertyName, out object result))
             {
-                return Task.FromResult(obj.ToObject<T>());
-            }
-            else if (cachedState.State[propertyName] is JArray jarray)
-            {
-                return Task.FromResult(jarray.ToObject<T>());
+                if (result is T t)
+                {
+                    return Task.FromResult(t);
+                }
+
+                if (result == null)
+                {
+                    return Task.FromResult(default(T));
+                }
+
+                // If types are not used by storage serialization, and Newtonsoft is the serializer,
+                // use Newtonsoft to convert the object to the type expected.
+                if (result is JObject jObj)
+                {
+                    return Task.FromResult(jObj.ToObject<T>());
+                }
+
+                if (result is JArray jarray)
+                {
+                    return Task.FromResult(jarray.ToObject<T>());
+                }
+
+                // attempt to convert result to T using json serializer.
+                return Task.FromResult(JToken.FromObject(result).ToObject<T>());
             }
 
-            // if there is no value, this will throw, to signal to IPropertyAccesor that a default value should be computed
-            // This allows this to work with value types
-            return Task.FromResult((T)cachedState.State[propertyName]);
+            if (typeof(T).IsValueType)
+            {
+                throw new KeyNotFoundException(propertyName);
+            }
+
+            return Task.FromResult(default(T));
         }
 
         /// <summary>
@@ -325,7 +345,7 @@ namespace Microsoft.Bot.Builder
         {
             public CachedBotState(IDictionary<string, object> state = null)
             {
-                State = state ?? new ConcurrentDictionary<string, object>();
+                State = state ?? new Dictionary<string, object>();
                 Hash = ComputeHash(State);
             }
 
@@ -391,25 +411,34 @@ namespace Microsoft.Bot.Builder
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
             public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory, CancellationToken cancellationToken)
             {
+                T result = default(T);
+                
                 await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+
                 try
                 {
-                    return await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
+                    // if T is a value type, lookup up will throw key not found if not found, but as perf
+                    // optimization it will return null if not found for types which are not value types (string and object).
+                    result = await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
+
+                    if (result == null && defaultValueFactory != null)
+                    {
+                        // use default Value Factory and save default value for any further calls
+                        result = defaultValueFactory();
+                        await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
+                    }
                 }
                 catch (KeyNotFoundException)
                 {
-                    // ask for default value from factory
-                    if (defaultValueFactory == null)
+                    if (defaultValueFactory != null)
                     {
-                        return default(T);
+                        // use default Value Factory and save default value for any further calls
+                        result = defaultValueFactory();
+                        await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
                     }
-
-                    var result = defaultValueFactory();
-
-                    // save default value for any further calls
-                    await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
-                    return result;
                 }
+
+                return result;
             }
 
             /// <summary>

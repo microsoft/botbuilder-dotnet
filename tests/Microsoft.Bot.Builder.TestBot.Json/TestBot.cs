@@ -21,6 +21,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Skills;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
@@ -31,8 +32,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         private DialogManager dialogManager;
         private readonly ResourceExplorer resourceExplorer;
 
-        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer)
+        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory)
         {
+            HostContext.Current.Set(skillClient);
+            HostContext.Current.Set(conversationIdFactory);
             this.dialogStateAccessor = conversationState.CreateProperty<DialogState>("RootDialogState");
             this.resourceExplorer = resourceExplorer;
 
@@ -99,13 +102,13 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             if (handleChoice.Cases.Count() == 1)
             {
-                rootDialog.Triggers.Add(new OnBeginDialog()
+                rootDialog.Triggers.Add(new OnBeginDialog
                 {
-                    Actions = new List<Dialog>()
-                {
-                    lastDialog,
-                    new RepeatDialog()
-                }
+                    Actions = new List<Dialog>
+                    {
+                        lastDialog,
+                        new RepeatDialog()
+                    }
                 });
             }
             else

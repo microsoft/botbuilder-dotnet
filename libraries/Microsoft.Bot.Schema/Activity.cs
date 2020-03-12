@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="deliveryMode">A delivery hint to signal to the
         /// recipient alternate delivery paths for the activity.
         /// The default delivery mode is "default". Possible values include:
-        /// 'normal', 'notification'.</param>
+        /// 'normal', 'notification', 'expectReplies', 'ephemeral'.</param>
         /// <param name="listenFor">List of phrases and references that speech
         /// and language priming systems should listen for.</param>
         /// <param name="textHighlights">The collection of text fragments to
@@ -430,7 +430,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets a delivery hint to signal to the recipient alternate
         /// delivery paths for the activity.
         /// The default delivery mode is "default". Possible values include:
-        /// 'normal', 'notification'.
+        /// 'normal', 'notification', 'expectReplies', 'ephemeral'.
         /// </summary>
         [JsonProperty(PropertyName = "deliveryMode")]
         public string DeliveryMode { get; set; }

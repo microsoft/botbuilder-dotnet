@@ -21,9 +21,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
         }
 
-        protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
+        protected override ActionChangeList OnCreateChangeList(ActionContext actionContext, object dialogOptions = null)
         {
-            var changeList = base.OnCreateChangeList(planning, dialogOptions);
+            var changeList = base.OnCreateChangeList(actionContext, dialogOptions);
 
             // For OnError handling we want to replace the old plan with whatever the error plan is, since the old plan blew up.
             changeList.ChangeType = ActionChangeType.ReplaceSequence;

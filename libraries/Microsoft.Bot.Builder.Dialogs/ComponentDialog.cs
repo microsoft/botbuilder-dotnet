@@ -88,6 +88,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
 
+            TelemetryClient.TrackDialogView(Id);
+
             // Just signal waiting
             return Dialog.EndOfTurn;
         }

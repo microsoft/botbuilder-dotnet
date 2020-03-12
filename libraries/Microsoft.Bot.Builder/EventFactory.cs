@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -68,16 +69,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(state));
             }
 
-            object value;
-
-            if (string.IsNullOrEmpty(message))
-            {
-                value = new { state };
-            }
-            else
-            {
-                value = new { state, message };
-            }
+            object value = new { state, message };
 
             var handoffEvent = CreateHandoffEvent(HandoffEventNames.HandoffStatus, value, conversation);
             return handoffEvent;
@@ -88,7 +80,7 @@ namespace Microsoft.Bot.Builder
             var handoffEvent = Activity.CreateEventActivity() as Activity;
 
             handoffEvent.Name = name;
-            handoffEvent.Value = value;
+            handoffEvent.Value = JObject.FromObject(value);
             handoffEvent.Id = Guid.NewGuid().ToString();
             handoffEvent.Timestamp = DateTime.UtcNow;
             handoffEvent.Conversation = conversation;

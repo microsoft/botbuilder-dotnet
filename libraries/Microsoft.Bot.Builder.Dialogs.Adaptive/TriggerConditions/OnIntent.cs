@@ -84,9 +84,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             return Expression.AndExpression(intentExpression, base.GetExpression());
         }
 
-        protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
+        protected override ActionChangeList OnCreateChangeList(ActionContext actionContext, object dialogOptions = null)
         {
-            var dcState = planning.GetState();
+            var dcState = actionContext.GetState();
             var recognizerResult = dcState.GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
             if (recognizerResult != null)
             {
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 };
             }
 
-            return base.OnCreateChangeList(planning, dialogOptions);
+            return base.OnCreateChangeList(actionContext, dialogOptions);
         }
     }
 }

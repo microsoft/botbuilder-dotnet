@@ -1,6 +1,6 @@
 {
     "$kind": "Microsoft.Test.Script",
-    "dialog": "sandwich.main",
+    "dialog": "sandwichTest.main",
     "script": [
         {
             "$kind": "Microsoft.Test.UserSays",

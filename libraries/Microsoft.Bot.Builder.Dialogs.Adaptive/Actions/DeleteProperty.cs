@@ -73,16 +73,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            // Ensure planning context
-            if (dc is SequenceContext planning)
-            {
-                dcState.RemoveValue(Property.GetValue(dcState));
-                return await dc.EndDialogAsync();
-            }
-            else
-            {
-                throw new Exception("`ClearProperty` should only be used in the context of an adaptive dialog.");
-            }
+            dcState.RemoveValue(Property.GetValue(dcState));
+            return await dc.EndDialogAsync();
         }
     }
 }

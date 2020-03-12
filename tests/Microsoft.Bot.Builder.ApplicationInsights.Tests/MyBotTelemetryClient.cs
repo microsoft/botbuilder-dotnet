@@ -40,6 +40,11 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             base.TrackTrace(message, severityLevel, properties);
         }
 
+        public override void TrackPageView(string name, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+            base.TrackPageView(name, properties, metrics);
+        }
+
         public override void Flush()
         {
             base.Flush();

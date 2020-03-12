@@ -234,6 +234,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (this.DefaultValueResponse != null)
                     {
                         var response = await this.DefaultValueResponse.BindToData(dc.Context, dcState).ConfigureAwait(false);
+
+                        var properties = new Dictionary<string, string>()
+                        {
+                            { "template", JsonConvert.SerializeObject(DefaultValueResponse) },
+                            { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+                        };
+                        TelemetryClient.TrackEvent("GeneratorResult", properties);
+
                         await dc.Context.SendActivityAsync(response).ConfigureAwait(false);
                     }
 
@@ -347,18 +355,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected virtual async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
         {
+            IMessageActivity msg = null;
             var dcState = dc.GetState();
 
+            ITemplate<Activity> template = null;
             switch (state)
             {
                 case InputState.Unrecognized:
                     if (this.UnrecognizedPrompt != null)
                     {
-                        return await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        template = this.UnrecognizedPrompt;
+                        msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
                     else if (this.InvalidPrompt != null)
                     {
-                        return await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        template = this.InvalidPrompt;
+                        msg = await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
 
                     break;
@@ -366,17 +378,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 case InputState.Invalid:
                     if (this.InvalidPrompt != null)
                     {
-                        return await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        template = this.InvalidPrompt;
+                        msg = await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
                     else if (this.UnrecognizedPrompt != null)
                     {
-                        return await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        template = this.UnrecognizedPrompt;
+                        msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
                     }
 
                     break;
             }
 
-            return await this.Prompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+            if (msg == null)
+            {
+                template = this.Prompt;
+                msg = await this.Prompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+            }
+
+            msg.InputHint = InputHints.ExpectingInput;
+
+            var properties = new Dictionary<string, string>()
+            {
+                { "template", JsonConvert.SerializeObject(template) },
+                { "result", msg == null ? string.Empty : JsonConvert.SerializeObject(msg, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
+            };
+            TelemetryClient.TrackEvent("GeneratorResult", properties);
+
+            return msg;
         }
 
         private async Task<InputState> RecognizeInput(DialogContext dc, int turnCount)
@@ -414,11 +443,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 if (this.GetType().Name == nameof(AttachmentInput))
                 {
-                    input = dc.Context.Activity.Attachments;
+                    input = dc.Context.Activity.Attachments ?? new List<Attachment>();
                 }
                 else
                 {
                     input = dc.Context.Activity.Text;
+
+                    // if there is no visible text AND we have a value object, then fallback to that.
+                    if (string.IsNullOrEmpty(dc.Context.Activity.Text) && dc.Context.Activity.Value != null)
+                    {
+                        input = dc.Context.Activity.Value;
+                    }
                 }
             }
 

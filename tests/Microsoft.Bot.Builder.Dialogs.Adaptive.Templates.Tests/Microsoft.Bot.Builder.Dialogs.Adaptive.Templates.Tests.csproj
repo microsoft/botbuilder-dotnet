@@ -20,26 +20,22 @@
 
   <ItemGroup>
     <None Remove="lg\NormalStructuredLG.lg" />
+    <None Remove="lg\DignosticStructuredLG.lg" />
     <None Remove="adaptiveCard.json" />
     <None Remove="lg\herocard.json" />
-    <None Remove="lg\c.en.lg" />
-    <None Remove="lg\c.lg" />
   </ItemGroup>
     
   <ItemGroup>
     <Content Include="lg\NormalStructuredLG.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="lg\DignosticStructuredLG.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="adaptiveCard.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="lg\herocard.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lg\c.en.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lg\c.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -51,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
   </ItemGroup>
 

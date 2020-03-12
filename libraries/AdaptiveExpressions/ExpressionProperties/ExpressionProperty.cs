@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.Properties
     /// Base class which defines a Expression or value for a property.
     /// </summary>
     /// <typeparam name="T">type of object the expression should evaluate to.</typeparam>
-    public class ExpressionProperty<T>
+    public class ExpressionProperty<T> : IExpressionProperty
     {
         private Expression expression;
 
@@ -145,6 +145,37 @@ namespace AdaptiveExpressions.Properties
             }
 
             this.Value = ConvertObject(value);
+        }
+
+        /// <summary>
+        /// Get value as object.
+        /// </summary>
+        /// <remarks>Helper methods which allows you to work with the expression property values as purely objects.</remarks>
+        /// <param name="data">data to bind to.</param>
+        /// <returns>value as object.</returns>
+        public virtual object GetObject(object data)
+        {
+            return GetValue(data);
+        }
+
+        /// <summary>
+        /// Try Get value as object.
+        /// </summary>
+        /// <remarks>Helper methods which allows you to work with the expression property values as purely objects.</remarks>
+        /// <param name="data">data.</param>
+        /// <returns>Value and error.</returns>
+        public virtual (object Value, string Error) TryGetObject(object data)
+        {
+            return TryGetValue(data);
+        }
+
+        /// <summary>
+        /// Set value as object.
+        /// </summary>
+        /// <param name="value">object.</param>
+        public virtual void SetObject(object value)
+        {
+            SetValue(value);
         }
 
         /// <summary>

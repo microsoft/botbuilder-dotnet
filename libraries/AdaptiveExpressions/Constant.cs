@@ -51,9 +51,19 @@ namespace AdaptiveExpressions
             {
                 return "null";
             }
-            else if (Value is string)
+            else if (Value is string value)
             {
-                return $"'{Value}'";
+                var result = value;
+                if (value.Contains(@"\"))
+                {
+                    result = result.Replace(@"\", @"\\");
+                }
+
+                return result.Contains("'") ? $"\"{result}\"" : $"'{result}'";
+            }
+            else if (Value is float || Value is double)
+            {
+               return ((double)Value).ToString("0.00########");
             }
             else
             {
