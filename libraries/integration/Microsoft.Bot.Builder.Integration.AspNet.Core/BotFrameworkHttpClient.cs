@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 };
                 activity.Conversation.Id = conversationId;
                 activity.ServiceUrl = serviceUrl.ToString();
-                activity.CallerId = fromBotId;
+                activity.CallerId = $"urn:botframework:aadappid:{fromBotId}";
 
                 using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
