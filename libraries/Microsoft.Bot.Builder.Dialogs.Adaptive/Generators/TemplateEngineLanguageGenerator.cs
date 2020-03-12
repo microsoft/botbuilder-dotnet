@@ -67,6 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
             this.lg = LanguageGeneration.Templates.ParseFile(filePath, importResolver);
+            this.lg.RegisterSourceMap();
         }
 
         /// <summary>
