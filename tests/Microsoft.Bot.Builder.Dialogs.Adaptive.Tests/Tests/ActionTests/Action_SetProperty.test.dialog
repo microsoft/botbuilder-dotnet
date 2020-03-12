@@ -7,35 +7,32 @@
         "triggers": [
             {
                 "$kind": "Microsoft.OnBeginDialog",
-              "actions": [
-                {
-                  "$type": "Microsoft.SetProperties",
-                  "assignments": [
-                    {
-                      "property": "user.lists",
-                      "value": "={}"
-                    },
-                    {
-                      "property": "user.lists.todo",
-                      "value": "todo"
-                    },
-                    {
-                      "property": "$mylist",
-                      "value": "lists"
-                    }
-
-                  ]
-                },
-                {
-                  "$kind": "Microsoft.SetProperty",
-                  "property": "user[$mylist].todo",
-                  "value": "newtodo"
-                },
-                {
-                  "$kind": "Microsoft.SendActivity",
-                  "activity": "${user[$mylist].todo}"
-                }
-              ]
+                "actions": [
+                  {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.lists",
+                    "value": "={}"
+                  },
+                  {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.lists.todo",
+                    "value": "todo"
+                  },
+                  {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "$mylist",
+                    "value": "lists"
+                  },
+                  {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user[$mylist].todo",
+                    "value": "newtodo"
+                  },
+                  {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "${user[$mylist].todo}"
+                  }
+                ]
             }
         ]
     },
