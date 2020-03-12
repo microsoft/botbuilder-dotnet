@@ -8,30 +8,55 @@
             {
                 "$kind": "Microsoft.OnBeginDialog",
                 "actions": [
-                  {
-                    "$kind": "Microsoft.SetProperty",
-                    "property": "user.lists",
-                    "value": "={}"
-                  },
-                  {
-                    "$kind": "Microsoft.SetProperty",
-                    "property": "user.lists.todo",
-                    "value": "todo"
-                  },
-                  {
-                    "$kind": "Microsoft.SetProperty",
-                    "property": "$mylist",
-                    "value": "lists"
-                  },
-                  {
-                    "$kind": "Microsoft.SetProperty",
-                    "property": "user[$mylist].todo",
-                    "value": "newtodo"
-                  },
-                  {
-                    "$kind": "Microsoft.SendActivity",
-                    "activity": "${user[$mylist].todo}"
-                  }
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "user.lists",
+                      "value": "={}"
+                    },
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "user.lists.todo",
+                      "value": "todo"
+                    },
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "$mylist",
+                      "value": "lists"
+                    },
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "$listType",
+                      "value": "todo"
+                    },
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "user[$mylist][$listType]",
+                      "value": "newtodo"
+                    },
+                    {
+                      "$kind": "Microsoft.SendActivity",
+                      "activity": "${user[$mylist][$listType]}"
+                    },
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "user.list2",
+                      "value": "=[]"
+                    },
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "$list2",
+                      "value": "list2"
+                    },
+                    {
+                      "$kind": "Microsoft.EditArray",
+                      "changeType": "Push",
+                      "itemsProperty": "user[$list2]",
+                      "value": "milk"
+                    },
+                    {
+                      "$kind": "Microsoft.SendActivity",
+                      "activity": "${user[$list2][0]}"
+                    }
                 ]
             }
         ]
@@ -41,8 +66,12 @@
             "$kind": "Microsoft.Test.UserConversationUpdate"
         },
         {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "newtodo"
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "newtodo"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "milk"
         }
     ]
 }

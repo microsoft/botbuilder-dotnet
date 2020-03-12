@@ -29,16 +29,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
             }
 
             var start = path.IndexOf(this.alias);
-            if (start >= 0)
+            if (start == 0)
             {
-                if (start > 1 && path[start - 1] == '.')
-                {
-                    // don't match on x.$foo 
-                    return path;
-                }
-
+                // here we only deals with trailing alias, alias in middle be handled in further breakdown
                 // $xxx -> path.xxx
-                return $"{path.Substring(0, start)}{this.prefix}{path.Substring(start + alias.Length)}{this.postfix}".TrimEnd('.');
+                return $"{this.prefix}{path.Substring(start + alias.Length)}{this.postfix}".TrimEnd('.');
             }
 
             return path;
