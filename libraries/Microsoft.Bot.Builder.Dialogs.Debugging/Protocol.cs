@@ -67,11 +67,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public TArguments Arguments { get; set; }
         }
 
-        public class Attach
+        public class LaunchAttach
+        {
+            public bool BreakOnStart { get; set; } = false;
+        }
+
+        public class Attach : LaunchAttach
         {
         }
 
-        public class Launch
+        public class Launch : LaunchAttach
         {
         }
 

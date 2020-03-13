@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private readonly Task task;
 
+        private Protocol.LaunchAttach options = new Protocol.LaunchAttach();
         private int sequence = 0;
 
         public DialogDebugAdapter(int port, ISourceMap sourceMap, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
@@ -138,6 +139,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     {
                         run.Post(Phase.Breakpoint);
                     }
+
+                    if (this.options.BreakOnStart && thread.StepCount == 0 && events[more])
+                    {
+                        run.Post(Phase.Breakpoint);
+                    }
+
+                    ++thread.StepCount;
 
                     // TODO: implement asynchronous condition variables
                     Monitor.Enter(run.Gate);
@@ -404,10 +412,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Launch> launch)
             {
+                this.options = launch.Arguments;
                 return Protocol.Response.From(NextSeq, launch, new { });
             }
             else if (message is Protocol.Request<Protocol.Attach> attach)
             {
+                this.options = attach.Arguments;
                 return Protocol.Response.From(NextSeq, attach, new { });
             }
             else if (message is Protocol.Request<Protocol.SetBreakpoints> setBreakpoints)
@@ -653,6 +663,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public ITurnContext TurnContext { get; }
 
             public ICodeModel CodeModel { get; }
+
+            public int StepCount { get; set; } = 0;
 
             public string Name => TurnContext.Activity.Text;
 
