@@ -485,6 +485,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         Name = frame.Name
                     };
 
+                    var item = this.codeModel.NameFor(frame.Item);
+                    DebuggerSourceMap.Assign(stackFrame, item, frame.More);
+
                     if (this.sourceMap.TryGetValue(frame.Item, out var range))
                     {
                         DebuggerSourceMap.Assign(stackFrame, range);

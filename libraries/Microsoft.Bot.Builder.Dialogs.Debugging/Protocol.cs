@@ -285,6 +285,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public class Range : Reference
         {
+            public string Item { get; set; }
+
+            public string More { get; set; }
+
             public Source Source { get; set; }
 
             public int? Line { get; set; }
