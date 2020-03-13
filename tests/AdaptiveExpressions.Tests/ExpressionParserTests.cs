@@ -21,6 +21,9 @@ namespace AdaptiveExpressions.Tests
         private readonly object scope = new Dictionary<string, object>
         {
             {
+                "alist", new List<A>() { new A("item1"), new A("item2") }
+            },
+            {
                 "emptyList", new List<object>()
             },
             {
@@ -260,6 +263,10 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            #region accessProperty and accessIndex
+            Test("alist[0].Name", "item1"),
+            #endregion
+
             #region string interpolation test
             Test("`hi`", "hi"),
             Test(@"`hi\``", "hi`"),
@@ -981,6 +988,16 @@ namespace AdaptiveExpressions.Tests
             }
 
             return value;
+        }
+
+        private class A
+        {
+            public A(string name)
+            {
+                this.Name = name;
+            }
+
+            public string Name { get; set; }
         }
     }
 }
