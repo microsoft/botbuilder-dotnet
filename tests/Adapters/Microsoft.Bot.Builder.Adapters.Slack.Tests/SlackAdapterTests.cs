@@ -653,6 +653,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         [Theory]
         [InlineData(@"/Files/InteractiveMessageBodyButton.txt")]
         [InlineData(@"/Files/InteractiveMessageBodySelect.txt")]
+        [InlineData(@"/Files/BlockActionsBodyButton.txt")]
+        [InlineData(@"/Files/BlockActionsBodySelect.txt")]
         public async Task ProcessAsyncShouldSucceedOnInteractiveMessage(string input)
         {
             var callback = false;

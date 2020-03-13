@@ -33,7 +33,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Files\BlockActionsBodySelect.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Files\InteractiveMessageBodyButton.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\BlockActionsBodyButton.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Files\InteractiveMessageBodySelect.txt">

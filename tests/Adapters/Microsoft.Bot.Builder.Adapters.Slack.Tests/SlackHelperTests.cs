@@ -208,15 +208,17 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Theory]
-        [InlineData(@"/Files/InteractiveMessageBodyButton.txt")]
-        [InlineData(@"/Files/InteractiveMessageBodySelect.txt")]
-        public void PayloadToActivityShouldReturnText(string input)
+        [InlineData(@"/Files/InteractiveMessageBodyButton.txt", "recommend")]
+        [InlineData(@"/Files/InteractiveMessageBodySelect.txt", "recommend")]
+        [InlineData(@"/Files/BlockActionsBodyButton.txt", "click_me_123")]
+        [InlineData(@"/Files/BlockActionsBodySelect.txt", "value-1")]
+        public void PayloadToActivityShouldReturnText(string input, string text)
         {
             var body = File.ReadAllText(Directory.GetCurrentDirectory() + input);
             var slackBody = SlackHelper.DeserializeBody(body);
             var activity = SlackHelper.PayloadToActivity(slackBody.Payload);
 
-            Assert.Equal("recommend", activity.Text);
+            Assert.Equal(text, activity.Text);
         }
 
         [Fact]

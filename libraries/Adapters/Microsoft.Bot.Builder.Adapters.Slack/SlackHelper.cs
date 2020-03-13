@@ -182,7 +182,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                         activity.Text = slackPayload.Actions[0].Value;
                         break;
                     case "select":
-                        activity.Text = slackPayload.Actions[0].SelectedOptions[0].Value;
+                        activity.Text = slackPayload.Actions[0].SelectedOptions[0]?.Value ?? slackPayload.Actions[0].SelectedOption?.Value;
+                        break;
+                    case "static_select":
+                        activity.Text = slackPayload.Actions[0].SelectedOption.Value;
                         break;
                     default:
                         break;
