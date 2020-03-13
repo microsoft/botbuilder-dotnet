@@ -130,9 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 if (threadByTurnId.TryGetValue(TurnIdFor(context.Context), out ThreadModel thread))
                 {
-                    thread.LastContext = context;
-                    thread.LastItem = item;
-                    thread.LastMore = more;
+                    thread.SetLast(context, item, more);
 
                     var run = thread.Run;
                     if (breakpoints.IsBreakPoint(item) && events[more])
@@ -671,7 +669,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             public string Name => TurnContext.Activity.Text;
 
-            public IReadOnlyList<ICodePoint> Frames => CodeModel.PointsFor(LastContext, LastItem, LastMore);
+            public IReadOnlyList<ICodePoint> Frames
+            {
+                get
+                {
+                    // try to avoid regenerating Identifier values within a breakpoint
+                    if (LastFrames == null)
+                    {
+                        LastFrames = CodeModel.PointsFor(LastContext, LastItem, LastMore);
+                    }
+
+                    return LastFrames;
+                }
+            }
 
             public RunModel Run { get; } = new RunModel();
 
@@ -679,11 +689,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             public Identifier<object> ValueCodes { get; } = new Identifier<object>();
 
-            public DialogContext LastContext { get; set; }
+            public DialogContext LastContext { get; private set; }
 
-            public object LastItem { get; set; }
+            public object LastItem { get; private set; }
 
-            public string LastMore { get; set; }
+            public string LastMore { get; private set; }
+
+            private IReadOnlyList<ICodePoint> LastFrames { get; set; }
+
+            public void SetLast(DialogContext context, object item, string more)
+            {
+                LastContext = context;
+                LastItem = item;
+                LastMore = more;
+
+                LastFrames = null;
+            }
         }
     }
 }
