@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -13,7 +12,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
-    /// ILanguageGenerator implementation which uses TemplateEngine. 
+    /// ILanguageGenerator implementation which uses LGFile. 
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
@@ -22,16 +21,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private const string DEFAULTLABEL = "Unknown";
 
-        private readonly Dictionary<string, TemplateEngine> multiLangEngines = new Dictionary<string, TemplateEngine>();
-
-        private TemplateEngine engine;      
+        private readonly LanguageGeneration.Templates lg;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         public TemplateEngineLanguageGenerator()
         {
-            this.engine = new TemplateEngine();
+            this.lg = new LanguageGeneration.Templates();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
+        /// <param name="engine">template engine.</param>
+        public TemplateEngineLanguageGenerator(LanguageGeneration.Templates engine = null)
+        {
+            this.lg = engine ?? new LanguageGeneration.Templates();
         }
 
         /// <summary>
@@ -43,20 +49,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<IResource>> resourceMapping)
         {
             this.Id = id ?? DEFAULTLABEL;
-            var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(id);
-            var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
-
-            foreach (var mapping in resourceMapping)    
-            {
-                // if no locale present in id, enumarate every locale found
-                // if locale is present, use that one
-                if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
-                {
-                    var engine = new TemplateEngine().AddText(lgText ?? string.Empty, Id, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
-                    multiLangEngines.Add(mapping.Key, engine);
-                }
-            }
-        }   
+            var (_, locale) = LGResourceLoader.ParseLGFileName(id);
+            var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
+            this.lg = LanguageGeneration.Templates.ParseText(lgText ?? string.Empty, Id, importResolver);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
@@ -68,28 +64,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             filePath = PathUtils.NormalizePath(filePath);
             this.Id = Path.GetFileName(filePath);
 
-            var (_, locale) = MultiLanguageResourceLoader.ParseLGFileName(Id);
-            var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
-
-            foreach (var mapping in resourceMapping)
-            {
-                // if no locale present in id, enumarate every locale found
-                // if locale is present, use that one
-                if (string.Equals(fallbackLocale, string.Empty) || string.Equals(fallbackLocale, mapping.Key))
-                {
-                    var engine = new TemplateEngine().AddFile(filePath, LanguageGeneratorManager.ResourceExplorerResolver(mapping.Key, resourceMapping));
-                    multiLangEngines.Add(mapping.Key, engine);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
-        /// </summary>
-        /// <param name="engine">template engine.</param>
-        public TemplateEngineLanguageGenerator(TemplateEngine engine)
-        {
-            this.engine = engine;
+            var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
+            var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
+            this.lg = LanguageGeneration.Templates.ParseFile(filePath, importResolver);
         }
 
         /// <summary>
@@ -110,11 +87,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            engine = InitTemplateEngine(turnContext);
-
             try
             {
-                return await Task.FromResult(engine.Evaluate(template, data).ToString());
+                return await Task.FromResult(lg.EvaluateText(template, data).ToString());
             }
             catch (Exception err)
             {
@@ -125,23 +100,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 throw;
             }
-        }
-
-        private TemplateEngine InitTemplateEngine(ITurnContext turnContext)
-        {
-            var locale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
-            if (multiLangEngines.Count > 0)
-            {
-                var fallbackLocale = MultiLanguageResourceLoader.FallbackLocale(locale, multiLangEngines.Keys.ToList());
-                engine = multiLangEngines[fallbackLocale];
-            }
-            else
-            {
-                // Do not rewrite to ??= (C# 8.0 new feature). It will break in linux/mac
-                engine = engine ?? new TemplateEngine();
-            }
-
-            return engine;
         }
     }
 }

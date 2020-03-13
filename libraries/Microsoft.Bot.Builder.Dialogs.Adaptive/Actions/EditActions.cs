@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -32,6 +33,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public BoolExpression Disabled { get; set; } 
+
+        /// <summary>
         /// Gets or sets the actions to be applied to the active action.
         /// </summary>
         /// <value>
@@ -47,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The type of change to appy to the active actions.
         /// </value>
         [JsonProperty("changeType")]
-        public ActionChangeType ChangeType { get; set; }
+        public EnumExpression<ActionChangeType> ChangeType { get; set; } = new EnumExpression<ActionChangeType>();
 
         public virtual IEnumerable<Dialog> GetDependencies()
         {
@@ -56,7 +69,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (dc is SequenceContext sc)
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
+            if (dc.Parent is ActionContext ac)
             {
                 var planActions = Actions.Select(s => new ActionState()
                 {
@@ -67,24 +87,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 var changes = new ActionChangeList()
                 {
-                    ChangeType = ChangeType,
+                    ChangeType = ChangeType.GetValue(dcState),
                     Actions = planActions.ToList()
                 };
 
-                sc.QueueChanges(changes);
+                ac.QueueChanges(changes);
 
-                return await sc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                throw new Exception("`EditAction` should only be used in the context of an adaptive dialog.");
+                throw new Exception("`EditActions` should only be used in the context of an adaptive dialog.");
             }
         }
 
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{this.GetType().Name}[{this.ChangeType}|{string.Join(",", idList)}]";
+            return $"{this.GetType().Name}[{this.ChangeType?.ToString()}|{string.Join(",", idList)}]";
         }
     }
 }

@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.IDialog)",
+    "$role": "implements(Microsoft.IDialog)",
     "title": "Adaptive Dialog",
     "description": "Flexible, data driven dialog that can adapt to the conversation.",
     "type": "object",
@@ -23,9 +23,9 @@
             "default": "dialog.result"
         },
         "recognizer": {
-            "$kind": "Microsoft.IRecognizer",
+            "$kind": "Microsoft.Recognizer",
             "title": "Recognizer",
-            "description": "Language Understanding recognizer that interprets user input into intent and entities."
+            "description": "Input recognizer that interprets user input into intent and entities."
         },
         "generator": {
             "$kind": "Microsoft.ILanguageGenerator",
@@ -44,6 +44,20 @@
             "items": {
                 "$kind": "Microsoft.ITriggerCondition"
             }
+        },
+        "schema": {
+            "anyOf": [
+                {
+                    "title": "The schema to be filled in.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                {
+                    "type": "string",
+                    "title": "Reference to JSON schema",
+                    "description": "Reference to JSON schema .dialog file."
+                }
+            ]
         }
     }
 }

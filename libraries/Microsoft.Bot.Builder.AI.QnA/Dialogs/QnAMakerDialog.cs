@@ -93,6 +93,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.AddStep(DisplayQnAResultAsync);
         }
 
+        [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

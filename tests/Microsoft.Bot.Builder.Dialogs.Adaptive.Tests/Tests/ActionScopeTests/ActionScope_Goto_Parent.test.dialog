@@ -1,0 +1,74 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.counter",
+                        "value": 10
+                    },
+                    {
+                        "$kind": "Microsoft.IfCondition",
+                        "condition": "user.counter > 0",
+                        "actions": [
+                            {
+                                "$type": "Microsoft.GotoAction",
+                                "actionId": "target2"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "false",
+                        "description": "Step after Goto should never be executed!"
+                    },
+                    {
+                        "id": "target2",
+                        "$kind": "Microsoft.IfCondition",
+                        "condition": "user.counter > 12",
+                        "actions": [
+                            {
+                                "$type": "Microsoft.EndDialog"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.counter}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.counter",
+                        "value": "=user.counter + 1"
+                    },
+                    {
+                        "$kind": "Microsoft.GotoAction",
+                        "actionId": "target2"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "10"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "11"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "12"
+        }
+    ]
+}

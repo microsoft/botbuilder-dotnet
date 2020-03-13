@@ -8,12 +8,12 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "@promptContentML",
+                    "value": "=@promptContentML",
                     "property": "dialog.item"
                 },
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "value": "@ListType",
+                    "value": "=@ListType",
                     "property": "dialog.listName"
                 },
                 {
@@ -34,9 +34,9 @@
                     "condition": "user.lists == null",
                     "actions": [
                         {
-                            "$kind": "Microsoft.InitProperty",
+                            "$kind": "Microsoft.SetProperty",
                             "property": "user.lists",
-                            "type": "object"
+                            "value": "={}"
                         }
                     ]
                 },
@@ -99,21 +99,21 @@
                     "condition": "(dialog.listName == \"shopping\" && user.lists.shopping == null) || (dialog.listName == \"grocery\" && user.lists.grocery == null) || (dialog.listName == \"todo\" && user.lists.todo == null)",
                     "actions": [
                         {
-                            "$kind": "Microsoft.InitProperty",
+                            "$kind": "Microsoft.SetProperty",
                             "property": "user.lists[dialog.listName]",
-                            "type": "array"
+                            "value": "=[]"
                         }
                     ]
                 },
                 {
                     "$kind": "Microsoft.EditArray",
-                    "changeType": "Push",
+                    "changeType": "push",
                     "itemsProperty": "user.lists[dialog.listName]",
                     "value": "dialog.item"
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Successfully added @{dialog.item} to @{dialog.listName} list."
+                    "activity": "Successfully added ${dialog.item} to ${dialog.listName} list."
                 }
             ]
         }

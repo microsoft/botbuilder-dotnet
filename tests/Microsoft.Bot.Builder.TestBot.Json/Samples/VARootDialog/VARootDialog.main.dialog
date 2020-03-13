@@ -7,31 +7,31 @@
         "intents": [
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "ToDoIntent",
                 "pattern": "(?i)todo" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "EmailIntent",
                 "pattern": "(?i)email" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "CalendarIntent",
                 "pattern": "(?i)meeting" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "HelpIntent",
                 "pattern": "(?i)help" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel"
             }
@@ -65,7 +65,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "@{help()}"
+                    "activity": "${help()}"
                 }
             ]
         },

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using Microsoft.ApplicationInsights.Channel;
@@ -43,10 +44,18 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
                         var channelId = (string)body["channelId"];
 
                         var conversationId = string.Empty;
+                        var sessionId = string.Empty;
                         var conversation = body["conversation"];
+                        
                         if (!string.IsNullOrWhiteSpace(conversation?.ToString()))
                         {
                             conversationId = (string)conversation["id"];
+
+                            using (var sha256Hash = SHA256.Create())
+                            {
+                                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(conversationId));
+                                sessionId = System.Convert.ToBase64String(bytes);
+                            }
                         }
 
                         var context = telemetry.Context;
@@ -54,18 +63,22 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
                         // Set the user id on the Application Insights telemetry item.
                         context.User.Id = channelId + userId;
 
-                        // Set the session id on the Application Insights telemetry item.
-                        context.Session.Id = conversationId;
+                        // Set the session id on the Application Insights telemetry item using hashed conversation Id.
+                        // Hashed ID is used due to max session ID length for App Insights session Id
+                        context.Session.Id = sessionId;
 
                         var telemetryProperties = ((ISupportProperties)telemetry).Properties;
 
-                        // Set the activity id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#id
+                        // Set the conversation id
+                        telemetryProperties.Add("conversationId", conversationId);
+
+                        // Set the activity id https://github.com/microsoft/botframework-obi/blob/master/protocols/botframework-activity/botframework-activity.md#id
                         telemetryProperties.Add("activityId", (string)body["id"]);
 
-                        // Set the channel id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#channel-id
+                        // Set the channel id https://github.com/microsoft/botframework-obi/blob/master/protocols/botframework-activity/botframework-activity.md#channel-id
                         telemetryProperties.Add("channelId", (string)channelId);
 
-                        // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
+                        // Set the activity type https://github.com/microsoft/botframework-obi/blob/master/protocols/botframework-activity/botframework-activity.md#type
                         telemetryProperties.Add("activityType", (string)body["type"]);
                     }
                 }

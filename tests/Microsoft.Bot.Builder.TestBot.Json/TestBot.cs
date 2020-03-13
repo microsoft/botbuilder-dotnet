@@ -7,8 +7,10 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -19,6 +21,8 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Skills;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -28,15 +32,17 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         private DialogManager dialogManager;
         private readonly ResourceExplorer resourceExplorer;
 
-        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer)
+        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory)
         {
+            HostContext.Current.Set(skillClient);
+            HostContext.Current.Set(conversationIdFactory);
             this.dialogStateAccessor = conversationState.CreateProperty<DialogState>("RootDialogState");
             this.resourceExplorer = resourceExplorer;
 
             // auto reload dialogs when file changes
             this.resourceExplorer.Changed += (resources) =>
             {
-                if (resources.Any(resource => resource.Id.EndsWith(".dialog")))
+                if (resources.Any(resource => resource.Id.EndsWith(".dialog") || resource.Id.EndsWith(".lg")))
                 {
                     Task.Run(() => this.LoadDialogs());
                 }
@@ -71,13 +77,17 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 Cases = new List<Case>()
             };
 
+            Dialog lastDialog = null;
+            var choices = new ChoiceSet();
+
             foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
             {
                 try
                 {
                     var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
-                    choiceInput.Choices.Value.Add(new Choice(name));
-                    var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceMap);
+                    choices.Add(new Choice(name));
+                    var dialog = resourceExplorer.LoadType<Dialog>(resource);
+                    lastDialog = dialog;
                     handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
                 }
                 catch (SyntaxErrorException err)
@@ -90,21 +100,38 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 }
             }
 
-            choiceInput.Style = ListStyle.Auto;
-            rootDialog.Triggers.Add(new OnBeginDialog()
+            if (handleChoice.Cases.Count() == 1)
             {
-                Actions = new List<Dialog>()
+                rootDialog.Triggers.Add(new OnBeginDialog
+                {
+                    Actions = new List<Dialog>
+                    {
+                        lastDialog,
+                        new RepeatDialog()
+                    }
+                });
+            }
+            else
+            {
+                choiceInput.Choices = choices;
+                choiceInput.Style = ListStyle.Auto;
+                rootDialog.Triggers.Add(new OnBeginDialog()
+                {
+                    Actions = new List<Dialog>()
                 {
                     choiceInput,
-                    new SendActivity("# Running @{conversation.dialogChoice}.main.dialog"),
+                    new SendActivity("# Running ${conversation.dialogChoice}.main.dialog"),
                     handleChoice,
                     new RepeatDialog()
                 }
-            });
+                });
+            }
 
-            this.dialogManager = new DialogManager(rootDialog);
+            this.dialogManager = new DialogManager(rootDialog)
+                .UseResourceExplorer(this.resourceExplorer)
+                .UseLanguageGeneration();
 
-            System.Diagnostics.Trace.TraceInformation("Done loading resources.");
+            Trace.TraceInformation("Done loading resources.");
         }
     }
 }

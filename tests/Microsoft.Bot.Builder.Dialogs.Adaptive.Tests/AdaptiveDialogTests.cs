@@ -12,6 +12,8 @@ using System.Threading;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using System.IO;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -19,209 +21,235 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class AdaptiveDialogTests
     {
+        public static ResourceExplorer ResourceExplorer { get; set; }
+
         public TestContext TestContext { get; set; }
+
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(AdaptiveDialogTests)), monitorChanges: false);
+        }
 
         [TestMethod]
         public async Task AdaptiveDialog_ActivityEvents()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_ActivityEvents.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_ActivityAndIntentEvents()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_ActivityAndIntentEvents.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_AdaptiveCardSubmit()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_AdaptiveCardSubmit.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+        
+        [TestMethod]
+        public async Task AdaptiveDialog_AllowInterruption()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_AllowInterruptionAlwaysWithFailedValidation()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_AllowInterruptionAlwaysWithFailedValidation.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_AllowInterruptionNever()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_AllowInterruptionNever.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_AllowInterruptionNeverWithInvalidInput()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_AllowInterruptionNeverWithInvalidInput.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_AllowInterruptionNeverWithMaxCount()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_AllowInterruptionNeverWithMaxCount.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_AllowInterruptionNeverWithUnrecognizedInput()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_AllowInterruptionNeverWithUnrecognizedInput.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_BeginDialog()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_BeginDialog.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_BindingCaptureValueWithinSameAdaptive()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_BindingCaptureValueWithinSameAdaptive.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_BindingOptionsAcrossAdaptiveDialogs()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_BindingOptionsAcrossAdaptiveDialogs.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_BindingReferValueInLaterAction()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_BindingReferValueInLaterAction.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_BindingReferValueInNestedAction()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_BindingReferValueInNestedAction.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_ConditionallyAllowInterruptions()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_ConditionallyAllowInterruptions.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_DoActions()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_DoActions.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_EditArray()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_EditArray.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_EndTurn()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_EndTurn.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_IfProperty()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_IfProperty.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_NestedInlineSequences()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_NestedInlineSequences.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_NestedRecognizers()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_NestedRecognizers.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_PropertySetInInterruption()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_PropertySetInInterruption.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_ReplacePlan()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_ReplacePlan.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_ReProcessInputProperty()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_ReProcessInputProperty.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_ReProcessInputPropertyValidOnlyOnce()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_ReProcessInputPropertyValidOnlyOnce.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_StringLiteralInExpression()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_StringLiteralInExpression.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_TextInput()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_TextInput.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_TextInputDefaultValueResponse()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_TextInputDefaultValueResponse.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_TextInputNoMaxTurnCount()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_TextInputNoMaxTurnCount.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_TopLevelFallback()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_TopLevelFallback.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task AdaptiveDialog_TopLevelFallbackMultipleActivities()
         {
-            await TestUtils.RunTestScript("AdaptiveDialog_TopLevelFallbackMultipleActivities.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task TestBindingTwoWayAcrossAdaptiveDialogs()
         {
-            await TestUtils.RunTestScript("TestBindingTwoWayAcrossAdaptiveDialogs.test.dialog");
-
-            //await TestBindingTwoWayAcrossAdaptiveDialogs(new { userName = "$name" });
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task TestForeachWithPrompt()
         {
-            await TestUtils.RunTestScript("TestForeachWithPrompt.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty()
         {
-            await TestUtils.RunTestScript("TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
+        public async Task AdaptiveDialog_EmitEventActivityReceived()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_NestedMemoryAccess()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        [Ignore]
         public async Task TestForeachWithLargeItems()
         {
             var testFlow = new TestScript()
@@ -235,7 +263,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 testFlow = testFlow.AssertReply(i.ToString());
             }
 
-            await testFlow.ExecuteAsync();
+            await testFlow.ExecuteAsync(ResourceExplorer);
         }
 
         private class ForeachItemsDialog : ComponentDialog
@@ -254,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new Foreach
                                 {
                                     ItemsProperty = "$items",
-                                    Actions = new List<Dialog> { new SendActivity { Activity = new ActivityTemplate("@{$foreach.value}") } }
+                                    Actions = new List<Dialog> { new SendActivity { Activity = new ActivityTemplate("${$foreach.value}") } }
                                 }
                             }
                         }

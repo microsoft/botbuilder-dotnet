@@ -5,38 +5,26 @@
     "$kind": "Microsoft.RegexRecognizer",
     "intents": [
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "CreateMeetingIntent",
             "pattern": "(?i)create meeting" 
         },
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "HelpIntent",
             "pattern": "(?i)help" 
         },
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "ShowNextPageIntent",
             "pattern": "(?i)next page meeting" 
         },
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "UpdateMeetingIntent",
             "pattern": "(?i)update meeting" 
         },
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "AcceptMeetingIntent",
             "pattern": "(?i)accept meeting" 
         },
         {
-
-            "$kind": "Microsoft.IntentPattern",
             "intent": "DeclineMeetingIntent",
             "pattern": "(?i)decline meeting"
         }
@@ -49,7 +37,7 @@
         "GetDisplayMeetings",
         {
           "$kind": "Microsoft.SendActivity",
-          "activity": "@{ShowMeetingSummaryResponse(user)}"
+          "activity": "${ShowMeetingSummaryResponse(user)}"
         },
         {
           "$kind": "Microsoft.IfCondition",
@@ -58,11 +46,11 @@
             // Bug: Choice input cannot accept expression as value
             {
               "$kind": "Microsoft.SendActivity",
-              "activity": "@{ShowMeetingList(user)}"
+              "activity": "${ShowMeetingList(user)}"
             },
             {
               "$kind": "Microsoft.TextInput",
-              "prompt": "@{ChooseReadMeetingList(user)}",
+              "prompt": "${ChooseReadMeetingList(user)}",
               "property": "dialog.choice"
             },
             // Question: how to use SwitchCondition
@@ -77,7 +65,7 @@
                 {
                   "$kind": "Microsoft.SetProperty",
                   "property": "user.focusedMeeting",
-                  "value": "user.meetings[0]"
+                  "value": "=user.meetings[0]"
                 }
               ]
             },
@@ -88,7 +76,7 @@
                 {
                   "$kind": "Microsoft.SetProperty",
                   "property": "user.focusedMeeting",
-                  "value": "user.meetings[1]"
+                  "value": "=user.meetings[1]"
                 }
               ]
             },
@@ -99,18 +87,18 @@
                 {
                   "$kind": "Microsoft.SetProperty",
                   "property": "user.focusedMeeting",
-                  "value": "user.meetings[2]"
+                  "value": "=user.meetings[2]"
                 }
               ]
             },
             // Read focused meeting
             {
               "$kind": "Microsoft.SendActivity",
-              "activity": "@{ReadFocusedMeeting(user)}"
+              "activity": "${ReadFocusedMeeting(user)}"
             },
             {
               "$kind": "Microsoft.SendActivity",
-              "activity": "@{ShowMeetingCard(user.focusedMeeting)}"
+              "activity": "${ShowMeetingCard(user.focusedMeeting)}"
             },
             {
               "$kind": "Microsoft.ConfirmInput",

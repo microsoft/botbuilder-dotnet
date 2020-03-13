@@ -1,0 +1,15 @@
+
+
+# AskQuantity
+- ${askNumber('Quantity')}
+
+
+# QuantityName
+- quantity
+
+
+# Quantity(val)
+- ${QuantityEntity(val)}
+[unittests-QuantityEntity.lg](unittests-QuantityEntity.lg)
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Missing.lg](unittests-library-Missing.lg)

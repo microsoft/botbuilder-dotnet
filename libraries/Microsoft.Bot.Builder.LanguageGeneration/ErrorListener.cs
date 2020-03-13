@@ -8,6 +8,9 @@ using Antlr4.Runtime.Misc;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// LG parser error listener.
+    /// </summary>
     public class ErrorListener : BaseErrorListener
     {
         private readonly string source;
@@ -22,9 +25,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startPosition = new Position(line, charPositionInLine);
             var stopPosition = new Position(line, charPositionInLine + offendingSymbol.StopIndex - offendingSymbol.StartIndex + 1);
             var range = new Range(startPosition, stopPosition);
-            msg = $"source: {source}. syntax error message: {msg}";
-            var diagnostic = new Diagnostic(range, msg, DiagnosticSeverity.Error);
-            throw new LGException(diagnostic.ToString(), new List<Diagnostic>() { diagnostic });
+            var diagnostic = new Diagnostic(range, TemplateErrors.SyntaxError, DiagnosticSeverity.Error, source);
+            throw new TemplateException(diagnostic.ToString(), new List<Diagnostic>() { diagnostic });
         }
     }
 }

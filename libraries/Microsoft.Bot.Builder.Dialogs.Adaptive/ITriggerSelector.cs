@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Select the best rule to execute.
         /// </summary>
-        /// <param name="context">Dialog context for evaluation.</param>
+        /// <param name="actionContext">Dialog context for evaluation.</param>
         /// <param name="cancel">Cancellation token.</param>
         /// <returns>Best rule in original list to execute or -1 if none.</returns>
-        Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken));
+        Task<IReadOnlyList<OnCondition>> Select(ActionContext actionContext, CancellationToken cancel = default);
     }
 }

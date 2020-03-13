@@ -1,0 +1,15 @@
+
+
+# AskUtteranceproperty
+- ${askString('Utteranceproperty')}
+
+
+# UtterancepropertyName
+- utteranceproperty
+
+
+# Utteranceproperty(val)
+- ${UtterancepropertyEntity(val)}
+[unittests-UtterancepropertyEntity.lg](unittests-UtterancepropertyEntity.lg)
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Missing.lg](unittests-library-Missing.lg)

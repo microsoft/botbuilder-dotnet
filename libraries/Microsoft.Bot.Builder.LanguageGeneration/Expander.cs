@@ -4,50 +4,84 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// LG template expander.
+    /// </summary>
     public class Expander : LGFileParserBaseVisitor<List<string>>
     {
-        private readonly ExpressionEngine expanderExpressionEngine;
-        private readonly ExpressionEngine evaluatorExpressionEngine;
+        private readonly ExpressionParser expanderExpressionParser;
+        private readonly ExpressionParser evaluatorExpressionParser;
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
+        private readonly bool strictMode;
 
-        public Expander(List<LGTemplate> templates, ExpressionEngine expressionEngine)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Expander"/> class.
+        /// </summary>
+        /// <param name="templates">template list.</param>
+        /// <param name="expressionParser">Given expression parser.</param>
+        /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
+        public Expander(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
+            this.strictMode = strictMode;
 
-            // generate a new customzied expression engine by injecting the template as functions
-            this.expanderExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup, true));
-            this.evaluatorExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup, false));
+            // generate a new customized expression parser by injecting the template as functions
+            this.expanderExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, true));
+            this.evaluatorExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, false));
         }
 
-        public List<LGTemplate> Templates { get; }
+        /// <summary>
+        /// Gets templates.
+        /// </summary>
+        /// <value>
+        /// Templates.
+        /// </value>
+        public List<Template> Templates { get; }
 
-        public Dictionary<string, LGTemplate> TemplateMap { get; }
+        /// <summary>
+        /// Gets templateMap.
+        /// </summary>
+        /// <value>
+        /// TemplateMap.
+        /// </value>
+        public Dictionary<string, Template> TemplateMap { get; }
 
-        public List<string> EvaluateTemplate(string templateName, object scope)
+        /// <summary>
+        /// Expand the results of a template with given name and scope.
+        /// </summary>
+        /// <param name="templateName">Given template name.</param>
+        /// <param name="scope">Given scope.</param>
+        /// <returns>All possiable results.</returns>
+        public List<string> ExpandTemplate(string templateName, object scope)
         {
+            if (!(scope is CustomizedMemory))
+            {
+                scope = new CustomizedMemory(SimpleObjectMemory.Wrap(scope));
+            }
+
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception($"[{templateName}] not found");
+                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
             if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"Loop detected: {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
-            // Using a stack to track the evalution trace
+            // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
             var result = Visit(TemplateMap[templateName].ParseTree);
             evaluationTargetStack.Pop();
@@ -100,7 +134,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             var length = switchCaseNodes.Length;
             var switchExprs = switchCaseNodes[0].switchCaseStat().EXPRESSION();
-            var switchExprResult = EvalExpression(switchExprs[0].GetText());
+            var switchErrorPrefix = "Switch '" + switchExprs[0].GetText() + "': ";
+            var switchExprResult = EvalExpression(switchExprs[0].GetText(), switchCaseNodes[0].switchCaseStat(), switchErrorPrefix);
             var idx = 0;
             foreach (var switchCaseNode in switchCaseNodes)
             {
@@ -124,7 +159,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
 
                 var caseExprs = switchCaseNode.switchCaseStat().EXPRESSION();
-                var caseExprResult = EvalExpression(caseExprs[0].GetText());
+                var caseErrorPrefix = "Case '" + caseExprs[0].GetText() + "': ";
+                var caseExprResult = EvalExpression(caseExprs[0].GetText(), switchCaseNode.switchCaseStat(), caseErrorPrefix);
                 if (switchExprResult[0] == caseExprResult[0])
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
@@ -138,61 +174,45 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override List<string> VisitStructuredBody([NotNull] LGFileParser.StructuredBodyContext context)
         {
-            var idToStringDict = new Dictionary<string, string>();
+            var templateRefValues = new Dictionary<string, List<string>>();
             var stb = context.structuredTemplateBody();
             var result = new JObject();
-            var typeName = stb.structuredBodyNameLine().STRUCTURED_CONTENT().GetText().Trim();
+            var typeName = stb.structuredBodyNameLine().STRUCTURE_NAME().GetText();
             result[Evaluator.LGType] = typeName;
             var expandedResult = new List<JObject>
             {
                 result
             };
-            var bodys = stb.structuredBodyContentLine().STRUCTURED_CONTENT();
+            var bodys = stb.structuredBodyContentLine();
             foreach (var body in bodys)
             {
-                var line = body.GetText().Trim();
-
-                if (string.IsNullOrWhiteSpace(line))
+                var isKVPairBody = body.keyValueStructureLine() != null;
+                if (isKVPairBody)
                 {
-                    continue;
-                }
-
-                var start = line.IndexOf('=');
-                if (start > 0)
-                {
-                    // make it insensitive
-                    var property = line.Substring(0, start).Trim().ToLower();
-                    var originValue = line.Substring(start + 1).Trim();
-
-                    var valueArray = Evaluator.EscapeSeperatorRegex.Split(originValue);
-                    if (valueArray.Length == 1)
-                    {
-                        var id = Guid.NewGuid().ToString();
-                        expandedResult.ForEach(x => x[property] = id);
-                        idToStringDict.Add(id, originValue);
-                    }
-                    else
+                    var property = body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText().ToLower();
+                    var value = VisitStructureValue(body.keyValueStructureLine());
+                    if (value.Count > 1) 
                     {
                         var valueList = new JArray();
-                        foreach (var item in valueArray)
+                        foreach (var item in value)
                         {
                             var id = Guid.NewGuid().ToString();
                             valueList.Add(id);
-                            idToStringDict.Add(id, item.Trim());
+                            templateRefValues.Add(id, item);
                         }
 
                         expandedResult.ForEach(x => x[property] = valueList);
                     }
+                    else
+                    {
+                        var id = Guid.NewGuid().ToString();
+                        expandedResult.ForEach(x => x[property] = id);
+                        templateRefValues.Add(id, value[0]);
+                    }
                 }
-                else if (Evaluator.IsPureExpression(line))
+                else
                 {
-                    // [MyStruct
-                    // Text = foo
-                    // {ST2()}
-                    // ]
-
-                    // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in the callee.
-                    var propertyObjects = EvalExpression(line).Select(x => JObject.Parse(x)).ToList();
+                    var propertyObjects = EvalExpression(body.objectStructureLine().GetText(), body.objectStructureLine()).Select(x => JObject.Parse(x)).ToList();
                     var tempResult = new List<JObject>();
                     foreach (var res in expandedResult)
                     {
@@ -221,19 +241,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var exps = expandedResult.Select(x => JsonConvert.SerializeObject(x)).ToList();
-            var templateRefValues = new Dictionary<string, List<string>>();
-            foreach (var idToString in idToStringDict)
-            {
-                // convert id text or expression to list of evaluated values
-                if (idToString.Value.StartsWith("@{") && idToString.Value.EndsWith("}"))
-                {
-                    templateRefValues.Add(idToString.Key, this.EvalExpression(idToString.Value));
-                }
-                else
-                {
-                    templateRefValues.Add(idToString.Key, this.EvalText(idToString.Value));
-                }
-            }
 
             var finalResult = new List<string>(exps);
             foreach (var templateRefValue in templateRefValues)
@@ -255,6 +262,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override List<string> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
+            var prefixErrorMsg = context.GetPrefixErrorMessage();
             var result = new List<string>() { string.Empty };
             foreach (ITerminalNode node in context.children)
             {
@@ -265,10 +273,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.MULTILINE_SUFFIX:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        result = StringListConcat(result, EvalEscape(node.GetText()));
+                        result = StringListConcat(result, new List<string>() { node.GetText().Escape() });
                         break;
                     case LGFileParser.EXPRESSION:
-                        result = StringListConcat(result, EvalExpression(node.GetText()));
+                        result = StringListConcat(result, EvalExpression(node.GetText(), context, prefixErrorMsg));
                         break;
                     default:
                         result = StringListConcat(result, new List<string>() { node.GetText() });
@@ -298,7 +306,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var expression = condition.EXPRESSION(0);
             if (expression == null || // no expression means it's else
-                EvalExpressionInCondition(expression.GetText()))
+                EvalExpressionInCondition(expression.GetText(), condition, "Condition '" + expression.GetText() + "':"))
             {
                 return true;
             }
@@ -306,57 +314,120 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return false;
         }
 
-        private bool EvalExpressionInCondition(string exp)
+        private List<List<string>> VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
         {
-            try
-            {
-                exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
-                var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+            var values = context.keyValueStructureValue();
 
-                if (error != null
-                    || result == null
-                    || (result is bool r1 && r1 == false)
-                    || (result is int r2 && r2 == 0))
+            var result = new List<List<string>>();
+            foreach (var item in values)
+            {
+                if (item.IsPureExpression(out var text))
                 {
-                    return false;
+                    result.Add(EvalExpression(text, context));
+                }
+                else
+                {
+                    var itemStringResult = new List<string>() { string.Empty };
+                    foreach (ITerminalNode node in item.children)
+                    {
+                        switch (node.Symbol.Type)
+                        {
+                            case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                                itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Escape() });
+                                break;
+                            case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                                var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
+                                itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText(), item, errorPrefix));
+                                break;
+                            default:
+                                itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText() });
+                                break;
+                        }
+                    }
+
+                    result.Add(itemStringResult);
+                }
+            }
+
+            return result;
+        }
+
+        private bool EvalExpressionInCondition(string exp, ParserRuleContext context = null, string errorPrefix = "")
+        {
+            exp = exp.TrimExpression();
+            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
+
+            if (strictMode && (error != null || result == null))
+            {
+                var errorMsg = string.Empty;
+
+                var childErrorMsg = string.Empty;
+                if (error != null)
+                {
+                    childErrorMsg += error;
+                }
+                else if (result == null)
+                {
+                    childErrorMsg += TemplateErrors.NullExpression(exp);
                 }
 
-                return true;
+                if (context != null)
+                {
+                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                }
+
+                if (evaluationTargetStack.Count > 0)
+                {
+                    evaluationTargetStack.Pop();
+                }
+
+                throw new Exception(childErrorMsg + errorMsg);
             }
-            catch (Exception e)
+            else if (error != null
+                || result == null
+                || (result is bool r1 && r1 == false)
+                || (result is int r2 && r2 == 0))
             {
-                Debug.WriteLine($"Expression {exp} evaled as false due to exception");
-                Debug.WriteLine(e.Message);
                 return false;
             }
+
+            return true;
         }
 
-        private List<string> EvalEscape(string exp)
+        private List<string> EvalExpression(string exp, ParserRuleContext context, string errorPrefix = "")
         {
-            var value = new List<string>();
-            var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
-            if (commonEscapes.Contains(exp))
+            exp = exp.TrimExpression();
+            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
+
+            if (error != null || (result == null && strictMode))
             {
-                value.Add(Regex.Unescape(exp));
+                var errorMsg = string.Empty;
+
+                var childErrorMsg = string.Empty;
+                if (error != null)
+                {
+                    childErrorMsg += error;
+                }
+                else if (result == null)
+                {
+                    childErrorMsg += TemplateErrors.NullExpression(exp);
+                }
+
+                if (context != null)
+                {
+                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                }
+
+                if (evaluationTargetStack.Count > 0)
+                {
+                    evaluationTargetStack.Pop();
+                }
+
+                throw new Exception(childErrorMsg + errorMsg);
             }
-
-            value.Add(exp.Substring(1));
-
-            return value;
-        }
-
-        private List<string> EvalExpression(string exp)
-        {
-            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
-            var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
-            if (error != null)
+            else if (result == null && !strictMode)
             {
-                throw new Exception($"Error occurs when evaluating expression ${exp}: {error}");
-            }
-
-            if (result == null)
-            {
-                throw new Exception($"Error occurs when evaluating expression '{exp}': {exp} is evaluated to null");
+                result = "null";
             }
 
             if (result is IList &&
@@ -372,10 +443,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         // just don't want to write evaluationTargetStack.Peek() everywhere
         private EvaluationTarget CurrentTarget() => evaluationTargetStack.Peek();
 
-        private (object value, string error) EvalByExpressionEngine(string exp, object scope)
+        private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
-            var expanderExpression = this.expanderExpressionEngine.Parse(exp);
-            var evaluatorExpression = this.evaluatorExpressionEngine.Parse(exp);
+            var expanderExpression = this.expanderExpressionParser.Parse(exp);
+            var evaluatorExpression = this.evaluatorExpressionParser.Parse(exp);
             var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
             string error;
             object value;
@@ -398,7 +469,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        // Genearte a new lookup function based on one lookup function
+        // Generate a new lookup function based on one lookup function
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup, bool isExpander)
         => (string name) =>
         {
@@ -413,11 +484,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (isExpander)
                 {
-                    return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateExpander(name)), ReturnType.String, this.ValidTemplateReference);
+                    return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateExpander(name)), ReturnType.String, this.ValidTemplateReference);
                 }
                 else
                 {
-                    return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+                    return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
                 }
             }
 
@@ -428,7 +499,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             (IReadOnlyList<object> args) =>
             {
                 var newScope = this.ConstructScope(templateName, args.ToList());
-                return this.EvaluateTemplate(templateName, newScope);
+                return this.ExpandTemplate(templateName, newScope);
             };
 
         private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName) =>
@@ -436,7 +507,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var newScope = this.ConstructScope(templateName, args.ToList());
 
-                var value = this.EvaluateTemplate(templateName, newScope);
+                var value = this.ExpandTemplate(templateName, newScope);
                 var rd = new Random();
                 return value[rd.Next(value.Count)];
             };
@@ -447,7 +518,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!this.TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception($"no such template '{templateName}' to call in {expression}");
+                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
@@ -455,7 +526,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (expectedArgsCount != actualArgsCount)
             {
-                throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
+                throw new Exception(TemplateErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
         }
 
@@ -479,54 +550,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return expanderExpression;
-        }
-
-        private List<string> EvalTextContainsExpression(string exp)
-        {
-            var templateRefValues = new Dictionary<string, List<string>>();
-            var matches = Evaluator.ExpressionRecognizeRegex.Matches(exp);
-            if (matches != null)
-            {
-                foreach (Match match in matches)
-                {
-                    templateRefValues.Add(match.Value, EvalExpression(match.Value));
-                }
-            }
-
-            var result = new List<string>() { exp };
-            foreach (var templateRefValue in templateRefValues)
-            {
-                var tempRes = new List<string>();
-                foreach (var res in result)
-                {
-                    foreach (var refValue in templateRefValue.Value)
-                    {
-                        tempRes.Add(res.Replace(templateRefValue.Key, refValue));
-                    }
-                }
-
-                result = tempRes;
-            }
-
-            return result;
-        }
-
-        private List<string> EvalText(string exp)
-        {
-            if (string.IsNullOrEmpty(exp))
-            {
-                return new List<string>() { exp };
-            }
-
-            if (Evaluator.IsPureExpression(exp))
-            {
-                // @{} or {} text, get object result
-                return EvalExpression(exp);
-            }
-            else
-            {
-                return EvalTextContainsExpression(exp).Select(x => Regex.Unescape(x)).ToList();
-            }
         }
     }
 }

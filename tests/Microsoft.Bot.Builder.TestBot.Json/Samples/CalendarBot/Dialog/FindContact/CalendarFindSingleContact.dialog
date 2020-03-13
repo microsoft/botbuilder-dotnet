@@ -15,7 +15,7 @@
         "GetContactService"
         //{
         //  "$kind": "Microsoft.EditArray",
-        //  "changeType": "Push",
+        //  "changeType": "push",
         //  "itemsProperty": "user.recipients",
         //  "itemProperty": "dialog.getResponse.value[0].emailAddresses[0].address"
         //}

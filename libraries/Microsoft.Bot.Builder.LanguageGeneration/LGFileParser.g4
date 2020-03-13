@@ -10,21 +10,19 @@ file
 	;
 
 paragraph
-    : newline
-    | templateDefinition
+    : templateDefinition
     | importDefinition
+    | optionsDefinition
+    | EOF
+    | errorTemplate
     ;
 
-// Treat EOF as newline to hanle file end gracefully
-// It's possible that parser doesn't even have to handle NEWLINE, 
-// but before the syntax is finalized, we still keep the NEWLINE in grammer 
-newline
-    : NEWLINE
-    | EOF
+errorTemplate
+    : INVALID_TOKEN+
     ;
 
 templateDefinition
-	: templateNameLine newline templateBody?
+	: templateNameLine templateBody?
 	;
 
 templateNameLine
@@ -51,23 +49,45 @@ templateBody
     ;
 
 structuredTemplateBody
-    : structuredBodyNameLine structuredBodyContentLine? structuredBodyEndLine
+    : structuredBodyNameLine ((structuredBodyContentLine STRUCTURED_NEWLINE)+)? structuredBodyEndLine?
     ;
 
 structuredBodyNameLine
-    : LEFT_SQUARE_BRACKET STRUCTURED_CONTENT STRUCTURED_NEWLINE
+    : LEFT_SQUARE_BRACKET (STRUCTURE_NAME | errorStructuredName)
+    ;
+
+errorStructuredName
+    : (STRUCTURE_NAME|TEXT_IN_STRUCTURE_NAME)*
     ;
 
 structuredBodyContentLine
-    : (STRUCTURED_CONTENT STRUCTURED_NEWLINE)+
+    : keyValueStructureLine
+    | objectStructureLine
+    | errorStructureLine
+    ;
+
+errorStructureLine
+    : (STRUCTURE_IDENTIFIER|STRUCTURE_EQUALS|STRUCTURE_OR_MARK|TEXT_IN_STRUCTURE_BODY|EXPRESSION_IN_STRUCTURE_BODY|ESCAPE_CHARACTER_IN_STRUCTURE_BODY)+
+    ;
+
+keyValueStructureLine
+    : STRUCTURE_IDENTIFIER STRUCTURE_EQUALS keyValueStructureValue (STRUCTURE_OR_MARK keyValueStructureValue)*
+    ;
+
+keyValueStructureValue
+    : (TEXT_IN_STRUCTURE_BODY|EXPRESSION_IN_STRUCTURE_BODY|ESCAPE_CHARACTER_IN_STRUCTURE_BODY)+
+    ;
+
+objectStructureLine
+    : EXPRESSION_IN_STRUCTURE_BODY
     ;
 
 structuredBodyEndLine
-    : STRUCTURED_TEMPLATE_BODY_END
+    : STRUCTURED_BODY_END
     ;
 
 normalTemplateBody
-    : (templateString newline)+
+    : templateString+
     ;
 
 templateString
@@ -76,11 +96,11 @@ templateString
     ;
 
 normalTemplateString
-	: DASH (WS|TEXT|EXPRESSION|ESCAPE_CHARACTER|MULTILINE_SUFFIX|MULTILINE_PREFIX)*
-	;
+    : DASH MULTILINE_PREFIX? (TEXT|EXPRESSION|ESCAPE_CHARACTER)* MULTILINE_SUFFIX?
+    ;
 
 errorTemplateString
-	: INVALID_TOKEN_DEFAULT_MODE+
+	: INVALID_TOKEN+
 	;
 
 ifElseTemplateBody
@@ -88,7 +108,7 @@ ifElseTemplateBody
     ;
 
 ifConditionRule
-    : ifCondition newline normalTemplateBody?
+    : ifCondition normalTemplateBody?
     ;
 
 ifCondition
@@ -100,7 +120,7 @@ switchCaseTemplateBody
     ;
 
 switchCaseRule
-    : switchCaseStat newline normalTemplateBody?
+    : switchCaseStat normalTemplateBody?
     ;
 
 switchCaseStat
@@ -108,5 +128,9 @@ switchCaseStat
     ;
 
 importDefinition
-    : IMPORT_DESC IMPORT_PATH
+    : IMPORT
+    ;
+
+optionsDefinition
+    : OPTIONS
     ;

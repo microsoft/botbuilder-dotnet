@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -28,30 +27,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel = default)
         {
-            var candidates = new List<int>();
-            var parser = _evaluate ? new ExpressionEngine() : null;
-            for (var i = 0; i < _conditionals.Count; ++i)
+            var candidates = _conditionals;
+            if (_evaluate)
             {
-                if (_evaluate)
+                candidates = new List<OnCondition>();
+                foreach (var conditional in _conditionals)
                 {
-                    var conditional = _conditionals[i];
-                    var expression = conditional.GetExpression(parser);
+                    var expression = conditional.GetExpression();
                     var (value, error) = expression.TryEvaluate(context.GetState());
                     var result = error == null && (bool)value;
                     if (result == true)
                     {
-                        candidates.Add(i);
+                        candidates.Add(conditional);
                     }
-                }
-                else
-                {
-                    candidates.Add(i);
                 }
             }
 
-            return Task.FromResult((IReadOnlyList<int>)candidates);
+            return Task.FromResult((IReadOnlyList<OnCondition>)candidates);
         }
     }
 }

@@ -1,0 +1,15 @@
+
+
+# AskEmail
+- ${askString('Email')}
+
+
+# EmailName
+- email
+
+
+# Email(val)
+- ${EmailEntity(val)}
+[unittests-EmailEntity.lg](unittests-EmailEntity.lg)
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Missing.lg](unittests-library-Missing.lg)

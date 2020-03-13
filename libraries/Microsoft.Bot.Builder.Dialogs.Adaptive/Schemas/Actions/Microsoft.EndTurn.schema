@@ -1,7 +1,23 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.IDialog)",
+    "$role": "implements(Microsoft.IDialog)",
     "title": "End turn",
     "description": "End the current turn without ending the dialog.",
-    "type": "object"
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$role": "expression",
+            "type": "boolean",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        }
+    }
 }

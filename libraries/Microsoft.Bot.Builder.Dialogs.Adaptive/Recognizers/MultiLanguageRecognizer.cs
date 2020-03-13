@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
@@ -12,11 +13,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// <summary>
     /// Defines map of languages -> recognizer.
     /// </summary>
-    public class MultiLanguageRecognizer : IRecognizer
+    public class MultiLanguageRecognizer : Recognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.MultiLanguageRecognizer";
 
+        [JsonConstructor]
         public MultiLanguageRecognizer()
         {
         }
@@ -37,45 +39,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// Map of languages -> IRecognizer.
         /// </value>
         [JsonProperty("recognizers")]
-        public IDictionary<string, IRecognizer> Recognizers { get; set; } = new Dictionary<string, IRecognizer>();
+        public IDictionary<string, Recognizer> Recognizers { get; set; } = new Dictionary<string, Recognizer>();
 
-        public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
-            if (!LanguagePolicy.TryGetValue(turnContext.Activity.Locale ?? string.Empty, out string[] policy))
+            if (!LanguagePolicy.TryGetValue(activity.Locale ?? string.Empty, out string[] policy))
             {
                 policy = new string[] { string.Empty };
             }
 
             foreach (var option in policy)
             {
-                if (this.Recognizers.TryGetValue(option, out IRecognizer recognizer))
+                if (this.Recognizers.TryGetValue(option, out var recognizer))
                 {
-                    return recognizer.RecognizeAsync(turnContext, cancellationToken);
+                    var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
+                    this.TelemetryClient.TrackEvent("MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+                    return result;
                 }
             }
 
+            this.TelemetryClient.TrackEvent("MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(new RecognizerResult() { }, telemetryProperties), telemetryMetrics);
+            
             // nothing recognized
-            return Task.FromResult(new RecognizerResult() { });
-        }
-
-        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
-            where T : IRecognizerConvert, new()
-        {
-            if (!LanguagePolicy.TryGetValue(turnContext.Activity.Locale ?? string.Empty, out string[] policy))
-            {
-                policy = new string[] { string.Empty };
-            }
-
-            foreach (var option in policy)
-            {
-                if (this.Recognizers.TryGetValue(option, out IRecognizer recognizer))
-                {
-                    return recognizer.RecognizeAsync<T>(turnContext, cancellationToken);
-                }
-            }
-
-            // nothing recognized
-            return Task.FromResult(default(T));
+            return new RecognizerResult() { };
         }
     }
 }

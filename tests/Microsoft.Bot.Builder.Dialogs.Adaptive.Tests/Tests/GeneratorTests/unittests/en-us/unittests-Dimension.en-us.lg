@@ -1,0 +1,10 @@
+
+
+# AskDimension
+- ${askString('Dimension')}
+
+
+# DimensionName
+- dimension
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Missing.lg](unittests-library-Missing.lg)

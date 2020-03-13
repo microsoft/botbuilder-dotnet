@@ -4,32 +4,59 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using NuGet.Packaging;
-using NuGet.Packaging.Core;
-using NuGet.Versioning;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     public delegate void ResourceChangedEventHandler(IResource[] resources);
 
     /// <summary>
-    /// Class which gives standard access to file based resources.
+    /// Class which gives standard access to content resources.
     /// </summary>
     public class ResourceExplorer : IDisposable
     {
-        private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
+        private const string RefPropertyName = "$copy";
 
+        private readonly List<JsonConverter> converters = new List<JsonConverter>();
+        private readonly Dictionary<Type, ICustomDeserializer> builders = new Dictionary<Type, ICustomDeserializer>();
+        private readonly Dictionary<string, Type> kinds = new Dictionary<string, Type>();
+        private readonly Dictionary<Type, string> names = new Dictionary<Type, string>();
+        private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<IResource> changedResources = new ConcurrentBag<IResource>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
+        /// </summary>
         public ResourceExplorer()
         {
+            foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentDeclarativeTypes>())
+            {
+                if (component != null)
+                {
+                    // add types
+                    foreach (var typeRegistration in component.GetDeclarativeTypes())
+                    {
+                        RegisterType(typeRegistration.Kind, typeRegistration.Type, typeRegistration.CustomDeserializer);
+                    }
+                }
+            }
+        }
+
+        public ResourceExplorer(IEnumerable<IResourceProvider> providers)
+            : this()
+        {
+            this.resourceProviders = providers.ToList();
         }
 
         /// <summary>
@@ -49,88 +76,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Add a .csproj as resource (adding the project, referenced projects and referenced packages).
+        /// Add a resource provider to the resources managed by the resource explorer.
         /// </summary>
-        /// <param name="projectFile">Project file.</param>
-        /// <param name="ignoreFolders">Folders to ignore.</param>
-        /// <param name="monitorChanges">Whether to track changes.</param>
-        /// <returns>A new <see cref="ResourceExplorer"/>.</returns>
-        public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
-        {
-            var explorer = new ResourceExplorer();
-            projectFile = PathUtils.NormalizePath(projectFile);
-            ignoreFolders = ignoreFolders?.Select(f => PathUtils.NormalizePath(f)).ToArray();
-
-            if (!File.Exists(projectFile))
-            {
-                projectFile = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
-                if (projectFile == null)
-                {
-                    explorer.AddFolder(Path.GetDirectoryName(projectFile));
-                    return explorer;
-                }
-            }
-
-            string projectFolder = Path.GetDirectoryName(projectFile);
-
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(projectFile);
-
-            // add folder for the project
-            if (ignoreFolders != null)
-            {
-                explorer.AddFolders(projectFolder, ignoreFolders, monitorChanges: monitorChanges);
-            }
-            else
-            {
-                explorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: monitorChanges));
-            }
-
-            // add project references
-            foreach (XmlNode node in xmlDoc.SelectNodes("//ProjectReference"))
-            {
-                var path = Path.Combine(projectFolder, PathUtils.NormalizePath(node.Attributes["Include"].Value));
-                path = Path.GetFullPath(path);
-                path = Path.GetDirectoryName(path);
-                if (Directory.Exists(path))
-                {
-                    explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
-                }
-            }
-
-            var packages = Path.GetFullPath("packages");
-            var relativePackagePath = Path.Combine(@"..", "packages");
-            while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
-            {
-                packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), PathUtils.NormalizePath(relativePackagePath)));
-                if (packages == null)
-                {
-                    throw new ArgumentNullException("Can't find packages folder");
-                }
-            }
-
-            var pathResolver = new PackagePathResolver(packages);
-
-            // add nuget package references
-            foreach (XmlNode node in xmlDoc.SelectNodes("//PackageReference"))
-            {
-                string packageName = node.Attributes["Include"]?.Value;
-                string version = node.Attributes["Version"]?.Value;
-                NuGetVersion nugetVersion;
-                if (!string.IsNullOrEmpty(packageName) && !string.IsNullOrEmpty(version) && NuGetVersion.TryParse(version, out nugetVersion))
-                {
-                    var package = new PackageIdentity(packageName, nugetVersion);
-                    var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
-                    if (Directory.Exists(folder))
-                    {
-                        explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: monitorChanges));
-                    }
-                }
-            }
-
-            return explorer;
-        }
-
+        /// <param name="resourceProvider">resource provider.</param>
+        /// <returns>resource explorer so that you can fluently call multiple methods on the resource explorer.</returns>
         public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
         {
             resourceProvider.Changed += ResourceProvider_Changed;
@@ -163,7 +112,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>created type.</returns>
         public T LoadType<T>(IResource resource)
         {
-            return DeclarativeTypeLoader.Load<T>(resource, this, DebugSupport.SourceMap);
+            return LoadTypeAsync<T>(resource).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Create Type from resource.
+        /// </summary>
+        /// <typeparam name="T">type to create.</typeparam>
+        /// <param name="resource">resource to bind to.</param>
+        /// <returns>task which will resolve to created type.</returns>
+        public async Task<T> LoadTypeAsync<T>(IResource resource)
+        {
+            string id = resource.Id;
+            var paths = new Stack<string>();
+            if (resource is FileResource fileResource)
+            {
+                id = fileResource.FullName;
+                paths.Push(fileResource.FullName);
+            }
+
+            string json = null;
+            try
+            {
+                json = await resource.ReadTextAsync();
+
+                var result = Load<T>(json, paths);
+                if (result is Dialog dlg)
+                {
+                    // dialog id's are resource ids
+                    dlg.Id = resource.Id;
+                }
+
+                return result;
+            }
+            catch (Exception err)
+            {
+                if (err.InnerException is SyntaxErrorException)
+                {
+                    throw new SyntaxErrorException(err.InnerException.Message)
+                    {
+                        Source = $"{id}{err.InnerException.Source}"
+                    };
+                }
+
+                throw new Exception($"{id} error: {err.Message}\n{err.InnerException?.Message}");
+            }
         }
 
         /// <summary>
@@ -217,6 +210,125 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return false;
         }
 
+        /// <summary>
+        /// Register a declarative type with the resource loader system.
+        /// </summary>
+        /// <typeparam name="T">type of object to create.</typeparam>
+        /// <param name="kind">the $kind name to map to this type.</param>
+        /// <param name="loader">optional custom deserializer.</param>
+        /// <returns>Resource explorer for fluent style multiple calls.</returns>
+        public ResourceExplorer RegisterType<T>(string kind, ICustomDeserializer loader = null)
+        {
+            return RegisterType(kind, typeof(T), loader);
+        }
+
+        /// <summary>
+        /// Register a declarative type with the resource loader system.
+        /// </summary>
+        /// <param name="kind">the $kind name to map to this type.</param>
+        /// <param name="type">type of object to create.</param>
+        /// <param name="loader">optional custom deserializer.</param>
+        /// <returns>Resource explorer for fluent style multiple calls.</returns>
+        public ResourceExplorer RegisterType(string kind, Type type, ICustomDeserializer loader = null)
+        {
+            // Default loader if none specified
+            if (loader == null)
+            {
+                loader = new DefaultLoader();
+            }
+
+            lock (kinds)
+            {
+                kinds[kind] = type;
+            }
+
+            lock (names)
+            {
+                names[type] = kind;
+            }
+
+            lock (builders)
+            {
+                builders[type] = loader;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Build type for given $kind using the JToken/serializer as the source.
+        /// </summary>
+        /// <typeparam name="T">type of object to create.</typeparam>
+        /// <param name="kind">$kind.</param>
+        /// <param name="obj">source object.</param>
+        /// <param name="serializer">serializer to user.</param>
+        /// <returns>instantiated object of type(T).</returns>
+        public T BuildType<T>(string kind, JToken obj, JsonSerializer serializer)
+            where T : class
+        {
+            ICustomDeserializer builder;
+            var type = GetTypeForKind(kind);
+
+            if (type == null)
+            {
+                throw new ArgumentException($"Type {kind} not registered in factory.");
+            }
+
+            var found = builders.TryGetValue(type, out builder);
+
+            if (!found)
+            {
+                throw new ArgumentException($"Type {kind} not registered in factory.");
+            }
+
+            var built = builder.Load(obj, serializer, type);
+
+            var result = built as T;
+
+            if (result == null)
+            {
+                throw new Exception($"Factory registration for name {kind} resulted in type {built.GetType()}, but expected assignable to {typeof(T)}");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get the type for $kind.
+        /// </summary>
+        /// <param name="kind">$kind.</param>
+        /// <returns>type of object.</returns>
+        public Type GetTypeForKind(string kind)
+        {
+            Type type;
+            return kinds.TryGetValue(kind, out type) ? type : default(Type);
+        }
+
+        /// <summary>
+        /// Get the $kind for a type.
+        /// </summary>
+        /// <param name="type">type.</param>
+        /// <returns>$kind for the type.</returns>
+        public string GetKindForType(Type type)
+        {
+            string name;
+            return names.TryGetValue(type, out name) ? name : default(string);
+        }
+
+        /// <summary>
+        /// Get the $kind for a type.
+        /// </summary>
+        /// <typeparam name="T">type.</typeparam>
+        /// <returns>$kind for the type.</returns>
+        public string GetKindForType<T>()
+        {
+            string name;
+            return names.TryGetValue(typeof(T), out name) ? name : default(string);
+        }
+
+        /// <summary>
+        /// Dispose of internal resources.
+        /// </summary>
         public void Dispose()
         {
             foreach (var resource in this.resourceProviders)
@@ -226,6 +338,119 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     disposable.Dispose();
                 }
             }
+        }
+
+        /// <summary>
+        /// Determine if token is a reference.
+        /// </summary>
+        /// <param name="token">jtoken.</param>
+        /// <returns>true if it is string ref.</returns>
+        public bool IsRef(JToken token)
+        {
+            return !string.IsNullOrEmpty(GetRefTarget(token));
+        }
+
+        /// <summary>
+        /// Resolves a ref to the actual object.
+        /// </summary>
+        /// <param name="refToken">reference.</param>
+        /// <returns>resolved object the reference refers to.</returns>
+        public async Task<JToken> ResolveRefAsync(JToken refToken)
+        {
+            var refTarget = GetRefTarget(refToken);
+
+            if (string.IsNullOrEmpty(refTarget))
+            {
+                throw new InvalidOperationException("Failed to resolve reference, $copy property not present");
+            }
+
+            var resource = this.GetResource($"{refTarget}.dialog");
+            if (resource == null)
+            {
+                throw new FileNotFoundException($"Failed to find resource named {refTarget}.dialog");
+            }
+
+            string text = await resource.ReadTextAsync().ConfigureAwait(false);
+            var json = JToken.Parse(text);
+
+            foreach (JProperty prop in refToken.Children<JProperty>())
+            {
+                if (prop.Name != "$ref")
+                {
+                    // JToken is an object, so we merge objects
+                    if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Object)
+                    {
+                        JObject targetProperty = json[prop.Name] as JObject;
+                        targetProperty.Merge(prop.Value);
+                    }
+
+                    // JToken is an object, so we merge objects
+                    else if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Array)
+                    {
+                        JArray targetArray = json[prop.Name] as JArray;
+                        targetArray.Merge(prop.Value);
+                    }
+
+                    // JToken is a value, simply assign
+                    else
+                    {
+                        json[prop.Name] = prop.Value;
+                    }
+                }
+            }
+
+            // if we have a source path for the resource, then make it available to InterfaceConverter
+            if (resource is FileResource fileResource)
+            {
+                DebugSupport.SourceMap.Add(json, new SourceRange() { Path = fileResource.FullName });
+            }
+
+            return json;
+        }
+
+        private string GetRefTarget(JToken token)
+        {
+            // If we expect an instance of IMyInterface and we find a string,
+            // we assume that it is an implicit reference
+            if (token.Type == JTokenType.String)
+            {
+                return token.Value<string>();
+            }
+
+            // Else try to get a reference from the token
+            return token?
+                .Children<JProperty>()
+                .FirstOrDefault(jProperty => jProperty.Name == RefPropertyName)
+                ?.Value.ToString();
+        }
+
+        private T Load<T>(string json, Stack<string> paths)
+        {
+            var converters = new List<JsonConverter>();
+            foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentDeclarativeTypes>())
+            {
+                var result = component.GetConverters(this, paths);
+                if (result.Any())
+                {
+                    converters.AddRange(result);
+                }
+            }
+
+            return JsonConvert.DeserializeObject<T>(
+                json, new JsonSerializerSettings()
+                {
+                    SerializationBinder = new UriTypeBinder(this),
+                    TypeNameHandling = TypeNameHandling.Auto,
+                    Converters = converters,
+                    Error = (sender, args) =>
+                    {
+                        var ctx = args.ErrorContext;
+                    },
+                    ContractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new CamelCaseNamingStrategy()
+                    }
+                });
         }
 
         private void ResourceProvider_Changed(IResource[] resources)

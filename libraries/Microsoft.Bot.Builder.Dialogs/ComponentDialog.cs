@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
         /// <seealso cref="DialogSet.TelemetryClient"/>
-        public new IBotTelemetryClient TelemetryClient
+        public override IBotTelemetryClient TelemetryClient
         {
             get
             {
@@ -87,6 +87,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Return result to calling dialog
                 return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
+
+            TelemetryClient.TrackDialogView(Id);
 
             // Just signal waiting
             return Dialog.EndOfTurn;

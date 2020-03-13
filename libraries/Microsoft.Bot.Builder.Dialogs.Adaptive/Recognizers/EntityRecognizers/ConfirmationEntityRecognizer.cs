@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// <summary>
     /// Recognizes yes/no confirmation style input.
     /// </summary>
-    public class ConfirmationEntityRecognizer : EntityRecognizer
+    public class ConfirmationEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.ConfirmationEntityRecognizer";

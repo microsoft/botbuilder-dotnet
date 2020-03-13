@@ -10,10 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
-    #if !FUNCTIONALTESTS
-    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
-    #endif
-
+    [TestCategory("FunctionalTests")]
     public class DirectLineClientTests
     {
         private static string directLineSecret = null;
@@ -74,9 +71,10 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             string watermark = null;
             var answer = string.Empty;
+            int retries = 3;
 
             // Poll the bot for replies once per second.
-            while (answer.Equals(string.Empty))
+            while (answer.Equals(string.Empty) && retries-- > 0)
             {
                 // Retrieve the activity sent from the bot.
                 var activitySet = await client.Conversations.GetActivitiesAsync(conversationId, watermark);
@@ -96,10 +94,11 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                     }
                 }
 
-                // Wait for one second before polling the bot again.
-                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
-
-                return answer;
+                if (answer.Equals(string.Empty))
+                {
+                    // Wait for one second before polling the bot again.
+                    await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                }
             }
 
             return answer;
@@ -115,13 +114,13 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 directLineSecret = Environment.GetEnvironmentVariable("DIRECTLINE");
                 if (string.IsNullOrWhiteSpace(directLineSecret))
                 {
-                    throw new Exception("Environment variable 'DIRECTLINE' not found.");
+                    Assert.Inconclusive("Environment variable 'DIRECTLINE' not found.");
                 }
 
                 botId = Environment.GetEnvironmentVariable("BOTID");
                 if (string.IsNullOrWhiteSpace(botId))
                 {
-                    throw new Exception("Environment variable 'BOTID' not found.");
+                    Assert.Inconclusive("Environment variable 'BOTID' not found.");
                 }
             }
         }

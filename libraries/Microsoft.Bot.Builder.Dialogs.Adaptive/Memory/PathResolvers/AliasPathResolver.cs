@@ -29,8 +29,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
             }
 
             var start = path.IndexOf(this.alias);
-            if (start >= 0)
+            if (start == 0)
             {
+                // here we only deals with trailing alias, alias in middle be handled in further breakdown
                 // $xxx -> path.xxx
                 return $"{this.prefix}{path.Substring(start + alias.Length)}{this.postfix}".TrimEnd('.');
             }

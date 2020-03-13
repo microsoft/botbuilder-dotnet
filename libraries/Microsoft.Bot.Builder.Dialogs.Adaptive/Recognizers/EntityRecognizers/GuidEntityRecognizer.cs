@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
-    public class GuidEntityRecognizer : EntityRecognizer
+    public class GuidEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.GuidEntityRecognizer";

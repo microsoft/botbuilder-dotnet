@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Skills
 
         private readonly BotAdapter _adapter;
         private readonly IBot _bot;
-        private readonly SkillConversationIdFactoryBase _conversationIdIdFactory;
+        private readonly SkillConversationIdFactoryBase _conversationIdFactory;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Skills
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            _conversationIdIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
+            _conversationIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -150,26 +150,44 @@ namespace Microsoft.Bot.Builder.Skills
 
         private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
         {
-            var conversationReference = await _conversationIdIdFactory.GetConversationReferenceAsync(conversationId, CancellationToken.None).ConfigureAwait(false);
+            SkillConversationReference skillConversationReference = null;
+            try
+            {
+                skillConversationReference = await _conversationIdFactory.GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (NotImplementedException)
+            {
+                // Attempt to get SkillConversationReference using deprecated method.
+                // this catch should be removed once we remove the deprecated method. 
+                // We need to use the deprecated method for backward compatibility.
+#pragma warning disable 618
+                var conversationReference = await _conversationIdFactory.GetConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
+#pragma warning restore 618
+                skillConversationReference = new SkillConversationReference
+                {
+                    ConversationReference = conversationReference,
+                    OAuthScope = ChannelProvider != null && ChannelProvider.IsGovernment() ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope : AuthenticationConstants.ToChannelFromBotOAuthScope
+                };
+            }
 
-            if (conversationReference == null)
+            if (skillConversationReference == null)
             {
                 throw new KeyNotFoundException();
             }
 
-            var skillConversationReference = activity.GetConversationReference();
+            var activityConversationReference = activity.GetConversationReference();
 
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
-                turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
+                turnContext.TurnState.Add(SkillConversationReferenceKey, activityConversationReference);
 
-                activity.ApplyConversationReference(conversationReference);
+                activity.ApplyConversationReference(skillConversationReference.ConversationReference);
 
                 turnContext.Activity.Id = replyToActivityId;
                 switch (activity.Type)
                 {
                     case ActivityTypes.EndOfConversation:
-                        await _conversationIdIdFactory.DeleteConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
+                        await _conversationIdFactory.DeleteConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
                         ApplyEoCToTurnContextActivity(turnContext, activity);
                         await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
                         break;
@@ -183,7 +201,7 @@ namespace Microsoft.Bot.Builder.Skills
                 }
             });
 
-            await _adapter.ContinueConversationAsync(claimsIdentity, conversationReference, callback, cancellationToken).ConfigureAwait(false);
+            await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
             return new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
         }
     }

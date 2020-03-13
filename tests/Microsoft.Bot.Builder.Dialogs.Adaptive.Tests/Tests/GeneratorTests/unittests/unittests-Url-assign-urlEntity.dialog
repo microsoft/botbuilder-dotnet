@@ -1,0 +1,18 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "Url",
+    "entity": "url",
+    "actions": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${setPropertyMessage('Url', @url)}"
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Url",
+            "value": "=@url"          
+        }
+    ]               
+}

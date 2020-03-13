@@ -4,31 +4,13 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.Bot.Expressions;
+using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.Number;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
-    /// <summary>
-    /// What format to output the number in.
-    /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum NumberOutputFormat
-    {
-        /// <summary>
-        /// Floating point.
-        /// </summary>
-        Float,
-
-        /// <summary>
-        /// Long.
-        /// </summary>
-        Integer
-    }
-
     public class NumberInput : InputDialog
     {
         [JsonProperty("$kind")]
@@ -40,14 +22,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         [JsonProperty("defaultLocale")]
-        public string DefaultLocale { get; set; } = null;
+        public StringExpression DefaultLocale { get; set; } = null;
 
         [JsonProperty("outputFormat")]
-        public string OutputFormat { get; set; }
+        public NumberExpression OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.GetState().GetValue<object>(VALUE_PROPERTY);
+            var dcState = dc.GetState();
+            var input = dcState.GetValue<object>(VALUE_PROPERTY);
 
             var culture = GetCulture(dc);
             var results = NumberRecognizer.RecognizeNumber(input.ToString(), culture);
@@ -56,13 +39,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 // Try to parse value based on type
                 var text = results[0].Resolution["value"].ToString();
 
-                if (float.TryParse(text, out var value))
+                if (int.TryParse(text, out var intValue))
                 {
-                    input = value;
+                    input = intValue;
                 }
                 else
                 {
-                    return Task.FromResult(InputState.Unrecognized);
+                    if (float.TryParse(text, out var value))
+                    {
+                        input = value;
+                    }
+                    else
+                    {
+                        return Task.FromResult(InputState.Unrecognized);
+                    }
                 }
             }
             else
@@ -70,22 +60,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Task.FromResult(InputState.Unrecognized);
             }
 
-            dc.GetState().SetValue(VALUE_PROPERTY, input);
+            dcState.SetValue(VALUE_PROPERTY, input);
 
-            if (!string.IsNullOrEmpty(OutputFormat))
+            if (OutputFormat != null)
             {
-                var outputExpression = new ExpressionEngine().Parse(OutputFormat);
-                var (outputValue, error) = outputExpression.TryEvaluate(dc.GetState());
+                var (outputValue, error) = this.OutputFormat.TryGetValue(dcState);
                 if (error == null)
                 {
-                    dc.GetState().SetValue(VALUE_PROPERTY, outputValue);
+                    dcState.SetValue(VALUE_PROPERTY, outputValue);
                 }
                 else
                 {
-                    throw new Exception($"In TextInput, OutputFormat Expression evaluation resulted in an error. Expression: {outputExpression.ToString()}. Error: {error}");
+                    throw new Exception($"In TextInput, OutputFormat Expression evaluation resulted in an error. Expression: {this.OutputFormat}. Error: {error}");
                 }
             }
-            
+
             return Task.FromResult(InputState.Valid);
         }
 
@@ -96,9 +85,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return dc.Context.Activity.Locale;
             }
 
-            if (!string.IsNullOrEmpty(this.DefaultLocale))
+            if (this.DefaultLocale != null)
             {
-                return this.DefaultLocale;
+                var dcState = dc.GetState();
+
+                return this.DefaultLocale.GetValue(dcState);
             }
 
             return English;

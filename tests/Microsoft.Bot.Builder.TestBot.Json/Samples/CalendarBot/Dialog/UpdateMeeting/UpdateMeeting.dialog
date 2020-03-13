@@ -26,7 +26,7 @@
                 {
                   "$kind": "Microsoft.SetProperty",
                   "property": "user.focusedMeeting",
-                  "value": "user.meetings[0]"
+                  "value": "=user.meetings[0]"
                 }
               ]
             },
@@ -37,7 +37,7 @@
                 {
                   "$kind": "Microsoft.SetProperty",
                   "property": "user.focusedMeeting",
-                  "value": "user.meetings[1]"
+                  "value": "=user.meetings[1]"
                 }
               ]
             },
@@ -48,7 +48,7 @@
                 {
                   "$kind": "Microsoft.SetProperty",
                   "property": "user.focusedMeeting",
-                  "value": "user.meetings[2]"
+                  "value": "=user.meetings[2]"
                 }
               ]
             }
@@ -81,12 +81,12 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.startDateTime",
-          "value": "formatDateTime(user.startDateTime[0].Value)"
+          "value": "=formatDateTime(user.startDateTime[0].Value)"
         },
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.endDateTime",
-          "value": "formatDateTime(user.endDateTime[0].Value)"
+          "value": "=formatDateTime(user.endDateTime[0].Value)"
         },
         {
           "$kind": "Microsoft.ConfirmInput",

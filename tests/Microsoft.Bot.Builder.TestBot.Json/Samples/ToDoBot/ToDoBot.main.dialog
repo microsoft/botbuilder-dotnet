@@ -7,38 +7,26 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-
-                "$kind": "Microsoft.IntentPattern",
                 "intent": "AddIntent",
-                "pattern": "(?i)(?:add|create) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?" 
+                "pattern": "(?i)(?:add|create) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?"
             },
             {
-
-                "$kind": "Microsoft.IntentPattern",
                 "intent": "ClearIntent",
-                "pattern": "(?i)(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)" 
+                "pattern": "(?i)(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)"
             },
             {
-
-                "$kind": "Microsoft.IntentPattern",
                 "intent": "DeleteIntent",
-                "pattern": "(?i)(?:delete|remove|clear) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?" 
+                "pattern": "(?i)(?:delete|remove|clear) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?"
             },
             {
-
-                "$kind": "Microsoft.IntentPattern",
                 "intent": "ShowIntent",
-                "pattern": "(?i)(?:show|see|view) .*(?:to-do|todo|task)" 
+                "pattern": "(?i)(?:show|see|view) .*(?:to-do|todo|task)"
             },
             {
-
-                "$kind": "Microsoft.IntentPattern",
                 "intent": "HelpIntent",
-                "pattern": "(?i)help" 
+                "pattern": "(?i)help"
             },
             {
-
-                "$kind": "Microsoft.IntentPattern",
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel|never mind"
             }
@@ -88,7 +76,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "@{help()}"
+                    "activity": "${help()}"
                 }
             ]
         },

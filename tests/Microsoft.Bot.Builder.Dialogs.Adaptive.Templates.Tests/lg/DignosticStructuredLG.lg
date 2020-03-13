@@ -11,16 +11,16 @@
 
 # ErrorMessage
 [Activity
- attachment = @{HerocardWithCardAction()}
+ attachment = ${HerocardWithCardAction()}
  suggestedaction = hello
- attachments = @{HerocardWithCardAction()} | @{ErrorStructuredType()}
+ attachments = ${HerocardWithCardAction()} | ${ErrorStructuredType()}
 ]
 
 # HerocardWithCardAction
 [herocard
     Title = title
     Text = text
-    Buttons = @{ErrorStructuredType()} | @{cardActionTemplate()}
+    Buttons = ${ErrorStructuredType()} | ${cardActionTemplate()}
     autoloop = notsure
 ]
 

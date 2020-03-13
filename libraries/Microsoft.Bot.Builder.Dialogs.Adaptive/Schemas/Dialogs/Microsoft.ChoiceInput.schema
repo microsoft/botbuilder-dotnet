@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "union(Microsoft.IDialog)",
+    "$role": "implements(Microsoft.IDialog)",
     "title": "Choice input dialog",
     "description": "Collect information - Pick from a list of choices",
     "type": "object",
@@ -11,6 +11,7 @@
         {
             "properties": {
                 "outputFormat": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
                         "value",
@@ -21,10 +22,8 @@
                     "default": "value"
                 },
                 "choices": {
-                    "anyOf": [
-                        {
-                            "$role": "expression"
-                        },
+                    "$role": "expression",
+                    "oneOf": [
                         {
                             "type": "array",
                             "items": [

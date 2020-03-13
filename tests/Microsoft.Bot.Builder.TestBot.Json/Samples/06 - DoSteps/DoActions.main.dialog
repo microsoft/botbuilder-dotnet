@@ -6,17 +6,17 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "JokeIntent",
                 "pattern": "(?i)joke"
             },
             {
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "FortuneTellerIntent",
                 "pattern": "(?i)fortune|future"
             },
             {
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel"
             }
@@ -39,7 +39,7 @@
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Hello @{user.name}, nice to talk to you!"
+                    "activity": "Hello ${user.name}, nice to talk to you!"
                 },
                 {
                     "$kind": "Microsoft.SendActivity",

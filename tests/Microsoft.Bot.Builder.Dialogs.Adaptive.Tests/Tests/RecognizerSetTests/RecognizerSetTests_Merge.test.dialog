@@ -1,0 +1,214 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RecognizerSet",
+            "recognizers": [
+                {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "id": "x",
+                    "intents": [
+                        {
+                            "intent": "codeIntent",
+                            "pattern": "(?<code>[a-z][0-9])"
+                        },
+                        {
+                            "intent": "sameIntent",
+                            "pattern": "same"
+                        }
+                    ],
+                    "entities": [
+                        { "$kind": "Microsoft.AgeEntityRecognizer" },
+                        { "$kind": "Microsoft.NumberEntityRecognizer" },
+                        { "$kind": "Microsoft.PercentageEntityRecognizer" },
+                        { "$kind": "Microsoft.PhoneNumberEntityRecognizer" },
+                        { "$kind": "Microsoft.TemperatureEntityRecognizer" }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "id": "y",
+                    "intents": [
+                        {
+                            "intent": "colorIntent",
+                            "pattern": "(?i)(color|colour)"
+                        },
+                        {
+                            "intent": "sameIntent",
+                            "pattern": "same"
+                        }
+                    ],
+                    "entities": [
+                        { "$kind": "Microsoft.UrlEntityRecognizer" },
+                        {
+
+                            "$kind": "Microsoft.RegexEntityRecognizer",
+                            "name": "color",
+                            "pattern": "(?i)(red|green|blue|purple|orange|violet|white|black)"
+                        },
+                        {
+
+                            "$kind": "Microsoft.RegexEntityRecognizer",
+                            "name": "backgroundColor",
+                            "pattern": "(?i)(back|background)"
+                        },
+                        {
+
+                            "$kind": "Microsoft.RegexEntityRecognizer",
+                            "name": "foregroundColor",
+                            "pattern": "(?i)(foreground|front) {color}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "codeIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${join(turn.recognized.entities.code, ',')}"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.intents) == 1"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.entities.code) == 2"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.entities.code) == count(turn.recognized.entities.$instance.code)"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ok"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "colorIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${join(turn.recognized.entities.color, ',')}"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.intents) == 1"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.entities.color) == 2"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.entities.color) == count(turn.recognized.entities.$instance.color)"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ok"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "sameIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.intents) == 1"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.entities.code == null"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.entities.$instance.code == null"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.entities.color == null"
+                    },
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "turn.recognized.entities.$instance.color == null"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ok"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "UnknownIntent:${turn.recognized.intent}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${join(turn.recognized.entities.age,',')}"
+                    }
+                ]
+            }
+        ]
+    },
+    "locale": "en-us",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "intent a1 b2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "a1,b2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ok"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "I would like color red and orange"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "red,orange"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ok"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "same"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ok"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "I am 14 years old"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "UnknownIntent:None",
+            "description": "Should have returned none intent"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "14 years old",
+            "description": "Should have returned age entity"
+        }
+    ]
+}

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -10,9 +11,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.TraceExtensions;
-using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -28,15 +28,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.HttpRequest";
 
-        private static readonly HttpClient Client = new HttpClient();
-
-        public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public HttpRequest(HttpMethod method, string url, Dictionary<string, StringExpression> headers = null, object body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Method = method;
             this.Url = url ?? throw new ArgumentNullException(nameof(url));
             this.Headers = headers;
-            this.Body = body;
+            this.Body = JToken.FromObject(body);
         }
 
         [JsonConstructor]
@@ -101,21 +99,69 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             DELETE
         }
 
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public BoolExpression Disabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the HttpMethod to use.
+        /// </summary>
+        /// <value>
+        /// HttpMethod.
+        /// </value>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("method")]
         public HttpMethod Method { get; set; }
 
+        /// <summary>
+        /// Gets or sets the content type for the body of the http operation.
+        /// </summary>
+        /// <value>Content type such as "application/json" or "test/plain".  Default is "application/json".</value>
+        [DefaultValue("application/json")]
+        [JsonProperty("contentType")]
+        public StringExpression ContentType { get; set; } = "application/json";
+
+        /// <summary>
+        /// Gets or sets the Url.
+        /// </summary>
+        /// <value>url.</value>
         [JsonProperty("url")]
-        public string Url { get; set; }
+        public StringExpression Url { get; set; }
 
+        /// <summary>
+        /// Gets or sets headers.
+        /// </summary>
+        /// <value>
+        /// Headers.
+        /// </value>
         [JsonProperty("headers")]
-        public Dictionary<string, string> Headers { get; set; }
+        public Dictionary<string, StringExpression> Headers { get; set; }
 
+        /// <summary>
+        /// Gets or sets body payload.
+        /// </summary>
+        /// <value>
+        /// Body payload.
+        /// </value>
         [JsonProperty("body")]
-        public JToken Body { get; set; }
+        public ValueExpression Body { get; set; }
 
+        /// <summary>
+        /// Gets or sets the ResponseType.
+        /// </summary>
+        /// <value>
+        /// The ResponseType.
+        /// </value>
         [JsonProperty("responseType")]
-        public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
+        public EnumExpression<ResponseTypes> ResponseType { get; set; } = ResponseTypes.Json;
 
         /// <summary>
         /// Gets or sets the property expression to store the HTTP response in. 
@@ -129,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The property expression to store the HTTP response in. 
         /// </value>
         [JsonProperty("resultProperty")]
-        public string ResultProperty { get; set; }
+        public StringExpression ResultProperty { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -138,19 +184,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
+            var dcState = dc.GetState();
+
+            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            {
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
+            var client = new HttpClient();
+
             // Single command running with a copy of the original data
-            Client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Clear();
 
             JToken instanceBody = null;
             if (this.Body != null)
             {
-                instanceBody = (JToken)this.Body.DeepClone();
+                var (body, err) = this.Body.TryGetValue(dcState);
+                if (err != null)
+                {
+                    throw new ArgumentException(err);
+                }
+
+                instanceBody = (JToken)JToken.FromObject(body).DeepClone();
             }
 
-            var instanceHeaders = Headers == null ? null : new Dictionary<string, string>(Headers);
-            var instanceUrl = this.Url;
+            var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dcState));
 
-            instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.GetState()).ConfigureAwait(false);
+            var (instanceUrl, instanceUrlError) = this.Url.TryGetValue(dcState);
+            if (instanceUrlError != null)
+            {
+                throw new ArgumentException(instanceUrlError);
+            }
 
             // Bind each string token to the data in state
             if (instanceBody != null)
@@ -163,9 +227,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 foreach (var unit in instanceHeaders)
                 {
-                    Client.DefaultRequestHeaders.Add(
-                        await new TextTemplate(unit.Key).BindToData(dc.Context, dc.GetState()),
-                        await new TextTemplate(unit.Value).BindToData(dc.Context, dc.GetState()));
+                    client.DefaultRequestHeaders.TryAddWithoutValidation(unit.Key, unit.Value);
                 }
             }
 
@@ -176,20 +238,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             traceInfo.request.url = instanceUrl;
 
             HttpResponseMessage response = null;
+            string contentType = ContentType?.GetValue(dcState) ?? "application/json";
 
             switch (this.Method)
             {
                 case HttpMethod.POST:
                     if (instanceBody == null)
                     {
-                        response = await Client.PostAsync(instanceUrl, null);
+                        response = await client.PostAsync(instanceUrl, null);
                     }
                     else
                     {
-                        var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await Client.PostAsync(instanceUrl, postContent);
+                        response = await client.PostAsync(instanceUrl, postContent);
                     }
 
                     break;
@@ -198,15 +261,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     if (instanceBody == null)
                     {
                         var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        response = await Client.SendAsync(request);
+                        response = await client.SendAsync(request);
                     }
                     else
                     {
                         var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await Client.SendAsync(request);
+                        response = await client.SendAsync(request);
                     }
 
                     break;
@@ -214,24 +277,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case HttpMethod.PUT:
                     if (instanceBody == null)
                     {
-                        response = await Client.PutAsync(instanceUrl, null);
+                        response = await client.PutAsync(instanceUrl, null);
                     }
                     else
                     {
-                        var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await Client.PutAsync(instanceUrl, putContent);
+                        response = await client.PutAsync(instanceUrl, putContent);
                     }
 
                     break;
 
                 case HttpMethod.DELETE:
-                    response = await Client.DeleteAsync(instanceUrl);
+                    response = await client.DeleteAsync(instanceUrl);
                     break;
 
                 case HttpMethod.GET:
-                    response = await Client.GetAsync(instanceUrl);
+                    response = await client.GetAsync(instanceUrl);
                     break;
             }
 
@@ -243,7 +306,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             object content = (object)await response.Content.ReadAsStringAsync();
 
-            switch (this.ResponseType)
+            switch (this.ResponseType.GetValue(dcState))
             {
                 case ResponseTypes.Activity:
                     var activity = JsonConvert.DeserializeObject<Activity>((string)content);
@@ -283,7 +346,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.ResultProperty != null)
             {
-                dc.GetState().SetValue(this.ResultProperty, requestResult);
+                dcState.SetValue(this.ResultProperty.GetValue(dcState), requestResult);
             }
 
             // return the actionResult as the result of this operation
@@ -292,11 +355,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{Method} {Url}]";
+            return $"{this.GetType().Name}[{Method} {Url?.ToString()}]";
         }
 
         private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
         {
+            var dcState = dc.GetState();
+
             switch (token.Type)
             {
                 case JTokenType.Object:
@@ -308,7 +373,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
 
                 case JTokenType.Array:
-                    foreach (var child in token.Children())
+                    // NOTE: ToList() is required because JToken.Replace will break the enumeration.
+                    foreach (var child in token.Children().ToList())
                     {
                         await ReplaceJTokenRecursively(dc, child);
                     }
@@ -324,18 +390,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     {
                         var text = token.ToString();
 
-                        // if it is a "{bindingpath}" then run through expression engine and treat as a value
-                        if (text.StartsWith("{") && text.EndsWith("}"))
+                        // if it is a "{bindingpath}" then run through expression parser and treat as a value
+                        var (result, error) = new ValueExpression(text).TryGetValue(dcState);
+                        if (error == null)
                         {
-                            text = text.Trim('{', '}');
-                            var (val, error) = new ExpressionEngine().Parse(text).TryEvaluate(dc.GetState());
-                            token.Replace(new JValue(val));
-                        }
-                        else
-                        {
-                            // use text template binding to bind in place to a string
-                            var temp = await new TextTemplate(text).BindToData(dc.Context, dc.GetState());
-                            token.Replace(new JValue(temp));
+                            token.Replace(JToken.FromObject(result));
                         }
                     }
 

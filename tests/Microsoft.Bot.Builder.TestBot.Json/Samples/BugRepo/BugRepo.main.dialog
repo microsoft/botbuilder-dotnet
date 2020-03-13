@@ -1,26 +1,25 @@
 {
     "$schema": "../../app.schema",
     "$kind": "Microsoft.AdaptiveDialog",
-    "$id": "root",
     "autoEndDialog": false,
     "recognizer": {
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "Test",
                 "pattern": "test" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "TextInput",
                 "pattern": "textinput" 
             },
             {
 
-                "$kind": "Microsoft.IntentPattern",
+                
                 "intent": "End",
                 "pattern": "end"
             }
@@ -47,7 +46,7 @@
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Hello @{dialog.name}, nice to meet you!"
+                    "activity": "Hello ${dialog.name}, nice to meet you!"
                 },
                 {
                     "$kind": "Microsoft.BeginDialog",
@@ -56,7 +55,7 @@
                 },
                 {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "Hello @{dialog.name}, nice to meet you!"
+                    "activity": "Hello ${dialog.name}, nice to meet you!"
                 }
             ]
         }

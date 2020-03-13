@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(originalActivity.From.Id, eventActivity.From.Id);
             Assert.AreEqual(originalActivity.From.Name, eventActivity.From.Name);
             Assert.AreEqual(ActivityTypes.Event, eventActivity.Type);
-            Assert.AreEqual("tokens/response", eventActivity.Name);
+            Assert.AreEqual(SignInConstants.TokenResponseEventName, eventActivity.Name);
 
             var tokenResponse = eventActivity.Value as TokenResponse;
             Assert.AreEqual("12345", tokenResponse.Token);
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(originalActivity.From.Id, eventActivity.From.Id);
             Assert.AreEqual(originalActivity.From.Name, eventActivity.From.Name);
             Assert.AreEqual(ActivityTypes.Event, eventActivity.Type);
-            Assert.AreEqual("tokens/response", eventActivity.Name);
+            Assert.AreEqual(SignInConstants.TokenResponseEventName, eventActivity.Name);
 
             var tokenResponse = eventActivity.Value as TokenResponse;
             Assert.AreEqual("1234", tokenResponse.Token);
@@ -342,7 +342,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             public new MockLogger Logger { get; private set; }
 
-            public override Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, string connectionName, string magicCode, CancellationToken cancellationToken)
+            public override Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, AppCredentials appCredentials, string connectionName, string magicCode, CancellationToken cancellationToken)
             {
                 return Task.FromResult(_getUserTokenAction());
             }

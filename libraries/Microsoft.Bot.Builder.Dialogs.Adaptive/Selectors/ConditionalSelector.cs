@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         private IReadOnlyList<OnCondition> _conditionals;
         private bool _evaluate;
-        private Expression condition;
 
         /// <summary>
         /// Gets or sets expression that determines which selector to use.
@@ -30,11 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// Expression that determines which selector to use.
         /// </value>
         [JsonProperty("condition")]
-        public string Condition
-        {
-            get { return condition?.ToString(); }
-            set { this.condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public BoolExpression Condition { get; set; }
 
         /// <summary>
         /// Gets or sets selector if <see cref="Condition"/> is true.
@@ -60,10 +55,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public async Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public async Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel = default)
         {
-            var (value, error) = condition.TryEvaluate(context.GetState());
-            var eval = error == null && (bool)value;
+            var dcState = context.GetState();
+            var (eval, _) = Condition.TryGetValue(dcState);
             ITriggerSelector selector;
             if (eval)
             {

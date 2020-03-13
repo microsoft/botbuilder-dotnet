@@ -1,0 +1,94 @@
+#
+# Runs functional tests against the Facebook channel.
+#
+
+# "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
+name: $(Build.BuildId)
+
+pool:
+  vmImage: 'windows-2019'
+
+trigger: # ci trigger
+  branches:
+    include:
+     - master
+  paths:
+    include:
+      - '*'
+    exclude:
+      - doc/
+      - specs/
+      - Changes.md
+      - LICENSE
+      - README.md
+      - UsingMyGet.md
+
+pr: none # no pr trigger
+
+variables:
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+  BuildPlatform: 'any cpu'
+  BuildConfiguration: 'debug'
+  Parameters.solution: Microsoft.Bot.Builder.sln
+#  FacebookTestBotAppId: define this in Azure
+#  FacebookTestBotAppSecret: define this in Azure
+#  AzureSubscription: define this in Azure
+#  DeleteResourceGroup: (optional) define this in Azure. Default = true.
+#  FacebookTestBotBotGroup: define this in Azure
+#  FacebookTestBotBotName: define this in Azure
+#  FacebookTestBotFacebookAccessToken: define this in Azure
+#  FacebookTestBotFacebookAppSecret: define this in Azure
+#  FacebookTestBotFacebookVerifyToken: define this in Azure
+#  FacebookTestBotSenderId: define this in Azure
+
+steps:
+- powershell: |
+   # Set values in appsettings.json file.
+   $file = "$(Build.SourcesDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\appsettings.json";
+   
+   $content = Get-Content -Raw $file | ConvertFrom-Json;
+   $content.FacebookVerifyToken = "$(FacebookTestBotFacebookVerifyToken)";
+   $content.FacebookAppSecret = "$(FacebookTestBotFaceBookAppSecret)";
+   $content.FacebookAccessToken = "$(FacebookTestBotFacebookAccessToken)";
+   $content | ConvertTo-Json | Set-Content $file;
+  displayName: 'Set values in appsettings.json file.'
+
+- template: ci-build-steps.yml
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish testbot'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.csproj'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot'
+    modifyOutputPath: false
+
+- task: AzureCLI@1
+  displayName: 'Deploy bot to Azure'
+  inputs:
+    azureSubscription: '$(AzureSubscription)'
+    scriptLocation: inlineScript
+    inlineScript: |
+     call az deployment create --name "$(FacebookTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId="$(AppId)" appSecret="$(FacebookTestBotAppSecret)" botId="$(FacebookTestBotBotName)" botSku=F0 newAppServicePlanName="$(FacebookTestBotBotName)" newWebAppName="$(FacebookTestBotBotName)" groupName="$(FacebookTestBotBotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" facebookVerifyToken="verifyToken" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)"
+     call az webapp deployment source config-zip --resource-group "$(FacebookTestBotBotGroup)" --name "$(FacebookTestBotBotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
+
+- powershell: |
+   echo '##vso[task.setvariable variable=BOT_ENDPOINT]https://$(FacebookTestBotBotName).azurewebsites.net/api/messages'
+  displayName: 'Set BOT_ENDPOINT environment variable'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: test
+    projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
+    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter FacebookChatTest'
+
+- task: AzureCLI@1
+  displayName: 'Delete Azure resources'
+  inputs:
+    azureSubscription: '$(AzureSubscription)'
+    scriptLocation: inlineScript
+    inlineScript: 'call az group delete -n "$(FacebookTestBotBotGroup)" --yes'
+  condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))

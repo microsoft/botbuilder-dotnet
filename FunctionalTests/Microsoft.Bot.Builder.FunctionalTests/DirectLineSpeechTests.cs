@@ -20,12 +20,8 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
 
-    // When the active Ignore tag is removed un-comment this one so these tests remain gated behind the FUNCTIONALTESTS flag.
-    //#if !FUNCTIONALTESTS
-    //    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
-    //#endif
+    [TestCategory("FunctionalTests")]
     [Ignore("DirectLine Speech tests require updates to the REST API and CLI to be able to properly provision a bot.")]
-
     public class DirectLineSpeechTests
     {
         private static readonly string SoundFileMessage = "Tell me a joke";
@@ -95,14 +91,14 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             speechBotSecret = Environment.GetEnvironmentVariable("SPEECHBOTSECRET");
             if (string.IsNullOrWhiteSpace(speechBotSecret))
             {
-                throw new Exception("Environment variable 'SPEECHBOTSECRET' not found.");
+                Assert.Inconclusive("Environment variable 'SPEECHBOTSECRET' not found.");
             }
 
             // The cog services key for use with DLS.
             speechSubscription = Environment.GetEnvironmentVariable("SPEECHSUBSCRIPTION");
             if (string.IsNullOrWhiteSpace(speechSubscription))
             {
-                throw new Exception("Environment variable 'SPEECHSUBSCRIPTION' not found.");
+                Assert.Inconclusive("Environment variable 'SPEECHSUBSCRIPTION' not found.");
             }
         }
 

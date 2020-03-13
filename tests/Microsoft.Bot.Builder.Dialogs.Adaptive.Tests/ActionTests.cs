@@ -2,16 +2,9 @@
 // Licensed under the MIT License.
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
-using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Schema;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -19,210 +12,285 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class ActionTests
     {
+        public static ResourceExplorer ResourceExplorer { get; set; }
+
         public TestContext TestContext { get; set; }
+
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(ActionTests)), monitorChanges: false);
+        }
+
+        [TestMethod]
+        public async Task Action_AttachmentInput()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
 
         [TestMethod]
         public async Task Action_BeginDialog()
         {
-            await TestUtils.RunTestScript("Action_BeginDialog.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_BeginDialogWithActivity()
         {
-            await TestUtils.RunTestScript("Action_BeginDialogWithActivity.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_BeginDialogWithoutActivity()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_CancelAllDialogs()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_ChoiceInput()
         {
-            await TestUtils.RunTestScript("Action_ChoiceInput.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_ChoiceInput_WithLocale()
         {
-            await TestUtils.RunTestScript("Action_ChoiceInput_WithLocale.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_ChoicesInMemory()
         {
-            await TestUtils.RunTestScript("Action_ChoicesInMemory.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_ChoiceStringInMemory()
         {
-            await TestUtils.RunTestScript("Action_ChoiceStringInMemory.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_ConfirmInput()
         {
-            await TestUtils.RunTestScript("Action_ConfirmInput.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_DatetimeInput()
         {
-            await TestUtils.RunTestScript("Action_DatetimeInput.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_DeleteActivity()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_DoActions()
         {
-            await TestUtils.RunTestScript("Action_DoActions.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_EditActionReplaceSequence()
         {
-            await TestUtils.RunTestScript("Action_EditActionReplaceSequence.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_EmitEvent()
         {
-            await TestUtils.RunTestScript("Action_EmitEvent.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_EndDialog()
         {
-            await TestUtils.RunTestScript("Action_EndDialog.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_Foreach()
         {
-            await TestUtils.RunTestScript("Action_Foreach.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_ForeachPage()
         {
-            await TestUtils.RunTestScript("Action_ForeachPage.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_ForeachPage_Empty()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_ForeachPage_Partial()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_GetActivityMembers()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_GetConversationMembers()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_IfCondition()
         {
-            await TestUtils.RunTestScript("Action_IfCondition.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_NumberInput()
         {
-            await TestUtils.RunTestScript("Action_NumberInput.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_NumberInputWithDefaultValue()
         {
-            await TestUtils.RunTestScript("Action_NumberInputWithDefaultValue.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_NumberInputWithVAlueExpression()
         {
-            await TestUtils.RunTestScript("Action_NumberInputWithVAlueExpression.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_RepeatDialog()
         {
-            await TestUtils.RunTestScript("Action_RepeatDialog.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_ReplaceDialog()
         {
-            await TestUtils.RunTestScript("Action_ReplaceDialog.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_SignOutUser()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_Switch()
         {
-            await TestUtils.RunTestScript("Action_Switch.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_Switch_Bool()
         {
-            await TestUtils.RunTestScript("Action_Switch_Bool.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_Switch_Default()
         {
-            await TestUtils.RunTestScript("Action_Switch_Default.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_Switch_Number()
         {
-            await TestUtils.RunTestScript("Action_Switch_Number.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_TextInput()
         {
-            await TestUtils.RunTestScript("Action_TextInput.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_TextInputWithInvalidPrompt()
         {
-            await TestUtils.RunTestScript("Action_TextInputWithInvalidPrompt.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_TextInputWithValueExpression()
         {
-            await TestUtils.RunTestScript("Action_TextInputWithValueExpression.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_TraceActivity()
         {
-            await TestUtils.RunTestScript("Action_TraceActivity.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_UpdateActivity()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_WaitForInput()
         {
-            await TestUtils.RunTestScript("Action_WaitForInput.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task InputDialog_ActivityProcessed()
         {
-            await TestUtils.RunTestScript("InputDialog_ActivityProcessed.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_SendActivity()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_SetProperty()
         {
-            await TestUtils.RunTestScript("Action_SetProperty.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_SetProperties()
         {
-            await TestUtils.RunTestScript("Action_SetProperties.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_DeleteProperty()
         {
-            await TestUtils.RunTestScript("Action_DeleteProperty.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
         public async Task Action_DeleteProperties()
         {
-            await TestUtils.RunTestScript("Action_DeleteProperties.test.dialog");
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
     }
 }

@@ -42,7 +42,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
         public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
@@ -109,7 +108,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
         public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
@@ -1586,7 +1584,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, conversationState)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(rootDialog);
 
@@ -1643,9 +1641,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var client = new HttpClient(mockHttp);
 
             var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
-            var host = "'https://dummy-hostname.azurewebsites.net/qnamaker'";
-            var knowlegeBaseId = "'dummy-id'";
-            var endpointKey = "'dummy-key'";
+            var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
+            var knowlegeBaseId = "dummy-id";
+            var endpointKey = "dummy-key";
             var activeLearningCardTitle = "QnAMaker Active Learning";
 
             var outerDialog = new AdaptiveDialog("outer")

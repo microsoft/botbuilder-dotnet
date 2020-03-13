@@ -1,0 +1,59 @@
+{
+    "$schema": "../../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "$counter",
+                        "value": 0
+                    },
+                    {
+                        "id": "target",
+                        "$kind": "Microsoft.IfCondition",
+                        "condition": "$counter > 2",
+                        "actions": [
+                            {
+                                "$type": "Microsoft.EndDialog"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${$counter}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "$counter",
+                        "value": "=$counter + 1"
+                    },
+                    {
+                        "$kind": "Microsoft.GotoAction",
+                        "actionId": "target"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "0"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "2"
+        }
+    ]
+}

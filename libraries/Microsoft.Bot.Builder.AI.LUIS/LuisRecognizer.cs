@@ -7,7 +7,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Configuration;
+using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -32,9 +34,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// The context label for a LUIS trace activity.
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
+
 #pragma warning disable CS0169 // Field is never used
         [Obsolete]
-        private readonly LuisApplication _application;     
+        private readonly LuisApplication _application;
         [Obsolete]
         private readonly LuisPredictionOptions _options;
         [Obsolete]
@@ -45,7 +48,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
         /// </summary>
-        /// <param name="application">The LUIS application to use to recognize text.</param>
         /// <param name="recognizerOptions"> The LUIS recognizer version options.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         public LuisRecognizer(LuisRecognizerOptions recognizerOptions, HttpClientHandler clientHandler = null)
@@ -74,9 +76,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         [Obsolete("Constructor is deprecated, please use LuisRecognizer(LuisRecognizerOptions recognizer).")]
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
-        #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
         : this(application, telemetryClient: null, logPersonalInformation: false, predictionOptions: predictionOptions, includeApiResults: includeApiResults, clientHandler: clientHandler)
-        #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
         {
         }
 
@@ -240,7 +242,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisPredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var overrideV2 = MergeDefaultOptionsWithProvidedOptionsV2(predictionOptions);
-            return await RecognizeInternalAsync(turnContext, overrideV2, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false); 
+            return await RecognizeInternalAsync(turnContext, overrideV2, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -431,7 +433,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <returns>LuisRecognizerOptions object.</returns>
         private static LuisRecognizerOptions BuildLuisRecognizerOptionsV2(LuisApplication application, LuisPredictionOptions options, bool includeAPIResults)
         {
-            if (options == null) 
+            if (options == null)
             {
                 return new LuisRecognizerOptionsV3(application)
                 {
@@ -442,11 +444,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var luisVersionOptions = new LuisRecognizerOptionsV2(application)
             {
                 PredictionOptions = options,
-                #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 TelemetryClient = options.TelemetryClient,
                 Timeout = options.Timeout,
                 LogPersonalInformation = options.LogPersonalInformation,
-                #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
                 IncludeAPIResults = includeAPIResults
             };
 
@@ -464,7 +466,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, LuisRecognizerOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
             var recognizer = predictionOptions ?? _luisRecognizerOptions;
-            var result = await recognizer.RecognizeInternalAsync(turnContext, DefaultHttpClient,  cancellationToken).ConfigureAwait(false);
+            var result = await recognizer.RecognizeInternalAsync(turnContext, DefaultHttpClient, cancellationToken).ConfigureAwait(false);
             await OnRecognizerResultAsync(result, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
             return result;
         }

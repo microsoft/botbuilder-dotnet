@@ -28,13 +28,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // Endpoint and Authkey for the CosmosDB Emulator running locally
         private const string CosmosServiceEndpoint = "https://localhost:8081";
         private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
-        private const string CosmosDatabaseName = "test-db";
+        private const string CosmosDatabaseName = "test-CosmosDbStorageTests";
         private const string CosmosCollectionName = "bot-storage";
         private const string DocumentId = "UtteranceLog-001";
 
-        private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
+        private const string NoEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
         private static readonly string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
-        private static Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
+        private static readonly Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
             if (File.Exists(_emulatorPath))
             {
@@ -450,8 +450,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (CheckEmulator())
             {
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
-                var changes = new Dictionary<string, object>();
-                changes.Add(DocumentId, itemToTest);
+                var changes = new Dictionary<string, object>
+                {
+                    { DocumentId, itemToTest }
+                };
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
@@ -469,14 +471,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
                 /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
                 /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
-                string partitionKeyPath = "document/city";
+                var partitionKeyPath = "document/city";
 
                 await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
 
                 // Connect to the comosDb created before with "Contoso" as partitionKey
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
-                var changes = new Dictionary<string, object>();
-                changes.Add(DocumentId, itemToTest);
+                var changes = new Dictionary<string, object>
+                {
+                    { DocumentId, itemToTest }
+                };
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
@@ -494,14 +498,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
                 /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
                 /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
-                string partitionKeyPath = "document/city";
+                var partitionKeyPath = "document/city";
 
                 await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
 
                 // Connect to the comosDb created before
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
-                var changes = new Dictionary<string, object>();
-                changes.Add(DocumentId, itemToTest);
+                var changes = new Dictionary<string, object>
+                {
+                    { DocumentId, itemToTest }
+                };
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
@@ -519,14 +525,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
                 /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
                 /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
-                string partitionKeyPath = "document/city";
+                var partitionKeyPath = "document/city";
 
                 await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
 
                 // Connect to the comosDb created before with "Contoso" as partitionKey
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
-                var changes = new Dictionary<string, object>();
-                changes.Add(DocumentId, itemToTest);
+                var changes = new Dictionary<string, object>
+                {
+                    { DocumentId, itemToTest }
+                };
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
@@ -544,14 +552,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
                 /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
                 /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
-                string partitionKeyPath = "document/city";
+                var partitionKeyPath = "document/city";
 
                 await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
 
                 // Connect to the comosDb created before without partitionKey
                 var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
-                var changes = new Dictionary<string, object>();
-                changes.Add(DocumentId, itemToTest);
+                var changes = new Dictionary<string, object>
+                {
+                    { DocumentId, itemToTest }
+                };
 
                 await storage.WriteAsync(changes, CancellationToken.None);
 
@@ -559,7 +569,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 // Should throw DocumentClientException: Cross partition query is required but disabled
                 await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
 #else // required by NETCOREAPP3_0 (have only tested NETCOREAPP2_1 and NETCOREAPP3_0)
-                bool badRequestExceptionThrown = false;
+                var badRequestExceptionThrown = false;
                 try
                 {
                     await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);
@@ -594,12 +604,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (!_hasEmulator.Value)
             {
-                Assert.Inconclusive(_noEmulatorMessage);
+                Assert.Inconclusive(NoEmulatorMessage);
             }
 
             if (Debugger.IsAttached)
             {
-                Assert.IsTrue(_hasEmulator.Value, _noEmulatorMessage);
+                Assert.IsTrue(_hasEmulator.Value, NoEmulatorMessage);
             }
 
             return _hasEmulator.Value;
@@ -607,14 +617,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         private static async Task CreateCosmosDbWithPartitionedCollection(string partitionKey)
         {
-            using (var client = new DocumentClient(new Uri(CosmosServiceEndpoint), CosmosAuthKey))
-            {
-                Database database = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = CosmosDatabaseName });
-                var partitionKeyDefinition = new PartitionKeyDefinition { Paths = new Collection<string> { $"/{partitionKey}" } };
-                var collectionDefinition = new DocumentCollection { Id = CosmosCollectionName, PartitionKey = partitionKeyDefinition };
+            using var client = new DocumentClient(new Uri(CosmosServiceEndpoint), CosmosAuthKey);
+            Database database = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = CosmosDatabaseName });
+            var partitionKeyDefinition = new PartitionKeyDefinition { Paths = new Collection<string> { $"/{partitionKey}" } };
+            var collectionDefinition = new DocumentCollection { Id = CosmosCollectionName, PartitionKey = partitionKeyDefinition };
 
-                await client.CreateDocumentCollectionIfNotExistsAsync(database.SelfLink, collectionDefinition);
-            }
+            await client.CreateDocumentCollectionIfNotExistsAsync(database.SelfLink, collectionDefinition);
         }
 
         private static CosmosDbStorageOptions CreateCosmosDbStorageOptions(string partitionKey = "")

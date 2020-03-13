@@ -1,0 +1,20 @@
+
+@ list CheeseEntity =
+	- american :
+		- american
+	- cheddar :
+		- cheddar
+	- feta :
+		- feta
+	- gouda :
+		- gouda
+	- pepper jack :
+		- pepper
+		- jack
+		- pepper jack
+	- provolone :
+		- provolone
+	- swiss :
+		- swiss
+	- none :
+		- none

@@ -1,7 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Expressions.Memory;
+using System;
+using AdaptiveExpressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -12,52 +13,78 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     internal class CustomizedMemory : IMemory
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomizedMemory"/> class.
+        /// </summary>
+        /// <param name="scope">scope.</param>
         public CustomizedMemory(object scope)
         {
             this.GlobalMemory = scope == null ? null : SimpleObjectMemory.Wrap(scope);
             this.LocalMemory = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomizedMemory"/> class.
+        /// </summary>
+        /// <param name="globalMemory">global memory.</param>
+        /// <param name="localMemory">local memory.</param>
         public CustomizedMemory(IMemory globalMemory, IMemory localMemory = null)
         {
             this.GlobalMemory = globalMemory;
             this.LocalMemory = localMemory;
         }
 
+        /// <summary>
+        /// Gets or sets global memory.
+        /// </summary>
+        /// <value>
+        /// Global memory.
+        /// </value>
         public IMemory GlobalMemory { get; set; }
 
+        /// <summary>
+        /// Gets or sets local memory.
+        /// </summary>
+        /// <value>
+        /// Local memory.
+        /// </value>
         public IMemory LocalMemory { get; set; }
 
-        public (object value, string error) GetValue(string path)
+        public void SetValue(string path, object value)
         {
-            object value = null;
-            var error = string.Empty;
+            throw new NotImplementedException();
+        }
 
+        /// <summary>
+        /// Try to get the value from a given path. Firstly, get result from global memory,
+        /// if global memory does not contain, get from local memory.
+        /// </summary>
+        /// <param name="path">memory path.</param>
+        /// <param name="value">resolved value.</param>
+        /// <returns> true if the memory contains an element with the specified key; otherwise, false.</returns>
+        public bool TryGetValue(string path, out object value)
+        {
+            value = null;
             if (this.LocalMemory != null)
             {
-                (value, error) = this.LocalMemory.GetValue(path);
-                if (error == null && value != null)
+                if (this.LocalMemory.TryGetValue(path, out var result))
                 {
-                    return (value, error);
+                    value = result;
+                    return true;
                 }
             }
 
             if (this.GlobalMemory != null)
             {
-                return this.GlobalMemory.GetValue(path);
+                this.GlobalMemory.TryGetValue(path, out var result);
+                value = result;
             }
 
-            return (value, error);
-        }
-
-        public (object value, string error) SetValue(string path, object value)
-        {
-            return (null, "LG memory are readonly");
+            return true;
         }
 
         public string Version()
         {
-            // Read-only
             return "0";
         }
     }

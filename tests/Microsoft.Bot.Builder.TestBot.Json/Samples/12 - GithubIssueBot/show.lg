@@ -1,9 +1,13 @@
 # Show
-- You have following issues : \n {join(foreach(dialog.getResponse.content, x, showSingleUrl(x)), '\n')}
+[Activity
+    Text = You have following issues :
+    Attachments = ${foreach(dialog.getResponse.content, x, json(showSingleUrl(x)))}
+    AttachmentLayout = carousel
+]
+
 
 # showSingleUrl(x)
 - ```
-[adaptivecard
 {
     "type": "AdaptiveCard",
     "body": [
@@ -14,7 +18,7 @@
                     "type": "TextBlock",
                     "size": "Medium",
                     "weight": "Bolder",
-                    "text": "@{replace(replace(x.title, '\"', "'"), '\\', '\\\\')}"
+                    "text": "${replace(replace(x.title, '\"', "'"), '\\', '\\\\')}"
                 },
                 {
                     "type": "ColumnSet",
@@ -25,7 +29,7 @@
                                 {
                                     "type": "Image",
                                     "style": "Person",
-                                    "url": "@{x.user.avatar_url}",
+                                    "url": "${x.user.avatar_url}",
                                     "size": "Small"
                                 }
                             ],
@@ -37,13 +41,13 @@
                                 {
                                     "type": "TextBlock",
                                     "weight": "Bolder",
-                                    "text": "@{x.user.login}",
+                                    "text": "${x.user.login}",
                                     "wrap": true
                                 },
                                 {
                                     "type": "TextBlock",
                                     "spacing": "None",
-                                    "text": "Created @{x.created_at}",
+                                    "text": "Created ${x.created_at}",
                                     "isSubtle": true,
                                     "wrap": true
                                 }
@@ -59,7 +63,7 @@
             "items": [
                 {
                     "type": "TextBlock",
-                    "text": "State: @{x.state}"
+                    "text": "State: ${x.state}"
                 }
             ]
         }
@@ -68,11 +72,10 @@
         {
             "type": "Action.OpenUrl",
             "title": "View on Github",
-            "url": "@{x.html_url}"
+            "url": "${x.html_url}"
         }
     ],
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
     "version": "1.0"
 }
-]
 ```

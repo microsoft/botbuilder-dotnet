@@ -1,0 +1,10 @@
+
+
+# AskTemperature
+- ${askString('Temperature')}
+
+
+# TemperatureName
+- temperature
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Missing.lg](unittests-library-Missing.lg)

@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="task">The exchange to add to the exchanges in the existing flow.</param>
         /// <param name="flow">The flow to build up from. This provides the test adapter to use,
-        /// the bot turn processing locig to test, and a set of exchanges to model and test.</param>
+        /// the bot turn processing logic to test, and a set of exchanges to model and test.</param>
         public TestFlow(Task task, TestFlow flow)
         {
             _testTask = task ?? Task.CompletedTask;
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="getTask">The exchange to add to the exchanges in the existing flow.</param>
         /// <param name="flow">The flow to build up from. This provides the test adapter to use,
-        /// the bot turn processing locig to test, and a set of exchanges to model and test.</param>
+        /// the bot turn processing logic to test, and a set of exchanges to model and test.</param>
         public TestFlow(Func<Task> getTask, TestFlow flow)
         {
             _testTask = getTask != null ? getTask() : Task.CompletedTask;
@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// Adds an assertion that the turn processing logic responds as expected.
         /// </summary>
         /// <param name="validateActivity">A validation method to apply to an activity from the bot.
-        /// This activity should throw an exception if validation wfails.</param>
+        /// This activity should throw an exception if validation fails.</param>
         /// <param name="description">A message to send if the actual response is not as expected.</param>
         /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
@@ -327,25 +327,43 @@ namespace Microsoft.Bot.Builder.Adapters
                         timeout = uint.MaxValue;
                     }
 
-                    var start = DateTime.UtcNow;
-                    while (true)
+                    CancellationTokenSource cts = new CancellationTokenSource();
+                    cts.CancelAfter((int)timeout);
+                    IActivity replyActivity = await _adapter.GetNextReplyAsync(cts.Token).ConfigureAwait(false);
+                    validateActivity(replyActivity);
+                    return;
+                },
+                this);
+        }
+
+        /// <summary>
+        /// Adds an assertion that the turn processing logic finishes responding as expected.
+        /// </summary>
+        /// <param name="description">A message to send if the turn still responds.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which no response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        public TestFlow AssertNoReply([CallerMemberName] string description = null, uint timeout = 3000)
+        {
+            return new TestFlow(
+                async () =>
+                {
+                    // NOTE: See details code in above method.
+                    await this._testTask.ConfigureAwait(false);
+
+                    try
                     {
-                        var current = DateTime.UtcNow;
-
-                        if ((current - start).TotalMilliseconds > timeout)
-                        {
-                            throw new TimeoutException($"{timeout}ms Timed out waiting for:'{description}'");
-                        }
-
-                        IActivity replyActivity = _adapter.GetNextReply();
+                        CancellationTokenSource cts = new CancellationTokenSource();
+                        cts.CancelAfter((int)timeout);
+                        IActivity replyActivity = await _adapter.GetNextReplyAsync(cts.Token).ConfigureAwait(false);
                         if (replyActivity != null)
                         {
                             // if we have a reply
-                            validateActivity(replyActivity);
-                            return;
+                            throw new Exception($"{replyActivity.ToString()} is repsonded when waiting for no reply:'{description}'");
                         }
-
-                        await Task.Delay(100).ConfigureAwait(false);
+                    }
+                    catch (TaskCanceledException)
+                    {
                     }
                 },
                 this);
