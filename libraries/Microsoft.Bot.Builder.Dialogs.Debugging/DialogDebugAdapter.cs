@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             Continue,
 
             /// <summary>
-            /// Signal to "Step" or to "Ccontinue".
+            /// Signal to "Step" or to "Continue".
             /// </summary>
             Next,
 
@@ -334,7 +334,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (phase == Phase.Continue)
             {
-                await SendAsync(Protocol.Event.From(NextSeq, "continue", new { threadId, allThreadsContinued = false }), cancellationToken).ConfigureAwait(false);
+                await SendAsync(Protocol.Event.From(NextSeq, "continued", new { threadId, allThreadsContinued = false }), cancellationToken).ConfigureAwait(false);
             }
             else
             {
