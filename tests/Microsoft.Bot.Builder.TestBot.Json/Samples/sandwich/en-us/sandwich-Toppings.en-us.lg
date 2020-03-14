@@ -1,0 +1,12 @@
+
+# AskToppings
+- ${askEnumArray('Toppings')}
+
+# ToppingsName
+- toppings
+
+# Toppings(values)
+- ${enumArrayValue('Toppings', values)}
+[sandwich-ToppingsEntity.lg](sandwich-ToppingsEntity.lg)
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-Missing.lg](sandwich-library-Missing.lg)

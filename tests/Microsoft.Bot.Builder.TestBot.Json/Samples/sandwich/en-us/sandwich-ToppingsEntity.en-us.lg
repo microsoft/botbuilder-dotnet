@@ -1,0 +1,29 @@
+
+
+# ToppingsEntity(value) 
+- SWITCH: ${value}
+
+  - CASE: ${'tomato'} 
+    - tomato
+  - CASE: ${'lettuce'} 
+    - lettuce
+  - CASE: ${'pickles'} 
+    - pickles
+  - CASE: ${'greenPeppers'} 
+    - green peppers
+  - CASE: ${'redPeppper'} 
+    - red peppper
+  - CASE: ${'whiteOnions'} 
+    - white onions
+  - CASE: ${'redOnions'} 
+    - red onions
+
+  - DEFAULT: 
+    - I don't understand ${value}
+
+
+
+# chooseToppingsEntity
+- ${chooseEnumArrayEntity('Toppings')}
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-Choose.lg](sandwich-library-Choose.lg)

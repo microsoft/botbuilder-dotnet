@@ -1,0 +1,12 @@
+
+# AskSauces
+- ${askEnumArray('Sauces')}
+
+# SaucesName
+- sauces
+
+# Sauces(values)
+- ${enumArrayValue('Sauces', values)}
+[sandwich-SaucesEntity.lg](sandwich-SaucesEntity.lg)
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-Missing.lg](sandwich-library-Missing.lg)

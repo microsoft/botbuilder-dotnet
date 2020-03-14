@@ -1,0 +1,18 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "Toppings",
+    "entity": "ToppingsEntity",
+    "actions": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${setPropertyMessage('Toppings', @ToppingsEntity)}"
+        },    
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Toppings",
+            "value": "=@ToppingsEntity"
+        }
+    ]
+}

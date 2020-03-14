@@ -14,6 +14,10 @@
   - meat,
  - CASE: ${'Cheese'} 
   - cheese,
+ - CASE: ${'Toppings'} 
+  - toppings,
+ - CASE: ${'Sauces'} 
+  - sauces,
  - CASE: ${'Price'} 
   - price
 

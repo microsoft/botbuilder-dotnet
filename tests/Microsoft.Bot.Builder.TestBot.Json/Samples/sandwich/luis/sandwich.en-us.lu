@@ -12,6 +12,8 @@
 [sandwich-BreadEntity.en-us.lu](../en-us/sandwich-BreadEntity.en-us.lu)
 [sandwich-MeatEntity.en-us.lu](../en-us/sandwich-MeatEntity.en-us.lu)
 [sandwich-CheeseEntity.en-us.lu](../en-us/sandwich-CheeseEntity.en-us.lu)
+[sandwich-ToppingsEntity.en-us.lu](../en-us/sandwich-ToppingsEntity.en-us.lu)
+[sandwich-SaucesEntity.en-us.lu](../en-us/sandwich-SaucesEntity.en-us.lu)
 [sandwich-library-HelpIntent.en-us.lu](../en-us/sandwich-library-HelpIntent.en-us.lu)
 [sandwich-library-CancelIntent.en-us.lu](../en-us/sandwich-library-CancelIntent.en-us.lu)
 [sandwich-library-NoneIntent.en-us.lu](../en-us/sandwich-library-NoneIntent.en-us.lu)

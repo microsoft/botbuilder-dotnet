@@ -5,4 +5,7 @@
 - {BreadEntity}
 - {MeatEntity}
 - {CheeseEntity}
+- {ToppingsEntity}
+- {SaucesEntity}
 - {money}
+- {PROPERTYName}

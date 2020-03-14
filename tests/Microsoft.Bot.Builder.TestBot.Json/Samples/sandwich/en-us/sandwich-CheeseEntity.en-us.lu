@@ -1,20 +1,128 @@
 
 @ list CheeseEntity =
-	- american :
+	- american:
 		- american
-	- cheddar :
+	- cheddar:
 		- cheddar
-	- feta :
+	- feta:
 		- feta
-	- gouda :
+	- gouda:
 		- gouda
-	- pepper jack :
+	- pepper jack:
 		- pepper
 		- jack
 		- pepper jack
-	- provolone :
+	- provolone:
 		- provolone
-	- swiss :
+	- swiss:
 		- swiss
-	- none :
+	- none:
 		- none
+
+@ list PROPERTYName
+    - Cheese:
+
+
+@composite AddToProperty = [CheeseEntity]
+@composite RemoveFromProperty = [CheeseEntity]
+@composite ClearProperty = [PROPERTYName]
+@composite ShowProperty = [PROPERTYName]
+# sandwich
+> Add only
+- add {@AddToProperty=pepper}
+- add {@AddToProperty=jack}
+- add {@AddToProperty=american}
+- add {@AddToProperty=american and american}
+- add {@AddToProperty=cheddar and cheddar}
+- add {@AddToProperty=pepper jack and pepper}
+- add {@AddToProperty=pepper jack, jack and jack}
+- add {@AddToProperty=gouda, pepper and gouda}
+- add {@AddToProperty=provolone, feta and pepper jack}
+> Remove only
+- remove {@RemoveFromProperty=feta}
+- remove {@RemoveFromProperty=gouda}
+- remove {@RemoveFromProperty=feta}
+- remove {@RemoveFromProperty=gouda and pepper jack}
+- remove {@RemoveFromProperty=provolone and gouda}
+- remove {@RemoveFromProperty=feta and american}
+- remove {@RemoveFromProperty=cheddar, pepper and feta}
+- remove {@RemoveFromProperty=provolone, jack and cheddar}
+- remove {@RemoveFromProperty=feta, gouda and swiss}
+- delete {@RemoveFromProperty=provolone}
+- delete {@RemoveFromProperty=gouda}
+- delete {@RemoveFromProperty=provolone}
+- delete {@RemoveFromProperty=american and cheddar}
+- delete {@RemoveFromProperty=swiss and provolone}
+- delete {@RemoveFromProperty=none and feta}
+- delete {@RemoveFromProperty=swiss, american and american}
+- delete {@RemoveFromProperty=jack, feta and feta}
+- delete {@RemoveFromProperty=provolone, feta and pepper jack}
+> Clear only
+- clear {@ClearProperty=Cheese}
+- clear {@ClearProperty=Cheese}
+- clear {@ClearProperty=Cheese}
+- remove {@ClearProperty=Cheese}
+- remove {@ClearProperty=Cheese}
+- remove {@ClearProperty=Cheese}
+- empty {@ClearProperty=Cheese}
+- empty {@ClearProperty=Cheese}
+- empty {@ClearProperty=Cheese}
+> Show only
+- value of {@ShowProperty=Cheese}
+- value of {@ShowProperty=Cheese}
+- value of {@ShowProperty=Cheese}
+- value for {@ShowProperty=Cheese}
+- value for {@ShowProperty=Cheese}
+- value for {@ShowProperty=Cheese}
+- selection of {@ShowProperty=Cheese}
+- selection of {@ShowProperty=Cheese}
+- selection of {@ShowProperty=Cheese}
+- selection for {@ShowProperty=Cheese}
+- selection for {@ShowProperty=Cheese}
+- selection for {@ShowProperty=Cheese}
+- display {@ShowProperty=Cheese}
+- display {@ShowProperty=Cheese}
+- display {@ShowProperty=Cheese}
+- show {@ShowProperty=Cheese}
+- show {@ShowProperty=Cheese}
+- show {@ShowProperty=Cheese}
+> Combinations
+- add {@AddToProperty=jack} and remove {@RemoveFromProperty=pepper}
+- add {@AddToProperty=cheddar} and remove {@RemoveFromProperty=pepper}
+- add {@AddToProperty=american} and remove {@RemoveFromProperty=provolone}
+- add {@AddToProperty=jack and american} and remove {@RemoveFromProperty=pepper jack}
+- add {@AddToProperty=jack and pepper jack} and remove {@RemoveFromProperty=pepper jack}
+- add {@AddToProperty=cheddar and feta} and remove {@RemoveFromProperty=pepper jack}
+- add {@AddToProperty=provolone, pepper jack and provolone} and remove {@RemoveFromProperty=pepper jack and pepper jack}
+- add {@AddToProperty=swiss, pepper jack and jack} and remove {@RemoveFromProperty=jack and jack}
+- add {@AddToProperty=pepper jack, pepper jack and american} and remove {@RemoveFromProperty=cheddar and jack}
+- add {@AddToProperty=cheddar}, remove {@RemoveFromProperty=none} and show {@ShowProperty=Cheese}
+- add {@AddToProperty=feta}, remove {@RemoveFromProperty=pepper jack} and show {@ShowProperty=Cheese}
+- add {@AddToProperty=cheddar}, remove {@RemoveFromProperty=none} and show {@ShowProperty=Cheese}
+- remove {@RemoveFromProperty=swiss} and add {@AddToProperty=feta}
+- remove {@RemoveFromProperty=cheddar} and add {@AddToProperty=pepper jack}
+- remove {@RemoveFromProperty=none} and add {@AddToProperty=cheddar}
+- remove {@RemoveFromProperty=cheddar and pepper} and add {@AddToProperty=jack}
+- remove {@RemoveFromProperty=jack and american} and add {@AddToProperty=gouda}
+- remove {@RemoveFromProperty=none and american} and add {@AddToProperty=gouda}
+- remove {@RemoveFromProperty=pepper, feta and american} and add {@AddToProperty=none and feta}
+- remove {@RemoveFromProperty=pepper jack, feta and swiss} and add {@AddToProperty=swiss and swiss}
+- remove {@RemoveFromProperty=pepper, gouda and cheddar} and add {@AddToProperty=gouda and provolone}
+- remove {@RemoveFromProperty=jack}, add {@AddToProperty=feta} and show {@ShowProperty=Cheese}
+- remove {@RemoveFromProperty=pepper jack}, add {@AddToProperty=provolone} and show {@ShowProperty=Cheese}
+- remove {@RemoveFromProperty=cheddar}, add {@AddToProperty=pepper} and show {@ShowProperty=Cheese}
+- display {@ShowProperty=Cheese} remove {@RemoveFromProperty=jack} and add {@AddToProperty=american}
+- display {@ShowProperty=Cheese} remove {@RemoveFromProperty=pepper} and add {@AddToProperty=none}
+- display {@ShowProperty=Cheese} remove {@RemoveFromProperty=pepper jack} and add {@AddToProperty=pepper}
+- show {@ShowProperty=Cheese} remove {@RemoveFromProperty=jack and jack} and add {@AddToProperty=american}
+- show {@ShowProperty=Cheese} remove {@RemoveFromProperty=pepper jack and pepper jack} and add {@AddToProperty=swiss}
+- show {@ShowProperty=Cheese} remove {@RemoveFromProperty=swiss and swiss} and add {@AddToProperty=provolone}
+- show {@ShowProperty=Cheese} remove {@RemoveFromProperty=none, provolone and cheddar} and add {@AddToProperty=none and provolone}
+- show {@ShowProperty=Cheese} remove {@RemoveFromProperty=feta, cheddar and pepper jack} and add {@AddToProperty=none and swiss}
+- show {@ShowProperty=Cheese} remove {@RemoveFromProperty=pepper jack, gouda and feta} and add {@AddToProperty=provolone and gouda}
+- display {@ShowProperty=Cheese} remove {@RemoveFromProperty=feta}, add {@AddToProperty=none} 
+- display {@ShowProperty=Cheese} remove {@RemoveFromProperty=feta}, add {@AddToProperty=swiss} 
+- display {@ShowProperty=Cheese} remove {@RemoveFromProperty=provolone}, add {@AddToProperty=none} 
+
+- Cheese
+
