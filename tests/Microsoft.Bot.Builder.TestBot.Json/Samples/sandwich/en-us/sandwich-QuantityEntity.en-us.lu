@@ -1,1 +1,6 @@
+
 @ ml QuantityEntity
+
+@ list PROPERTYName
+    - Quantity:
+

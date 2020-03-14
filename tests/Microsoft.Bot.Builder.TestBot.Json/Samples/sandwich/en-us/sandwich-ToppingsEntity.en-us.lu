@@ -1,0 +1,132 @@
+
+@ list ToppingsEntity =
+  - tomato :
+		- tomato
+  - lettuce :
+		- lettuce
+  - pickles :
+		- pickles
+  - greenPeppers :
+		- green
+		- peppers
+		- green peppers
+  - redPeppper :
+		- red
+		- peppper
+		- red peppper
+  - whiteOnions :
+		- white
+		- onions
+		- white onions
+  - redOnions :
+		- red
+		- onions
+		- red onions
+
+@ list PROPERTYName
+    - Toppings:
+
+
+@composite AddToProperty = [ToppingsEntity]
+@composite RemoveFromProperty = [ToppingsEntity]
+@composite ClearProperty = [PROPERTYName]
+@composite ShowProperty = [PROPERTYName]
+# sandwich
+> Add only
+- add {@AddToProperty=red onions}
+- add {@AddToProperty=onions}
+- add {@AddToProperty=onions}
+- add {@AddToProperty=onions and green peppers}
+- add {@AddToProperty=red and lettuce}
+- add {@AddToProperty=red and peppers}
+- add {@AddToProperty=red, onions and tomato}
+- add {@AddToProperty=onions, red onions and onions}
+- add {@AddToProperty=peppper, pickles and red}
+> Remove only
+- remove {@RemoveFromProperty=pickles}
+- remove {@RemoveFromProperty=onions}
+- remove {@RemoveFromProperty=red}
+- remove {@RemoveFromProperty=red peppper and white onions}
+- remove {@RemoveFromProperty=pickles and red peppper}
+- remove {@RemoveFromProperty=peppper and tomato}
+- remove {@RemoveFromProperty=red, white and red}
+- remove {@RemoveFromProperty=peppper, tomato and lettuce}
+- remove {@RemoveFromProperty=peppper, red peppper and red peppper}
+- delete {@RemoveFromProperty=red}
+- delete {@RemoveFromProperty=red peppper}
+- delete {@RemoveFromProperty=peppper}
+- delete {@RemoveFromProperty=green peppers and lettuce}
+- delete {@RemoveFromProperty=green and red}
+- delete {@RemoveFromProperty=peppers and red}
+- delete {@RemoveFromProperty=red peppper, green peppers and onions}
+- delete {@RemoveFromProperty=tomato, peppper and pickles}
+- delete {@RemoveFromProperty=pickles, pickles and white onions}
+> Clear only
+- clear {@ClearProperty=Toppings}
+- clear {@ClearProperty=Toppings}
+- clear {@ClearProperty=Toppings}
+- remove {@ClearProperty=Toppings}
+- remove {@ClearProperty=Toppings}
+- remove {@ClearProperty=Toppings}
+- empty {@ClearProperty=Toppings}
+- empty {@ClearProperty=Toppings}
+- empty {@ClearProperty=Toppings}
+> Show only
+- value of {@ShowProperty=Toppings}
+- value of {@ShowProperty=Toppings}
+- value of {@ShowProperty=Toppings}
+- value for {@ShowProperty=Toppings}
+- value for {@ShowProperty=Toppings}
+- value for {@ShowProperty=Toppings}
+- selection of {@ShowProperty=Toppings}
+- selection of {@ShowProperty=Toppings}
+- selection of {@ShowProperty=Toppings}
+- selection for {@ShowProperty=Toppings}
+- selection for {@ShowProperty=Toppings}
+- selection for {@ShowProperty=Toppings}
+- display {@ShowProperty=Toppings}
+- display {@ShowProperty=Toppings}
+- display {@ShowProperty=Toppings}
+- show {@ShowProperty=Toppings}
+- show {@ShowProperty=Toppings}
+- show {@ShowProperty=Toppings}
+> Combinations
+- add {@AddToProperty=onions} and remove {@RemoveFromProperty=peppers}
+- add {@AddToProperty=white onions} and remove {@RemoveFromProperty=red onions}
+- add {@AddToProperty=tomato} and remove {@RemoveFromProperty=red}
+- add {@AddToProperty=green peppers and tomato} and remove {@RemoveFromProperty=white onions}
+- add {@AddToProperty=tomato and white onions} and remove {@RemoveFromProperty=lettuce}
+- add {@AddToProperty=red and red} and remove {@RemoveFromProperty=white onions}
+- add {@AddToProperty=pickles, white onions and peppper} and remove {@RemoveFromProperty=white onions and white onions}
+- add {@AddToProperty=red peppper, white onions and onions} and remove {@RemoveFromProperty=onions and green peppers}
+- add {@AddToProperty=lettuce, lettuce and onions} and remove {@RemoveFromProperty=white onions and onions}
+- add {@AddToProperty=lettuce}, remove {@RemoveFromProperty=white} and show {@ShowProperty=Toppings}
+- add {@AddToProperty=peppper}, remove {@RemoveFromProperty=red} and show {@ShowProperty=Toppings}
+- add {@AddToProperty=lettuce}, remove {@RemoveFromProperty=peppers} and show {@ShowProperty=Toppings}
+- remove {@RemoveFromProperty=red peppper} and add {@AddToProperty=pickles}
+- remove {@RemoveFromProperty=red} and add {@AddToProperty=white onions}
+- remove {@RemoveFromProperty=peppers} and add {@AddToProperty=white onions}
+- remove {@RemoveFromProperty=red and peppers} and add {@AddToProperty=tomato}
+- remove {@RemoveFromProperty=green peppers and green peppers} and add {@AddToProperty=green}
+- remove {@RemoveFromProperty=red onions and tomato} and add {@AddToProperty=onions}
+- remove {@RemoveFromProperty=white, red and green peppers} and add {@AddToProperty=white and red}
+- remove {@RemoveFromProperty=red, peppper and onions} and add {@AddToProperty=onions and onions}
+- remove {@RemoveFromProperty=peppers, onions and white onions} and add {@AddToProperty=onions and pickles}
+- remove {@RemoveFromProperty=green peppers}, add {@AddToProperty=pickles} and show {@ShowProperty=Toppings}
+- remove {@RemoveFromProperty=white onions}, add {@AddToProperty=peppper} and show {@ShowProperty=Toppings}
+- remove {@RemoveFromProperty=white onions}, add {@AddToProperty=peppers} and show {@ShowProperty=Toppings}
+- display {@ShowProperty=Toppings} remove {@RemoveFromProperty=green peppers} and add {@AddToProperty=green peppers}
+- display {@ShowProperty=Toppings} remove {@RemoveFromProperty=white} and add {@AddToProperty=white}
+- display {@ShowProperty=Toppings} remove {@RemoveFromProperty=lettuce} and add {@AddToProperty=red onions}
+- show {@ShowProperty=Toppings} remove {@RemoveFromProperty=tomato and tomato} and add {@AddToProperty=onions}
+- show {@ShowProperty=Toppings} remove {@RemoveFromProperty=white onions and red} and add {@AddToProperty=onions}
+- show {@ShowProperty=Toppings} remove {@RemoveFromProperty=green and red peppper} and add {@AddToProperty=pickles}
+- show {@ShowProperty=Toppings} remove {@RemoveFromProperty=peppers, peppper and lettuce} and add {@AddToProperty=red onions and peppper}
+- show {@ShowProperty=Toppings} remove {@RemoveFromProperty=pickles, white onions and white onions} and add {@AddToProperty=peppers and onions}
+- show {@ShowProperty=Toppings} remove {@RemoveFromProperty=white onions, green and peppper} and add {@AddToProperty=red and red peppper}
+- display {@ShowProperty=Toppings} remove {@RemoveFromProperty=red}, add {@AddToProperty=peppers} 
+- display {@ShowProperty=Toppings} remove {@RemoveFromProperty=red}, add {@AddToProperty=onions} 
+- display {@ShowProperty=Toppings} remove {@RemoveFromProperty=peppper}, add {@AddToProperty=peppers} 
+
+- Toppings
+

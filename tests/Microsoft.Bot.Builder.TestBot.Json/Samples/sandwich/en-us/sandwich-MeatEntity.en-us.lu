@@ -1,22 +1,130 @@
 
 @ list MeatEntity =
-	- bacon :
+	- bacon:
 		- bacon
-	- chicken :
+	- chicken:
 		- chicken
-	- ham :
+	- ham:
 		- ham
-	- pulled pork :
+	- pulled pork:
 		- pulled
 		- pork
 		- pulled pork
-	- roast beef :
+	- roast beef:
 		- roast
 		- beef
 		- roast beef
-	- salami :
+	- salami:
 		- salami
-	- turkey :
+	- turkey:
 		- turkey
-	- none :
+	- none:
 		- none
+
+@ list PROPERTYName
+    - Meat:
+
+
+@composite AddToProperty = [MeatEntity]
+@composite RemoveFromProperty = [MeatEntity]
+@composite ClearProperty = [PROPERTYName]
+@composite ShowProperty = [PROPERTYName]
+# sandwich
+> Add only
+- add {@AddToProperty=roast beef}
+- add {@AddToProperty=beef}
+- add {@AddToProperty=turkey}
+- add {@AddToProperty=pork and ham}
+- add {@AddToProperty=salami and chicken}
+- add {@AddToProperty=bacon and turkey}
+- add {@AddToProperty=bacon, chicken and salami}
+- add {@AddToProperty=beef, ham and chicken}
+- add {@AddToProperty=beef, ham and roast}
+> Remove only
+- remove {@RemoveFromProperty=roast beef}
+- remove {@RemoveFromProperty=chicken}
+- remove {@RemoveFromProperty=bacon}
+- remove {@RemoveFromProperty=pulled pork and ham}
+- remove {@RemoveFromProperty=none and pulled pork}
+- remove {@RemoveFromProperty=turkey and bacon}
+- remove {@RemoveFromProperty=pulled, roast and roast}
+- remove {@RemoveFromProperty=chicken, pulled and chicken}
+- remove {@RemoveFromProperty=pork, pulled pork and roast beef}
+- delete {@RemoveFromProperty=pulled}
+- delete {@RemoveFromProperty=pulled pork}
+- delete {@RemoveFromProperty=beef}
+- delete {@RemoveFromProperty=roast beef and beef}
+- delete {@RemoveFromProperty=roast and salami}
+- delete {@RemoveFromProperty=beef and roast}
+- delete {@RemoveFromProperty=roast beef, ham and turkey}
+- delete {@RemoveFromProperty=salami, pork and ham}
+- delete {@RemoveFromProperty=none, ham and roast beef}
+> Clear only
+- clear {@ClearProperty=Meat}
+- clear {@ClearProperty=Meat}
+- clear {@ClearProperty=Meat}
+- remove {@ClearProperty=Meat}
+- remove {@ClearProperty=Meat}
+- remove {@ClearProperty=Meat}
+- empty {@ClearProperty=Meat}
+- empty {@ClearProperty=Meat}
+- empty {@ClearProperty=Meat}
+> Show only
+- value of {@ShowProperty=Meat}
+- value of {@ShowProperty=Meat}
+- value of {@ShowProperty=Meat}
+- value for {@ShowProperty=Meat}
+- value for {@ShowProperty=Meat}
+- value for {@ShowProperty=Meat}
+- selection of {@ShowProperty=Meat}
+- selection of {@ShowProperty=Meat}
+- selection of {@ShowProperty=Meat}
+- selection for {@ShowProperty=Meat}
+- selection for {@ShowProperty=Meat}
+- selection for {@ShowProperty=Meat}
+- display {@ShowProperty=Meat}
+- display {@ShowProperty=Meat}
+- display {@ShowProperty=Meat}
+- show {@ShowProperty=Meat}
+- show {@ShowProperty=Meat}
+- show {@ShowProperty=Meat}
+> Combinations
+- add {@AddToProperty=chicken} and remove {@RemoveFromProperty=turkey}
+- add {@AddToProperty=pulled pork} and remove {@RemoveFromProperty=roast beef}
+- add {@AddToProperty=roast} and remove {@RemoveFromProperty=salami}
+- add {@AddToProperty=none and bacon} and remove {@RemoveFromProperty=ham}
+- add {@AddToProperty=pulled and roast beef} and remove {@RemoveFromProperty=turkey}
+- add {@AddToProperty=pulled and roast} and remove {@RemoveFromProperty=ham}
+- add {@AddToProperty=pulled pork, roast beef and chicken} and remove {@RemoveFromProperty=roast beef and roast beef}
+- add {@AddToProperty=ham, roast beef and beef} and remove {@RemoveFromProperty=beef and pulled pork}
+- add {@AddToProperty=pork, turkey and turkey} and remove {@RemoveFromProperty=none and beef}
+- add {@AddToProperty=chicken}, remove {@RemoveFromProperty=salami} and show {@ShowProperty=Meat}
+- add {@AddToProperty=pork}, remove {@RemoveFromProperty=roast} and show {@ShowProperty=Meat}
+- add {@AddToProperty=beef}, remove {@RemoveFromProperty=chicken} and show {@ShowProperty=Meat}
+- remove {@RemoveFromProperty=ham} and add {@AddToProperty=roast beef}
+- remove {@RemoveFromProperty=pulled} and add {@AddToProperty=roast beef}
+- remove {@RemoveFromProperty=beef} and add {@AddToProperty=none}
+- remove {@RemoveFromProperty=salami and pork} and add {@AddToProperty=pulled}
+- remove {@RemoveFromProperty=pulled pork and ham} and add {@AddToProperty=salami}
+- remove {@RemoveFromProperty=none and roast} and add {@AddToProperty=chicken}
+- remove {@RemoveFromProperty=roast, bacon and roast beef} and add {@AddToProperty=pulled and roast}
+- remove {@RemoveFromProperty=roast, turkey and pork} and add {@AddToProperty=pork and turkey}
+- remove {@RemoveFromProperty=turkey, beef and none} and add {@AddToProperty=chicken and none}
+- remove {@RemoveFromProperty=none}, add {@AddToProperty=ham} and show {@ShowProperty=Meat}
+- remove {@RemoveFromProperty=roast beef}, add {@AddToProperty=chicken} and show {@ShowProperty=Meat}
+- remove {@RemoveFromProperty=pulled pork}, add {@AddToProperty=turkey} and show {@ShowProperty=Meat}
+- display {@ShowProperty=Meat} remove {@RemoveFromProperty=pulled pork} and add {@AddToProperty=roast beef}
+- display {@ShowProperty=Meat} remove {@RemoveFromProperty=roast} and add {@AddToProperty=salami}
+- display {@ShowProperty=Meat} remove {@RemoveFromProperty=pork} and add {@AddToProperty=ham}
+- show {@ShowProperty=Meat} remove {@RemoveFromProperty=pulled and pulled} and add {@AddToProperty=pork}
+- show {@ShowProperty=Meat} remove {@RemoveFromProperty=ham and roast} and add {@AddToProperty=turkey}
+- show {@ShowProperty=Meat} remove {@RemoveFromProperty=bacon and roast beef} and add {@AddToProperty=pulled pork}
+- show {@ShowProperty=Meat} remove {@RemoveFromProperty=beef, chicken and beef} and add {@AddToProperty=none and beef}
+- show {@ShowProperty=Meat} remove {@RemoveFromProperty=roast beef, none and ham} and add {@AddToProperty=beef and pork}
+- show {@ShowProperty=Meat} remove {@RemoveFromProperty=roast beef, pulled and turkey} and add {@AddToProperty=salami and none}
+- display {@ShowProperty=Meat} remove {@RemoveFromProperty=roast}, add {@AddToProperty=chicken} 
+- display {@ShowProperty=Meat} remove {@RemoveFromProperty=bacon}, add {@AddToProperty=pork} 
+- display {@ShowProperty=Meat} remove {@RemoveFromProperty=chicken}, add {@AddToProperty=chicken} 
+
+- Meat
+

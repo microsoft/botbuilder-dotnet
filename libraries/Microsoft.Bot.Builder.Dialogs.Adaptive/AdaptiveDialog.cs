@@ -1041,7 +1041,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var globalExpectedOnly = dialogSchema.Schema["$expectedOnly"]?.ToObject<List<string>>() ?? new List<string>();
             foreach (var propSchema in dialogSchema.Property.Children)
             {
-                var isExpected = expected.Contains(propSchema.Path);
+                var isExpected = expected.Contains(propSchema.Name);
                 var expectedOnly = propSchema.ExpectedOnly ?? globalExpectedOnly;
                 foreach (var entityName in propSchema.Entities)
                 {
@@ -1052,7 +1052,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             yield return new EntityAssignment
                             {
                                 Entity = entity,
-                                Property = propSchema.Path,
+                                Property = propSchema.Name,
 
                                 // TODO: Eventually we should be able to pick up an add/remove composite here as an alternative
                                 Operation = AssignEntityOperations.Add,
@@ -1119,7 +1119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var choices = propChoices.ToList();
 
                 // Assume preference by order listed in mappings
-                // Alternatives would be to look at coverage or other metrices
+                // Alternatives would be to look at coverage or other metrics
                 foreach (var entity in schema.Entities)
                 {
                     EntityAssignment candidate;

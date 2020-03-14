@@ -78,6 +78,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     if (items is JObject itemsSchema)
                     {
+                        // Copy parent $ properties like $entities
+                        foreach (JProperty prop in schema.Properties())
+                        {
+                            if (prop.Name.StartsWith("$"))
+                            {
+                                itemsSchema[prop.Name] = prop.Value;
+                            }
+                        }
+
                         schema = itemsSchema;
                         type = schema["type"].Value<string>();
                     }

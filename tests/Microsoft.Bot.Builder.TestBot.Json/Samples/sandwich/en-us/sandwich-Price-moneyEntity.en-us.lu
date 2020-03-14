@@ -1,1 +1,6 @@
+
 @ prebuilt money hasRole Price
+
+@ list PROPERTYName
+    - Price:
+
