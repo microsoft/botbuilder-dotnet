@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Newtonsoft.Json;
@@ -88,9 +89,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
+            EventHandler onEvent = (object sender, EventArgs e) =>
+            {
+                if (e is BeginTemplateEvaluationArgs be)
+                {
+                    Console.WriteLine($"Running into template {be.TemplateName} in {be.Id}");
+                    var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), $"{be.Id}#{be.TemplateName}", be.Type, new System.Threading.CancellationToken());
+                    task.Wait();
+                }
+            };
+
             try
             {
-                return await Task.FromResult(lg.EvaluateText(template, data).ToString());
+                return await Task.FromResult(lg.EvaluateText(template, data, onEvent).ToString());
             }
             catch (Exception err)
             {

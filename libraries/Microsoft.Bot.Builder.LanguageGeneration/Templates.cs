@@ -172,12 +172,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
+        /// <param name="onEvent">An event handler that handles the emited events in the evaluation processs.</param>
         /// <returns>Evaluate result.</returns>
-        public object Evaluate(string templateName, object scope = null)
+        public object Evaluate(string templateName, object scope = null, EventHandler onEvent = null)
         {
             CheckErrors();
 
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, StrictMode);
+            evaluator.OnEvent += onEvent;
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
@@ -187,7 +189,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="text">inline string which will be evaluated.</param>
         /// <param name="scope">scope object or JToken.</param>
         /// <returns>Evaluate result.</returns>
-        public object EvaluateText(string text, object scope = null)
+        public object EvaluateText(string text, object scope = null, EventHandler onEvent = null)
         {
             if (text == null)
             {
@@ -207,7 +209,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var newLG = TemplatesParser.ParseTextWithRef(newContent, this);
 
-            return newLG.Evaluate(fakeTemplateId, scope);
+            return newLG.Evaluate(fakeTemplateId, scope, onEvent);
         }
 
         /// <summary>

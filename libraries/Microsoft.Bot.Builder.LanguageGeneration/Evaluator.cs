@@ -68,6 +68,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public Dictionary<string, Template> TemplateMap { get; }
 
         /// <summary>
+        /// Gets or sets event handler.
+        /// </summary>
+        /// <value>
+        /// OnEvent.
+        /// </value>
+        public EventHandler OnEvent { get; set; }
+
+        /// <summary>
         /// Evaluate a template with given name and scope.
         /// </summary>
         /// <param name="inputTemplateName">template name.</param>
@@ -91,6 +99,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
+
+            OnEvent(TemplateMap[templateName], new BeginTemplateEvaluationArgs { Id = TemplateMap[templateName].Source, TemplateName = templateName });
 
             var templateTarget = new EvaluationTarget(templateName, scope);
 
