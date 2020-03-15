@@ -86,8 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         protected override ActionChangeList OnCreateChangeList(ActionContext actionContext, object dialogOptions = null)
         {
-            var dcState = actionContext.GetState();
-            var recognizerResult = dcState.GetValue<RecognizerResult>($"{TurnPath.DialogEvent}.value");
+            var recognizerResult = actionContext.State.GetValue<RecognizerResult>($"{TurnPath.DialogEvent}.value");
             if (recognizerResult != null)
             {
                 var (name, score) = recognizerResult.GetTopScoringIntent();

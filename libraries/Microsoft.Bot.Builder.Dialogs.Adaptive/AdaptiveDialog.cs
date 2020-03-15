@@ -146,32 +146,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             EnsureDependenciesInstalled();
 
-            var dcState = dc.GetState();
-
-            if (!dcState.ContainsKey(DialogPath.EventCounter))
+            if (!dc.State.ContainsKey(DialogPath.EventCounter))
             {
-                dcState.SetValue(DialogPath.EventCounter, 0u);
+                dc.State.SetValue(DialogPath.EventCounter, 0u);
             }
 
-            if (dialogSchema != null && !dcState.ContainsKey(DialogPath.RequiredProperties))
+            if (dialogSchema != null && !dc.State.ContainsKey(DialogPath.RequiredProperties))
             {
                 // RequiredProperties control what properties must be filled in.
                 // Initialize if not present from schema.
-                dcState.SetValue(DialogPath.RequiredProperties, dialogSchema.Required());
+                dc.State.SetValue(DialogPath.RequiredProperties, dialogSchema.Required());
             }
 
             if (needsTracker)
             {
-                if (!dcState.ContainsKey(ConditionTracker))
+                if (!dc.State.ContainsKey(ConditionTracker))
                 {
                     foreach (var trigger in Triggers)
                     {
                         if (trigger.RunOnce && trigger.Condition != null)
                         {
-                            var paths = dcState.TrackPaths(trigger.Condition.ToExpression().References());
+                            var paths = dc.State.TrackPaths(trigger.Condition.ToExpression().References());
                             var triggerPath = $"{ConditionTracker}.{trigger.Id}.";
-                            dcState.SetValue(triggerPath + "paths", paths);
-                            dcState.SetValue(triggerPath + "lastRun", 0u);
+                            dc.State.SetValue(triggerPath + "paths", paths);
+                            dc.State.SetValue(triggerPath + "lastRun", 0u);
                         }
                     }
                 }
@@ -318,12 +316,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         protected virtual async Task<bool> ProcessEventAsync(ActionContext actionContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var dcState = actionContext.GetState();
-
             // Save into turn
-            dcState.SetValue(TurnPath.DialogEvent, dialogEvent);
+            actionContext.State.SetValue(TurnPath.DialogEvent, dialogEvent);
 
-            var activity = dcState.GetValue<Activity>(TurnPath.Activity);
+            var activity = actionContext.State.GetValue<Activity>(TurnPath.Activity);
 
             // some dialogevents get promoted into turn state for general access outside of the dialogevent.
             // This allows events to be fired (in the case of ChooseIntent), or in interruption (Activity) 
@@ -335,12 +331,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         // we have received a RecognizedIntent event
                         // get the value and promote to turn.recognized, topintent,topscore and lastintent
-                        var recognizedResult = dcState.GetValue<RecognizerResult>($"{TurnPath.DialogEvent}.value");
+                        var recognizedResult = actionContext.State.GetValue<RecognizerResult>($"{TurnPath.DialogEvent}.value");
                         var (name, score) = recognizedResult.GetTopScoringIntent();
-                        dcState.SetValue(TurnPath.Recognized, recognizedResult);
-                        dcState.SetValue(TurnPath.TopIntent, name);
-                        dcState.SetValue(TurnPath.TopScore, score);
-                        dcState.SetValue(DialogPath.LastIntent, name);
+                        actionContext.State.SetValue(TurnPath.Recognized, recognizedResult);
+                        actionContext.State.SetValue(TurnPath.TopIntent, name);
+                        actionContext.State.SetValue(TurnPath.TopScore, score);
+                        actionContext.State.SetValue(DialogPath.LastIntent, name);
 
                         // process entities for ambiguity processing (We do this regardless of who handles the event)
                         ProcessEntities(actionContext, activity);
@@ -350,7 +346,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 case AdaptiveEvents.ActivityReceived:
                     {
                         // We received an ActivityReceived event, promote the activity into turn.activity
-                        dcState.SetValue(TurnPath.Activity, dialogEvent.Value);
+                        actionContext.State.SetValue(TurnPath.Activity, dialogEvent.Value);
                         activity = ObjectPath.GetPathValue<Activity>(dialogEvent, "Value");
                         break;
                     }
@@ -359,8 +355,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             EnsureDependenciesInstalled();
 
             // Count of events processed
-            var count = dcState.GetValue<uint>(DialogPath.EventCounter);
-            dcState.SetValue(DialogPath.EventCounter, ++count);
+            var count = actionContext.State.GetValue<uint>(DialogPath.EventCounter);
+            actionContext.State.SetValue(DialogPath.EventCounter, ++count);
 
             // Look for triggered evt
             var handled = await QueueFirstMatchAsync(actionContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
@@ -376,7 +372,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        if (dcState.GetBoolValue(TurnPath.ActivityProcessed) == false)
+                        if (actionContext.State.GetBoolValue(TurnPath.ActivityProcessed) == false)
                         {
                             // Emit leading ActivityReceived event
                             var activityReceivedEvent = new DialogEvent()
@@ -404,7 +400,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             await ProcessEventAsync(actionContext, dialogEvent: recognizeUtteranceEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                             // Emit leading RecognizedIntent event
-                            var recognized = dcState.GetValue<RecognizerResult>(TurnPath.Recognized);
+                            var recognized = actionContext.State.GetValue<RecognizerResult>(TurnPath.Recognized);
                             var recognizedIntentEvent = new DialogEvent
                             {
                                 Name = AdaptiveEvents.RecognizedIntent,
@@ -420,7 +416,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         //   process the users uterrance when its continued.
                         if (handled)
                         {
-                            dcState.SetValue(TurnPath.Interrupted, true);
+                            actionContext.State.SetValue(TurnPath.Interrupted, true);
                         }
 
                         break;
@@ -433,7 +429,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 var recognized = await OnRecognize(actionContext, activity, cancellationToken).ConfigureAwait(false);
 
                                 // TODO figure out way to not use turn state to pass this value back to caller.
-                                dcState.SetValue(TurnPath.Recognized, recognized);
+                                actionContext.State.SetValue(TurnPath.Recognized, recognized);
 
                                 if (Recognizer != null)
                                 {
@@ -452,7 +448,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (dialogEvent.Name)
                 {
                     case AdaptiveEvents.BeginDialog:
-                        if (dcState.GetBoolValue(TurnPath.ActivityProcessed) == false)
+                        if (actionContext.State.GetBoolValue(TurnPath.ActivityProcessed) == false)
                         {
                             var activityReceivedEvent = new DialogEvent
                             {
@@ -492,7 +488,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         //   process the users uterrance when its continued.
                         if (handled)
                         {
-                            dcState.SetValue(TurnPath.Interrupted, true);
+                            actionContext.State.SetValue(TurnPath.Interrupted, true);
                         }
 
                         break;
@@ -597,8 +593,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Is the current dialog still on the stack?
             if (actionContext.ActiveDialog != null)
             {
-                var dcState = actionContext.GetState();
-
                 // Completed actions so continue processing entity queues
                 var handled = await ProcessQueuesAsync(actionContext, cancellationToken).ConfigureAwait(false);
 
@@ -610,7 +604,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 else if (ShouldEnd(actionContext))
                 {
                     RestoreParentGenerator(actionContext.Context);
-                    dcState.TryGetValue<object>(DefaultResultProperty, out var result);
+                    actionContext.State.TryGetValue<object>(DefaultResultProperty, out var result);
                     return await actionContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
                 }
 
@@ -663,8 +657,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         // In order ClearProperties, AssignEntity, ChooseProperties, ChooseEntity, EndOfActions.
         private async Task<bool> ProcessQueuesAsync(ActionContext actionContext, CancellationToken cancellationToken)
         {
-            var dcState = actionContext.GetState();
-
             DialogEvent evt;
             var queues = EntityEvents.Read(actionContext);
             var changed = false;
@@ -687,7 +679,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     entity = new object[] { entity };
                 }
 
-                dcState.SetValue($"{TurnPath.Recognized}.entities.{val.Entity.Name}", entity);
+                actionContext.State.SetValue($"{TurnPath.Recognized}.entities.{val.Entity.Name}", entity);
                 changed = true;
             }
             else if (queues.ChooseProperties.Any())
@@ -708,7 +700,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 queues.Write(actionContext);
             }
 
-            dcState.SetValue(DialogPath.LastEvent, evt.Name);
+            actionContext.State.SetValue(DialogPath.LastEvent, evt.Name);
             var handled = await this.ProcessEventAsync(actionContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (!handled)
             {
@@ -865,36 +857,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         // Check to see if an entity is in response to a previous ambiguity event
         // Assign entities to possible properties
         // Merge new queues into existing queues of ambiguity events
-        private void ProcessEntities(ActionContext context, Activity activity)
+        private void ProcessEntities(ActionContext actionContext, Activity activity)
         {
-            var dcState = context.GetState();
-
             if (dialogSchema != null)
             {
-                if (dcState.TryGetValue<string>(DialogPath.LastEvent, out var lastEvent))
+                if (actionContext.State.TryGetValue<string>(DialogPath.LastEvent, out var lastEvent))
                 {
-                    dcState.RemoveValue(DialogPath.LastEvent);
+                    actionContext.State.RemoveValue(DialogPath.LastEvent);
                 }
 
-                var queues = EntityEvents.Read(context);
-                var entities = NormalizeEntities(context);
+                var queues = EntityEvents.Read(actionContext);
+                var entities = NormalizeEntities(actionContext);
                 var utterance = activity?.AsMessageActivity()?.Text;
-                if (!dcState.TryGetValue<string[]>(DialogPath.ExpectedProperties, out var expected))
+                if (!actionContext.State.TryGetValue<string[]>(DialogPath.ExpectedProperties, out var expected))
                 {
                     expected = new string[0];
                 }
 
                 // Utterance is a special entity that corresponds to the full utterance
                 entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
-                var recognized = AssignEntities(context, entities, expected, queues, lastEvent);
+                var recognized = AssignEntities(actionContext, entities, expected, queues, lastEvent);
                 var unrecognized = SplitUtterance(utterance, recognized);
 
                 // TODO: Is this actually useful information?
-                dcState.SetValue(TurnPath.UnrecognizedText, unrecognized);
-                dcState.SetValue(TurnPath.RecognizedEntities, recognized);
-                var turn = dcState.GetValue<uint>(DialogPath.EventCounter);
+                actionContext.State.SetValue(TurnPath.UnrecognizedText, unrecognized);
+                actionContext.State.SetValue(TurnPath.RecognizedEntities, recognized);
+                var turn = actionContext.State.GetValue<uint>(DialogPath.EventCounter);
                 CombineOldEntityToProperties(queues, turn);
-                queues.Write(context);
+                queues.Write(actionContext);
             }
         }
 
@@ -928,14 +918,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         // * Property: Which property should an entity go to?  Resolve by expected, then ask.
 
         // Combine entity values and $instance meta-data
-        private Dictionary<string, List<EntityInfo>> NormalizeEntities(ActionContext context)
+        private Dictionary<string, List<EntityInfo>> NormalizeEntities(ActionContext actionContext)
         {
-            var dcState = context.GetState();
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
-            var text = dcState.GetValue<string>(TurnPath.Recognized + ".text");
-            if (dcState.TryGetValue<dynamic>(TurnPath.Recognized + ".entities", out var entities))
+            var text = actionContext.State.GetValue<string>(TurnPath.Recognized + ".text");
+            if (actionContext.State.TryGetValue<dynamic>(TurnPath.Recognized + ".entities", out var entities))
             {
-                var turn = dcState.GetValue<uint>(DialogPath.EventCounter);
+                var turn = actionContext.State.GetValue<uint>(DialogPath.EventCounter);
                 var metaData = entities["$instance"];
                 foreach (var entry in entities)
                 {
@@ -1141,9 +1130,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        private List<EntityInfo> AddToQueues(ActionContext context, Dictionary<string, List<EntityInfo>> entities, string[] expected, EntityEvents queues, string lastEvent)
+        private List<EntityInfo> AddToQueues(ActionContext actionContext, Dictionary<string, List<EntityInfo>> entities, string[] expected, EntityEvents queues, string lastEvent)
         {
-            var dcState = context.GetState();
             var candidates = (from candidate in RemoveOverlappingPerProperty(Candidates(entities, expected))
                               orderby candidate.IsExpected descending
                               select candidate).ToList();
@@ -1206,7 +1194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (expectedChoices.Any())
             {
                 // When choosing between property assignments, make the assignments be expected.
-                dcState.SetValue(DialogPath.ExpectedProperties, expectedChoices);
+                actionContext.State.SetValue(DialogPath.ExpectedProperties, expectedChoices);
                 var choices = queues.ChooseProperties[0];
 
                 // Add back in any non-overlapping choices

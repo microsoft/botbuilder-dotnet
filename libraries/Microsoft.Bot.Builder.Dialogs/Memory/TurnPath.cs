@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Bot.Builder.Dialogs
+﻿using System;
+
+namespace Microsoft.Bot.Builder.Dialogs
 {
     public class TurnPath
     {
@@ -61,6 +63,31 @@
         /// This is a bool which if set means that the turncontext.activity has been consumed by some component in the system.
         /// </summary>
         public const string ActivityProcessed = "turn.activityProcessed";
+
+        [Obsolete]
+        public const string LASTRESULT = "turn.lastresult";
+        [Obsolete]
+        public const string ACTIVITY = "turn.activity";
+        [Obsolete]
+        public const string RECOGNIZED = "turn.recognized";
+        [Obsolete]
+        public const string TOPINTENT = "turn.recognized.intent";
+        [Obsolete]
+        public const string TOPSCORE = "turn.recognized.score";
+        [Obsolete]
+        public const string TEXT = "turn.recognized.text";
+        [Obsolete]
+        public const string UNRECOGNIZEDTEXT = "turn.unrecognizedText";
+        [Obsolete]
+        public const string RECOGNIZEDENTITIES = "turn.recognizedEntities";
+        [Obsolete]
+        public const string INTERRUPTED = "turn.interrupted";
+        [Obsolete]
+        public const string DIALOGEVENT = "turn.dialogEvent";
+        [Obsolete]
+        public const string REPEATEDIDS = "turn.repeatedIds";
+        [Obsolete]
+        public const string ACTIVITYPROCESSED = "turn.activityProcessed";
 
         /// <summary>
         /// Utility function to get just the property name without the memory scope prefix.

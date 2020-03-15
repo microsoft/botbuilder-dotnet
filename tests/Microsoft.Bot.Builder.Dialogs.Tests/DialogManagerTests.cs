@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
             {
-                if (outerDc.GetState().TryGetValue<string>(this.Property, out string result))
+                if (outerDc.State.TryGetValue<string>(this.Property, out string result))
                 {
                     await outerDc.Context.SendActivityAsync($"Hello {result.ToString()}, nice to meet you!");
                     return await outerDc.EndDialogAsync(result);
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
             {
-                outerDc.GetState().SetValue(this.Property, result);
+                outerDc.State.SetValue(this.Property, result);
                 await outerDc.Context.SendActivityAsync($"Hello {result.ToString()}, nice to meet you!");
                 return await outerDc.EndDialogAsync(result);
             }

@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 var dialog = dc.FindDialog(dc.ActiveDialog.Id);
                 if (dialog != null)
                 {
-                    return new ExpressionPropertyBinder(dc, dialog);
+                    return new ReadOnlyObject(dialog);
                 }
             }
 

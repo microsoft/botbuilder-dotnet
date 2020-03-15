@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions.Memory;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Newtonsoft.Json.Linq;
 
@@ -19,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
     /// MemoryScopes are named root level objects, which can exist either in the dialogcontext or off of turn state
     /// PathResolvers allow for shortcut behavior for mapping things like $foo -> dialog.foo.
     /// </summary>
-    public class DialogStateManager : IDictionary<string, object>, IMemory
+    public class DialogStateManager : IDictionary<string, object>
     {
         /// <summary>
         /// Information for tracking when path was last modified.
@@ -109,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// Version help caller to identify the updates and decide cache or not.
         /// </summary>
         /// <returns>Current version.</returns>
-        string IMemory.Version()
+        public string Version()
         {
             return version.ToString();
         }

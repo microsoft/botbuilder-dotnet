@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Bot.Builder.Dialogs
+﻿using System;
+
+namespace Microsoft.Bot.Builder.Dialogs
 {
     public class ScopePath
     {
@@ -41,5 +43,22 @@
         /// Turn memory scope root path.
         /// </summary>
         public const string Turn = "turn";
+
+        [Obsolete]
+        public const string USER = "user";
+        [Obsolete]
+        public const string CONVERSATION = "conversation";
+        [Obsolete]
+        public const string DIALOG = "dialog";
+        [Obsolete]
+        public const string DIALOGCLASS = "dialogclass";
+        [Obsolete]
+        public const string THIS = "this";
+        [Obsolete]
+        public const string CLASS = "class";
+        [Obsolete]
+        public const string SETTINGS = "settings";
+        [Obsolete]
+        public const string TURN = "turn";
     }
 }

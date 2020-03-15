@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Memory;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -30,6 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
+            State = new DialogStateManager(this);
 
             ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.Activity, Context.Activity);
         }
@@ -125,6 +127,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return null;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the DialogStateManager which manages view of all memory scopes.
+        /// </summary>
+        /// <value>
+        /// DialogStateManager with unified memory view of all memory scopes.
+        /// </value>
+        public DialogStateManager State { get; set; }
 
         /// <summary>
         /// Starts a new dialog and pushes it onto the dialog stack.
