@@ -347,8 +347,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var signInResource = await adapter.GetSignInResourceAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, turnContext.Activity.From.Id, null, cancellationToken).ConfigureAwait(false);
                 var value = signInResource.SignInLink;
 
+                // use the SignInLink when 
+                //   in speech channel or
+                //   bot is a skill or
+                //   an extra OAuthAppCredentials is being passed in
                 if (turnContext.Activity.IsFromStreamingConnection() ||
-                    (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims)))
+                    (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims)) ||
+                    _settings.OAuthAppCredentials != null)
                 {
                     if (turnContext.Activity.ChannelId == Channels.Emulator)
                     {
