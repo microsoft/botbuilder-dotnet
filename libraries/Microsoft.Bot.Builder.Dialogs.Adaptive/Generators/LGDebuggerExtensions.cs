@@ -10,7 +10,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             foreach (var t in templates)
             {
-                var key = templates.Id + "#" + t.Name;
+                // current debugger protocol check reference to match breakpoints, so here we are using object as key
+                var key = t; 
                 var startLine = t.ParseTree.Start.Line;
                 var startChar = t.ParseTree.Start.Column;
                 var endLine = t.ParseTree.Stop.Line;

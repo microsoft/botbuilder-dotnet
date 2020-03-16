@@ -91,10 +91,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             EventHandler onEvent = (object sender, EventArgs e) =>
             {
-                if (e is BeginTemplateEvaluationArgs be)
+                if (e is BeginTemplateEvaluationArgs be && be.Source != "inline content")
                 {
                     Console.WriteLine($"Running into template {be.TemplateName} in {be.Source}");
-                    var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), $"{be.Source}#{be.TemplateName}", be.Type, new System.Threading.CancellationToken());
+                    var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, be.Type, new System.Threading.CancellationToken());
                     task.Wait();
                 }
             };
