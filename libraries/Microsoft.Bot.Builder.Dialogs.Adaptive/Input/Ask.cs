@@ -48,6 +48,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("expectedProperties")]
         public ArrayExpression<string> ExpectedProperties { get; set; }
 
+        /// <summary>
+        /// Gets or sets the expected operation to assign entity to property.
+        /// </summary>
+        /// <value>Expected operation to assign entity to property.</value>
+        [JsonProperty("expectedOperation")]
+        public StringExpression ExpectedOperation { get; set; }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             var dcState = dc.GetState();

@@ -928,6 +928,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         // * Property: Which property should an entity go to?  Resolve by expected, then ask.
 
         // Combine entity values and $instance meta-data
+
         private Dictionary<string, List<EntityInfo>> NormalizeEntities(ActionContext context)
         {
             var dcState = context.GetState();
@@ -936,51 +937,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (dcState.TryGetValue<dynamic>(TurnPath.RECOGNIZED + ".entities", out var entities))
             {
                 var turn = dcState.GetValue<uint>(DialogPath.EventCounter);
+                var operations = dialogSchema.Schema["$operations"]?.ToObject<List<string>>() ?? new List<string>();
+                var defaultOp = dcState.GetValue<string>(DialogPath.ExpectedOperation) ?? dialogSchema.Schema["$defaultOperation"]?.ToObject<string>() ?? string.Empty;
                 var metaData = entities["$instance"];
                 foreach (var entry in entities)
                 {
-                    // TODO: If entity is in $operations go down one level and apply operation
-                    // If there is no $operation, then use dialog.expectedOperation if present.  (Which should be added to ask schema)
-                    // otherwise, just have an empty operation.  
-                    // Maybe operation and entity is enough if no property can be mapped?
-                    // What if they say "what do you want to change?" ep: PropertyToChange
                     // Should also use order of operations to define order in assign queue--this provides a simple way of usually getting the right result.
                     var name = entry.Name;
-                    if (!name.StartsWith("$"))
+                    var op = defaultOp;
+                    if (operations.Contains(name))
                     {
-                        var values = entry.Value;
-                        var instances = metaData?[name];
-                        for (var i = 0; i < values.Count; ++i)
+                        op = name;
+                        for (var i = 0; i < entry.Value.Count; ++i)
                         {
-                            var val = values[i];
-                            var instance = instances?[i];
-                            if (!entityToInfo.TryGetValue(name, out List<EntityInfo> infos))
+                            var composite = entry.Value[i];
+                            var childInstance = composite["$instance"];
+                            foreach (var child in composite)
                             {
-                                infos = new List<EntityInfo>();
-                                entityToInfo[name] = infos;
+                                ExpandEntity(child, childInstance, op, turn, text, entityToInfo);
                             }
-
-                            var info = new EntityInfo
-                            {
-                                WhenRecognized = turn,
-                                Name = name,
-                                Value = val
-                            };
-                            if (instance != null)
-                            {
-                                info.Start = (int)instance.startIndex;
-                                info.End = (int)instance.endIndex;
-                                info.Text = (string)(instance.text ?? string.Empty);
-                                info.Type = (string)(instance.type ?? null);
-                                info.Role = (string)(instance.role ?? null);
-                                info.Score = (double)(instance.score ?? 0.0d);
-                            }
-
-                            // Eventually this could be passed in
-                            info.Priority = info.Role == null ? 1 : 0;
-                            info.Coverage = (info.End - info.Start) / (double)text.Length;
-                            infos.Add(info);
                         }
+                    }
+                    else
+                    {
+                        ExpandEntity(entry, metaData, op, turn, text, entityToInfo);
                     }
                 }
             }
@@ -1035,6 +1015,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return entityToInfo;
         }
 
+        private void ExpandEntity(dynamic entry, dynamic metaData, string op, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
+        {
+            var name = entry.Name;
+            if (!name.StartsWith("$"))
+            {
+                var values = entry.Value;
+                var instances = metaData?[name];
+                for (var i = 0; i < values.Count; ++i)
+                {
+                    var val = values[i];
+                    var instance = instances?[i];
+                    if (!entityToInfo.TryGetValue(name, out List<EntityInfo> infos))
+                    {
+                        infos = new List<EntityInfo>();
+                        entityToInfo[name] = infos;
+                    }
+
+                    var info = new EntityInfo
+                    {
+                        WhenRecognized = turn,
+                        Name = name,
+                        Value = val,
+                        Operation = op
+                    };
+                    if (instance != null)
+                    {
+                        info.Start = (int)instance.startIndex;
+                        info.End = (int)instance.endIndex;
+                        info.Text = (string)(instance.text ?? string.Empty);
+                        info.Type = (string)(instance.type ?? null);
+                        info.Role = (string)(instance.role ?? null);
+                        info.Score = (double)(instance.score ?? 0.0d);
+                    }
+
+                    // Eventually this could be passed in
+                    info.Priority = info.Role == null ? 1 : 0;
+                    info.Coverage = (info.End - info.Start) / (double)text.Length;
+                    infos.Add(info);
+                }
+            }
+        }
+
         // Generate possible entity to property mappings
         private IEnumerable<EntityAssignment> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
@@ -1053,9 +1075,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 Entity = entity,
                                 Property = propSchema.Name,
-
-                                // TODO: Eventually we should be able to pick up an add/remove composite here as an alternative
-                                Operation = AssignEntityOperations.Add,
+                                Operation = entity.Operation,
                                 IsExpected = isExpected
                             };
                         }
@@ -1281,7 +1301,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (!property.IsArray && propertyQueues.AssignEntities.Count() + propertyQueues.ChooseEntities.Count() > 1)
                 {
                     // Singleton with multiple operations
-                    var mappings = from mapping in propertyQueues.AssignEntities.Union(propertyQueues.ChooseEntities) where mapping.Operation != AssignEntityOperations.Remove select mapping;
+                    var mappings = propertyQueues.AssignEntities.Union(propertyQueues.ChooseEntities);
                     switch (mappings.Count())
                     {
                         case 0:
