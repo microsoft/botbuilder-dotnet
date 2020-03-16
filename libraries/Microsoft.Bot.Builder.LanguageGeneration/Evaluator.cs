@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
-            OnEvent(TemplateMap[templateName], new BeginTemplateEvaluationArgs { Id = TemplateMap[templateName].Source, TemplateName = templateName });
+            OnEvent(TemplateMap[templateName], new BeginTemplateEvaluationArgs { Source = TemplateMap[templateName].Source, TemplateName = templateName });
 
             var templateTarget = new EvaluationTarget(templateName, scope);
 

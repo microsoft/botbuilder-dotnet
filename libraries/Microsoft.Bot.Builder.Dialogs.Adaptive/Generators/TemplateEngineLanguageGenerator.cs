@@ -93,8 +93,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 if (e is BeginTemplateEvaluationArgs be)
                 {
-                    Console.WriteLine($"Running into template {be.TemplateName} in {be.Id}");
-                    var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), $"{be.Id}#{be.TemplateName}", be.Type, new System.Threading.CancellationToken());
+                    Console.WriteLine($"Running into template {be.TemplateName} in {be.Source}");
+                    var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), $"{be.Source}#{be.TemplateName}", be.Type, new System.Threading.CancellationToken());
                     task.Wait();
                 }
             };
