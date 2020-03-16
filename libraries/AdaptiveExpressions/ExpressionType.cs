@@ -105,7 +105,6 @@ namespace AdaptiveExpressions
         public const string Int = "int";
         public const string String = "string";
         public const string Bool = "bool";
-        public const string Array = "array";
         public const string Binary = "binary";
         public const string Base64 = "base64";
         public const string Base64ToBinary = "base64ToBinary";
@@ -150,8 +149,17 @@ namespace AdaptiveExpressions
         // Regular expression
         public const string IsMatch = "isMatch";
 
+        //Type Checking
+        public const string IsInteger = "isInteger";
+        public const string IsFloat = "isFloat";
+        public const string IsString = "isString";
+        public const string IsArray = "isArray";
+        public const string IsObject = "isObject";
+        public const string IsBoolean = "isBoolean";
+        public const string IsDateTime = "isDateTime";
+
         // trigger tree 
-        
+
         /// <summary>
         /// Mark a sub-expression as optional.
         /// </summary>

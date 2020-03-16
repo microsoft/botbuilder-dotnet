@@ -786,6 +786,11 @@ namespace AdaptiveExpressions.Tests
             Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
             #endregion
 
+            #region type checking
+            Test("isString('abc')", true),
+            Test("isString(123)", false), 
+            #endregion
+
             #region Empty expression
             Test(string.Empty, string.Empty),
             Test(string.Empty, string.Empty),
