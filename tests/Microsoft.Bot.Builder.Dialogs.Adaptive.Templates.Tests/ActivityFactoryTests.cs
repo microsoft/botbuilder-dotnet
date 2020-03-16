@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var lgResult = GetNormalStructureLGFile().Evaluate("notSupport");
             var activity = ActivityFactory.FromObject(lgResult);
             Assert.AreEqual(0, activity.Attachments.Count);
-            Assert.AreEqual("{\"lgType\":\"Acti\",\"key\":\"value\"}", activity.Text.Replace("\r\n", string.Empty).Replace(" ", string.Empty));
+            Assert.AreEqual("{\"lgType\":\"Acti\",\"key\":\"value\"}", activity.Text.Replace("\r\n", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty));
         }
 
         [TestMethod]
