@@ -260,11 +260,22 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            #region accessor and element
+            Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
+            Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
+            Test("`\\${a}`", "${a}"), // `\${a}` -> ${a}
+            Test("\"ab\\\"cd\"", "ab\"cd"), // "ab\"cd" -> ab"cd
+            Test("\"ab`cd\"", "ab`cd"), // "ab`cd" -> ab1cd
+            Test("\"ab\\ncd\"", "ab\ncd"),  // "ab\ncd" -> ab [newline] cd
+            Test("\"ab\\ycd\"", "ab\\ycd"), //"ab\ycd" -> ab\ycd
+            Test("'ab\\'cd'", "ab'cd"), // 'ab\'cd' -> ab'cd
+            #endregion
+
             #region string interpolation test
             Test("`hi`", "hi"),
             Test(@"`hi\``", "hi`"),
             Test("`${world}`", "world"),
-            Test(@"`hi ${string('jack\`')}`", "hi jack`"),
+            Test(@"`hi ${string('jack`')}`", "hi jack`"),
             Test(@"`\${world}`", "${world}"), // use escape character
             Test("length(`hello ${world}`)", "hello world".Length),
             Test("json(`{'foo': '${hello}','item': '${world}'}`).foo", "hello"),
