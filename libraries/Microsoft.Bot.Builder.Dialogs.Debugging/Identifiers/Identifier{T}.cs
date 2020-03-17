@@ -65,6 +65,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
+        bool IIdentifier<T>.TryGetValue(T item, out ulong code)
+        {
+            lock (gate)
+            {
+                return this.codeByItem.TryGetValue(item, out code);
+            }
+        }
+
         ulong IIdentifier<T>.Add(T item)
         {
             lock (gate)
