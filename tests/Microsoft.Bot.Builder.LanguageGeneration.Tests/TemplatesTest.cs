@@ -235,10 +235,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("EscapeCharacter.lg"));
             var evaled = templates.Evaluate("wPhrase", null);
-            Assert.AreEqual(evaled, "Hi \r\n\t[]{}\\");
+            Assert.AreEqual(evaled, "Hi \r\n\t\\");
 
             evaled = templates.Evaluate("AtEscapeChar", null);
-            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1} ");
+            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1}");
 
             evaled = templates.Evaluate("otherEscape", null);
             Assert.AreEqual(evaled, "Hi y ");
