@@ -2991,7 +2991,7 @@ namespace AdaptiveExpressions
                             if (args.Count == 1)
                             {
                                 inputStr = ParseStringOrNull(args[0]);
-                            } 
+                            }
                             else
                             {
                                 inputStr = ParseStringOrNull(args[0]);
@@ -3746,7 +3746,6 @@ namespace AdaptiveExpressions
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float)Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => (int)Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Array, Apply(args => new[] { args[0] }, VerifyString), ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ExpressionFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ExpressionFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
@@ -3909,6 +3908,58 @@ namespace AdaptiveExpressions
                         }),
                     ReturnType.Boolean,
                     ValidateIsMatch),
+
+                //Type Checking Functions
+                new ExpressionEvaluator(
+                    ExpressionType.IsString,
+                    Apply(args => args[0].GetType() == typeof(string)),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsInteger,
+                    Apply(args => Extensions.IsNumber(args[0]) && args[0] % 1 == 0),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsFloat,
+                    Apply(args => Extensions.IsNumber(args[0]) && args[0] % 1 != 0),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsArray,
+                    Apply(args => TryParseList(args[0], out IList _)),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsObject,
+                    Apply(args => !(args[0] is JValue) && args[0].GetType().IsValueType == false && args[0].GetType() != typeof(string)),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsBoolean,
+                    Apply(args => args[0] is bool),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsDateTime,
+                    Apply(
+                        args => 
+                        {
+                            if (args[0] is string) 
+                            {
+                                object value = null;
+                                string error = null;
+                                (value, error) = ParseISOTimestamp(args[0] as string);
+                                if (error == null)
+                                {
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        }),
+                    ReturnType.Boolean,
+                    ValidateUnary),
             };
 
             var eval = new ExpressionEvaluator(ExpressionType.Optional, (expression, state) => throw new NotImplementedException(), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
