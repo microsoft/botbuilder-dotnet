@@ -246,6 +246,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 catch (Exception error)
                 {
                     this.Logger.LogError(error, error.Message);
+
+                    this.ContinueAllThreads();
+
                     throw;
                 }
             }
@@ -287,6 +290,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             Identifier.Decode(frameCode, out var threadCode, out var valueCode);
             thread = this.threads[threadCode];
             frame = thread.FrameCodes[valueCode];
+        }
+
+        private void ContinueAllThreads()
+        {
+            var errors = new List<Exception>();
+            foreach (var thread in this.threads)
+            {
+                try
+                {
+                    thread.Value.Run.Post(Phase.Continue);
+                }
+                catch (Exception error)
+                {
+                    errors.Add(error);
+                }
+            }
+
+            if (errors.Count > 0)
+            {
+                throw new AggregateException(errors);
+            }
         }
 
         private async Task UpdateBreakpointsAsync(CancellationToken cancellationToken)
@@ -612,8 +636,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     this.terminate();
                 }
+                else
+                {
+                    this.ContinueAllThreads();
+                }
 
-                // if attach, possibly run all threads
                 return Protocol.Response.From(NextSeq, disconnect, new { });
             }
             else if (message is Protocol.Request request)
