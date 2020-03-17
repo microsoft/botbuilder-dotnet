@@ -795,6 +795,7 @@ namespace AdaptiveExpressions.Tests
             Test("isArray(createArray(1,2,3))", true),
             Test("isArray(123.234)", false),
             Test("isObject(emptyJObject)", true),
+            Test("isObject(dialog)", true),
             Test("isObject(123.234)", false),
             Test("isBoolean(2 + 3)", false),
             Test("isBoolean(2 > 1)", true),

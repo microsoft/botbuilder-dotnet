@@ -3916,12 +3916,12 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsInteger,
-                    Apply(args => args[0].GetType() == typeof(int)),
+                    Apply(args => Extensions.IsNumber(args[0]) && args[0] % 1 == 0),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsFloat,
-                    Apply(args => args[0] is float || args[0] is double),
+                    Apply(args => Extensions.IsNumber(args[0]) && args[0] % 1 != 0),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
@@ -3931,7 +3931,7 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsObject,
-                    Apply(args => args[0] is JObject),
+                    Apply(args => !(args[0] is JValue) && args[0].GetType().IsValueType == false && args[0].GetType() != typeof(string)),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
