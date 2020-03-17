@@ -90,14 +90,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             var type = context.GetType();
-            if (!modelByType.TryGetValue(type, out var model))
+            lock (modelByType)
             {
-                var options = Options(type);
-                model = options.OrderByDescending(m => m.Rank).First();
-                modelByType.Add(type, model);
-            }
+                if (!modelByType.TryGetValue(type, out var model))
+                {
+                    var options = Options(type);
+                    model = options.OrderByDescending(m => m.Rank).First();
+                    modelByType.Add(type, model);
+                }
 
-            return model;
+                return model;
+            }
         }
     }
 }

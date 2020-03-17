@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
 
                 var threadText = $"'{Ellipsis(turnText, 18)}'";
-                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {codeModel.NameFor(item)} ", item, activity, cancellationToken).ConfigureAwait(false);
+                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {codeModel.NameFor(item)} ", item, null, cancellationToken).ConfigureAwait(false);
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public async Task OutputAsync(string text, object item, object value, CancellationToken cancellationToken)
         {
             bool found = this.sourceMap.TryGetValue(item, out var range);
-            ulong code = EncodeValue(output, value);
+            var code = EncodeValue(this.output, value);
 
             var body = new
             {
@@ -548,7 +548,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.Variables> vars)
             {
                 var arguments = vars.Arguments;
-                DecodeValue(arguments.VariablesReference, out var thread, out var context);
+                DecodeValue(arguments.VariablesReference, out var arena, out var context);
 
                 var names = this.dataModel.Names(context);
 
@@ -556,7 +556,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     variables = (from name in names
                                  let value = dataModel[context, name]
-                                 let variablesReference = EncodeValue(thread, value)
+                                 let variablesReference = EncodeValue(arena, value)
                                  select new { name = dataModel.ToString(name), value = dataModel.ToString(value), variablesReference })
                                 .ToArray()
                 };
@@ -566,14 +566,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.SetVariable> setVariable)
             {
                 var arguments = setVariable.Arguments;
-                DecodeValue(arguments.VariablesReference, out var thread, out var context);
+                DecodeValue(arguments.VariablesReference, out var arena, out var context);
 
                 var value = this.dataModel[context, arguments.Name] = JToken.Parse(arguments.Value);
 
                 var body = new
                 {
                     value = dataModel.ToString(value),
-                    variablesReference = EncodeValue(thread, value)
+                    variablesReference = EncodeValue(arena, value)
                 };
 
                 return Protocol.Response.From(NextSeq, setVariable, body);
@@ -702,7 +702,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private sealed class OutputModel : ArenaModel
         {
             public OutputModel()
-                : base(new IdentifierCache<object>(new Identifier<object>(), count: 5))
+                : base(new IdentifierCache<object>(new Identifier<object>(), count: 25))
             {
             }
         }
