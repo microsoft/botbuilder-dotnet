@@ -3926,7 +3926,7 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsArray,
-                    Apply(args => args[0] is IList),
+                    Apply(args => TryParseList(args[0], out IList _)),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
