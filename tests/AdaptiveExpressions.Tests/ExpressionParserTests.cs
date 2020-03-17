@@ -265,7 +265,7 @@ namespace AdaptiveExpressions.Tests
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
             Test("`\\${a}`", "${a}"), // `\${a}` -> ${a}
             Test("\"ab\\\"cd\"", "ab\"cd"), // "ab\"cd" -> ab"cd
-            Test("\"ab`cd\"", "ab`cd"), // "ab`cd" -> ab1cd
+            Test("\"ab`cd\"", "ab`cd"), // "ab`cd" -> ab`cd
             Test("\"ab\\ncd\"", "ab\ncd"),  // "ab\ncd" -> ab [newline] cd
             Test("\"ab\\ycd\"", "ab\\ycd"), //"ab\ycd" -> ab\ycd
             Test("'ab\\'cd'", "ab'cd"), // 'ab\'cd' -> ab'cd
