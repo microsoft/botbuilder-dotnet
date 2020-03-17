@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// <summary>
     /// Class which implements Debug Adapter protocol connected to IDialogDebugger data.
     /// </summary>
-    public sealed class DialogDebugAdapter : DebugTransport, IMiddleware, IDialogDebugger
+    public sealed class DialogDebugAdapter : DebugTransport, IMiddleware, IDialogDebugger, IDebugger
     {
         private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
@@ -33,6 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         // https://en.wikipedia.org/wiki/Region-based_memory_management
         private readonly IIdentifier<ArenaModel> arenas = new Identifier<ArenaModel>();
+        private readonly OutputModel output = new OutputModel();
 
         private readonly Task task;
 
@@ -49,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
             this.terminate = terminate ?? new Action(() => Environment.Exit(0));
             this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port), cancellationToken.Token);
+            this.arenas.Add(output);
         }
 
         /// <summary>
@@ -119,14 +121,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             try
             {
-                var turnText = context.Context.Activity.Text?.Trim() ?? string.Empty;
+                var activity = context.Context.Activity;
+                var turnText = activity.Text?.Trim() ?? string.Empty;
                 if (turnText.Length == 0)
                 {
-                    turnText = context.Context.Activity.Type;
+                    turnText = activity.Type;
                 }
 
                 var threadText = $"'{Ellipsis(turnText, 18)}'";
-                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {codeModel.NameFor(item)} ", item, cancellationToken).ConfigureAwait(false);
+                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {codeModel.NameFor(item)} ", item, activity, cancellationToken).ConfigureAwait(false);
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
@@ -189,6 +192,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             {
                 this.Logger.LogError(error, error.Message);
             }
+        }
+
+        public async Task OutputAsync(string text, object item, object value, CancellationToken cancellationToken)
+        {
+            bool found = this.sourceMap.TryGetValue(item, out var range);
+            ulong code = EncodeValue(output, value);
+
+            var body = new
+            {
+                output = text + Environment.NewLine,
+                source = found ? new Protocol.Source(range.Path) : null,
+                line = found ? (int?)range.StartPoint.LineIndex : null,
+                variablesReference = code,
+            };
+
+            await SendAsync(Protocol.Event.From(NextSeq, "output", body), cancellationToken).ConfigureAwait(false);
         }
 
         public async Task DisposeAsync()
@@ -325,7 +344,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 if (breakpoint.Verified)
                 {
                     var item = this.breakpoints.ItemFor(breakpoint);
-                    await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                    await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, null, cancellationToken).ConfigureAwait(false);
                 }
 
                 var body = new { reason = "changed", breakpoint };
@@ -351,7 +370,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             var description = $"{threadText} ==> {phase.ToString().PadRight(16)}{suffix}";
 
-            await OutputAsync(description, item, cancellationToken).ConfigureAwait(false);
+            await OutputAsync(description, item, null, cancellationToken).ConfigureAwait(false);
 
             var threadId = this.threads[thread];
 
@@ -398,20 +417,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             await SendAsync(token, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task OutputAsync(string text, object item, CancellationToken cancellationToken)
-        {
-            bool found = this.sourceMap.TryGetValue(item, out var range);
-
-            var body = new
-            {
-                output = text + Environment.NewLine,
-                source = found ? new Protocol.Source(range.Path) : null,
-                line = found ? (int?)range.StartPoint.LineIndex : null,
-            };
-
-            await SendAsync(Protocol.Event.From(NextSeq, "output", body), cancellationToken).ConfigureAwait(false);
-        }
-
         private Protocol.Capabilities MakeCapabilities()
         {
             // TODO: there is a "capabilities" event for dynamic updates, but exceptionBreakpointFilters does not seem to be dynamically updateable
@@ -450,7 +455,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             {
                 var arguments = setBreakpoints.Arguments;
                 var file = Path.GetFileName(arguments.Source.Path);
-                await OutputAsync($"Set breakpoints for {file}", null, cancellationToken).ConfigureAwait(false);
+                await OutputAsync($"Set breakpoints for {file}", null, null, cancellationToken).ConfigureAwait(false);
 
                 var breakpoints = this.breakpoints.SetBreakpoints(arguments.Source, arguments.Breakpoints);
                 foreach (var breakpoint in breakpoints)
@@ -458,7 +463,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     if (breakpoint.Verified)
                     {
                         var item = this.breakpoints.ItemFor(breakpoint);
-                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, null, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -467,14 +472,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.SetFunctionBreakpoints> setFunctionBreakpoints)
             {
                 var arguments = setFunctionBreakpoints.Arguments;
-                await OutputAsync($"Set function breakpoints.", null, cancellationToken).ConfigureAwait(false);
+                await OutputAsync($"Set function breakpoints.", null, null, cancellationToken).ConfigureAwait(false);
                 var breakpoints = this.breakpoints.SetBreakpoints(arguments.Breakpoints);
                 foreach (var breakpoint in breakpoints)
                 {
                     if (breakpoint.Verified)
                     {
                         var item = this.breakpoints.ItemFor(breakpoint);
-                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, null, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -686,12 +691,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private class ArenaModel
         {
-            public IIdentifier<object> ValueCodes { get; } = new Identifier<object>();
+            protected ArenaModel(IIdentifier<object> valueCodes)
+            {
+                ValueCodes = valueCodes ?? throw new ArgumentNullException(nameof(valueCodes));
+            }
+
+            public IIdentifier<object> ValueCodes { get; }
+        }
+
+        private sealed class OutputModel : ArenaModel
+        {
+            public OutputModel()
+                : base(new IdentifierCache<object>(new Identifier<object>(), count: 5))
+            {
+            }
         }
 
         private sealed class ThreadModel : ArenaModel
         {
             public ThreadModel(ITurnContext turnContext, ICodeModel codeModel)
+                : base(new Identifier<object>())
             {
                 TurnContext = turnContext;
                 CodeModel = codeModel;

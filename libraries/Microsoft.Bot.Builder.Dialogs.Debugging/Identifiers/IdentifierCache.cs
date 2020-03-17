@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers
+namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public sealed class IdentifierCache<T> : IIdentifier<T>
     {
