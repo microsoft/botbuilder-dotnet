@@ -13,16 +13,16 @@
 - Hi ${replace('hello\\', '\\', '\\\\')}
 
 # escapeInExpression2
-- Hi ${replace('hello\"', '\"', "'")}
+- Hi ${replace('hello"', '"', '\'')}
 
 # escapeInExpression3
-- Hi ${replace("hello'", "'", '"')}
+- Hi ${replace("hello'", "'", "\"")}
 
 # escapeInExpression4
-- Hi ${replace("hello\n", "\n", '"')}
+- Hi ${replace("hello\n", "\n", "\"")}
 
 # escapeInExpression5
-- Hi ${replace('hello\"', '\"', '\n')}
+- Hi ${replace('hello\'', '\'', '\n')}
 
 # escapeInExpression6
 - Hi ${replace("hello'", "'", '\n')}
@@ -40,3 +40,9 @@
 
 # showSingleTodo(x)
 - * ${x}
+
+# getUserName
+- ${json(userInfoStr()).name}
+
+# userInfoStr
+- {"age":1, "name":"super \"x man\""}
