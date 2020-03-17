@@ -546,7 +546,6 @@ namespace AdaptiveExpressions.Tests
             Test("bool('hi')", true),
             Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object> { "h", "e", "l", "l", "o" }),
             Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object> { 1, true, "true", 10.0f }),
-            Test("array('hello')", new List<object> { "hello" }),
             Test("binary(hello)", "0110100001100101011011000110110001101111"),
             Test("length(binary(hello))", 40),
             Test("base64(hello)", "aGVsbG8="),
@@ -791,6 +790,24 @@ namespace AdaptiveExpressions.Tests
             Test("isMatch('12abc', '([0-9]+)([a-z]+)([0-9]+)')", false), // "(...)" (simple group)
             Test(@"isMatch('a', '\\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
             Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
+            #endregion
+
+            #region type checking
+            Test("isString('abc')", true),
+            Test("isString(123)", false),
+            Test("isInteger('abc')", false),
+            Test("isInteger(123)", true),
+            Test("isFloat('abc')", false),
+            Test("isFloat(123.234)", true),
+            Test("isArray(createArray(1,2,3))", true),
+            Test("isArray(123.234)", false),
+            Test("isObject(emptyJObject)", true),
+            Test("isObject(dialog)", true),
+            Test("isObject(123.234)", false),
+            Test("isBoolean(2 + 3)", false),
+            Test("isBoolean(2 > 1)", true),
+            Test("isDateTime(2 + 3)", false),
+            Test("isDateTime(timestamp)", true),
             #endregion
 
             #region Empty expression
