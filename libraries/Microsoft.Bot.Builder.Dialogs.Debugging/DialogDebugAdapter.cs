@@ -10,14 +10,13 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     /// <summary>
     /// Class which implements Debug Adapter protocol connected to IDialogDebugger data.
     /// </summary>
-    public sealed class DialogDebugAdapter : DebugTransport, IMiddleware, IDialogDebugger
+    public sealed class DialogDebugAdapter : DebugTransport, IMiddleware, IDialogDebugger, IDebugger
     {
         private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
@@ -30,7 +29,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         // lifetime scoped to IMiddleware.OnTurnAsync
         private readonly ConcurrentDictionary<string, ThreadModel> threadByTurnId = new ConcurrentDictionary<string, ThreadModel>();
-        private readonly Identifier<ThreadModel> threads = new Identifier<ThreadModel>();
+        private readonly IIdentifier<ThreadModel> threads = new Identifier<ThreadModel>();
+
+        // https://en.wikipedia.org/wiki/Region-based_memory_management
+        private readonly IIdentifier<ArenaModel> arenas = new Identifier<ArenaModel>();
+        private readonly OutputModel output = new OutputModel();
 
         private readonly Task task;
 
@@ -47,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
             this.terminate = terminate ?? new Action(() => Environment.Exit(0));
             this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port), cancellationToken.Token);
+            this.arenas.Add(output);
         }
 
         /// <summary>
@@ -117,14 +121,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             try
             {
-                var turnText = context.Context.Activity.Text?.Trim() ?? string.Empty;
+                var activity = context.Context.Activity;
+                var turnText = activity.Text?.Trim() ?? string.Empty;
                 if (turnText.Length == 0)
                 {
-                    turnText = context.Context.Activity.Type;
+                    turnText = activity.Type;
                 }
 
                 var threadText = $"'{Ellipsis(turnText, 18)}'";
-                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {codeModel.NameFor(item)} ", item, cancellationToken).ConfigureAwait(false);
+                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {codeModel.NameFor(item)} ", item, null, cancellationToken).ConfigureAwait(false);
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
 
@@ -189,6 +194,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
+        public async Task OutputAsync(string text, object item, object value, CancellationToken cancellationToken)
+        {
+            bool found = this.sourceMap.TryGetValue(item, out var range);
+            var code = EncodeValue(this.output, value);
+
+            var body = new
+            {
+                output = text + Environment.NewLine,
+                source = found ? new Protocol.Source(range.Path) : null,
+                line = found ? (int?)range.StartPoint.LineIndex : null,
+                variablesReference = code,
+            };
+
+            await SendAsync(Protocol.Event.From(NextSeq, "output", body), cancellationToken).ConfigureAwait(false);
+        }
+
         public async Task DisposeAsync()
         {
             this.cancellationToken.Cancel();
@@ -202,7 +223,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         async Task IMiddleware.OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
             var thread = new ThreadModel(turnContext, codeModel);
-            var threadId = threads.Add(thread);
+            arenas.Add(thread);
+            threads.Add(thread);
             threadByTurnId.TryAdd(TurnIdFor(turnContext), thread);
             try
             {
@@ -220,6 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 threadByTurnId.TryRemove(TurnIdFor(turnContext), out var ignored);
                 threads.Remove(thread);
+                arenas.Remove(thread);
             }
         }
 
@@ -246,6 +269,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 catch (Exception error)
                 {
                     this.Logger.LogError(error, error.Message);
+
+                    this.ContinueAllThreads();
+
                     throw;
                 }
             }
@@ -256,23 +282,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             return $"{turnContext.Activity.ChannelId}-{turnContext.Activity.Id}";
         }
 
-        private ulong EncodeValue(ThreadModel thread, object value)
+        private ulong EncodeValue(ArenaModel arena, object value)
         {
             if (dataModel.IsScalar(value))
             {
                 return 0;
             }
 
-            var threadCode = threads[thread];
-            var valueCode = thread.ValueCodes.Add(value);
-            return Identifier.Encode(threadCode, valueCode);
+            var arenaCode = arenas[arena];
+            var valueCode = arena.ValueCodes.Add(value);
+            return Identifier.Encode(arenaCode, valueCode);
         }
 
-        private void DecodeValue(ulong variablesReference, out ThreadModel thread, out object value)
+        private void DecodeValue(ulong variablesReference, out ArenaModel arena, out object value)
         {
             Identifier.Decode(variablesReference, out var threadCode, out var valueCode);
-            thread = this.threads[threadCode];
-            value = thread.ValueCodes[valueCode];
+            arena = this.arenas[threadCode];
+            value = arena.ValueCodes[valueCode];
         }
 
         private ulong EncodeFrame(ThreadModel thread, ICodePoint frame)
@@ -289,6 +315,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             frame = thread.FrameCodes[valueCode];
         }
 
+        private void ContinueAllThreads()
+        {
+            var errors = new List<Exception>();
+            foreach (var thread in this.threads)
+            {
+                try
+                {
+                    thread.Value.Run.Post(Phase.Continue);
+                }
+                catch (Exception error)
+                {
+                    errors.Add(error);
+                }
+            }
+
+            if (errors.Count > 0)
+            {
+                throw new AggregateException(errors);
+            }
+        }
+
         private async Task UpdateBreakpointsAsync(CancellationToken cancellationToken)
         {
             var breakpoints = this.breakpoints.ApplyUpdates();
@@ -297,7 +344,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 if (breakpoint.Verified)
                 {
                     var item = this.breakpoints.ItemFor(breakpoint);
-                    await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                    await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, null, cancellationToken).ConfigureAwait(false);
                 }
 
                 var body = new { reason = "changed", breakpoint };
@@ -323,7 +370,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             var description = $"{threadText} ==> {phase.ToString().PadRight(16)}{suffix}";
 
-            await OutputAsync(description, item, cancellationToken).ConfigureAwait(false);
+            await OutputAsync(description, item, null, cancellationToken).ConfigureAwait(false);
 
             var threadId = this.threads[thread];
 
@@ -370,20 +417,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             await SendAsync(token, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task OutputAsync(string text, object item, CancellationToken cancellationToken)
-        {
-            bool found = this.sourceMap.TryGetValue(item, out var range);
-
-            var body = new
-            {
-                output = text + Environment.NewLine,
-                source = found ? new Protocol.Source(range.Path) : null,
-                line = found ? (int?)range.StartPoint.LineIndex : null,
-            };
-
-            await SendAsync(Protocol.Event.From(NextSeq, "output", body), cancellationToken).ConfigureAwait(false);
-        }
-
         private Protocol.Capabilities MakeCapabilities()
         {
             // TODO: there is a "capabilities" event for dynamic updates, but exceptionBreakpointFilters does not seem to be dynamically updateable
@@ -422,7 +455,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             {
                 var arguments = setBreakpoints.Arguments;
                 var file = Path.GetFileName(arguments.Source.Path);
-                await OutputAsync($"Set breakpoints for {file}", null, cancellationToken).ConfigureAwait(false);
+                await OutputAsync($"Set breakpoints for {file}", null, null, cancellationToken).ConfigureAwait(false);
 
                 var breakpoints = this.breakpoints.SetBreakpoints(arguments.Source, arguments.Breakpoints);
                 foreach (var breakpoint in breakpoints)
@@ -430,7 +463,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     if (breakpoint.Verified)
                     {
                         var item = this.breakpoints.ItemFor(breakpoint);
-                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, null, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -439,14 +472,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.SetFunctionBreakpoints> setFunctionBreakpoints)
             {
                 var arguments = setFunctionBreakpoints.Arguments;
-                await OutputAsync($"Set function breakpoints.", null, cancellationToken).ConfigureAwait(false);
+                await OutputAsync($"Set function breakpoints.", null, null, cancellationToken).ConfigureAwait(false);
                 var breakpoints = this.breakpoints.SetBreakpoints(arguments.Breakpoints);
                 foreach (var breakpoint in breakpoints)
                 {
                     if (breakpoint.Verified)
                     {
                         var item = this.breakpoints.ItemFor(breakpoint);
-                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
+                        await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, null, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -515,7 +548,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.Variables> vars)
             {
                 var arguments = vars.Arguments;
-                DecodeValue(arguments.VariablesReference, out var thread, out var context);
+                DecodeValue(arguments.VariablesReference, out var arena, out var context);
 
                 var names = this.dataModel.Names(context);
 
@@ -523,7 +556,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     variables = (from name in names
                                  let value = dataModel[context, name]
-                                 let variablesReference = EncodeValue(thread, value)
+                                 let variablesReference = EncodeValue(arena, value)
                                  select new { name = dataModel.ToString(name), value = dataModel.ToString(value), variablesReference })
                                 .ToArray()
                 };
@@ -533,14 +566,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             else if (message is Protocol.Request<Protocol.SetVariable> setVariable)
             {
                 var arguments = setVariable.Arguments;
-                DecodeValue(arguments.VariablesReference, out var thread, out var context);
+                DecodeValue(arguments.VariablesReference, out var arena, out var context);
 
                 var value = this.dataModel[context, arguments.Name] = JToken.Parse(arguments.Value);
 
                 var body = new
                 {
                     value = dataModel.ToString(value),
-                    variablesReference = EncodeValue(thread, value)
+                    variablesReference = EncodeValue(arena, value)
                 };
 
                 return Protocol.Response.From(NextSeq, setVariable, body);
@@ -612,8 +645,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     this.terminate();
                 }
+                else
+                {
+                    this.ContinueAllThreads();
+                }
 
-                // if attach, possibly run all threads
                 return Protocol.Response.From(NextSeq, disconnect, new { });
             }
             else if (message is Protocol.Request request)
@@ -653,9 +689,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        private sealed class ThreadModel
+        private class ArenaModel
+        {
+            protected ArenaModel(IIdentifier<object> valueCodes)
+            {
+                ValueCodes = valueCodes ?? throw new ArgumentNullException(nameof(valueCodes));
+            }
+
+            public IIdentifier<object> ValueCodes { get; }
+        }
+
+        private sealed class OutputModel : ArenaModel
+        {
+            public OutputModel()
+                : base(new IdentifierCache<object>(new Identifier<object>(), count: 25))
+            {
+            }
+        }
+
+        private sealed class ThreadModel : ArenaModel
         {
             public ThreadModel(ITurnContext turnContext, ICodeModel codeModel)
+                : base(new Identifier<object>())
             {
                 TurnContext = turnContext;
                 CodeModel = codeModel;
@@ -685,9 +740,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             public RunModel Run { get; } = new RunModel();
 
-            public Identifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>();
-
-            public Identifier<object> ValueCodes { get; } = new Identifier<object>();
+            public IIdentifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>();
 
             public DialogContext LastContext { get; private set; }
 

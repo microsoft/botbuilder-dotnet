@@ -7,4 +7,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     {
         Task StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken);
     }
+
+    public interface IDebugger
+    {
+        Task OutputAsync(string text, object item, object value, CancellationToken cancellationToken);
+    }
 }

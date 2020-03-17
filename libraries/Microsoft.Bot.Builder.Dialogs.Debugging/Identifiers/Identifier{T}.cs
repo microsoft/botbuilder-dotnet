@@ -17,14 +17,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// For these combined identifiers, we use 7 bit encoding.
     /// </summary>
     /// <typeparam name="T">Datatype of the stored items.</typeparam>
-    public sealed class Identifier<T> : IEnumerable<KeyValuePair<ulong, T>>
+    public sealed class Identifier<T> : IIdentifier<T>
     {
         private readonly Dictionary<T, ulong> codeByItem = new Dictionary<T, ulong>(ReferenceEquality<T>.Instance);
         private readonly Dictionary<ulong, T> itemByCode = new Dictionary<ulong, T>();
         private readonly object gate = new object();
         private ulong last = 0;
 
-        public IEnumerable<T> Items
+        IEnumerable<T> IIdentifier<T>.Items
         {
             get
             {
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        public T this[ulong code]
+        T IIdentifier<T>.this[ulong code]
         {
             get
             {
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        public ulong this[T item]
+        ulong IIdentifier<T>.this[T item]
         {
             get
             {
@@ -57,7 +57,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        public ulong Add(T item)
+        bool IIdentifier<T>.TryGetValue(ulong code, out T item)
+        {
+            lock (gate)
+            {
+                return this.itemByCode.TryGetValue(code, out item);
+            }
+        }
+
+        bool IIdentifier<T>.TryGetValue(T item, out ulong code)
+        {
+            lock (gate)
+            {
+                return this.codeByItem.TryGetValue(item, out code);
+            }
+        }
+
+        ulong IIdentifier<T>.Add(T item)
         {
             lock (gate)
             {
@@ -73,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        public void Remove(T item)
+        void IIdentifier<T>.Remove(T item)
         {
             lock (gate)
             {
@@ -92,13 +108,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
 
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<ulong, T>>)this).GetEnumerator();
-
-        public bool TryGetValue(ulong code, out T item)
-        {
-            lock (gate)
-            {
-                return this.itemByCode.TryGetValue(code, out item);
-            }
-        }
     }
 }
