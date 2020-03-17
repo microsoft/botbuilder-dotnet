@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -31,6 +30,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         // lifetime scoped to IMiddleware.OnTurnAsync
         private readonly ConcurrentDictionary<string, ThreadModel> threadByTurnId = new ConcurrentDictionary<string, ThreadModel>();
         private readonly IIdentifier<ThreadModel> threads = new Identifier<ThreadModel>();
+
+        // https://en.wikipedia.org/wiki/Region-based_memory_management
+        private readonly IIdentifier<ArenaModel> arenas = new Identifier<ArenaModel>();
 
         private readonly Task task;
 
@@ -202,7 +204,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         async Task IMiddleware.OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
             var thread = new ThreadModel(turnContext, codeModel);
-            var threadId = threads.Add(thread);
+            arenas.Add(thread);
+            threads.Add(thread);
             threadByTurnId.TryAdd(TurnIdFor(turnContext), thread);
             try
             {
@@ -220,6 +223,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 threadByTurnId.TryRemove(TurnIdFor(turnContext), out var ignored);
                 threads.Remove(thread);
+                arenas.Remove(thread);
             }
         }
 
@@ -259,23 +263,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             return $"{turnContext.Activity.ChannelId}-{turnContext.Activity.Id}";
         }
 
-        private ulong EncodeValue(ThreadModel thread, object value)
+        private ulong EncodeValue(ArenaModel arena, object value)
         {
             if (dataModel.IsScalar(value))
             {
                 return 0;
             }
 
-            var threadCode = threads[thread];
-            var valueCode = thread.ValueCodes.Add(value);
-            return Identifier.Encode(threadCode, valueCode);
+            var arenaCode = arenas[arena];
+            var valueCode = arena.ValueCodes.Add(value);
+            return Identifier.Encode(arenaCode, valueCode);
         }
 
-        private void DecodeValue(ulong variablesReference, out ThreadModel thread, out object value)
+        private void DecodeValue(ulong variablesReference, out ArenaModel arena, out object value)
         {
             Identifier.Decode(variablesReference, out var threadCode, out var valueCode);
-            thread = this.threads[threadCode];
-            value = thread.ValueCodes[valueCode];
+            arena = this.arenas[threadCode];
+            value = arena.ValueCodes[valueCode];
         }
 
         private ulong EncodeFrame(ThreadModel thread, ICodePoint frame)
@@ -680,7 +684,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        private sealed class ThreadModel
+        private class ArenaModel
+        {
+            public IIdentifier<object> ValueCodes { get; } = new Identifier<object>();
+        }
+
+        private sealed class ThreadModel : ArenaModel
         {
             public ThreadModel(ITurnContext turnContext, ICodeModel codeModel)
             {
@@ -713,8 +722,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public RunModel Run { get; } = new RunModel();
 
             public IIdentifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>();
-
-            public IIdentifier<object> ValueCodes { get; } = new Identifier<object>();
 
             public DialogContext LastContext { get; private set; }
 
