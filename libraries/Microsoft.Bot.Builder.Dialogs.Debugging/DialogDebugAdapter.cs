@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         // lifetime scoped to IMiddleware.OnTurnAsync
         private readonly ConcurrentDictionary<string, ThreadModel> threadByTurnId = new ConcurrentDictionary<string, ThreadModel>();
-        private readonly Identifier<ThreadModel> threads = new Identifier<ThreadModel>();
+        private readonly IIdentifier<ThreadModel> threads = new Identifier<ThreadModel>();
 
         private readonly Task task;
 
@@ -712,9 +712,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             public RunModel Run { get; } = new RunModel();
 
-            public Identifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>();
+            public IIdentifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>();
 
-            public Identifier<object> ValueCodes { get; } = new Identifier<object>();
+            public IIdentifier<object> ValueCodes { get; } = new Identifier<object>();
 
             public DialogContext LastContext { get; private set; }
 

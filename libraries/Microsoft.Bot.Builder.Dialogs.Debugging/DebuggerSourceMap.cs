@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly Dictionary<object, SourceRange> sourceByItem = new Dictionary<object, SourceRange>(ReferenceEquality<object>.Instance);
         private bool dirty = true;
 
-        private readonly Identifier<Row> rows = new Identifier<Row>();
+        private readonly IIdentifier<Row> rows = new Identifier<Row>();
         private readonly HashSet<object> items = new HashSet<object>(ReferenceEquality<object>.Instance);
 
         public DebuggerSourceMap(ICodeModel codeModel)
