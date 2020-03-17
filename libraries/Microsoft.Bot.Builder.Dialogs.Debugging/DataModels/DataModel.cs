@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private IEnumerable<IDataModel> Options(Type type)
         {
-            if (type.IsPrimitive || type == typeof(string))
+            if (type.IsPrimitive || type.IsValueType || type == typeof(string))
             {
                 yield return ScalarDataModel.Instance;
                 yield break;
