@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using AdaptiveExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.Tests
 {
@@ -359,6 +360,16 @@ namespace AdaptiveExpressions.Tests
             Test("isMatch('abC', '^[a-z+$')"), // bad regular expression
 #endregion
 
+#region Type Checking
+            Test("isString(hello, hello)"), // should have 1 parameter
+            Test("isInteger(2, 3)"), // should have 1 parameter
+            Test("isFloat(1.2, 3.1)"), // should have 1 parameter
+            Test("isArray(createArray(1,2,3), 1)"), // should have 1 parameter
+            Test("isObejct(emptyJObject, hello)"), // should have 1 parameter
+            Test("isDateTime('2018-03-15T13:00:00.000Z', hello)"), // should have 1 parameter
+            Test("isBoolean(false, false)"), // should have 1 parameter
+#endregion
+
 #region SetPathToValue tests
             Test("setPathToValue(2+3, 4)"), // Not a real path
             Test("setPathToValue(a)"), // Missing value
@@ -412,6 +423,7 @@ namespace AdaptiveExpressions.Tests
                 hello = "hello",
                 world = "world",
                 istrue = true,
+                emptyJObject = new JObject(),
                 bag = new
                 {
                     three = 3.0,
