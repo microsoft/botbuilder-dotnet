@@ -3921,22 +3921,42 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsFloat,
-                    Apply(args => args[0].GetType() == typeof(float) || args[0].GetType() == typeof(double)),
+                    Apply(args => args[0] is float || args[0] is double),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsArray,
-                    Apply(args => args[0].IsArray()),
+                    Apply(args => args[0] is IList),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsObject,
-                    Apply(args => args[0].GetType() == typeof(object) || args[0].GetType() == typeof(JObject)),
+                    Apply(args => args[0] is JObject),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsBoolean,
-                    Apply(args => args[0].GetType() == typeof(bool)),
+                    Apply(args => args[0] is bool),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsDateTime,
+                    Apply(
+                        args => 
+                        {
+                            if (args[0] is string) 
+                            {
+                                object value = null;
+                                string error = null;
+                                (value, error) = ParseISOTimestamp(args[0] as string);
+                                if (error == null)
+                                {
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        }),
                     ReturnType.Boolean,
                     ValidateUnary),
             };
