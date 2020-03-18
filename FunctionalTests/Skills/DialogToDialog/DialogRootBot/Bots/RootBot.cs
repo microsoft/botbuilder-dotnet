@@ -33,6 +33,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Bots
             }
             else
             {
+                // Let the base class handle the activity.
                 await base.OnTurnAsync(turnContext, cancellationToken);
             }
 
@@ -45,11 +46,12 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Bots
             foreach (var member in membersAdded)
             {
                 // Greet anyone that was not the target (recipient) of this message.
-                // To learn more about Adaptive Cards, see https://aka.ms/msbot-adaptivecards for more details.
+                // To learn more about Adaptive Cards, see https://aka.ms/msbot-adaptivecards.
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
                     var welcomeCard = CreateAdaptiveCardAttachment();
                     var activity = MessageFactory.Attachment(welcomeCard);
+                    activity.Speak = "Welcome to the Dialog Skill Prototype!";
                     await turnContext.SendActivityAsync(activity, cancellationToken);
                     await _mainDialog.RunAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
                 }

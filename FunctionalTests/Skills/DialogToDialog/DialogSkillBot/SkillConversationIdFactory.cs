@@ -8,13 +8,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.BotBuilderSamples.DialogRootBot
+namespace Microsoft.BotBuilderSamples.DialogSkillBot
 {
     /// <summary>
-    /// A <see cref="SkillConversationIdFactory"/> that uses <see cref="IStorage"/> to store
-    /// and retrieve <see cref="SkillConversationReference"/> instances.
+    /// A <see cref="SkillConversationIdFactory"/> that uses <see cref="IStorage"/> to store and retrieve <see cref="ConversationReference"/> instances.
     /// </summary>
     public class SkillConversationIdFactory : SkillConversationIdFactoryBase
     {
@@ -32,23 +32,23 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot
                 throw new ArgumentNullException(nameof(options));
             }
 
-            // Create the storage key based on the SkillConversationIdFactoryOptions.
+            // Create the storage key based on the SkillConversationIdFactoryOptions
             var conversationReference = options.Activity.GetConversationReference();
-            var skillConversationId = $"{conversationReference.Conversation.Id}-{options.BotFrameworkSkill.Id}-{conversationReference.ChannelId}-skillconvo";
+            var storageKey = $"{conversationReference.Conversation.Id}-{options.BotFrameworkSkill.Id}-{conversationReference.ChannelId}-skillconvo";
 
-            // Create the SkillConversationReference instance.
+            // Create the SkillConversationReference
             var skillConversationReference = new SkillConversationReference
             {
                 ConversationReference = conversationReference,
                 OAuthScope = options.FromBotOAuthScope
             };
 
-            // Store the SkillConversationReference using the skillConversationId as a key.
-            var skillConversationInfo = new Dictionary<string, object> { { skillConversationId, JObject.FromObject(skillConversationReference) } };
+            // Store the SkillConversationReference
+            var skillConversationInfo = new Dictionary<string, object> { { storageKey, JObject.FromObject(skillConversationReference) } };
             await _storage.WriteAsync(skillConversationInfo, cancellationToken).ConfigureAwait(false);
 
-            // Return the generated skillConversationId (that will be also used as the conversation ID to call the skill).
-            return skillConversationId;
+            // Return the storageKey (that will be also used as the conversation ID to call the skill)
+            return storageKey;
         }
 
         public override async Task<SkillConversationReference> GetSkillConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
@@ -71,7 +71,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot
 
         public override async Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
         {
-            // Delete the SkillConversationReference from storage.
+            // Delete the SkillConversationReference from storage
             await _storage.DeleteAsync(new[] { skillConversationId }, cancellationToken).ConfigureAwait(false);
         }
     }

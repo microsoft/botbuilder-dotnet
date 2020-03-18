@@ -89,6 +89,11 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
+        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return base.ResumeDialogAsync(outerDc, reason, result, cancellationToken);
+        }
+
         protected override async Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default)
         {
             // This is an example on how to cancel a SkillDialog that is currently in progress from the parent bot
@@ -114,10 +119,12 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
         private async Task<DialogTurnResult> SelectSkillStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // Create the PromptOptions from the skill configuration which contain the list of configured skills.
+            var messageText = stepContext.Options?.ToString() ?? "What skill would you like to call?";
+            var repromptMessageText = "That was not a valid choice, please select a valid skill.";
             var options = new PromptOptions
             {
-                Prompt = MessageFactory.Text(stepContext.Options?.ToString() ?? "What skill would you like to call?"),
-                RetryPrompt = MessageFactory.Text("That was not a valid choice, please select a valid skill."),
+                Prompt = MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput),
+                RetryPrompt = MessageFactory.Text(repromptMessageText, repromptMessageText, InputHints.ExpectingInput),
                 Choices = _skillsConfig.Skills.Select(skill => new Choice(skill.Value.Id)).ToList()
             };
 
@@ -136,12 +143,13 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             stepContext.Values[_selectedSkillKey] = selectedSkill;
 
             // Create the PromptOptions with the actions supported by the selected skill.
+            var messageText = $"What action would you like to call in **{selectedSkill.Id}**?";
+            var repromptMessageText = "That was not a valid choice, please select a valid action.";
             var options = new PromptOptions
             {
-                Prompt = MessageFactory.Text($"What action would you like to call in **{selectedSkill.Id}**?"),
-                RetryPrompt = MessageFactory.Text("That was not a valid choice, please select a valid action."),
-                Choices = GetSkillActions(selectedSkill),
-                Style = ListStyle.SuggestedAction
+                Prompt = MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput),
+                RetryPrompt = MessageFactory.Text(repromptMessageText, repromptMessageText, InputHints.ExpectingInput),
+                Choices = GetSkillActions(selectedSkill)
             };
 
             // Prompt the user to select a skill action.
@@ -178,7 +186,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             skillDialogArgs.Activity.Properties = stepContext.Context.Activity.Properties;
 
             // Comment or uncomment this line if you need to enable or disabled buffered replies.
-            skillDialogArgs.Activity.DeliveryMode = DeliveryModes.ExpectReplies;
+            //skillDialogArgs.Activity.DeliveryMode = DeliveryModes.ExpectReplies;
 
             // Save active skill in state
             await _activeSkillProperty.SetAsync(stepContext.Context, selectedSkill, cancellationToken);
@@ -196,7 +204,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             {
                 var message = $"Skill \"{activeSkill.Id}\" invocation complete.";
                 message += $" Result: {JsonConvert.SerializeObject(stepContext.Result)}";
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(message, inputHint: InputHints.IgnoringInput), cancellationToken: cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(message, message, inputHint: InputHints.IgnoringInput), cancellationToken: cancellationToken);
             }
 
             // Clear the skill selected by the user.
@@ -226,6 +234,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
                     choices.Add(new Choice("m:some message for tomorrow"));
                     choices.Add(new Choice("BookFlight"));
                     choices.Add(new Choice("OAuthTest"));
+                    choices.Add(new Choice("EchoSkillBot"));
                     choices.Add(new Choice("mv:some message with value"));
                     choices.Add(new Choice("BookFlightWithValues"));
                     break;
@@ -270,6 +279,14 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             {
                 var activity = (Activity)Activity.CreateEventActivity();
                 activity.Name = "BookFlight";
+                return activity;
+            }
+
+            // Send an event activity to the skill with "EchoSkillBot" in the name.
+            if (selectedOption.Equals("EchoSkillBot", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var activity = (Activity)Activity.CreateEventActivity();
+                activity.Name = "EchoSkillBot";
                 return activity;
             }
 

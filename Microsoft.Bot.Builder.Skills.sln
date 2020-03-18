@@ -151,6 +151,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EchoSkillBot", "FunctionalTests\Skills\SimpleBotToBot\EchoSkillBot\EchoSkillBot.csproj", "{C8F3C6E5-6A21-4F77-ADF7-30119D836A4D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DialogToDialog", "DialogToDialog", "{3E023AB7-FE1F-41B1-9EF4-1550BCE1DC37}"
+	ProjectSection(SolutionItems) = preProject
+		FunctionalTests\Skills\DialogToDialog\README.md = FunctionalTests\Skills\DialogToDialog\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogRootBot", "FunctionalTests\Skills\DialogToDialog\DialogRootBot\DialogRootBot.csproj", "{E65DC262-CA77-41F6-8439-02C1917874DD}"
 EndProject
