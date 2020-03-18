@@ -39,12 +39,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
 
         public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            var dcState = dc.GetState();
-
-            var (result, error) = Condition.TryEvaluate(dcState);
+            var (result, error) = Condition.TryEvaluate(dc.State);
             if ((bool)result == false)
             {
-                var desc = Description?.GetValue(dcState) ?? Condition.ToString();
+                var desc = Description?.GetValue(dc.State) ?? Condition.ToString();
                 throw new Exception(desc);
             }
 

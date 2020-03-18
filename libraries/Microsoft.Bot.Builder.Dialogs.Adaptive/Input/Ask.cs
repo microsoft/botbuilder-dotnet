@@ -50,22 +50,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            var dcState = dc.GetState();
-
             //get number of retries from memory
-            if (!dcState.TryGetValue(DialogPath.Retries, out int retries))
+            if (!dc.State.TryGetValue(DialogPath.Retries, out int retries))
             {
                 retries = 0;
             }
 
-            dcState.TryGetValue(TurnPath.DIALOGEVENT, out DialogEvent trigger);
+            dc.State.TryGetValue(TurnPath.DialogEvent, out DialogEvent trigger);
 
-            var expected = this.ExpectedProperties?.GetValue(dcState);
+            var expected = this.ExpectedProperties?.GetValue(dc.State);
             if (expected != null
-                && dcState.TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
+                && dc.State.TryGetValue(DialogPath.ExpectedProperties, out List<string> lastExpectedProperties)
                 && !expected.Any(prop => !lastExpectedProperties.Contains(prop))
                 && !lastExpectedProperties.Any(prop => !expected.Contains(prop))
-                && dcState.TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
+                && dc.State.TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
                 && lastTrigger.Name.Equals(trigger.Name))
             {
                 retries++;
@@ -75,9 +73,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 retries = 0;
             }
 
-            dcState.SetValue(DialogPath.Retries, retries);
-            dcState.SetValue(DialogPath.LastTriggerEvent, trigger);
-            dcState.SetValue(DialogPath.ExpectedProperties, expected);
+            dc.State.SetValue(DialogPath.Retries, retries);
+            dc.State.SetValue(DialogPath.LastTriggerEvent, trigger);
+            dc.State.SetValue(DialogPath.ExpectedProperties, expected);
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;

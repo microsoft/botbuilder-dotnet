@@ -57,17 +57,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             var expressions = new List<Expression> { base.GetExpression() };
             if (this.Property != null)
             {
-                expressions.Add(Expression.Parse($"{TurnPath.DIALOGEVENT}.value.property == '{this.Property}'"));
+                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.property == '{this.Property}'"));
             }
 
             if (this.Entity != null)
             {
-                expressions.Add(Expression.Parse($"{TurnPath.DIALOGEVENT}.value.entity.name == '{this.Entity}'"));
+                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.entity.name == '{this.Entity}'"));
             }
 
             if (this.Operation != null)
             {
-                expressions.Add(Expression.Parse($"{TurnPath.DIALOGEVENT}.value.entity.operation == '{this.Operation}'"));
+                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.entity.operation == '{this.Operation}'"));
             }
 
             return Expression.AndExpression(expressions.ToArray());
