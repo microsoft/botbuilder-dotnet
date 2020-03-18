@@ -33,11 +33,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
         public void TestNotSupportStructuredType()
         {
+            // fallback to text activity
             var lgResult = GetNormalStructureLGFile().Evaluate("notSupport");
             var activity = ActivityFactory.FromObject(lgResult);
+            Assert.AreEqual(0, activity.Attachments.Count);
+            Assert.AreEqual("{\"lgType\":\"Acti\",\"key\":\"value\"}", activity.Text.Replace("\r\n", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty));
         }
 
         [TestMethod]
@@ -303,10 +305,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var diagnostics = ActivityFactory.CheckLGResult("Not a valid json");
             Assert.AreEqual(diagnostics.Count, 1);
             Assert.AreEqual("[WARNING]LG output is not a json object, and will fallback to string format.", diagnostics[0]);
-
-            diagnostics = ActivityFactory.CheckLGResult("{}");
-            Assert.AreEqual(diagnostics.Count, 1);
-            Assert.AreEqual("[ERROR]'lgType' does not exist in lg output json object.", diagnostics[0]);
         }
 
         [TestMethod]
@@ -315,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var lgResult = GetDiagnosticStructureLGFile().Evaluate("ErrorStructuredType", null);
             var diagnostics = ActivityFactory.CheckLGResult(lgResult);
             Assert.AreEqual(diagnostics.Count, 1);
-            Assert.AreEqual("[ERROR]Type 'mystruct' is not supported currently.", diagnostics[0]);
+            Assert.AreEqual("[WARNING]Type 'mystruct' is not supported currently.", diagnostics[0]);
 
             lgResult = GetDiagnosticStructureLGFile().Evaluate("ErrorActivityType", null);
             
