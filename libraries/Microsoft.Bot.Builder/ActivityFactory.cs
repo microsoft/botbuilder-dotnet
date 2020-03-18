@@ -153,6 +153,10 @@ namespace Microsoft.Bot.Builder
             {
                 activity = BuildActivity(lgJObj);
             }
+            else
+            {
+                activity = BuildActivityFromText(lgJObj?.ToString()?.Trim());
+            }
 
             return activity;
         }
@@ -462,6 +466,10 @@ namespace Microsoft.Bot.Builder
             try
             {
                 lgStructuredResult = JObject.Parse(lgStringResult);
+                if (string.IsNullOrWhiteSpace(GetStructureType(lgStructuredResult)))
+                {
+                    return false;
+                }
             }
             catch
             {
@@ -476,6 +484,12 @@ namespace Microsoft.Bot.Builder
             var result = new List<string>();
             var type = GetStructureType(lgJObj);
 
+            //if type is empty, just parse it to text activity
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                return result;
+            }
+
             if (GenericCardTypeMapping.ContainsKey(type)
                 || type == nameof(Attachment).ToLowerInvariant())
             {
@@ -487,10 +501,7 @@ namespace Microsoft.Bot.Builder
             }
             else
             {
-                var diagnosticMessage = string.IsNullOrWhiteSpace(type) ?
-                    $"'{LGType}' does not exist in lg output json object."
-                    : $"Type '{type}' is not supported currently.";
-                result.Add(BuildDiagnostic(diagnosticMessage));
+                result.Add(BuildDiagnostic($"Type '{type}' is not supported currently.", false));
             }
 
             return result;
