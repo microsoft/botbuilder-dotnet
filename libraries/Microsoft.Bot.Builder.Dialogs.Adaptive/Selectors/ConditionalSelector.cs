@@ -55,10 +55,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public async Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel = default)
+        public async Task<IReadOnlyList<OnCondition>> Select(ActionContext actionContext, CancellationToken cancel = default)
         {
-            var dcState = context.GetState();
-            var (eval, _) = Condition.TryGetValue(dcState);
+            var (eval, _) = Condition.TryGetValue(actionContext.State);
             ITriggerSelector selector;
             if (eval)
             {
@@ -71,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 IfFalse.Initialize(_conditionals, _evaluate);
             }
 
-            return await selector.Select(context, cancel).ConfigureAwait(false);
+            return await selector.Select(actionContext, cancel).ConfigureAwait(false);
         }
     }
 }

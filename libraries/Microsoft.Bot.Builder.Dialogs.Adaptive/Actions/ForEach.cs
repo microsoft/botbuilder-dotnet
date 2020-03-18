@@ -57,14 +57,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var dcState = dc.GetState();
-
-            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            dcState.SetValue(INDEX, -1);
+            dc.State.SetValue(INDEX, -1);
             return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
         }
 
@@ -86,16 +84,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected virtual async Task<DialogTurnResult> NextItemAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             // Get list information
-            var dcState = dc.GetState();
-            var list = dcState.GetValue<JArray>(this.ItemsProperty.GetValue(dcState));
-            var index = dcState.GetIntValue(INDEX);
+            var list = dc.State.GetValue<JArray>(this.ItemsProperty.GetValue(dc.State));
+            var index = dc.State.GetIntValue(INDEX);
 
             // Next item
             if (++index < list.Count)
             {
                 // Persist index and value
-                dcState.SetValue(VALUE, list[index]);
-                dcState.SetValue(INDEX, index);
+                dc.State.SetValue(VALUE, list[index]);
+                dc.State.SetValue(INDEX, index);
 
                 // Start loop
                 return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);

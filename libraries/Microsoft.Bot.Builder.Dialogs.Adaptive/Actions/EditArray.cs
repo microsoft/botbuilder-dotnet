@@ -152,9 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var dcState = dc.GetState();
-
-            if (this.Disabled != null && this.Disabled.GetValue(dcState))
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State))
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -164,12 +162,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var array = dcState.GetValue<JArray>(this.ItemsProperty.GetValue(dcState), () => new JArray());
+            var array = dc.State.GetValue<JArray>(this.ItemsProperty.GetValue(dc.State), () => new JArray());
 
             object item = null;
             object result = null;
 
-            switch (ChangeType.GetValue(dcState))
+            switch (ChangeType.GetValue(dc.State))
             {
                 case ArrayChangeType.Pop:
                     item = array[array.Count - 1];
@@ -178,7 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
                 case ArrayChangeType.Push:
                     EnsureValue();
-                    var (itemResult, error) = this.Value.TryGetValue(dcState);
+                    var (itemResult, error) = this.Value.TryGetValue(dc.State);
                     if (error == null && itemResult != null)
                     {
                         array.Add(itemResult);
@@ -197,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
                 case ArrayChangeType.Remove:
                     EnsureValue();
-                    (itemResult, error) = this.Value.TryGetValue(dcState);
+                    (itemResult, error) = this.Value.TryGetValue(dc.State);
                     if (error == null && itemResult != null)
                     {
                         result = false;
@@ -219,11 +217,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
             }
 
-            dcState.SetValue(this.ItemsProperty.GetValue(dcState), array);
+            dc.State.SetValue(this.ItemsProperty.GetValue(dc.State), array);
 
             if (ResultProperty != null)
             {
-                dcState.SetValue(this.ResultProperty.GetValue(dcState), result);
+                dc.State.SetValue(this.ResultProperty.GetValue(dc.State), result);
             }
 
             return await dc.EndDialogAsync(result);
