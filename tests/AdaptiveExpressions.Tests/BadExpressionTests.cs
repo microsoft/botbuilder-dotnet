@@ -29,6 +29,7 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> BadExpressions => new[]
         {
+            Test("items[3]"),
             #region General test
             Test("length(func())"), // no such function in children
             Test("func()"), // no such func

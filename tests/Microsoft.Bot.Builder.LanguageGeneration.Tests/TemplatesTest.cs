@@ -989,7 +989,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             { 
                 if (func == "custom")
                 {
-                    return ExpressionFunctions.Numeric("custom", (args) => args[0] + args[1]);
+                    return ExpressionFunctions.Numeric("custom", (args) => (int)args[0] + (int)args[1]);
                 }
                 else
                 {
