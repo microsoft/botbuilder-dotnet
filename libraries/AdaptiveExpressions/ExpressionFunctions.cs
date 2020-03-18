@@ -819,20 +819,11 @@ namespace AdaptiveExpressions
             object value = null;
             string error = null;
 
-            var count = -1;
             if (TryParseList(instance, out var list))
             {
-                count = list.Count;
-            }
-
-            var itype = instance.GetType();
-            var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
-            if (count != -1 && indexer != null)
-            {
-                if (index >= 0 && count > index)
+                if (index >= 0 && index < list.Count)
                 {
-                    dynamic idyn = instance;
-                    value = idyn[index];
+                    value = list[index];
                 }
                 else
                 {
