@@ -67,5 +67,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             base.SetValue(value);
         }
+
+        public new string ToString()
+        {
+            if (this.Value != null)
+            {
+                return this.Value.Id;
+            }
+
+            return base.ToString();
+        }
     }
 }
