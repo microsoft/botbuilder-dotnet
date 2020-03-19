@@ -147,8 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // Increment our offset into the actions and being the next action
-            var dcState = dc.GetState();
-            var nextOffset = dcState.GetIntValue(OFFSETKEY, 0) + 1;
+            var nextOffset = dc.State.GetIntValue(OFFSETKEY, 0) + 1;
             if (nextOffset < this.Actions.Count)
             {
                 return await this.BeginActionAsync(dc, nextOffset, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -172,9 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected virtual async Task<DialogTurnResult> BeginActionAsync(DialogContext dc, int offset, CancellationToken cancellationToken = default)
         {
             // get the action for the offset
-            var dcState = dc.GetState();
-
-            dcState.SetValue(OFFSETKEY, offset);
+            dc.State.SetValue(OFFSETKEY, offset);
             var action = this.Actions[offset];
             var actionName = action.GetType().Name.ToString();
 

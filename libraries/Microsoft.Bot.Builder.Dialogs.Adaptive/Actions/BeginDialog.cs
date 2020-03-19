@@ -53,9 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
             
-            var dcState = dc.GetState();
-
-            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -66,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var boundOptions = BindOptions(dc, options);
 
             // set the activity processed state (default is true)
-            dcState.SetValue(TurnPath.ACTIVITYPROCESSED, this.ActivityProcessed.GetValue(dcState));
+            dc.State.SetValue(TurnPath.ActivityProcessed, this.ActivityProcessed.GetValue(dc.State));
 
             // start dialog with bound options passed in as the options
             return await dc.BeginDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -74,11 +72,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var dcState = dc.GetState();
-
             if (this.ResultProperty != null)
             {
-                dcState.SetValue(this.ResultProperty.GetValue(dcState), result);
+                dc.State.SetValue(this.ResultProperty.GetValue(dc.State), result);
             }
 
             // By default just end the current dialog and return result to parent.

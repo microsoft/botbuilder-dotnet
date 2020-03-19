@@ -483,7 +483,7 @@ namespace AdaptiveExpressions
         /// </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
         public (object value, string error) TryEvaluate(object state)
-            => this.TryEvaluate<object>(state);
+            => this.TryEvaluate<object>(MemoryFactory.Create(state));
 
         /// <summary>
         /// Evaluate the expression.
@@ -506,7 +506,7 @@ namespace AdaptiveExpressions
         /// </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
         public (T value, string error) TryEvaluate<T>(object state)
-        => this.TryEvaluate<T>(SimpleObjectMemory.Wrap(state));
+        => this.TryEvaluate<T>(MemoryFactory.Create(state));
 
         /// <summary>
         /// Evaluate the expression.

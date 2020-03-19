@@ -78,9 +78,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var dcState = dc.GetState();
-
-            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -89,10 +87,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             // use bindingOptions to bind to the bound options
             var boundOptions = BindOptions(dc, options);
-            dcState.SetValue(ThisPath.OPTIONS, boundOptions);
+            dc.State.SetValue(ThisPath.Options, boundOptions);
 
             var engine = new Engine();
-            foreach (var scope in dcState.Where(ms => ms.Key != "this"))
+            foreach (var scope in dc.State.Where(ms => ms.Key != "this"))
             {
                 engine.SetValue(scope.Key, scope.Value);
             }
@@ -104,7 +102,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             if (this.ResultProperty != null)
             {
-                dcState.SetValue(this.ResultProperty.GetValue(dcState), result);
+                dc.State.SetValue(this.ResultProperty.GetValue(dc.State), result);
             }
 
             return await dc.EndDialogAsync(result, cancellationToken: cancellationToken);
@@ -118,16 +116,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         protected object BindOptions(DialogContext dc, object options)
         {
-            var dcState = dc.GetState();
-
             // binding options are static definition of options with overlay of passed in options);
-            var bindingOptions = (JObject)ObjectPath.Merge(this.Options.GetValue(dcState), options ?? new JObject());
+            var bindingOptions = (JObject)ObjectPath.Merge(this.Options.GetValue(dc.State), options ?? new JObject());
             var boundOptions = new JObject();
 
             foreach (var binding in bindingOptions)
             {
                 // evalute the value
-                var (value, error) = new ValueExpression(binding.Value).TryGetValue(dcState);
+                var (value, error) = new ValueExpression(binding.Value).TryGetValue(dc.State);
 
                 if (error != null)
                 {

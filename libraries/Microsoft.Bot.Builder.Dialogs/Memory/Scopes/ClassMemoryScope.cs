@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     public class ClassMemoryScope : MemoryScope
     {
         public ClassMemoryScope()
-            : base(ScopePath.CLASS)
+            : base(ScopePath.Class)
         {
             this.IncludeInSnapshot = false;
         }
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 var dialog = dc.FindDialog(dc.ActiveDialog.Id);
                 if (dialog != null)
                 {
-                    return new ExpressionPropertyBinder(dc, dialog);
+                    return new ReadOnlyObject(dialog);
                 }
             }
 

@@ -30,8 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var dcState = dc.GetState();
-            var input = dcState.GetValue<object>(VALUE_PROPERTY);
+            var input = dc.State.GetValue<object>(VALUE_PROPERTY);
             var culture = GetCulture(dc);
             var refTime = dc.Context.Activity.LocalTimestamp?.LocalDateTime;
             var results = DateTimeRecognizer.RecognizeDateTime(input.ToString(), culture, refTime: refTime);
@@ -45,14 +44,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     result.Add(ReadResolution(value));
                 }
 
-                dcState.SetValue(VALUE_PROPERTY, result);
+                dc.State.SetValue(VALUE_PROPERTY, result);
 
                 if (OutputFormat != null)
                 {
-                    var (outputValue, error) = this.OutputFormat.TryGetValue(dcState);
+                    var (outputValue, error) = this.OutputFormat.TryGetValue(dc.State);
                     if (error == null)
                     {
-                        dcState.SetValue(VALUE_PROPERTY, outputValue);
+                        dc.State.SetValue(VALUE_PROPERTY, outputValue);
                     }
                     else
                     {
@@ -104,8 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (this.DefaultLocale != null)
             {
-                var dcState = dc.GetState();
-                return this.DefaultLocale.GetValue(dcState);
+                return this.DefaultLocale.GetValue(dc.State);
             }
 
             return English;
