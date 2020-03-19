@@ -151,33 +151,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var dcState = dc.GetState();
-
-            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             var op = OnInitializeOptions(dc, options);
-            dcState.SetValue(ThisPath.OPTIONS, op);
-            dcState.SetValue(TURN_COUNT_PROPERTY, 0);
+            dc.State.SetValue(ThisPath.Options, op);
+            dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
 
-            var alwaysPrompt = this.AlwaysPrompt?.GetValue(dcState) ?? false;
+            var alwaysPrompt = this.AlwaysPrompt?.GetValue(dc.State) ?? false;
 
             // If AlwaysPrompt is set to true, then clear Property value for turn 0.
-            var property = this.Property?.GetValue(dcState);
+            var property = this.Property?.GetValue(dc.State);
             if (property != null && alwaysPrompt)
             {
-                dcState.SetValue(property, null);
+                dc.State.SetValue(property, null);
             }
 
             var state = alwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc, 0);
             if (state == InputState.Valid)
             {
-                var input = dcState.GetValue<object>(VALUE_PROPERTY);
+                var input = dc.State.GetValue<object>(VALUE_PROPERTY);
 
                 // set property
-                dcState.SetValue(property, input);
+                dc.State.SetValue(property, input);
 
                 // return as result too
                 return await dc.EndDialogAsync(input);
@@ -187,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 // turnCount should increase here, because you want when nextTurn comes in
                 // We will set the turn count to 1 so the input will not pick from "dialog.value"
                 // and instead go with "turn.activity.text"
-                dcState.SetValue(TURN_COUNT_PROPERTY, 1);
+                dc.State.SetValue(TURN_COUNT_PROPERTY, 1);
                 return await this.PromptUser(dc, state);
             }
         }
@@ -200,40 +198,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Dialog.EndOfTurn;
             }
 
-            var dcState = dc.GetState();
-
-            var interrupted = dcState.GetValue<bool>(TurnPath.INTERRUPTED, () => false);
-            var turnCount = dcState.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
+            var interrupted = dc.State.GetValue<bool>(TurnPath.Interrupted, () => false);
+            var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
             var state = await this.RecognizeInput(dc, interrupted ? 0 : turnCount);
 
             if (state == InputState.Valid)
             {
-                var input = dcState.GetValue<object>(VALUE_PROPERTY);
+                var input = dc.State.GetValue<object>(VALUE_PROPERTY);
 
                 // set output property
                 if (this.Property != null)
                 {
-                    dcState.SetValue(this.Property.GetValue(dcState), input);
+                    dc.State.SetValue(this.Property.GetValue(dc.State), input);
                 }
 
                 return await dc.EndDialogAsync(input).ConfigureAwait(false);
             }
-            else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount.GetValue(dcState))
+            else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount.GetValue(dc.State))
             {
                 // increase the turnCount as last step
-                dcState.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
+                dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
                 return await this.PromptUser(dc, state).ConfigureAwait(false);
             }
             else
             {
                 if (this.DefaultValue != null)
                 {
-                    var (value, error) = this.DefaultValue.TryGetValue(dcState);
+                    var (value, error) = this.DefaultValue.TryGetValue(dc.State);
                     if (this.DefaultValueResponse != null)
                     {
-                        var response = await this.DefaultValueResponse.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        var response = await this.DefaultValueResponse.BindToData(dc.Context, dc.State).ConfigureAwait(false);
 
                         var properties = new Dictionary<string, string>()
                         {
@@ -246,7 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     }
 
                     // set output property
-                    dcState.SetValue(this.Property.GetValue(dcState), value);
+                    dc.State.SetValue(this.Property.GetValue(dc.State), value);
 
                     return await dc.EndDialogAsync(value).ConfigureAwait(false);
                 }
@@ -266,8 +262,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
             {
-                var dcState = dc.GetState();
-
                 // Ask parent to perform recognition
                 await dc.Parent.EmitEventAsync(AdaptiveEvents.RecognizeUtterance, value: dc.Context.Activity, bubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -275,7 +269,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 var canInterrupt = true;
                 if (this.AllowInterruptions != null)
                 {
-                    var (allowInterruptions, error) = this.AllowInterruptions.TryGetValue(dcState);
+                    var (allowInterruptions, error) = this.AllowInterruptions.TryGetValue(dc.State);
                     canInterrupt = error == null && allowInterruptions;
                 }
 
@@ -356,8 +350,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         protected virtual async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
         {
             IMessageActivity msg = null;
-            var dcState = dc.GetState();
-
             ITemplate<Activity> template = null;
             switch (state)
             {
@@ -365,12 +357,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (this.UnrecognizedPrompt != null)
                     {
                         template = this.UnrecognizedPrompt;
-                        msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
                     }
                     else if (this.InvalidPrompt != null)
                     {
                         template = this.InvalidPrompt;
-                        msg = await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        msg = await this.InvalidPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
                     }
 
                     break;
@@ -379,12 +371,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (this.InvalidPrompt != null)
                     {
                         template = this.InvalidPrompt;
-                        msg = await this.InvalidPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        msg = await this.InvalidPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
                     }
                     else if (this.UnrecognizedPrompt != null)
                     {
                         template = this.UnrecognizedPrompt;
-                        msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                        msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
                     }
 
                     break;
@@ -393,7 +385,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (msg == null)
             {
                 template = this.Prompt;
-                msg = await this.Prompt.BindToData(dc.Context, dcState).ConfigureAwait(false);
+                msg = await this.Prompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
             }
 
             msg.InputHint = InputHints.ExpectingInput;
@@ -412,23 +404,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             dynamic input = null;
 
-            var dcState = dc.GetState();
-
             // Use Property expression for input first
             if (this.Property != null)
             {
-                var property = this.Property.GetValue(dcState);
-                dcState.TryGetValue(property, out input);
+                var property = this.Property.GetValue(dc.State);
+                dc.State.TryGetValue(property, out input);
 
                 // Clear property to avoid it being stuck on the next turn. It will get written 
                 // back if the value passes validations.
-                dcState.SetValue(property, null);
+                dc.State.SetValue(property, null);
             }
 
             // Use Value expression for input second
             if (input == null && this.Value != null)
             {
-                var (value, valueError) = this.Value.TryGetValue(dcState);
+                var (value, valueError) = this.Value.TryGetValue(dc.State);
                 if (valueError != null)
                 {
                     throw new Exception($"In InputDialog, this.Value expression evaluation resulted in an error. Expression: {this.Value}. Error: {valueError}");
@@ -438,7 +428,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             // Fallback to using activity
-            bool activityProcessed = dcState.GetBoolValue(TurnPath.ACTIVITYPROCESSED);
+            bool activityProcessed = dc.State.GetBoolValue(TurnPath.ActivityProcessed);
             if (!activityProcessed && input == null && turnCount > 0)
             {
                 if (this.GetType().Name == nameof(AttachmentInput))
@@ -458,7 +448,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             // Update "this.value" and perform additional recognition and validations
-            dcState.SetValue(VALUE_PROPERTY, input);
+            dc.State.SetValue(VALUE_PROPERTY, input);
             if (input != null)
             {
                 var state = await this.OnRecognizeInput(dc).ConfigureAwait(false);
@@ -467,14 +457,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     foreach (var validation in this.Validations)
                     {
                         var exp = Expression.Parse(validation.TrimStart('='));
-                        var (value, error) = exp.TryEvaluate(dcState);
+                        var (value, error) = exp.TryEvaluate(dc.State);
                         if (value == null || (value is bool && (bool)value == false))
                         {
                             return InputState.Invalid;
                         }
                     }
 
-                    dcState.SetValue(TurnPath.ACTIVITYPROCESSED, true);
+                    dc.State.SetValue(TurnPath.ActivityProcessed, true);
                     return InputState.Valid;
                 }
                 else

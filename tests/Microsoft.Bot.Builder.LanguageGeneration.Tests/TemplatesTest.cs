@@ -81,6 +81,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestMultiLineExprInLG()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("MultiLineExpr.lg"));
+
+            string evaled = templates.Evaluate("ExprInCondition", new { userName = "Henry", day = "Monday" }).ToString();
+            Assert.IsTrue(evaled == "Not today", $"Evaled is {evaled}");
+
+            evaled = templates.Evaluate("definition").ToString();
+            Assert.IsTrue(evaled == "10", $"Evaled is {evaled}");
+
+            evaled = templates.Evaluate("template").ToString();
+            Assert.IsTrue(evaled == "15", $"Evaled is {evaled}");
+        }
+
+        [TestMethod]
         public void TestBasicSwitchCaseTemplate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("switchcase.lg"));

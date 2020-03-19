@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!(scope is CustomizedMemory))
             {
-                scope = new CustomizedMemory(SimpleObjectMemory.Wrap(scope));
+                scope = new CustomizedMemory(scope);
             }
 
             (var reExecute, var templateName) = ParseTemplateName(inputTemplateName);

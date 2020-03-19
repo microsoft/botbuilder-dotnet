@@ -123,13 +123,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var op = options as ChoiceInputOptions;
             if (op == null || op.Choices == null || op.Choices.Count == 0)
             {
-                var dcState = dc.GetState();
                 if (op == null)
                 {
                     op = new ChoiceInputOptions();
                 }
 
-                var (choices, error) = this.Choices.TryGetValue(dcState);
+                var (choices, error) = this.Choices.TryGetValue(dc.State);
                 if (error != null)
                 {
                     throw new Exception(error);
@@ -143,17 +142,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var dcState = dc.GetState();
-
-            var input = dcState.GetValue<object>(VALUE_PROPERTY);
-            var options = dcState.GetValue<ChoiceInputOptions>(ThisPath.OPTIONS);
+            var input = dc.State.GetValue<object>(VALUE_PROPERTY);
+            var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
 
             var choices = options.Choices;
 
             var result = new PromptRecognizerResult<FoundChoice>();
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
-                var opt = this.RecognizerOptions?.GetValue(dcState) ?? new FindChoicesOptions();
+                var opt = this.RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
                 opt.Locale = GetCulture(dc);
                 var results = ChoiceRecognizers.RecognizeChoices(input.ToString(), choices, opt);
                 if (results == null || results.Count == 0)
@@ -162,14 +159,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
 
                 var foundChoice = results[0].Resolution;
-                switch (this.OutputFormat.GetValue(dcState))
+                switch (this.OutputFormat.GetValue(dc.State))
                 {
                     case ChoiceOutputFormat.Value:
                     default:
-                        dcState.SetValue(VALUE_PROPERTY, foundChoice.Value);
+                        dc.State.SetValue(VALUE_PROPERTY, foundChoice.Value);
                         break;
                     case ChoiceOutputFormat.Index:
-                        dcState.SetValue(VALUE_PROPERTY, foundChoice.Index);
+                        dc.State.SetValue(VALUE_PROPERTY, foundChoice.Index);
                         break;
                 }
             }
@@ -179,26 +176,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
         {
-            var dcState = dc.GetState();
             var locale = GetCulture(dc);
             var prompt = await base.OnRenderPrompt(dc, state);
             var channelId = dc.Context.Activity.ChannelId;
             var choicePrompt = new ChoicePrompt(this.Id);
-            var choiceOptions = this.ChoiceOptions?.GetValue(dcState) ?? ChoiceInput.DefaultChoiceOptions[locale];
+            var choiceOptions = this.ChoiceOptions?.GetValue(dc.State) ?? ChoiceInput.DefaultChoiceOptions[locale];
 
-            var (choices, error) = this.Choices.TryGetValue(dcState);
+            var (choices, error) = this.Choices.TryGetValue(dc.State);
             if (error != null)
             {
                 throw new Exception(error);
             }
 
-            return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style.GetValue(dcState), choiceOptions);
+            return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style.GetValue(dc.State), choiceOptions);
         }
 
         private string GetCulture(DialogContext dc)
         {
-            var dcState = dc.GetState();
-
             if (!string.IsNullOrWhiteSpace(dc.Context.Activity.Locale))
             {
                 return dc.Context.Activity.Locale;
@@ -206,7 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (this.DefaultLocale != null)
             {
-                return this.DefaultLocale.GetValue(dcState);
+                return this.DefaultLocale.GetValue(dc.State);
             }
 
             return English;

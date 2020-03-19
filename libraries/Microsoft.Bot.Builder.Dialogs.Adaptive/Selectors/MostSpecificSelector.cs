@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         public virtual async Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel)
         {
-            var triggers = _tree.Matches(context.GetState());
+            var triggers = _tree.Matches(context.State);
             var matches = new List<OnCondition>();
             foreach (var trigger in triggers)
             {
