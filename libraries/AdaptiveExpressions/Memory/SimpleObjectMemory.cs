@@ -37,7 +37,7 @@ namespace AdaptiveExpressions.Memory
         public bool TryGetValue(string path, out object value)
         {
             value = null;
-            if (memory == null || path.Length == 0 || (path[0] != '[' && !char.IsLetter(path[0])))
+            if (memory == null || path.Length == 0)
             {
                 return false;
             }
