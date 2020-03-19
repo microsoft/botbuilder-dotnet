@@ -76,6 +76,7 @@
                     "type": "array",
                     "items": [
                         {
+                            "title": "Array of confirm choice objects",
                             "type": "object",
                             "properties": {
                                 "value": {
