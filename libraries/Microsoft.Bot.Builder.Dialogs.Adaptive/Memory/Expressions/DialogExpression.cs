@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             base.SetValue(value);
         }
 
-        public new string ToString()
+        public override string ToString()
         {
             if (this.Value != null)
             {
