@@ -57,7 +57,7 @@ namespace AdaptiveExpressions
         /// This is all available functions, you can add custom functions to it, but you cannot
         /// replace builtin functions.  If you clear the dictionary, it will be reset to the built in functions.
         /// </remarks>
-        public static readonly IDictionary<string, ExpressionEvaluator> Functions = new FunctionTable();
+        public static readonly FunctionTable Functions = new FunctionTable();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Expression"/> class.
@@ -699,7 +699,7 @@ namespace AdaptiveExpressions
         /// <summary>
         /// FunctionTable is a dictionary which merges BuiltinFunctions.Functions with a CustomDictionary.
         /// </summary>
-        private class FunctionTable : IDictionary<string, ExpressionEvaluator>
+        public class FunctionTable : IDictionary<string, ExpressionEvaluator>
         {
             private readonly ConcurrentDictionary<string, ExpressionEvaluator> customFunctions = new ConcurrentDictionary<string, ExpressionEvaluator>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -740,6 +740,11 @@ namespace AdaptiveExpressions
             }
 
             public void Add(string key, ExpressionEvaluator value) => this[key] = value;
+
+            public void Add(string key, Func<IReadOnlyList<dynamic>, object> func)
+            {
+                Add(key, new ExpressionEvaluator(key, ExpressionFunctions.Apply(func)));
+            }
 
             public void Add(KeyValuePair<string, ExpressionEvaluator> item) => this[item.Key] = item.Value;
 
