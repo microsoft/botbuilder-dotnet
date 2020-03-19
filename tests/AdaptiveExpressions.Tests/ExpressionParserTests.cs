@@ -20,6 +20,7 @@ namespace AdaptiveExpressions.Tests
 
         private readonly object scope = new Dictionary<string, object>
         {
+            { "$index", "index" },
             {
                 "alist", new List<A>() { new A("item1"), new A("item2") }
             },
@@ -265,6 +266,7 @@ namespace AdaptiveExpressions.Tests
         {
             #region accessProperty and accessIndex
             Test("alist[0].Name", "item1"),
+            Test("$index", "index"),
             #endregion
 
             #region string interpolation test
