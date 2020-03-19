@@ -108,6 +108,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return false;
             }
 
+            // look to see if it's ExpressionProperty and bind it if it is
+            // NOTE: this bit of duck typing keeps us from adding dependency between adaptiveExpressions and Dialogs.
+            if (result.GetType().GetProperty("ExpressionText") != null)
+            {
+                var method = result.GetType().GetMethod("GetValue", new Type[] { typeof(object) });
+                if (method != null)
+                {
+                    result = method.Invoke(result, new object[] { obj });
+                }
+            }
+
             value = MapValueTo<T>(result);
             return true;
         }

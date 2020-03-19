@@ -1,0 +1,26 @@
+﻿>Demo How LG can evalute a multiple line defined expression
+#definition
+- ${count(concat('hello',
+'world'))}
+
+# definition2
+- this is book list: ${join(createArray("Ender's Game", 
+"Dune")
+, ", ")}
+
+#ExprInCondition
+- IF: ${userName.length < 5 || 
+    day == "Monday"}
+- Not today
+-ELSE:
+- Nice Try
+
+#template 
+-${sum(
+createArray(
+1,
+2,
+3,
+4,
+5)
+)}
