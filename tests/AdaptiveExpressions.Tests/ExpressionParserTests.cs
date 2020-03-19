@@ -298,13 +298,17 @@ namespace AdaptiveExpressions.Tests
 
             #region Operators test
             Test("1 + 2", 3),
+            Test("1 +\r\n 2", 3),
             Test("- 1 + 2", 1),
+            Test("- 1\r\n + 2", 1),
             Test("+ 1 + 2", 3),
             Test("1 - 2", -1),
             Test("1 - (-2)", 3),
             Test("1.0 + 2.0", 3.0),
             Test("1 * 2 + 3", 5),
+            Test("1 *\r\n 2 + 3", 5),
             Test("1 + 2 * 3", 7),
+            Test("1 + 2\r\n * 3", 7),
             Test("4 / 2", 2),
             Test("1 + 3 / 2", 2),
             Test("(1 + 3) / 2", 2),
@@ -317,9 +321,13 @@ namespace AdaptiveExpressions.Tests
             Test("one + two + hello + one + two", "3hello12"),
 
             Test("2^2", 4.0),
+            Test("2^\r\n2", 4.0),
             Test("3^2^2", 81.0),
+            Test("3\r\n^2^2", 81.0),
             Test("one > 0.5 && two < 2.5", true),
+            Test("one > 0.5\r\n && two < 2.5", true),
             Test("one > 0.5 || two < 1.5", true),
+            Test("one > 0.5 ||\r\n two < 1.5", true),
             Test("5 % 2", 1),
             Test("!(one == 1.0)", false),
             Test("!!(one == 1.0)", true),
@@ -336,6 +344,7 @@ namespace AdaptiveExpressions.Tests
             Test("hello == 'world'", false),
             Test("(1 + 2) != (4 - 1)", false),
             Test("!!exists(one) != !!exists(one)", false),
+            Test("!!exists(one) !=\r\n !!exists(one)", false),
             Test("hello != 'hello'", false),
             Test("hello != 'world'", true),
             Test("hello != \"hello\"", false),
@@ -348,6 +357,7 @@ namespace AdaptiveExpressions.Tests
             Test("float(5.5) <= float(4 - 1)", false),
             Test("'string'&'builder'", "stringbuilder"),
             Test("\"string\"&\"builder\"", "stringbuilder"),
+            Test("\"string\"&\r\n\"builder\"", "stringbuilder"),
             Test("one > 0.5 && two < 2.5", true, OneTwo),
             Test("notThere > 4", false),
             Test("float(5.5) && float(0.0)", true),
@@ -365,6 +375,7 @@ namespace AdaptiveExpressions.Tests
 
             #region  String functions test
             Test("concat(hello,world)", "helloworld"),
+            Test("concat(hello,\r\nworld)", "helloworld"),
             Test("concat('hello','world')", "helloworld"),
             Test("concat(nullObj,'world')", "world"),
             Test("concat('hello',nullObj)", "hello"),
@@ -378,6 +389,7 @@ namespace AdaptiveExpressions.Tests
             Test("length(\"hello\")", 5),
             Test("length(nullObj)", 0),
             Test("length(concat(hello,world))", 10),
+            Test("length(\r\nconcat(hello,\r\nworld))", 10),
             Test("length(hello + world)", 10),
             Test("count('hello')", 5),
             Test("count(\"hello\")", 5),
@@ -442,6 +454,7 @@ namespace AdaptiveExpressions.Tests
 
             #region  Logical comparison functions test
             Test("and(1 == 1, 1 < 2, 1 > 2)", false),
+            Test("and(1 == 1,\r\n 1 < 2,\r\n 1 > 2)", false),
             Test("and(!true, !!true)", false), // false && true
             Test("and(!!true, !!true)", true), // true && true
             Test("and(hello != 'world', bool('true'))", true), // true && true
@@ -545,6 +558,7 @@ namespace AdaptiveExpressions.Tests
             Test("bool('false')", true),
             Test("bool('hi')", true),
             Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object> { "h", "e", "l", "l", "o" }),
+            Test("createArray('h',\r\n 'e',\r\n 'l',\r\n 'l',\r\n 'o')", new List<object> { "h", "e", "l", "l", "o" }),
             Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object> { 1, true, "true", 10.0f }),
             Test("binary(hello)", "0110100001100101011011000110110001101111"),
             Test("length(binary(hello))", 40),
@@ -667,6 +681,7 @@ namespace AdaptiveExpressions.Tests
             Test("average(createArray(one, two, 3))", 2.0),
             Test("contains('hello world', 'hello')", true),
             Test("contains('hello world', 'hellow')", false),
+            Test("contains('hello world',\r\n 'hellow')", false),
             Test("contains(items, 'zero')", true),
             Test("contains(items, 'hi')", false),
             Test("contains(bag, 'three')", true),
@@ -686,6 +701,7 @@ namespace AdaptiveExpressions.Tests
             Test("join(createArray('a', 'b', 'c'), '.')", "a.b.c"),
             Test("join(createArray('a', 'b', 'c'), ',', ' and ')", "a,b and c"),
             Test("join(createArray('a', 'b'), ',', ' and ')", "a and b"),
+            Test("join(createArray(\r\n'a',\r\n 'b'), ','\r\n,\r\n ' and ')", "a and b"),
             Test("join(foreach(dialog, item, item.key), ',')", "x,instance,options,title,subTitle"),
             Test("foreach(dialog, item, item.value)[1].xxx", "instance"),
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
