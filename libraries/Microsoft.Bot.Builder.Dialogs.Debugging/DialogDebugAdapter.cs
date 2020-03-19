@@ -270,7 +270,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     this.Logger.LogError(error, error.Message);
 
-                    this.ContinueAllThreads();
+                    this.ResetOnDisconnect();
 
                     throw;
                 }
@@ -313,6 +313,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             Identifier.Decode(frameCode, out var threadCode, out var valueCode);
             thread = this.threads[threadCode];
             frame = thread.FrameCodes[valueCode];
+        }
+
+        private void ResetOnDisconnect()
+        {
+            // consider resetting this.events filter enabled state to defaults from constructor
+
+            this.options = new Protocol.LaunchAttach();
+            this.breakpoints.Clear();
+            this.output.ValueCodes.Clear();
+            ContinueAllThreads();
         }
 
         private void ContinueAllThreads()
@@ -647,7 +657,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
                 else
                 {
-                    this.ContinueAllThreads();
+                    this.ResetOnDisconnect();
                 }
 
                 return Protocol.Response.From(NextSeq, disconnect, new { });

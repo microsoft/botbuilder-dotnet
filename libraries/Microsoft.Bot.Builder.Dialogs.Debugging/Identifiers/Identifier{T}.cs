@@ -73,6 +73,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
+        void IIdentifier<T>.Clear()
+        {
+            lock (gate)
+            {
+                // do not reset the last code to avoid any risk of https://en.wikipedia.org/wiki/ABA_problem
+                this.itemByCode.Clear();
+                this.codeByItem.Clear();
+            }
+        }
+
         ulong IIdentifier<T>.Add(T item)
         {
             lock (gate)

@@ -14,6 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         object ItemFor(Protocol.Breakpoint breakpoint);
 
+        void Clear();
+
         IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints);
 
         IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints);
