@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// <summary>
     /// Select between two rule selectors based on a condition.
     /// </summary>
-    public class ConditionalSelector : ITriggerSelector
+    public class ConditionalSelector : TriggerSelector
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.ConditionalSelector";
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// Selector if <see cref="Condition"/> is true.
         /// </value>
         [JsonProperty("ifTrue")]
-        public ITriggerSelector IfTrue { get; set; }
+        public TriggerSelector IfTrue { get; set; }
 
         /// <summary>
         /// Gets or sets selector if <see cref="Condition"/> is false.
@@ -47,18 +47,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// Selector if <see cref="Condition"/> is false.
         /// </value>
         [JsonProperty("ifFalse")]
-        public ITriggerSelector IfFalse { get; set; }
+        public TriggerSelector IfFalse { get; set; }
 
-        public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
+        public override void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
         {
             _conditionals = conditionals.ToList();
             _evaluate = evaluate;
         }
 
-        public async Task<IReadOnlyList<OnCondition>> Select(ActionContext actionContext, CancellationToken cancel = default)
+        public override async Task<IReadOnlyList<OnCondition>> Select(ActionContext actionContext, CancellationToken cancel = default)
         {
             var (eval, _) = Condition.TryGetValue(actionContext.State);
-            ITriggerSelector selector;
+            TriggerSelector selector;
             if (eval)
             {
                 selector = IfTrue;

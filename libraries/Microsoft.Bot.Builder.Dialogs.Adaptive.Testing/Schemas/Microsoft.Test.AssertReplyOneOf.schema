@@ -1,17 +1,20 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.Test.ITestAction)",
-    "title": "Assert Reply",
-    "description": "Asserts that a reply text is valid.",
+    "$role": "implements(Microsoft.Test.TestAction)",
+    "title": "Assert Reply OneOf",
+    "description": "Asserts that a reply text is one of multiple optional responses.",
     "type": "object",
     "required": [
-        "text"
+        "replies"
     ],
     "properties": {
         "text": {
-            "type": "string",
-            "title": "Reply Text",
-            "description": "Expected reply text"
+            "type": "array",
+            "title": "Replies",
+            "description": "Expected replies (one of which must match",
+            "items": {
+                "type": "string"
+            }
         },
         "exact": {
             "type": "boolean",

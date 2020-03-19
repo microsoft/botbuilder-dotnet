@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.IDialog)",
+    "$role": "implements(Microsoft.Dialog)",
     "title": "Switch condition",
     "description": "Execute different actions based on the value of a property.",
     "type": "object",
@@ -56,7 +56,7 @@
                     "actions": {
                         "type": "array",
                         "items": {
-                            "$kind": "Microsoft.IDialog"
+                            "$kind": "Microsoft.Dialog"
                         },
                         "title": "Actions",
                         "description": "Actions to execute."
@@ -71,7 +71,7 @@
         "default": {
             "type": "array",
             "items": {
-                "$kind": "Microsoft.IDialog"
+                "$kind": "Microsoft.Dialog"
             },
             "title": "Default",
             "description": "Actions to execute if none of the cases meet the condition."

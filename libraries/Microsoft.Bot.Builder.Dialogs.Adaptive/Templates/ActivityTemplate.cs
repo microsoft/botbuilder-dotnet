@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         {
             if (!string.IsNullOrEmpty(this.Template))
             {
-                var languageGenerator = context.TurnState.Get<ILanguageGenerator>();
+                var languageGenerator = context.TurnState.Get<LanguageGenerator>();
                 if (languageGenerator != null)
                 {
                     var lgStringResult = await languageGenerator.Generate(context, this.Template, data).ConfigureAwait(false);

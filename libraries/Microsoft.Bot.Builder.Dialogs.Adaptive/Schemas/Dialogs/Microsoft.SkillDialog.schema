@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.IDialog)",
+    "$role": "implements(Microsoft.Dialog)",
     "title": "Begin a skill dialog",
     "description": "Begin a remote skill dialog.",
     "type": "object",
@@ -68,7 +68,7 @@
             ]
         },
         "activity ": {
-            "$kind": "Microsoft.IActivityTemplate",
+            "$kind": "Microsoft.ActivityTemplate",
             "title": "Activity",
             "description": "The activity to send to the skill."
         }

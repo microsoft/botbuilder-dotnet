@@ -33,7 +33,7 @@
         "entities": {
             "type": "array",
             "items": {
-                "$kind": "Microsoft.EntityRecognizers"
+                "$kind": "Microsoft.EntityRecognizer"
             },
             "title": "Entity recognizers",
             "description": "Collection of entity recognizers to use."

@@ -5,7 +5,7 @@
     "type": "object",
     "properties": {
         "dialog": {
-            "$kind": "Microsoft.IDialog",
+            "$kind": "Microsoft.Dialog",
             "title": "Dialog",
             "description": "The root dialog to execute the test script against."
         },
@@ -18,7 +18,7 @@
             "type": "array",
             "description": "Sequence of test actions to execute.",
             "items": {
-                "$kind": "Microsoft.Test.ITestAction"
+                "$kind": "Microsoft.Test.TestAction"
             }
         },
         "locale": {

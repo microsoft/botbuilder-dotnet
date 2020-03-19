@@ -573,7 +573,7 @@
     ],
     "definitions": {
         "Microsoft.ActivityTemplate": {
-            "$role": "implements(Microsoft.IActivityTemplate)",
+            "$role": "implements(Microsoft.ActivityTemplate)",
             "title": "Microsoft ActivityTemplate",
             "type": "object",
             "properties": {
@@ -687,7 +687,7 @@
             ]
         },
         "Microsoft.AdaptiveDialog": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Adaptive Dialog",
             "description": "Flexible, data driven dialog that can adapt to the conversation.",
             "type": "object",
@@ -740,24 +740,24 @@
                     "$ref": "#/definitions/Microsoft.Recognizer"
                 },
                 "generator": {
-                    "$kind": "Microsoft.ILanguageGenerator",
+                    "$kind": "Microsoft.LanguageGenerator",
                     "title": "Language Generator",
                     "description": "Language generator that generates bot responses.",
-                    "$ref": "#/definitions/Microsoft.ILanguageGenerator"
+                    "$ref": "#/definitions/Microsoft.LanguageGenerator"
                 },
                 "selector": {
-                    "$kind": "Microsoft.ITriggerSelector",
+                    "$kind": "Microsoft.TriggerSelector",
                     "title": "Selector",
                     "description": "Policy to determine which trigger is executed. Defaults to a 'best match' selector (optional).",
-                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
+                    "$ref": "#/definitions/Microsoft.TriggerSelector"
                 },
                 "triggers": {
                     "type": "array",
                     "description": "List of triggers defined for this dialog.",
                     "title": "Triggers",
                     "items": {
-                        "$kind": "Microsoft.ITriggerCondition",
-                        "$ref": "#/definitions/Microsoft.ITriggerCondition"
+                        "$kind": "Microsoft.OnCondition",
+                        "$ref": "#/definitions/Microsoft.OnCondition"
                     }
                 },
                 "schema": {
@@ -797,7 +797,7 @@
             ]
         },
         "Microsoft.AgeEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Age Entity Recognizer",
             "description": "Recognizer which recognizes age.",
             "type": "object",
@@ -849,7 +849,7 @@
             ]
         },
         "Microsoft.Ask": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Send Activity to Ask a question",
             "description": "This is an action which sends an activity to the user when a response is expected",
             "type": "object",
@@ -903,10 +903,10 @@
                     ]
                 },
                 "activity": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Activity",
                     "description": "Activity to send.",
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "expectedProperties": {
                     "$role": "expression",
@@ -951,7 +951,7 @@
             ]
         },
         "Microsoft.AttachmentInput": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Attachment input dialog",
             "description": "Collect information - Ask for a file or image.",
             "type": "object",
@@ -998,40 +998,40 @@
                     ]
                 },
                 "prompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -1164,7 +1164,7 @@
             ]
         },
         "Microsoft.BeginDialog": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Begin a dialog",
             "description": "Begin another dialog.",
             "type": "object",
@@ -1226,10 +1226,10 @@
                     ],
                     "oneOf": [
                         {
-                            "$kind": "Microsoft.IDialog",
+                            "$kind": "Microsoft.Dialog",
                             "type": "object",
                             "title": "object",
-                            "$ref": "#/definitions/Microsoft.IDialog"
+                            "$ref": "#/definitions/Microsoft.Dialog"
                         },
                         {
                             "type": "string",
@@ -1307,7 +1307,7 @@
             ]
         },
         "Microsoft.BreakLoop": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Break Loop",
             "description": "Stop executing this loop",
             "type": "object",
@@ -1383,7 +1383,7 @@
             ]
         },
         "Microsoft.CancelAllDialogs": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Cancel all dialogs",
             "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
             "type": "object",
@@ -1479,7 +1479,7 @@
             ]
         },
         "Microsoft.ChoiceInput": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Choice input dialog",
             "description": "Collect information - Pick from a list of choices",
             "type": "object",
@@ -1526,40 +1526,40 @@
                     ]
                 },
                 "prompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -1814,7 +1814,7 @@
             ]
         },
         "Microsoft.ConditionalSelector": {
-            "$role": "implements(Microsoft.ITriggerSelector)",
+            "$role": "implements(Microsoft.TriggerSelector)",
             "title": "Condtional Trigger Selector",
             "description": "Use a rule selector based on a condition",
             "type": "object",
@@ -1858,12 +1858,12 @@
                     ]
                 },
                 "ifTrue": {
-                    "$kind": "Microsoft.ITriggerSelector",
-                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
+                    "$kind": "Microsoft.TriggerSelector",
+                    "$ref": "#/definitions/Microsoft.TriggerSelector"
                 },
                 "ifFalse": {
-                    "$kind": "Microsoft.ITriggerSelector",
-                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
+                    "$kind": "Microsoft.TriggerSelector",
+                    "$ref": "#/definitions/Microsoft.TriggerSelector"
                 }
             },
             "additionalProperties": false,
@@ -1891,7 +1891,7 @@
             ]
         },
         "Microsoft.ConfirmInput": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Confirm input dialog",
             "description": "Collect information - Ask for confirmation (yes or no).",
             "type": "object",
@@ -1938,40 +1938,40 @@
                     ]
                 },
                 "prompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -2205,7 +2205,7 @@
             ]
         },
         "Microsoft.ConfirmationEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Confirmation Entity Recognizer",
             "description": "Recognizer which recognizes confirmation choices (yes/no).",
             "type": "object",
@@ -2257,7 +2257,7 @@
             ]
         },
         "Microsoft.ContinueLoop": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Continune Loop",
             "description": "Stop executing this template and continue with the next iteration of the loop.",
             "type": "object",
@@ -2400,7 +2400,7 @@
             ]
         },
         "Microsoft.CurrencyEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Currency Entity Recognizer",
             "description": "Recognizer which recognizes currency.",
             "type": "object",
@@ -2452,7 +2452,7 @@
             ]
         },
         "Microsoft.DateTimeEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "DateTime Entity Recognizer",
             "description": "Recognizer which recognizes dates and time fragments.",
             "type": "object",
@@ -2504,7 +2504,7 @@
             ]
         },
         "Microsoft.DateTimeInput": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Date/time input dialog",
             "description": "Collect information - Ask for date and/ or time",
             "type": "object",
@@ -2551,40 +2551,40 @@
                     ]
                 },
                 "prompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -2722,7 +2722,7 @@
             ]
         },
         "Microsoft.DebugBreak": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Debugger break",
             "description": "If debugger is attached, stop the execution at this point in the conversation.",
             "type": "object",
@@ -2798,7 +2798,7 @@
             ]
         },
         "Microsoft.DeleteActivity": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Delete Activity",
             "description": "Delete an activity that was previously sent.",
             "type": "object",
@@ -2885,7 +2885,7 @@
             ]
         },
         "Microsoft.DeleteProperties": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Delete Properties",
             "description": "Delete multiple properties and any value it holds.",
             "type": "object",
@@ -2973,7 +2973,7 @@
             ]
         },
         "Microsoft.DeleteProperty": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Delete Property",
             "description": "Delete a property and any value it holds.",
             "type": "object",
@@ -3056,7 +3056,7 @@
             ]
         },
         "Microsoft.DimensionEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Dimension Entity Recognizer",
             "description": "Recognizer which recognizes dimension.",
             "type": "object",
@@ -3108,7 +3108,7 @@
             ]
         },
         "Microsoft.EditActions": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Edit actions.",
             "description": "Edit the current list of actions.",
             "type": "object",
@@ -3179,8 +3179,8 @@
                     "title": "Actions",
                     "description": "Actions to apply.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -3208,7 +3208,7 @@
             ]
         },
         "Microsoft.EditArray": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Edit array",
             "description": "Modify an array in memory",
             "type": "object",
@@ -3329,7 +3329,7 @@
             ]
         },
         "Microsoft.EmailEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Email Entity Recognizer",
             "description": "Recognizer which recognizes email.",
             "type": "object",
@@ -3381,7 +3381,7 @@
             ]
         },
         "Microsoft.EmitEvent": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Emit a custom event",
             "description": "Emit an event. Capture this event with a trigger.",
             "type": "object",
@@ -3508,7 +3508,7 @@
             ]
         },
         "Microsoft.EndDialog": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "End dialog",
             "description": "End this dialog.",
             "type": "object",
@@ -3601,7 +3601,7 @@
             ]
         },
         "Microsoft.EndTurn": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "End turn",
             "description": "End the current turn without ending the dialog.",
             "type": "object",
@@ -3676,7 +3676,7 @@
                 }
             ]
         },
-        "Microsoft.EntityRecognizers": {
+        "Microsoft.EntityRecognizer": {
             "$role": "interface",
             "title": "Entity Recognizers",
             "description": "Union of components which derive from EntityRecognizer abstract class.",
@@ -3774,13 +3774,13 @@
                 },
                 {
                     "type": "string",
-                    "title": "Reference to Microsoft.EntityRecognizers",
-                    "description": "Reference to Microsoft.EntityRecognizers .dialog file."
+                    "title": "Reference to Microsoft.EntityRecognizer",
+                    "description": "Reference to Microsoft.EntityRecognizer .dialog file."
                 }
             ]
         },
         "Microsoft.FirstSelector": {
-            "$role": "implements(Microsoft.ITriggerSelector)",
+            "$role": "implements(Microsoft.TriggerSelector)",
             "title": "First Trigger Selector",
             "description": "Selector for first true rule",
             "type": "object",
@@ -3832,7 +3832,7 @@
             ]
         },
         "Microsoft.Foreach": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "For each item",
             "description": "Execute actions on each item in an a collection.",
             "type": "object",
@@ -3899,8 +3899,8 @@
                     "title": "Actions",
                     "description": "Actions to execute for each item. Use '$foreach.value' to access the value of each item. Use '$foreach.index' to access the index of each item.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -3928,7 +3928,7 @@
             ]
         },
         "Microsoft.ForeachPage": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "For each page",
             "description": "Execute actions on each page (collection of items) in an array.",
             "type": "object",
@@ -3995,8 +3995,8 @@
                     "title": "Actions",
                     "description": "Actions to execute for each page. Use '$foreach.page' to access each page.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "pageSize": {
@@ -4041,7 +4041,7 @@
             ]
         },
         "Microsoft.GetActivityMembers": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Get Activity Members",
             "description": "Get the members who are participating in an activity. (BotFrameworkAdapter only)",
             "type": "object",
@@ -4126,7 +4126,7 @@
             ]
         },
         "Microsoft.GetConversationMembers": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Get Converation Members",
             "description": "Get the members who are participating in an conversation. (BotFrameworkAdapter only)",
             "type": "object",
@@ -4202,7 +4202,7 @@
             ]
         },
         "Microsoft.GotoAction": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Go to Action",
             "description": "Go to an an action by id.",
             "type": "object",
@@ -4285,7 +4285,7 @@
             ]
         },
         "Microsoft.GuidEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Guid Entity Recognizer",
             "description": "Recognizer which recognizes guids.",
             "type": "object",
@@ -4337,7 +4337,7 @@
             ]
         },
         "Microsoft.HashtagEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Hashtag Entity Recognizer",
             "description": "Recognizer which recognizes Hashtags.",
             "type": "object",
@@ -4389,7 +4389,7 @@
             ]
         },
         "Microsoft.HttpRequest": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "type": "object",
             "title": "HTTP request",
             "description": "Make a HTTP request.",
@@ -4546,9 +4546,9 @@
                 }
             ]
         },
-        "Microsoft.IActivityTemplate": {
+        "Microsoft.ActivityTemplate": {
             "title": "Microsoft ActivityTemplates",
-            "description": "Components which are IActivityTemplates",
+            "description": "Components which are ActivityTemplates",
             "$role": "interface",
             "oneOf": [
                 {
@@ -4567,7 +4567,7 @@
                 }
             ]
         },
-        "Microsoft.IDialog": {
+        "Microsoft.Dialog": {
             "title": "Microsoft Dialogs",
             "description": "Union of components which implement the Dialog contract",
             "$role": "interface",
@@ -4793,9 +4793,9 @@
                 }
             ]
         },
-        "Microsoft.ILanguageGenerator": {
-            "title": "Microsoft ILanguageGenerator",
-            "description": "Union of components which implement the ILanguageGenerator interface",
+        "Microsoft.LanguageGenerator": {
+            "title": "Microsoft LanguageGenerator",
+            "description": "Union of components which implement the LanguageGenerator interface",
             "$role": "interface",
             "oneOf": [
                 {
@@ -4804,7 +4804,7 @@
                 }
             ]
         },
-        "Microsoft.ITextTemplate": {
+        "Microsoft.TextTemplate": {
             "title": "Microsoft TextTemplate",
             "description": "Union of components which implement the TextTemplate",
             "$role": "interface",
@@ -4820,7 +4820,7 @@
                 }
             ]
         },
-        "Microsoft.ITriggerCondition": {
+        "Microsoft.OnCondition": {
             "$role": "interface",
             "title": "Microsoft Triggers",
             "description": "Union of components which implement the OnCondition",
@@ -4962,12 +4962,12 @@
                 },
                 {
                     "type": "string",
-                    "title": "Reference to Microsoft.ITriggerCondition",
-                    "description": "Reference to Microsoft.ITriggerCondition .dialog file."
+                    "title": "Reference to Microsoft.OnCondition",
+                    "description": "Reference to Microsoft.OnCondition .dialog file."
                 }
             ]
         },
-        "Microsoft.ITriggerSelector": {
+        "Microsoft.TriggerSelector": {
             "$role": "interface",
             "title": "Selectors",
             "description": "Union of components which are trigger selectors",
@@ -4999,13 +4999,13 @@
                 },
                 {
                     "type": "string",
-                    "title": "Reference to Microsoft.ITriggerSelector",
-                    "description": "Reference to Microsoft.ITriggerSelector .dialog file."
+                    "title": "Reference to Microsoft.TriggerSelector",
+                    "description": "Reference to Microsoft.TriggerSelector .dialog file."
                 }
             ]
         },
         "Microsoft.IfCondition": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "If condition",
             "description": "Two-way branch the conversation flow based on a condition.",
             "type": "object",
@@ -5082,8 +5082,8 @@
                     "title": "Actions",
                     "description": "Actions to execute if condition is true.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "elseActions": {
@@ -5091,8 +5091,8 @@
                     "title": "Else",
                     "description": "Actions to execute if condition is false.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5120,7 +5120,7 @@
             ]
         },
         "Microsoft.IpEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Ip Entity Recognizer",
             "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
             "type": "object",
@@ -5223,7 +5223,7 @@
             ]
         },
         "Microsoft.LogAction": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Log to console",
             "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
             "type": "object",
@@ -5501,7 +5501,7 @@
             ]
         },
         "Microsoft.MentionEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Mentions Entity Recognizer",
             "description": "Recognizer which recognizes @Mentions",
             "type": "object",
@@ -5553,7 +5553,7 @@
             ]
         },
         "Microsoft.MostSpecificSelector": {
-            "$role": "implements(Microsoft.ITriggerSelector)",
+            "$role": "implements(Microsoft.TriggerSelector)",
             "title": "Most Specific Trigger Selector",
             "description": "Select most specific true events with optional additional selector",
             "type": "object",
@@ -5583,8 +5583,8 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "selector": {
-                    "$kind": "Microsoft.ITriggerSelector",
-                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
+                    "$kind": "Microsoft.TriggerSelector",
+                    "$ref": "#/definitions/Microsoft.TriggerSelector"
                 }
             },
             "additionalProperties": false,
@@ -5683,7 +5683,7 @@
             ]
         },
         "Microsoft.NumberEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Number Entity Recognizer",
             "description": "Recognizer which recognizes numbers.",
             "type": "object",
@@ -5735,7 +5735,7 @@
             ]
         },
         "Microsoft.NumberInput": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Number input dialog",
             "description": "Collect information - Ask for a number.",
             "type": "object",
@@ -5782,40 +5782,40 @@
                     ]
                 },
                 "prompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -5954,7 +5954,7 @@
             ]
         },
         "Microsoft.NumberRangeEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "NumberRange Entity Recognizer",
             "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
             "type": "object",
@@ -6006,7 +6006,7 @@
             ]
         },
         "Microsoft.OAuthInput": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "OAuthInput Dialog",
             "description": "Collect login information.",
             "type": "object",
@@ -6108,22 +6108,22 @@
                     ]
                 },
                 "invalidPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send if user response is invalid.",
                     "examples": [
                         "Sorry, the login info you provided is not valid."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "Login failed."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -6205,7 +6205,7 @@
             ]
         },
         "Microsoft.OnActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On activity",
             "description": "Actions to perform on receipt of a generic activity.",
             "type": "object",
@@ -6257,8 +6257,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -6312,7 +6312,7 @@
             ]
         },
         "Microsoft.OnAssignEntity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On entity assignment",
             "description": "Actions to take when an entity should be assigned to a property.",
             "type": "object",
@@ -6364,8 +6364,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -6427,7 +6427,7 @@
             ]
         },
         "Microsoft.OnBeginDialog": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On begin dialog",
             "description": "Actions to perform when this dialog begins.",
             "type": "object",
@@ -6479,8 +6479,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -6528,7 +6528,7 @@
             ]
         },
         "Microsoft.OnCancelDialog": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On cancel dialog",
             "description": "Actions to perform on cancel dialog event.",
             "type": "object",
@@ -6580,8 +6580,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -6629,7 +6629,7 @@
             ]
         },
         "Microsoft.OnChooseEntity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On choose entity",
             "description": "Actions to be performed when an entity value needs to be resolved.",
             "type": "object",
@@ -6681,8 +6681,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -6740,7 +6740,7 @@
             ]
         },
         "Microsoft.OnChooseIntent": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On ambigious intent",
             "description": "Actions to perform on when an intent is ambigious.",
             "type": "object",
@@ -6792,8 +6792,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -6849,7 +6849,7 @@
             ]
         },
         "Microsoft.OnChooseProperty": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On choose property",
             "description": "Actions to take when there are multiple possible mappings of entities to properties.",
             "type": "object",
@@ -6901,8 +6901,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -6973,7 +6973,7 @@
             ]
         },
         "Microsoft.OnClearProperty": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On clear property",
             "description": "Actions to take when a property needs to be cleared.",
             "type": "object",
@@ -7025,8 +7025,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -7079,7 +7079,7 @@
             ]
         },
         "Microsoft.OnCondition": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On condition",
             "description": "Actions to perform when specified condition is true.",
             "type": "object",
@@ -7131,8 +7131,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -7180,7 +7180,7 @@
             ]
         },
         "Microsoft.OnConversationUpdateActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On ConversationUpdate activity",
             "description": "Actions to perform on receipt of an activity with type 'ConversationUpdate'.",
             "type": "object",
@@ -7232,8 +7232,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -7281,7 +7281,7 @@
             ]
         },
         "Microsoft.OnCustomEvent": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On custom event",
             "description": "Actions to perform when a custom event is detected. Use 'Emit a custom event' action to raise a custom event.",
             "type": "object",
@@ -7333,8 +7333,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -7388,7 +7388,7 @@
             ]
         },
         "Microsoft.OnDialogEvent": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On dialog event",
             "description": "Actions to perform when a specific dialog event occurs.",
             "type": "object",
@@ -7440,8 +7440,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -7495,7 +7495,7 @@
             ]
         },
         "Microsoft.OnEndOfActions": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On end of actions",
             "description": "Actions to take when there are no more actions in the current dialog.",
             "type": "object",
@@ -7547,8 +7547,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -7596,7 +7596,7 @@
             ]
         },
         "Microsoft.OnEndOfConversationActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On EndOfConversation activity",
             "description": "Actions to perform on receipt of an activity with type 'EndOfConversation'.",
             "type": "object",
@@ -7648,8 +7648,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -7697,7 +7697,7 @@
             ]
         },
         "Microsoft.OnError": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On Error",
             "description": "Action to perform when an 'Error' dialog event occurs.",
             "type": "object",
@@ -7749,8 +7749,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -7798,7 +7798,7 @@
             ]
         },
         "Microsoft.OnEventActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On Event activity",
             "description": "Actions to perform on receipt of an activity with type 'Event'.",
             "type": "object",
@@ -7850,8 +7850,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -7899,7 +7899,7 @@
             ]
         },
         "Microsoft.OnHandoffActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On Handoff activity",
             "description": "Actions to perform on receipt of an activity with type 'HandOff'.",
             "type": "object",
@@ -7951,8 +7951,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -8000,7 +8000,7 @@
             ]
         },
         "Microsoft.OnIntent": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On intent recognition",
             "description": "Actions to perform when specified intent is recognized.",
             "type": "object",
@@ -8052,8 +8052,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -8114,7 +8114,7 @@
             ]
         },
         "Microsoft.OnInvokeActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On Invoke activity",
             "description": "Actions to perform on receipt of an activity with type 'Invoke'.",
             "type": "object",
@@ -8166,8 +8166,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -8215,7 +8215,7 @@
             ]
         },
         "Microsoft.OnMessageActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On Message activity",
             "description": "Actions to perform on receipt of an activity with type 'Message'. Overrides Intent trigger.",
             "type": "object",
@@ -8267,8 +8267,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -8316,7 +8316,7 @@
             ]
         },
         "Microsoft.OnMessageDeleteActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On MessageDelete activity",
             "description": "Actions to perform on receipt of an activity with type 'MessageDelete'.",
             "type": "object",
@@ -8368,8 +8368,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -8417,7 +8417,7 @@
             ]
         },
         "Microsoft.OnMessageReactionActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On MessageReaction activity",
             "description": "Actions to perform on receipt of an activity with type 'MessageReaction'.",
             "type": "object",
@@ -8469,8 +8469,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -8518,7 +8518,7 @@
             ]
         },
         "Microsoft.OnMessageUpdateActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On MessageUpdate activity",
             "description": "Actions to perform on receipt of an activity with type 'MessageUpdate'.",
             "type": "object",
@@ -8570,8 +8570,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -8619,7 +8619,7 @@
             ]
         },
         "Microsoft.OnQnAMatch": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On QnAMaker Match",
             "description": "Actions to perform on when an match from QnAMaker is found.",
             "type": "object",
@@ -8671,8 +8671,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -8720,7 +8720,7 @@
             ]
         },
         "Microsoft.OnRepromptDialog": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On RepromptDialog",
             "description": "Actions to perform when 'RepromptDialog' event occurs.",
             "type": "object",
@@ -8772,8 +8772,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -8821,7 +8821,7 @@
             ]
         },
         "Microsoft.OnTypingActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "title": "On Typing activity",
             "description": "Actions to perform on receipt of an activity with type 'Typing'.",
             "type": "object",
@@ -8873,8 +8873,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -8925,7 +8925,7 @@
             "title": "On unknown intent",
             "description": "Action to perform when user input is unrecognized and if none of the 'on intent recognition' triggers match recognized intent.",
             "type": "object",
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.OnCondition)",
             "properties": {
                 "$kind": {
                     "title": "$kind",
@@ -8974,8 +8974,8 @@
                     "type": "array",
                     "description": "Sequence of actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "priority": {
@@ -9023,7 +9023,7 @@
             ]
         },
         "Microsoft.OrdinalEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Ordinal Entity Recognizer",
             "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
             "type": "object",
@@ -9075,7 +9075,7 @@
             ]
         },
         "Microsoft.PercentageEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Percentage Entity Recognizer",
             "description": "Recognizer which recognizes percentages.",
             "type": "object",
@@ -9127,7 +9127,7 @@
             ]
         },
         "Microsoft.PhoneNumberEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Phone Number Entity Recognizer",
             "description": "Recognizer which recognizes phone numbers.",
             "type": "object",
@@ -9179,7 +9179,7 @@
             ]
         },
         "Microsoft.QnAMakerDialog": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "QnAMaker Dialog",
             "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
             "type": "object",
@@ -9234,11 +9234,11 @@
                     ]
                 },
                 "noAnswer": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Fallback answer",
                     "description": "Default answer to return when none found in KB.",
                     "default": "Sorry, I did not find an answer.",
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "threshold": {
                     "$role": "expression",
@@ -9272,11 +9272,11 @@
                     "default": "None of the above."
                 },
                 "cardNoMatchResponse ": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Card no match response",
                     "description": "Custom response when no match option was selected.",
                     "default": "Thanks for the feedback.",
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "strictFilters": {
                     "$role": "expression",
@@ -9621,7 +9621,7 @@
             ]
         },
         "Microsoft.RandomSelector": {
-            "$role": "implements(Microsoft.ITriggerSelector)",
+            "$role": "implements(Microsoft.TriggerSelector)",
             "title": "Random rule selector",
             "description": "Select most specific true rule",
             "type": "object",
@@ -9789,7 +9789,7 @@
             ]
         },
         "Microsoft.RegExEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Regex Entity Recognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
             "type": "object",
@@ -9912,8 +9912,8 @@
                     "title": "Entity recognizers",
                     "description": "Collection of entity recognizers to use.",
                     "items": {
-                        "$kind": "Microsoft.EntityRecognizers",
-                        "$ref": "#/definitions/Microsoft.EntityRecognizers"
+                        "$kind": "Microsoft.EntityRecognizer",
+                        "$ref": "#/definitions/Microsoft.EntityRecognizer"
                     }
                 }
             },
@@ -9940,7 +9940,7 @@
             ]
         },
         "Microsoft.RepeatDialog": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "type": "object",
             "title": "Repeat dialog",
             "description": "Repeat current dialog.",
@@ -10053,7 +10053,7 @@
             ]
         },
         "Microsoft.ReplaceDialog": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "type": "object",
             "title": "Replace dialog",
             "description": "Replace current dialog with another dialog.",
@@ -10107,7 +10107,7 @@
                     ]
                 },
                 "dialog": {
-                    "$kind": "Microsoft.IDialog",
+                    "$kind": "Microsoft.Dialog",
                     "$role": "expression",
                     "type": "string",
                     "title": "Dialog name",
@@ -10115,7 +10115,7 @@
                     "examples": [
                         "AddToDoDialog"
                     ],
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "$ref": "#/definitions/Microsoft.Dialog"
                 },
                 "options": {
                     "$role": "expression",
@@ -10177,7 +10177,7 @@
             ]
         },
         "Microsoft.SendActivity": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Send an activity",
             "description": "Respond with an activity.",
             "type": "object",
@@ -10231,10 +10231,10 @@
                     ]
                 },
                 "activity": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Activity",
                     "description": "Activity to send.",
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 }
             },
             "additionalProperties": false,
@@ -10259,7 +10259,7 @@
             ]
         },
         "Microsoft.SetProperties": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Set property",
             "description": "Set one or more property values.",
             "type": "object",
@@ -10373,7 +10373,7 @@
             ]
         },
         "Microsoft.SetProperty": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Set property",
             "description": "Set property to a value.",
             "type": "object",
@@ -10478,7 +10478,7 @@
             ]
         },
         "Microsoft.SignOutUser": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Sign Out User",
             "description": "Sign a user out that was logged in previously using OAuthInput.",
             "type": "object",
@@ -10569,7 +10569,7 @@
             ]
         },
         "Microsoft.StaticActivityTemplate": {
-            "$role": "implements(Microsoft.IActivityTemplate)",
+            "$role": "implements(Microsoft.ActivityTemplate)",
             "title": "Microsoft Static Activity Template",
             "description": "This allows you to define a static Activity object",
             "type": "object",
@@ -10627,7 +10627,7 @@
             ]
         },
         "Microsoft.SwitchCondition": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Switch condition",
             "description": "Execute different actions based on the value of a property.",
             "type": "object",
@@ -10720,8 +10720,8 @@
                                 "title": "Actions",
                                 "description": "Actions to execute.",
                                 "items": {
-                                    "$kind": "Microsoft.IDialog",
-                                    "$ref": "#/definitions/Microsoft.IDialog"
+                                    "$kind": "Microsoft.Dialog",
+                                    "$ref": "#/definitions/Microsoft.Dialog"
                                 }
                             }
                         }
@@ -10732,8 +10732,8 @@
                     "title": "Default",
                     "description": "Actions to execute if none of the cases meet the condition.",
                     "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$kind": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -10760,7 +10760,7 @@
             ]
         },
         "Microsoft.TemperatureEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Temperature Entity Recognizer",
             "description": "Recognizer which recognizes temperatures.",
             "type": "object",
@@ -10812,7 +10812,7 @@
             ]
         },
         "Microsoft.Test.AssertCondition": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Assert Condition",
             "description": "Assert condition is true.",
             "type": "object",
@@ -10888,7 +10888,7 @@
             ]
         },
         "Microsoft.Test.AssertReply": {
-            "$role": "implements(Microsoft.Test.ITestAction)",
+            "$role": "implements(Microsoft.Test.TestAction)",
             "title": "Assert Reply",
             "description": "Asserts that a reply text is valid.",
             "type": "object",
@@ -10985,7 +10985,7 @@
             ]
         },
         "Microsoft.Test.AssertReplyActivity": {
-            "$role": "implements(Microsoft.Test.ITestAction)",
+            "$role": "implements(Microsoft.Test.TestAction)",
             "title": "Assert Reply Activity",
             "description": "Asserts that a reply activity is valid.",
             "type": "object",
@@ -11072,7 +11072,7 @@
             ]
         },
         "Microsoft.Test.AssertReplyOneOf": {
-            "$role": "implements(Microsoft.Test.ITestAction)",
+            "$role": "implements(Microsoft.Test.TestAction)",
             "title": "Assert Reply OneOf",
             "description": "Asserts that a reply text is one of multiple optional responses.",
             "type": "object",
@@ -11171,7 +11171,7 @@
                 }
             ]
         },
-        "Microsoft.Test.ITestAction": {
+        "Microsoft.Test.TestAction": {
             "title": "Microsoft Test ITestAction",
             "description": "Union of components which implement the Test.ITestAction interface",
             "$role": "interface",
@@ -11218,8 +11218,8 @@
                 },
                 {
                     "type": "string",
-                    "title": "Reference to Microsoft.Test.ITestAction",
-                    "description": "Reference to Microsoft.Test.ITestAction .dialog file."
+                    "title": "Reference to Microsoft.Test.TestAction",
+                    "description": "Reference to Microsoft.Test.TestAction .dialog file."
                 }
             ]
         },
@@ -11253,10 +11253,10 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "dialog": {
-                    "$kind": "Microsoft.IDialog",
+                    "$kind": "Microsoft.Dialog",
                     "title": "Dialog",
                     "description": "The root dialog to execute the test script against.",
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "$ref": "#/definitions/Microsoft.Dialog"
                 },
                 "description": {
                     "type": "string",
@@ -11267,8 +11267,8 @@
                     "type": "array",
                     "description": "Sequence of test actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.Test.ITestAction",
-                        "$ref": "#/definitions/Microsoft.Test.ITestAction"
+                        "$kind": "Microsoft.Test.TestAction",
+                        "$ref": "#/definitions/Microsoft.Test.TestAction"
                     }
                 },
                 "locale": {
@@ -11308,7 +11308,7 @@
             ]
         },
         "Microsoft.Test.UserActivity": {
-            "$role": "implements(Microsoft.Test.ITestAction)",
+            "$role": "implements(Microsoft.Test.TestAction)",
             "title": "Send Activity",
             "description": "Sends activity to the bot.",
             "type": "object",
@@ -11370,7 +11370,7 @@
             ]
         },
         "Microsoft.Test.UserConversationUpdate": {
-            "$role": "implements(Microsoft.Test.ITestAction)",
+            "$role": "implements(Microsoft.Test.TestAction)",
             "title": "Send ConversationUpdate",
             "description": "Sends ConversationUpdate activity to the bot.",
             "type": "object",
@@ -11438,7 +11438,7 @@
             ]
         },
         "Microsoft.Test.UserDelay": {
-            "$role": "implements(Microsoft.Test.ITestAction)",
+            "$role": "implements(Microsoft.Test.TestAction)",
             "title": "Delay Execution",
             "description": "Delays text script for time period.",
             "type": "object",
@@ -11496,7 +11496,7 @@
             ]
         },
         "Microsoft.Test.UserSays": {
-            "$role": "implements(Microsoft.Test.ITestAction)",
+            "$role": "implements(Microsoft.Test.TestAction)",
             "title": "User Text",
             "description": "Sends text to the bot from the user.",
             "type": "object",
@@ -11559,7 +11559,7 @@
             ]
         },
         "Microsoft.Test.UserTyping": {
-            "$role": "implements(Microsoft.Test.ITestAction)",
+            "$role": "implements(Microsoft.Test.TestAction)",
             "title": "Send Typing",
             "description": "Sends typing activity to the bot.",
             "type": "object",
@@ -11616,7 +11616,7 @@
             ]
         },
         "Microsoft.TextInput": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "type": "object",
             "title": "Text input dialog",
             "description": "Collection information - Ask for a word or sentence.",
@@ -11663,40 +11663,40 @@
                     ]
                 },
                 "prompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Initial prompt",
                     "description": "Message to send to collect information.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized prompt",
                     "description": "Message to send when the recognizer does not understand the user input.",
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Invalid prompt",
                     "description": "Message to send when the user input does not meet any validation expression.",
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Default value response",
                     "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -11828,7 +11828,7 @@
             ]
         },
         "Microsoft.TextTemplate": {
-            "$role": "implements(Microsoft.ITextTemplate)",
+            "$role": "implements(Microsoft.TextTemplate)",
             "title": "Microsoft TextTemplate",
             "description": "Lg tempalte to evaluate to create text",
             "type": "object",
@@ -11886,7 +11886,7 @@
             ]
         },
         "Microsoft.TraceActivity": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Send a TraceActivity",
             "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
             "type": "object",
@@ -11993,7 +11993,7 @@
             ]
         },
         "Microsoft.TrueSelector": {
-            "$role": "implements(Microsoft.ITriggerSelector)",
+            "$role": "implements(Microsoft.TriggerSelector)",
             "title": "True Trigger Selector",
             "description": "Selector for all true events",
             "type": "object",
@@ -12045,7 +12045,7 @@
             ]
         },
         "Microsoft.UpdateActivity": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Send an activity",
             "description": "Respond with an activity.",
             "type": "object",
@@ -12108,10 +12108,10 @@
                     ]
                 },
                 "activity": {
-                    "$kind": "Microsoft.IActivityTemplate",
+                    "$kind": "Microsoft.ActivityTemplate",
                     "title": "Activity",
                     "description": "Activity to send.",
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 }
             },
             "additionalProperties": false,
@@ -12136,7 +12136,7 @@
             ]
         },
         "Microsoft.UrlEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.EntityRecognizer)",
             "title": "Url Entity Recognizer",
             "description": "Recognizer which recognizes urls (example: http://bing.com)",
             "type": "object",
@@ -12188,7 +12188,7 @@
             ]
         },
         "Testbot.JavascriptAction": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Javascript Action",
             "description": "This gives you the ability to execute javascript to manipulate memory",
             "type": "object",
@@ -12298,7 +12298,7 @@
             ]
         },
         "Testbot.Multiply": {
-            "$role": "implements(Microsoft.IDialog)",
+            "$role": "implements(Microsoft.Dialog)",
             "title": "Multiply",
             "description": "This will return the result of arg1*arg2",
             "type": "object",

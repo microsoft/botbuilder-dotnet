@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             yield return new InterfaceConverter<OnCondition>(resourceExplorer, paths);
             yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, paths);
-            yield return new InterfaceConverter<ITriggerSelector>(resourceExplorer, paths);
+            yield return new InterfaceConverter<TriggerSelector>(resourceExplorer, paths);
 
             yield return new IntExpressionConverter();
             yield return new NumberExpressionConverter();

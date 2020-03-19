@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// The language generators for multiple languages.
         /// </value>
         [JsonProperty("languageGenerators")]
-        public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
+        public ConcurrentDictionary<string, LanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, LanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Implementation of lookup by locale.  This uses internal dictionary to lookup.
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="locale">locale.</param>
         /// <param name="languageGenerator">generator to return.</param>
         /// <returns>true if found.</returns>
-        public override bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator languageGenerator)
+        public override bool TryGetGenerator(ITurnContext context, string locale, out LanguageGenerator languageGenerator)
         {
             return this.LanguageGenerators.TryGetValue(locale, out languageGenerator);
         }
