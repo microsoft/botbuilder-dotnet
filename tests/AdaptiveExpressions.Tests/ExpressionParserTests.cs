@@ -20,6 +20,7 @@ namespace AdaptiveExpressions.Tests
 
         private readonly object scope = new Dictionary<string, object>
         {
+            { "$index", "index" },
             {
                 "alist", new List<A>() { new A("item1"), new A("item2") }
             },
@@ -273,6 +274,7 @@ namespace AdaptiveExpressions.Tests
             Test("\"ab\\ycd\"", "ab\\ycd"), //"ab\ycd" -> ab\ycd
             Test("'ab\\'cd'", "ab'cd"), // 'ab\'cd' -> ab'cd
             Test("alist[0].Name", "item1"),
+            Test("$index", "index"),
             #endregion
 
             #region string interpolation test
@@ -353,8 +355,8 @@ namespace AdaptiveExpressions.Tests
             Test("(1 + 2) != (4 - 1)", false),
             Test("!!exists(one) != !!exists(one)", false),
             Test("!!exists(one) !=\r\n !!exists(one)", false),
-            Test("hello != 'hello'", false),
-            Test("hello != 'world'", true),
+            Test("hello!= 'hello'", false),
+            Test("hello!= 'world'", true),
             Test("hello != \"hello\"", false),
             Test("hello != \"world\"", true),
             Test("(1 + 2) >= (4 - 1)", true),

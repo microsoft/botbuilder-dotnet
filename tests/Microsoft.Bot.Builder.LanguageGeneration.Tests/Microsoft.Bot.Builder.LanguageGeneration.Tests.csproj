@@ -246,6 +246,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Examples\CustomFunction2.lg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Examples\Expand.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
