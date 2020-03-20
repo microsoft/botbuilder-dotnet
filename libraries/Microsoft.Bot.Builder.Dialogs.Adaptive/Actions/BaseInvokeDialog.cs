@@ -78,27 +78,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return this.Dialog.Value;
             }
 
-            var dcState = dc.GetState();
-
             // NOTE: we call TryEvaluate instead of TryGetValue because we want the result of the expression as a string so we can
             // look up the string using external FindDialog().
             var se = new StringExpression($"={this.Dialog.ExpressionText}");
-            var dialogId = se.GetValue(dcState);
+            var dialogId = se.GetValue(dc.State);
             return dc.FindDialog(dialogId ?? throw new Exception($"{this.Dialog.ToString()} not found."));
         }
 
         protected object BindOptions(DialogContext dc, object options)
         {
-            var dcState = dc.GetState();
-
             // binding options are static definition of options with overlay of passed in options);
-            var bindingOptions = (JObject)ObjectPath.Merge(this.Options.GetValue(dcState), options ?? new JObject());
+            var bindingOptions = (JObject)ObjectPath.Merge(this.Options.GetValue(dc.State), options ?? new JObject());
             var boundOptions = new JObject();
 
             foreach (var binding in bindingOptions)
             {
                 // evalute the value
-                var (value, error) = new ValueExpression(binding.Value).TryGetValue(dcState);
+                var (value, error) = new ValueExpression(binding.Value).TryGetValue(dc.State);
 
                 if (error != null)
                 {

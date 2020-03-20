@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// Initializes a new instance of the <see cref="UserMemoryScope"/> class.
         /// </summary>
         public UserMemoryScope()
-            : base(ScopePath.USER)
+            : base(ScopePath.User)
         {
         }
     }

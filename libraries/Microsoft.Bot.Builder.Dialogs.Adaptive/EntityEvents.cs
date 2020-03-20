@@ -1,5 +1,6 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -55,9 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>Event queues.</returns>
         public static EntityEvents Read(ActionContext actionContext)
         {
-            var dcState = actionContext.GetState();
-
-            if (!dcState.TryGetValue<EntityEvents>(Events, out var queues))
+            if (!actionContext.State.TryGetValue<EntityEvents>(Events, out var queues))
             {
                 queues = new EntityEvents();
             }
@@ -70,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="actionContext">Memory context.</param>
         public void Write(ActionContext actionContext)
-            => actionContext.GetState().SetValue(Events, this);
+            => actionContext.State.SetValue(Events, this);
 
         /// <summary>
         /// Remove an event result from queues.

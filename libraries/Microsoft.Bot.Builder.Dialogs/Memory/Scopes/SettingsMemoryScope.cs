@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         private Dictionary<string, object> emptySettings = new Dictionary<string, object>();
 
         public SettingsMemoryScope()
-            : base(ScopePath.SETTINGS)
+            : base(ScopePath.Settings)
         {
             this.IncludeInSnapshot = false;
         }
@@ -28,13 +28,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (!dc.Context.TurnState.TryGetValue(ScopePath.SETTINGS, out object settings))
+            if (!dc.Context.TurnState.TryGetValue(ScopePath.Settings, out object settings))
             {
                 var configuration = HostContext.Current.Get<IConfiguration>();
                 if (configuration != null)
                 {
                     settings = LoadSettings(configuration);
-                    dc.Context.TurnState[ScopePath.SETTINGS] = settings;
+                    dc.Context.TurnState[ScopePath.Settings] = settings;
                 }
             }
 

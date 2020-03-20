@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 // try to avoid regenerating Identifier values within a breakpoint
                 if (CachedData == null)
                 {
-                    CachedData = DialogContext.GetState().GetMemorySnapshot();
+                    CachedData = DialogContext.State.GetMemorySnapshot();
                 }
 
                 return CachedData;
@@ -44,6 +44,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public override string ToString() => Name;
 
-        object ICodePoint.Evaluate(string expression) => DialogContext.GetState().GetValue<object>(expression);
+        object ICodePoint.Evaluate(string expression) => DialogContext.State.GetValue<object>(expression);
     }
 }

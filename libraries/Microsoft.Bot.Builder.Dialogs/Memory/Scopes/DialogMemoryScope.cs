@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     public class DialogMemoryScope : MemoryScope
     {
         public DialogMemoryScope()
-            : base(ScopePath.DIALOG)
+            : base(ScopePath.Dialog)
         {
         }
 

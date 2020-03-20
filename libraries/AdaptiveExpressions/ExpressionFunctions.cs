@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using AdaptiveExpressions.Memory;
+using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -1089,7 +1090,7 @@ namespace AdaptiveExpressions
                     return (null, err);
                 }
 
-                return WrapGetValue(new SimpleObjectMemory(newScope), path);
+                return WrapGetValue(MemoryFactory.Create(newScope), path);
             }
         }
 
@@ -1107,7 +1108,7 @@ namespace AdaptiveExpressions
                 (property, error) = children[1].TryEvaluate(state);
                 if (error == null)
                 {
-                    (value, error) = WrapGetValue(new SimpleObjectMemory(instance), (string)property);
+                    (value, error) = WrapGetValue(MemoryFactory.Create(instance), (string)property);
                 }
             }
 
@@ -1548,7 +1549,7 @@ namespace AdaptiveExpressions
                         };
 
                         // the local iterator is pushed as one memory layer in the memory stack
-                        stackedMemory.Push(SimpleObjectMemory.Wrap(local));
+                        stackedMemory.Push(new SimpleObjectMemory(local));
                         (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory);
                         stackedMemory.Pop();
 
@@ -1607,7 +1608,7 @@ namespace AdaptiveExpressions
                         };
 
                         // the local iterator is pushed as one memory layer in the memory stack
-                        stackedMemory.Push(SimpleObjectMemory.Wrap(local));
+                        stackedMemory.Push(new SimpleObjectMemory(local));
                         var (r, _) = expression.Children[2].TryEvaluate<bool>(stackedMemory);
                         stackedMemory.Pop();
 

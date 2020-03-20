@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// Create new ConversationMemoryScope bound to ConversationState.
         /// </summary>
         public ConversationMemoryScope()
-            : base(ScopePath.CONVERSATION)
+            : base(ScopePath.Conversation)
         {
         }
     }

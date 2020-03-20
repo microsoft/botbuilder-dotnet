@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 
-namespace Microsoft.Bot.Builder.Dialogs.Declarative
+namespace Microsoft.Bot.Builder.Dialogs.Memory
 {
     public interface IComponentMemoryScopes
     {

@@ -104,25 +104,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            var dcState = dc.GetState();
-            if (Disabled != null && Disabled.GetValue(dcState))
+            if (Disabled != null && Disabled.GetValue(dc.State))
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             // Update the dialog options with the runtime settings.
-            DialogOptions.BotId = BotId.GetValue(dcState);
-            DialogOptions.SkillHostEndpoint = new Uri(SkillHostEndpoint.GetValue(dcState));
+            DialogOptions.BotId = BotId.GetValue(dc.State);
+            DialogOptions.SkillHostEndpoint = new Uri(SkillHostEndpoint.GetValue(dc.State));
             DialogOptions.ConversationIdFactory = HostContext.Current.Get<SkillConversationIdFactoryBase>() ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in HostContext");
             DialogOptions.SkillClient = HostContext.Current.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in HostContext");
             DialogOptions.ConversationState = dc.Context.TurnState.Get<ConversationState>() ?? throw new NullReferenceException($"Unable to get an instance of {nameof(ConversationState)} from TurnState.");
 
             // Set the skill to call
-            DialogOptions.Skill.Id = DialogOptions.Skill.AppId = SkillAppId.GetValue(dcState);
-            DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint.GetValue(dcState));
+            DialogOptions.Skill.Id = DialogOptions.Skill.AppId = SkillAppId.GetValue(dc.State);
+            DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint.GetValue(dc.State));
 
             // Get the activity to send to the skill.
-            var activity = await Activity.BindToData(dc.Context, dcState).ConfigureAwait(false);
+            var activity = await Activity.BindToData(dc.Context, dc.State).ConfigureAwait(false);
 
             // Call the base to invoke the skill
             return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity }, cancellationToken).ConfigureAwait(false);
@@ -133,10 +132,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation)
             {
                 // Capture the result of the dialog if the property is set
-                var dcState = dc.GetState();
                 if (ResultProperty != null)
                 {
-                    dcState.SetValue(ResultProperty.GetValue(dcState), dc.Context.Activity.Value);
+                    dc.State.SetValue(ResultProperty.GetValue(dc.State), dc.Context.Activity.Value);
                 }
             }
 

@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 if (this.fullConstraint == null)
                 {
                     var allExpressions = new List<Expression>();
-                    
+
                     if (this.Condition != null)
                     {
                         allExpressions.Add(this.Condition.ToExpression());
@@ -141,11 +141,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                     $"runOnce{Id}",
                                     (expression, os) =>
                                     {
-                                        var state = os as DialogStateManager;
                                         var basePath = $"{AdaptiveDialog.ConditionTracker}.{Id}.";
-                                        var lastRun = state.GetValue<uint>(basePath + "lastRun");
-                                        var paths = state.GetValue<string[]>(basePath + "paths");
-                                        var changed = state.AnyPathChanged(lastRun, paths);
+                                        var changed = false;
+
+                                        if (os.TryGetValue(basePath + "lastRun", out object val))
+                                        {
+                                            uint lastRun = ObjectPath.MapValueTo<uint>(val);
+
+                                            if (os.TryGetValue(basePath + "paths", out val))
+                                            {
+                                                string[] paths = ObjectPath.MapValueTo<string[]>(val);
+                                                if (paths != null)
+                                                {
+                                                    foreach (var path in paths)
+                                                    {
+                                                        if (os.TryGetValue($"dialog._tracker.paths.{path}", out val))
+                                                        {
+                                                            uint current = ObjectPath.MapValueTo<uint>(val);
+                                                            if (current > lastRun)
+                                                            {
+                                                                changed = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
                                         return (changed, null);
                                     },
                                     ReturnType.Boolean,
@@ -164,7 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <returns>Computed priority.</returns>
         public int CurrentPriority(ActionContext actionContext)
         {
-            var (priority, error) = this.Priority.TryGetValue(actionContext.GetState());
+            var (priority, error) = this.Priority.TryGetValue(actionContext.State);
             if (error != null)
             {
                 priority = -1;
@@ -205,9 +228,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
             if (RunOnce)
             {
-                var dcState = actionContext.GetState();
-                var count = dcState.GetValue<uint>(DialogPath.EventCounter);
-                dcState.SetValue($"{AdaptiveDialog.ConditionTracker}.{Id}.lastRun", count);
+                var count = actionContext.State.GetValue<uint>(DialogPath.EventCounter);
+                actionContext.State.SetValue($"{AdaptiveDialog.ConditionTracker}.{Id}.lastRun", count);
             }
 
             return await Task.FromResult(new List<ActionChangeList>()
