@@ -1344,6 +1344,23 @@ namespace AdaptiveExpressions
             }
         }
 
+        private static object Mod(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (a.IsInteger() && b.IsInteger())
+            {
+                return Convert.ToInt32(a) % Convert.ToInt32(b);
+            }
+            else
+            {
+                return Convert.ToDouble(a) % Convert.ToDouble(b);
+            }
+        }
+
         private static (object value, string error) And(Expression expression, IMemory state)
         {
             object result = true;
@@ -2740,7 +2757,7 @@ namespace AdaptiveExpressions
                             else
                             {
                                 error = null;
-                                value = Convert.ToInt32(args[0]) % Convert.ToInt32(args[1]);
+                                value = Mod(args[0], args[1]);
                             }
 
                             return (value, error);
