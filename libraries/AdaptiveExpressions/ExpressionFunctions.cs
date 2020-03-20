@@ -720,7 +720,7 @@ namespace AdaptiveExpressions
                         bool? isNumber = null;
                         foreach (var arg in args)
                         {
-                            var obj = (object)arg;
+                            var obj = arg;
                             if (isNumber.HasValue)
                             {
                                 if (obj != null && obj.IsNumber() != isNumber.Value)
@@ -785,10 +785,10 @@ namespace AdaptiveExpressions
                     (args, error) = EvaluateChildren(expr, state);
                     if (error == null)
                     {
-                        if (args[0] is string string0 && args[1] is int int1)
+                        if (args[0] is string string0 && args[1].IsInteger())
                         {
                             var formatString = (args.Count() == 3 && args[2] is string string1) ? string1 : DefaultDateTimeFormat;
-                            (value, error) = ParseISOTimestamp(string0, dt => function(dt, int1).ToString(formatString));
+                            (value, error) = ParseISOTimestamp(string0, dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
                         }
                         else
                         {
@@ -906,7 +906,7 @@ namespace AdaptiveExpressions
         /// <returns>Value and error information if any.</returns>
         public static (object result, string error) SetProperty(object instance, string property, object value)
         {
-            object result = value;
+            var result = value;
             string error = null;
 
             if (instance is IDictionary<string, object> idict)
@@ -994,7 +994,7 @@ namespace AdaptiveExpressions
         /// <returns>return the accumulated path and the expression left unable to accumulate.</returns>
         public static (string path, Expression left, string error) TryAccumulatePath(Expression expression, IMemory state)
         {
-            string path = string.Empty;
+            var path = string.Empty;
             var left = expression;
 
             // get path from Accessor or Element+Accessor
@@ -1156,31 +1156,6 @@ namespace AdaptiveExpressions
             return (value, error);
         }
 
-        private static bool CanBeModified(object value, string property, int? expected)
-        {
-            var modifiable = false;
-            if (expected.HasValue)
-            {
-                // Modifiable list
-                modifiable = TryParseList(value, out var _);
-            }
-            else
-            {
-                // Modifiable object
-                modifiable = value is IDictionary<string, object>
-                    || value is IDictionary
-                    || value is JObject;
-                if (!modifiable)
-                {
-                    var type = value.GetType();
-                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
-                    modifiable = prop != null;
-                }
-            }
-
-            return modifiable;
-        }
-
         private static (object value, string error) SetPathToValue(Expression expr, IMemory state)
         {
             var (path, left, error) = TryAccumulatePath(expr.Children[0], state);
@@ -1208,7 +1183,7 @@ namespace AdaptiveExpressions
 
         private static string ParseStringOrNull(object value)
         {
-            string result = null;
+            string result;
             if (value is string str)
             {
                 result = str;
@@ -1327,7 +1302,7 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return (int)a + (int)b;
+                return Convert.ToInt32(a) + Convert.ToInt32(b);
             }
             else
             {
@@ -1344,7 +1319,7 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return (int)a - (int)b;
+                return Convert.ToInt32(a) - Convert.ToInt32(b);
             }
             else
             {
@@ -1361,7 +1336,7 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return (int)a * (int)b;
+                return Convert.ToInt32(a) * Convert.ToInt32(b);
             }
             else
             {
@@ -1696,8 +1671,8 @@ namespace AdaptiveExpressions
                 case "hour": converter = (dateTime) => dateTime.AddHours(multiFlag * interval); break;
                 case "day": converter = (dateTime) => dateTime.AddDays(multiFlag * interval); break;
                 case "week": converter = (dateTime) => dateTime.AddDays(multiFlag * (interval * 7)); break;
-                case "month": converter = (dateTime) => dateTime.AddMonths(multiFlag * (int)interval); break;
-                case "year": converter = (dateTime) => dateTime.AddYears(multiFlag * (int)interval); break;
+                case "month": converter = (dateTime) => dateTime.AddMonths(multiFlag * Convert.ToInt32(interval)); break;
+                case "year": converter = (dateTime) => dateTime.AddYears(multiFlag * Convert.ToInt32(interval)); break;
                 default: error = $"{timeUnit} is not a valid time unit."; break;
             }
 
@@ -2037,7 +2012,7 @@ namespace AdaptiveExpressions
                 {
                     var uriBase = (Uri)result;
                     var port = uriBase.Port;
-                    result = (int)port;
+                    result = Convert.ToInt32(port);
                 }
                 catch
                 {
@@ -2546,8 +2521,6 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
-
         private static bool IsEqual(IReadOnlyList<object> args)
         {
             if (args[0] == null)
@@ -2661,7 +2634,7 @@ namespace AdaptiveExpressions
                     {
                         if (args[0].IsInteger() && args[1].IsInteger())
                         {
-                            return (int)args[0] / (int)args[1];
+                            return Convert.ToInt32(args[0]) / Convert.ToInt32(args[1]);
                         }
                         else
                         {
@@ -2760,14 +2733,14 @@ namespace AdaptiveExpressions
                         {
                             object value = null;
                             string error;
-                            if (Convert.ToInt64(args[1]) == 0L)
+                            if (Convert.ToInt32(args[1]) == 0)
                             {
                                 error = $"Cannot mod by 0";
                             }
                             else
                             {
                                 error = null;
-                                value = (int)args[0] % (int)args[1];
+                                value = Convert.ToInt32(args[0]) % Convert.ToInt32(args[1]);
                             }
 
                             return (value, error);
@@ -2823,34 +2796,34 @@ namespace AdaptiveExpressions
                     Apply(
                         args =>
                         {
-                            List<object> operands = ResolveListValue(args[0]).OfType<object>().ToList();
-                            return operands.All(u => (u is int)) ? operands.Sum(u => (int)u) : operands.Sum(u => Convert.ToSingle(u));
+                            var operands = ResolveListValue(args[0]).OfType<object>().ToList();
+                            return operands.All(u => u.IsInteger()) ? operands.Sum(u => Convert.ToInt32(u)) : operands.Sum(u => Convert.ToSingle(u));
                         },
                         VerifyNumericList),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Range,
-                    ExpressionFunctions.ApplyWithError(
+                    ApplyWithError(
                         args =>
                         {
                             string error = null;
                             IList result = null;
-                            var count = (int)args[1];
+                            var count = Convert.ToInt32(args[1]);
                             if (count <= 0)
                             {
                                 error = $"The second parameter should be more than zero";
                             }
                             else
                             {
-                                result = Enumerable.Range((int)args[0], count).ToList();
+                                result = Enumerable.Range(Convert.ToInt32(args[0]), count).ToList();
                             }
 
                             return (result, error);
                         },
-                        ExpressionFunctions.VerifyInteger),
+                        VerifyInteger),
                     ReturnType.Object,
-                    ExpressionFunctions.ValidateBinaryNumber),
+                    ValidateBinaryNumber),
 
                 // Collection Functions
                 new ExpressionEvaluator(
@@ -2906,37 +2879,37 @@ namespace AdaptiveExpressions
                     ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Skip,
-                    ExpressionFunctions.Skip,
+                    Skip,
                     ReturnType.Object,
-                    (expression) => ExpressionFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                    (expression) => ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.Take,
-                    ExpressionFunctions.Take,
+                    Take,
                     ReturnType.Object,
-                    (expression) => ExpressionFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                    (expression) => ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SubArray,
-                    ExpressionFunctions.SubArray,
+                    SubArray,
                     ReturnType.Object,
-                    (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object, ReturnType.Number)),
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SortBy,
                     SortBy(false),
                     ReturnType.Object,
-                    (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.SortByDescending,
                     SortBy(true),
                     ReturnType.Object,
-                    (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Flatten,
                     Apply(
                         args =>
                         {
-                            var depth = args.Count > 1 ? (int)args[1] : 100;
-                            return ExpressionFunctions.Flatten((IEnumerable<object>)args[0], depth);
+                            var depth = args.Count > 1 ? Convert.ToInt32(args[1]) : 100;
+                            return Flatten((IEnumerable<object>)args[0], depth);
                         }),
                     ReturnType.Object,
                     (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object)),
@@ -3188,7 +3161,7 @@ namespace AdaptiveExpressions
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.AddOrdinal,
-                    Apply(args => AddOrdinal((int)args[0]), VerifyInteger),
+                    Apply(args => AddOrdinal(Convert.ToInt32(args[0])), VerifyInteger),
                     ReturnType.Number,
                     (expression) => ValidateArityAndAnyType(expression, 1, 1, ReturnType.Number)),
                 new ExpressionEvaluator(
@@ -3230,9 +3203,9 @@ namespace AdaptiveExpressions
                     expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.NewGuid,
-                    ExpressionFunctions.Apply(args => Guid.NewGuid().ToString()),
+                    Apply(args => Guid.NewGuid().ToString()),
                     ReturnType.String,
-                    (exprssion) => ExpressionFunctions.ValidateArityAndAnyType(exprssion, 0, 0)),
+                    (exprssion) => ValidateArityAndAnyType(exprssion, 0, 0)),
                 new ExpressionEvaluator(
                     ExpressionType.IndexOf,
                     (expression, state) =>
@@ -3312,7 +3285,7 @@ namespace AdaptiveExpressions
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfWeek,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => (int)dt.DayOfWeek), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => Convert.ToInt32(dt.DayOfWeek)), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
@@ -3372,11 +3345,11 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args[0] is string string0 && args[1] is int int1 && args[2] is string string2)
+                            if (args[0] is string string0 && args[1].IsInteger() && args[2] is string string2)
                             {
                                 var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(int1, string2);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt32(args[1]), string2);
                                 if (error == null)
                                 {
                                     (value, error) = ParseISOTimestamp(string0, dt => timeConverter(dt).ToString(format));
@@ -3469,11 +3442,11 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args[0] is int int1 && args[1] is string string1)
+                            if (args[0].IsInteger() && args[1] is string string1)
                             {
                                 var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(int1, string1, false);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt32(args[0]), string1, false);
                                 if (error == null)
                                 {
                                     value = timeConverter(DateTime.Now).ToString(format);
@@ -3499,11 +3472,11 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-                            if (args[0] is int int1 && args[1] is string string1)
+                            if (args[0].IsInteger() && args[1] is string string1)
                             {
                                 var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(int1, string1);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt32(args[0]), string1);
                                 if (error == null)
                                 {
                                     value = timeConverter(DateTime.Now).ToString(format);
@@ -3532,7 +3505,7 @@ namespace AdaptiveExpressions
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                             if (args[0] is string timestamp && args[1] is string targetTimeZone)
                             {
-                                (value, error) = ExpressionFunctions.ConvertFromUTC(timestamp, targetTimeZone, format);
+                                (value, error) = ConvertFromUTC(timestamp, targetTimeZone, format);
                             }
                             else
                             {
@@ -3557,7 +3530,7 @@ namespace AdaptiveExpressions
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                             if (args[0] is string timestamp && args[1] is string sourceTimeZone)
                             {
-                                (value, error) = ExpressionFunctions.ConvertToUTC(timestamp, sourceTimeZone, format);
+                                (value, error) = ConvertToUTC(timestamp, sourceTimeZone, format);
                             }
                             else
                             {
@@ -3580,9 +3553,9 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp && args[1] is int interval && args[2] is string timeUnit)
+                            if (args[0] is string timestamp && args[1].IsInteger() && args[2] is string timeUnit)
                             {
-                                (value, error) = AddToTime(timestamp, interval, timeUnit, format);
+                                (value, error) = AddToTime(timestamp, Convert.ToInt32(args[1]), timeUnit, format);
                             }
                             else
                             {
@@ -3841,22 +3814,22 @@ namespace AdaptiveExpressions
                     ValidateUnary),
 
                 // Conversions
-                new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float)Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Int, Apply(args => (int)Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ExpressionFunctions.ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Float, Apply(args => Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ExpressionFunctions.ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.UriComponent, Apply(args => Uri.EscapeDataString(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ExpressionFunctions.ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.DataUriToBinary, Apply(args => ExpressionFunctions.ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.DataUriToBinary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.DataUriToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].ToString().Substring(args[0].ToString().IndexOf(",") + 1))), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.UriComponentToString, Apply(args => Uri.UnescapeDataString(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
 
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
                 Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ExpressionFunctions.ToXml(args[0])), ReturnType.String, ExpressionFunctions.ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ToXml(args[0])), ReturnType.String, ValidateUnary),
 
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
@@ -3869,8 +3842,8 @@ namespace AdaptiveExpressions
                         {
                             object value = null;
                             string error = null;
-                            var min = (int)args[0];
-                            var max = (int)args[1];
+                            var min = Convert.ToInt32(args[0]);
+                            var max = Convert.ToInt32(args[1]);
                             if (min >= max)
                             {
                                 error = $"{min} is not < {max} for rand";
@@ -4061,11 +4034,11 @@ namespace AdaptiveExpressions
                     ValidateUnary),
             };
 
-            var eval = new ExpressionEvaluator(ExpressionType.Optional, (expression, state) => throw new NotImplementedException(), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
+            var eval = new ExpressionEvaluator(ExpressionType.Optional, (expression, state) => throw new NotImplementedException(), ReturnType.Boolean, ValidateUnaryBoolean);
             eval.Negation = eval;
             functions.Add(eval);
             
-            eval = new ExpressionEvaluator(ExpressionType.Ignore, (expression, state) => expression.Children[0].TryEvaluate(state), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
+            eval = new ExpressionEvaluator(ExpressionType.Ignore, (expression, state) => expression.Children[0].TryEvaluate(state), ReturnType.Boolean, ValidateUnaryBoolean);
             eval.Negation = eval;
             functions.Add(eval);
 
