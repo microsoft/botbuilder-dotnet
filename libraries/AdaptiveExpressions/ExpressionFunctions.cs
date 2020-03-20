@@ -824,6 +824,10 @@ namespace AdaptiveExpressions
                 {
                     value = list[index];
                 }
+                else
+                {
+                    error = $"Index was out of range.";
+                }
             }
             else
             {
@@ -1278,6 +1282,91 @@ namespace AdaptiveExpressions
             }
 
             return result;
+        }
+
+        private static object Max(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (Convert.ToDouble(a) > Convert.ToDouble(b))
+            {
+                return a;
+            }
+            else
+            {
+                return b;
+            }
+        }
+
+        private static object Min(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (Convert.ToDouble(a) <= Convert.ToDouble(b))
+            {
+                return a;
+            }
+            else
+            {
+                return b;
+            }
+        }
+
+        private static object Add(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (a.IsInteger() && b.IsInteger())
+            {
+                return (int)a + (int)b;
+            }
+            else
+            {
+                return Convert.ToDouble(a) + Convert.ToDouble(b);
+            }
+        }
+
+        private static object Subtract(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (a.IsInteger() && b.IsInteger())
+            {
+                return (int)a - (int)b;
+            }
+            else
+            {
+                return Convert.ToDouble(a) - Convert.ToDouble(b);
+            }
+        }
+
+        private static object Multiply(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (a.IsInteger() && b.IsInteger())
+            {
+                return (int)a * (int)b;
+            }
+            else
+            {
+                return Convert.ToDouble(a) * Convert.ToDouble(b);
+            }
         }
 
         private static (object value, string error) And(Expression expression, IMemory state)
@@ -2476,9 +2565,17 @@ namespace AdaptiveExpressions
                 return true;
             }
 
+            if (args[0].IsNumber() && args[0].IsNumber())
+            {
+                if (Math.Abs(Convert.ToDouble(args[0]) - Convert.ToDouble(args[1])) < 0.00000001)
+                {
+                    return true;
+                }
+            }
+
             try
             {
-                return args[0] == args[1];
+                return args[0] == args[1] || (args[0] != null && args[0].Equals(args[1]));
             }
             catch
             {
@@ -2556,11 +2653,21 @@ namespace AdaptiveExpressions
             {
                 // Math
                 new ExpressionEvaluator(ExpressionType.Element, ExtractElement, ReturnType.Object, ValidateBinary),
-                MultivariateNumeric(ExpressionType.Subtract, args => (double)args[0] - (double)args[1]),
-                MultivariateNumeric(ExpressionType.Multiply, args => (double)args[0] * (double)args[1]),
+                MultivariateNumeric(ExpressionType.Subtract, args => Subtract(args[0], args[1])),
+                MultivariateNumeric(ExpressionType.Multiply, args => Multiply(args[0], args[1])),
                 MultivariateNumeric(
                     ExpressionType.Divide,
-                    args => (double)args[0] / (double)args[1],
+                    args =>
+                    {
+                        if (args[0].IsInteger() && args[1].IsInteger())
+                        {
+                            return (int)args[0] / (int)args[1];
+                        }
+                        else
+                        {
+                            return Convert.ToDouble(args[0]) / Convert.ToDouble(args[1]);
+                        }
+                    },
                     (val, expression, pos) =>
                     {
                         var error = VerifyNumber(val, expression, pos);
@@ -2573,19 +2680,19 @@ namespace AdaptiveExpressions
                     }),
                 NumericOrCollection(ExpressionType.Min, (args) =>
                 {
-                    var result = double.MaxValue;
+                    object result = double.MaxValue;
                     if (args.Count == 1)
                     {
                         if (TryParseList(args[0], out IList ilist))
                         {
                             foreach (var value in ilist)
                             {
-                                result = Math.Min((double)result, (double)value);
+                                result = Min(result, value);
                             }
                         }
                         else
                         {
-                            result = Math.Min((double)result, (double)args[0]);
+                            result = Min(result, args[0]);
                         }
                     }
                     else
@@ -2596,12 +2703,12 @@ namespace AdaptiveExpressions
                             {
                                 foreach (var value in ilist)
                                 {
-                                    result = Math.Min((double)result, (double)value);
+                                    result = Min(result, value);
                                 }
                             }
                             else
                             {
-                                result = Math.Min((double)result, (double)arg);
+                                result = Min(result, arg);
                             }
                         }
                     }
@@ -2610,19 +2717,19 @@ namespace AdaptiveExpressions
                 }),
                 NumericOrCollection(ExpressionType.Max, args =>
                 {
-                    var result = double.MinValue;
+                    object result = double.MinValue;
                     if (args.Count == 1)
                     {
                         if (TryParseList(args[0], out IList ilist))
                         {
                             foreach (var value in ilist)
                             {
-                                result = Math.Max((double)result, (double)value);
+                                result = Max(result, value);
                             }
                         }
                         else
                         {
-                            result = Math.Max((double)result, (double)args[0]);
+                            result = Max(result, args[0]);
                         }
                     }
                     else
@@ -2633,19 +2740,19 @@ namespace AdaptiveExpressions
                             {
                                 foreach (var value in ilist)
                                 {
-                                    result = Math.Max((double)result, (double)value);
+                                    result = Max(result, value);
                                 }
                             }
                             else
                             {
-                                result = Math.Max((double)result, (double)arg);
+                                result = Max(result, arg);
                             }
                         }
                     }
 
                     return result;
                 }),
-                MultivariateNumeric(ExpressionType.Power, args => Math.Pow((double)args[0], (double)args[1])),
+                MultivariateNumeric(ExpressionType.Power, args => Math.Pow(Convert.ToDouble(args[0]), Convert.ToDouble(args[1]))),
                 new ExpressionEvaluator(
                     ExpressionType.Mod,
                     ApplyWithError(
@@ -2686,8 +2793,8 @@ namespace AdaptiveExpressions
                         {
                             object result = null;
                             string error = null;
-                            var firstItem = (object)args[0];
-                            var secondItem = (object)args[1];
+                            var firstItem = args[0];
+                            var secondItem = args[1];
                             var stringConcat = !firstItem.IsNumber() || !secondItem.IsNumber();
 
                             if ((firstItem == null && secondItem.IsNumber())
@@ -2703,7 +2810,7 @@ namespace AdaptiveExpressions
                                 }
                                 else
                                 {
-                                    result = (double)args[0] + (double)args[1];
+                                    result = Add(args[0], args[1]);
                                 }
                             }
 
@@ -2844,13 +2951,13 @@ namespace AdaptiveExpressions
                     (expression) => ValidateOrder(expression, null, ReturnType.Object)),
 
                 // Booleans
-                Comparison(ExpressionType.LessThan, args => (double)args[0] < (double)args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.LessThanOrEqual, args => (double)args[0] <= (double)args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.LessThan, args => Convert.ToDouble(args[0]) < Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.LessThanOrEqual, args => Convert.ToDouble(args[0]) <= Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
 
                 Comparison(ExpressionType.Equal, IsEqual, ValidateBinary),
                 Comparison(ExpressionType.NotEqual, args => !IsEqual(args), ValidateBinary),
-                Comparison(ExpressionType.GreaterThan, args => (double)args[0] > (double)args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.GreaterThanOrEqual, args => (double)args[0] >= (double)args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.GreaterThan, args => Convert.ToDouble(args[0]) > Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.GreaterThanOrEqual, args => Convert.ToDouble(args[0]) >= Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNotNull),
                 new ExpressionEvaluator(
                     ExpressionType.Contains,
@@ -3848,18 +3955,9 @@ namespace AdaptiveExpressions
                     Apply(args =>
                         {
                             var newJobj = (IDictionary<string, JToken>)args[0];
-                            var prop = args[1].ToString();
-                            string error = null;
-                            if (newJobj.ContainsKey(prop))
-                            {
-                                error = $"{prop} already exists";
-                            }
-                            else
-                            {
-                                newJobj[prop] = JToken.FromObject(args[2]);
-                            }
+                            newJobj[args[1].ToString()] = JToken.FromObject(args[2]);
 
-                            return (newJobj, error);
+                            return newJobj;
                         }),
                     ReturnType.Object,
                     (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String, ReturnType.Object)),
@@ -3888,7 +3986,8 @@ namespace AdaptiveExpressions
                 // Regex expression
                 new ExpressionEvaluator(
                     ExpressionType.IsMatch,
-                    ApplyWithError(args =>
+                    ApplyWithError(
+                        args =>
                         {
                             var value = false;
                             string error = null;
@@ -3905,7 +4004,7 @@ namespace AdaptiveExpressions
                             }
 
                             return (value, error);
-                        }),
+                        }, VerifyStringOrNull),
                     ReturnType.Boolean,
                     ValidateIsMatch),
 
@@ -3917,12 +4016,12 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsInteger,
-                    Apply(args => Extensions.IsNumber(args[0]) && (double)args[0] % 1 == 0),
+                    Apply(args => Extensions.IsNumber(args[0]) && Convert.ToDouble(args[0]) % 1 == 0),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsFloat,
-                    Apply(args => Extensions.IsNumber(args[0]) && (double)args[0] % 1 != 0),
+                    Apply(args => Extensions.IsNumber(args[0]) && Convert.ToDouble(args[0]) % 1 != 0),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
