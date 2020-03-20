@@ -466,6 +466,11 @@
             "$ref": "#/definitions/Microsoft.SignOutUser"
         },
         {
+            "title": "Microsoft.SkillDialog",
+            "description": "Begin a remote skill dialog.",
+            "$ref": "#/definitions/Microsoft.SkillDialog"
+        },
+        {
             "title": "Microsoft.StaticActivityTemplate",
             "description": "This allows you to define a static Activity object",
             "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
@@ -536,11 +541,6 @@
             "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
-            "title": "Microsoft.TextTemplate",
-            "description": "Lg tempalte to evaluate to create text",
-            "$ref": "#/definitions/Microsoft.TextTemplate"
-        },
-        {
             "title": "Microsoft.TraceActivity",
             "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
             "$ref": "#/definitions/Microsoft.TraceActivity"
@@ -557,7 +557,7 @@
         },
         {
             "title": "Microsoft.UrlEntityRecognizer",
-            "description": "Recognizer which recognizes urls (example: http://bing.com)",
+            "description": "Recognizer which recognizes urls.",
             "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
         },
         {
@@ -737,19 +737,19 @@
                     "$kind": "Microsoft.IRecognizer",
                     "title": "Recognizer",
                     "description": "Input recognizer that interprets user input into intent and entities.",
-                    "$ref": "#/definitions/Microsoft.Recognizer"
+                    "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "generator": {
                     "$kind": "Microsoft.ILanguageGenerator",
                     "title": "Language Generator",
                     "description": "Language generator that generates bot responses.",
-                    "$ref": "#/definitions/Microsoft.LanguageGenerator"
+                    "$ref": "#/definitions/Microsoft.ILanguageGenerator"
                 },
                 "selector": {
                     "$kind": "Microsoft.ITriggerSelector",
                     "title": "Selector",
                     "description": "Policy to determine which trigger is executed. Defaults to a 'best match' selector (optional).",
-                    "$ref": "#/definitions/Microsoft.TriggerSelector"
+                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 },
                 "triggers": {
                     "type": "array",
@@ -757,7 +757,7 @@
                     "title": "Triggers",
                     "items": {
                         "$kind": "Microsoft.ITrigger",
-                        "$ref": "#/definitions/Microsoft.OnCondition"
+                        "$ref": "#/definitions/Microsoft.ITrigger"
                     }
                 },
                 "schema": {
@@ -906,7 +906,7 @@
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
                     "description": "Activity to send.",
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "expectedProperties": {
                     "$role": "expression",
@@ -1004,7 +1004,7 @@
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1013,7 +1013,7 @@
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1022,7 +1022,7 @@
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1031,7 +1031,7 @@
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -1229,7 +1229,7 @@
                             "$kind": "Microsoft.IDialog",
                             "type": "object",
                             "title": "object",
-                            "$ref": "#/definitions/Microsoft.Dialog"
+                            "$ref": "#/definitions/Microsoft.IDialog"
                         },
                         {
                             "type": "string",
@@ -1532,7 +1532,7 @@
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1541,7 +1541,7 @@
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1550,7 +1550,7 @@
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1559,7 +1559,7 @@
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -1859,11 +1859,11 @@
                 },
                 "ifTrue": {
                     "$kind": "Microsoft.ITriggerSelector",
-                    "$ref": "#/definitions/Microsoft.TriggerSelector"
+                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 },
                 "ifFalse": {
                     "$kind": "Microsoft.ITriggerSelector",
-                    "$ref": "#/definitions/Microsoft.TriggerSelector"
+                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 }
             },
             "additionalProperties": false,
@@ -1944,7 +1944,7 @@
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1953,7 +1953,7 @@
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1962,7 +1962,7 @@
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -1971,7 +1971,7 @@
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -2373,7 +2373,7 @@
                     "description": "List of Recognizers defined for this set.",
                     "items": {
                         "$kind": "Microsoft.IRecognizer",
-                        "$ref": "#/definitions/Microsoft.Recognizer"
+                        "$ref": "#/definitions/Microsoft.IRecognizer"
                     }
                 }
             },
@@ -2557,7 +2557,7 @@
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -2566,7 +2566,7 @@
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -2575,7 +2575,7 @@
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -2584,7 +2584,7 @@
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -3180,7 +3180,7 @@
                     "description": "Actions to apply.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
             },
@@ -3676,109 +3676,6 @@
                 }
             ]
         },
-        "Microsoft.EntityRecognizer": {
-            "$role": "interface",
-            "title": "Entity Recognizers",
-            "description": "Union of components which derive from EntityRecognizer abstract class.",
-            "type": "object",
-            "oneOf": [
-                {
-                    "title": "Microsoft.AgeEntityRecognizer",
-                    "description": "Recognizer which recognizes age.",
-                    "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.ConfirmationEntityRecognizer",
-                    "description": "Recognizer which recognizes confirmation choices (yes/no).",
-                    "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.CurrencyEntityRecognizer",
-                    "description": "Recognizer which recognizes currency.",
-                    "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.DateTimeEntityRecognizer",
-                    "description": "Recognizer which recognizes dates and time fragments.",
-                    "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.DimensionEntityRecognizer",
-                    "description": "Recognizer which recognizes dimension.",
-                    "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.EmailEntityRecognizer",
-                    "description": "Recognizer which recognizes email.",
-                    "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.GuidEntityRecognizer",
-                    "description": "Recognizer which recognizes guids.",
-                    "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.HashtagEntityRecognizer",
-                    "description": "Recognizer which recognizes Hashtags.",
-                    "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.IpEntityRecognizer",
-                    "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
-                    "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.MentionEntityRecognizer",
-                    "description": "Recognizer which recognizes @Mentions",
-                    "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.NumberEntityRecognizer",
-                    "description": "Recognizer which recognizes numbers.",
-                    "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.NumberRangeEntityRecognizer",
-                    "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
-                    "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.OrdinalEntityRecognizer",
-                    "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
-                    "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.PercentageEntityRecognizer",
-                    "description": "Recognizer which recognizes percentages.",
-                    "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.PhoneNumberEntityRecognizer",
-                    "description": "Recognizer which recognizes phone numbers.",
-                    "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.RegExEntityRecognizer",
-                    "description": "Recognizer which recognizes patterns of input based on regex.",
-                    "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.TemperatureEntityRecognizer",
-                    "description": "Recognizer which recognizes temperatures.",
-                    "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.UrlEntityRecognizer",
-                    "description": "Recognizer which recognizes urls (example: http://bing.com)",
-                    "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-                },
-                {
-                    "type": "string",
-                    "title": "Reference to Microsoft.EntityRecognizer",
-                    "description": "Reference to Microsoft.EntityRecognizer .dialog file."
-                }
-            ]
-        },
         "Microsoft.FirstSelector": {
             "$role": "implements(Microsoft.ITriggerSelector)",
             "title": "First Trigger Selector",
@@ -3900,7 +3797,7 @@
                     "description": "Actions to execute for each item. Use '$foreach.value' to access the value of each item. Use '$foreach.index' to access the index of each item.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
             },
@@ -3996,7 +3893,7 @@
                     "description": "Actions to execute for each page. Use '$foreach.page' to access each page.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "pageSize": {
@@ -4546,9 +4443,9 @@
                 }
             ]
         },
-        "Microsoft.ActivityTemplate": {
+        "Microsoft.IActivityTemplate": {
             "title": "Microsoft ActivityTemplates",
-            "description": "Components which are ActivityTemplates",
+            "description": "Components which are ActivityTemplate",
             "$role": "interface",
             "oneOf": [
                 {
@@ -4567,9 +4464,9 @@
                 }
             ]
         },
-        "Microsoft.Dialog": {
+        "Microsoft.IDialog": {
             "title": "Microsoft Dialogs",
-            "description": "Union of components which implement the Dialog contract",
+            "description": "Components which derive from Dialog",
             "$role": "interface",
             "oneOf": [
                 {
@@ -4753,6 +4650,11 @@
                     "$ref": "#/definitions/Microsoft.SignOutUser"
                 },
                 {
+                    "title": "Microsoft.SkillDialog",
+                    "description": "Begin a remote skill dialog.",
+                    "$ref": "#/definitions/Microsoft.SkillDialog"
+                },
+                {
                     "title": "Microsoft.SwitchCondition",
                     "description": "Execute different actions based on the value of a property.",
                     "$ref": "#/definitions/Microsoft.SwitchCondition"
@@ -4793,9 +4695,112 @@
                 }
             ]
         },
-        "Microsoft.LanguageGenerator": {
+        "Microsoft.IEntityRecognizer": {
+            "$role": "interface",
+            "title": "Entity Recognizers",
+            "description": "Components which derive from EntityRecognizer.",
+            "type": "object",
+            "oneOf": [
+                {
+                    "title": "Microsoft.AgeEntityRecognizer",
+                    "description": "Recognizer which recognizes age.",
+                    "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.ConfirmationEntityRecognizer",
+                    "description": "Recognizer which recognizes confirmation choices (yes/no).",
+                    "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.CurrencyEntityRecognizer",
+                    "description": "Recognizer which recognizes currency.",
+                    "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.DateTimeEntityRecognizer",
+                    "description": "Recognizer which recognizes dates and time fragments.",
+                    "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.DimensionEntityRecognizer",
+                    "description": "Recognizer which recognizes dimension.",
+                    "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.EmailEntityRecognizer",
+                    "description": "Recognizer which recognizes email.",
+                    "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.GuidEntityRecognizer",
+                    "description": "Recognizer which recognizes guids.",
+                    "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.HashtagEntityRecognizer",
+                    "description": "Recognizer which recognizes Hashtags.",
+                    "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.IpEntityRecognizer",
+                    "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
+                    "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.MentionEntityRecognizer",
+                    "description": "Recognizer which recognizes @Mentions",
+                    "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.NumberEntityRecognizer",
+                    "description": "Recognizer which recognizes numbers.",
+                    "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.NumberRangeEntityRecognizer",
+                    "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
+                    "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.OrdinalEntityRecognizer",
+                    "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
+                    "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.PercentageEntityRecognizer",
+                    "description": "Recognizer which recognizes percentages.",
+                    "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.PhoneNumberEntityRecognizer",
+                    "description": "Recognizer which recognizes phone numbers.",
+                    "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.RegExEntityRecognizer",
+                    "description": "Recognizer which recognizes patterns of input based on regex.",
+                    "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.TemperatureEntityRecognizer",
+                    "description": "Recognizer which recognizes temperatures.",
+                    "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.UrlEntityRecognizer",
+                    "description": "Recognizer which recognizes urls.",
+                    "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+                },
+                {
+                    "type": "string",
+                    "title": "Reference to Microsoft.IEntityRecognizer",
+                    "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
+                }
+            ]
+        },
+        "Microsoft.ILanguageGenerator": {
             "title": "Microsoft LanguageGenerator",
-            "description": "Union of components which implement the LanguageGenerator interface",
+            "description": "Components which dervie from the LanguageGenerator class",
             "$role": "interface",
             "oneOf": [
                 {
@@ -4804,15 +4809,45 @@
                 }
             ]
         },
-        "Microsoft.TextTemplate": {
-            "title": "Microsoft TextTemplate",
-            "description": "Union of components which implement the TextTemplate",
+        "Microsoft.IRecognizer": {
+            "title": "Microsoft Recognizer",
+            "description": "Components which derive from Recognizer class",
             "$role": "interface",
             "oneOf": [
                 {
-                    "title": "Microsoft.TextTemplate",
-                    "description": "Lg tempalte to evaluate to create text",
-                    "$ref": "#/definitions/Microsoft.TextTemplate"
+                    "title": "Microsoft.AdaptiveCardRecognizer",
+                    "description": "Recognizer for detecting the value response from an Adaptive Card.",
+                    "$ref": "#/definitions/Microsoft.AdaptiveCardRecognizer"
+                },
+                {
+                    "title": "Microsoft.CrossTrainedRecognizerSet",
+                    "description": "Recognizer for selecting between cross trained recognizers.",
+                    "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+                },
+                {
+                    "title": "Microsoft.LuisRecognizer",
+                    "description": "LUIS recognizer.",
+                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
+                },
+                {
+                    "title": "Microsoft.MultiLanguageRecognizer",
+                    "description": "Configure one recognizer per language and the specify the language fallback policy.",
+                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+                },
+                {
+                    "title": "Microsoft.QnAMakerRecognizer",
+                    "description": "Recognizer for generating QnAMatch intents from a KB.",
+                    "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+                },
+                {
+                    "title": "Microsoft.RecognizerSet",
+                    "description": "Creates the union of the intents and entities of the recognizers in the set.",
+                    "$ref": "#/definitions/Microsoft.RecognizerSet"
+                },
+                {
+                    "title": "Microsoft.RegexRecognizer",
+                    "description": "Use regular expressions to recognize intents and entities from user input.",
+                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
                 },
                 {
                     "type": "string",
@@ -4820,10 +4855,21 @@
                 }
             ]
         },
-        "Microsoft.OnCondition": {
+        "Microsoft.ITextTemplate": {
+            "title": "Microsoft TextTemplate",
+            "description": "Components which derive from TextTemplate class",
+            "$role": "interface",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "string"
+                }
+            ]
+        },
+        "Microsoft.ITrigger": {
             "$role": "interface",
             "title": "Microsoft Triggers",
-            "description": "Union of components which implement the OnCondition",
+            "description": "Components which derive from OnCondition class.",
             "oneOf": [
                 {
                     "title": "Microsoft.OnActivity",
@@ -4962,15 +5008,15 @@
                 },
                 {
                     "type": "string",
-                    "title": "Reference to Microsoft.OnCondition",
-                    "description": "Reference to Microsoft.OnCondition .dialog file."
+                    "title": "Reference to Microsoft.ITrigger",
+                    "description": "Reference to Microsoft.ITrigger .dialog file."
                 }
             ]
         },
-        "Microsoft.TriggerSelector": {
+        "Microsoft.ITriggerSelector": {
             "$role": "interface",
             "title": "Selectors",
-            "description": "Union of components which are trigger selectors",
+            "description": "Components which derive from TriggerSelector class.",
             "oneOf": [
                 {
                     "title": "Microsoft.ConditionalSelector",
@@ -4999,8 +5045,8 @@
                 },
                 {
                     "type": "string",
-                    "title": "Reference to Microsoft.TriggerSelector",
-                    "description": "Reference to Microsoft.TriggerSelector .dialog file."
+                    "title": "Reference to Microsoft.ITriggerSelector",
+                    "description": "Reference to Microsoft.ITriggerSelector .dialog file."
                 }
             ]
         },
@@ -5083,7 +5129,7 @@
                     "description": "Actions to execute if condition is true.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "elseActions": {
@@ -5092,7 +5138,7 @@
                     "description": "Actions to execute if condition is false.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
             },
@@ -5386,7 +5432,7 @@
                     "title": "External Entity Recognizer",
                     "description": "Entities recognized by this recognizer will be passed to LUIS as external entities.",
                     "$kind": "Microsoft.IRecognizer",
-                    "$ref": "#/definitions/Microsoft.Recognizer"
+                    "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "dynamicLists": {
                     "$role": "expression",
@@ -5584,7 +5630,7 @@
                 },
                 "selector": {
                     "$kind": "Microsoft.ITriggerSelector",
-                    "$ref": "#/definitions/Microsoft.TriggerSelector"
+                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 }
             },
             "additionalProperties": false,
@@ -5656,7 +5702,7 @@
                     "description": "Map of language -> Recognizer",
                     "additionalProperties": {
                         "$kind": "Microsoft.IRecognizer",
-                        "$ref": "#/definitions/Microsoft.Recognizer"
+                        "$ref": "#/definitions/Microsoft.IRecognizer"
                     }
                 }
             },
@@ -5788,7 +5834,7 @@
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -5797,7 +5843,7 @@
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -5806,7 +5852,7 @@
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -5815,7 +5861,7 @@
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -6114,7 +6160,7 @@
                     "examples": [
                         "Sorry, the login info you provided is not valid."
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -6123,7 +6169,7 @@
                     "examples": [
                         "Login failed."
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -6258,7 +6304,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -6365,7 +6411,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -6480,7 +6526,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -6581,7 +6627,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -6682,7 +6728,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -6793,7 +6839,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -6902,7 +6948,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -7026,7 +7072,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -7132,7 +7178,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -7233,7 +7279,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -7334,7 +7380,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -7441,7 +7487,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -7548,7 +7594,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -7649,7 +7695,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -7750,7 +7796,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -7851,7 +7897,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -7952,7 +7998,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -8053,7 +8099,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -8167,7 +8213,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -8268,7 +8314,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -8369,7 +8415,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -8470,7 +8516,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -8571,7 +8617,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -8672,7 +8718,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -8773,7 +8819,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -8874,7 +8920,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -8975,7 +9021,7 @@
                     "description": "Sequence of actions to execute.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
                 "priority": {
@@ -9238,7 +9284,7 @@
                     "title": "Fallback answer",
                     "description": "Default answer to return when none found in KB.",
                     "default": "Sorry, I did not find an answer.",
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "threshold": {
                     "$role": "expression",
@@ -9276,7 +9322,7 @@
                     "title": "Card no match response",
                     "description": "Custom response when no match option was selected.",
                     "default": "Thanks for the feedback.",
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "strictFilters": {
                     "$role": "expression",
@@ -9675,52 +9721,6 @@
                 }
             ]
         },
-        "Microsoft.Recognizer": {
-            "title": "Microsoft Recognizer",
-            "description": "Union of components which implement the Recognizer abstract class",
-            "$role": "interface",
-            "oneOf": [
-                {
-                    "title": "Microsoft.AdaptiveCardRecognizer",
-                    "description": "Recognizer for detecting the value response from an Adaptive Card.",
-                    "$ref": "#/definitions/Microsoft.AdaptiveCardRecognizer"
-                },
-                {
-                    "title": "Microsoft.CrossTrainedRecognizerSet",
-                    "description": "Recognizer for selecting between cross trained recognizers.",
-                    "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
-                },
-                {
-                    "title": "Microsoft.LuisRecognizer",
-                    "description": "LUIS recognizer.",
-                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
-                },
-                {
-                    "title": "Microsoft.MultiLanguageRecognizer",
-                    "description": "Configure one recognizer per language and the specify the language fallback policy.",
-                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
-                },
-                {
-                    "title": "Microsoft.QnAMakerRecognizer",
-                    "description": "Recognizer for generating QnAMatch intents from a KB.",
-                    "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
-                },
-                {
-                    "title": "Microsoft.RecognizerSet",
-                    "description": "Creates the union of the intents and entities of the recognizers in the set.",
-                    "$ref": "#/definitions/Microsoft.RecognizerSet"
-                },
-                {
-                    "title": "Microsoft.RegexRecognizer",
-                    "description": "Use regular expressions to recognize intents and entities from user input.",
-                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
-                },
-                {
-                    "type": "string",
-                    "title": "string"
-                }
-            ]
-        },
         "Microsoft.RecognizerSet": {
             "$role": "implements(Microsoft.IRecognizer)",
             "title": "Recognizer Set",
@@ -9762,7 +9762,7 @@
                     "description": "List of Recognizers defined for this set.",
                     "items": {
                         "$kind": "Microsoft.IRecognizer",
-                        "$ref": "#/definitions/Microsoft.Recognizer"
+                        "$ref": "#/definitions/Microsoft.IRecognizer"
                     }
                 }
             },
@@ -9913,7 +9913,7 @@
                     "description": "Collection of entity recognizers to use.",
                     "items": {
                         "$kind": "Microsoft.IEntityRecognizer",
-                        "$ref": "#/definitions/Microsoft.EntityRecognizer"
+                        "$ref": "#/definitions/Microsoft.IEntityRecognizer"
                     }
                 }
             },
@@ -10115,7 +10115,7 @@
                     "examples": [
                         "AddToDoDialog"
                     ],
-                    "$ref": "#/definitions/Microsoft.Dialog"
+                    "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
                     "$role": "expression",
@@ -10234,7 +10234,7 @@
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
                     "description": "Activity to send.",
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
             "additionalProperties": false,
@@ -10568,6 +10568,146 @@
                 }
             ]
         },
+        "Microsoft.SkillDialog": {
+            "$role": "implements(Microsoft.IDialog)",
+            "title": "Begin a skill dialog",
+            "description": "Begin a remote skill dialog.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SkillDialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the skill dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "activityProcessed": {
+                    "$role": "expression",
+                    "title": "Activity Processed",
+                    "description": "When set to false, the dialog that is called can process the current activity.",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "resultProperty": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property to store any value returned by the dialog that is called.",
+                    "examples": [
+                        "dialog.userName"
+                    ]
+                },
+                "botId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill host bot ID",
+                    "description": "The Microsoft App ID that will be calling the skill.",
+                    "default": "=settings.MicrosoftAppId"
+                },
+                "skillHostEndpoint": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill host",
+                    "description": "The callback Url for the skill host.",
+                    "default": "=settings.skillHostEndpoint",
+                    "examples": [
+                        "https://mybot.contoso.com/api/skills/"
+                    ]
+                },
+                "skillAppId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill App ID",
+                    "description": "The Microsoft App ID for the skill."
+                },
+                "skillEndpoint": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill endpoint ",
+                    "description": "The /api/messages endpoint for the skill.",
+                    "examples": [
+                        "https://myskill.contoso.com/api/messages/"
+                    ]
+                },
+                "activity ": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Activity",
+                    "description": "The activity to send to the skill.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
         "Microsoft.StaticActivityTemplate": {
             "$role": "implements(Microsoft.IActivityTemplate)",
             "title": "Microsoft Static Activity Template",
@@ -10721,7 +10861,7 @@
                                 "description": "Actions to execute.",
                                 "items": {
                                     "$kind": "Microsoft.IDialog",
-                                    "$ref": "#/definitions/Microsoft.Dialog"
+                                    "$ref": "#/definitions/Microsoft.IDialog"
                                 }
                             }
                         }
@@ -10733,7 +10873,7 @@
                     "description": "Actions to execute if none of the cases meet the condition.",
                     "items": {
                         "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.Dialog"
+                        "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 }
             },
@@ -10761,7 +10901,7 @@
         },
         "Microsoft.TemperatureEntityRecognizer": {
             "$role": "implements(Microsoft.IEntityRecognizer)",
-            "title": "Temperature Entity Recognizer",
+            "title": "Temperature Recognizer",
             "description": "Recognizer which recognizes temperatures.",
             "type": "object",
             "properties": {
@@ -11171,9 +11311,9 @@
                 }
             ]
         },
-        "Microsoft.Test.TestAction": {
+        "Microsoft.Test.ITestAction": {
             "title": "Microsoft Test ITestAction",
-            "description": "Union of components which implement the Test.ITestAction interface",
+            "description": "Components which derive from TestAction class",
             "$role": "interface",
             "oneOf": [
                 {
@@ -11218,8 +11358,8 @@
                 },
                 {
                     "type": "string",
-                    "title": "Reference to Microsoft.Test.TestAction",
-                    "description": "Reference to Microsoft.Test.TestAction .dialog file."
+                    "title": "Reference to Microsoft.Test.ITestAction",
+                    "description": "Reference to Microsoft.Test.ITestAction .dialog file."
                 }
             ]
         },
@@ -11256,7 +11396,7 @@
                     "$kind": "Microsoft.IDialog",
                     "title": "Dialog",
                     "description": "The root dialog to execute the test script against.",
-                    "$ref": "#/definitions/Microsoft.Dialog"
+                    "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "description": {
                     "type": "string",
@@ -11267,8 +11407,8 @@
                     "type": "array",
                     "description": "Sequence of test actions to execute.",
                     "items": {
-                        "$kind": "Microsoft.Test.TestAction",
-                        "$ref": "#/definitions/Microsoft.Test.TestAction"
+                        "$kind": "Microsoft.Test.ITestAction",
+                        "$ref": "#/definitions/Microsoft.Test.ITestAction"
                     }
                 },
                 "locale": {
@@ -11669,7 +11809,7 @@
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -11678,7 +11818,7 @@
                     "examples": [
                         "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -11687,7 +11827,7 @@
                     "examples": [
                         "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "defaultValueResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -11696,7 +11836,7 @@
                     "examples": [
                         "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
                 "maxTurnCount": {
                     "$role": "expression",
@@ -11828,61 +11968,19 @@
             ]
         },
         "Microsoft.TextTemplate": {
-            "$role": "implements(Microsoft.ITextTemplate))",
+            "$role": "interface",
             "title": "Microsoft TextTemplate",
             "description": "Lg tempalte to evaluate to create text",
             "type": "object",
             "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.TextTemplate"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
                 "template": {
                     "title": "Template",
                     "Description": "Language Generator template to evaluate to create the text",
                     "type": "string"
                 }
             },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "template",
-                        "$kind"
-                    ]
-                }
+            "required": [
+                "template"
             ]
         },
         "Microsoft.TraceActivity": {
@@ -12111,7 +12209,7 @@
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
                     "description": "Activity to send.",
-                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
             "additionalProperties": false,
@@ -12137,8 +12235,8 @@
         },
         "Microsoft.UrlEntityRecognizer": {
             "$role": "implements(Microsoft.IEntityRecognizer)",
-            "title": "Url Entity Recognizer",
-            "description": "Recognizer which recognizes urls (example: http://bing.com)",
+            "title": "Confirmation Url Recognizer",
+            "description": "Recognizer which recognizes urls.",
             "type": "object",
             "properties": {
                 "$kind": {

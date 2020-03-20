@@ -6,6 +6,11 @@
     "description": "These are all of the kinds that can be created by the loader.",
     "oneOf": [
         {
+            "title": "Microsoft.ActivityTemplate",
+            "description": "",
+            "$ref": "#/definitions/Microsoft.ActivityTemplate"
+        },
+        {
             "title": "Microsoft.AdaptiveCardRecognizer",
             "description": "Recognizer for detecting the value response from an Adaptive Card.",
             "$ref": "#/definitions/Microsoft.AdaptiveCardRecognizer"
@@ -558,22 +563,59 @@
     ],
     "definitions": {
         "Microsoft.ActivityTemplate": {
-            "$role": "interface",
+            "$role": "implements(Microsoft.IActivityTemplate)",
             "title": "Microsoft ActivityTemplate",
-            "oneOf": [
-                {
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ActivityTemplate"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
                     "type": "object",
-                    "properties": {
-                        "template": {
-                            "title": "Template",
-                            "Description": "Language Generator template to use to create the activity",
-                            "type": "string"
-                        }
-                    },
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "template": {
+                    "title": "Template",
+                    "Description": "Language Generator template to use to create the activity",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
                     "required": [
-                        "template"
-                    ],
-                    "title": "object"
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "template",
+                        "$kind"
+                    ]
                 }
             ]
         },
@@ -4396,6 +4438,11 @@
             "description": "Components which are ActivityTemplate",
             "$role": "interface",
             "oneOf": [
+                {
+                    "title": "Microsoft.ActivityTemplate",
+                    "description": "",
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                },
                 {
                     "title": "Microsoft.StaticActivityTemplate",
                     "description": "This allows you to define a static Activity object",
