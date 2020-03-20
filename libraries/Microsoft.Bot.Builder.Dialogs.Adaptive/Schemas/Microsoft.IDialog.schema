@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "title": "Microsoft ActivityTemplates",
-    "description": "Components which are ActivityTemplates",
+    "title": "Microsoft Dialogs",
+    "description": "Components which derive from Dialog",
     "$role": "interface",
     "oneOf": [
         {

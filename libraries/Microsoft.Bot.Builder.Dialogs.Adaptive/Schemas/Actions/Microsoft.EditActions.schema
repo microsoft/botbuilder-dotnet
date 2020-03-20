@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.Dialog)",
+    "$role": "implements(Microsoft.IDialog)",
     "title": "Edit actions.",
     "description": "Edit the current list of actions.",
     "type": "object",
@@ -39,7 +39,7 @@
         "actions": {
             "type": "array",
             "items": {
-                "$kind": "Microsoft.Dialog"
+                "$kind": "Microsoft.IDialog"
             },
             "title": "Actions",
             "description": "Actions to apply."
