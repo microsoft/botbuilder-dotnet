@@ -78,5 +78,21 @@ namespace AdaptiveExpressions
                 return Value?.ToString();
             }
         }
+
+        public override bool DeepEquals(Expression other)
+        {
+            bool eq;
+            if (other == null || other.Type != ExpressionType.Constant)
+            {
+                eq = false;
+            }
+            else
+            {
+                var otherVal = ((Constant)other).Value;
+                eq = Value == otherVal || (Value != null && Value.Equals(otherVal));
+            }
+
+            return eq;
+        }
     }
 }

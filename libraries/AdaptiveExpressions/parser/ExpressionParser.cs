@@ -106,6 +106,11 @@ namespace AdaptiveExpressions
 
                 // Remove the check to check primaryExpression is just an IDENTIFIER to support "." in template name
                 var functionName = context.primaryExpression().GetText();
+                if (context.NON() != null)
+                {
+                    functionName += context.NON().GetText();
+                }
+
                 return MakeExpression(functionName, parameters.ToArray());
             }
 

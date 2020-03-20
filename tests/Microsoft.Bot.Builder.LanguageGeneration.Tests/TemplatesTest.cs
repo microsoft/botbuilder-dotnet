@@ -1021,6 +1021,28 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(12, evaled);
         }
 
+        [TestMethod]
+        public void TestCustomFunction2()
+        {
+            Expression.Functions.Add("contoso.sqrt", (args) =>
+            {
+                object retValue = null;
+                if (args[0] != null)
+                {
+                    double dblValue;
+                    if (double.TryParse(args[0], out dblValue))
+                    {
+                        retValue = Math.Sqrt(dblValue);
+                    }
+                }
+
+                return retValue;
+            });
+            var templates = Templates.ParseFile(GetExampleFilePath("CustomFunction2.lg"), null);
+            var evaled = templates.Evaluate("custom");
+            Assert.AreEqual(6.0, evaled);
+        }
+
         public class LoopClass
         {
             public string Name { get; set; }
