@@ -809,6 +809,7 @@ namespace AdaptiveExpressions.Tests
             Test(@"isMatch('a', '\\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
             Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
             Test(@"isMatch('12.5', '[0-9]+(\\.5)')", true), // "\." (match .)
+            Test(@"isMatch('12x5', '[0-9]+(\\.5)')", false), // "\." (match .)
             #endregion
 
             #region type checking
