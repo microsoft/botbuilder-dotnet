@@ -541,6 +541,11 @@
             "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
+            "title": "Microsoft.TextTemplate",
+            "description": "Use LG Templates to create text",
+            "$ref": "#/definitions/Microsoft.TextTemplate"
+        },
+        {
             "title": "Microsoft.TraceActivity",
             "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
             "$ref": "#/definitions/Microsoft.TraceActivity"
@@ -4840,6 +4845,11 @@
             "description": "Components which derive from TextTemplate class",
             "$role": "interface",
             "oneOf": [
+                {
+                    "title": "Microsoft.TextTemplate",
+                    "description": "Use LG Templates to create text",
+                    "$ref": "#/definitions/Microsoft.TextTemplate"
+                },
                 {
                     "type": "string",
                     "title": "string"
@@ -11948,19 +11958,61 @@
             ]
         },
         "Microsoft.TextTemplate": {
-            "$role": "interface",
+            "$role": "implements(Microsoft.ITextTemplate)",
             "title": "Microsoft TextTemplate",
-            "description": "Lg tempalte to evaluate to create text",
+            "description": "Use LG Templates to create text",
             "type": "object",
             "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.TextTemplate"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "template": {
                     "title": "Template",
                     "Description": "Language Generator template to evaluate to create the text",
                     "type": "string"
                 }
             },
-            "required": [
-                "template"
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "template",
+                        "$kind"
+                    ]
+                }
             ]
         },
         "Microsoft.TraceActivity": {
