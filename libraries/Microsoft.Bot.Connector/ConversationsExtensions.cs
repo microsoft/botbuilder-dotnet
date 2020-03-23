@@ -446,7 +446,6 @@ namespace Microsoft.Bot.Connector
         /// <param name='conversationId'>
         /// Conversation ID
         /// </param>
-        /// </param>
         /// <param name='userId'>
         /// User ID
         /// </param>
