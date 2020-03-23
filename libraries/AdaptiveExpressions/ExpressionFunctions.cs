@@ -1362,6 +1362,23 @@ namespace AdaptiveExpressions
             }
         }
 
+        private static object Divide(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (a.IsInteger() && b.IsInteger())
+            {
+                return Convert.ToInt32(a) / Convert.ToInt32(b);
+            }
+            else
+            {
+                return Convert.ToDouble(a) / Convert.ToDouble(b);
+            }
+        }
+
         private static (object value, string error) And(Expression expression, IMemory state)
         {
             object result = true;
@@ -2648,17 +2665,7 @@ namespace AdaptiveExpressions
                 MultivariateNumeric(ExpressionType.Multiply, args => Multiply(args[0], args[1])),
                 MultivariateNumeric(
                     ExpressionType.Divide,
-                    args =>
-                    {
-                        if (args[0].IsInteger() && args[1].IsInteger())
-                        {
-                            return Convert.ToInt32(args[0]) / Convert.ToInt32(args[1]);
-                        }
-                        else
-                        {
-                            return Convert.ToDouble(args[0]) / Convert.ToDouble(args[1]);
-                        }
-                    },
+                    args => Divide(args[0], args[1]),
                     (val, expression, pos) =>
                     {
                         var error = VerifyNumber(val, expression, pos);
