@@ -33,7 +33,7 @@ namespace AdaptiveExpressions
             {
                 if (string.IsNullOrEmpty(pattern) || !IsCommonRegex(pattern))
                 {
-                    throw new ArgumentException("A regular expression parsing error occurred.");
+                    throw new ArgumentException($"'{pattern}' is not a valid regex.");
                 }
 
                 result = new Regex(pattern, RegexOptions.Compiled);
