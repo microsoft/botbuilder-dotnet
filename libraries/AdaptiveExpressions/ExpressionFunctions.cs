@@ -3884,7 +3884,8 @@ namespace AdaptiveExpressions
                             var value = false;
                             string error = null;
 
-                            if (string.IsNullOrEmpty(args[0]))
+                            string inputString = args[0]?.ToString();
+                            if (string.IsNullOrEmpty(inputString))
                             {
                                 value = false;
                                 error = "regular expression is empty.";
@@ -3892,7 +3893,7 @@ namespace AdaptiveExpressions
                             else
                             {
                                 var regex = CommonRegex.CreateRegex(args[1]);
-                                value = regex.IsMatch(args[0]);
+                                value = regex.IsMatch(inputString);
                             }
 
                             return (value, error);

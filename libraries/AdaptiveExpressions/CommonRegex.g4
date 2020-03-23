@@ -101,6 +101,13 @@ option_flag
  | 's'
  ;
 
+// QUOTING
+//
+//         \x         where x is non-alphanumeric is a literal x
+//         \Q...\E    treat enclosed characters as literal
+Quoted      : '\\' NonAlphaNumeric;
+BlockQuoted : '\\Q' .*? '\\E';
+
 atom
  : shared_atom
  | literal
@@ -161,6 +168,8 @@ shared_literal
  | CarriageReturn
  | Tab
  | HexChar
+ | Quoted
+ | BlockQuoted
  | OpenBrace
  | CloseBrace
  | Comma

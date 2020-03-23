@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder
     {
         /// <summary>
         /// Registers a storage layer with the adapter. The storage object will be available via the turn context's
-        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{IStorage}"/> method.
+        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{IStorage}()"/> method.
         /// </summary>
         /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the storage object.</param>
         /// <param name="storage">The <see cref="IStorage"/> object to register.</param>
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Registers user and conversation state objects with the adapter. These objects will be available via the turn context's
-        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{T}"/> method.
+        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{T}()"/> method.
         /// </summary>
         /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the storage object.</param>
         /// <param name="userState">The <see cref="UserState"/> object to register.</param>
