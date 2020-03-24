@@ -19,6 +19,7 @@ expression
  
 primaryExpression 
     : OPEN_BRACKET expression CLOSE_BRACKET                                  #parenthesisExp
+    | OPEN_SQUARE_BRACKET argsList? CLOSE_SQUARE_BRACKET                     #arrayCreationExp
     | CONSTANT                                                               #constantAtom
     | NUMBER                                                                 #numericAtom
     | STRING                                                                 #stringAtom
