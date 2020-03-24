@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using AdaptiveExpressions.Properties;
 
 namespace AdaptiveExpressions.Memory
 {
@@ -48,6 +49,12 @@ namespace AdaptiveExpressions.Memory
                 if (memory.TryGetValue(path, out var result) && result != null)
                 {
                     value = result;
+                    
+                    if (value is IExpressionProperty ep)
+                    {
+                        value = ep.GetObject(memory);
+                    }
+
                     return true;
                 }
             }

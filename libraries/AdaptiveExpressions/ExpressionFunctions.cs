@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using AdaptiveExpressions.Memory;
+using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -818,20 +819,11 @@ namespace AdaptiveExpressions
             object value = null;
             string error = null;
 
-            var count = -1;
             if (TryParseList(instance, out var list))
             {
-                count = list.Count;
-            }
-
-            var itype = instance.GetType();
-            var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
-            if (count != -1 && indexer != null)
-            {
-                if (index >= 0 && count > index)
+                if (index >= 0 && index < list.Count)
                 {
-                    dynamic idyn = instance;
-                    value = idyn[index];
+                    value = list[index];
                 }
                 else
                 {
@@ -1098,7 +1090,7 @@ namespace AdaptiveExpressions
                     return (null, err);
                 }
 
-                return WrapGetValue(new SimpleObjectMemory(newScope), path);
+                return WrapGetValue(MemoryFactory.Create(newScope), path);
             }
         }
 
@@ -1116,7 +1108,7 @@ namespace AdaptiveExpressions
                 (property, error) = children[1].TryEvaluate(state);
                 if (error == null)
                 {
-                    (value, error) = WrapGetValue(new SimpleObjectMemory(instance), (string)property);
+                    (value, error) = WrapGetValue(MemoryFactory.Create(instance), (string)property);
                 }
             }
 
@@ -1480,7 +1472,7 @@ namespace AdaptiveExpressions
                         };
 
                         // the local iterator is pushed as one memory layer in the memory stack
-                        stackedMemory.Push(SimpleObjectMemory.Wrap(local));
+                        stackedMemory.Push(new SimpleObjectMemory(local));
                         (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory);
                         stackedMemory.Pop();
 
@@ -1539,7 +1531,7 @@ namespace AdaptiveExpressions
                         };
 
                         // the local iterator is pushed as one memory layer in the memory stack
-                        stackedMemory.Push(SimpleObjectMemory.Wrap(local));
+                        stackedMemory.Push(new SimpleObjectMemory(local));
                         var (r, _) = expression.Children[2].TryEvaluate<bool>(stackedMemory);
                         stackedMemory.Pop();
 
@@ -2990,7 +2982,7 @@ namespace AdaptiveExpressions
                             if (args.Count == 1)
                             {
                                 inputStr = ParseStringOrNull(args[0]);
-                            } 
+                            }
                             else
                             {
                                 inputStr = ParseStringOrNull(args[0]);
@@ -3745,7 +3737,6 @@ namespace AdaptiveExpressions
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float)Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => (int)Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Array, Apply(args => new[] { args[0] }, VerifyString), ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ExpressionFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ExpressionFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
@@ -3893,7 +3884,8 @@ namespace AdaptiveExpressions
                             var value = false;
                             string error = null;
 
-                            if (string.IsNullOrEmpty(args[0]))
+                            string inputString = args[0]?.ToString();
+                            if (string.IsNullOrEmpty(inputString))
                             {
                                 value = false;
                                 error = "regular expression is empty.";
@@ -3901,13 +3893,65 @@ namespace AdaptiveExpressions
                             else
                             {
                                 var regex = CommonRegex.CreateRegex(args[1]);
-                                value = regex.IsMatch(args[0]);
+                                value = regex.IsMatch(inputString);
                             }
 
                             return (value, error);
                         }),
                     ReturnType.Boolean,
                     ValidateIsMatch),
+
+                //Type Checking Functions
+                new ExpressionEvaluator(
+                    ExpressionType.IsString,
+                    Apply(args => args[0].GetType() == typeof(string)),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsInteger,
+                    Apply(args => Extensions.IsNumber(args[0]) && args[0] % 1 == 0),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsFloat,
+                    Apply(args => Extensions.IsNumber(args[0]) && args[0] % 1 != 0),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsArray,
+                    Apply(args => TryParseList(args[0], out IList _)),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsObject,
+                    Apply(args => !(args[0] is JValue) && args[0].GetType().IsValueType == false && args[0].GetType() != typeof(string)),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsBoolean,
+                    Apply(args => args[0] is bool),
+                    ReturnType.Boolean,
+                    ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.IsDateTime,
+                    Apply(
+                        args => 
+                        {
+                            if (args[0] is string) 
+                            {
+                                object value = null;
+                                string error = null;
+                                (value, error) = ParseISOTimestamp(args[0] as string);
+                                if (error == null)
+                                {
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        }),
+                    ReturnType.Boolean,
+                    ValidateUnary),
             };
 
             var eval = new ExpressionEvaluator(ExpressionType.Optional, (expression, state) => throw new NotImplementedException(), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);

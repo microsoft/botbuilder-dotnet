@@ -67,11 +67,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public TArguments Arguments { get; set; }
         }
 
-        public class Attach
+        public class LaunchAttach
+        {
+            public bool BreakOnStart { get; set; } = false;
+        }
+
+        public class Attach : LaunchAttach
         {
         }
 
-        public class Launch
+        public class Launch : LaunchAttach
         {
         }
 
@@ -280,6 +285,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public class Range : Reference
         {
+            public string Item { get; set; }
+
+            public string More { get; set; }
+
             public Source Source { get; set; }
 
             public int? Line { get; set; }

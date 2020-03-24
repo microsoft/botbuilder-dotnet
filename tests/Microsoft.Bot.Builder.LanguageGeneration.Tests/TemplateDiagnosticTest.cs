@@ -114,6 +114,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestErrorMultiLineExpr()
+        {
+            var diagnostics = GetDiagnostics("MultiLineExprError.lg");
+
+            Assert.AreEqual(1, diagnostics.Count);
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
+            Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
+
+            diagnostics = Templates.ParseText("#Demo2\r\n- ${createArray(1,\r\n, 2,3)").Diagnostics;
+            Assert.AreEqual(1, diagnostics.Count);
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
+            Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
+
+            diagnostics = Templates.ParseText("#Demo4\r\n- ${createArray(1,\r\n2,3)\r\n> this is a comment").Diagnostics;
+            Assert.AreEqual(1, diagnostics.Count);
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
+            Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
+
+            diagnostics = Templates.ParseText("#Demo4\r\n- ${createArray(1,\r\n2,3)\r\n#AnotherTemplate").Diagnostics;
+            Assert.AreEqual(1, diagnostics.Count);
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
+            Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
+        }
+
+        [TestMethod]
         public void TestErrorTemplateName()
         {
             var diagnostics = GetDiagnostics("ErrorTemplateName.lg");

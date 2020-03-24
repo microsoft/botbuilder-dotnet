@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly Dictionary<object, SourceRange> sourceByItem = new Dictionary<object, SourceRange>(ReferenceEquality<object>.Instance);
         private bool dirty = true;
 
-        private readonly Identifier<Row> rows = new Identifier<Row>();
+        private readonly IIdentifier<Row> rows = new Identifier<Row>();
         private readonly HashSet<object> items = new HashSet<object>(ReferenceEquality<object>.Instance);
 
         public DebuggerSourceMap(ICodeModel codeModel)
@@ -50,6 +50,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 target.Column = null;
                 target.EndColumn = null;
             }
+        }
+
+        public static void Assign(Protocol.Range target, string item, string more)
+        {
+            target.Item = item;
+            target.More = more;
         }
 
         void ISourceMap.Add(object item, SourceRange range)
@@ -200,6 +206,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             row.Item = item;
             row.Breakpoint.Verified = source != null;
             Assign(row.Breakpoint, source);
+
+            var name = this.codeModel.NameFor(row.Item);
+            Assign(row.Breakpoint, name, null);
+
             return true;
         }
 

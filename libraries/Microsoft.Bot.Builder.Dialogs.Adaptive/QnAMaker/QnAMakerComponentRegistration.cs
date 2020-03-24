@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using AdaptiveExpressions.Converters;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers;
