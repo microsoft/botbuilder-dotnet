@@ -4,33 +4,28 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AdaptiveExpressions.Properties;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
     /// <summary>
-    /// ExpressionPropertyBinder is a wrapper around any object to support expression binding.
+    /// ReadOnlyObject is a wrapper around any object to prevent setting of properties on the object.
     /// </summary>
     /// <remarks>
-    /// The ExpressionPropertyBinder provides read-only dictionary semantics for getting access to properties of an object.
-    /// If the value of a property is an IExpressionProperty, then the expression property will be evaluated using the DC.
-    /// Any complex objects that are returned from this are further wrapped in an ExpressionPropertyBinder, so that you can
+    /// Any complex objects that are returned from this are further wrapped in an ReadOnlyObject, so that you can
     /// get ExpressionProperty binding for properties in a complex hierarchy of objects.
     /// </remarks>
-    internal class ExpressionPropertyBinder : IDictionary<string, object>
+    internal class ReadOnlyObject : IDictionary<string, object>
     {
-        private const string NOTSUPPORTED = "Changing dialog definitions at run time is not supported";
-        private readonly DialogContext dc;
+        private const string NOTSUPPORTED = "This object is readonly.";
         private readonly object obj;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExpressionPropertyBinder"/> class.
+        /// Initializes a new instance of the <see cref="ReadOnlyObject"/> class.
         /// </summary>
         /// <param name="dialogContext">dialog context for evalutation of expression properties.</param>
         /// <param name="obj">object to wrap.  Any expression properties on it will be evaluated using the dc.</param>
-        public ExpressionPropertyBinder(DialogContext dialogContext, object obj)
+        public ReadOnlyObject(object obj)
         {
-            this.dc = dialogContext;
             this.obj = obj;
         }
 
@@ -61,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         public override bool Equals(object other)
         {
-            if (other is ExpressionPropertyBinder esp)
+            if (other is ReadOnlyObject esp)
             {
                 return this.obj.Equals(esp.obj);
             }
@@ -106,21 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         public bool TryGetValue(string name, out object value)
         {
-            if (ObjectPath.TryGetPathValue<object>(this.obj, name, out value))
-            {
-                if (value is IExpressionProperty ep)
-                {
-                    value = ep.GetObject(dc.GetState());
-                    if (!value.GetType().IsValueType && !(value is string))
-                    {
-                        value = new ExpressionPropertyBinder(this.dc, value);
-                    }
-                }
-
-                return true;
-            }
-
-            return false;
+            return ObjectPath.TryGetPathValue<object>(this.obj, name, out value);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -133,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             object val;
             if (TryGetValue(name, out val))
             {
-                return val;
+                return new ReadOnlyObject(val);
             }
 
             return null;

@@ -75,14 +75,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var dcState = dc.GetState();
-
-            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var text = await Text.BindToData(dc.Context, dcState).ConfigureAwait(false);
+            var text = await Text.BindToData(dc.Context, dc.State).ConfigureAwait(false);
 
             var properties = new Dictionary<string, string>()
             {
@@ -93,9 +91,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             System.Diagnostics.Trace.TraceInformation(text);
 
-            if (this.TraceActivity.GetValue(dcState))
+            if (this.TraceActivity.GetValue(dc.State))
             {
-                var traceActivity = Activity.CreateTraceActivity(name: "Log", valueType: "Text", value: text, label: this.Label?.GetValue(dcState) ?? dc.Parent?.ActiveDialog?.Id);
+                var traceActivity = Activity.CreateTraceActivity(name: "Log", valueType: "Text", value: text, label: this.Label?.GetValue(dc.State) ?? dc.Parent?.ActiveDialog?.Id);
                 await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
             }
 

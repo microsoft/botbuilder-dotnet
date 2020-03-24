@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets a list of activities to send when `context.Activity.DeliveryMode == 'expectReplies'.
         /// </summary>
-        /// <value>A list of activities.</value></placeholder>
+        /// <value>A list of activities.</value>
         public List<Activity> BufferedReplyActivities { get; } = new List<Activity>();
 
         /// <summary>

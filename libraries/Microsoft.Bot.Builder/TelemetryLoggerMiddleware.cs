@@ -29,11 +29,11 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets a value indicating whether to include personal information that came from the user.
         /// </summary>
-        /// <value>`true` to include personally identifiable information; otherwise, `false`.
+        /// <value>`true` to include personally identifiable information; otherwise, `false`.</value>
         /// <remarks>
         /// If true, personal information is included in calls to the telemetry client's
         /// <see cref="IBotTelemetryClient.TrackEvent(string, IDictionary{string, string}, IDictionary{string, double})"/> method;
-        /// otherwise this information is filtered out.</value>
+        /// otherwise this information is filtered out.
         /// </remarks>
         public bool LogPersonalInformation { get; }
 

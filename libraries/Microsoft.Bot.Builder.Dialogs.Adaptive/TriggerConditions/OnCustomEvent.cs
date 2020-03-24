@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         public override Expression GetExpression()
         {
-            return Expression.AndExpression(Expression.Parse($"{TurnPath.DIALOGEVENT}.name == '{this.Event}'"), base.GetExpression());
+            return Expression.AndExpression(Expression.Parse($"{TurnPath.DialogEvent}.name == '{this.Event}'"), base.GetExpression());
         }
     }
 }

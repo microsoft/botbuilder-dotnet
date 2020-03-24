@@ -22,7 +22,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public string Name => CodeModel.NameFor(Item) + (More != null ? ":" + More : string.Empty);
 
-        public object Data => DialogContext.GetState().GetMemorySnapshot();
+        public object Data
+        {
+            get
+            {
+                // try to avoid regenerating Identifier values within a breakpoint
+                if (CachedData == null)
+                {
+                    CachedData = DialogContext.State.GetMemorySnapshot();
+                }
+
+                return CachedData;
+            }
+        }
+
+        private object CachedData { get; set; }
 
         private ICodeModel CodeModel { get; }
 
@@ -30,6 +44,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public override string ToString() => Name;
 
-        object ICodePoint.Evaluate(string expression) => DialogContext.GetState().GetValue<object>(expression);
+        object ICodePoint.Evaluate(string expression) => DialogContext.State.GetValue<object>(expression);
     }
 }

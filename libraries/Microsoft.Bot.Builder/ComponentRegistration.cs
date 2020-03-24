@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using AdaptiveExpressions;
 
-namespace Microsoft.Bot.Builder.Dialogs.Declarative
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// ComponentRegistration is a placeholder class for discovering assets from components. 
@@ -85,18 +84,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 .Where(type => typeof(ComponentRegistration).IsAssignableFrom(type))
                 .Select(t => (ComponentRegistration)Activator.CreateInstance(t))
                 .ToList<ComponentRegistration>();
-
-            // ExpressionFunctions.Functions is global table of functions that are callable from an Expression
-            // This is an appropriate place for us to go ahead and process any IComponentExpressionFunctions
-            // that we found in the global components list.
-            foreach (var component in components.OfType<IComponentExpressionFunctions>())
-            {
-                foreach (var function in component.GetExpressionEvaluators())
-                {
-                    // add the custom function to the global ExpressionFunctions table.
-                    Expression.Functions[function.Type] = function;
-                }
-            }
 
             return components;
         });

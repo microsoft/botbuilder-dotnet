@@ -1,10 +1,10 @@
 ﻿﻿> Welcome Phrase template
 > LG runtime will pick a text value from the one-of collection list at random.
 # wPhrase
-- Hi \r\n\t\[\]\{\}\\
+- Hi \r\n\t\\
 
 # AtEscapeChar
-- Hi{1+1}[wPhrase]{wPhrase()}\${wPhrase()}${1+1}\${1+1}\ \
+- Hi{1+1}[wPhrase]{wPhrase()}\${wPhrase()}${1+1}\${1+1}
 
 # otherEscape
 - Hi \y \
@@ -16,10 +16,10 @@
 - Hi ${replace('hello\"', '\"', "'")}
 
 # escapeInExpression3
-- Hi ${replace("hello'", "'", '\"')}
+- Hi ${replace("hello'", "'", '"')}
 
 # escapeInExpression4
-- Hi ${replace("hello\n", "\n", '\"')}
+- Hi ${replace("hello\n", "\n", '"')}
 
 # escapeInExpression5
 - Hi ${replace('hello\"', '\"', '\n')}

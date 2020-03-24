@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -37,9 +38,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private IEnumerable<IDataModel> Options(Type type)
         {
-            if (type.IsPrimitive || type == typeof(string))
+            if (type.IsPrimitive || type.IsValueType || type == typeof(string))
             {
                 yield return ScalarDataModel.Instance;
+                yield break;
+            }
+
+            if (type == typeof(JValue))
+            {
+                yield return JValueDataModel.Instance;
                 yield break;
             }
 
@@ -83,14 +90,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             var type = context.GetType();
-            if (!modelByType.TryGetValue(type, out var model))
+            lock (modelByType)
             {
-                var options = Options(type);
-                model = options.OrderByDescending(m => m.Rank).First();
-                modelByType.Add(type, model);
-            }
+                if (!modelByType.TryGetValue(type, out var model))
+                {
+                    var options = Options(type);
+                    model = options.OrderByDescending(m => m.Rank).First();
+                    modelByType.Add(type, model);
+                }
 
-            return model;
+                return model;
+            }
         }
     }
 }

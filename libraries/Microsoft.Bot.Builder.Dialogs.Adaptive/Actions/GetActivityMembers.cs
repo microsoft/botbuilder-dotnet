@@ -62,9 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
             
-            var dcState = dc.GetState();
-
-            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -78,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             string id = dc.Context.Activity.Id;
             if (this.ActivityId != null)
             {
-                var (value, valueError) = this.ActivityId.TryGetValue(dcState);
+                var (value, valueError) = this.ActivityId.TryGetValue(dc.State);
                 if (valueError != null)
                 {
                     throw new Exception($"Expression evaluation resulted in an error. Expression: {this.ActivityId}. Error: {valueError}");
@@ -89,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var result = await bfAdapter.GetActivityMembersAsync(dc.Context, id, cancellationToken).ConfigureAwait(false);
 
-            dcState.SetValue(this.Property.GetValue(dcState), result);
+            dc.State.SetValue(this.Property.GetValue(dc.State), result);
 
             return await dc.EndDialogAsync(result, cancellationToken: cancellationToken).ConfigureAwait(false);
         }

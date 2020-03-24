@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 throw new ArgumentNullException(nameof(this.Intent));
             }
 
-            var intentExpression = Expression.Parse($"{TurnPath.RECOGNIZED}.intent == '{this.Intent.TrimStart('#')}'");
+            var intentExpression = Expression.Parse($"{TurnPath.Recognized}.intent == '{this.Intent.TrimStart('#')}'");
 
             // build expression to be INTENT AND (@ENTITY1 != null AND @ENTITY2 != null)
             if (this.Entities.Any())
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     intentExpression,
                     Expression.AndExpression(this.Entities.Select(entity =>
                     {
-                        if (entity.StartsWith("@") || entity.StartsWith(TurnPath.RECOGNIZED, StringComparison.InvariantCultureIgnoreCase))
+                        if (entity.StartsWith("@") || entity.StartsWith(TurnPath.Recognized, StringComparison.InvariantCultureIgnoreCase))
                         {
                             return Expression.Parse($"exists({entity})");
                         }
@@ -86,8 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         protected override ActionChangeList OnCreateChangeList(ActionContext actionContext, object dialogOptions = null)
         {
-            var dcState = actionContext.GetState();
-            var recognizerResult = dcState.GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
+            var recognizerResult = actionContext.State.GetValue<RecognizerResult>($"{TurnPath.DialogEvent}.value");
             if (recognizerResult != null)
             {
                 var (name, score) = recognizerResult.GetTopScoringIntent();

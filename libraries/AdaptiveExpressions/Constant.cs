@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Text.RegularExpressions;
+
 namespace AdaptiveExpressions
 {
     /// <summary>
@@ -8,6 +11,7 @@ namespace AdaptiveExpressions
     /// </summary>
     public class Constant : Expression
     {
+        private readonly Regex singleQuotRegex = new Regex(@"(?<!\\)'");
         private object _value;
 
         /// <summary>
@@ -53,13 +57,17 @@ namespace AdaptiveExpressions
             }
             else if (Value is string value)
             {
-                var result = value;
-                if (value.Contains(@"\"))
-                {
-                    result = result.Replace(@"\", @"\\");
-                }
+                var result = value.Replace(@"\", @"\\");
 
-                return result.Contains("'") ? $"\"{result}\"" : $"'{result}'";
+                result = singleQuotRegex.Replace(result, new MatchEvaluator(m =>
+                {
+                    var value = m.Value;
+
+                    // ' -> \'
+                    return @"\'";
+                }));
+
+                return $"'{result}'";
             }
             else if (Value is float || Value is double)
             {
@@ -69,6 +77,22 @@ namespace AdaptiveExpressions
             {
                 return Value?.ToString();
             }
+        }
+
+        public override bool DeepEquals(Expression other)
+        {
+            bool eq;
+            if (other == null || other.Type != ExpressionType.Constant)
+            {
+                eq = false;
+            }
+            else
+            {
+                var otherVal = ((Constant)other).Value;
+                eq = Value == otherVal || (Value != null && Value.Equals(otherVal));
+            }
+
+            return eq;
         }
     }
 }
