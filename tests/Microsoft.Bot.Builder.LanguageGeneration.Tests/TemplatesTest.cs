@@ -291,6 +291,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("nestedSample", null);
             Assert.AreEqual(evaled.ToString(), "i like three movies, they are \"\\\"name1\", \"name2\" and \"{name3\"");
+
+            evaled = templates.Evaluate("dollarsymbol");
+            Assert.AreEqual("$ $ ${'hi'} hi", evaled);
         }
 
         [TestMethod]
