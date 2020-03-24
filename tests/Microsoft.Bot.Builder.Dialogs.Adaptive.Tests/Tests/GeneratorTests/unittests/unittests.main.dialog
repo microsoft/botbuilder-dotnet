@@ -31,11 +31,11 @@
 "unittests-Dimension-missing",
 "unittests-Dimension-assign-dimensionEntity",
 "unittests-Enum1-missing",
-"unittests-Enum1-assign-Enum1Entity",
 "unittests-Enum1Entity-choose",
+"unittests-Enum1-assign-Enum1Entity",
 "unittests-Enum2-missing",
-"unittests-Enum2-assign-Enum2Entity",
 "unittests-Enum2Entity-choose",
+"unittests-Enum2-assign-Enum2Entity",
 "unittests-Zipcodepattern-missing",
 "unittests-Zipcodepattern-assign-utteranceEntity",
 "unittests-Zipcodepattern-assign-numberEntity",
@@ -57,7 +57,7 @@
 "unittests-library-ChooseProperty",
 "unittests-library-HelpIntent",
 "unittests-library-NotUnderstood",
-"unittests-library-unittests",
+"unittests-library-trigger",
 "unittests-library-ReadPropertyIntent" 
         ]
 }

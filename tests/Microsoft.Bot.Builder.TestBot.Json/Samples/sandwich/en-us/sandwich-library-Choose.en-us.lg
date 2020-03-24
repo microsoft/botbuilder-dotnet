@@ -15,5 +15,9 @@ Please choose a value for ${name(property)} from \[${join(foreach(turn.dialogEve
 
 # choosePropertyEntity(property)
 - "${property.entity.text}" as ${name(property.property)}
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Help.lg](sandwich-library-Help.lg)
+
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+
+[sandwich-library-Help.en-us.lg](sandwich-library-Help.en-us.lg)
+
+> Generator: 82507cf7e397d4641ddf5c49979f05d0

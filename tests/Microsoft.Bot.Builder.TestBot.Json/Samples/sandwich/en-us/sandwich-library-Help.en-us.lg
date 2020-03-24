@@ -25,4 +25,7 @@ You can find out about a specific property by doing 'help <property>'.
 - Enter any string for ${name(property)}
 - ELSE:
 - No help available.
-[sandwich-library.lg](sandwich-library.lg)
+
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+
+> Generator: c85eb949fc8fef738a39ac991de48557

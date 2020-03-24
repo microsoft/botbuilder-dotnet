@@ -1,1 +1,0 @@
-{"query":"21c","prediction":{"topIntent":"unittests","intents":{"unittests":{"score":0.99999}},"entities":{"temperature":[{"number":21,"units":"C"}],"$instance":{"temperature":[{"type":"builtin.temperature","text":"21c","startIndex":0,"length":3,"modelTypeId":2,"modelType":"Prebuilt Entity Extractor","recognitionSources":["model"]}]}}}}

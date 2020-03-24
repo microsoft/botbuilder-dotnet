@@ -241,5 +241,7 @@
                 "PROPERTYName"
             ]
         }
-    }
+    },
+    "$defaultOperation": "AddToProperty",
+    "$Generator": "dfcc7ebcfbcf5f261ebfa1a3c7a10f05"
 }

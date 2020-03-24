@@ -1,8 +1,7 @@
-
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Length",
+    "condition": "!$Length",
     "priority": "indexOf(dialog.requiredProperties, 'Length')",
     "actions": [
         {
@@ -12,5 +11,6 @@
                 "Length"
             ]
         }
-    ]
+    ],
+    "$Generator": "7101af7a2ca8a83ddf1cb91f97d427cc"
 }

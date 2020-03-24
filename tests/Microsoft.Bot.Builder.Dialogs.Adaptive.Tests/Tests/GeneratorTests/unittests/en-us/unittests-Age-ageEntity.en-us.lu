@@ -1,1 +1,6 @@
-@ prebuilt age hasRole Age
+
+@ prebuilt age 
+
+@ list PROPERTYName
+    - Age:
+

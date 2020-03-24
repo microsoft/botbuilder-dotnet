@@ -1,1 +1,0 @@
-{"query":"abc@def.com","prediction":{"topIntent":"unittests","intents":{"unittests":{"score":0.99999}},"entities":{"email":["abc@def.com"],"$instance":{"email":[{"type":"builtin.email","text":"abc@def.com","startIndex":0,"length":11,"modelTypeId":2,"modelType":"Prebuilt Entity Extractor","recognitionSources":["model"]}]}}}}

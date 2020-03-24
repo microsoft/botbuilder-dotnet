@@ -4,6 +4,12 @@ ${askHelp()}
 Which value do you want for ${name(property)}?
 ```
 
+# askEnumArray(property)
+- ```
+${askHelp()}
+What values do you want to add for ${name(property)}?
+```
+
 # askNumber(property)
 - IF: ${dialogClass.schema.properties[property].minimum && dialogClass.schema.properties[property].maximum}
 - Enter a number for ${name(property)} between ${dialogClass.schema.properties[property].minimum} and ${dialogClass.schema.properties[property].maximum}
@@ -25,5 +31,10 @@ Enter a value for ${name(property)}
 ${askHelp()}
 Enter a value for ${name(property)}: true or false
 ```
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Help.lg](unittests-library-Help.lg)
+
+# enumArrayValue(property, values)
+- ${join(foreach(values, value, template(property + 'Entity', value)), ',')}
+
+[unittests-library.en-us.lg](unittests-library.en-us.lg)
+
+[unittests-library-Help.en-us.lg](unittests-library-Help.en-us.lg)

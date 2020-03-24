@@ -1,10 +1,9 @@
-
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Cheese",
+    "condition": "!$Cheese",
     "priority": "indexOf(dialog.requiredProperties, 'Cheese')",
-    "actions": [       
+    "actions": [
         {
             "$kind": "Microsoft.Ask",
             "activity": "${AskCheese()}",
@@ -12,5 +11,6 @@
                 "Cheese"
             ]
         }
-    ]
+    ],
+    "$Generator": "cef35e74c099a3440fe7e5eacdcd6f10"
 }

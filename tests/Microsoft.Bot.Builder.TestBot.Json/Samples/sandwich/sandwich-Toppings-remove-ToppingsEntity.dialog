@@ -1,0 +1,21 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "operation": "RemoveFromProperty",
+    "property": "Toppings",
+    "entity": "ToppingsEntity",
+    "actions": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${removePropertyMessage('Toppings', @ToppingsEntity)}"
+        },
+        {
+            "$kind": "Microsoft.EditArray",
+            "changeType": "remove",
+            "itemsProperty": "$Toppings",
+            "value": "=@ToppingsEntity",
+            "resultProperty": "$Toppings"
+        }
+    ],
+    "$Generator": "2d0838d67dbe6f70d2b90fd25a75e4b2"
+}

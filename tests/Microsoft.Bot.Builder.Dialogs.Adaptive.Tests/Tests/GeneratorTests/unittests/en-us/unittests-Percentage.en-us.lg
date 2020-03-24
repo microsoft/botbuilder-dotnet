@@ -10,6 +10,8 @@
 
 # Percentage(val)
 - ${PercentageEntity(val)}
-[unittests-PercentageEntity.lg](unittests-PercentageEntity.lg)
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Missing.lg](unittests-library-Missing.lg)
+
+
+[unittests-PercentageEntity.en-us.lg](unittests-PercentageEntity.en-us.lg)
+[unittests-library.en-us.lg](unittests-library.en-us.lg)
+[unittests-library-Missing.en-us.lg](unittests-library-Missing.en-us.lg)

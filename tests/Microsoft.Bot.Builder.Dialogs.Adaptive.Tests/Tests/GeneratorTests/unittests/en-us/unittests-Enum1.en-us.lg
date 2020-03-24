@@ -10,6 +10,8 @@
 
 # Enum1(val)
 - ${Enum1Entity(val)}
-[unittests-Enum1Entity.lg](unittests-Enum1Entity.lg)
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Missing.lg](unittests-library-Missing.lg)
+
+
+[unittests-Enum1Entity.en-us.lg](unittests-Enum1Entity.en-us.lg)
+[unittests-library.en-us.lg](unittests-library.en-us.lg)
+[unittests-library-Missing.en-us.lg](unittests-library-Missing.en-us.lg)

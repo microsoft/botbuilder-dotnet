@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "operation": "ClearProperty",
+    "property": "Sauces",
+    "actions": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${clearPropertyMessage('Sauces')}"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "$Sauces"
+        }
+    ],
+    "$Generator": "d7cab71d1073d4b6b7596dad61e3ed69"
+}

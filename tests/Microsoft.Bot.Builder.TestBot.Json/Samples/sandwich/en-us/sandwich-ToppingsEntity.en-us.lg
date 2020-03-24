@@ -25,5 +25,8 @@
 
 # chooseToppingsEntity
 - ${chooseEnumArrayEntity('Toppings')}
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Choose.lg](sandwich-library-Choose.lg)
+
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Choose.en-us.lg](sandwich-library-Choose.en-us.lg)
+
+> Generator: 198f129e4d1e999dbafcfd62f9cfa9c8

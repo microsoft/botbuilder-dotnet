@@ -10,6 +10,8 @@
 
 # Zipcodepattern(val)
 - ${ZipcodepatternEntity(val)}
-[unittests-ZipcodepatternEntity.lg](unittests-ZipcodepatternEntity.lg)
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Missing.lg](unittests-library-Missing.lg)
+
+
+[unittests-ZipcodepatternEntity.en-us.lg](unittests-ZipcodepatternEntity.en-us.lg)
+[unittests-library.en-us.lg](unittests-library.en-us.lg)
+[unittests-library-Missing.en-us.lg](unittests-library-Missing.en-us.lg)

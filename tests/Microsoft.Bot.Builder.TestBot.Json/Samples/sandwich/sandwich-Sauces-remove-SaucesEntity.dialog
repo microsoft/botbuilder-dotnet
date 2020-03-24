@@ -1,0 +1,21 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "operation": "RemoveFromProperty",
+    "property": "Sauces",
+    "entity": "SaucesEntity",
+    "actions": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${removePropertyMessage('Sauces', @SaucesEntity)}"
+        },
+        {
+            "$kind": "Microsoft.EditArray",
+            "changeType": "remove",
+            "itemsProperty": "$Sauces",
+            "value": "=@SaucesEntity",
+            "resultProperty": "$Sauces"
+        }
+    ],
+    "$Generator": "1705506f3cafd49af5e2445f43809f3b"
+}

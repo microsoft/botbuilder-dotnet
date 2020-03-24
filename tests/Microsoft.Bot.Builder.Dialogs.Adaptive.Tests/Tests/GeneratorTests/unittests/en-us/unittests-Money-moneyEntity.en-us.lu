@@ -1,1 +1,6 @@
-@ prebuilt money hasRole Money
+
+@ prebuilt money 
+
+@ list PROPERTYName
+    - Money:
+

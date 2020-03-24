@@ -1,10 +1,9 @@
-
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Toppings",
+    "condition": "!$Toppings",
     "priority": "indexOf(dialog.requiredProperties, 'Toppings')",
-    "actions": [       
+    "actions": [
         {
             "$kind": "Microsoft.Ask",
             "activity": "${AskToppings()}",
@@ -12,5 +11,6 @@
                 "Toppings"
             ]
         }
-    ]
+    ],
+    "$Generator": "945bdfb0dd6ae698928854c84f412967"
 }

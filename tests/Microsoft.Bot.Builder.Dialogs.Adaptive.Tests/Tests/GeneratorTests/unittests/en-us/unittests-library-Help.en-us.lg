@@ -25,4 +25,5 @@ You can find out about a specific property by doing 'help <property>'.
 - Enter any string for ${name(property)}
 - ELSE:
 - No help available.
-[unittests-library.lg](unittests-library.lg)
+
+[unittests-library.en-us.lg](unittests-library.en-us.lg)

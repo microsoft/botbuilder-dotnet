@@ -1,17 +1,125 @@
 
 @ list Enum1Entity =
-	- multiGrainWheat :
+	- multiGrainWheat:
 		- multi
 		- grain
 		- wheat
 		- multi grain
 		- grain wheat
 		- multi grain wheat
-	- rye :
+	- rye:
 		- rye
-	- white :
+	- white:
 		- white
-	- wholeWheat :
+	- wholeWheat:
 		- whole
 		- wheat
 		- whole wheat
+
+@ list PROPERTYName
+    - Enum1:
+
+
+@composite AddToProperty = [Enum1Entity]
+@composite RemoveFromProperty = [Enum1Entity]
+@composite ClearProperty = [PROPERTYName]
+@composite ShowProperty = [PROPERTYName]
+# unittests
+> Add only
+- add {@AddToProperty=grain}
+- add {@AddToProperty=rye}
+- add {@AddToProperty=multi}
+- add {@AddToProperty=rye and white}
+- add {@AddToProperty=multi and rye}
+- add {@AddToProperty=rye and white}
+- add {@AddToProperty=rye, rye and wheat}
+- add {@AddToProperty=whole wheat, wheat and white}
+- add {@AddToProperty=rye, whole wheat and rye}
+> Remove only
+- remove {@RemoveFromProperty=multi}
+- remove {@RemoveFromProperty=white}
+- remove {@RemoveFromProperty=multi grain}
+- remove {@RemoveFromProperty=multi grain and whole}
+- remove {@RemoveFromProperty=multi grain and grain}
+- remove {@RemoveFromProperty=wheat and multi}
+- remove {@RemoveFromProperty=wheat, wheat and multi}
+- remove {@RemoveFromProperty=rye, wheat and whole}
+- remove {@RemoveFromProperty=rye, wheat and white}
+- delete {@RemoveFromProperty=grain wheat}
+- delete {@RemoveFromProperty=grain wheat}
+- delete {@RemoveFromProperty=white}
+- delete {@RemoveFromProperty=wheat and rye}
+- delete {@RemoveFromProperty=rye and rye}
+- delete {@RemoveFromProperty=multi and grain}
+- delete {@RemoveFromProperty=multi, grain and multi grain}
+- delete {@RemoveFromProperty=multi, whole and grain wheat}
+- delete {@RemoveFromProperty=wheat, multi grain and white}
+> Clear only
+- clear {@ClearProperty=Enum1}
+- clear {@ClearProperty=Enum1}
+- clear {@ClearProperty=Enum1}
+- remove {@ClearProperty=Enum1}
+- remove {@ClearProperty=Enum1}
+- remove {@ClearProperty=Enum1}
+- empty {@ClearProperty=Enum1}
+- empty {@ClearProperty=Enum1}
+- empty {@ClearProperty=Enum1}
+> Show only
+- value of {@ShowProperty=Enum1}
+- value of {@ShowProperty=Enum1}
+- value of {@ShowProperty=Enum1}
+- value for {@ShowProperty=Enum1}
+- value for {@ShowProperty=Enum1}
+- value for {@ShowProperty=Enum1}
+- selection of {@ShowProperty=Enum1}
+- selection of {@ShowProperty=Enum1}
+- selection of {@ShowProperty=Enum1}
+- selection for {@ShowProperty=Enum1}
+- selection for {@ShowProperty=Enum1}
+- selection for {@ShowProperty=Enum1}
+- display {@ShowProperty=Enum1}
+- display {@ShowProperty=Enum1}
+- display {@ShowProperty=Enum1}
+- show {@ShowProperty=Enum1}
+- show {@ShowProperty=Enum1}
+- show {@ShowProperty=Enum1}
+> Combinations
+- add {@AddToProperty=multi} and remove {@RemoveFromProperty=whole wheat}
+- add {@AddToProperty=wheat} and remove {@RemoveFromProperty=whole wheat}
+- add {@AddToProperty=multi} and remove {@RemoveFromProperty=wheat}
+- add {@AddToProperty=wheat and whole wheat} and remove {@RemoveFromProperty=wheat}
+- add {@AddToProperty=wheat and wheat} and remove {@RemoveFromProperty=whole wheat}
+- add {@AddToProperty=whole and wheat} and remove {@RemoveFromProperty=multi grain}
+- add {@AddToProperty=grain, whole and multi grain} and remove {@RemoveFromProperty=wheat and wheat}
+- add {@AddToProperty=multi grain, whole wheat and white} and remove {@RemoveFromProperty=multi grain and white}
+- add {@AddToProperty=whole, grain wheat and multi grain wheat} and remove {@RemoveFromProperty=multi grain wheat and white}
+- add {@AddToProperty=wheat}, remove {@RemoveFromProperty=multi grain wheat} and show {@ShowProperty=Enum1}
+- add {@AddToProperty=multi}, remove {@RemoveFromProperty=grain} and show {@ShowProperty=Enum1}
+- add {@AddToProperty=white}, remove {@RemoveFromProperty=whole wheat} and show {@ShowProperty=Enum1}
+- remove {@RemoveFromProperty=grain} and add {@AddToProperty=grain}
+- remove {@RemoveFromProperty=wheat} and add {@AddToProperty=multi}
+- remove {@RemoveFromProperty=white} and add {@AddToProperty=whole}
+- remove {@RemoveFromProperty=multi grain and white} and add {@AddToProperty=grain wheat}
+- remove {@RemoveFromProperty=wheat and multi grain} and add {@AddToProperty=whole}
+- remove {@RemoveFromProperty=whole and rye} and add {@AddToProperty=wheat}
+- remove {@RemoveFromProperty=wheat, wheat and rye} and add {@AddToProperty=multi and white}
+- remove {@RemoveFromProperty=whole wheat, multi grain wheat and whole} and add {@AddToProperty=multi grain and white}
+- remove {@RemoveFromProperty=whole wheat, grain wheat and whole} and add {@AddToProperty=rye and rye}
+- remove {@RemoveFromProperty=multi}, add {@AddToProperty=white} and show {@ShowProperty=Enum1}
+- remove {@RemoveFromProperty=multi grain}, add {@AddToProperty=grain} and show {@ShowProperty=Enum1}
+- remove {@RemoveFromProperty=whole wheat}, add {@AddToProperty=grain wheat} and show {@ShowProperty=Enum1}
+- display {@ShowProperty=Enum1} remove {@RemoveFromProperty=grain wheat} and add {@AddToProperty=multi grain wheat}
+- display {@ShowProperty=Enum1} remove {@RemoveFromProperty=whole} and add {@AddToProperty=whole}
+- display {@ShowProperty=Enum1} remove {@RemoveFromProperty=wheat} and add {@AddToProperty=multi grain}
+- show {@ShowProperty=Enum1} remove {@RemoveFromProperty=wheat and grain} and add {@AddToProperty=wheat}
+- show {@ShowProperty=Enum1} remove {@RemoveFromProperty=whole and multi} and add {@AddToProperty=whole wheat}
+- show {@ShowProperty=Enum1} remove {@RemoveFromProperty=wheat and multi} and add {@AddToProperty=white}
+- show {@ShowProperty=Enum1} remove {@RemoveFromProperty=grain wheat, multi and multi grain} and add {@AddToProperty=wheat and multi}
+- show {@ShowProperty=Enum1} remove {@RemoveFromProperty=rye, wheat and whole wheat} and add {@AddToProperty=wheat and wheat}
+- show {@ShowProperty=Enum1} remove {@RemoveFromProperty=rye, rye and multi} and add {@AddToProperty=multi and grain}
+- display {@ShowProperty=Enum1} remove {@RemoveFromProperty=whole wheat}, add {@AddToProperty=whole} 
+- display {@ShowProperty=Enum1} remove {@RemoveFromProperty=rye}, add {@AddToProperty=white} 
+- display {@ShowProperty=Enum1} remove {@RemoveFromProperty=wheat}, add {@AddToProperty=wheat} 
+
+- Enum1
+

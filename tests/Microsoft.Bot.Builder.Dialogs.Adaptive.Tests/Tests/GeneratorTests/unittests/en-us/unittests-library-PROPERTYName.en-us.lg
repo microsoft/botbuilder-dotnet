@@ -1,6 +1,6 @@
 
- # PROPERTYName(value) 
- - SWITCH: ${value}
+# PROPERTYName(value) 
+- SWITCH: ${value}
 
  - CASE: ${'Personname'} 
   - personname,

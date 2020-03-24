@@ -1,10 +1,9 @@
-
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Sauces",
+    "condition": "!$Sauces",
     "priority": "indexOf(dialog.requiredProperties, 'Sauces')",
-    "actions": [       
+    "actions": [
         {
             "$kind": "Microsoft.Ask",
             "activity": "${AskSauces()}",
@@ -12,5 +11,6 @@
                 "Sauces"
             ]
         }
-    ]
+    ],
+    "$Generator": "17381ab4005b2bf2a3e4ac0d3c22ec71"
 }

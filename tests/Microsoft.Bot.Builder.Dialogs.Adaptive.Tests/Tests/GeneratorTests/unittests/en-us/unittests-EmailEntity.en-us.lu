@@ -1,1 +1,6 @@
+
 @ ml EmailEntity
+
+@ list PROPERTYName
+    - Email:
+
