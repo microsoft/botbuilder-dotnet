@@ -285,6 +285,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("getUserName", null);
             Assert.AreEqual(evaled, "super \"x man\"");
+
+            evaled = templates.Evaluate("structure1", null);
+            Assert.AreEqual(evaled.ToString().Replace("\r\n", "\n").Replace("\n", string.Empty), "{  \"lgType\": \"struct\",  \"list\": [    \"a\",    \"b|c\"  ]}");
+
+            evaled = templates.Evaluate("nestedSample", null);
+            Assert.AreEqual(evaled.ToString(), "i like three movies, they are \"\\\"name1\", \"name2\" and \"{name3\"");
         }
 
         [TestMethod]
