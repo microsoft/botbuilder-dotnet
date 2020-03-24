@@ -1,4 +1,3 @@
-
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
@@ -15,5 +14,6 @@
                 "CompleteConfirmation"
             ]
         }
-    ]
+    ],
+    "$Generator": "352f48201bc1ce41fe2eba0d714ce3d5"
 }

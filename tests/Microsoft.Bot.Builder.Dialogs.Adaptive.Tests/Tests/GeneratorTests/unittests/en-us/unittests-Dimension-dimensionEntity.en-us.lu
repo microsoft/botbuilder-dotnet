@@ -1,1 +1,6 @@
-@ prebuilt dimension hasRole Dimension
+
+@ prebuilt dimension 
+
+@ list PROPERTYName
+    - Dimension:
+

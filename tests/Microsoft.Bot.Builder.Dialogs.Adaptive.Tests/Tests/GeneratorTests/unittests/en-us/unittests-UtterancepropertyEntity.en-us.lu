@@ -1,1 +1,6 @@
+
 @ ml UtterancepropertyEntity
+
+@ list PROPERTYName
+    - Utteranceproperty:
+

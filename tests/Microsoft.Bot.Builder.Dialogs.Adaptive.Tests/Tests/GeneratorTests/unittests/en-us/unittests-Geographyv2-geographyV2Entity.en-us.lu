@@ -1,1 +1,6 @@
-@ prebuilt geographyV2 hasRole Geographyv2
+
+@ prebuilt geographyV2 
+
+@ list PROPERTYName
+    - Geographyv2:
+

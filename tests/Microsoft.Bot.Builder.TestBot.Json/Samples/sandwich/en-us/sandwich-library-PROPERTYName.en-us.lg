@@ -1,6 +1,6 @@
 
- # PROPERTYName(value) 
- - SWITCH: ${value}
+# PROPERTYName(value) 
+- SWITCH: ${value}
 
  - CASE: ${'Quantity'} 
   - quantity,
@@ -23,3 +23,5 @@
 
  - DEFAULT: 
   - I don't understand ${value}
+
+> Generator: 2cb11c0a41d6ccb70464e38f27e658e4

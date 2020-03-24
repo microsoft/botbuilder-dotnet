@@ -1,1 +1,6 @@
-@ prebuilt ordinalV2 hasRole Ordinalv2
+
+@ prebuilt ordinalV2 
+
+@ list PROPERTYName
+    - Ordinalv2:
+

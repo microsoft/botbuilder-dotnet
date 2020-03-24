@@ -18,13 +18,11 @@
 - ELSE:
 - 
 
-> TODO: We should enable this when where/foreach works over objects.
 # optionalProperties
--
-> - IF: ${add(count(dialogClass.schema.required),count(dialogClass.schema.$expectedOnly)) < count(dialogClass.schema.properties)}
-> - Optional properties include: ${join(foreach(where(dialogClass.schema.properties, property, !contains(dialogClass.schema.required, property) && !contains(dialogClass.schema.$expectedOnly, property)), property, name(property)), ', ')}\n
-> - ELSE:
-> - 
+- IF: ${add(count(dialogClass.schema.required),count(dialogClass.schema.$expectedOnly)) < count(dialogClass.schema.properties)}
+- Optional properties include: ${join(foreach(where(dialogClass.schema.properties, property, !contains(dialogClass.schema.required, property) && !contains(dialogClass.schema.$expectedOnly, property)), property, name(property)), ', ')}\n
+- ELSE:
+- 
 
 # possibleValues(property)
 - ${foreach(dialogClass.schema.properties[property].enum, enum, value(property, enum))}
@@ -46,4 +44,8 @@
 
 # notUnderstood
 - Sorry, I do not understand ${join(foreach(turn.unrecognizedtext, chunk, concat("'", chunk, "'")), ' or ')}
-[sandwich-library-PROPERTYName.lg](sandwich-library-PROPERTYName.lg)
+
+[sandwich-library-PROPERTYName.en-us.lg](sandwich-library-PROPERTYName.en-us.lg)
+
+
+> Generator: 3169afe9eed47a8e735e03220394046c

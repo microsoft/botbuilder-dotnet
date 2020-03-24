@@ -1,1 +1,6 @@
+
 @ ml PersonnameEntity
+
+@ list PROPERTYName
+    - Personname:
+

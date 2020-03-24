@@ -1,1 +1,6 @@
-@ prebuilt datetimeV2 hasRole Datetimev2
+
+@ prebuilt datetimeV2 
+
+@ list PROPERTYName
+    - Datetimev2:
+

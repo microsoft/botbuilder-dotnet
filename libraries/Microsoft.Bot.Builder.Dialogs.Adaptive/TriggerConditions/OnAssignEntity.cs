@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
             Property = property;
             Entity = entity;
+            Operation = operation;
         }
 
         /// <summary>

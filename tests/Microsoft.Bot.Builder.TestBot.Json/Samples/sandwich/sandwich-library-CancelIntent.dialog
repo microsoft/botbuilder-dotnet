@@ -1,4 +1,3 @@
-
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnIntent",
@@ -9,8 +8,9 @@
             "$kind": "Microsoft.Ask",
             "activity": "${cancel()}",
             "expectedProperties": [
-                "CancelConfirmation"                    
-            ]           
+                "CancelConfirmation"
+            ]
         }
-    ]
+    ],
+    "$Generator": "7b33518820839388b34fea0034ecb6fd"
 }

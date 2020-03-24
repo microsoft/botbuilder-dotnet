@@ -1,1 +1,0 @@
-{"query":"help","prediction":{"topIntent":"Help","intents":{"Help":{"score":0.914065957}},"entities":{"personName":["help"],"$instance":{"personName":[{"type":"builtin.personName","text":"help","startIndex":0,"length":4,"modelTypeId":2,"modelType":"Prebuilt Entity Extractor","recognitionSources":["model"]}]}}}}

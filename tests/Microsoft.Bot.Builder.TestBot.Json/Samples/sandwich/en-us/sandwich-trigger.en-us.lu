@@ -1,0 +1,13 @@
+
+# sandwich
+- {number}
+- {dimension}
+- {BreadEntity}
+- {MeatEntity}
+- {CheeseEntity}
+- {ToppingsEntity}
+- {SaucesEntity}
+- {money}
+- {PROPERTYName}
+
+> Generator: d3c2de01f2242a34585358bbca468f07

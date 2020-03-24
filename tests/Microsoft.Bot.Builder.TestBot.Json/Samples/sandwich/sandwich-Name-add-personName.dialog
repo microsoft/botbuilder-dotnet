@@ -1,0 +1,19 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "operation": "AddToProperty",
+    "property": "Name",
+    "entity": "personName",
+    "actions": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${setPropertyMessage('Name', @personName)}"
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Name",
+            "value": "=@personName"
+        }
+    ],
+    "$Generator": "81acf2ee9c8d16d1c08ac7c9b6aa6592"
+}

@@ -1,7 +1,7 @@
 
  
- # MeatEntity(value) 
- - SWITCH: ${value}
+# MeatEntity(value) 
+- SWITCH: ${value}
   - CASE: ${'bacon'} 
     - bacon
   - CASE: ${'chicken'} 
@@ -22,7 +22,11 @@
     - I don't understand ${value}
 
  
- # chooseMeatEntity
- - ${chooseEnumEntity('Meat')}
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Choose.lg](sandwich-library-Choose.lg)
+# chooseMeatEntity
+- ${chooseEnumEntity('Meat')}
+
+ 
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Choose.en-us.lg](sandwich-library-Choose.en-us.lg)
+
+> Generator: 4c5ce5f51f9cd7dc723c44b98a05dd24
