@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.Recognizer)",
+    "$role": "implements(Microsoft.IRecognizer)",
     "title": "Recognizer Set",
     "description": "Creates the union of the intents and entities of the recognizers in the set.",
     "type": "object",
@@ -15,7 +15,7 @@
             "title": "Recognizers",
             "description": "List of Recognizers defined for this set.",
             "items": {
-                "$kind": "Microsoft.Recognizer"
+                "$kind": "Microsoft.IRecognizer"
             }
         }
     },

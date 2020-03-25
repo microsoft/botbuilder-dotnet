@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// <summary>
     /// Base class which applies language policy to virtual method of TryGetGenerator.
     /// </summary>
-    public abstract class MultiLanguageGeneratorBase : ILanguageGenerator
+    public abstract class MultiLanguageGeneratorBase : LanguageGenerator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiLanguageGeneratorBase"/> class.
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="locale">locale.</param>
         /// <param name="generator">generator to return.</param>
         /// <returns>true if found.</returns>
-        public abstract bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator generator);
+        public abstract bool TryGetGenerator(ITurnContext context, string locale, out LanguageGenerator generator);
 
         /// <summary>
         /// Find a language generator that matches the current context locale.
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="template">The template.</param>
         /// <param name="data">data to bind to.</param>
         /// <returns>The generator.</returns>
-        public async Task<string> Generate(ITurnContext turnContext, string template, object data)
+        public override async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
             // see if we have any locales that match
             var targetLocale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
@@ -52,10 +52,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 }
             }
 
-            var generators = new List<ILanguageGenerator>();
+            var generators = new List<LanguageGenerator>();
             foreach (var locale in locales)
             {
-                if (this.TryGetGenerator(turnContext, locale, out ILanguageGenerator generator))
+                if (this.TryGetGenerator(turnContext, locale, out LanguageGenerator generator))
                 {
                     generators.Add(generator);
                 }

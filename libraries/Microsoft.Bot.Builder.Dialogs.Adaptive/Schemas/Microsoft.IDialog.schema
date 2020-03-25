@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "title": "Microsoft Dialogs",
-    "description": "Union of components which implement the Dialog contract",
+    "description": "Components which derive from Dialog",
     "$role": "interface",
     "oneOf": [
         {

@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.ITriggerCondition)",
+    "$role": "implements(Microsoft.ITrigger)",
     "title": "On EndOfConversation activity",
     "description": "Actions to perform on receipt of an activity with type 'EndOfConversation'.",
     "type": "object",

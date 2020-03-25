@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "title": "Microsoft TextTemplate",
-    "description": "Union of components which implement the TextTemplate",
+    "description": "Components which derive from TextTemplate class",
     "$role": "interface",
     "oneOf": [
         {
