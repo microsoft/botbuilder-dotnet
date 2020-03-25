@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="locale">locale to lookup.</param>
         /// <param name="languageGenerator">found LanguageGenerator.</param>
         /// <returns>true if found.</returns>
-        public override bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator languageGenerator)
+        public override bool TryGetGenerator(ITurnContext context, string locale, out LanguageGenerator languageGenerator)
         {
             var lgm = context.TurnState.Get<LanguageGeneratorManager>();
             var resourceId = string.IsNullOrEmpty(locale) ? this.ResourceId : this.ResourceId.Replace(".lg", $".{locale}.lg");

@@ -23,7 +23,7 @@
             "default": "dialog.result"
         },
         "recognizer": {
-            "$kind": "Microsoft.Recognizer",
+            "$kind": "Microsoft.IRecognizer",
             "title": "Recognizer",
             "description": "Input recognizer that interprets user input into intent and entities."
         },
@@ -42,7 +42,7 @@
             "description": "List of triggers defined for this dialog.",
             "title": "Triggers",
             "items": {
-                "$kind": "Microsoft.ITriggerCondition"
+                "$kind": "Microsoft.ITrigger"
             }
         },
         "schema": {

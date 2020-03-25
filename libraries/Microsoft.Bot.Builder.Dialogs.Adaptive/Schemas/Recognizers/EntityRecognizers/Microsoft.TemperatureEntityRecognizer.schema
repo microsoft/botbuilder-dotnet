@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.EntityRecognizers)",
-    "title": "Temperature Entity Recognizer",
+    "$role": "implements(Microsoft.IEntityRecognizer)",
+    "title": "Temperature Recognizer",
     "description": "Recognizer which recognizes temperatures.",
     "type": "object",
     "properties": {}

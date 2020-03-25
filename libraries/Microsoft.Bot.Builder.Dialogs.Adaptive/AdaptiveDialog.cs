@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Language Generator override.
         /// </value>
         [JsonProperty("generator")]
-        public ILanguageGenerator Generator { get; set; }
+        public LanguageGenerator Generator { get; set; }
 
         /// <summary>
         /// Gets or sets trigger handlers to respond to conditions which modifying the executing plan. 
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// The selector for picking the possible events to execute.
         /// </value>
         [JsonProperty("selector")]
-        public ITriggerSelector Selector { get; set; }
+        public TriggerSelector Selector { get; set; }
 
         /// <summary>
         /// Gets or sets the property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
@@ -612,7 +612,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             if (Generator != null)
             {
-                turnContext.TurnState.Pop<ILanguageGenerator>();
+                turnContext.TurnState.Pop<LanguageGenerator>();
             }
         }
 
