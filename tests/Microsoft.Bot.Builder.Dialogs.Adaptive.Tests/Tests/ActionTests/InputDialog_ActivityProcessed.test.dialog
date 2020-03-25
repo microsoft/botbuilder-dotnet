@@ -30,11 +30,11 @@
                         "$kind": "Microsoft.TextInput",
                         "alwaysPrompt": true,
                         "property": "$userName",
-                        "prompt": "\\[set name]::What is your name?"
+                        "prompt": "[set name]::What is your name?"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "\\[set name]::I have ${$userName} as your name"
+                        "activity": "[set name]::I have ${$userName} as your name"
                     }
                 ]
             },
@@ -46,11 +46,11 @@
                         "$kind": "Microsoft.TextInput",
                         "allowInterruptions": "False",
                         "property": "$userName",
-                        "prompt": "\\[start]::What is your name?"
+                        "prompt": "[start]::What is your name?"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "\\[start]::I have ${$userName} as your name"
+                        "activity": "[start]::I have ${$userName} as your name"
                     },
                     {
                         "$kind": "Microsoft.DateTimeInput",
@@ -61,7 +61,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "\\[start]:: I have ${$fromDate} as date 1"
+                        "activity": "[start]:: I have ${$fromDate} as date 1"
                     },
                     {
                         "$kind": "Microsoft.DateTimeInput",
@@ -71,7 +71,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "\\[start]:: I have ${$toDate} as date 2"
+                        "activity": "[start]:: I have ${$toDate} as date 2"
                     }
                 ]
             },
