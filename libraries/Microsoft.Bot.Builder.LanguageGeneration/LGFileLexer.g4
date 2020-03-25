@@ -45,9 +45,9 @@ fragment WHITESPACE : ' '|'\t'|'\ufeff'|'\u00a0';
 
 fragment EMPTY_OBJECT: '{' WHITESPACE* '}';
 
-fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
+fragment STRING_LITERAL : ('\'' (('\\'('\''|'\\'))|(~'\''))*? '\'') | ('"' (('\\'('"'|'\\'))|(~'"'))*? '"');
 
-fragment STRING_INTERPOLATION : '`' ('\\`' | ~'`')* '`';
+fragment STRING_INTERPOLATION : '`' (('\\'('`'|'\\'))|(~'`'))*? '`';
 
 fragment EXPRESSION_FRAGMENT : '$' '{' (STRING_LITERAL | STRING_INTERPOLATION | EMPTY_OBJECT | ~[}'"`] )+ '}'?;
 
