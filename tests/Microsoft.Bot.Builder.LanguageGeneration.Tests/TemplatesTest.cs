@@ -617,12 +617,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(templates[1].Parameters.Count, 2);
             Assert.AreEqual(templates[1].Parameters[0], "age");
             Assert.AreEqual(templates[1].Parameters[1], "name");
-            Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- hi \n");
+            Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- hi ");
 
             templates.AddTemplate("newtemplate2", null, "- hi2 ");
             Assert.AreEqual(templates.Count, 3);
             Assert.AreEqual(templates[2].Name, "newtemplate2");
-            Assert.AreEqual(templates[2].Body.Replace("\r\n", "\n"), "- hi2 \n");
+            Assert.AreEqual(templates[2].Body.Replace("\r\n", "\n"), "- hi2 ");
 
             templates.UpdateTemplate("newtemplate", "newtemplateName", new List<string> { "newage", "newname" }, "- new hi\r\n#hi");
             Assert.AreEqual(templates.Count, 3);
@@ -631,13 +631,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(templates[1].Parameters.Count, 2);
             Assert.AreEqual(templates[1].Parameters[0], "newage");
             Assert.AreEqual(templates[1].Parameters[1], "newname");
-            Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- new hi\n- #hi\n");
+            Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- new hi\n- #hi");
 
             templates.UpdateTemplate("newtemplate2", "newtemplateName2", new List<string> { "newage2", "newname2" }, "- new hi\r\n#hi2");
             Assert.AreEqual(templates.Count, 3);
             Assert.AreEqual(templates.Imports.Count, 0);
             Assert.AreEqual(templates[2].Name, "newtemplateName2");
-            Assert.AreEqual(templates[2].Body.Replace("\r\n", "\n"), "- new hi\n- #hi2\n");
+            Assert.AreEqual(templates[2].Body.Replace("\r\n", "\n"), "- new hi\n- #hi2");
 
             templates.DeleteTemplate("newtemplateName");
             Assert.AreEqual(templates.Count, 2);
