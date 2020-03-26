@@ -13,7 +13,17 @@
             "$kind": "Microsoft.SetProperty",
             "property": "$Name",
             "value": "=@personName"
+        },
+        {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "PropertyToChange == 'Name'",
+            "actions": [
+                {
+                    "$kind": "Microsoft.DeleteProperty",
+                    "property": "PropertyToChange"
+                }
+            ]
         }
     ],
-    "$Generator": "81acf2ee9c8d16d1c08ac7c9b6aa6592"
+    "$Generator": "fb1e326b11990e3188b44052e85b2e3c"
 }

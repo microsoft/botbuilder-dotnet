@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition": "!$Sauces",
+    "condition": "!$Sauces || $PropertyToChange == 'Sauces'",
     "priority": "indexOf(dialog.requiredProperties, 'Sauces')",
     "actions": [
         {
@@ -12,5 +12,5 @@
             ]
         }
     ],
-    "$Generator": "17381ab4005b2bf2a3e4ac0d3c22ec71"
+    "$Generator": "5536d2ec1048f73ab7dce8ef1d2e5e44"
 }

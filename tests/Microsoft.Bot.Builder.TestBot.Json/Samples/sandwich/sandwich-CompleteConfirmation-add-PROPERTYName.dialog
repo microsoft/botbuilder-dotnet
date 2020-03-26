@@ -6,9 +6,10 @@
     "entity": "PROPERTYName",
     "actions": [
         {
-            "$kind": "Microsoft.DeleteProperty",
-            "property": "dialog[@PROPERTYName]"
+            "$kind": "Microsoft.SetProperty",
+            "property": "$PropertyToChange",
+            "value": "=@PropertyName"
         }
     ],
-    "$Generator": "230401a9f5d87fc74cf8b077221f5781"
+    "$Generator": "4136a26233904b43ceedea31e1fd2a25"
 }

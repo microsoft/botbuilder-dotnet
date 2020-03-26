@@ -88,41 +88,50 @@
 - add {@AddToProperty=dijon} and remove {@RemoveFromProperty=yellow mustard}
 - add {@AddToProperty=salt} and remove {@RemoveFromProperty=yellow mustard}
 - add {@AddToProperty=pepper} and remove {@RemoveFromProperty=dijon mustard}
-- add {@AddToProperty=dijon and pepper} and remove {@RemoveFromProperty=mustard}
+- add {@AddToProperty=dijon} remove {@RemoveFromProperty=pepper}
+- add {@AddToProperty=mustard} remove {@RemoveFromProperty=dijon}
+- add {@AddToProperty=mustard} remove {@RemoveFromProperty=mustard}
+- add {@AddToProperty=salt}, remove {@RemoveFromProperty=yellow}
+- add {@AddToProperty=mustard}, remove {@RemoveFromProperty=dijon mustard}
+- add {@AddToProperty=mustard}, remove {@RemoveFromProperty=dijon mustard}
+- add {@AddToProperty=mustard and mustard} and remove {@RemoveFromProperty=mayo}
+- add {@AddToProperty=mustard and dijon} and remove {@RemoveFromProperty=dijon}
 - add {@AddToProperty=dijon and mustard} and remove {@RemoveFromProperty=mustard}
-- add {@AddToProperty=salt and yellow} and remove {@RemoveFromProperty=mustard}
-- add {@AddToProperty=dijon mustard, mustard and dijon mustard} and remove {@RemoveFromProperty=mustard and mustard}
-- add {@AddToProperty=mayo, mustard and dijon} and remove {@RemoveFromProperty=dijon and dijon}
-- add {@AddToProperty=mustard, mustard and pepper} and remove {@RemoveFromProperty=salt and dijon}
-- add {@AddToProperty=salt}, remove {@RemoveFromProperty=vinegar} and show {@ShowProperty=Sauces}
-- add {@AddToProperty=yellow}, remove {@RemoveFromProperty=mustard} and show {@ShowProperty=Sauces}
-- add {@AddToProperty=salt}, remove {@RemoveFromProperty=vinegar} and show {@ShowProperty=Sauces}
-- remove {@RemoveFromProperty=mayo} and add {@AddToProperty=yellow}
+- add {@AddToProperty=pepper, salt and dijon} and remove {@RemoveFromProperty=salt and vinegar}
+- add {@AddToProperty=salt, yellow and mustard} and remove {@RemoveFromProperty=salt and salt}
+- add {@AddToProperty=vinegar, pepper and mayo} and remove {@RemoveFromProperty=yellow and salt}
+- add {@AddToProperty=mustard, vinegar and salt} remove {@RemoveFromProperty=salt and yellow mustard}
+- add {@AddToProperty=dijon, dijon and pepper} remove {@RemoveFromProperty=mustard and vinegar}
+- add {@AddToProperty=pepper, mustard and yellow mustard} remove {@RemoveFromProperty=yellow and pepper}
+- add {@AddToProperty=vinegar}, remove {@RemoveFromProperty=yellow} and show {@ShowProperty=Sauces}
+- add {@AddToProperty=yellow}, remove {@RemoveFromProperty=mayo} and show {@ShowProperty=Sauces}
+- add {@AddToProperty=mayo}, remove {@RemoveFromProperty=yellow mustard} and show {@ShowProperty=Sauces}
 - remove {@RemoveFromProperty=salt} and add {@AddToProperty=mustard}
-- remove {@RemoveFromProperty=vinegar} and add {@AddToProperty=salt}
-- remove {@RemoveFromProperty=salt and yellow mustard} and add {@AddToProperty=dijon}
-- remove {@RemoveFromProperty=dijon and pepper} and add {@AddToProperty=mustard}
-- remove {@RemoveFromProperty=vinegar and pepper} and add {@AddToProperty=mustard}
-- remove {@RemoveFromProperty=yellow mustard, yellow and pepper} and add {@AddToProperty=vinegar and yellow}
-- remove {@RemoveFromProperty=mustard, yellow and mayo} and add {@AddToProperty=mayo and mayo}
-- remove {@RemoveFromProperty=yellow mustard, mustard and salt} and add {@AddToProperty=mustard and dijon mustard}
-- remove {@RemoveFromProperty=dijon}, add {@AddToProperty=yellow} and show {@ShowProperty=Sauces}
-- remove {@RemoveFromProperty=mustard}, add {@AddToProperty=dijon mustard} and show {@ShowProperty=Sauces}
-- remove {@RemoveFromProperty=salt}, add {@AddToProperty=yellow mustard} and show {@ShowProperty=Sauces}
-- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=dijon} and add {@AddToProperty=pepper}
-- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=yellow mustard} and add {@AddToProperty=vinegar}
-- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=mustard} and add {@AddToProperty=yellow mustard}
-- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=dijon and dijon} and add {@AddToProperty=pepper}
-- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=mustard and mustard} and add {@AddToProperty=mayo}
-- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=mayo and mayo} and add {@AddToProperty=dijon mustard}
-- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=vinegar, dijon mustard and salt} and add {@AddToProperty=vinegar and dijon mustard}
-- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=yellow, salt and mustard} and add {@AddToProperty=vinegar and mayo}
-- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=mustard, mustard and yellow} and add {@AddToProperty=dijon mustard and mustard}
-- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=yellow}, add {@AddToProperty=vinegar} 
-- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=yellow}, add {@AddToProperty=mayo} 
-- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=dijon mustard}, add {@AddToProperty=vinegar} 
+- remove {@RemoveFromProperty=dijon mustard} and add {@AddToProperty=dijon}
+- remove {@RemoveFromProperty=yellow} and add {@AddToProperty=pepper}
+- remove {@RemoveFromProperty=mustard and dijon mustard} and add {@AddToProperty=salt}
+- remove {@RemoveFromProperty=salt and yellow mustard} and add {@AddToProperty=mustard}
+- remove {@RemoveFromProperty=yellow and dijon} and add {@AddToProperty=pepper}
+- remove {@RemoveFromProperty=vinegar, yellow mustard and vinegar} and add {@AddToProperty=pepper and mustard}
+- remove {@RemoveFromProperty=yellow mustard, mustard and dijon} and add {@AddToProperty=dijon and pepper}
+- remove {@RemoveFromProperty=yellow, mustard and mustard} and add {@AddToProperty=mayo and mustard}
+- remove {@RemoveFromProperty=mayo}, add {@AddToProperty=mayo} and show {@ShowProperty=Sauces}
+- remove {@RemoveFromProperty=yellow}, add {@AddToProperty=vinegar} and show {@ShowProperty=Sauces}
+- remove {@RemoveFromProperty=salt}, add {@AddToProperty=vinegar} and show {@ShowProperty=Sauces}
+- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=yellow} and add {@AddToProperty=salt}
+- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=vinegar} and add {@AddToProperty=mayo}
+- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=mustard} and add {@AddToProperty=mustard}
+- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=dijon mustard and mustard} and add {@AddToProperty=mayo}
+- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=vinegar and yellow} and add {@AddToProperty=yellow}
+- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=yellow and dijon mustard} and add {@AddToProperty=vinegar}
+- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=mustard, yellow and dijon} and add {@AddToProperty=yellow mustard and salt}
+- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=yellow mustard, pepper and salt} and add {@AddToProperty=dijon and yellow}
+- show {@ShowProperty=Sauces} remove {@RemoveFromProperty=dijon mustard, dijon mustard and mustard} and add {@AddToProperty=vinegar and yellow mustard}
+- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=mustard}, add {@AddToProperty=mayo} 
+- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=pepper}, add {@AddToProperty=dijon mustard} 
+- display {@ShowProperty=Sauces} remove {@RemoveFromProperty=yellow}, add {@AddToProperty=pepper} 
 
 - Sauces
 
 
-> Generator: 1d3950984b6489c568412e9590d6fbc5
+> Generator: c16beb19ff1f098bd5a51805ee1f80ea

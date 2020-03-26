@@ -12,10 +12,9 @@
         {
             "$kind": "Microsoft.EditArray",
             "changeType": "remove",
-            "itemsProperty": "$Toppings",
-            "value": "=@ToppingsEntity",
-            "resultProperty": "$Toppings"
+            "itemsProperty": "=$Toppings",
+            "value": "=@ToppingsEntity"
         }
     ],
-    "$Generator": "2d0838d67dbe6f70d2b90fd25a75e4b2"
+    "$Generator": "91b70996eb921d3149d4dde4ecb74c06"
 }
