@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
@@ -12,12 +13,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             yield break;
         }
 
-        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
+        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
         {
-            yield return new InterfaceConverter<IStorage>(resourceExplorer, paths);
-            yield return new InterfaceConverter<IRecognizer>(resourceExplorer, paths);
-            yield return new InterfaceConverter<Dialog>(resourceExplorer, paths);
-            yield return new InterfaceConverter<Recognizer>(resourceExplorer, paths);
+            yield return new InterfaceConverter<IStorage>(resourceExplorer, context);
+            yield return new InterfaceConverter<IRecognizer>(resourceExplorer, context);
+            yield return new InterfaceConverter<Dialog>(resourceExplorer, context);
+            yield return new InterfaceConverter<Recognizer>(resourceExplorer, context);
             yield return new ActivityConverter();
         }
     }

@@ -87,5 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
 
         public override string ToString() => $"{LineIndex}:{CharIndex}";
+
+        public SourcePoint DeepClone() => new SourcePoint() { LineIndex = LineIndex, CharIndex = CharIndex };
     }
 }

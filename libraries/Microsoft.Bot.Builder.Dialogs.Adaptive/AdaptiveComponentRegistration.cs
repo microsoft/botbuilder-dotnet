@@ -13,6 +13,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Skills;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -147,18 +148,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<AdaptiveSkillDialog>(AdaptiveSkillDialog.DeclarativeType);
         }
 
-        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
+        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
         {
-            yield return new InterfaceConverter<OnCondition>(resourceExplorer, paths);
-            yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, paths);
-            yield return new InterfaceConverter<TriggerSelector>(resourceExplorer, paths);
+            yield return new InterfaceConverter<OnCondition>(resourceExplorer, context);
+            yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, context);
+            yield return new InterfaceConverter<TriggerSelector>(resourceExplorer, context);
 
             yield return new IntExpressionConverter();
             yield return new NumberExpressionConverter();
             yield return new StringExpressionConverter();
             yield return new ValueExpressionConverter();
             yield return new BoolExpressionConverter();
-            yield return new DialogExpressionConverter(resourceExplorer, paths);
+            yield return new DialogExpressionConverter(resourceExplorer, context);
 
             yield return new ObjectExpressionConverter<ChoiceSet>();
             yield return new ObjectExpressionConverter<ChoiceFactoryOptions>();

@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -36,6 +37,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
 
         /// <summary>
+        /// Gets or sets the optional designer information.
+        /// </summary>
+        /// <value>
+        /// Optional designer information.
+        /// </value>
+        public JToken Designer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets or sets path to source file.
         /// </summary>
         /// <value>
@@ -60,5 +73,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public SourcePoint EndPoint { get; set; }
 
         public override string ToString() => $"{System.IO.Path.GetFileName(Path)}:{StartPoint}->{EndPoint}";
+
+        public SourceRange DeepClone()
+            => new SourceRange()
+            {
+                Path = Path,
+                Designer = Designer?.DeepClone(),
+                StartPoint = StartPoint?.DeepClone(),
+                EndPoint = EndPoint?.DeepClone(),
+            };
     }
 }

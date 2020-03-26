@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Newtonsoft.Json;
@@ -124,26 +125,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         public async Task<T> LoadTypeAsync<T>(IResource resource)
         {
             string id = resource.Id;
-            var paths = new Stack<string>();
             if (resource is FileResource fileResource)
             {
                 id = fileResource.FullName;
-                paths.Push(fileResource.FullName);
             }
 
-            string json = null;
             try
             {
-                json = await resource.ReadTextAsync();
-
-                var result = Load<T>(json, paths);
-                if (result is Dialog dlg)
+                var context = new Stack<SourceRange>();
+                var (json, range) = await resource.ReadTokenRangeAsync(context);
+                using (new SourceContext(context, range))
                 {
-                    // dialog id's are resource ids
-                    dlg.Id = resource.Id;
-                }
+                    var result = Load<T>(json, context);
+                    if (result is Dialog dlg)
+                    {
+                        // dialog id's are resource ids
+                        dlg.Id = resource.Id;
+                    }
 
-                return result;
+                    return result;
+                }
             }
             catch (Exception err)
             {
@@ -424,33 +425,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 ?.Value.ToString();
         }
 
-        private T Load<T>(string json, Stack<string> paths)
+        private T Load<T>(JToken token, Stack<SourceRange> context)
         {
             var converters = new List<JsonConverter>();
             foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentDeclarativeTypes>())
             {
-                var result = component.GetConverters(this, paths);
+                var result = component.GetConverters(this, context);
                 if (result.Any())
                 {
                     converters.AddRange(result);
                 }
             }
 
-            return JsonConvert.DeserializeObject<T>(
-                json, new JsonSerializerSettings()
+            var serializer = JsonSerializer.Create(new JsonSerializerSettings()
+            {
+                SerializationBinder = new UriTypeBinder(this),
+                TypeNameHandling = TypeNameHandling.Auto,
+                Converters = converters,
+                Error = (sender, args) =>
                 {
-                    SerializationBinder = new UriTypeBinder(this),
-                    TypeNameHandling = TypeNameHandling.Auto,
-                    Converters = converters,
-                    Error = (sender, args) =>
-                    {
-                        var ctx = args.ErrorContext;
-                    },
-                    ContractResolver = new DefaultContractResolver
-                    {
-                        NamingStrategy = new CamelCaseNamingStrategy()
-                    }
-                });
+                    var ctx = args.ErrorContext;
+                },
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                }
+            });
+
+            return token.ToObject<T>(serializer);
         }
 
         private void ResourceProvider_Changed(IResource[] resources)
