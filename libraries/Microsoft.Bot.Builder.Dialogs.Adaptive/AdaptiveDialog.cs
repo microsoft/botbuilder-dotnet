@@ -929,14 +929,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         // Combine entity values and $instance meta-data
         private Dictionary<string, List<EntityInfo>> NormalizeEntities(ActionContext actionContext)
         {
-            var dcState = context.GetState();
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
-            var text = dcState.GetValue<string>(TurnPath.Recognized + ".text");
-            if (dcState.TryGetValue<dynamic>(TurnPath.Recognized + ".entities", out var entities))
+            var text = actionContext.State.GetValue<string>(TurnPath.Recognized + ".text");
+            if (actionContext.State.TryGetValue<dynamic>(TurnPath.Recognized + ".entities", out var entities))
             {
-                var turn = dcState.GetValue<uint>(DialogPath.EventCounter);
+                var turn = actionContext.State.GetValue<uint>(DialogPath.EventCounter);
                 var operations = dialogSchema.Schema["$operations"]?.ToObject<List<string>>() ?? new List<string>();
-                var defaultOp = dcState.GetValue<string>(DialogPath.ExpectedOperation) ?? dialogSchema.Schema["$defaultOperation"]?.ToObject<string>() ?? string.Empty;
+                var defaultOp = actionContext.State.GetValue<string>(DialogPath.ExpectedOperation) ?? dialogSchema.Schema["$defaultOperation"]?.ToObject<string>() ?? string.Empty;
                 var metaData = entities["$instance"];
                 foreach (var entry in entities)
                 {

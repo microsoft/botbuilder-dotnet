@@ -33,10 +33,10 @@ Enter a value for ${name(property)}: true or false
 ```
 
 # enumArrayValue(property, values)
-- ${if(isArray(values), join(foreach(values, value, template(property + 'Entity', value)), ', '), template(property + 'Entity', value))}
+- ${if(isArray(values), join(foreach(values, value, template(property + 'Entity', value)), ', '), template(property + 'Entity', values))}
 
 [sandwich-library.en-us.lg](sandwich-library.en-us.lg)
 
 [sandwich-library-Help.en-us.lg](sandwich-library-Help.en-us.lg)
 
-> Generator: 380b483251d3f4258e586f9d467b299c
+> Generator: a7445f96133093ebbcb464fe7b046c31

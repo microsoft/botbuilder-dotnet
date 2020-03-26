@@ -13,7 +13,17 @@
             "$kind": "Microsoft.SetProperty",
             "property": "$Meat",
             "value": "=@MeatEntity"
+        },
+        {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "PropertyToChange == 'Meat'",
+            "actions": [
+                {
+                    "$kind": "Microsoft.DeleteProperty",
+                    "property": "PropertyToChange"
+                }
+            ]
         }
     ],
-    "$Generator": "58a39c987ce90d868e6b20691056f00c"
+    "$Generator": "74deabe248461b89972bfa604fb83764"
 }

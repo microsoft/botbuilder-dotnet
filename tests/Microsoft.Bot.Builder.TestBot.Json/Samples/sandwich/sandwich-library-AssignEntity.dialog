@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "=$Property",
+                    "value": "=$Value"
+                }
+            ]
+        }
+    ],
+    "$Generator": "17de1fdcddebb6b9abecdb705f9ff015"
+}

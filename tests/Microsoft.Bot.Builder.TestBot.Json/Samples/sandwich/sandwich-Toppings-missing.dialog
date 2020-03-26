@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition": "!$Toppings",
+    "condition": "!$Toppings || $PropertyToChange == 'Toppings'",
     "priority": "indexOf(dialog.requiredProperties, 'Toppings')",
     "actions": [
         {
@@ -12,5 +12,5 @@
             ]
         }
     ],
-    "$Generator": "945bdfb0dd6ae698928854c84f412967"
+    "$Generator": "6963ecb3195b398a97f3ca67c8ad32ad"
 }

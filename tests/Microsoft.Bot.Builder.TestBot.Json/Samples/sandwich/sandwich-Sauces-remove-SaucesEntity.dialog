@@ -12,10 +12,9 @@
         {
             "$kind": "Microsoft.EditArray",
             "changeType": "remove",
-            "itemsProperty": "$Sauces",
-            "value": "=@SaucesEntity",
-            "resultProperty": "$Sauces"
+            "itemsProperty": "=$Sauces",
+            "value": "=@SaucesEntity"
         }
     ],
-    "$Generator": "1705506f3cafd49af5e2445f43809f3b"
+    "$Generator": "997968816a77a8794fcc07f51fc1e345"
 }

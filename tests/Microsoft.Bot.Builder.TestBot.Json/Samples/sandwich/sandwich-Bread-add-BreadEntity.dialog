@@ -13,7 +13,17 @@
             "$kind": "Microsoft.SetProperty",
             "property": "$Bread",
             "value": "=@BreadEntity"
+        },
+        {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "PropertyToChange == 'Bread'",
+            "actions": [
+                {
+                    "$kind": "Microsoft.DeleteProperty",
+                    "property": "PropertyToChange"
+                }
+            ]
         }
     ],
-    "$Generator": "ee38cefd2fa3cfee96f24dd28bc638bd"
+    "$Generator": "fdf229dac9c238ae557bd03b26fa400c"
 }
