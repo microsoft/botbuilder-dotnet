@@ -156,20 +156,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 string aLine;
                 var lineNumber = -1;
-                while (true)
+                while ((aLine = strReader.ReadLine()) != null)
                 {
-                    aLine = strReader.ReadLine();
                     lineNumber++;
-                    if (aLine != null)
+                    if (lineNumber >= startLine && lineNumber <= stopLine)
                     {
-                        if (lineNumber >= startLine && lineNumber <= stopLine)
-                        {
-                            destList.Add(aLine);
-                        }
-                    }
-                    else
-                    {
-                        break;
+                        destList.Add(aLine);
                     }
                 }
             }

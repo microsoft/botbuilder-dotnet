@@ -335,31 +335,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 string aLine;
                 var lineNumber = -1;
                 var replaced = false;
-                while (true)
+                while ((aLine = strReader.ReadLine()) != null)
                 {
-                    aLine = strReader.ReadLine();
                     lineNumber++;
-                    if (aLine != null)
+                    if (lineNumber < startLine || lineNumber > stopLine)
                     {
-                        if (lineNumber < startLine || lineNumber > stopLine)
-                        {
-                            destList.Add(aLine);
-                        }
-                        else
-                        {
-                            if (!replaced)
-                            {
-                                replaced = true;
-                                if (!string.IsNullOrEmpty(replaceString))
-                                {
-                                    destList.Add(replaceString);
-                                }
-                            }
-                        }
+                        destList.Add(aLine);
                     }
                     else
                     {
-                        break;
+                        if (!replaced)
+                        {
+                            replaced = true;
+                            if (!string.IsNullOrEmpty(replaceString))
+                            {
+                                destList.Add(replaceString);
+                            }
+                        }
                     }
                 }
             }
@@ -374,23 +366,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             using (var strReader = new StringReader(templateBody))
             {
                 string aLine;
-                while (true)
+                while ((aLine = strReader.ReadLine()) != null)
                 {
-                    aLine = strReader.ReadLine();
-                    if (aLine != null)
+                    var newTemplateBodyLine = aLine;
+                    if (aLine.TrimStart().StartsWith("#"))
                     {
-                        var newTemplateBodyLine = aLine;
-                        if (aLine.TrimStart().StartsWith("#"))
-                        {
-                            newTemplateBodyLine = $"- {aLine.TrimStart()}";
-                        }
+                        newTemplateBodyLine = $"- {aLine.TrimStart()}";
+                    }
 
-                        destList.Add(newTemplateBodyLine);
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    destList.Add(newTemplateBodyLine);
                 }
             }
 
