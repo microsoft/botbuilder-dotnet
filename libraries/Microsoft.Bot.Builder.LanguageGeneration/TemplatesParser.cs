@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var fullPath = Path.GetFullPath(filePath.NormalizePath());
             var content = File.ReadAllText(fullPath);
 
-            return ParseText(content, fullPath, importResolver, expressionParser);
+            return InnerParseText(content, fullPath, importResolver, expressionParser);
         }
 
         /// <summary>
@@ -117,19 +117,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">expressionEngine parser engine for parsing expressions.</param>
-        /// <param name="initTemplates">give the file path and templates to avoid parsing and to improve performance.</param>
+        /// <param name="cachedTemplates">give the file path and templates to avoid parsing and to improve performance.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
         private static Templates InnerParseText(
             string content,
             string id = "",
             ImportResolverDelegate importResolver = null,
             ExpressionParser expressionParser = null,
-            Dictionary<string, Templates> initTemplates = null)
+            Dictionary<string, Templates> cachedTemplates = null)
         {
-            initTemplates = initTemplates ?? new Dictionary<string, Templates>();
-            if (initTemplates.ContainsKey(id))
+            cachedTemplates = cachedTemplates ?? new Dictionary<string, Templates>();
+            if (cachedTemplates.ContainsKey(id))
             {
-                return initTemplates[id];
+                return cachedTemplates[id];
             }
 
             importResolver = importResolver ?? DefaultFileResolver;
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 lg.Options = options;
                 diagnostics.AddRange(invalidTemplateErrors);
 
-                lg.References = GetReferences(lg, initTemplates);
+                lg.References = GetReferences(lg, cachedTemplates);
                 var semanticErrors = new StaticChecker(lg).Check();
                 diagnostics.AddRange(semanticErrors);
             }
@@ -305,16 +305,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    .ToList();
         }
 
-        private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> initTemplates = null)
+        private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null)
         {
             var resourcesFound = new HashSet<Templates>();
-            ResolveImportResources(file, resourcesFound, initTemplates ?? new Dictionary<string, Templates>());
+            ResolveImportResources(file, resourcesFound, cachedTemplates ?? new Dictionary<string, Templates>());
 
             resourcesFound.Remove(file);
             return resourcesFound.ToList();
         }
 
-        private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, Dictionary<string, Templates> initTemplates)
+        private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, Dictionary<string, Templates> cachedTemplates)
         {
             var resourceIds = start.Imports.Select(lg => lg.Id);
             resourcesFound.Add(start);
@@ -327,17 +327,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     if (resourcesFound.All(u => u.Id != path))
                     {
                         Templates childResource;
-                        if (initTemplates.ContainsKey(path))
+                        if (cachedTemplates.ContainsKey(path))
                         {
-                            childResource = initTemplates[path];
+                            childResource = cachedTemplates[path];
                         }
                         else
                         {
-                            childResource = InnerParseText(content, path, start.ImportResolver, start.ExpressionParser, initTemplates);
-                            initTemplates.Add(path, childResource);
+                            childResource = InnerParseText(content, path, start.ImportResolver, start.ExpressionParser, cachedTemplates);
+                            cachedTemplates.Add(path, childResource);
                         }
 
-                        ResolveImportResources(childResource, resourcesFound, initTemplates);
+                        ResolveImportResources(childResource, resourcesFound, cachedTemplates);
                     }
                 }
                 catch (TemplateException err)
