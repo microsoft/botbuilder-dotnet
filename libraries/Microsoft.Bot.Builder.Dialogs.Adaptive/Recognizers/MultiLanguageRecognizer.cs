@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// Policy for languages fallback. 
         /// </value>
         [JsonProperty("languagePolicy")]
-        public LanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
+        public LanguagePolicy LanguagePolicy { get; set; } = LanguagePolicy.DefaultPolicy;
 
         /// <summary>
         /// Gets or sets map of languages -> IRecognizer.

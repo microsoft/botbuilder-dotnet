@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             var resourceMapping = new Dictionary<string, IList<IResource>>();
             var allResources = resourceExplorer.GetResources("lg");
-            var languagePolicy = new LanguagePolicy();
+            var languagePolicy = LanguagePolicy.DefaultPolicy;
             foreach (var item in languagePolicy)
             {
                 var locale = item.Key;
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return locale;
             }
 
-            var languagePolicy = new LanguagePolicy();
+            var languagePolicy = LanguagePolicy.DefaultPolicy;
 
             if (languagePolicy.ContainsKey(locale))
             {
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>the most closest common ancestor local.</returns>
         private static string FindCommonAncestorLocale(string locale1, string locale2)
         {
-            var policy = new LanguagePolicy();
+            var policy = LanguagePolicy.DefaultPolicy;
             if (!policy.ContainsKey(locale1) || !policy.ContainsKey(locale2))
             {
                 return string.Empty;

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -20,7 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
         }
 
-        public LanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
+        [JsonProperty("languagePolicy")]
+        public LanguagePolicy LanguagePolicy { get; set; } = LanguagePolicy.DefaultPolicy;
 
         /// <summary>
         /// Abstract method to get an ILanguageGenerator by locale.
