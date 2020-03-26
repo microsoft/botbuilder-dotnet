@@ -332,7 +332,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             })
             .Send("hello")
                 .AssertReply("root")
-                .AssertReply("overriden")
+                .AssertReply("overriden in fr") // because the policy inherit from root dialog
             .StartTestAsync();
         }
 

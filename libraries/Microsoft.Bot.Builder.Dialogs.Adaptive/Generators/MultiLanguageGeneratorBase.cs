@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         }
 
         [JsonProperty("languagePolicy")]
-        public LanguagePolicy LanguagePolicy { get; set; } = LanguagePolicy.DefaultPolicy;
+        public LanguagePolicy LanguagePolicy { get; set; }
 
         /// <summary>
         /// Abstract method to get an ILanguageGenerator by locale.
@@ -45,10 +45,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             // see if we have any locales that match
             var targetLocale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
 
+            // priority 
+            // 1. local policy
+            // 2. shared policy in turnContext
+            // 3. default policy
+            var langagePolicy = this.LanguagePolicy ?? 
+                                turnContext.TurnState.Get<LanguagePolicy>() ?? 
+                                LanguagePolicy.DefaultPolicy;
+
             var locales = new string[] { string.Empty };
-            if (!this.LanguagePolicy.TryGetValue(targetLocale, out locales))
+            if (!langagePolicy.TryGetValue(targetLocale, out locales))
             {
-                if (!this.LanguagePolicy.TryGetValue(string.Empty, out locales))
+                if (!langagePolicy.TryGetValue(string.Empty, out locales))
                 {
                     throw new Exception($"No supported language found for {targetLocale}");
                 }

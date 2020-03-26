@@ -4,6 +4,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -84,6 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     this.rootDialogId = value.Id;
                     this.Dialogs.TelemetryClient = value.TelemetryClient;
                     this.Dialogs.Add(value);
+                    this.RegisterDefaultLanguagePolicy(value);
                 }
                 else
                 {
@@ -236,6 +239,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             await dc.Context.SendActivityAsync(traceActivity).ConfigureAwait(false);
 
             return new DialogManagerResult() { TurnResult = turnResult };
+        }
+
+        public void RegisterDefaultLanguagePolicy(Dialog dialog)
+        {
+            if (dialog is AdaptiveDialog adialog && adialog.Generator != null)
+            {
+                if (adialog.Generator is ResourceMultiLanguageGenerator rGenerator)
+                {
+                    TurnState.Set<LanguagePolicy>(rGenerator.LanguagePolicy);
+                }
+            }
         }
     }
 }
