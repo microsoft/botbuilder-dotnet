@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             yield return new ChoiceSetConverter();
             yield return new ActivityTemplateConverter();
-            yield return new JObjectConverter(resourceExplorer);
+            yield return new JObjectConverter(resourceExplorer, context);
         }
 
         public virtual IEnumerable<MemoryScope> GetMemoryScopes()

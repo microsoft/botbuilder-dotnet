@@ -355,8 +355,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// Resolves a ref to the actual object.
         /// </summary>
         /// <param name="refToken">reference.</param>
+        /// <param name="context">source range context stack to build debugger source map.</param>
         /// <returns>resolved object the reference refers to.</returns>
-        public async Task<JToken> ResolveRefAsync(JToken refToken)
+        public async Task<JToken> ResolveRefAsync(JToken refToken, Stack<SourceRange> context)
         {
             var refTarget = GetRefTarget(refToken);
 
@@ -371,8 +372,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 throw new FileNotFoundException($"Failed to find resource named {refTarget}.dialog");
             }
 
-            string text = await resource.ReadTextAsync().ConfigureAwait(false);
-            var json = JToken.Parse(text);
+            var (json, range) = await resource.ReadTokenRangeAsync(context);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
             {
@@ -400,11 +400,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
-            // if we have a source path for the resource, then make it available to InterfaceConverter
-            if (resource is FileResource fileResource)
-            {
-                DebugSupport.SourceMap.Add(json, new SourceRange() { Path = fileResource.FullName });
-            }
+            // if we have a source range for the resource, then make it available to InterfaceConverter
+            DebugSupport.SourceMap.Add(json, range);
 
             return json;
         }

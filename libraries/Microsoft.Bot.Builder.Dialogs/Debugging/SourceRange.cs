@@ -79,8 +79,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             {
                 Path = Path,
                 Designer = Designer?.DeepClone(),
-                StartPoint = StartPoint?.DeepClone(),
-                EndPoint = EndPoint?.DeepClone(),
+                StartPoint = StartPoint.DeepClone(),
+                EndPoint = EndPoint.DeepClone(),
             };
     }
 }

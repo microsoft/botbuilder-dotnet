@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 if (this.resourceExplorer.IsRef(jsonObject))
                 {
                     // We can't do this asynchronously as the Json.NET interface is synchronous
-                    jsonObject = this.resourceExplorer.ResolveRefAsync(jsonObject).GetAwaiter().GetResult();
+                    jsonObject = this.resourceExplorer.ResolveRefAsync(jsonObject, context).GetAwaiter().GetResult();
                 }
 
                 var kind = (string)jsonObject["$kind"] ?? (string)jsonObject["$type"];
