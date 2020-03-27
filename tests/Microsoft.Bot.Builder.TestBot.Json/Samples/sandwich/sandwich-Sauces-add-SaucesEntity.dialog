@@ -7,14 +7,24 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${setPropertyMessage('Sauces', @SaucesEntity)}"
+            "activity": "${setArrayPropertyMessage('Sauces', @SaucesEntity)}"
         },
         {
             "$kind": "Microsoft.EditArray",
             "changeType": "push",
             "itemsProperty": "$Sauces",
             "value": "=@SaucesEntity"
+        },
+        {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "$PropertyToChange == 'Sauces'",
+            "actions": [
+                {
+                    "$kind": "Microsoft.DeleteProperty",
+                    "property": "$PropertyToChange"
+                }
+            ]
         }
     ],
-    "$Generator": "d0fe5720934261f307de55d5f7384e1c"
+    "$Generator": "1b64d0b326a079569b5062d2a472b044"
 }

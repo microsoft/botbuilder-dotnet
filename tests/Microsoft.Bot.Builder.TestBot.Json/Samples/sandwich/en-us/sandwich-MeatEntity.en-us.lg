@@ -19,7 +19,7 @@
   - CASE: ${'none'} 
     - none
   - DEFAULT: 
-    - I don't understand ${value}
+    - No value
 
  
 # chooseMeatEntity
@@ -29,4 +29,4 @@
 [sandwich-library.en-us.lg](sandwich-library.en-us.lg)
 [sandwich-library-Choose.en-us.lg](sandwich-library-Choose.en-us.lg)
 
-> Generator: 4c5ce5f51f9cd7dc723c44b98a05dd24
+> Generator: 2d2af17dd1ce2932f48e657767070a68

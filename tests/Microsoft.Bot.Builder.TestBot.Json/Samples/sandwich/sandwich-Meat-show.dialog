@@ -1,17 +1,14 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnAssignEntity",
-    "operation": "ClearProperty",
-    "property": "Meat",
+    "operation": "ShowProperty",
+    "entity": "PROPERTYName",
+    "condition": "@PROPERTYName == 'Meat'",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${clearPropertyMessage('Meat')}"
-        },
-        {
-            "$kind": "Microsoft.DeleteProperty",
-            "property": "$Meat"
+            "activity": "${showPropertyMessage(@PROPERTYName)}"
         }
     ],
-    "$Generator": "ebe4aa04d2960993223c47b8b33bd8b1"
+    "$Generator": "1cd99f7e9bfbb90d305ef883eed4c1e3"
 }

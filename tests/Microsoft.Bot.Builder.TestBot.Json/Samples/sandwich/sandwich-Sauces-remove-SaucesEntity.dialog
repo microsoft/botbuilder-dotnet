@@ -7,14 +7,14 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${removePropertyMessage('Sauces', @SaucesEntity)}"
+            "activity": "${removeArrayPropertyMessage('Sauces', @SaucesEntity)}"
         },
         {
             "$kind": "Microsoft.EditArray",
             "changeType": "remove",
-            "itemsProperty": "=$Sauces",
+            "itemsProperty": "$Sauces",
             "value": "=@SaucesEntity"
         }
     ],
-    "$Generator": "997968816a77a8794fcc07f51fc1e345"
+    "$Generator": "a827f3b1c39c8512e92bfc32c8d7061f"
 }

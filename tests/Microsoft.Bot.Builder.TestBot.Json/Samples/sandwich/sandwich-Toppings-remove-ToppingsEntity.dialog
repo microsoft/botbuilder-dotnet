@@ -7,14 +7,14 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${removePropertyMessage('Toppings', @ToppingsEntity)}"
+            "activity": "${removeArrayPropertyMessage('Toppings', @ToppingsEntity)}"
         },
         {
             "$kind": "Microsoft.EditArray",
             "changeType": "remove",
-            "itemsProperty": "=$Toppings",
+            "itemsProperty": "$Toppings",
             "value": "=@ToppingsEntity"
         }
     ],
-    "$Generator": "91b70996eb921d3149d4dde4ecb74c06"
+    "$Generator": "552bdc7d87c662be1a7afc284bab197c"
 }

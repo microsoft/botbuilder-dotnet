@@ -7,14 +7,24 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${setPropertyMessage('Toppings', @ToppingsEntity)}"
+            "activity": "${setArrayPropertyMessage('Toppings', @ToppingsEntity)}"
         },
         {
             "$kind": "Microsoft.EditArray",
             "changeType": "push",
             "itemsProperty": "$Toppings",
             "value": "=@ToppingsEntity"
+        },
+        {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "$PropertyToChange == 'Toppings'",
+            "actions": [
+                {
+                    "$kind": "Microsoft.DeleteProperty",
+                    "property": "$PropertyToChange"
+                }
+            ]
         }
     ],
-    "$Generator": "2654e964c469d574cab7817e4ea39668"
+    "$Generator": "20e06be59d0c2e6b3936740f6ecc2701"
 }

@@ -16,14 +16,14 @@
         },
         {
             "$kind": "Microsoft.IfCondition",
-            "condition": "PropertyToChange == 'Name'",
+            "condition": "$PropertyToChange == 'Name'",
             "actions": [
                 {
                     "$kind": "Microsoft.DeleteProperty",
-                    "property": "PropertyToChange"
+                    "property": "$PropertyToChange"
                 }
             ]
         }
     ],
-    "$Generator": "582318344e573a3f6a3847f62a040dec"
+    "$Generator": "ac4f86877e5153a8a21e157f13b5a1ef"
 }
