@@ -6,6 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using AdaptiveExpressions.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -677,10 +678,10 @@ namespace AdaptiveExpressions.Tests
             Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.Now.AddMonths(1).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(7).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.Now.AddDays(1).ToString("MM-dd-yy")),
-            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D')", "Monday, January 1, 2018"),
-            Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D')", "Monday, January 1, 2018"),
+            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D')", "Monday, 01 January 2018"),
+            Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D')", "Monday, 01 January 2018"),
             Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time')", "2018-01-01T08:00:00.000Z"),
-            Test("addToTime('2018-01-01T08:00:00.000Z', 1, 'Day', 'D')", "Tuesday, January 2, 2018"),
+            Test("addToTime('2018-01-01T08:00:00.000Z', 1, 'Day', 'D')", "Tuesday, 02 January 2018"),
             Test("addToTime('2018-01-01T00:00:00.000Z', 1, 'Week')", "2018-01-08T00:00:00.000Z"),
             Test("startOfDay('2018-03-15T13:30:30.000Z')", "2018-03-15T00:00:00.000Z"),
             Test("startOfHour('2018-03-15T13:30:30.000Z')", "2018-03-15T13:00:00.000Z"),
@@ -975,8 +976,8 @@ namespace AdaptiveExpressions.Tests
             AssertResult<ushort>(ushort.MaxValue.ToString(), ushort.MaxValue);
             AssertResult<uint>(uint.MaxValue.ToString(), uint.MaxValue);
             AssertResult<ulong>(uint.MaxValue.ToString(), uint.MaxValue);
-            AssertResult<float>(15.32322F.ToString(), 15.32322F);
-            AssertResult<double>(15.32322.ToString(), 15.32322);
+            AssertResult<float>(15.32322F.ToString(CultureInfo.InvariantCulture), 15.32322F);
+            AssertResult<double>(15.32322.ToString(CultureInfo.InvariantCulture), 15.32322);
         }
 
         private void AssertResult<T>(string text, T expected)

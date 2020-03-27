@@ -1793,7 +1793,7 @@ namespace AdaptiveExpressions
             string error = null;
             try
             {
-                result = datetime.ToString(format);
+                result = datetime.ToString(format, CultureInfo.InvariantCulture.DateTimeFormat);
             }
             catch
             {
@@ -3325,7 +3325,7 @@ namespace AdaptiveExpressions
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Date,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Date.ToString("M/dd/yyyy")), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture)), VerifyString),
                     ReturnType.String,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
@@ -3347,14 +3347,21 @@ namespace AdaptiveExpressions
                             object timestamp = args[0];
                             if (Extensions.IsNumber(timestamp))
                             {
-                                if (double.TryParse(args[0].ToString(), out double unixTimestamp))
+                                if (double.TryParse(args[0].ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out double unixTimestamp))
                                 {
                                     var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
                                     timestamp = dateTime.AddSeconds(unixTimestamp);
                                 }
                             }
 
-                            (result, error) = ParseTimestamp((string)timestamp.ToString(), dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat));
+                            if (timestamp is string tsString)
+                            {
+                                (result, error) = ParseTimestamp(tsString, dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture));
+                            }
+                            else
+                            {
+                                (result, error) = ParseTimestamp((string)((DateTime)timestamp).ToString(CultureInfo.InvariantCulture), dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture));
+                            }
 
                             return (result, error);
                         }),
@@ -3839,7 +3846,7 @@ namespace AdaptiveExpressions
                     ValidateUnary),
 
                 // Conversions
-                new ExpressionEvaluator(ExpressionType.Float, Apply(args => Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Float, Apply(args => Convert.ToDouble(args[0], CultureInfo.InvariantCulture)), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
