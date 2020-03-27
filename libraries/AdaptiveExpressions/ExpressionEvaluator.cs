@@ -22,7 +22,7 @@ namespace AdaptiveExpressions
     /// </remarks>
     /// <param name="expression">Expression to evaluate.</param>
     /// <param name="state">Global state information.</param>
-    /// <param name="options">Options for the evalution.</param>
+    /// <param name="options">Options for the evaluation.</param>
     /// <returns>Value and error string that is non-null if there is an error.</returns>
     public delegate (object value, string error) EvaluateExpressionDelegate(Expression expression, IMemory state, Options options);
 
