@@ -423,6 +423,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             {
                 if (!this.loaded)
                 {
+                    // this can be reentrant, and we only want to do once.
+                    this.loaded = true;
+
                     foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentDeclarativeTypes>())
                     {
                         if (component != null)
@@ -434,8 +437,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                             }
                         }
                     }
-
-                    this.loaded = true;
                 }
             }
         }
