@@ -1,17 +1,14 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnAssignEntity",
-    "operation": "ClearProperty",
-    "property": "Price",
+    "operation": "ShowProperty",
+    "entity": "PROPERTYName",
+    "condition": "@PROPERTYName == 'Price'",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${clearPropertyMessage('Price')}"
-        },
-        {
-            "$kind": "Microsoft.DeleteProperty",
-            "property": "$Price"
+            "activity": "${showPropertyMessage(@PROPERTYName)}"
         }
     ],
-    "$Generator": "5b4f2ffc1b81f164a139c4ab4408dc90"
+    "$Generator": "c5d075e3cc5861dea9bb99abaeab52ff"
 }

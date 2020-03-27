@@ -162,7 +162,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var array = dc.State.GetValue<JArray>(this.ItemsProperty.GetValue(dc.State), () => new JArray());
+            var property = this.ItemsProperty.GetValue(dc.State);
+            var array = dc.State.GetValue<JArray>(property, () => new JArray());
 
             object item = null;
             object result = null;
@@ -217,7 +218,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
             }
 
-            dc.State.SetValue(this.ItemsProperty.GetValue(dc.State), array);
+            dc.State.SetValue(property, array);
 
             if (ResultProperty != null)
             {

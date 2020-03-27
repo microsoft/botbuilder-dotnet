@@ -2,7 +2,8 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "operation": "ClearProperty",
-    "property": "Length",
+    "entity": "PROPERTYName",
+    "condition": "@PROPERTYName == 'Length'",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
@@ -13,5 +14,5 @@
             "property": "$Length"
         }
     ],
-    "$Generator": "5883759abab653377868fb6ff9384a6e"
+    "$Generator": "8f10bb6792bd222c213f7be315099517"
 }

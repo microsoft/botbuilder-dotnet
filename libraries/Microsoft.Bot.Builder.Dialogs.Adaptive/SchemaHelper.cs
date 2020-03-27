@@ -33,28 +33,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public PropertySchema PathToSchema(string path)
         {
             var property = Property;
-            var steps = path.Split('.', '[');
-            var step = 0;
-            while (property != null && step < steps.Length)
+            if (path != null)
             {
-                var found = false;
-                foreach (var child in property.Children)
+                var steps = path.Split('.', '[');
+                var step = 0;
+                while (property != null && step < steps.Length)
                 {
-                    if (child.Name == steps[step])
+                    var found = false;
+                    foreach (var child in property.Children)
                     {
-                        property = child;
-                        while (++step < steps.Length && (steps[step] == "." || steps[step] == "[]"))
+                        if (child.Name == steps[step])
                         {
+                            property = child;
+                            while (++step < steps.Length && (steps[step] == "." || steps[step] == "[]"))
+                            {
+                            }
+
+                            found = true;
+                            break;
                         }
-
-                        found = true;
-                        break;
                     }
-                }
 
-                if (!found)
-                {
-                    property = null;
+                    if (!found)
+                    {
+                        property = null;
+                    }
                 }
             }
 

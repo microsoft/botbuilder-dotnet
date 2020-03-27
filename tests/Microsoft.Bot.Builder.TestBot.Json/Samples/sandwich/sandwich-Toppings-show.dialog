@@ -1,17 +1,14 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnAssignEntity",
-    "operation": "ClearProperty",
-    "property": "Toppings",
+    "operation": "ShowProperty",
+    "entity": "PROPERTYName",
+    "condition": "@PROPERTYName == 'Toppings'",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${clearPropertyMessage('Toppings')}"
-        },
-        {
-            "$kind": "Microsoft.DeleteProperty",
-            "property": "$Toppings"
+            "activity": "${showPropertyMessage(@PROPERTYName)}"
         }
     ],
-    "$Generator": "a5827046b6b044af4641300e45943fd2"
+    "$Generator": "9a0c62559399936abdd48c849b8280e4"
 }

@@ -1,17 +1,14 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnAssignEntity",
-    "operation": "ClearProperty",
-    "property": "Length",
+    "operation": "ShowProperty",
+    "entity": "PROPERTYName",
+    "condition": "@PROPERTYName == 'Length'",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${clearPropertyMessage('Length')}"
-        },
-        {
-            "$kind": "Microsoft.DeleteProperty",
-            "property": "$Length"
+            "activity": "${showPropertyMessage(@PROPERTYName)}"
         }
     ],
-    "$Generator": "5883759abab653377868fb6ff9384a6e"
+    "$Generator": "375170199c8a63f9f7aca4650407c19d"
 }

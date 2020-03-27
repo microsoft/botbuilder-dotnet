@@ -2,7 +2,8 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "operation": "ClearProperty",
-    "property": "Sauces",
+    "entity": "PROPERTYName",
+    "condition": "@PROPERTYName == 'Sauces'",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
@@ -13,5 +14,5 @@
             "property": "$Sauces"
         }
     ],
-    "$Generator": "d7cab71d1073d4b6b7596dad61e3ed69"
+    "$Generator": "48a67beafc3b670a727af3f637a5d59d"
 }

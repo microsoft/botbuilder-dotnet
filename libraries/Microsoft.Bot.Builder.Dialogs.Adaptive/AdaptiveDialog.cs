@@ -1058,6 +1058,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private IEnumerable<EntityAssignment> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
             var globalExpectedOnly = dialogSchema.Schema["$expectedOnly"]?.ToObject<List<string>>() ?? new List<string>();
+            var used = new HashSet<string> { "utterance" };
             foreach (var propSchema in dialogSchema.Property.Children)
             {
                 var isExpected = expected.Contains(propSchema.Name);
@@ -1066,6 +1067,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     if (entities.TryGetValue(entityName, out var matches) && (isExpected || !expectedOnly.Contains(entityName)))
                     {
+                        used.Add(entityName);
                         foreach (var entity in matches)
                         {
                             yield return new EntityAssignment
@@ -1076,6 +1078,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 IsExpected = isExpected
                             };
                         }
+                    }
+                }
+            }
+
+            // Unassigned entities
+            var entityPreferences = EntityPreferences(null);
+            foreach (var entry in entities)
+            {
+                if (!used.Contains(entry.Key) && entityPreferences.Contains(entry.Key))
+                {
+                    foreach (var entity in entry.Value)
+                    {
+                        yield return new EntityAssignment
+                        {
+                            Entity = entity,
+                            Operation = entity.Operation
+                        };
                     }
                 }
             }
@@ -1125,6 +1144,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        private IReadOnlyList<string> EntityPreferences(string property)
+        {
+            IReadOnlyList<string> result;
+            if (property == null)
+            {
+                if (dialogSchema.Schema.ContainsKey("$entities"))
+                {
+                    result = dialogSchema.Schema["$entities"].ToObject<List<string>>();
+                }
+                else
+                {
+                    result = new List<string> { "PROPERTYName" };
+                }
+            }
+            else
+            {
+                result = dialogSchema.PathToSchema(property).Entities;
+            }
+
+            return result;
+        }
+
         // Have each property pick which overlapping entity is the best one
         private IEnumerable<EntityAssignment> RemoveOverlappingPerProperty(IEnumerable<EntityAssignment> candidates)
         {
@@ -1132,12 +1173,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                               group candidate by candidate.Property;
             foreach (var propChoices in perProperty)
             {
-                var schema = dialogSchema.PathToSchema(propChoices.Key);
+                var entityPreferences = EntityPreferences(propChoices.Key);
                 var choices = propChoices.ToList();
 
                 // Assume preference by order listed in mappings
                 // Alternatives would be to look at coverage or other metrics
-                foreach (var entity in schema.Entities)
+                foreach (var entity in entityPreferences)
                 {
                     EntityAssignment candidate;
                     do

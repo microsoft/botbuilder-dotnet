@@ -16,14 +16,14 @@
         },
         {
             "$kind": "Microsoft.IfCondition",
-            "condition": "PropertyToChange == 'Bread'",
+            "condition": "$PropertyToChange == 'Bread'",
             "actions": [
                 {
                     "$kind": "Microsoft.DeleteProperty",
-                    "property": "PropertyToChange"
+                    "property": "$PropertyToChange"
                 }
             ]
         }
     ],
-    "$Generator": "fdf229dac9c238ae557bd03b26fa400c"
+    "$Generator": "93b095d4e7706cbeecf8cbacaa5895af"
 }
