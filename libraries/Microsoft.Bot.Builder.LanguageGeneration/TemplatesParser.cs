@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var fullPath = Path.GetFullPath(filePath.NormalizePath());
             var content = File.ReadAllText(fullPath);
 
-            return ParseText(content, fullPath, importResolver, expressionParser);
+            return InnerParseText(content, fullPath, importResolver, expressionParser);
         }
 
         /// <summary>
@@ -61,34 +61,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ImportResolverDelegate importResolver = null,
             ExpressionParser expressionParser = null)
         {
-            importResolver = importResolver ?? DefaultFileResolver;
-            var lg = new Templates(content: content, id: id, importResolver: importResolver, expressionParser: expressionParser);
-
-            var diagnostics = new List<Diagnostic>();
-            try
-            {
-                var (templates, imports, invalidTemplateErrors, options) = AntlrParse(content, id);
-                lg.AddRange(templates);
-                lg.Imports = imports;
-                lg.Options = options;
-                diagnostics.AddRange(invalidTemplateErrors);
-
-                lg.References = GetReferences(lg, importResolver);
-                var semanticErrors = new StaticChecker(lg).Check();
-                diagnostics.AddRange(semanticErrors);
-            }
-            catch (TemplateException ex)
-            {
-                diagnostics.AddRange(ex.Diagnostics);
-            }
-            catch (Exception err)
-            {
-                diagnostics.Add(BuildDiagnostic(err.Message, source: id));
-            }
-
-            lg.Diagnostics = diagnostics;
-
-            return lg;
+            return InnerParseText(content, id, importResolver, expressionParser);
         }
 
         /// <summary>
@@ -115,7 +88,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 newLG.Options = options;
                 diagnostics.AddRange(invalidTemplateErrors);
 
-                newLG.References = GetReferences(newLG, newLG.ImportResolver)
+                newLG.References = GetReferences(newLG)
                         .Union(lg.References)
                         .Union(new List<Templates> { lg })
                         .ToList();
@@ -135,6 +108,58 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             newLG.Diagnostics = diagnostics;
 
             return newLG;
+        }
+
+        /// <summary>
+        /// Parser to turn lg content into a <see cref="Templates"/>.
+        /// </summary>
+        /// <param name="content">Text content contains lg templates.</param>
+        /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">expressionEngine parser engine for parsing expressions.</param>
+        /// <param name="cachedTemplates">give the file path and templates to avoid parsing and to improve performance.</param>
+        /// <returns>new <see cref="Templates"/> entity.</returns>
+        private static Templates InnerParseText(
+            string content,
+            string id = "",
+            ImportResolverDelegate importResolver = null,
+            ExpressionParser expressionParser = null,
+            Dictionary<string, Templates> cachedTemplates = null)
+        {
+            cachedTemplates = cachedTemplates ?? new Dictionary<string, Templates>();
+            if (cachedTemplates.ContainsKey(id))
+            {
+                return cachedTemplates[id];
+            }
+
+            importResolver = importResolver ?? DefaultFileResolver;
+            var lg = new Templates(content: content, id: id, importResolver: importResolver, expressionParser: expressionParser);
+
+            var diagnostics = new List<Diagnostic>();
+            try
+            {
+                var (templates, imports, invalidTemplateErrors, options) = AntlrParse(content, id);
+                lg.AddRange(templates);
+                lg.Imports = imports;
+                lg.Options = options;
+                diagnostics.AddRange(invalidTemplateErrors);
+
+                lg.References = GetReferences(lg, cachedTemplates);
+                var semanticErrors = new StaticChecker(lg).Check();
+                diagnostics.AddRange(semanticErrors);
+            }
+            catch (TemplateException ex)
+            {
+                diagnostics.AddRange(ex.Diagnostics);
+            }
+            catch (Exception err)
+            {
+                diagnostics.Add(BuildDiagnostic(err.Message, source: id));
+            }
+
+            lg.Diagnostics = diagnostics;
+
+            return lg;
         }
 
         /// <summary>
@@ -280,16 +305,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    .ToList();
         }
 
-        private static IList<Templates> GetReferences(Templates file, ImportResolverDelegate importResolver)
+        private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null)
         {
             var resourcesFound = new HashSet<Templates>();
-            ResolveImportResources(file, resourcesFound, importResolver);
+            ResolveImportResources(file, resourcesFound, cachedTemplates ?? new Dictionary<string, Templates>());
 
             resourcesFound.Remove(file);
             return resourcesFound.ToList();
         }
 
-        private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, ImportResolverDelegate importResolver)
+        private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, Dictionary<string, Templates> cachedTemplates)
         {
             var resourceIds = start.Imports.Select(lg => lg.Id);
             resourcesFound.Add(start);
@@ -298,11 +323,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 try
                 {
-                    var (content, path) = importResolver(start.Id, id);
+                    var (content, path) = start.ImportResolver(start.Id, id);
                     if (resourcesFound.All(u => u.Id != path))
                     {
-                        var childResource = ParseText(content, path, importResolver, start.ExpressionParser);
-                        ResolveImportResources(childResource, resourcesFound, importResolver);
+                        Templates childResource;
+                        if (cachedTemplates.ContainsKey(path))
+                        {
+                            childResource = cachedTemplates[path];
+                        }
+                        else
+                        {
+                            childResource = InnerParseText(content, path, start.ImportResolver, start.ExpressionParser, cachedTemplates);
+                            cachedTemplates.Add(path, childResource);
+                        }
+
+                        ResolveImportResources(childResource, resourcesFound, cachedTemplates);
                     }
                 }
                 catch (TemplateException err)
