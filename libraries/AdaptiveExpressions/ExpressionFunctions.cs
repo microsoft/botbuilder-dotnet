@@ -1081,7 +1081,7 @@ namespace AdaptiveExpressions
             if (left == null)
             {
                 // fully converted to path, so we just delegate to memory scope
-                return WrapGetValue(state, path);
+                return WrapGetValue(state, path, options);
             }
             else
             {
@@ -1092,7 +1092,7 @@ namespace AdaptiveExpressions
                     return (null, err);
                 }
 
-                return WrapGetValue(MemoryFactory.Create(newScope), path);
+                return WrapGetValue(MemoryFactory.Create(newScope), path, options);
             }
         }
 
@@ -1110,16 +1110,16 @@ namespace AdaptiveExpressions
                 (property, error) = children[1].TryEvaluate(state, options);
                 if (error == null)
                 {
-                    (value, error) = WrapGetValue(MemoryFactory.Create(instance), (string)property);
+                    (value, error) = WrapGetValue(MemoryFactory.Create(instance), (string)property, options);
                 }
             }
 
             return (value, error);
         }
 
-        private static (object value, string error) WrapGetValue(IMemory memory, string property)
+        private static (object value, string error) WrapGetValue(IMemory memory, string property, Options options)
         {
-            if (memory.TryGetValue(property, out var result))
+            if (memory.TryGetValue(property, out var result, options.AllowSubstitution))
             {
                 return (result, null);
             }
@@ -1387,7 +1387,7 @@ namespace AdaptiveExpressions
             string error = null;
             foreach (var child in expression.Children)
             {
-                (result, error) = child.TryEvaluate(state, options);
+                (result, error) = child.TryEvaluate(state, new Options { AllowSubstitution = false });
                 if (error == null)
                 {
                     if (IsLogicTrue(result))
@@ -1418,7 +1418,7 @@ namespace AdaptiveExpressions
             string error = null;
             foreach (var child in expression.Children)
             {
-                (result, error) = child.TryEvaluate(state, options);
+                (result, error) = child.TryEvaluate(state, new Options { AllowSubstitution = false });
                 if (error == null)
                 {
                     if (IsLogicTrue(result))
@@ -1441,7 +1441,7 @@ namespace AdaptiveExpressions
         {
             object result;
             string error;
-            (result, error) = expression.Children[0].TryEvaluate(state, options);
+            (result, error) = expression.Children[0].TryEvaluate(state, new Options { AllowSubstitution = false });
             if (error == null)
             {
                 result = !IsLogicTrue(result);
@@ -1459,7 +1459,7 @@ namespace AdaptiveExpressions
         {
             object result;
             string error;
-            (result, error) = expression.Children[0].TryEvaluate(state, options);
+            (result, error) = expression.Children[0].TryEvaluate(state, new Options { AllowSubstitution = false });
             if (error == null && IsLogicTrue(result))
             {
                 (result, error) = expression.Children[1].TryEvaluate(state, options);
@@ -3855,7 +3855,19 @@ namespace AdaptiveExpressions
 
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
-                Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.Bool,
+                    (expr, state, options) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, null, new Options { AllowSubstitution = false });
+                        value = IsLogicTrue(args[0]);
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ToXml(args[0])), ReturnType.String, ValidateUnary),
 
                 // Misc

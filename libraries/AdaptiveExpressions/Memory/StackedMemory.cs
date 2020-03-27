@@ -32,8 +32,9 @@ namespace AdaptiveExpressions.Memory
         /// </summary>
         /// <param name="path">Given path.</param>
         /// <param name="value">Resolved value.</param>
+        /// <param name="allowSubstitution">allow substitution at null or not.</param>
         /// <returns>True if the memory contains an element with the specified key; otherwise, false.</returns>
-        public bool TryGetValue(string path, out object value)
+        public bool TryGetValue(string path, out object value, bool allowSubstitution)
         {
             value = null;
             if (this.Count == 0)
@@ -46,7 +47,7 @@ namespace AdaptiveExpressions.Memory
             {
                 var memory = it.Current;
 
-                if (memory.TryGetValue(path, out var result) && result != null)
+                if (memory.TryGetValue(path, out var result, allowSubstitution) && result != null)
                 {
                     value = result;
                     

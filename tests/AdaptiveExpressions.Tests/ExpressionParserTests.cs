@@ -943,22 +943,22 @@ namespace AdaptiveExpressions.Tests
 
             // normal case, note, we doesn't append a " yet
             var exp = Expression.Parse("a[f].b[n].z");
-            var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
+            var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
             Assert.AreEqual(path, "a['foo'].b[2].z");
 
             // normal case
             exp = Expression.Parse("a[z.z][z.z].y");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
+            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
             Assert.AreEqual(path, "a['zar']['zar'].y");
 
             // normal case
             exp = Expression.Parse("a.b[z.z]");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
+            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
             Assert.AreEqual(path, "a.b['zar']");
 
             // stop evaluate at middle
             exp = Expression.Parse("json(x).b");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
+            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
             Assert.AreEqual(path, "b");
         }
 
@@ -977,6 +977,49 @@ namespace AdaptiveExpressions.Tests
             AssertResult<ulong>(uint.MaxValue.ToString(), uint.MaxValue);
             AssertResult<float>(15.32322F.ToString(), 15.32322F);
             AssertResult<double>(15.32322.ToString(), 15.32322);
+        }
+
+        [TestMethod]
+        public void TestEvaluationOptions()
+        {
+            var mockMemory = new SubstitutionMemory();
+            object value = null;
+            string error = null;
+
+            // normal case null value is substituted
+            var exp = Expression.Parse("foo");
+            (value, error) = exp.TryEvaluate(mockMemory);
+            AssertObjectEquals("foo is undefined", value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("if(foo, 1, 2)");
+            (value, error) = exp.TryEvaluate(mockMemory);
+            AssertObjectEquals(2, value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("foo && true");
+            (value, error) = exp.TryEvaluate(mockMemory);
+            AssertObjectEquals(false, value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("foo || true");
+            (value, error) = exp.TryEvaluate(mockMemory);
+            AssertObjectEquals(true, value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("bool(foo)");
+            (value, error) = exp.TryEvaluate(mockMemory);
+            AssertObjectEquals(false, value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("not(foo)");
+            (value, error) = exp.TryEvaluate(mockMemory);
+            AssertObjectEquals(true, value);
+
+            // concat is evaluated in boolean context also, use raw value
+            exp = Expression.Parse("if(concat(foo, 'bar'), 1, 2)");
+            (value, error) = exp.TryEvaluate(mockMemory);
+            AssertObjectEquals(1, value);
         }
 
         private void AssertResult<T>(string text, T expected)
