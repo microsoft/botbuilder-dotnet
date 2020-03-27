@@ -1,7 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -25,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes, IComponentMemoryScopes, IComponentPathResolvers
     {
-        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes()
+        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Conditionals
             yield return new DeclarativeType<OnCondition>(OnCondition.DeclarativeType);
@@ -145,6 +149,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Dialogs
             yield return new DeclarativeType<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
             yield return new DeclarativeType<AdaptiveSkillDialog>(AdaptiveSkillDialog.DeclarativeType);
+
+            // register x.schema/x.dialog as DynamicBeginDialog bound to x.dialog resource.
+            foreach (var schema in resourceExplorer.GetResources(".schema").Where(s => resourceExplorer.GetTypeForKind(Path.GetFileNameWithoutExtension(s.Id)) == null))
+            {
+                var kind = Path.GetFileNameWithoutExtension(schema.Id);
+                if (resourceExplorer.TryGetResource($"{kind}.dialog", out IResource dialogResource))
+                {
+                    yield return new DeclarativeType<DynamicBeginDialog>(kind) { CustomDeserializer = new DynamicBeginDialogSerializer(resourceExplorer, dialogResource.Id) };
+                }
+            }
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
