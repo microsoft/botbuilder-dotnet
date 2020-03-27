@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using AdaptiveExpressions;
@@ -20,6 +21,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </remarks>
     public class Templates : List<Template>
     {
+        private readonly string newLine = "\r\n";
+
         public Templates(
             IList<Template> templates = null,
             IList<TemplateImport> imports = null,
@@ -203,7 +206,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             text = !text.Trim().StartsWith(multiLineMark) && text.Contains('\n')
                    ? $"{multiLineMark}{text}{multiLineMark}" : text;
 
-            var newContent = $"# {fakeTemplateId} \r\n - {text}";
+            var newContent = $"# {fakeTemplateId} {newLine} - {text}";
 
             var newLG = TemplatesParser.ParseTextWithRef(newContent, this);
 
@@ -252,7 +255,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
                 var newTemplateBody = ConvertTemplateBody(templateBody);
-                var content = $"{templateNameLine}\r\n{newTemplateBody}\r\n";
+                var content = $"{templateNameLine}{newLine}{newTemplateBody}";
                 var (startLine, stopLine) = template.GetTemplateRange();
 
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
@@ -279,7 +282,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
-            var newContent = $"{Content.TrimEnd()}\r\n\r\n{templateNameLine}\r\n{newTemplateBody}\r\n";
+            var newContent = $"{Content}{newLine}{templateNameLine}{newLine}{newTemplateBody}";
             Initialize(ParseText(newContent, Id, ImportResolver));
 
             return this;
@@ -320,108 +323,63 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
         {
-            var originList = originString.Split('\n');
-            var destList = new List<string>();
-            if (startLine < 0 || startLine > stopLine || stopLine >= originList.Length)
+            if (startLine < 0 || startLine > stopLine)
             {
                 throw new Exception("index out of range.");
             }
 
-            destList.AddRange(TrimList(originList.Take(startLine).ToList()));
+            var destList = new List<string>();
 
-            if (stopLine < originList.Length - 1)
+            using (var strReader = new StringReader(originString))
             {
-                destList.Add("\r\n");
-                if (!string.IsNullOrEmpty(replaceString))
+                string aLine;
+                var lineNumber = -1;
+                var replaced = false;
+                while ((aLine = strReader.ReadLine()) != null)
                 {
-                    destList.Add(replaceString);
-                    destList.Add("\r\n");
-                }
-
-                destList.AddRange(TrimList(originList.Skip(stopLine + 1).ToList()));
-            }
-            else
-            {
-                // insert at the tail of the content
-                if (!string.IsNullOrEmpty(replaceString))
-                {
-                    destList.Add("\r\n");
-                    destList.Add(replaceString);
-                }
-            }
-
-            return BuildNewLGContent(TrimList(destList));
-        }
-
-        /// <summary>
-        /// trim the newlines at the beginning or at the tail of the array.
-        /// </summary>
-        /// <param name="input">input array.</param>
-        /// <returns>trimed list.</returns>
-        private IList<string> TrimList(IList<string> input)
-        {
-            if (input == null)
-            {
-                return null;
-            }
-
-            var startIndex = 0;
-            var endIndex = input.Count;
-            for (var i = 0; i < input.Count; i++)
-            {
-                if (!string.IsNullOrWhiteSpace(input[i]?.Trim()))
-                {
-                    startIndex = i;
-                    break;
+                    lineNumber++;
+                    if (lineNumber < startLine || lineNumber > stopLine)
+                    {
+                        destList.Add(aLine);
+                    }
+                    else
+                    {
+                        if (!replaced)
+                        {
+                            replaced = true;
+                            if (!string.IsNullOrEmpty(replaceString))
+                            {
+                                destList.Add(replaceString);
+                            }
+                        }
+                    }
                 }
             }
 
-            for (var i = input.Count - 1; i >= 0; i--)
-            {
-                if (!string.IsNullOrWhiteSpace(input[i]?.Trim()))
-                {
-                    endIndex = i + 1;
-                    break;
-                }
-            }
-
-            return input.Skip(startIndex).Take(endIndex - startIndex).ToList();
-        }
-
-        private string BuildNewLGContent(IList<string> destList)
-        {
-            var result = new StringBuilder();
-            for (var i = 0; i < destList.Count; i++)
-            {
-                var currentItem = destList[i];
-                result.Append(currentItem);
-                if (currentItem.EndsWith("\r"))
-                {
-                    result.Append("\n");
-                }
-                else if (i < destList.Count - 1 && !currentItem.EndsWith("\r\n"))
-                {
-                    result.Append("\r\n");
-                }
-            }
-
-            return result.ToString();
+            return string.Join(newLine, destList);
         }
 
         private string ConvertTemplateBody(string templateBody)
         {
-            if (string.IsNullOrWhiteSpace(templateBody))
+            var destList = new List<string>();
+
+            using (var strReader = new StringReader(templateBody))
             {
-                return string.Empty;
+                string aLine;
+                while ((aLine = strReader.ReadLine()) != null)
+                {
+                    var newTemplateBodyLine = aLine;
+                    if (aLine.TrimStart().StartsWith("#"))
+                    {
+                        newTemplateBodyLine = $"- {aLine.TrimStart()}";
+                    }
+
+                    destList.Add(newTemplateBodyLine);
+                }
             }
 
-            var replaceList = templateBody.Split('\n');
-
-            return string.Join("\n", replaceList.Select(u => WrapTemplateBodyString(u)));
+            return string.Join(newLine, destList);
         }
-
-        // we will warp '# abc' into '- #abc', to avoid adding additional template.
-        private string WrapTemplateBodyString(string replaceItem) => replaceItem.TrimStart().StartsWith("#") ? $"- {replaceItem.TrimStart()}" : replaceItem;
 
         private string BuildTemplateNameLine(string templateName, List<string> parameters)
         {
@@ -459,7 +417,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var errors = AllDiagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
                 if (errors.Count() != 0)
                 {
-                    throw new Exception(string.Join("\n", errors));
+                    throw new Exception(string.Join(newLine, errors));
                 }
             }
         }
