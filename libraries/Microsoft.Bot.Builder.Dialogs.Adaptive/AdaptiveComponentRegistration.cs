@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 // x.dialog.schema => resourceType=dialog resourceId=x.dialog $kind=x
                 var resourceId = Path.GetFileNameWithoutExtension(schema.Id);
-                var resourceType = Path.GetExtension(resourceId).TrimStart('.');
+                var resourceType = Path.GetExtension(resourceId).TrimStart('.').ToLowerInvariant();
                 var kind = Path.GetFileNameWithoutExtension(resourceId);
 
                 // load dynamic dialogs
