@@ -150,13 +150,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
             yield return new DeclarativeType<AdaptiveSkillDialog>(AdaptiveSkillDialog.DeclarativeType);
 
-            // register x.schema/x.dialog as DynamicBeginDialog bound to x.dialog resource.
+            // register x.dialog.schema/x.dialog as DynamicBeginDialog $kind="x" => DynamicBeginDialog(x.dialog) resource.
             foreach (var schema in resourceExplorer.GetResources(".schema").Where(s => resourceExplorer.GetTypeForKind(Path.GetFileNameWithoutExtension(s.Id)) == null))
             {
-                var kind = Path.GetFileNameWithoutExtension(schema.Id);
-                if (resourceExplorer.TryGetResource($"{kind}.dialog", out IResource dialogResource))
+                // x.dialog.schema => resourceType=dialog resourceId=x.dialog $kind=x
+                var resourceId = Path.GetFileNameWithoutExtension(schema.Id);
+                var resourceType = Path.GetExtension(resourceId).TrimStart('.');
+                var kind = Path.GetFileNameWithoutExtension(resourceId);
+
+                // load dynamic dialogs
+                switch (resourceType)
                 {
-                    yield return new DeclarativeType<DynamicBeginDialog>(kind) { CustomDeserializer = new DynamicBeginDialogSerializer(resourceExplorer, dialogResource.Id) };
+                    case "dialog":
+                        yield return new DeclarativeType<DynamicBeginDialog>(kind) { CustomDeserializer = new DynamicBeginDialogSerializer(resourceExplorer, resourceId) };
+                        break;
                 }
             }
         }

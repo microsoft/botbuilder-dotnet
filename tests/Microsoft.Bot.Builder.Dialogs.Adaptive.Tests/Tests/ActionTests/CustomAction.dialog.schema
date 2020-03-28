@@ -5,20 +5,6 @@
     "description": "My Custom Action.",
     "type": "object",
     "properties": {
-        "id": {
-            "type": "string",
-            "title": "Id",
-            "description": "Optional id for the dialog"
-        },
-        "disabled": {
-            "$role": "expression",
-            "type": "boolean",
-            "title": "Disabled",
-            "description": "Optional condition which if true will disable this action.",
-            "examples": [
-                "user.age > 3"
-            ]
-        },
         "age": {
             "$role": "expression",
             "type": "number",
