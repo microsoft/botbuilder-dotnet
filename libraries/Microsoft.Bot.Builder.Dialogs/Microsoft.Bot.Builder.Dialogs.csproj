@@ -28,24 +28,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="**/*.dialog" />
-    <Content Include="**/*.lg" />
-    <Content Include="**/*.lu" />
-    <Content Include="**/*.schema" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Templating\**" />
-    <Content Remove="Templating\**" />
-    <EmbeddedResource Remove="Templating\**" />
-    <None Remove="Templating\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Schemas\Microsoft.IRecognizer.schema" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
