@@ -396,6 +396,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             return this.TryGetValue<object>(key, out value);
         }
 
+        // A duck type method for IMemory and we are ignore allowSubstituion in this implementation
+        public bool TryGetvalue(string key, out object value, bool allowSubstitution)
+        {
+            return this.TryGetValue<object>(key, out value);
+        }
+
         public void Add(KeyValuePair<string, object> item)
         {
             throw new NotSupportedException();
