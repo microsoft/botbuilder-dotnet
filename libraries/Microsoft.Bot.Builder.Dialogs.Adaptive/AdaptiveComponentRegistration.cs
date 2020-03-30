@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 switch (resourceType)
                 {
                     case "dialog":
-                        yield return new DeclarativeType<DynamicBeginDialog>(kind) { CustomDeserializer = new DynamicBeginDialogSerializer(resourceExplorer, resourceId) };
+                        yield return new DeclarativeType<DynamicBeginDialog>(kind) { CustomDeserializer = new DynamicBeginDialogDeserializer(resourceExplorer, resourceId) };
                         break;
                 }
             }

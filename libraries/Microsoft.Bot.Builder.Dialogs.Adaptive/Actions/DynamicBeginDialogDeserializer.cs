@@ -12,12 +12,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Internal serializer for DynamicBeginDialog which binds the x.dialog resourceId to the DyanmicBeginDialog.Dialog property.
     /// </summary>
-    internal class DynamicBeginDialogSerializer : ICustomDeserializer
+    internal class DynamicBeginDialogDeserializer : ICustomDeserializer
     {
-        private ResourceExplorer resourceExplorer;
-        private string resourceId;
+        private readonly ResourceExplorer resourceExplorer;
+        private readonly string resourceId;
 
-        public DynamicBeginDialogSerializer(ResourceExplorer resourceExplorer, string resourceId)
+        public DynamicBeginDialogDeserializer(ResourceExplorer resourceExplorer, string resourceId)
         {
             this.resourceExplorer = resourceExplorer;
             this.resourceId = resourceId;
