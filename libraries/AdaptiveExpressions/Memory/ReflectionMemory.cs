@@ -70,7 +70,7 @@ namespace AdaptiveExpressions.Memory
                 var setValue = obj.GetType().GetMethod("SetValue", BindingFlags.Public | BindingFlags.Instance);
                 if (setValue != null)
                 {
-                    var tryGetValue = obj.GetType().GetMethod("TryGetValue", new Type[] { typeof(string), typeof(object).MakeByRefType(), typeof(bool) });
+                    var tryGetValue = obj.GetType().GetMethod("TryGetValue", new Type[] { typeof(string), typeof(object).MakeByRefType() });
                     if (tryGetValue != null)
                     {
                         methods = new Methods()
