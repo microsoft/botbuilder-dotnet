@@ -10,7 +10,7 @@ namespace AdaptiveExpressions
     public class Options
     {
         /// <summary>
-        /// Gets or sets a diagnostic indicating whether we allow the memory interface to substitue the value when value is null.
+        /// Gets or sets a value indicating whether we allow the memory interface to substitue the value when value is null.
         /// </summary>
         /// <value>
         /// The flag.
