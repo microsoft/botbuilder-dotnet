@@ -3863,6 +3863,13 @@ namespace AdaptiveExpressions
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, new Options { AllowSubstitution = false });
+                        
+                        if (error != null)
+                        {
+                            // Swallow error and treat as false
+                            return (false, null);
+                        }
+
                         value = IsLogicTrue(args[0]);
                         return (value, error);
                     },
