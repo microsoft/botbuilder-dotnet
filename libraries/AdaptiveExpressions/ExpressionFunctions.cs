@@ -513,10 +513,10 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="expression">Expression with children.</param>
         /// <param name="state">Global state.</param>
-        /// <param name="verify">Optional function to verify each child's result.</param>
         /// <param name="options">Options used in evaluation. </param>
+        /// <param name="verify">Optional function to verify each child's result.</param>
         /// <returns>List of child values or error message.</returns>
-        public static (IReadOnlyList<object>, string error) EvaluateChildren(Expression expression, IMemory state, VerifyExpression verify, Options options)
+        public static (IReadOnlyList<object>, string error) EvaluateChildren(Expression expression, IMemory state, Options options, VerifyExpression verify = null)
         {
             var args = new List<object>();
             object value;
@@ -562,7 +562,7 @@ namespace AdaptiveExpressions
                 object value = null;
                 string error = null;
                 IReadOnlyList<object> args;
-                (args, error) = EvaluateChildren(expression, state, verify, options);
+                (args, error) = EvaluateChildren(expression, state, options, verify);
                 if (error == null)
                 {
                     try
@@ -593,7 +593,7 @@ namespace AdaptiveExpressions
                 object value = null;
                 string error = null;
                 IReadOnlyList<object> args;
-                (args, error) = EvaluateChildren(expression, state, verify, options);
+                (args, error) = EvaluateChildren(expression, state, options, verify);
                 if (error == null)
                 {
                     try
@@ -715,7 +715,7 @@ namespace AdaptiveExpressions
                     var result = false;
                     string error = null;
                     IReadOnlyList<object> args;
-                    (args, error) = EvaluateChildren(expression, state, verify, options);
+                    (args, error) = EvaluateChildren(expression, state, options, verify);
                     if (error == null)
                     {
                         // Ensure args are all of same type
@@ -784,7 +784,7 @@ namespace AdaptiveExpressions
                     object value = null;
                     string error = null;
                     IReadOnlyList<object> args;
-                    (args, error) = EvaluateChildren(expr, state, null, options);
+                    (args, error) = EvaluateChildren(expr, state, options);
                     if (error == null)
                     {
                         if (args[0] is string string0 && args[1].IsInteger())
@@ -2964,7 +2964,7 @@ namespace AdaptiveExpressions
                     (expression, state, options) =>
                     {
                         var found = false;
-                        var (args, error) = EvaluateChildren(expression, state, null, options);
+                        var (args, error) = EvaluateChildren(expression, state, options);
                         if (error == null)
                         {
                             if (args[0] is string string0 && args[1] is string string1)
@@ -3196,7 +3196,7 @@ namespace AdaptiveExpressions
                     (expression, state, options) =>
                     {
                         object result = null;
-                        var (args, error) = EvaluateChildren(expression, state, null, options);
+                        var (args, error) = EvaluateChildren(expression, state, options);
                         if (error == null)
                         {
                             if (!TryParseList(args[0], out IList list))
@@ -3238,7 +3238,7 @@ namespace AdaptiveExpressions
                     (expression, state, options) =>
                     {
                         object result = -1;
-                        var (args, error) = EvaluateChildren(expression, state, null, options);
+                        var (args, error) = EvaluateChildren(expression, state, options);
                         if (error == null)
                         {
                             if (args[0] is string || args[0] == null)
@@ -3271,7 +3271,7 @@ namespace AdaptiveExpressions
                     (expression, state, options) =>
                     {
                         object result = -1;
-                        var (args, error) = EvaluateChildren(expression, state, null, options);
+                        var (args, error) = EvaluateChildren(expression, state, options);
                         if (error == null)
                         {
                             if (args[0] is string || args[0] == null)
@@ -3369,7 +3369,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string string0 && args[1].IsInteger() && args[2] is string string2)
@@ -3466,7 +3466,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0].IsInteger() && args[1] is string string1)
@@ -3496,7 +3496,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0].IsInteger() && args[1] is string string1)
@@ -3526,7 +3526,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
@@ -3551,7 +3551,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
@@ -3576,7 +3576,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
@@ -3601,7 +3601,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
@@ -3626,7 +3626,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
@@ -3651,7 +3651,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
@@ -3676,7 +3676,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string ts)
@@ -3702,7 +3702,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3726,7 +3726,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3750,7 +3750,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3774,7 +3774,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3798,7 +3798,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3822,7 +3822,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, options);
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3862,7 +3862,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, null, new Options { AllowSubstitution = false });
+                        (args, error) = EvaluateChildren(expr, state, new Options { AllowSubstitution = false });
                         value = IsLogicTrue(args[0]);
                         return (value, error);
                     },
