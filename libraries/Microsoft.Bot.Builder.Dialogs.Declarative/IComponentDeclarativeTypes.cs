@@ -14,8 +14,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// <summary>
         /// Return an enumeration of KindRegistrations $kind => Type.
         /// </summary>
+        /// <param name="resourceExplorer">resourceExplorer.</param>
         /// <returns>declarative type registration.</returns>
-        IEnumerable<DeclarativeType> GetDeclarativeTypes();
+        IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer);
 
         /// <summary>
         /// Return an enumeration of JsonConverters for supporting loading declarative types.
