@@ -62,8 +62,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="path">memory path.</param>
         /// <param name="value">resolved value.</param>
+        /// <param name="allowSubstitution">Allow substitution on null or not.</param>
         /// <returns> true if the memory contains an element with the specified key; otherwise, false.</returns>
-        public bool TryGetValue(string path, out object value)
+        public bool TryGetValue(string path, out object value, bool allowSubstitution)
         {
             value = null;
             if (this.LocalMemory != null)
