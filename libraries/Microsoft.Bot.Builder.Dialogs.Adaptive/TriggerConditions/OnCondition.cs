@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                 Expression.Lookup(ExpressionType.Ignore),
                                 new Expression(new ExpressionEvaluator(
                                     $"runOnce{Id}",
-                                    (expression, os) =>
+                                    (expression, os, opts) =>
                                     {
                                         var basePath = $"{AdaptiveDialog.ConditionTracker}.{Id}.";
                                         var changed = false;
