@@ -89,11 +89,6 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return base.ResumeDialogAsync(outerDc, reason, result, cancellationToken);
-        }
-
         protected override async Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default)
         {
             // This is an example on how to cancel a SkillDialog that is currently in progress from the parent bot

@@ -2,6 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TraceExtensions;
@@ -14,6 +19,8 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot
 {
     public class SkillAdapterWithErrorHandler : BotFrameworkHttpAdapter
     {
+        private readonly ConcurrentDictionary<string, string> _conversationMap = new ConcurrentDictionary<string, string>();
+
         public SkillAdapterWithErrorHandler(IConfiguration configuration, ICredentialProvider credentialProvider, AuthenticationConfiguration authConfig, ILogger<BotFrameworkHttpAdapter> logger, ConversationState conversationState = null)
             : base(configuration, credentialProvider, authConfig, logger: logger)
         {
@@ -58,6 +65,30 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot
                 // this should not be done in production.
                 await turnContext.TraceActivityAsync("OnTurnError Trace", exception.ToString(), "https://www.botframework.com/schemas/error", "TurnError");
             };
+        }
+
+        public override async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            if (claimsIdentity.Claims.All(x => x.Type != "azp"))
+            {
+                if (_conversationMap.TryGetValue(activity.Conversation.Id, out var appId))
+                {
+                    claimsIdentity.AddClaim(new Claim("azp", appId));
+                    claimsIdentity.AddClaim(new Claim("ver", "2.0"));
+                }
+            }
+            else
+            {
+                var appId = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+                _conversationMap.AddOrUpdate(activity.Conversation.Id, appId, (id, a) => appId);
+            }
+
+            if (activity.Type == ActivityTypes.EndOfConversation)
+            {
+                _conversationMap.TryRemove(activity.Conversation.Id, out var conversation);
+            }
+
+            return await base.ProcessActivityAsync(claimsIdentity, activity, callback, cancellationToken).ConfigureAwait(false);
         }
     }
 }
