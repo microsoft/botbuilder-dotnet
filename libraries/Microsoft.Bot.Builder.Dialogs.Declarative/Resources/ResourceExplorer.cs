@@ -76,6 +76,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
+        /// Gets the resource type id extensions that you want to manage.
+        /// </summary>
+        /// <value>
+        /// The extensions that you want the to manage.
+        /// </value>
+        public HashSet<string> ResourceTypes { get; private set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "dialog",
+            "lu",
+            "lg",
+            "qna",
+            "schema",
+            "json"
+        };
+
+        /// <summary>
         /// Add a resource provider to the resources managed by the resource explorer.
         /// </summary>
         /// <param name="resourceProvider">resource provider.</param>
@@ -364,10 +380,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 throw new InvalidOperationException("Failed to resolve reference, $copy property not present");
             }
 
-            var resource = this.GetResource($"{refTarget}.dialog");
-            if (resource == null)
+            // see if there is a dialog file for this resource.id
+            if (!this.TryGetResource($"{refTarget}.dialog", out IResource resource))
             {
-                throw new FileNotFoundException($"Failed to find resource named {refTarget}.dialog");
+                // if not, try loading the resource directly.
+                if (!this.TryGetResource(refTarget, out resource))
+                {
+                    throw new FileNotFoundException($"Failed to find resource named {refTarget}.dialog or {refTarget}.");
+                }
             }
 
             string text = await resource.ReadTextAsync().ConfigureAwait(false);

@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>The resource explorer.</returns>
         public static ResourceExplorer AddFolder(this ResourceExplorer explorer, string folder, bool includeSubFolders = true, bool monitorChanges = true)
         {
-            explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: includeSubFolders, monitorChanges: monitorChanges));
+            explorer.AddResourceProvider(new FolderResourceProvider(explorer, folder, includeSubFolders: includeSubFolders, monitorChanges: monitorChanges));
             return explorer;
         }
 
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
             else
             {
-                resourceExplorer.AddResourceProvider(new FolderResourceProvider(projectFolder, includeSubFolders: true, monitorChanges: monitorChanges));
+                resourceExplorer.AddResourceProvider(new FolderResourceProvider(resourceExplorer, projectFolder, includeSubFolders: true, monitorChanges: monitorChanges));
             }
 
             // add project references
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 path = Path.GetDirectoryName(path);
                 if (Directory.Exists(path))
                 {
-                    resourceExplorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
+                    resourceExplorer.AddResourceProvider(new FolderResourceProvider(resourceExplorer, path, includeSubFolders: true, monitorChanges: monitorChanges));
                 }
             }
 
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
                     if (Directory.Exists(folder))
                     {
-                        resourceExplorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: monitorChanges));
+                        resourceExplorer.AddResourceProvider(new FolderResourceProvider(resourceExplorer, folder, includeSubFolders: true, monitorChanges: monitorChanges));
                     }
                 }
             }

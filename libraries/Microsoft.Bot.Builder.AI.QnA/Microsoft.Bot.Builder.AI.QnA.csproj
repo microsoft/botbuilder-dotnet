@@ -28,6 +28,8 @@
     <Content Include="**/*.lg" />
     <Content Include="**/*.lu" />
     <Content Include="**/*.schema" />
+    <Content Include="**/*.qna"/>
+    <Content Include="**/*.json"/>
   </ItemGroup>
 
   <ItemGroup>
