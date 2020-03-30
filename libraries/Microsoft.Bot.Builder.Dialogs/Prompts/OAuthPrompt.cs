@@ -490,7 +490,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                            {
                                Id = tokenExchangeRequest.Id,
                                ConnectionName = _settings.ConnectionName,
-                               FailureDetail = "The bot's BotAdapter does not support token exchange operations. Ensure the bot's Adapter supports the ITokenExchangeProvider interface.",
+                               FailureDetail = $"The bot's BotAdapter does not support token exchange operations. Ensure the bot's Adapter supports the {nameof(IExtendedUserTokenProvider)} interface.",
                            }).ConfigureAwait(false);
                     throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                 }
