@@ -1267,7 +1267,7 @@ namespace AdaptiveExpressions
                 throw new ArgumentNullException();
             }
 
-            if (Convert.ToDouble(a) > Convert.ToDouble(b))
+            if (CultureInvariantDoubleConvert(a) > CultureInvariantDoubleConvert(b))
             {
                 return a;
             }
@@ -1284,7 +1284,7 @@ namespace AdaptiveExpressions
                 throw new ArgumentNullException();
             }
 
-            if (Convert.ToDouble(a) <= Convert.ToDouble(b))
+            if (CultureInvariantDoubleConvert(a) <= CultureInvariantDoubleConvert(b))
             {
                 return a;
             }
@@ -1293,6 +1293,8 @@ namespace AdaptiveExpressions
                 return b;
             }
         }
+
+        private static double CultureInvariantDoubleConvert(object numberObj) => Convert.ToDouble(numberObj, CultureInfo.InvariantCulture);
 
         private static object Add(object a, object b)
         {
@@ -1307,7 +1309,7 @@ namespace AdaptiveExpressions
             }
             else
             {
-                return Convert.ToDouble(a) + Convert.ToDouble(b);
+                return CultureInvariantDoubleConvert(a) + CultureInvariantDoubleConvert(b);
             }
         }
 
@@ -1324,7 +1326,7 @@ namespace AdaptiveExpressions
             }
             else
             {
-                return Convert.ToDouble(a) - Convert.ToDouble(b);
+                return CultureInvariantDoubleConvert(a) - CultureInvariantDoubleConvert(b);
             }
         }
 
@@ -1341,7 +1343,7 @@ namespace AdaptiveExpressions
             }
             else
             {
-                return Convert.ToDouble(a) * Convert.ToDouble(b);
+                return CultureInvariantDoubleConvert(a) * CultureInvariantDoubleConvert(b);
             }
         }
 
@@ -1358,7 +1360,7 @@ namespace AdaptiveExpressions
             }
             else
             {
-                return Convert.ToDouble(a) % Convert.ToDouble(b);
+                return CultureInvariantDoubleConvert(a) % CultureInvariantDoubleConvert(b);
             }
         }
 
@@ -1375,7 +1377,7 @@ namespace AdaptiveExpressions
             }
             else
             {
-                return Convert.ToDouble(a) / Convert.ToDouble(b);
+                return CultureInvariantDoubleConvert(a) / CultureInvariantDoubleConvert(b);
             }
         }
 
@@ -2575,7 +2577,7 @@ namespace AdaptiveExpressions
 
             if (args[0].IsNumber() && args[0].IsNumber())
             {
-                if (Math.Abs(Convert.ToDouble(args[0]) - Convert.ToDouble(args[1])) < 0.00000001)
+                if (Math.Abs(CultureInvariantDoubleConvert(args[0]) - CultureInvariantDoubleConvert(args[1])) < 0.00000001)
                 {
                     return true;
                 }
@@ -2750,7 +2752,7 @@ namespace AdaptiveExpressions
 
                     return result;
                 }),
-                MultivariateNumeric(ExpressionType.Power, args => Math.Pow(Convert.ToDouble(args[0]), Convert.ToDouble(args[1]))),
+                MultivariateNumeric(ExpressionType.Power, args => Math.Pow(CultureInvariantDoubleConvert(args[0]), CultureInvariantDoubleConvert(args[1]))),
                 new ExpressionEvaluator(
                     ExpressionType.Mod,
                     ApplyWithError(
@@ -2949,13 +2951,13 @@ namespace AdaptiveExpressions
                     (expression) => ValidateOrder(expression, null, ReturnType.Object)),
 
                 // Booleans
-                Comparison(ExpressionType.LessThan, args => Convert.ToDouble(args[0]) < Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.LessThanOrEqual, args => Convert.ToDouble(args[0]) <= Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.LessThan, args => CultureInvariantDoubleConvert(args[0]) < CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.LessThanOrEqual, args => CultureInvariantDoubleConvert(args[0]) <= CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
 
                 Comparison(ExpressionType.Equal, IsEqual, ValidateBinary),
                 Comparison(ExpressionType.NotEqual, args => !IsEqual(args), ValidateBinary),
-                Comparison(ExpressionType.GreaterThan, args => Convert.ToDouble(args[0]) > Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.GreaterThanOrEqual, args => Convert.ToDouble(args[0]) >= Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.GreaterThan, args => CultureInvariantDoubleConvert(args[0]) > CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.GreaterThanOrEqual, args => CultureInvariantDoubleConvert(args[0]) >= CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNotNull),
                 new ExpressionEvaluator(
                     ExpressionType.Contains,
@@ -3846,7 +3848,7 @@ namespace AdaptiveExpressions
                     ValidateUnary),
 
                 // Conversions
-                new ExpressionEvaluator(ExpressionType.Float, Apply(args => Convert.ToDouble(args[0], CultureInfo.InvariantCulture)), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Float, Apply(args => CultureInvariantDoubleConvert(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
@@ -4022,12 +4024,12 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsInteger,
-                    Apply(args => Extensions.IsNumber(args[0]) && Convert.ToDouble(args[0]) % 1 == 0),
+                    Apply(args => Extensions.IsNumber(args[0]) && CultureInvariantDoubleConvert(args[0]) % 1 == 0),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsFloat,
-                    Apply(args => Extensions.IsNumber(args[0]) && Convert.ToDouble(args[0]) % 1 != 0),
+                    Apply(args => Extensions.IsNumber(args[0]) && CultureInvariantDoubleConvert(args[0]) % 1 != 0),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
