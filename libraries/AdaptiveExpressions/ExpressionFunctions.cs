@@ -1156,7 +1156,7 @@ namespace AdaptiveExpressions
                     }
                     else
                     {
-                        error = $"Could not coerce {index}<{idxValue.GetType()}> to an int or string";
+                        error = $"Could not coerce {index}<{idxValue?.GetType()}> to an int or string";
                     }
                 }
             }
