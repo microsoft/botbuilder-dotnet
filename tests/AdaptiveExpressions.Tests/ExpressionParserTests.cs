@@ -920,6 +920,8 @@ namespace AdaptiveExpressions.Tests
             var newExpression = Expression.Parse(parsed.ToString());
             var newActual = newExpression.TryEvaluate(scope).value;
             AssertObjectEquals(actual, newActual);
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
         }
 
         [DataTestMethod]
@@ -942,6 +944,8 @@ namespace AdaptiveExpressions.Tests
             var newExpression = Expression.Parse(parsed.ToString());
             var newActual = newExpression.TryEvaluate(scope).value;
             AssertObjectEquals(actual, newActual);
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
         }
 
         [DataTestMethod]
