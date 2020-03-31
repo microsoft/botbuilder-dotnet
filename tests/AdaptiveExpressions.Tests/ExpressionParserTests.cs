@@ -904,6 +904,7 @@ namespace AdaptiveExpressions.Tests
         [DynamicData(nameof(Data))]
         public void EvaluateInDeCulture(string input, object expected, HashSet<string> expectedRefs)
         {
+            var originalCuture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
             var parsed = Expression.Parse(input);
             Assert.IsNotNull(parsed);
@@ -921,13 +922,14 @@ namespace AdaptiveExpressions.Tests
             var newActual = newExpression.TryEvaluate(scope).value;
             AssertObjectEquals(actual, newActual);
 
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentCulture = originalCuture;
         }
 
         [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void EvaluateInFrCulture(string input, object expected, HashSet<string> expectedRefs)
         {
+            var originalCuture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-FR");
             var parsed = Expression.Parse(input);
             Assert.IsNotNull(parsed);
@@ -945,7 +947,7 @@ namespace AdaptiveExpressions.Tests
             var newActual = newExpression.TryEvaluate(scope).value;
             AssertObjectEquals(actual, newActual);
 
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentCulture = originalCuture;
         }
 
         [DataTestMethod]
