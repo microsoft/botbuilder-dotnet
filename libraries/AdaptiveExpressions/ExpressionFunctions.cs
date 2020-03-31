@@ -1633,10 +1633,10 @@ namespace AdaptiveExpressions
 
                         // the local iterator is pushed as one memory layer in the memory stack
                         stackedMemory.Push(new SimpleObjectMemory(local));
-                        var (r, _) = expression.Children[2].TryEvaluate(stackedMemory, new Options(options) { NullSubstitution = null });
+                        var (r, e) = expression.Children[2].TryEvaluate(stackedMemory, new Options(options) { NullSubstitution = null });
                         stackedMemory.Pop();
 
-                        if (IsLogicTrue(r))
+                        if (IsLogicTrue(r) && e == null)
                         {
                             // add if only if it evaluates to true
                             ((List<object>)result).Add(local[iteratorName]);
