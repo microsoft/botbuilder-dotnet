@@ -27,7 +27,7 @@ namespace AdaptiveExpressions.Memory
             this.methods.SetValue.Invoke(obj, new object[] { value });
         }
 
-        public bool TryGetValue(string path, out object value, bool allowSubstitution)
+        public bool TryGetValue(string path, out object value)
         {
             value = null;
             var args = new object[] { path, null };

@@ -982,43 +982,48 @@ namespace AdaptiveExpressions.Tests
         [TestMethod]
         public void TestEvaluationOptions()
         {
-            var mockMemory = new SubstitutionMemory();
+            var mockMemory = new Dictionary<string, object>();
+            var options = new Options
+            {
+                NullSubstitution = (path) => $"{path} is undefined"
+            };
+                
             object value = null;
             string error = null;
 
             // normal case null value is substituted
             var exp = Expression.Parse("foo");
-            (value, error) = exp.TryEvaluate(mockMemory);
+            (value, error) = exp.TryEvaluate(mockMemory, options);
             AssertObjectEquals("foo is undefined", value);
 
             // in boolean context, substitution is not allowed, use raw value instead
             exp = Expression.Parse("if(foo, 1, 2)");
-            (value, error) = exp.TryEvaluate(mockMemory);
+            (value, error) = exp.TryEvaluate(mockMemory, options);
             AssertObjectEquals(2, value);
 
             // in boolean context, substitution is not allowed, use raw value instead
             exp = Expression.Parse("foo && true");
-            (value, error) = exp.TryEvaluate(mockMemory);
+            (value, error) = exp.TryEvaluate(mockMemory, options);
             AssertObjectEquals(false, value);
 
             // in boolean context, substitution is not allowed, use raw value instead
             exp = Expression.Parse("foo || true");
-            (value, error) = exp.TryEvaluate(mockMemory);
+            (value, error) = exp.TryEvaluate(mockMemory, options);
             AssertObjectEquals(true, value);
 
             // in boolean context, substitution is not allowed, use raw value instead
             exp = Expression.Parse("bool(foo)");
-            (value, error) = exp.TryEvaluate(mockMemory);
+            (value, error) = exp.TryEvaluate(mockMemory, options);
             AssertObjectEquals(false, value);
 
             // in boolean context, substitution is not allowed, use raw value instead
             exp = Expression.Parse("not(foo)");
-            (value, error) = exp.TryEvaluate(mockMemory);
+            (value, error) = exp.TryEvaluate(mockMemory, options);
             AssertObjectEquals(true, value);
 
             // concat is evaluated in boolean context also, use raw value
             exp = Expression.Parse("if(concat(foo, 'bar'), 1, 2)");
-            (value, error) = exp.TryEvaluate(mockMemory);
+            (value, error) = exp.TryEvaluate(mockMemory, options);
             AssertObjectEquals(1, value);
         }
 

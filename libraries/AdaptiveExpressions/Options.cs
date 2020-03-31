@@ -9,12 +9,14 @@ namespace AdaptiveExpressions
     /// </summary>
     public class Options
     {
+        public delegate object GetValueDelegate(string path);
+
         /// <summary>
-        /// Gets or sets a value indicating whether we allow the memory interface to substitue the value when value is null.
+        /// Gets or sets a value, a delegate that been called when there is null value hit in memory.
         /// </summary>
         /// <value>
-        /// The flag.
+        /// The delegate.</placeholder>
         /// </value>
-        public bool AllowSubstitution { get; set; } = true;
+        public GetValueDelegate NullSubstitution { get; set; } = null;
     }
 }

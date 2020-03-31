@@ -23,9 +23,8 @@ namespace AdaptiveExpressions.Memory
         /// </summary>
         /// <param name="path">memory path.</param>
         /// <param name="value">resolved value.</param>
-        /// <param name="allowSubstitution">allow substitution at null or not.</param>
         /// <returns> true if the memory contains an element with the specified key; otherwise, false.</returns>
-        bool TryGetValue(string path, out object value, bool allowSubstitution = true);
+        bool TryGetValue(string path, out object value);
 
         /// <summary>
         /// Version is used to identify whether the a particular memory instance has been updated or not.

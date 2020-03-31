@@ -1119,9 +1119,14 @@ namespace AdaptiveExpressions
 
         private static (object value, string error) WrapGetValue(IMemory memory, string property, Options options)
         {
-            if (memory.TryGetValue(property, out var result, options.AllowSubstitution))
+            if (memory.TryGetValue(property, out var result) && result != null)
             {
                 return (result, null);
+            }
+
+            if (options.NullSubstitution != null)
+            {
+                return (options.NullSubstitution(property), null);
             }
 
             return (null, null);
@@ -1387,7 +1392,7 @@ namespace AdaptiveExpressions
             string error = null;
             foreach (var child in expression.Children)
             {
-                (result, error) = child.TryEvaluate(state, new Options { AllowSubstitution = false });
+                (result, error) = child.TryEvaluate(state, new Options());
                 if (error == null)
                 {
                     if (IsLogicTrue(result))
@@ -1418,7 +1423,7 @@ namespace AdaptiveExpressions
             string error = null;
             foreach (var child in expression.Children)
             {
-                (result, error) = child.TryEvaluate(state, new Options { AllowSubstitution = false });
+                (result, error) = child.TryEvaluate(state, new Options());
                 if (error == null)
                 {
                     if (IsLogicTrue(result))
@@ -1441,7 +1446,7 @@ namespace AdaptiveExpressions
         {
             object result;
             string error;
-            (result, error) = expression.Children[0].TryEvaluate(state, new Options { AllowSubstitution = false });
+            (result, error) = expression.Children[0].TryEvaluate(state, new Options());
             if (error == null)
             {
                 result = !IsLogicTrue(result);
@@ -1459,7 +1464,7 @@ namespace AdaptiveExpressions
         {
             object result;
             string error;
-            (result, error) = expression.Children[0].TryEvaluate(state, new Options { AllowSubstitution = false });
+            (result, error) = expression.Children[0].TryEvaluate(state, new Options());
             if (error == null && IsLogicTrue(result))
             {
                 (result, error) = expression.Children[1].TryEvaluate(state, options);
@@ -1628,7 +1633,7 @@ namespace AdaptiveExpressions
 
                         // the local iterator is pushed as one memory layer in the memory stack
                         stackedMemory.Push(new SimpleObjectMemory(local));
-                        var (r, _) = expression.Children[2].TryEvaluate(stackedMemory, new Options { AllowSubstitution = false });
+                        var (r, _) = expression.Children[2].TryEvaluate(stackedMemory, new Options());
                         stackedMemory.Pop();
 
                         if (IsLogicTrue(r))
@@ -3862,7 +3867,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, new Options { AllowSubstitution = false });
+                        (args, error) = EvaluateChildren(expr, state, new Options());
                         
                         if (error != null)
                         {
