@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using AdaptiveExpressions.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -882,6 +883,50 @@ namespace AdaptiveExpressions.Tests
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
+            var parsed = Expression.Parse(input);
+            Assert.IsNotNull(parsed);
+            var (actual, msg) = parsed.TryEvaluate(scope);
+            Assert.AreEqual(null, msg);
+            AssertObjectEquals(expected, actual);
+            if (expectedRefs != null)
+            {
+                var actualRefs = parsed.References();
+                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+            }
+
+            // ToString re-parse
+            var newExpression = Expression.Parse(parsed.ToString());
+            var newActual = newExpression.TryEvaluate(scope).value;
+            AssertObjectEquals(actual, newActual);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(Data))]
+        public void EvaluateInDeCulture(string input, object expected, HashSet<string> expectedRefs)
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
+            var parsed = Expression.Parse(input);
+            Assert.IsNotNull(parsed);
+            var (actual, msg) = parsed.TryEvaluate(scope);
+            Assert.AreEqual(null, msg);
+            AssertObjectEquals(expected, actual);
+            if (expectedRefs != null)
+            {
+                var actualRefs = parsed.References();
+                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+            }
+
+            // ToString re-parse
+            var newExpression = Expression.Parse(parsed.ToString());
+            var newActual = newExpression.TryEvaluate(scope).value;
+            AssertObjectEquals(actual, newActual);
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(Data))]
+        public void EvaluateInFrCulture(string input, object expected, HashSet<string> expectedRefs)
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-FR");
             var parsed = Expression.Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
