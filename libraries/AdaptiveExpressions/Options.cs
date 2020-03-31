@@ -9,14 +9,12 @@ namespace AdaptiveExpressions
     /// </summary>
     public class Options
     {
-        public delegate object GetValueDelegate(string path);
-
         /// <summary>
-        /// Gets or sets a value, a delegate that been called when there is null value hit in memory.
+        /// Gets or sets a value, a function that been called when there is null value hit in memory.
         /// </summary>
         /// <value>
         /// The delegate.</placeholder>
         /// </value>
-        public GetValueDelegate NullSubstitution { get; set; } = null;
+        public Func<string, object> NullSubstitution { get; set; } = null;
     }
 }
