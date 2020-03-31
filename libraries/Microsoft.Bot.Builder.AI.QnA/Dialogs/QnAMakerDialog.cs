@@ -15,17 +15,48 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 {
     /// <summary>
-    /// QnAMaker dialog which uses QnAMaker to get an answer.
+    /// A dialog that supports multi-step and adaptive-learning QnA Maker services.
     /// </summary>
+    /// <remarks>An instance of this class targets a specific QnA Maker knowledge base.</remarks>
     public class QnAMakerDialog : WaterfallDialog
     {
+        /// <summary>
+        /// The path for storing and retrieving QnA Maker context data.
+        /// </summary>
+        /// <remarks>This represents context about the current or previous call to QnA Maker.
+        /// It is stored within the current step's <see cref="WaterfallStepContext"/>.
+        /// It supports QnA Maker's follow-up prompt and active learning features.</remarks>
         protected const string QnAContextData = "qnaContextData";
+
+        /// <summary>
+        /// The path for storing and retrieving the previous question ID.
+        /// </summary>
+        /// <remarks>This represents the QnA question ID from the previous turn.
+        /// It is stored within the current step's <see cref="WaterfallStepContext"/>.
+        /// It supports QnA Maker's follow-up prompt and active learning features.</remarks>
         protected const string PreviousQnAId = "prevQnAId";
+
+        /// <summary>
+        /// The path for storing and retrieving the options for this instance of the dialog.
+        /// </summary>
+        /// <remarks>This includes the options with which the dialog was started and options
+        /// expected by the QnA Maker service.
+        /// It is stored within the current step's <see cref="WaterfallStepContext"/>.
+        /// It supports QnA Maker and the dialog system.</remarks>
         protected const string Options = "options";
 
         // Dialog Options parameters
+
+        /// <summary>
+        /// The default threshold for answers returned, based on score.
+        /// </summary>
         protected const float DefaultThreshold = 0.3F;
+
+        /// <summary>
+        /// The default maximum number of answers to be returned for the question.
+        /// </summary>
         protected const int DefaultTopN = 3;
+
         private const string DefaultNoAnswer = "No QnAMaker answers found.";
 
         // Card parameters
@@ -44,6 +75,27 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private Activity cardNoMatchResponse;
         private Metadata[] strictFilters;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
+        /// </summary>
+        /// <param name="knowledgeBaseId">The ID of the QnA Maker knowledge base to target.</param>
+        /// <param name="endpointKey">The QnA Maker App Service endpoint for the knowledge base.</param>
+        /// <param name="hostName">The QnA Maker host path for the knowledge base.</param>
+        /// <param name="noAnswer">The activity to send the user when QnA Maker does not find an answer.</param>
+        /// <param name="threshold">The threshold for answers returned, based on score.</param>
+        /// <param name="activeLearningCardTitle">The title to use when sending an active learning card to the user.</param>
+        /// <param name="cardNoMatchText">The text for the none-of-the-above button, to let the user
+        /// indicate that none of the answers or options apply.</param>
+        /// <param name="top">The maximum number of answers to be returned for the question.</param>
+        /// <param name="cardNoMatchResponse">The activity to send the user when they click the
+        /// none-of-the-above button.</param>
+        /// <param name="strictFilters">Metadata with which to filter answers; or null to apply no filters.</param>
+        /// <param name="httpClient">An alternate client with which to talk to QnAMaker. If null,
+        /// a default client is used for this instance.</param>
+        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
+        /// of the source file that contains the caller.</param>
+        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
+        /// in the source file at which the method is called.</param>
         public QnAMakerDialog(
             string knowledgeBaseId,
             string endpointKey,
@@ -80,6 +132,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.AddStep(DisplayQnAResultAsync);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
+        /// </summary>
+        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
+        /// of the source file that contains the caller.</param>
+        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
+        /// in the source file at which the method is called.</param>
         [JsonConstructor]
         public QnAMakerDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base(nameof(QnAMakerDialog))
@@ -243,7 +302,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             stepContext.Values[ValueProperty.QnAData] = result;
             ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
-            // If card is not shown, move to next step with top qna response.
+            // If card is not shown, move to next step with top QnA response.
             return await stepContext.NextAsync(result, cancellationToken).ConfigureAwait(false);
         }
 
@@ -311,7 +370,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
                 // -Check if context is present and prompt exists 
-                // -If yes: Add reverse index of prompt display name and its corresponding qna id
+                // -If yes: Add reverse index of prompt display name and its corresponding QnA ID
                 // -Set PreviousQnAId as answer.Id
                 // -Display card for the prompt
                 // -Wait for the reply
