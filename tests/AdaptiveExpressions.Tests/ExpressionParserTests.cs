@@ -983,6 +983,7 @@ namespace AdaptiveExpressions.Tests
         public void TestEvaluationOptions()
         {
             var mockMemory = new Dictionary<string, object>();
+
             var options = new Options
             {
                 NullSubstitution = (path) => $"{path} is undefined"
@@ -1025,6 +1026,11 @@ namespace AdaptiveExpressions.Tests
             exp = Expression.Parse("if(concat(foo, 'bar'), 1, 2)");
             (value, error) = exp.TryEvaluate(mockMemory, options);
             AssertObjectEquals(1, value);
+
+            // index is not boolean context, but it also requires raw value
+            exp = Expression.Parse("a[b]");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            Assert.IsTrue(error != null);
         }
 
         private void AssertResult<T>(string text, T expected)

@@ -1143,7 +1143,7 @@ namespace AdaptiveExpressions
             if (error == null)
             {
                 object idxValue;
-                (idxValue, error) = index.TryEvaluate(state, options);
+                (idxValue, error) = index.TryEvaluate(state, new Options());
                 if (error == null)
                 {
                     if (idxValue is int idx)
