@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             else
             {
                 JObject obj = JObject.Load(reader);
-                string kind = (string)obj["$kind"] ?? (string)obj["$type"]; 
+                string kind = (string)obj["$kind"]; 
                 if (kind == "Microsoft.ActivityTemplate")
                 {
                     return obj.ToObject<ActivityTemplate>();

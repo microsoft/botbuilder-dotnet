@@ -22,8 +22,9 @@ namespace AdaptiveExpressions
     /// </remarks>
     /// <param name="expression">Expression to evaluate.</param>
     /// <param name="state">Global state information.</param>
+    /// <param name="options">Options for the evaluation.</param>
     /// <returns>Value and error string that is non-null if there is an error.</returns>
-    public delegate (object value, string error) EvaluateExpressionDelegate(Expression expression, IMemory state);
+    public delegate (object value, string error) EvaluateExpressionDelegate(Expression expression, IMemory state, Options options);
 
     /// <summary>
     /// Delegate to lookup function information from the type.
@@ -105,9 +106,10 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="expression">Expression to evaluate.</param>
         /// <param name="state">Global state information.</param>
+        /// <param name="options">Options used in the evaluation. </param>
         /// <returns>Value and error string that is non-null if there is an error.</returns>
-        public (object value, string error) TryEvaluate(Expression expression, IMemory state)
-            => _evaluator(expression, state);
+        public (object value, string error) TryEvaluate(Expression expression, IMemory state, Options options)
+            => _evaluator(expression, state, options);
 
         /// <summary>
         /// Validate an expression.
