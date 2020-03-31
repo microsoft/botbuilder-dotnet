@@ -1013,6 +1013,11 @@ namespace AdaptiveExpressions.Tests
             AssertObjectEquals(true, value);
 
             // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("foo == 'foo is undefined'");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            AssertObjectEquals(false, value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
             exp = Expression.Parse("bool(foo)");
             (value, error) = exp.TryEvaluate(mockMemory, options);
             AssertObjectEquals(false, value);

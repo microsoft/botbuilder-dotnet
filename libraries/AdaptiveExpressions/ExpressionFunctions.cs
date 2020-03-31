@@ -715,7 +715,7 @@ namespace AdaptiveExpressions
                     var result = false;
                     string error = null;
                     IReadOnlyList<object> args;
-                    (args, error) = EvaluateChildren(expression, state, options, verify);
+                    (args, error) = EvaluateChildren(expression, state, new Options(options) { NullSubstitution = null }, verify);
                     if (error == null)
                     {
                         // Ensure args are all of same type
