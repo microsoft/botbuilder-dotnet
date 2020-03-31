@@ -9,6 +9,16 @@ namespace AdaptiveExpressions
     /// </summary>
     public class Options
     {
+        public Options()
+        {
+            this.NullSubstitution = null;
+        }
+
+        public Options(Options opt)
+        {
+            this.NullSubstitution = opt.NullSubstitution;
+        }
+
         /// <summary>
         /// Gets or sets a value, a function that been called when there is null value hit in memory.
         /// </summary>
