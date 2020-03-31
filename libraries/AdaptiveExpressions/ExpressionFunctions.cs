@@ -3860,26 +3860,7 @@ namespace AdaptiveExpressions
 
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(
-                    ExpressionType.Bool,
-                    (expr, state, options) =>
-                    {
-                        object value = null;
-                        string error = null;
-                        IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, new Options(options) { NullSubstitution = null });
-                        
-                        if (error != null)
-                        {
-                            // Swallow error and treat as false
-                            return (false, null);
-                        }
-
-                        value = IsLogicTrue(args[0]);
-                        return (value, error);
-                    },
-                    ReturnType.Boolean,
-                    ValidateUnary),
+                Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ToXml(args[0])), ReturnType.String, ValidateUnary),
 
                 // Misc
