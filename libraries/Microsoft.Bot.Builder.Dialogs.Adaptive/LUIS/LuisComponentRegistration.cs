@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
-        public IEnumerable<DeclarativeType> GetDeclarativeTypes()
+        public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             yield return new DeclarativeType<LuisAdaptiveRecognizer>(LuisAdaptiveRecognizer.DeclarativeType);
         }

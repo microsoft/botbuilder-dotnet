@@ -20,7 +20,7 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="value">Constant value.</param>
         public Constant(object value = null)
-            : base(new ExpressionEvaluator(ExpressionType.Constant, (expression, state) => ((expression as Constant).Value, null)))
+            : base(new ExpressionEvaluator(ExpressionType.Constant, (expression, state, _) => ((expression as Constant).Value, null)))
         {
             Value = value;
         }

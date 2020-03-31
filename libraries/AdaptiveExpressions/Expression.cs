@@ -177,7 +177,7 @@ namespace AdaptiveExpressions
         /// <param name="function">Lambda expression to evaluate.</param>
         /// <returns>New expression.</returns>
         public static Expression Lambda(Func<object, object> function)
-            => new Expression(new ExpressionEvaluator(ExpressionType.Lambda, (expression, state) =>
+            => new Expression(new ExpressionEvaluator(ExpressionType.Lambda, (expression, state, _) =>
             {
                 object value = null;
                 string error = null;
@@ -481,9 +481,10 @@ namespace AdaptiveExpressions
         /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
+        /// <param name="options">Options used in the evaluation. </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (object value, string error) TryEvaluate(object state)
-            => this.TryEvaluate<object>(MemoryFactory.Create(state));
+        public (object value, string error) TryEvaluate(object state, Options options = null)
+            => this.TryEvaluate<object>(MemoryFactory.Create(state), options);
 
         /// <summary>
         /// Evaluate the expression.
@@ -492,21 +493,10 @@ namespace AdaptiveExpressions
         /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
+        /// <param name="options">Options used in the evaluation. </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (object value, string error) TryEvaluate(IMemory state)
-            => this.TryEvaluate<object>(state);
-
-        /// <summary>
-        /// Evaluate the expression.
-        /// </summary>
-        /// <typeparam name="T">type of result of the expression.</typeparam>
-        /// <param name="state">
-        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
-        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
-        /// </param>
-        /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (T value, string error) TryEvaluate<T>(object state)
-        => this.TryEvaluate<T>(MemoryFactory.Create(state));
+        public (object value, string error) TryEvaluate(IMemory state, Options options = null)
+            => this.TryEvaluate<object>(state, options);
 
         /// <summary>
         /// Evaluate the expression.
@@ -516,10 +506,25 @@ namespace AdaptiveExpressions
         /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
+        /// <param name="options">Options used in the evaluation. </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (T value, string error) TryEvaluate<T>(IMemory state)
+        public (T value, string error) TryEvaluate<T>(object state, Options options = null)
+        => this.TryEvaluate<T>(MemoryFactory.Create(state), options);
+
+        /// <summary>
+        /// Evaluate the expression.
+        /// </summary>
+        /// <typeparam name="T">type of result of the expression.</typeparam>
+        /// <param name="state">
+        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
+        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
+        /// </param>
+        /// <param name="options">Options used in the evaluation. </param>
+        /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
+        public (T value, string error) TryEvaluate<T>(IMemory state, Options options = null)
         {
-            var (result, error) = Evaluator.TryEvaluate(this, state);
+            var opts = options ?? new Options();
+            var (result, error) = Evaluator.TryEvaluate(this, state, opts);
             if (error != null)
             {
                 return (default(T), error);
