@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Schema.Tests
         /// Ensures that <see cref="GeoCoordinates"/> class can be serialized and deserialized properly.
         /// </summary>
         [TestMethod]
-        public void EntityTests_GeoCoordinatesSerializationDeserializationTest()
+        public void EntityTests_GeoCoordinatesSerializationDeserializationTest_AsType()
         {
             GeoCoordinates geoCoordinates = new GeoCoordinates()
             {
@@ -24,53 +24,135 @@ namespace Microsoft.Bot.Schema.Tests
                 Elevation = 23,
             };
 
-            Assert.AreEqual("GeoCoordinates", geoCoordinates.Type);
-            string serialized = JsonConvert.SerializeObject(geoCoordinates);
+            EntityTest(geoCoordinates, EntityTypes.GeoCoordinates);
+        }
 
-            Entity deserializedEntity = JsonConvert.DeserializeObject<Entity>(serialized);
-            Assert.AreEqual(deserializedEntity.Type, geoCoordinates.Type);
-            var geo = deserializedEntity.GetAs<GeoCoordinates>();
-            Assert.AreEqual(geo.Type, geoCoordinates.Type);
+        /// <summary>
+        /// Ensures that <see cref="GeoCoordinates"/> class can be serialized and deserialized properly.
+        /// </summary>
+        [TestMethod]
+        public void EntityTests_GeoCoordinatesSerializationDeserializationTest_AsEntity()
+        {
+            Entity geoCoordinates = new GeoCoordinates()
+            {
+                Latitude = 22,
+                Elevation = 23,
+            };
+
+            EntityTest(geoCoordinates, EntityTypes.GeoCoordinates);
+        }
+
+        /// <summary>
+        /// Ensures that <see cref="GeoCoordinates"/> class can be serialized and deserialized properly.
+        /// </summary>
+        [TestMethod]
+        public void EntityTests_GeoCoordinatesSerializationDeserializationTest_SetAs()
+        {
+            var entity = new Entity();
+            entity.SetAs(new GeoCoordinates
+            {
+                Latitude = 22,
+                Elevation = 23,
+            });
+
+            EntityTest(entity, EntityTypes.GeoCoordinates);
         }
 
         /// <summary>
         /// Ensures that <see cref="Mention"/> class can be serialized and deserialized properly.
         /// </summary>
         [TestMethod]
-        public void EntityTests_MentionSerializationDeserializationTest()
+        public void EntityTests_MentionSerializationDeserializationTest_AsType()
         {
             Mention mentionEntity = new Mention()
             {
                 Text = "TESTTEST",
             };
 
-            Assert.AreEqual("mention", mentionEntity.Type);
-            string serialized = JsonConvert.SerializeObject(mentionEntity);
+            EntityTest(mentionEntity, EntityTypes.Mention);
+        }
 
-            Entity deserializedEntity = JsonConvert.DeserializeObject<Entity>(serialized);
-            Assert.AreEqual(deserializedEntity.Type, mentionEntity.Type);
-            var mentionDeserialized = deserializedEntity.GetAs<Mention>();
-            Assert.AreEqual(mentionDeserialized.Type, mentionEntity.Type);
+        /// <summary>
+        /// Ensures that <see cref="Mention"/> class can be serialized and deserialized properly.
+        /// </summary>
+        [TestMethod]
+        public void EntityTests_MentionSerializationDeserializationTest_AsEntity()
+        {
+            Entity mentionEntity = new Mention()
+            {
+                Text = "TESTTEST",
+            };
+
+            EntityTest(mentionEntity, EntityTypes.Mention);
+        }
+
+        /// <summary>
+        /// Ensures that <see cref="Mention"/> class can be serialized and deserialized properly.
+        /// </summary>
+        [TestMethod]
+        public void EntityTests_MentionSerializationDeserializationTest_SetAs()
+        {
+            var entity = new Entity();
+            entity.SetAs(new Mention()
+            {
+                Text = "TESTTEST",
+            });
+
+            EntityTest(entity, EntityTypes.Mention);
         }
 
         /// <summary>
         /// Ensures that <see cref="Place"/> class can be serialized and deserialized properly.
         /// </summary>
         [TestMethod]
-        public void EntityTests_PlaceSerializationDeserializationTest()
+        public void EntityTests_PlaceSerializationDeserializationTest_AsType()
         {
             Place placeEntity = new Place()
             {
                 Name = "TESTTEST",
             };
+            EntityTest(placeEntity, EntityTypes.Place);
+        }
 
-            Assert.AreEqual("Place", placeEntity.Type);
-            string serialized = JsonConvert.SerializeObject(placeEntity);
+        /// <summary>
+        /// Ensures that <see cref="Place"/> class can be serialized and deserialized properly.
+        /// </summary>
+        [TestMethod]
+        public void EntityTests_PlaceSerializationDeserializationTest_AsEntity()
+        {
+            Entity placeEntity = new Place()
+            {
+                Name = "TESTTEST",
+            };
+            EntityTest(placeEntity, EntityTypes.Place);
+        }
+
+        /// <summary>
+        /// Ensures that <see cref="Place"/> class can be serialized and deserialized properly.
+        /// </summary>
+        [TestMethod]
+        public void EntityTests_PlaceSerializationDeserializationTest_SetAs()
+        {
+            var entity = new Entity();
+            entity.SetAs(new Place()
+            {
+                Name = "TESTTEST",
+            });
+
+            EntityTest(entity, EntityTypes.Place);
+        }
+
+        private void EntityTest<T>(T geoCoordinates, string type)
+            where T : Entity
+        {
+            Assert.AreEqual(type, geoCoordinates.Type);
+
+            string serialized = JsonConvert.SerializeObject(geoCoordinates);
 
             Entity deserializedEntity = JsonConvert.DeserializeObject<Entity>(serialized);
-            Assert.AreEqual(deserializedEntity.Type, placeEntity.Type);
-            var placeDeserialized = deserializedEntity.GetAs<Place>();
-            Assert.AreEqual(placeDeserialized.Type, placeEntity.Type);
+            Assert.AreEqual(deserializedEntity.Type, geoCoordinates.Type);
+            var geo = deserializedEntity.GetAs<GeoCoordinates>();
+            Assert.AreEqual(geo.Type, geoCoordinates.Type);
         }
     }
 }

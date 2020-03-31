@@ -4,13 +4,13 @@
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// GeoCoordinates extensions.
+    /// Mention extensions.
     /// </summary>
     public partial class Mention : Entity
     {
         partial void CustomInit()
         {
-            Type = "mention";
+            Type = EntityTypes.Mention;
         }
     }
 }

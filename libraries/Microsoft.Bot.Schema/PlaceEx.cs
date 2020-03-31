@@ -4,13 +4,13 @@
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// GeoCoordinates extensions.
+    /// Place extensions.
     /// </summary>
     public partial class Place : Entity
     {
         partial void CustomInit()
         {
-            Type = "Place";
+            Type = EntityTypes.Place;
         }
     }
 }
