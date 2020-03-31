@@ -17,7 +17,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
     /// <summary>
     /// A dialog that supports multi-step and adaptive-learning QnA Maker services.
     /// </summary>
-    /// <remarks>An instance of this class targets a specific QnA Maker knowledge base.</remarks>
+    /// <remarks>An instance of this class targets a specific QnA Maker knowledge base.
+    /// It supports knowledge bases that include follow-up prompt and active learning features.</remarks>
     public class QnAMakerDialog : WaterfallDialog
     {
         /// <summary>
@@ -268,20 +269,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             });
         }
 
-        /// <summary>
-        /// Step to generates an answer from the knowledge base.
-        /// </summary>
-        /// /// <param name="stepContext">The waterfall step context for the current turn of the conversation.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task is successful, the result indicates whether the dialog is still
-        /// active after the turn has been processed by the dialog. The result may also contain a
-        /// return value.
-        /// 
-        /// If the current state of the dialog includes QnA Maker context data, the context is provided in
-        /// the query to QnA Maker.
-        /// </remarks>
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
