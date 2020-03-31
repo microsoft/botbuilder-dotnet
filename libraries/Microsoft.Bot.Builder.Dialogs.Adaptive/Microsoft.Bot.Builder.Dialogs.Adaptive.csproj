@@ -35,13 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Schemas\Generators\**" />
-    <Content Remove="Schemas\Generators\**" />
-    <EmbeddedResource Remove="Schemas\Generators\**" />
-    <None Remove="Schemas\Generators\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
