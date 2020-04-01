@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Tree;
@@ -160,43 +159,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return errorPrefix;
-        }
-
-        /// <summary>
-        /// read string content line by line.
-        /// </summary>
-        /// <param name="input">string content.</param>
-        /// <returns>enumerable result.</returns>
-        public static IEnumerable<string> StringReadLine(string input)
-        {
-            if (input == null)
-            {
-                yield return input;
-            }
-
-            using (var strReader = new StringReader(input))
-            {
-                string aLine;
-                while ((aLine = strReader.ReadLine()) != null)
-                {
-                    yield return aLine;
-                }
-            }
-
-            // append newline to result
-            while (input.EndsWith("\r\n") || input.EndsWith("\n"))
-            {
-                if (input.EndsWith("\r\n"))
-                {
-                    input = input.Substring(0, input.Length - 2);
-                }
-                else
-                {
-                    input = input.Substring(0, input.Length - 1);
-                }
-
-                yield return string.Empty;
-            }
         }
     }
 }
