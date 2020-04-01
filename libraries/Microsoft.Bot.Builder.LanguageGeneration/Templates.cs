@@ -328,29 +328,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception("index out of range.");
             }
 
-            var destList = new List<string>();
+            var contentCollection = Extensions.StringReadLine(originString);
 
-            using (var strReader = new StringReader(originString))
+            var destList = new List<string>();
+            var lineNumber = -1;
+            var replaced = false;
+            foreach (var line in contentCollection)
             {
-                string aLine;
-                var lineNumber = -1;
-                var replaced = false;
-                while ((aLine = strReader.ReadLine()) != null)
+                lineNumber++;
+                if (lineNumber < startLine || lineNumber > stopLine)
                 {
-                    lineNumber++;
-                    if (lineNumber < startLine || lineNumber > stopLine)
+                    destList.Add(line);
+                }
+                else
+                {
+                    if (!replaced)
                     {
-                        destList.Add(aLine);
-                    }
-                    else
-                    {
-                        if (!replaced)
+                        replaced = true;
+                        if (!string.IsNullOrEmpty(replaceString))
                         {
-                            replaced = true;
-                            if (!string.IsNullOrEmpty(replaceString))
-                            {
-                                destList.Add(replaceString);
-                            }
+                            destList.Add(replaceString);
                         }
                     }
                 }
@@ -361,24 +358,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ConvertTemplateBody(string templateBody)
         {
-            var destList = new List<string>();
-
-            using (var strReader = new StringReader(templateBody))
+            var contentCollection = Extensions.StringReadLine(templateBody);
+            var newCollection = contentCollection.Select(u =>
             {
-                string aLine;
-                while ((aLine = strReader.ReadLine()) != null)
+                if (u.TrimStart().StartsWith("#"))
                 {
-                    var newTemplateBodyLine = aLine;
-                    if (aLine.TrimStart().StartsWith("#"))
-                    {
-                        newTemplateBodyLine = $"- {aLine.TrimStart()}";
-                    }
-
-                    destList.Add(newTemplateBodyLine);
+                    return $"- {u.TrimStart()}";
                 }
-            }
+                else
+                {
+                    return u;
+                }
+            });
 
-            return string.Join(newLine, destList);
+            return string.Join(newLine, newCollection);
         }
 
         private string BuildTemplateNameLine(string templateName, List<string> parameters)

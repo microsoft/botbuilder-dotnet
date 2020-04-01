@@ -49,7 +49,7 @@ templateBody
     ;
 
 structuredTemplateBody
-    : structuredBodyNameLine ((structuredBodyContentLine STRUCTURED_NEWLINE)+)? structuredBodyEndLine?
+    : structuredBodyNameLine ((structuredBodyContentLine? STRUCTURED_NEWLINE)+)? structuredBodyEndLine?
     ;
 
 structuredBodyNameLine
