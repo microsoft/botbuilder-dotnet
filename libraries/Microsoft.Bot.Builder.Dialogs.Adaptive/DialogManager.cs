@@ -231,7 +231,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             await botStateSet.SaveAllChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);
 
             // send trace of memory
-            var snapshot = dc.State.GetMemorySnapshot();
+            var snapshotDc = dc;
+            while (snapshotDc.Child != null)
+            {
+                snapshotDc = snapshotDc.Child;
+            }
+
+            var snapshot = snapshotDc.State.GetMemorySnapshot();
             var traceActivity = (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", snapshot, "Bot State");
             await dc.Context.SendActivityAsync(traceActivity).ConfigureAwait(false);
 
