@@ -633,11 +633,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(templates[1].Parameters[1], "newname");
             Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- new hi\n- #hi");
 
-            templates.UpdateTemplate("newtemplate2", "newtemplateName2", new List<string> { "newage2", "newname2" }, "- new hi\r\n#hi2");
+            templates.UpdateTemplate("newtemplate2", "newtemplateName2", new List<string> { "newage2", "newname2" }, "- new hi\r\n#hi2\r\n");
             Assert.AreEqual(templates.Count, 3);
             Assert.AreEqual(templates.Imports.Count, 0);
             Assert.AreEqual(templates[2].Name, "newtemplateName2");
-            Assert.AreEqual(templates[2].Body.Replace("\r\n", "\n"), "- new hi\n- #hi2");
+            Assert.AreEqual(templates[2].Body.Replace("\r\n", "\n"), "- new hi\n- #hi2\n");
 
             templates.DeleteTemplate("newtemplateName");
             Assert.AreEqual(templates.Count, 2);
