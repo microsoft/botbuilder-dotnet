@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// <summary>
     /// Select all rules which evaluate to true.
     /// </summary>
-    public class TrueSelector : ITriggerSelector
+    public class TrueSelector : TriggerSelector
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.TrueSelector";
@@ -21,13 +21,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private List<OnCondition> _conditionals;
         private bool _evaluate;
 
-        public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
+        public override void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
         {
             _conditionals = conditionals.ToList();
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel = default)
+        public override Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel = default)
         {
             var candidates = _conditionals;
             if (_evaluate)

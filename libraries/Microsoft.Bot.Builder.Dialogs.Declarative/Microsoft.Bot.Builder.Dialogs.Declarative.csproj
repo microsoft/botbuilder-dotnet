@@ -26,14 +26,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Content Include="**/*.dialog" />
-    <Content Include="schemas/**/*.json" />
-    <Content Include="**/*.lg" />
-    <Content Include="**/*.lu" />
-    <Content Include="**/*.schema" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Json.Pointer" Version="0.61.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NuGet.Client" Version="4.2.0" />

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -40,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 jsonObject = this.resourceExplorer.ResolveRefAsync(jsonObject).GetAwaiter().GetResult();
             }
 
-            var kind = (string)jsonObject["$kind"] ?? (string)jsonObject["$type"];
+            var kind = (string)jsonObject["$kind"];
             if (kind == null)
             {
                 throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jsonObject)}");

@@ -466,6 +466,11 @@
             "$ref": "#/definitions/Microsoft.SignOutUser"
         },
         {
+            "title": "Microsoft.SkillDialog",
+            "description": "Begin a remote skill dialog.",
+            "$ref": "#/definitions/Microsoft.SkillDialog"
+        },
+        {
             "title": "Microsoft.StaticActivityTemplate",
             "description": "This allows you to define a static Activity object",
             "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
@@ -536,11 +541,6 @@
             "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
-            "title": "Microsoft.TextTemplate",
-            "description": "Lg tempalte to evaluate to create text",
-            "$ref": "#/definitions/Microsoft.TextTemplate"
-        },
-        {
             "title": "Microsoft.TraceActivity",
             "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
             "$ref": "#/definitions/Microsoft.TraceActivity"
@@ -557,7 +557,7 @@
         },
         {
             "title": "Microsoft.UrlEntityRecognizer",
-            "description": "Recognizer which recognizes urls (example: http://bing.com)",
+            "description": "Recognizer which recognizes urls.",
             "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
         },
         {
@@ -630,7 +630,7 @@
             ]
         },
         "Microsoft.AdaptiveCardRecognizer": {
-            "$role": "implements(Microsoft.Recognizer)",
+            "$role": "implements(Microsoft.IRecognizer)",
             "title": "Cross-trained Recognizer Set",
             "description": "Recognizer for detecting the value response from an Adaptive Card.",
             "type": "object",
@@ -734,10 +734,10 @@
                     "default": "dialog.result"
                 },
                 "recognizer": {
-                    "$kind": "Microsoft.Recognizer",
+                    "$kind": "Microsoft.IRecognizer",
                     "title": "Recognizer",
                     "description": "Input recognizer that interprets user input into intent and entities.",
-                    "$ref": "#/definitions/Microsoft.Recognizer"
+                    "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "generator": {
                     "$kind": "Microsoft.ILanguageGenerator",
@@ -756,8 +756,8 @@
                     "description": "List of triggers defined for this dialog.",
                     "title": "Triggers",
                     "items": {
-                        "$kind": "Microsoft.ITriggerCondition",
-                        "$ref": "#/definitions/Microsoft.ITriggerCondition"
+                        "$kind": "Microsoft.ITrigger",
+                        "$ref": "#/definitions/Microsoft.ITrigger"
                     }
                 },
                 "schema": {
@@ -797,7 +797,7 @@
             ]
         },
         "Microsoft.AgeEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Age Entity Recognizer",
             "description": "Recognizer which recognizes age.",
             "type": "object",
@@ -2205,7 +2205,7 @@
             ]
         },
         "Microsoft.ConfirmationEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Confirmation Entity Recognizer",
             "description": "Recognizer which recognizes confirmation choices (yes/no).",
             "type": "object",
@@ -2333,7 +2333,7 @@
             ]
         },
         "Microsoft.CrossTrainedRecognizerSet": {
-            "$role": "implements(Microsoft.Recognizer)",
+            "$role": "implements(Microsoft.IRecognizer)",
             "title": "Cross-trained Recognizer Set",
             "description": "Recognizer for selecting between cross trained recognizers.",
             "type": "object",
@@ -2372,8 +2372,8 @@
                     "title": "Recognizers",
                     "description": "List of Recognizers defined for this set.",
                     "items": {
-                        "$kind": "Microsoft.Recognizer",
-                        "$ref": "#/definitions/Microsoft.Recognizer"
+                        "$kind": "Microsoft.IRecognizer",
+                        "$ref": "#/definitions/Microsoft.IRecognizer"
                     }
                 }
             },
@@ -2400,7 +2400,7 @@
             ]
         },
         "Microsoft.CurrencyEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Currency Entity Recognizer",
             "description": "Recognizer which recognizes currency.",
             "type": "object",
@@ -2452,7 +2452,7 @@
             ]
         },
         "Microsoft.DateTimeEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "DateTime Entity Recognizer",
             "description": "Recognizer which recognizes dates and time fragments.",
             "type": "object",
@@ -3056,7 +3056,7 @@
             ]
         },
         "Microsoft.DimensionEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Dimension Entity Recognizer",
             "description": "Recognizer which recognizes dimension.",
             "type": "object",
@@ -3329,7 +3329,7 @@
             ]
         },
         "Microsoft.EmailEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Email Entity Recognizer",
             "description": "Recognizer which recognizes email.",
             "type": "object",
@@ -3673,109 +3673,6 @@
                     "required": [
                         "$kind"
                     ]
-                }
-            ]
-        },
-        "Microsoft.EntityRecognizers": {
-            "$role": "interface",
-            "title": "Entity Recognizers",
-            "description": "Union of components which derive from EntityRecognizer abstract class.",
-            "type": "object",
-            "oneOf": [
-                {
-                    "title": "Microsoft.AgeEntityRecognizer",
-                    "description": "Recognizer which recognizes age.",
-                    "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.ConfirmationEntityRecognizer",
-                    "description": "Recognizer which recognizes confirmation choices (yes/no).",
-                    "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.CurrencyEntityRecognizer",
-                    "description": "Recognizer which recognizes currency.",
-                    "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.DateTimeEntityRecognizer",
-                    "description": "Recognizer which recognizes dates and time fragments.",
-                    "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.DimensionEntityRecognizer",
-                    "description": "Recognizer which recognizes dimension.",
-                    "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.EmailEntityRecognizer",
-                    "description": "Recognizer which recognizes email.",
-                    "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.GuidEntityRecognizer",
-                    "description": "Recognizer which recognizes guids.",
-                    "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.HashtagEntityRecognizer",
-                    "description": "Recognizer which recognizes Hashtags.",
-                    "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.IpEntityRecognizer",
-                    "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
-                    "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.MentionEntityRecognizer",
-                    "description": "Recognizer which recognizes @Mentions",
-                    "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.NumberEntityRecognizer",
-                    "description": "Recognizer which recognizes numbers.",
-                    "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.NumberRangeEntityRecognizer",
-                    "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
-                    "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.OrdinalEntityRecognizer",
-                    "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
-                    "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.PercentageEntityRecognizer",
-                    "description": "Recognizer which recognizes percentages.",
-                    "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.PhoneNumberEntityRecognizer",
-                    "description": "Recognizer which recognizes phone numbers.",
-                    "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.RegExEntityRecognizer",
-                    "description": "Recognizer which recognizes patterns of input based on regex.",
-                    "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.TemperatureEntityRecognizer",
-                    "description": "Recognizer which recognizes temperatures.",
-                    "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
-                },
-                {
-                    "title": "Microsoft.UrlEntityRecognizer",
-                    "description": "Recognizer which recognizes urls (example: http://bing.com)",
-                    "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-                },
-                {
-                    "type": "string",
-                    "title": "Reference to Microsoft.EntityRecognizers",
-                    "description": "Reference to Microsoft.EntityRecognizers .dialog file."
                 }
             ]
         },
@@ -4285,7 +4182,7 @@
             ]
         },
         "Microsoft.GuidEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Guid Entity Recognizer",
             "description": "Recognizer which recognizes guids.",
             "type": "object",
@@ -4337,7 +4234,7 @@
             ]
         },
         "Microsoft.HashtagEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Hashtag Entity Recognizer",
             "description": "Recognizer which recognizes Hashtags.",
             "type": "object",
@@ -4548,7 +4445,7 @@
         },
         "Microsoft.IActivityTemplate": {
             "title": "Microsoft ActivityTemplates",
-            "description": "Components which are IActivityTemplates",
+            "description": "Components which are ActivityTemplate",
             "$role": "interface",
             "oneOf": [
                 {
@@ -4569,7 +4466,7 @@
         },
         "Microsoft.IDialog": {
             "title": "Microsoft Dialogs",
-            "description": "Union of components which implement the Dialog contract",
+            "description": "Components which derive from Dialog",
             "$role": "interface",
             "oneOf": [
                 {
@@ -4753,6 +4650,11 @@
                     "$ref": "#/definitions/Microsoft.SignOutUser"
                 },
                 {
+                    "title": "Microsoft.SkillDialog",
+                    "description": "Begin a remote skill dialog.",
+                    "$ref": "#/definitions/Microsoft.SkillDialog"
+                },
+                {
                     "title": "Microsoft.SwitchCondition",
                     "description": "Execute different actions based on the value of a property.",
                     "$ref": "#/definitions/Microsoft.SwitchCondition"
@@ -4793,11 +4695,160 @@
                 }
             ]
         },
+        "Microsoft.IEntityRecognizer": {
+            "$role": "interface",
+            "title": "Entity Recognizers",
+            "description": "Components which derive from EntityRecognizer.",
+            "type": "object",
+            "oneOf": [
+                {
+                    "title": "Microsoft.AgeEntityRecognizer",
+                    "description": "Recognizer which recognizes age.",
+                    "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.ConfirmationEntityRecognizer",
+                    "description": "Recognizer which recognizes confirmation choices (yes/no).",
+                    "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.CurrencyEntityRecognizer",
+                    "description": "Recognizer which recognizes currency.",
+                    "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.DateTimeEntityRecognizer",
+                    "description": "Recognizer which recognizes dates and time fragments.",
+                    "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.DimensionEntityRecognizer",
+                    "description": "Recognizer which recognizes dimension.",
+                    "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.EmailEntityRecognizer",
+                    "description": "Recognizer which recognizes email.",
+                    "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.GuidEntityRecognizer",
+                    "description": "Recognizer which recognizes guids.",
+                    "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.HashtagEntityRecognizer",
+                    "description": "Recognizer which recognizes Hashtags.",
+                    "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.IpEntityRecognizer",
+                    "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
+                    "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.MentionEntityRecognizer",
+                    "description": "Recognizer which recognizes @Mentions",
+                    "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.NumberEntityRecognizer",
+                    "description": "Recognizer which recognizes numbers.",
+                    "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.NumberRangeEntityRecognizer",
+                    "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
+                    "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.OrdinalEntityRecognizer",
+                    "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
+                    "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.PercentageEntityRecognizer",
+                    "description": "Recognizer which recognizes percentages.",
+                    "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.PhoneNumberEntityRecognizer",
+                    "description": "Recognizer which recognizes phone numbers.",
+                    "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.RegExEntityRecognizer",
+                    "description": "Recognizer which recognizes patterns of input based on regex.",
+                    "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.TemperatureEntityRecognizer",
+                    "description": "Recognizer which recognizes temperatures.",
+                    "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.UrlEntityRecognizer",
+                    "description": "Recognizer which recognizes urls.",
+                    "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+                },
+                {
+                    "type": "string",
+                    "title": "Reference to Microsoft.IEntityRecognizer",
+                    "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
+                }
+            ]
+        },
         "Microsoft.ILanguageGenerator": {
-            "title": "Microsoft ILanguageGenerator",
-            "description": "Union of components which implement the ILanguageGenerator interface",
+            "title": "Microsoft LanguageGenerator",
+            "description": "Components which dervie from the LanguageGenerator class",
             "$role": "interface",
             "oneOf": [
+                {
+                    "type": "string",
+                    "title": "string"
+                }
+            ]
+        },
+        "Microsoft.IRecognizer": {
+            "title": "Microsoft Recognizer",
+            "description": "Components which derive from Recognizer class",
+            "$role": "interface",
+            "oneOf": [
+                {
+                    "title": "Microsoft.AdaptiveCardRecognizer",
+                    "description": "Recognizer for detecting the value response from an Adaptive Card.",
+                    "$ref": "#/definitions/Microsoft.AdaptiveCardRecognizer"
+                },
+                {
+                    "title": "Microsoft.CrossTrainedRecognizerSet",
+                    "description": "Recognizer for selecting between cross trained recognizers.",
+                    "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+                },
+                {
+                    "title": "Microsoft.LuisRecognizer",
+                    "description": "LUIS recognizer.",
+                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
+                },
+                {
+                    "title": "Microsoft.MultiLanguageRecognizer",
+                    "description": "Configure one recognizer per language and the specify the language fallback policy.",
+                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+                },
+                {
+                    "title": "Microsoft.QnAMakerRecognizer",
+                    "description": "Recognizer for generating QnAMatch intents from a KB.",
+                    "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+                },
+                {
+                    "title": "Microsoft.RecognizerSet",
+                    "description": "Creates the union of the intents and entities of the recognizers in the set.",
+                    "$ref": "#/definitions/Microsoft.RecognizerSet"
+                },
+                {
+                    "title": "Microsoft.RegexRecognizer",
+                    "description": "Use regular expressions to recognize intents and entities from user input.",
+                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
+                },
                 {
                     "type": "string",
                     "title": "string"
@@ -4806,24 +4857,19 @@
         },
         "Microsoft.ITextTemplate": {
             "title": "Microsoft TextTemplate",
-            "description": "Union of components which implement the TextTemplate",
+            "description": "Components which derive from TextTemplate class",
             "$role": "interface",
             "oneOf": [
-                {
-                    "title": "Microsoft.TextTemplate",
-                    "description": "Lg tempalte to evaluate to create text",
-                    "$ref": "#/definitions/Microsoft.TextTemplate"
-                },
                 {
                     "type": "string",
                     "title": "string"
                 }
             ]
         },
-        "Microsoft.ITriggerCondition": {
+        "Microsoft.ITrigger": {
             "$role": "interface",
             "title": "Microsoft Triggers",
-            "description": "Union of components which implement the OnCondition",
+            "description": "Components which derive from OnCondition class.",
             "oneOf": [
                 {
                     "title": "Microsoft.OnActivity",
@@ -4962,15 +5008,15 @@
                 },
                 {
                     "type": "string",
-                    "title": "Reference to Microsoft.ITriggerCondition",
-                    "description": "Reference to Microsoft.ITriggerCondition .dialog file."
+                    "title": "Reference to Microsoft.ITrigger",
+                    "description": "Reference to Microsoft.ITrigger .dialog file."
                 }
             ]
         },
         "Microsoft.ITriggerSelector": {
             "$role": "interface",
             "title": "Selectors",
-            "description": "Union of components which are trigger selectors",
+            "description": "Components which derive from TriggerSelector class.",
             "oneOf": [
                 {
                     "title": "Microsoft.ConditionalSelector",
@@ -5120,7 +5166,7 @@
             ]
         },
         "Microsoft.IpEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Ip Entity Recognizer",
             "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
             "type": "object",
@@ -5329,7 +5375,7 @@
             ]
         },
         "Microsoft.LuisRecognizer": {
-            "$role": "implements(Microsoft.Recognizer)",
+            "$role": "implements(Microsoft.IRecognizer)",
             "title": "LUIS Recognizer",
             "description": "LUIS recognizer.",
             "type": "object",
@@ -5385,8 +5431,8 @@
                 "externalEntityRecognizer": {
                     "title": "External Entity Recognizer",
                     "description": "Entities recognized by this recognizer will be passed to LUIS as external entities.",
-                    "$kind": "Microsoft.Recognizer",
-                    "$ref": "#/definitions/Microsoft.Recognizer"
+                    "$kind": "Microsoft.IRecognizer",
+                    "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "dynamicLists": {
                     "$role": "expression",
@@ -5501,7 +5547,7 @@
             ]
         },
         "Microsoft.MentionEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Mentions Entity Recognizer",
             "description": "Recognizer which recognizes @Mentions",
             "type": "object",
@@ -5609,7 +5655,7 @@
             ]
         },
         "Microsoft.MultiLanguageRecognizer": {
-            "$role": "implements(Microsoft.Recognizer)",
+            "$role": "implements(Microsoft.IRecognizer)",
             "title": "Multi-language recognizer",
             "description": "Configure one recognizer per language and the specify the language fallback policy.",
             "type": "object",
@@ -5655,8 +5701,8 @@
                     "title": "Recognizers",
                     "description": "Map of language -> Recognizer",
                     "additionalProperties": {
-                        "$kind": "Microsoft.Recognizer",
-                        "$ref": "#/definitions/Microsoft.Recognizer"
+                        "$kind": "Microsoft.IRecognizer",
+                        "$ref": "#/definitions/Microsoft.IRecognizer"
                     }
                 }
             },
@@ -5683,7 +5729,7 @@
             ]
         },
         "Microsoft.NumberEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Number Entity Recognizer",
             "description": "Recognizer which recognizes numbers.",
             "type": "object",
@@ -5954,7 +6000,7 @@
             ]
         },
         "Microsoft.NumberRangeEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "NumberRange Entity Recognizer",
             "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
             "type": "object",
@@ -6205,7 +6251,7 @@
             ]
         },
         "Microsoft.OnActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On activity",
             "description": "Actions to perform on receipt of a generic activity.",
             "type": "object",
@@ -6312,7 +6358,7 @@
             ]
         },
         "Microsoft.OnAssignEntity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On entity assignment",
             "description": "Actions to take when an entity should be assigned to a property.",
             "type": "object",
@@ -6427,7 +6473,7 @@
             ]
         },
         "Microsoft.OnBeginDialog": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On begin dialog",
             "description": "Actions to perform when this dialog begins.",
             "type": "object",
@@ -6528,7 +6574,7 @@
             ]
         },
         "Microsoft.OnCancelDialog": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On cancel dialog",
             "description": "Actions to perform on cancel dialog event.",
             "type": "object",
@@ -6629,7 +6675,7 @@
             ]
         },
         "Microsoft.OnChooseEntity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On choose entity",
             "description": "Actions to be performed when an entity value needs to be resolved.",
             "type": "object",
@@ -6740,7 +6786,7 @@
             ]
         },
         "Microsoft.OnChooseIntent": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On ambigious intent",
             "description": "Actions to perform on when an intent is ambigious.",
             "type": "object",
@@ -6849,7 +6895,7 @@
             ]
         },
         "Microsoft.OnChooseProperty": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On choose property",
             "description": "Actions to take when there are multiple possible mappings of entities to properties.",
             "type": "object",
@@ -6973,7 +7019,7 @@
             ]
         },
         "Microsoft.OnClearProperty": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On clear property",
             "description": "Actions to take when a property needs to be cleared.",
             "type": "object",
@@ -7079,7 +7125,7 @@
             ]
         },
         "Microsoft.OnCondition": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On condition",
             "description": "Actions to perform when specified condition is true.",
             "type": "object",
@@ -7180,7 +7226,7 @@
             ]
         },
         "Microsoft.OnConversationUpdateActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On ConversationUpdate activity",
             "description": "Actions to perform on receipt of an activity with type 'ConversationUpdate'.",
             "type": "object",
@@ -7281,7 +7327,7 @@
             ]
         },
         "Microsoft.OnCustomEvent": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On custom event",
             "description": "Actions to perform when a custom event is detected. Use 'Emit a custom event' action to raise a custom event.",
             "type": "object",
@@ -7388,7 +7434,7 @@
             ]
         },
         "Microsoft.OnDialogEvent": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On dialog event",
             "description": "Actions to perform when a specific dialog event occurs.",
             "type": "object",
@@ -7495,7 +7541,7 @@
             ]
         },
         "Microsoft.OnEndOfActions": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On end of actions",
             "description": "Actions to take when there are no more actions in the current dialog.",
             "type": "object",
@@ -7596,7 +7642,7 @@
             ]
         },
         "Microsoft.OnEndOfConversationActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On EndOfConversation activity",
             "description": "Actions to perform on receipt of an activity with type 'EndOfConversation'.",
             "type": "object",
@@ -7697,7 +7743,7 @@
             ]
         },
         "Microsoft.OnError": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On Error",
             "description": "Action to perform when an 'Error' dialog event occurs.",
             "type": "object",
@@ -7798,7 +7844,7 @@
             ]
         },
         "Microsoft.OnEventActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On Event activity",
             "description": "Actions to perform on receipt of an activity with type 'Event'.",
             "type": "object",
@@ -7899,7 +7945,7 @@
             ]
         },
         "Microsoft.OnHandoffActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On Handoff activity",
             "description": "Actions to perform on receipt of an activity with type 'HandOff'.",
             "type": "object",
@@ -8000,7 +8046,7 @@
             ]
         },
         "Microsoft.OnIntent": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On intent recognition",
             "description": "Actions to perform when specified intent is recognized.",
             "type": "object",
@@ -8114,7 +8160,7 @@
             ]
         },
         "Microsoft.OnInvokeActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On Invoke activity",
             "description": "Actions to perform on receipt of an activity with type 'Invoke'.",
             "type": "object",
@@ -8215,7 +8261,7 @@
             ]
         },
         "Microsoft.OnMessageActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On Message activity",
             "description": "Actions to perform on receipt of an activity with type 'Message'. Overrides Intent trigger.",
             "type": "object",
@@ -8316,7 +8362,7 @@
             ]
         },
         "Microsoft.OnMessageDeleteActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On MessageDelete activity",
             "description": "Actions to perform on receipt of an activity with type 'MessageDelete'.",
             "type": "object",
@@ -8417,7 +8463,7 @@
             ]
         },
         "Microsoft.OnMessageReactionActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On MessageReaction activity",
             "description": "Actions to perform on receipt of an activity with type 'MessageReaction'.",
             "type": "object",
@@ -8518,7 +8564,7 @@
             ]
         },
         "Microsoft.OnMessageUpdateActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On MessageUpdate activity",
             "description": "Actions to perform on receipt of an activity with type 'MessageUpdate'.",
             "type": "object",
@@ -8619,7 +8665,7 @@
             ]
         },
         "Microsoft.OnQnAMatch": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On QnAMaker Match",
             "description": "Actions to perform on when an match from QnAMaker is found.",
             "type": "object",
@@ -8720,7 +8766,7 @@
             ]
         },
         "Microsoft.OnRepromptDialog": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On RepromptDialog",
             "description": "Actions to perform when 'RepromptDialog' event occurs.",
             "type": "object",
@@ -8821,7 +8867,7 @@
             ]
         },
         "Microsoft.OnTypingActivity": {
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "title": "On Typing activity",
             "description": "Actions to perform on receipt of an activity with type 'Typing'.",
             "type": "object",
@@ -8925,7 +8971,7 @@
             "title": "On unknown intent",
             "description": "Action to perform when user input is unrecognized and if none of the 'on intent recognition' triggers match recognized intent.",
             "type": "object",
-            "$role": "implements(Microsoft.ITriggerCondition)",
+            "$role": "implements(Microsoft.ITrigger)",
             "properties": {
                 "$kind": {
                     "title": "$kind",
@@ -9023,7 +9069,7 @@
             ]
         },
         "Microsoft.OrdinalEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Ordinal Entity Recognizer",
             "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
             "type": "object",
@@ -9075,7 +9121,7 @@
             ]
         },
         "Microsoft.PercentageEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Percentage Entity Recognizer",
             "description": "Recognizer which recognizes percentages.",
             "type": "object",
@@ -9127,7 +9173,7 @@
             ]
         },
         "Microsoft.PhoneNumberEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Phone Number Entity Recognizer",
             "description": "Recognizer which recognizes phone numbers.",
             "type": "object",
@@ -9369,7 +9415,7 @@
             ]
         },
         "Microsoft.QnAMakerRecognizer": {
-            "$role": "implements(Microsoft.Recognizer)",
+            "$role": "implements(Microsoft.IRecognizer)",
             "title": "QnAMaker Recognizer",
             "description": "Recognizer for generating QnAMatch intents from a KB.",
             "type": "object",
@@ -9675,54 +9721,8 @@
                 }
             ]
         },
-        "Microsoft.Recognizer": {
-            "title": "Microsoft Recognizer",
-            "description": "Union of components which implement the Recognizer abstract class",
-            "$role": "interface",
-            "oneOf": [
-                {
-                    "title": "Microsoft.AdaptiveCardRecognizer",
-                    "description": "Recognizer for detecting the value response from an Adaptive Card.",
-                    "$ref": "#/definitions/Microsoft.AdaptiveCardRecognizer"
-                },
-                {
-                    "title": "Microsoft.CrossTrainedRecognizerSet",
-                    "description": "Recognizer for selecting between cross trained recognizers.",
-                    "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
-                },
-                {
-                    "title": "Microsoft.LuisRecognizer",
-                    "description": "LUIS recognizer.",
-                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
-                },
-                {
-                    "title": "Microsoft.MultiLanguageRecognizer",
-                    "description": "Configure one recognizer per language and the specify the language fallback policy.",
-                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
-                },
-                {
-                    "title": "Microsoft.QnAMakerRecognizer",
-                    "description": "Recognizer for generating QnAMatch intents from a KB.",
-                    "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
-                },
-                {
-                    "title": "Microsoft.RecognizerSet",
-                    "description": "Creates the union of the intents and entities of the recognizers in the set.",
-                    "$ref": "#/definitions/Microsoft.RecognizerSet"
-                },
-                {
-                    "title": "Microsoft.RegexRecognizer",
-                    "description": "Use regular expressions to recognize intents and entities from user input.",
-                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
-                },
-                {
-                    "type": "string",
-                    "title": "string"
-                }
-            ]
-        },
         "Microsoft.RecognizerSet": {
-            "$role": "implements(Microsoft.Recognizer)",
+            "$role": "implements(Microsoft.IRecognizer)",
             "title": "Recognizer Set",
             "description": "Creates the union of the intents and entities of the recognizers in the set.",
             "type": "object",
@@ -9761,8 +9761,8 @@
                     "title": "Recognizers",
                     "description": "List of Recognizers defined for this set.",
                     "items": {
-                        "$kind": "Microsoft.Recognizer",
-                        "$ref": "#/definitions/Microsoft.Recognizer"
+                        "$kind": "Microsoft.IRecognizer",
+                        "$ref": "#/definitions/Microsoft.IRecognizer"
                     }
                 }
             },
@@ -9789,7 +9789,7 @@
             ]
         },
         "Microsoft.RegExEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Regex Entity Recognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
             "type": "object",
@@ -9853,7 +9853,7 @@
             ]
         },
         "Microsoft.RegexRecognizer": {
-            "$role": "implements(Microsoft.Recognizer)",
+            "$role": "implements(Microsoft.IRecognizer)",
             "title": "Regex recognizer",
             "description": "Use regular expressions to recognize intents and entities from user input.",
             "type": "object",
@@ -9912,8 +9912,8 @@
                     "title": "Entity recognizers",
                     "description": "Collection of entity recognizers to use.",
                     "items": {
-                        "$kind": "Microsoft.EntityRecognizers",
-                        "$ref": "#/definitions/Microsoft.EntityRecognizers"
+                        "$kind": "Microsoft.IEntityRecognizer",
+                        "$ref": "#/definitions/Microsoft.IEntityRecognizer"
                     }
                 }
             },
@@ -10568,6 +10568,146 @@
                 }
             ]
         },
+        "Microsoft.SkillDialog": {
+            "$role": "implements(Microsoft.IDialog)",
+            "title": "Begin a skill dialog",
+            "description": "Begin a remote skill dialog.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.SkillDialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the skill dialog"
+                },
+                "disabled": {
+                    "$role": "expression",
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "activityProcessed": {
+                    "$role": "expression",
+                    "title": "Activity Processed",
+                    "description": "When set to false, the dialog that is called can process the current activity.",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "resultProperty": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property to store any value returned by the dialog that is called.",
+                    "examples": [
+                        "dialog.userName"
+                    ]
+                },
+                "botId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill host bot ID",
+                    "description": "The Microsoft App ID that will be calling the skill.",
+                    "default": "=settings.MicrosoftAppId"
+                },
+                "skillHostEndpoint": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill host",
+                    "description": "The callback Url for the skill host.",
+                    "default": "=settings.skillHostEndpoint",
+                    "examples": [
+                        "https://mybot.contoso.com/api/skills/"
+                    ]
+                },
+                "skillAppId": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill App ID",
+                    "description": "The Microsoft App ID for the skill."
+                },
+                "skillEndpoint": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Skill endpoint ",
+                    "description": "The /api/messages endpoint for the skill.",
+                    "examples": [
+                        "https://myskill.contoso.com/api/messages/"
+                    ]
+                },
+                "activity ": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Activity",
+                    "description": "The activity to send to the skill.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
         "Microsoft.StaticActivityTemplate": {
             "$role": "implements(Microsoft.IActivityTemplate)",
             "title": "Microsoft Static Activity Template",
@@ -10760,8 +10900,8 @@
             ]
         },
         "Microsoft.TemperatureEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
-            "title": "Temperature Entity Recognizer",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
+            "title": "Temperature Recognizer",
             "description": "Recognizer which recognizes temperatures.",
             "type": "object",
             "properties": {
@@ -11173,7 +11313,7 @@
         },
         "Microsoft.Test.ITestAction": {
             "title": "Microsoft Test ITestAction",
-            "description": "Union of components which implement the Test.ITestAction interface",
+            "description": "Components which derive from TestAction class",
             "$role": "interface",
             "oneOf": [
                 {
@@ -11828,61 +11968,19 @@
             ]
         },
         "Microsoft.TextTemplate": {
-            "$role": "implements(Microsoft.ITextTemplate)",
+            "$role": "interface",
             "title": "Microsoft TextTemplate",
             "description": "Lg tempalte to evaluate to create text",
             "type": "object",
             "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.TextTemplate"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
                 "template": {
                     "title": "Template",
                     "Description": "Language Generator template to evaluate to create the text",
                     "type": "string"
                 }
             },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "template",
-                        "$kind"
-                    ]
-                }
+            "required": [
+                "template"
             ]
         },
         "Microsoft.TraceActivity": {
@@ -12136,9 +12234,9 @@
             ]
         },
         "Microsoft.UrlEntityRecognizer": {
-            "$role": "implements(Microsoft.EntityRecognizers)",
-            "title": "Url Entity Recognizer",
-            "description": "Recognizer which recognizes urls (example: http://bing.com)",
+            "$role": "implements(Microsoft.IEntityRecognizer)",
+            "title": "Confirmation Url Recognizer",
+            "description": "Recognizer which recognizes urls.",
             "type": "object",
             "properties": {
                 "$kind": {

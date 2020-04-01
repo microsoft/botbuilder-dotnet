@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "$role": "interface",
-    "title": "Selectors",
-    "description": "Components which derive from TriggerSelector class."
+    "title": "Microsoft Triggers",
+    "description": "Components which derive from OnCondition class."
 }

@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
                 throw new ArgumentNullException(nameof(this.Template));
             }
 
-            ILanguageGenerator languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
+            LanguageGenerator languageGenerator = turnContext.TurnState.Get<LanguageGenerator>();
             if (languageGenerator != null)
             {
                 var result = await languageGenerator.Generate(
