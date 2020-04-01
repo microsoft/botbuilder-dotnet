@@ -10,10 +10,6 @@
 
 # Meat(val)
 - ${MeatEntity(val)}
-
-
-[sandwich-MeatEntity.en-us.lg](sandwich-MeatEntity.en-us.lg)
-[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
-[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
-
-> Generator: 4a335bab7dc20494e6889746eb29e33d
+[sandwich-MeatEntity.lg](sandwich-MeatEntity.lg)
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-Missing.lg](sandwich-library-Missing.lg)

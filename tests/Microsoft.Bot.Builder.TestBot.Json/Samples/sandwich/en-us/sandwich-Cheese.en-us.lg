@@ -10,10 +10,6 @@
 
 # Cheese(val)
 - ${CheeseEntity(val)}
-
-
-[sandwich-CheeseEntity.en-us.lg](sandwich-CheeseEntity.en-us.lg)
-[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
-[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
-
-> Generator: bb2614a78039854335c0fb225b22a985
+[sandwich-CheeseEntity.lg](sandwich-CheeseEntity.lg)
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-Missing.lg](sandwich-library-Missing.lg)

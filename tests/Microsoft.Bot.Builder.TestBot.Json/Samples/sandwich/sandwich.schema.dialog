@@ -81,42 +81,6 @@
                 "CheeseEntity"
             ]
         },
-        "Toppings": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": [
-                    "tomato",
-                    "lettuce",
-                    "pickles",
-                    "greenPeppers",
-                    "redPeppper",
-                    "whiteOnions",
-                    "redOnions"
-                ],
-                "maxItems": 3
-            },
-            "$entities": [
-                "ToppingsEntity"
-            ]
-        },
-        "Sauces": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": [
-                    "pepper",
-                    "salt",
-                    "yellowMustard",
-                    "dijonMustard",
-                    "mayo",
-                    "vinegar"
-                ]
-            },
-            "$entities": [
-                "SaucesEntity"
-            ]
-        },
         "Price": {
             "type": "object",
             "$entities": [
@@ -164,8 +128,6 @@
                 "Bread",
                 "Meat",
                 "Cheese",
-                "Toppings",
-                "Sauces",
                 "Price"
             ],
             "$entities": [
@@ -181,8 +143,6 @@
                 "Bread",
                 "Meat",
                 "Cheese",
-                "Toppings",
-                "Sauces",
                 "Price"
             ],
             "$entities": [
@@ -195,8 +155,6 @@
         "Bread",
         "Cheese",
         "Meat",
-        "Toppings",
-        "Sauces",
         "Price"
     ],
     "$expectedOnly": [
@@ -206,12 +164,6 @@
         "keyPhrase",
         "personName"
     ],
-    "$operations": [
-        "AddToProperty",
-        "RemoveFromProperty",
-        "ClearProperty",
-        "ShowProperty"
-    ],
     "$public": [
         "Quantity",
         "Length",
@@ -219,8 +171,6 @@
         "Bread",
         "Meat",
         "Cheese",
-        "Toppings",
-        "Sauces",
         "Price"
     ],
     "definitions": {
@@ -233,15 +183,11 @@
                 "Bread",
                 "Meat",
                 "Cheese",
-                "Toppings",
-                "Sauces",
                 "Price"
             ],
             "$entities": [
                 "PROPERTYName"
             ]
         }
-    },
-    "$defaultOperation": "AddToProperty",
-    "$Generator": "dfcc7ebcfbcf5f261ebfa1a3c7a10f05"
+    }
 }

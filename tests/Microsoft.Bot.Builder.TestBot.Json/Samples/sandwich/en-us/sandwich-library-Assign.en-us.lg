@@ -3,8 +3,6 @@
 - ${number} is less than the minimum value ${dialogClass.schema.properties[property].minimum}.
 - ELSEIF: ${greater(number, dialogClass.schema.properties[property].maximum)}
 - ${number} is greater than the maximum value ${dialogClass.schema.properties[property].maximum}.
-- ELSE:
--
 
 # unitsAlert(property)
 - IF: ${dialogClass.schema.properties[property].$units}
@@ -37,42 +35,5 @@
 
 # unexpectedPropertyChange(property, val, oldVal)
 - ${name(property)} is changed from ${value(property, oldVal)} to ${value(property, val)}.
-
-# setArrayPropertyMessage(property, val)
-- IF: ${contains($expectedProperties, property)}
-- 
-- ELSE:
-- Added ${value(property, val)} to ${name(property)}
-
-# clearPropertyMessage(property)
-- ${name(property)} has been cleared.
-
-# removePropertyMessage(property, val)
-- IF: ${contains($expectedProperties, property) && $expectedOperation == 'RemoveFromProperty'}
-- 
-- ELSE:
-- ${removeUnexpectedPropertyMessage(property, val)}
-
-# removeUnexpectedPropertyMessage(property, val)
-- Removed ${value(property, val)} from ${name(property)}.
-
-# removeArrayPropertyMessage(property, val)
-- IF: ${contains($expectedProperties, property) && $expectedOperation == 'RemoveFromProperty'}
-- 
-- ELSE:
-- ${removeUnexpectedArrayPropertyMessage(property, val)}
-
-# removeUnexpectedArrayPropertyMessage(property, val)
-- IF: ${contains(dialog[property], val)}
-- Removed ${value(property, val)} from ${name(property)} ${value(property, val)}
-- ELSE:
--
-
-# showPropertyMessage(property)
-- ${name(property)}: ${value(property, dialog[property])}
-
-[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
-
-[sandwich-library-ReadForm.en-us.lg](sandwich-library-ReadForm.en-us.lg)
-
-> Generator: e053922ac4c27791e33e3ed9b6143854
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-ReadForm.lg](sandwich-library-ReadForm.lg)

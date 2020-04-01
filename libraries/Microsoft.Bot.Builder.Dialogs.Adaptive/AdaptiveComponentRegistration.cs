@@ -57,7 +57,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<OnEndOfActions>(OnEndOfActions.DeclarativeType);
             yield return new DeclarativeType<OnChooseProperty>(OnChooseProperty.DeclarativeType);
             yield return new DeclarativeType<OnChooseEntity>(OnChooseEntity.DeclarativeType);
-            yield return new DeclarativeType<OnClearProperty>(OnClearProperty.DeclarativeType);
             yield return new DeclarativeType<OnAssignEntity>(OnAssignEntity.DeclarativeType);
 
             // Actions

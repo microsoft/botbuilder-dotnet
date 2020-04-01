@@ -1,0 +1,13 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$kind": "Microsoft.OnAssignEntity",
+    "property": "PropertyToChange",
+    "entity": "PROPERTYName",
+    "actions": [
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "dialog[@PROPERTYName]"            
+        }
+    ]
+}

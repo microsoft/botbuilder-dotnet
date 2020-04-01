@@ -49,7 +49,4 @@
 
 # subFact(property, subproperty)
 - ${dialog[property][subproperty]}
-
-[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
-
-> Generator: 36c8be333c24265b394a4ad454ee34fa
+[sandwich-library.lg](sandwich-library.lg)

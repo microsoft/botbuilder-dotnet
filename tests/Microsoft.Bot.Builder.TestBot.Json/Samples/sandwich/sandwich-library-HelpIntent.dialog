@@ -1,3 +1,4 @@
+
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnIntent",
@@ -5,8 +6,7 @@
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${help(@PropertyName)}"
+            "activity": "${help(@PropertyName)}"           
         }
-    ],
-    "$Generator": "821b1da74cba078c381b917bea33e391"
+    ]
 }

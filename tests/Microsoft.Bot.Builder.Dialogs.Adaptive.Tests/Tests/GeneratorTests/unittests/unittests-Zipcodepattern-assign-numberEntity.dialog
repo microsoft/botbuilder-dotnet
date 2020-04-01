@@ -6,26 +6,13 @@
     "entity": "number",
     "actions": [
         {
-            "$kind": "Microsoft.IfCondition",
-            "condition":"or(less(@number, dialogClass.schema.properties['Zipcodepattern'].minimum), greater(@number, dialogClass.schema.properties['Zipcodepattern'].maximum))",
-            "actions":[
-                {
-                    "$kind": "Microsoft.SendActivity",
-                    "activity": "${numberValidation('Zipcodepattern', @number)}"
-                }                    
-            ],
-            "elseActions":[
-                {
-                    "$kind": "Microsoft.SendActivity",
-                    "activity": "${setPropertyMessage('Zipcodepattern', @number)}"
-                },
-                {
-                    "$kind": "Microsoft.SetProperty",
-                    "property": "$Zipcodepattern",
-                    "value": "=@number"          
-                }
-            ]
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${setPropertyMessage('Zipcodepattern', @number)}"
+        }, 
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Zipcodepattern",
+            "value": "=@number"          
         }
-        
     ]               
 }

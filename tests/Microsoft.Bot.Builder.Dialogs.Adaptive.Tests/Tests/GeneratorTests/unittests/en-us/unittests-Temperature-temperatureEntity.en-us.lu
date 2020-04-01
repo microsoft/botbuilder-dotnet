@@ -1,6 +1,1 @@
-
-@ prebuilt temperature 
-
-@ list PROPERTYName
-    - Temperature:
-
+@ prebuilt temperature hasRole Temperature

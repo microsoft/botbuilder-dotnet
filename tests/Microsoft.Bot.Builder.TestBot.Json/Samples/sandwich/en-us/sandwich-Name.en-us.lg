@@ -10,10 +10,6 @@
 
 # Name(val)
 - ${NameEntity(val)}
-
-
-[sandwich-NameEntity.en-us.lg](sandwich-NameEntity.en-us.lg)
-[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
-[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
-
-> Generator: cd697f3eb56e588b9bf91dcabc10d68c
+[sandwich-NameEntity.lg](sandwich-NameEntity.lg)
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-Missing.lg](sandwich-library-Missing.lg)

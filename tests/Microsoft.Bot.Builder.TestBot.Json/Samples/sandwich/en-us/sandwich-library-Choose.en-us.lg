@@ -1,23 +1,13 @@
 # chooseEnumEntity(property)
 - ```
 ${askHelp()}
-Please choose a value for ${name(property)} from \[${join(foreach(turn.dialogEvent.value.entity.value, val, enumEntityValue(property, val)), ', ')}\]
+Please choose a value for ${name(property)} from [${join(foreach(turn.dialogEvent.value.entity.value, val, enumEntityValue(property, val)), ', ')}]
 ```
-
-# chooseEnumArrayEntity(property)
-- ```
-${askHelp()}
-Please choose a value for ${name(property)} from \[${join(foreach(turn.dialogEvent.value.entity.value, val, enumEntityValue(property, val)), ', ')}\]
-``` 
 
 # chooseProperties
 - Did you mean ${join(foreach(turn.dialogevent.value, choice, choosePropertyEntity(choice)), " or ")}
 
 # choosePropertyEntity(property)
 - "${property.entity.text}" as ${name(property.property)}
-
-[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
-
-[sandwich-library-Help.en-us.lg](sandwich-library-Help.en-us.lg)
-
-> Generator: 82507cf7e397d4641ddf5c49979f05d0
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-Help.lg](sandwich-library-Help.lg)

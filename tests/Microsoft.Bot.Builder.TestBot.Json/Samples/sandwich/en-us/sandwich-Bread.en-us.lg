@@ -10,10 +10,6 @@
 
 # Bread(val)
 - ${BreadEntity(val)}
-
-
-[sandwich-BreadEntity.en-us.lg](sandwich-BreadEntity.en-us.lg)
-[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
-[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
-
-> Generator: f445ba8d8c646b85891e2d07295e2fdc
+[sandwich-BreadEntity.lg](sandwich-BreadEntity.lg)
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-Missing.lg](sandwich-library-Missing.lg)
