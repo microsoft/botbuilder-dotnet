@@ -162,6 +162,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return errorPrefix;
         }
 
+        /// <summary>
+        /// read string content line by line.
+        /// </summary>
+        /// <param name="input">string content.</param>
+        /// <returns>enumerable result.</returns>
         public static IEnumerable<string> StringReadLine(string input)
         {
             if (input == null)
