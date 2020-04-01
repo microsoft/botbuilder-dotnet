@@ -71,21 +71,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return $"{this.GetType().Name}[{Dialog?.ToString()}]";
         }
 
-        protected Dialog ResolveDialog(DialogContext dc)
+        /// <summary>
+        /// Resolve Dialog Expression as either Dialog, or StringExpression to get dialogid.
+        /// </summary>
+        /// <param name="dc">dialogcontext.</param>
+        /// <returns>dialog.</returns>
+        protected virtual Dialog ResolveDialog(DialogContext dc)
         {
             if (this.Dialog?.Value != null)
             {
                 return this.Dialog.Value;
             }
 
-            // NOTE: we call TryEvaluate instead of TryGetValue because we want the result of the expression as a string so we can
-            // look up the string using external FindDialog().
+            // NOTE: we want the result of the expression as a string so we can look up the string using external FindDialog().
             var se = new StringExpression($"={this.Dialog.ExpressionText}");
             var dialogId = se.GetValue(dc.State);
             return dc.FindDialog(dialogId ?? throw new Exception($"{this.Dialog.ToString()} not found."));
         }
 
-        protected object BindOptions(DialogContext dc, object options)
+        /// <summary>
+        /// BindOptions - evaluate expressions in options.
+        /// </summary>
+        /// <param name="dc">dialog context.</param>
+        /// <param name="options">options to bind.</param>
+        /// <returns>merged options with expressions bound to values.</returns>
+        protected virtual object BindOptions(DialogContext dc, object options)
         {
             // binding options are static definition of options with overlay of passed in options);
             var bindingOptions = (JObject)ObjectPath.Merge(this.Options.GetValue(dc.State), options ?? new JObject());

@@ -1,6 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "$role": "interface",
-    "title": "Microsoft Triggers",
-    "description": "Union of components which implement the OnCondition"
+    "title": "Entity Recognizers",
+    "description": "Components which derive from EntityRecognizer.",
+    "type": "object"
 }

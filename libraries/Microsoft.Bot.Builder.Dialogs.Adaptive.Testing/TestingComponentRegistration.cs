@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
     public class TestingComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
-        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes()
+        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Action
             yield return new DeclarativeType<AssertCondition>(AssertCondition.DeclarativeType);

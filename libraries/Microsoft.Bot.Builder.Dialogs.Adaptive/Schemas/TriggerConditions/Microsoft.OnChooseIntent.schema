@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.ITriggerCondition)",
+    "$role": "implements(Microsoft.ITrigger)",
     "title": "On ambigious intent",
     "description": "Actions to perform on when an intent is ambigious.",
     "type": "object",

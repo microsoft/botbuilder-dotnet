@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.Recognizer)",
+    "$role": "implements(Microsoft.IRecognizer)",
     "title": "Multi-language recognizer",
     "description": "Configure one recognizer per language and the specify the language fallback policy.",
     "type": "object",
@@ -21,7 +21,7 @@
             "title": "Recognizers",
             "description": "Map of language -> Recognizer",
             "additionalProperties": {
-                "$kind": "Microsoft.Recognizer"
+                "$kind": "Microsoft.IRecognizer"
             }
         }
     },

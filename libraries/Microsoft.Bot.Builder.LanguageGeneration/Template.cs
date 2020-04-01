@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -144,14 +145,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string GetRangeContent(string originString, int startLine, int stopLine)
         {
-            var originList = originString.Split('\n');
-            if (startLine < 0 || startLine > stopLine || originList.Length <= stopLine)
+            if (startLine < 0 || startLine > stopLine)
             {
                 throw new Exception("index out of range.");
             }
 
-            var destList = originList.Skip(startLine).Take(stopLine - startLine + 1);
-            return string.Join("\n", destList).TrimEnd('\r');
+            var destList = new List<string>();
+
+            using (var strReader = new StringReader(originString))
+            {
+                string aLine;
+                var lineNumber = -1;
+                while ((aLine = strReader.ReadLine()) != null)
+                {
+                    lineNumber++;
+                    if (lineNumber >= startLine && lineNumber <= stopLine)
+                    {
+                        destList.Add(aLine);
+                    }
+                }
+            }
+
+            return string.Join("\r\n", destList);
         }
     }
 }
