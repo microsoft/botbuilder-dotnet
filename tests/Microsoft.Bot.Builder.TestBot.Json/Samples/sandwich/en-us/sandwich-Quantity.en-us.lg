@@ -10,10 +10,6 @@
 
 # Quantity(val)
 - ${QuantityEntity(val)}
-
-
-[sandwich-QuantityEntity.en-us.lg](sandwich-QuantityEntity.en-us.lg)
-[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
-[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
-
-> Generator: e03de8abf2d31b87dd802e311e28cacf
+[sandwich-QuantityEntity.lg](sandwich-QuantityEntity.lg)
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-Missing.lg](sandwich-library-Missing.lg)

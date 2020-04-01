@@ -321,12 +321,6 @@
         "keyPhrase",
         "personName"
     ],
-    "$operations": [
-        "AddToProperty",
-        "RemoveFromProperty",
-        "ClearProperty",
-        "ShowProperty"
-    ],
     "$public": [
         "Personname",
         "Age",

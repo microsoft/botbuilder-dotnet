@@ -1,3 +1,4 @@
+
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.LuisRecognizer",
@@ -6,6 +7,5 @@
     "endpointKey": "=settings.luis.endpointKey",
     "predictionOptions": {
         "includeInstanceData": true
-    },
-    "$Generator": "57ed009eb185cc5ba6dc8dafcf97cd89"
+    }
 }

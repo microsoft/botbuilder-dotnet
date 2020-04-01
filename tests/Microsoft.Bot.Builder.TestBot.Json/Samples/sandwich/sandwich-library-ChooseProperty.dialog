@@ -1,3 +1,4 @@
+
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnChooseProperty",
@@ -5,10 +6,7 @@
         {
             "$kind": "Microsoft.Ask",
             "activity": "${chooseProperties()}",
-            "expectedProperties": [
-                "PropertyToChange"
-            ]
+            "expectedProperties": ["PropertyToChange"]
         }
-    ],
-    "$Generator": "7c5cc92205f88b73f06330730bbeda32"
+    ]
 }

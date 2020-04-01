@@ -1,3 +1,14 @@
-@ list PROPERTYName
-
-> Generator: f1bbeac52a9987f82df621607484cf25
+$PROPERTYName:Quantity=
+- quantity
+$PROPERTYName:Length=
+- length
+$PROPERTYName:Name=
+- name
+$PROPERTYName:Bread=
+- bread
+$PROPERTYName:Meat=
+- meat
+$PROPERTYName:Cheese=
+- cheese
+$PROPERTYName:Price=
+- price

@@ -10,8 +10,6 @@
 
 # Personname(val)
 - ${PersonnameEntity(val)}
-
-
-[unittests-PersonnameEntity.en-us.lg](unittests-PersonnameEntity.en-us.lg)
-[unittests-library.en-us.lg](unittests-library.en-us.lg)
-[unittests-library-Missing.en-us.lg](unittests-library-Missing.en-us.lg)
+[unittests-PersonnameEntity.lg](unittests-PersonnameEntity.lg)
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Missing.lg](unittests-library-Missing.lg)

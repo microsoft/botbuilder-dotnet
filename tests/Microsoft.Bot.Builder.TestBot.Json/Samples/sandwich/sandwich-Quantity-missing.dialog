@@ -1,9 +1,10 @@
+
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition": "!$Quantity || $PropertyToChange == 'Quantity'",
+    "condition":"!$Quantity",
     "priority": "indexOf(dialog.requiredProperties, 'Quantity')",
-    "actions": [
+    "actions": [        
         {
             "$kind": "Microsoft.Ask",
             "activity": "${AskQuantity()}",
@@ -11,6 +12,5 @@
                 "Quantity"
             ]
         }
-    ],
-    "$Generator": "b5118d8283ba0d7dba3f143e89a4e35b"
+    ]
 }

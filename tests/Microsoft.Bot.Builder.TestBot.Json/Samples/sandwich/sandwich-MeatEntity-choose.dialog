@@ -1,3 +1,4 @@
+
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.OnChooseEntity",
@@ -6,10 +7,7 @@
         {
             "$kind": "Microsoft.Ask",
             "activity": "${chooseMeatEntity()}",
-            "expectedProperties": [
-                "Meat"
-            ]
+            "expectedProperties": ["Meat"]
         }
-    ],
-    "$Generator": "8794e4fdc5f5c2ddbbafec70594056f8"
+    ]
 }

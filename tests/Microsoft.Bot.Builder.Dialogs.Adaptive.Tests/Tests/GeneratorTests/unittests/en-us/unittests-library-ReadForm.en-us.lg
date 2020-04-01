@@ -49,5 +49,4 @@
 
 # subFact(property, subproperty)
 - ${dialog[property][subproperty]}
-
-[unittests-library.en-us.lg](unittests-library.en-us.lg)
+[unittests-library.lg](unittests-library.lg)
