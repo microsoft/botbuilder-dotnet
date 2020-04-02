@@ -731,7 +731,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (!handled)
             {
                 // If event wasn't handled, remove it from assignments and keep going if things changed
-                if (nextAssignment.Event != AdaptiveEvents.AssignEntity)
+                if (nextAssignment != null && nextAssignment.Event != AdaptiveEvents.AssignEntity)
                 {
                     assignments.Dequeue(actionContext);
                     handled = await this.ProcessQueuesAsync(actionContext, cancellationToken);
