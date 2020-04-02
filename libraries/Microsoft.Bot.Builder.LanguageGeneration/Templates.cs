@@ -331,25 +331,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var destList = new List<string>();
-            var replaced = false;
-            for (var line = 0; line < originList.Length; line++)
-            {
-                if (line < startLine || line > stopLine)
-                {
-                    destList.Add(originList[line]);
-                }
-                else
-                {
-                    if (!replaced)
-                    {
-                        replaced = true;
-                        if (!string.IsNullOrEmpty(replaceString))
-                        {
-                            destList.Add(replaceString);
-                        }
-                    }
-                }
-            }
+
+            destList.AddRange(originList.Take(startLine));
+            destList.Add(replaceString);
+            destList.AddRange(originList.Skip(stopLine + 1));
 
             return string.Join(newLine, destList);
         }
