@@ -51,8 +51,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     name = item?.GetType().Name ?? "null";
                 }
 
-                var count = context.State.GetValue<uint>(DialogPath.EventCounter);
-                var threadText = $"{count}: '{Ellipsis(turnText, 18)}'";
+                var threadText = $"'{Ellipsis(turnText, 18)}'";
+                if (context.State.GetMemoryScope(ScopePath.Dialog) != null && context.State.TryGetValue<uint>(DialogPath.EventCounter, out var count))
+                {
+                    threadText = $"{count}: {threadText}";
+                }
+
                 System.Diagnostics.Trace.TraceInformation($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {name} ");
             }
 
