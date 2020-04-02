@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("ErrorStructuredTemplate.lg");
 
-            Assert.AreEqual(5, diagnostics.Count);
+            Assert.AreEqual(8, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.InvalidStrucBody));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
@@ -111,6 +111,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(diagnostics[3].Message.Contains("Error occurred when parsing expression 'NOTemplate()'. NOTemplate does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[4].Severity);
             Assert.IsTrue(diagnostics[4].Message.Contains(TemplateErrors.InvalidStrucName));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[5].Severity);
+            Assert.IsTrue(diagnostics[5].Message.Contains(TemplateErrors.InvalidStrucName));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[6].Severity); 
+            Assert.IsTrue(diagnostics[6].Message.Contains(TemplateErrors.MissingStrucEnd));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[7].Severity);
+            Assert.IsTrue(diagnostics[7].Message.Contains(TemplateErrors.InvalidStrucBody));
         }
 
         [TestMethod]
