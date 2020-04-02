@@ -25,6 +25,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         bool TryGetValue(T item, out ulong code);
 
+        void Clear();
+
         ulong Add(T item);
 
         void Remove(T item);
