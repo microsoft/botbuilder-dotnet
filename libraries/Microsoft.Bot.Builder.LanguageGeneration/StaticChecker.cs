@@ -158,34 +158,41 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 result.Add(BuildLGDiagnostic(TemplateErrors.MissingStrucEnd, context: context));
             }
 
-            var bodys = context.structuredBodyContentLine();
-
-            if (bodys == null || bodys.Length == 0)
+            var errors = context.errorStructureLine();
+            if (errors != null && errors.Length > 0)
             {
-                result.Add(BuildLGDiagnostic(TemplateErrors.EmptyStrucContent, context: context));
+                foreach (var error in errors)
+                {
+                    result.Add(BuildLGDiagnostic(TemplateErrors.InvalidStrucBody, context: error));
+                }
             }
             else
             {
-                foreach (var body in bodys)
+                var bodys = context.structuredBodyContentLine();
+
+                if (bodys == null || bodys.Length == 0)
                 {
-                    if (body.errorStructureLine() != null)
+                    result.Add(BuildLGDiagnostic(TemplateErrors.EmptyStrucContent, context: context));
+                }
+                else
+                {
+                    foreach (var body in bodys)
                     {
-                        result.Add(BuildLGDiagnostic(TemplateErrors.InvalidStrucBody, context: body.errorStructureLine()));
-                    }
-                    else if (body.objectStructureLine() != null)
-                    {
-                        result.AddRange(CheckExpression(body.objectStructureLine().GetText(), body.objectStructureLine()));
-                    }
-                    else
-                    {
-                        // KeyValueStructuredLine
-                        var structureValues = body.keyValueStructureLine().keyValueStructureValue();
-                        var errorPrefix = "Property '" + body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText() + "':";
-                        foreach (var structureValue in structureValues)
+                        if (body.objectStructureLine() != null)
                         {
-                            foreach (var expression in structureValue.EXPRESSION_IN_STRUCTURE_BODY())
+                            result.AddRange(CheckExpression(body.objectStructureLine().GetText(), body.objectStructureLine()));
+                        }
+                        else
+                        {
+                            // KeyValueStructuredLine
+                            var structureValues = body.keyValueStructureLine().keyValueStructureValue();
+                            var errorPrefix = "Property '" + body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText() + "':";
+                            foreach (var structureValue in structureValues)
                             {
-                                result.AddRange(CheckExpression(expression.GetText(), structureValue, errorPrefix));
+                                foreach (var expression in structureValue.EXPRESSION_IN_STRUCTURE_BODY())
+                                {
+                                    result.AddRange(CheckExpression(expression.GetText(), structureValue, errorPrefix));
+                                }
                             }
                         }
                     }
