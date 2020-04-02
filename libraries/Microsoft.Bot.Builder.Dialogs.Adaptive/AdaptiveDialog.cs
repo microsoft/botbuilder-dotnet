@@ -10,9 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -875,7 +873,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 actionContext.State.SetValue(TurnPath.UnrecognizedText, unrecognized);
                 actionContext.State.SetValue(TurnPath.RecognizedEntities, recognized);
-                var turn = actionContext.State.GetValue<uint>(DialogPath.EventCounter);
                 assignments.Write(actionContext);
             }
         }
@@ -1230,7 +1227,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     if (alternative.Operation == null)
                     {
-                        alternative.Operation = alternative.IsExpected ? expectedOp : defaultOp;
+                        alternative.Operation = alternative.IsExpected ? (expectedOp ?? defaultOp) : defaultOp;
                     }
 
                     usedEntities.Add(alternative.Entity);

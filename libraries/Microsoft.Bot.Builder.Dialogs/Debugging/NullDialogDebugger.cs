@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     turnText = activity.Type;
                 }
 
-                string name = string.Empty;
+                string name;
                 if (item is Dialog dialog)
                 {
                     name = dialog.Id;
