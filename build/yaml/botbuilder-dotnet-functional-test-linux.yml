@@ -31,12 +31,12 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
+#  AzureDeploymentPassword: define this in Azure
+#  AzureDeploymentUser: define this in Azure
 #  AzureSubscription: define this in Azure
 #  DeleteResourceGroup: (optional) define this in Azure. Default = true.
 #  LinuxTestBotAppId: define this in Azure
 #  LinuxTestBotAppSecret: define this in Azure
-#  LinuxTestBotAzureDeploymentPassword: define this in Azure
-#  LinuxTestBotAzureDeploymentUser: define this in Azure
 #  LinuxTestBotBotGroup: define this in Azure
 #  LinuxTestBotBotName: define this in Azure
 
@@ -76,7 +76,7 @@ steps:
    git init
    git add .
    git commit -m "cibuildtest"
-   git remote add azure https://$(LinuxTestBotAzureDeploymentUser):$(LinuxTestBotAzureDeploymentPassword)@$(LinuxTestBotBotName).scm.azurewebsites.net:443/$(LinuxTestBotBotName).git
+   git remote add azure https://$(AzureDeploymentUser):$(AzureDeploymentPassword)@$(LinuxTestBotBotName).scm.azurewebsites.net:443/$(LinuxTestBotBotName).git
    git push azure master
   workingDirectory: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot'
   displayName: 'Git bot deployment'
