@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace AdaptiveExpressions
@@ -71,7 +72,7 @@ namespace AdaptiveExpressions
             }
             else if (Value is float || Value is double)
             {
-               return ((double)Value).ToString("0.00########");
+               return ((double)Value).ToString("0.00########", CultureInfo.InvariantCulture);
             }
             else
             {
