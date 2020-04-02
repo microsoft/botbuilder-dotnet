@@ -150,11 +150,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception("index out of range.");
             }
 
-            var contentCollection = Extensions.StringReadLine(originString);
+            var lines = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
 
             var destList = new List<string>();
             var lineNumber = -1;
-            foreach (var line in contentCollection)
+            foreach (var line in lines)
             {
                 lineNumber++;
                 if (lineNumber >= startLine && lineNumber <= stopLine)

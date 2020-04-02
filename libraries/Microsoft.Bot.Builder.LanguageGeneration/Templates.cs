@@ -328,12 +328,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception("index out of range.");
             }
 
-            var contentCollection = Extensions.StringReadLine(originString);
+            var lines = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
 
             var destList = new List<string>();
             var lineNumber = -1;
             var replaced = false;
-            foreach (var line in contentCollection)
+            foreach (var line in lines)
             {
                 lineNumber++;
                 if (lineNumber < startLine || lineNumber > stopLine)
@@ -358,8 +358,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ConvertTemplateBody(string templateBody)
         {
-            var contentCollection = Extensions.StringReadLine(templateBody);
-            var newCollection = contentCollection.Select(u =>
+            var lines = templateBody.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
+            var destList = lines.Select(u =>
             {
                 if (u.TrimStart().StartsWith("#"))
                 {
@@ -371,7 +371,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             });
 
-            return string.Join(newLine, newCollection);
+            return string.Join(newLine, destList);
         }
 
         private string BuildTemplateNameLine(string templateName, List<string> parameters)
