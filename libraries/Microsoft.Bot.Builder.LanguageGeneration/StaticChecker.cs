@@ -402,7 +402,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 catch (Exception e)
                 {
-                    var errorMsg = prefix + TemplateErrors.ExpressionParseError(exp) + e.Message;
+                    var suffixErrorMsg = TemplateErrors.ExpressionParseError(exp) + " " + e.Message;
+                    var errorMsg = string.IsNullOrEmpty(prefix) ? suffixErrorMsg
+                         : prefix + " " + suffixErrorMsg;
 
                     result.Add(BuildLGDiagnostic(errorMsg, context: context));
                     return result;

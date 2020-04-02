@@ -286,10 +286,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var lgFile = GetTemplates("RunTimeErrors.lg");
 
-            //var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("template1"));
-            //Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'.", exception.Message);
+            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("template1"));
+            Assert.AreEqual("'dialog.abc' evaluated to null. [template1]  Error occurred when evaluating '-I want ${dialog.abc}'.", exception.Message);
 
-            var exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("prebuilt1"));
+            exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("prebuilt1"));
             Assert.AreEqual("'dialog.abc' evaluated to null. [prebuilt1]  Error occurred when evaluating '-I want ${foreach(dialog.abc, item, template1())}'.", exception.Message);
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("template2"));
