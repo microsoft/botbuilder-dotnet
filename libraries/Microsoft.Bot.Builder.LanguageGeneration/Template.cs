@@ -145,23 +145,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string GetRangeContent(string originString, int startLine, int stopLine)
         {
+            var originList = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
             if (startLine < 0 || startLine > stopLine)
             {
                 throw new Exception("index out of range.");
             }
 
-            var lines = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
-
-            var destList = new List<string>();
-            var lineNumber = -1;
-            foreach (var line in lines)
-            {
-                lineNumber++;
-                if (lineNumber >= startLine && lineNumber <= stopLine)
-                {
-                    destList.Add(line);
-                }
-            }
+            var destList = originList.Skip(startLine).Take(stopLine - startLine + 1);
 
             return string.Join("\r\n", destList);
         }

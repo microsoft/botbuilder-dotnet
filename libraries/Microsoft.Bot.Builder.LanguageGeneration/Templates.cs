@@ -323,22 +323,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
         {
-            if (startLine < 0 || startLine > stopLine)
+            var originList = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
+
+            if (startLine < 0 || startLine > stopLine || stopLine >= originList.Length)
             {
                 throw new Exception("index out of range.");
             }
 
-            var lines = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
-
             var destList = new List<string>();
-            var lineNumber = -1;
             var replaced = false;
-            foreach (var line in lines)
+            for (var line = 0; line < originList.Length; line++)
             {
-                lineNumber++;
-                if (lineNumber < startLine || lineNumber > stopLine)
+                if (line < startLine || line > stopLine)
                 {
-                    destList.Add(line);
+                    destList.Add(originList[line]);
                 }
                 else
                 {
@@ -361,14 +359,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var lines = templateBody.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
             var destList = lines.Select(u =>
             {
-                if (u.TrimStart().StartsWith("#"))
-                {
-                    return $"- {u.TrimStart()}";
-                }
-                else
-                {
-                    return u;
-                }
+                return u.TrimStart().StartsWith("#") ? $"- {u.TrimStart()}" : u;
             });
 
             return string.Join(newLine, destList);
