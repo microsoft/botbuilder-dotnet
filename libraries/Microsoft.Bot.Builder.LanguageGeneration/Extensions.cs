@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Tree;
