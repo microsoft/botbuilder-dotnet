@@ -406,16 +406,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var childErrorMsg = string.Empty;
                 if (error != null)
                 {
-                    childErrorMsg += error;
+                    childErrorMsg = Evaluator.ConcatErrorMsg(childErrorMsg, error);
                 }
                 else if (result == null)
                 {
-                    childErrorMsg += TemplateErrors.NullExpression(exp);
+                    childErrorMsg = Evaluator.ConcatErrorMsg(childErrorMsg, TemplateErrors.NullExpression(exp));
                 }
 
                 if (context != null)
                 {
-                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                    errorMsg = Evaluator.ConcatErrorMsg(errorMsg, TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix));
                 }
 
                 if (evaluationTargetStack.Count > 0)
@@ -423,7 +423,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     evaluationTargetStack.Pop();
                 }
 
-                throw new Exception(childErrorMsg + errorMsg);
+                throw new Exception(Evaluator.ConcatErrorMsg(childErrorMsg, errorMsg));
             }
             else if (result == null && !strictMode)
             {

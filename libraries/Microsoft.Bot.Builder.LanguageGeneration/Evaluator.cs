@@ -304,6 +304,44 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return new CustomizedMemory(memory.GlobalMemory, new SimpleObjectMemory(newScope));
         }
 
+        internal static string ConcatErrorMsg(string firstError, string secondError)
+        {
+            if (string.IsNullOrEmpty(firstError))
+            {
+                return secondError;
+            }
+            else if (string.IsNullOrEmpty(secondError))
+            {
+                return firstError;
+            }
+            else
+            {
+                return firstError + " " + secondError;
+            }
+        }
+
+        internal static void CheckExpressionResult(string exp, string error, string result, ParserRuleContext context = null, string errorPrefix = "")
+        {
+            var errorMsg = string.Empty;
+
+            var childErrorMsg = string.Empty;
+            if (error != null)
+            {
+                childErrorMsg = ConcatErrorMsg(childErrorMsg, error);
+            }
+            else if (result == null)
+            {
+                childErrorMsg = ConcatErrorMsg(childErrorMsg, TemplateErrors.NullExpression(exp));
+            }
+
+            if (context != null)
+            {
+                errorMsg = ConcatErrorMsg(errorMsg, TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix));
+            }
+
+            throw new Exception(ConcatErrorMsg(childErrorMsg, errorMsg));
+        }
+
         private object VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
         {
             var values = context.keyValueStructureValue();
@@ -366,16 +404,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var childErrorMsg = string.Empty;
                 if (error != null)
                 {
-                    childErrorMsg += error;
+                    childErrorMsg = ConcatErrorMsg(childErrorMsg, error);
                 }
                 else if (result == null)
                 {
-                    childErrorMsg += TemplateErrors.NullExpression(exp);
+                    childErrorMsg = ConcatErrorMsg(childErrorMsg, TemplateErrors.NullExpression(exp));
                 }
 
                 if (context != null)
                 {
-                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                    errorMsg = ConcatErrorMsg(errorMsg, TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix));
                 }
 
                 if (evaluationTargetStack.Count > 0)
@@ -383,7 +421,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     evaluationTargetStack.Pop();
                 }
 
-                throw new Exception(childErrorMsg + errorMsg);
+                throw new Exception(ConcatErrorMsg(childErrorMsg, errorMsg));
             }
             else if (error != null
                 || result == null
@@ -408,16 +446,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var childErrorMsg = string.Empty;
                 if (error != null)
                 {
-                    childErrorMsg += error;
+                    childErrorMsg = ConcatErrorMsg(childErrorMsg, error);
                 }
                 else if (result == null)
                 {
-                    childErrorMsg += TemplateErrors.NullExpression(exp);
+                    childErrorMsg = ConcatErrorMsg(childErrorMsg, TemplateErrors.NullExpression(exp));
                 }
 
                 if (context != null)
                 {
-                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
+                    errorMsg = ConcatErrorMsg(errorMsg, TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix));
                 }
 
                 if (evaluationTargetStack.Count > 0)
@@ -425,7 +463,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     evaluationTargetStack.Pop();
                 }
 
-                throw new Exception(childErrorMsg + errorMsg);
+                throw new Exception(ConcatErrorMsg(childErrorMsg, errorMsg));
             }
             else if (result == null && !strictMode)
             {
