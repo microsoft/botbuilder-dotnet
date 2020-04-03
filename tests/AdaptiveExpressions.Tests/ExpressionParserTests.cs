@@ -688,6 +688,7 @@ namespace AdaptiveExpressions.Tests
             Test("startOfHour('2018-03-15T13:30:30.000Z')", "2018-03-15T13:00:00.000Z"),
             Test("startOfMonth('2018-03-15T13:30:30.000Z')", "2018-03-01T00:00:00.000Z"),
             Test("ticks('2018-01-01T08:00:00.000Z')", 636503904000000000),
+            Test("formatDateTime((ticks('2018-01-01T08:00:00.000Z') - ticks('1970-01-01T00:00:00.000Z'))/10000000)", "2018-01-01T08:00:00.000Z"),
             #endregion
 
             #region uri parsing function test

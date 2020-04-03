@@ -1016,7 +1016,7 @@ namespace AdaptiveExpressions
                         return (null, null, error);
                     }
 
-                    if (value is int)
+                    if (value.IsInteger())
                     {
                         path = $"[{value}]" + "." + path;
                     }
@@ -1146,8 +1146,9 @@ namespace AdaptiveExpressions
                 (idxValue, error) = index.TryEvaluate(state, new Options(options) { NullSubstitution = null });
                 if (error == null)
                 {
-                    if (idxValue is int idx)
+                    if (idxValue.IsInteger())
                     {
+                        var idx = Convert.ToInt32(idxValue);
                         (value, error) = AccessIndex(inst, idx);
                     }
                     else if (idxValue is string idxStr)
@@ -1312,7 +1313,7 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt32(a) + Convert.ToInt32(b);
+                return Convert.ToInt64(a) + Convert.ToInt64(b);
             }
             else
             {
@@ -1329,7 +1330,7 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt32(a) - Convert.ToInt32(b);
+                return Convert.ToInt64(a) - Convert.ToInt64(b);
             }
             else
             {
@@ -1346,7 +1347,7 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt32(a) * Convert.ToInt32(b);
+                return Convert.ToInt64(a) * Convert.ToInt64(b);
             }
             else
             {
@@ -1363,7 +1364,7 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt32(a) % Convert.ToInt32(b);
+                return Convert.ToInt64(a) % Convert.ToInt64(b);
             }
             else
             {
@@ -1380,7 +1381,7 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt32(a) / Convert.ToInt32(b);
+                return Convert.ToInt64(a) / Convert.ToInt64(b);
             }
             else
             {
@@ -1867,7 +1868,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, string) AddToTime(string timestamp, int interval, string timeUnit, string format)
+        private static (string, string) AddToTime(string timestamp, long interval, string timeUnit, string format)
         {
             string result = null;
             string error = null;
@@ -2767,7 +2768,7 @@ namespace AdaptiveExpressions
                         {
                             object value = null;
                             string error;
-                            if (Convert.ToInt32(args[1]) == 0)
+                            if (Convert.ToInt64(args[1]) == 0)
                             {
                                 error = $"Cannot mod by 0";
                             }
@@ -2831,7 +2832,7 @@ namespace AdaptiveExpressions
                         args =>
                         {
                             var operands = ResolveListValue(args[0]).OfType<object>().ToList();
-                            return operands.All(u => u.IsInteger()) ? operands.Sum(u => Convert.ToInt32(u)) : operands.Sum(u => Convert.ToSingle(u));
+                            return operands.All(u => u.IsInteger()) ? operands.Sum(u => Convert.ToInt64(u)) : operands.Sum(u => Convert.ToSingle(u));
                         },
                         VerifyNumericList),
                     ReturnType.Number,
@@ -3390,7 +3391,7 @@ namespace AdaptiveExpressions
                             {
                                 var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(Convert.ToInt32(args[1]), string2);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[1]), string2);
                                 if (error == null)
                                 {
                                     (value, error) = ParseISOTimestamp(string0, dt => timeConverter(dt).ToString(format));
@@ -3487,7 +3488,7 @@ namespace AdaptiveExpressions
                             {
                                 var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(Convert.ToInt32(args[0]), string1, false);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1, false);
                                 if (error == null)
                                 {
                                     value = timeConverter(DateTime.Now).ToString(format);
@@ -3517,7 +3518,7 @@ namespace AdaptiveExpressions
                             {
                                 var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(Convert.ToInt32(args[0]), string1);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1);
                                 if (error == null)
                                 {
                                     value = timeConverter(DateTime.Now).ToString(format);
@@ -3596,7 +3597,7 @@ namespace AdaptiveExpressions
                             var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                             if (args[0] is string timestamp && args[1].IsInteger() && args[2] is string timeUnit)
                             {
-                                (value, error) = AddToTime(timestamp, Convert.ToInt32(args[1]), timeUnit, format);
+                                (value, error) = AddToTime(timestamp, Convert.ToInt64(args[1]), timeUnit, format);
                             }
                             else
                             {
@@ -3856,7 +3857,7 @@ namespace AdaptiveExpressions
 
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => CultureInvariantDoubleConvert(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
