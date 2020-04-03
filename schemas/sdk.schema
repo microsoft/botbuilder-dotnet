@@ -291,11 +291,6 @@
             "$ref": "#/definitions/Microsoft.OnChooseProperty"
         },
         {
-            "title": "Microsoft.OnClearProperty",
-            "description": "Actions to take when a property needs to be cleared.",
-            "$ref": "#/definitions/Microsoft.OnClearProperty"
-        },
-        {
             "title": "Microsoft.OnCondition",
             "description": "Actions to perform when specified condition is true.",
             "$ref": "#/definitions/Microsoft.OnCondition"
@@ -922,6 +917,12 @@
                             "description": "Expression evaluating to array."
                         }
                     ]
+                },
+                "expectedOperation": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Expected operation to assign entity to property",
+                    "description": "Operation to apply to entities by default."
                 }
             },
             "additionalProperties": false,
@@ -1668,16 +1669,17 @@
                     "$role": "expression",
                     "oneOf": [
                         {
+                            "title": "Array of strings",
                             "type": "array",
                             "items": [
                                 {
                                     "type": "string",
                                     "title": "string"
                                 }
-                            ],
-                            "title": "array"
+                            ]
                         },
                         {
+                            "title": "Array of choice objects",
                             "type": "array",
                             "items": [
                                 {
@@ -1705,8 +1707,7 @@
                                         }
                                     }
                                 }
-                            ],
-                            "title": "array"
+                            ]
                         },
                         {
                             "type": "string",
@@ -2143,6 +2144,7 @@
                             "type": "array",
                             "items": [
                                 {
+                                    "title": "Array of confirm choice objects",
                                     "type": "object",
                                     "properties": {
                                         "value": {
@@ -2164,8 +2166,7 @@
                                                 "title": "string"
                                             }
                                         }
-                                    },
-                                    "title": "object"
+                                    }
                                 }
                             ],
                             "title": "array"
@@ -4897,11 +4898,6 @@
                     "$ref": "#/definitions/Microsoft.OnChooseProperty"
                 },
                 {
-                    "title": "Microsoft.OnClearProperty",
-                    "description": "Actions to take when a property needs to be cleared.",
-                    "$ref": "#/definitions/Microsoft.OnClearProperty"
-                },
-                {
                     "title": "Microsoft.OnCondition",
                     "description": "Actions to perform when specified condition is true.",
                     "$ref": "#/definitions/Microsoft.OnCondition"
@@ -6984,112 +6980,6 @@
                         "type": "string",
                         "title": "Entity name"
                     }
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "$kind"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.OnClearProperty": {
-            "$role": "implements(Microsoft.ITrigger)",
-            "title": "On clear property",
-            "description": "Actions to take when a property needs to be cleared.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnClearProperty"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "condition": {
-                    "$role": "expression",
-                    "title": "Condition",
-                    "description": "Condition (expression).",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "oneOf": [
-                        {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
-                            "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to boolean."
-                        }
-                    ]
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions to execute.",
-                    "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                },
-                "priority": {
-                    "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression",
-                    "oneOf": [
-                        {
-                            "type": "integer",
-                            "title": "integer"
-                        },
-                        {
-                            "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
-                        }
-                    ]
-                },
-                "runOnce": {
-                    "type": "boolean",
-                    "title": "Run Once",
-                    "description": "True if rule should run once per unique conditions"
-                },
-                "property": {
-                    "type": "string",
-                    "title": "Property",
-                    "description": "Property that will be cleared"
                 }
             },
             "additionalProperties": false,
