@@ -402,7 +402,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 catch (Exception e)
                 {
-                    var errorMsg = prefix + TemplateErrors.ExpressionParseError(exp) + e.Message;
+                    var suffixErrorMsg = Evaluator.ConcatErrorMsg(TemplateErrors.ExpressionParseError(exp), e.Message);
+                    var errorMsg = Evaluator.ConcatErrorMsg(prefix, suffixErrorMsg);
 
                     result.Add(BuildLGDiagnostic(errorMsg, context: context));
                     return result;
