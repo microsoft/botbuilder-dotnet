@@ -89,6 +89,7 @@ namespace AdaptiveExpressions.Tests
                     listType = "todo",
                 }
             },
+            { "byteArr", new byte[] { 3, 5, 1, 12 } },
             { "timestamp", "2018-03-15T13:00:00.000Z" },
             { "notISOTimestamp", "2018/03/15 13:00:00" },
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
@@ -586,6 +587,7 @@ namespace AdaptiveExpressions.Tests
             Test("binary(hello)", "0110100001100101011011000110110001101111"),
             Test("length(binary(hello))", 40),
             Test("base64(hello)", "aGVsbG8="),
+            Test("base64(byteArr)", "AwUBDA=="),
             Test("base64ToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
             Test("base64ToString(base64(hello))", "hello"),
             Test("dataUri(hello)", "data:text/plain;charset=utf-8;base64,aGVsbG8="),

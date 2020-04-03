@@ -3849,7 +3849,23 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64, Apply(
+                    (args) => 
+                    {
+                        string value = null;
+                        if (args[0] is byte[] byteArr)
+                        {
+                            value = Convert.ToBase64String(byteArr);
+                        }
+                        else
+                        {
+                            value = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString()));
+                        }
+
+                        return value;
+                    }), 
+                    ReturnType.String, 
+                    ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.UriComponent, Apply(args => Uri.EscapeDataString(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
