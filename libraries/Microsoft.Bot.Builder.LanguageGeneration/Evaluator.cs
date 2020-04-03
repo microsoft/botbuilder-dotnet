@@ -306,18 +306,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         internal static string ConcatErrorMsg(string firstError, string secondError)
         {
+            string errorMsg;
             if (string.IsNullOrEmpty(firstError))
             {
-                return secondError;
+                errorMsg = secondError;
             }
             else if (string.IsNullOrEmpty(secondError))
             {
-                return firstError;
+                errorMsg = firstError;
             }
             else
             {
-                return firstError + " " + secondError;
+                errorMsg = firstError + " " + secondError;
             }
+
+            return errorMsg;
         }
 
         internal static void CheckExpressionResult(string exp, string error, object result, string templateName, ParserRuleContext context = null, string errorPrefix = "")
