@@ -1016,7 +1016,7 @@ namespace AdaptiveExpressions
                         return (null, null, error);
                     }
 
-                    if (value is int)
+                    if (value.IsInteger())
                     {
                         path = $"[{value}]" + "." + path;
                     }
@@ -1146,8 +1146,9 @@ namespace AdaptiveExpressions
                 (idxValue, error) = index.TryEvaluate(state, new Options(options) { NullSubstitution = null });
                 if (error == null)
                 {
-                    if (idxValue is int idx)
+                    if (idxValue.IsInteger())
                     {
+                        var idx = Convert.ToInt32(idxValue);
                         (value, error) = AccessIndex(inst, idx);
                     }
                     else if (idxValue is string idxStr)
