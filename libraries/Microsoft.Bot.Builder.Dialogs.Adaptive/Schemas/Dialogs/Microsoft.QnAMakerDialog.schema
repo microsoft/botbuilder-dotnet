@@ -57,7 +57,7 @@
             "description": "Text for no match option.",
             "default": "None of the above."
         },
-        "cardNoMatchResponse ": {
+        "cardNoMatchResponse": {
             "$kind": "Microsoft.IActivityTemplate",
             "title": "Card no match response",
             "description": "Custom response when no match option was selected.",
