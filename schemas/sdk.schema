@@ -1668,16 +1668,17 @@
                     "$role": "expression",
                     "oneOf": [
                         {
+                            "title": "Array of strings",
                             "type": "array",
                             "items": [
                                 {
                                     "type": "string",
                                     "title": "string"
                                 }
-                            ],
-                            "title": "array"
+                            ]
                         },
                         {
+                            "title": "Array of choice objects",
                             "type": "array",
                             "items": [
                                 {
@@ -1705,8 +1706,7 @@
                                         }
                                     }
                                 }
-                            ],
-                            "title": "array"
+                            ]
                         },
                         {
                             "type": "string",
@@ -2143,6 +2143,7 @@
                             "type": "array",
                             "items": [
                                 {
+                                    "title": "Array of confirm choice objects",
                                     "type": "object",
                                     "properties": {
                                         "value": {
@@ -2164,8 +2165,7 @@
                                                 "title": "string"
                                             }
                                         }
-                                    },
-                                    "title": "object"
+                                    }
                                 }
                             ],
                             "title": "array"
@@ -6199,22 +6199,28 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
                     "examples": [
                         "true"
+                    ]
+                },
+                "alwaysPrompt": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
                     ],
-                    "oneOf": [
-                        {
-                            "type": "boolean",
-                            "default": "true",
-                            "title": "boolean"
-                        },
-                        {
-                            "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to boolean."
-                        }
+                    "title": "Always prompt",
+                    "description": "Collect information even if the specified 'property' is not empty.",
+                    "default": false,
+                    "examples": [
+                        false
                     ]
                 }
             },
