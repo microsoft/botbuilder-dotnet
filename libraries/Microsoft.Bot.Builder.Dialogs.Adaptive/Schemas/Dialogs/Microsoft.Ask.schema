@@ -18,6 +18,12 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "expectedOperation": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Expected operation to assign entity to property",
+                    "description": "Operation to apply to entities by default."
                 }
             }
         }
