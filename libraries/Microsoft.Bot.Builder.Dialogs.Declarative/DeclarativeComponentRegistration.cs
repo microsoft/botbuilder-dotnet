@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public class DeclarativeComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
-        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes()
+        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             yield break;
         }

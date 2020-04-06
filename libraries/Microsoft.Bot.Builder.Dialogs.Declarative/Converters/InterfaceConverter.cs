@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -42,10 +41,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     jsonObject = this.resourceExplorer.ResolveRefAsync(jsonObject, context).GetAwaiter().GetResult();
                 }
 
-                var kind = (string)jsonObject["$kind"] ?? (string)jsonObject["$type"];
+                var kind = (string)jsonObject["$kind"];
                 if (kind == null)
                 {
-                    throw new ArgumentNullException(JsonConvert.SerializeObject(jsonObject));
+                    throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jsonObject)}");
                 }
 
                 // if IdRefResolver made a source context available for the JToken, then add it to the context stack

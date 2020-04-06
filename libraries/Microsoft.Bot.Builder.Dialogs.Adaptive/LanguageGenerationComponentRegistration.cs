@@ -18,8 +18,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Return declarative types for Language Generation.
         /// </summary>
+        /// <param name="resourceExplorer">resource explorer to use for resolving references.</param>
         /// <returns>DeclarativeTypes enumeration.</returns>
-        public IEnumerable<DeclarativeType> GetDeclarativeTypes()
+        public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             yield return new DeclarativeType<TextTemplate>(TextTemplate.DeclarativeType);
             yield return new DeclarativeType<ActivityTemplate>(ActivityTemplate.DeclarativeType);

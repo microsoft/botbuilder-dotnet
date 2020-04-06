@@ -32,6 +32,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
             settings["luis:endpoint"] = $"https://{luisRegion}.api.cognitive.microsoft.com";
             settings["BotRoot"] = botRoot;
             builder.AddInMemoryCollection(settings);
+            if (environment == "Development")
+            {
+                environment = Environment.UserName;
+            }
 
             var di = new DirectoryInfo(botRoot);
             foreach (var file in di.GetFiles($"luis.settings.{environment.ToLower()}.{luisRegion}.json", SearchOption.AllDirectories))

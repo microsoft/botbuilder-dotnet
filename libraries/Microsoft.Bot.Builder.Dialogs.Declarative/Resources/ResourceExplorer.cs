@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -28,30 +27,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     {
         private const string RefPropertyName = "$copy";
 
-        private readonly List<JsonConverter> converters = new List<JsonConverter>();
-        private readonly Dictionary<Type, ICustomDeserializer> builders = new Dictionary<Type, ICustomDeserializer>();
-        private readonly Dictionary<string, Type> kinds = new Dictionary<string, Type>();
-        private readonly Dictionary<Type, string> names = new Dictionary<Type, string>();
+        private readonly ConcurrentDictionary<Type, ICustomDeserializer> kindDeserializers = new ConcurrentDictionary<Type, ICustomDeserializer>();
+        private readonly ConcurrentDictionary<string, Type> kindToType = new ConcurrentDictionary<string, Type>();
+        private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
         private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<IResource> changedResources = new ConcurrentBag<IResource>();
+        private bool loaded = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
         /// </summary>
         public ResourceExplorer()
         {
-            foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentDeclarativeTypes>())
-            {
-                if (component != null)
-                {
-                    // add types
-                    foreach (var typeRegistration in component.GetDeclarativeTypes())
-                    {
-                        RegisterType(typeRegistration.Kind, typeRegistration.Type, typeRegistration.CustomDeserializer);
-                    }
-                }
-            }
         }
 
         public ResourceExplorer(IEnumerable<IResourceProvider> providers)
@@ -75,6 +63,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             get { return this.resourceProviders; }
         }
+
+        /// <summary>
+        /// Gets the resource type id extensions that you want to manage.
+        /// </summary>
+        /// <value>
+        /// The extensions that you want the to manage.
+        /// </value>
+        public HashSet<string> ResourceTypes { get; private set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "dialog",
+            "lu",
+            "lg",
+            "qna",
+            "schema",
+            "json"
+        };
 
         /// <summary>
         /// Add a resource provider to the resources managed by the resource explorer.
@@ -124,6 +128,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>task which will resolve to created type.</returns>
         public async Task<T> LoadTypeAsync<T>(IResource resource)
         {
+            RegisterComponentTypes();
+
             string id = resource.Id;
             if (resource is FileResource fileResource)
             {
@@ -232,27 +238,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>Resource explorer for fluent style multiple calls.</returns>
         public ResourceExplorer RegisterType(string kind, Type type, ICustomDeserializer loader = null)
         {
-            // Default loader if none specified
-            if (loader == null)
-            {
-                loader = new DefaultLoader();
-            }
-
-            lock (kinds)
-            {
-                kinds[kind] = type;
-            }
-
-            lock (names)
-            {
-                names[type] = kind;
-            }
-
-            lock (builders)
-            {
-                builders[type] = loader;
-            }
-
+            RegisterComponentTypes();
+            RegisterTypeInternal(kind, type, loader);
             return this;
         }
 
@@ -267,7 +254,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         public T BuildType<T>(string kind, JToken obj, JsonSerializer serializer)
             where T : class
         {
-            ICustomDeserializer builder;
+            ICustomDeserializer kindDeserializer;
             var type = GetTypeForKind(kind);
 
             if (type == null)
@@ -275,14 +262,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 throw new ArgumentException($"Type {kind} not registered in factory.");
             }
 
-            var found = builders.TryGetValue(type, out builder);
+            var found = kindDeserializers.TryGetValue(type, out kindDeserializer);
 
             if (!found)
             {
                 throw new ArgumentException($"Type {kind} not registered in factory.");
             }
 
-            var built = builder.Load(obj, serializer, type);
+            var built = kindDeserializer.Load(obj, serializer, type);
 
             var result = built as T;
 
@@ -301,8 +288,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>type of object.</returns>
         public Type GetTypeForKind(string kind)
         {
-            Type type;
-            return kinds.TryGetValue(kind, out type) ? type : default(Type);
+            RegisterComponentTypes();
+            return kindToType.TryGetValue(kind, out Type type) ? type : default(Type);
         }
 
         /// <summary>
@@ -310,10 +297,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="type">type.</param>
         /// <returns>$kind for the type.</returns>
-        public string GetKindForType(Type type)
+        public List<string> GetKindsForType(Type type)
         {
-            string name;
-            return names.TryGetValue(type, out name) ? name : default(string);
+            RegisterComponentTypes();
+            return typeToKinds.TryGetValue(type, out List<string> kinds) ? kinds : null;
         }
 
         /// <summary>
@@ -321,10 +308,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <typeparam name="T">type.</typeparam>
         /// <returns>$kind for the type.</returns>
-        public string GetKindForType<T>()
+        public List<string> GetKindsForType<T>()
         {
-            string name;
-            return names.TryGetValue(typeof(T), out name) ? name : default(string);
+            return GetKindsForType(typeof(T));
         }
 
         /// <summary>
@@ -366,10 +352,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 throw new InvalidOperationException("Failed to resolve reference, $copy property not present");
             }
 
-            var resource = this.GetResource($"{refTarget}.dialog");
-            if (resource == null)
+            // see if there is a dialog file for this resource.id
+            if (!this.TryGetResource($"{refTarget}.dialog", out IResource resource))
             {
-                throw new FileNotFoundException($"Failed to find resource named {refTarget}.dialog");
+                // if not, try loading the resource directly.
+                if (!this.TryGetResource(refTarget, out resource))
+                {
+                    throw new FileNotFoundException($"Failed to find resource named {refTarget}.dialog or {refTarget}.");
+                }
             }
 
             var (json, range) = await resource.ReadTokenRangeAsync(context);
@@ -406,6 +396,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return json;
         }
 
+        private void RegisterTypeInternal(string kind, Type type, ICustomDeserializer loader = null)
+        {
+            // Default loader if none specified
+            if (loader == null)
+            {
+                loader = new DefaultLoader();
+            }
+
+            kindToType[kind] = type;
+
+            if (!typeToKinds.TryGetValue(type, out List<string> kinds))
+            {
+                kinds = new List<string>();
+            }
+
+            kinds.Add(kind);
+            typeToKinds[type] = kinds;
+            kindDeserializers[type] = loader;
+        }
+
         private string GetRefTarget(JToken token)
         {
             // If we expect an instance of IMyInterface and we find a string,
@@ -420,6 +430,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 .Children<JProperty>()
                 .FirstOrDefault(jProperty => jProperty.Name == RefPropertyName)
                 ?.Value.ToString();
+        }
+
+        /// <summary>
+        /// Register all types from components.
+        /// </summary>
+        private void RegisterComponentTypes()
+        {
+            lock (this.kindToType)
+            {
+                if (!this.loaded)
+                {
+                    // this can be reentrant, and we only want to do once.
+                    this.loaded = true;
+
+                    foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentDeclarativeTypes>())
+                    {
+                        if (component != null)
+                        {
+                            // add types
+                            foreach (var typeRegistration in component.GetDeclarativeTypes(this))
+                            {
+                                RegisterTypeInternal(typeRegistration.Kind, typeRegistration.Type, typeRegistration.CustomDeserializer);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private T Load<T>(JToken token, Stack<SourceRange> context)
@@ -441,13 +478,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 Converters = converters,
                 Error = (sender, args) =>
                 {
-                    var ctx = args.ErrorContext;
-                },
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy()
-                }
-            });
+                    TypeNameHandling = TypeNameHandling.Auto,
+                    Converters = converters,
+                    Error = (sender, args) =>
+                    {
+                        var ctx = args.ErrorContext;
+                    },
+                    ContractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new CamelCaseNamingStrategy()
+                    }
+                });
 
             return token.ToObject<T>(serializer);
         }

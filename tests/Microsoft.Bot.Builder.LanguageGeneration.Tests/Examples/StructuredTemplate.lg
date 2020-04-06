@@ -2,6 +2,7 @@
 # AskForAge.prompt
 [Activity
     Text = ${GetAge()}
+
 > this is a comment about this specific property
     Speak = ${GetAge()}
 ]

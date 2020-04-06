@@ -1,7 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -26,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes, IComponentMemoryScopes, IComponentPathResolvers
     {
-        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes()
+        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Conditionals
             yield return new DeclarativeType<OnCondition>(OnCondition.DeclarativeType);
@@ -58,7 +62,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<OnEndOfActions>(OnEndOfActions.DeclarativeType);
             yield return new DeclarativeType<OnChooseProperty>(OnChooseProperty.DeclarativeType);
             yield return new DeclarativeType<OnChooseEntity>(OnChooseEntity.DeclarativeType);
-            yield return new DeclarativeType<OnClearProperty>(OnClearProperty.DeclarativeType);
             yield return new DeclarativeType<OnAssignEntity>(OnAssignEntity.DeclarativeType);
 
             // Actions
@@ -146,6 +149,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Dialogs
             yield return new DeclarativeType<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
             yield return new DeclarativeType<AdaptiveSkillDialog>(AdaptiveSkillDialog.DeclarativeType);
+
+            // register x.dialog.schema/x.dialog as DynamicBeginDialog $kind="x" => DynamicBeginDialog(x.dialog) resource.
+            foreach (var schema in resourceExplorer.GetResources(".schema").Where(s => resourceExplorer.GetTypeForKind(Path.GetFileNameWithoutExtension(s.Id)) == null))
+            {
+                // x.dialog.schema => resourceType=dialog resourceId=x.dialog $kind=x
+                var resourceId = Path.GetFileNameWithoutExtension(schema.Id);
+                var resourceType = Path.GetExtension(resourceId).TrimStart('.').ToLowerInvariant();
+                var kind = Path.GetFileNameWithoutExtension(resourceId);
+
+                // load dynamic dialogs
+                switch (resourceType)
+                {
+                    case "dialog":
+                        yield return new DeclarativeType<DynamicBeginDialog>(kind) { CustomDeserializer = new DynamicBeginDialogDeserializer(resourceExplorer, resourceId) };
+                        break;
+                }
+            }
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)

@@ -22,8 +22,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Gets declarative type registrations for QnAMAker.
         /// </summary>
+        /// <param name="resourceExplorer">resourceExplorer to use for resolving references.</param>
         /// <returns>enumeration of DeclarativeTypes.</returns>
-        public IEnumerable<DeclarativeType> GetDeclarativeTypes()
+        public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Dialogs
             yield return new DeclarativeType<QnAMakerDialog2>(QnAMakerDialog2.DeclarativeType);

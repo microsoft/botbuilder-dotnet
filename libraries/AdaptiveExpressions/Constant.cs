@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace AdaptiveExpressions
@@ -20,7 +21,7 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="value">Constant value.</param>
         public Constant(object value = null)
-            : base(new ExpressionEvaluator(ExpressionType.Constant, (expression, state) => ((expression as Constant).Value, null)))
+            : base(new ExpressionEvaluator(ExpressionType.Constant, (expression, state, _) => ((expression as Constant).Value, null)))
         {
             Value = value;
         }
@@ -71,7 +72,7 @@ namespace AdaptiveExpressions
             }
             else if (Value is float || Value is double)
             {
-               return ((double)Value).ToString("0.00########");
+               return ((double)Value).ToString("0.00########", CultureInfo.InvariantCulture);
             }
             else
             {

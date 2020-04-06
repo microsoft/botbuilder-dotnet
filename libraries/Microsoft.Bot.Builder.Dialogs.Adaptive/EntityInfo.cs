@@ -25,6 +25,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public object Value { get; set; }
 
         /// <summary>
+        /// Gets or sets operation for entity.
+        /// </summary>
+        /// <value>Operation to apply to entity.</value>
+        [JsonProperty("operation")]
+        public string Operation { get; set; }
+
+        /// <summary>
         /// Gets or sets where entity starts in utterance.
         /// </summary>
         /// <value>Start of entity.</value>

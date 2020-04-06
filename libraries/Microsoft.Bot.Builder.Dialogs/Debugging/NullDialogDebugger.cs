@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     turnText = activity.Type;
                 }
 
-                string name = string.Empty;
+                string name;
                 if (item is Dialog dialog)
                 {
                     name = dialog.Id;
@@ -52,6 +52,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
 
                 var threadText = $"'{Ellipsis(turnText, 18)}'";
+                if (context.State.GetMemoryScope(ScopePath.Dialog) != null && context.State.TryGetValue<uint>(DialogPath.EventCounter, out var count))
+                {
+                    threadText = $"{count}: {threadText}";
+                }
+
                 System.Diagnostics.Trace.TraceInformation($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {name} ");
             }
 

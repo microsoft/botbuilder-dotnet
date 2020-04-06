@@ -90,6 +90,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
+        void IBreakpoints.Clear()
+        {
+            lock (gate)
+            {
+                this.rows.Clear();
+                this.items.Clear();
+                this.dirty = true;
+            }
+        }
+
         IReadOnlyList<Protocol.Breakpoint> IBreakpoints.SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints)
         {
             lock (gate)

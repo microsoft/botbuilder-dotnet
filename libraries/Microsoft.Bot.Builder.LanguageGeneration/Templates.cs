@@ -323,60 +323,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
         {
-            if (startLine < 0 || startLine > stopLine)
+            var originList = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
+
+            if (startLine < 0 || startLine > stopLine || stopLine >= originList.Length)
             {
                 throw new Exception("index out of range.");
             }
 
             var destList = new List<string>();
 
-            using (var strReader = new StringReader(originString))
-            {
-                string aLine;
-                var lineNumber = -1;
-                var replaced = false;
-                while ((aLine = strReader.ReadLine()) != null)
-                {
-                    lineNumber++;
-                    if (lineNumber < startLine || lineNumber > stopLine)
-                    {
-                        destList.Add(aLine);
-                    }
-                    else
-                    {
-                        if (!replaced)
-                        {
-                            replaced = true;
-                            if (!string.IsNullOrEmpty(replaceString))
-                            {
-                                destList.Add(replaceString);
-                            }
-                        }
-                    }
-                }
-            }
+            destList.AddRange(originList.Take(startLine));
+            destList.Add(replaceString);
+            destList.AddRange(originList.Skip(stopLine + 1));
 
             return string.Join(newLine, destList);
         }
 
         private string ConvertTemplateBody(string templateBody)
         {
-            var destList = new List<string>();
-
-            using (var strReader = new StringReader(templateBody))
+            var lines = templateBody.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
+            var destList = lines.Select(u =>
             {
-                string aLine;
-                while ((aLine = strReader.ReadLine()) != null)
-                {
-                    var newTemplateBodyLine = aLine;
-                    if (aLine.TrimStart().StartsWith("#"))
-                    {
-                        newTemplateBodyLine = $"- {aLine.TrimStart()}";
-                    }
-
-                    destList.Add(newTemplateBodyLine);
-                }
-            }
+                return u.TrimStart().StartsWith("#") ? $"- {u.TrimStart()}" : u;
+            });
 
             return string.Join(newLine, destList);
         }

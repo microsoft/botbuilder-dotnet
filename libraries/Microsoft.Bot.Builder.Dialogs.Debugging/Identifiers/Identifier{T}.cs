@@ -21,92 +21,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     {
         private readonly Dictionary<T, ulong> codeByItem = new Dictionary<T, ulong>(ReferenceEquality<T>.Instance);
         private readonly Dictionary<ulong, T> itemByCode = new Dictionary<ulong, T>();
-        private readonly object gate = new object();
         private ulong last = 0;
 
         IEnumerable<T> IIdentifier<T>.Items
-        {
-            get
-            {
-                lock (gate)
-                {
-                    return this.itemByCode.Values.ToArray();
-                }
-            }
-        }
+            => this.itemByCode.Values.ToArray();
 
         T IIdentifier<T>.this[ulong code]
-        {
-            get
-            {
-                lock (gate)
-                {
-                    return this.itemByCode[code];
-                }
-            }
-        }
+            => this.itemByCode[code];
 
         ulong IIdentifier<T>.this[T item]
-        {
-            get
-            {
-                lock (gate)
-                {
-                    return this.codeByItem[item];
-                }
-            }
-        }
+            => this.codeByItem[item];
 
         bool IIdentifier<T>.TryGetValue(ulong code, out T item)
-        {
-            lock (gate)
-            {
-                return this.itemByCode.TryGetValue(code, out item);
-            }
-        }
+            => this.itemByCode.TryGetValue(code, out item);
 
         bool IIdentifier<T>.TryGetValue(T item, out ulong code)
+            => this.codeByItem.TryGetValue(item, out code);
+
+        void IIdentifier<T>.Clear()
         {
-            lock (gate)
-            {
-                return this.codeByItem.TryGetValue(item, out code);
-            }
+            // do not reset the last code to avoid any risk of https://en.wikipedia.org/wiki/ABA_problem
+            this.itemByCode.Clear();
+            this.codeByItem.Clear();
         }
 
         ulong IIdentifier<T>.Add(T item)
         {
-            lock (gate)
+            if (!this.codeByItem.TryGetValue(item, out var code))
             {
-                if (!this.codeByItem.TryGetValue(item, out var code))
-                {
-                    // avoid false values
-                    code = ++last;
-                    this.codeByItem.Add(item, code);
-                    this.itemByCode.Add(code, item);
-                }
-
-                return code;
+                // avoid false values
+                code = ++last;
+                this.codeByItem.Add(item, code);
+                this.itemByCode.Add(code, item);
             }
+
+            return code;
         }
 
         void IIdentifier<T>.Remove(T item)
         {
-            lock (gate)
-            {
-                var code = this.codeByItem[item];
-                this.itemByCode.Remove(code);
-                this.codeByItem.Remove(item);
-            }
+            var code = this.codeByItem[item];
+            this.itemByCode.Remove(code);
+            this.codeByItem.Remove(item);
         }
 
         IEnumerator<KeyValuePair<ulong, T>> IEnumerable<KeyValuePair<ulong, T>>.GetEnumerator()
-        {
-            lock (gate)
-            {
-                return this.itemByCode.ToList().GetEnumerator();
-            }
-        }
+            => this.itemByCode.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<ulong, T>>)this).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+            => this.itemByCode.GetEnumerator();
     }
 }
