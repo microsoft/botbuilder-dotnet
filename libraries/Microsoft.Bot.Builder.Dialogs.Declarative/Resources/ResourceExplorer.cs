@@ -473,22 +473,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             var serializer = JsonSerializer.Create(new JsonSerializerSettings()
             {
-                SerializationBinder = new UriTypeBinder(this),
                 TypeNameHandling = TypeNameHandling.Auto,
                 Converters = converters,
                 Error = (sender, args) =>
                 {
-                    TypeNameHandling = TypeNameHandling.Auto,
-                    Converters = converters,
-                    Error = (sender, args) =>
-                    {
-                        var ctx = args.ErrorContext;
-                    },
-                    ContractResolver = new DefaultContractResolver
-                    {
-                        NamingStrategy = new CamelCaseNamingStrategy()
-                    }
-                });
+                    var ctx = args.ErrorContext;
+                },
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                }
+            });
 
             return token.ToObject<T>(serializer);
         }
