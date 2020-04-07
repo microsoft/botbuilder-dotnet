@@ -39,6 +39,11 @@ namespace AdaptiveExpressions
         /// String value.
         /// </summary>
         String,
+
+        /// <summary>
+        /// Array value.
+        /// </summary>
+        Array,
     }
 
     /// <summary>

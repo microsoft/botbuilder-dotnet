@@ -2894,7 +2894,7 @@ namespace AdaptiveExpressions
 
                         return result.ToList();
                         }, VerifyList),
-                    ReturnType.Object,
+                    ReturnType.Array,
                     ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Intersection,
@@ -2910,34 +2910,34 @@ namespace AdaptiveExpressions
 
                         return result.ToList();
                         }, VerifyList),
-                    ReturnType.Object,
+                    ReturnType.Array,
                     ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Skip,
                     Skip,
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.Take,
                     Take,
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SubArray,
                     SubArray,
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object, ReturnType.Number)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Array, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SortBy,
                     SortBy(false),
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.SortByDescending,
                     SortBy(true),
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
-                new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Object, ValidateUnary),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Array)),
+                new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Array, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Flatten,
                     Apply(
@@ -2946,8 +2946,8 @@ namespace AdaptiveExpressions
                             var depth = args.Count > 1 ? Convert.ToInt32(args[1]) : 100;
                             return Flatten((IEnumerable<object>)args[0], depth);
                         }),
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Unique,
                     Apply(
@@ -2955,8 +2955,8 @@ namespace AdaptiveExpressions
                         {
                             return ((IEnumerable<object>)args[0]).Distinct().ToList();
                         }, VerifyList),
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, null, ReturnType.Object)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array)),
 
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => CultureInvariantDoubleConvert(args[0]) < CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
@@ -3110,7 +3110,7 @@ namespace AdaptiveExpressions
 
                             return inputStr.Split(seperator.ToCharArray());
                         }, VerifyStringOrNull),
-                    ReturnType.Object,
+                    ReturnType.Array,
                     (expression) => ValidateArityAndAnyType(expression, 1, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.Substring,
@@ -3235,7 +3235,7 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.String,
-                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.String)),
+                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Array, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.NewGuid,
                     Apply(args => Guid.NewGuid().ToString()),
@@ -3273,7 +3273,7 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
+                    ValidateBinary),
                 new ExpressionEvaluator(
                     ExpressionType.LastIndexOf,
                     (expression, state, options) =>
@@ -3306,7 +3306,7 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
+                    ValidateBinary),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),
@@ -3903,7 +3903,7 @@ namespace AdaptiveExpressions
                         VerifyInteger),
                     ReturnType.Number,
                     ValidateBinaryNumber),
-                new ExpressionEvaluator(ExpressionType.CreateArray, Apply(args => new List<object>(args)), ReturnType.Object),
+                new ExpressionEvaluator(ExpressionType.CreateArray, Apply(args => new List<object>(args)), ReturnType.Array),
                 new ExpressionEvaluator(
                     ExpressionType.First,
                     Apply(
@@ -3991,10 +3991,10 @@ namespace AdaptiveExpressions
                     SetPathToValue,
                     ReturnType.Object,
                     ValidateBinary),
-                new ExpressionEvaluator(ExpressionType.Select, Foreach, ReturnType.Object, ValidateForeach),
-                new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
-                new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Object, ValidateWhere),
-                new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
+                new ExpressionEvaluator(ExpressionType.Select, Foreach, ReturnType.Array, ValidateForeach),
+                new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Array, ValidateForeach),
+                new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Array, ValidateWhere),
+                new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(ExpressionType.JPath, ApplyWithError(args => JPath(args[0], args[1].ToString())), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
 
