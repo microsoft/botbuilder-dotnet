@@ -3854,17 +3854,17 @@ namespace AdaptiveExpressions
                     Apply(
                         (args) => 
                         {
-                            string value = null;
+                            byte[] byteArray;
                             if (args[0] is byte[] byteArr)
                             {
-                                value = Convert.ToBase64String(byteArr);
+                                byteArray = byteArr;
                             }
                             else
                             {
-                                value = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString()));
+                                byteArray = System.Text.Encoding.UTF8.GetBytes(args[0].ToString());
                             }
 
-                            return value;
+                            return Convert.ToBase64String(byteArray);
                         }), 
                     ReturnType.String, 
                     ValidateUnary),
