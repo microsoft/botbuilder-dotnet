@@ -17,7 +17,7 @@
                         "condition": "user.counter > 0",
                         "actions": [
                             {
-                                "$type": "Microsoft.GotoAction",
+                                "$kind": "Microsoft.GotoAction",
                                 "actionId": "wherethesundontshine"
                             }
                         ]

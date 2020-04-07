@@ -9,7 +9,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     /// </summary>
     public class FileResource : IResource
     {
-        private string path;
         private Task<byte[]> contentTask;
         private Task<string> textTask;
 
@@ -19,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="path">path to file.</param>
         public FileResource(string path)
         {
-            this.path = path;
+            this.FullName = path;
             this.Id = Path.GetFileName(path);
         }
 
@@ -37,10 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <value>
         /// The full path to the resource on disk.
         /// </value>
-        public string FullName
-        {
-            get { return this.path; }
-        }
+        public string FullName { get; }
 
         /// <summary>
         /// Open a stream to the resource.
@@ -53,11 +49,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 this.contentTask = Task.Run(async () =>
                 {
                     Trace.TraceInformation($"Loading {this.Id}");
-                    var fileInfo = new FileInfo(this.path);
+                    var fileInfo = new FileInfo(this.FullName);
                     Stream stream = null;
                     try
                     {
-                        stream = File.OpenRead(this.path);
+                        stream = File.OpenRead(this.FullName);
                         var buffer = new byte[fileInfo.Length];
                         await stream.ReadAsync(buffer, 0, (int)fileInfo.Length).ConfigureAwait(false);
                         return buffer;

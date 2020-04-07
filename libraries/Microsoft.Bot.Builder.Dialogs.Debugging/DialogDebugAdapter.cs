@@ -29,10 +29,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         // lifetime scoped to IMiddleware.OnTurnAsync
         private readonly ConcurrentDictionary<string, ThreadModel> threadByTurnId = new ConcurrentDictionary<string, ThreadModel>();
-        private readonly IIdentifier<ThreadModel> threads = new Identifier<ThreadModel>();
+        private readonly IIdentifier<ThreadModel> threads = new Identifier<ThreadModel>().WithMutex();
 
         // https://en.wikipedia.org/wiki/Region-based_memory_management
-        private readonly IIdentifier<ArenaModel> arenas = new Identifier<ArenaModel>();
+        private readonly IIdentifier<ArenaModel> arenas = new Identifier<ArenaModel>().WithMutex();
         private readonly OutputModel output = new OutputModel();
 
         private readonly Task task;
@@ -270,7 +270,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     this.Logger.LogError(error, error.Message);
 
-                    this.ContinueAllThreads();
+                    this.ResetOnDisconnect();
 
                     throw;
                 }
@@ -313,6 +313,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             Identifier.Decode(frameCode, out var threadCode, out var valueCode);
             thread = this.threads[threadCode];
             frame = thread.FrameCodes[valueCode];
+        }
+
+        private void ResetOnDisconnect()
+        {
+            // consider resetting this.events filter enabled state to defaults from constructor
+
+            this.options = new Protocol.LaunchAttach();
+            this.breakpoints.Clear();
+            this.output.ValueCodes.Clear();
+            ContinueAllThreads();
         }
 
         private void ContinueAllThreads()
@@ -647,7 +657,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
                 else
                 {
-                    this.ContinueAllThreads();
+                    this.ResetOnDisconnect();
                 }
 
                 return Protocol.Response.From(NextSeq, disconnect, new { });
@@ -702,7 +712,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private sealed class OutputModel : ArenaModel
         {
             public OutputModel()
-                : base(new IdentifierCache<object>(new Identifier<object>(), count: 25))
+                : base(new Identifier<object>().WithCache(count: 25).WithMutex())
             {
             }
         }
@@ -710,7 +720,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private sealed class ThreadModel : ArenaModel
         {
             public ThreadModel(ITurnContext turnContext, ICodeModel codeModel)
-                : base(new Identifier<object>())
+                : base(new Identifier<object>().WithMutex())
             {
                 TurnContext = turnContext;
                 CodeModel = codeModel;
@@ -740,7 +750,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             public RunModel Run { get; } = new RunModel();
 
-            public IIdentifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>();
+            public IIdentifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>().WithMutex();
 
             public DialogContext LastContext { get; private set; }
 

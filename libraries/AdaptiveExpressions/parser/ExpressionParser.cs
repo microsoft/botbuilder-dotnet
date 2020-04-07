@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AdaptiveExpressions.parser;
@@ -165,7 +166,7 @@ namespace AdaptiveExpressions
                     return Expression.ConstantExpression(intValue);
                 }
 
-                if (double.TryParse(context.GetText(), out var doubleValue))
+                if (double.TryParse(context.GetText(), NumberStyles.Any, CultureInfo.InvariantCulture, out var doubleValue))
                 {
                     return Expression.ConstantExpression(doubleValue);
                 }
