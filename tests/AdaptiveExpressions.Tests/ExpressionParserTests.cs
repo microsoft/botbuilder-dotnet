@@ -50,6 +50,7 @@ namespace AdaptiveExpressions.Tests
             { "two", 2.0 },
             { "hello", "hello" },
             { "world", "world" },
+            { "newExpr", "new land" },
             { "cit", "cit" },
             { "y", "y" },
             { "istrue", true },
@@ -295,6 +296,8 @@ namespace AdaptiveExpressions.Tests
             Test("`hi ${join([\'jack\\`\', \'queen\', \'king\'], ',')}`", "hi jack\\`,queen,king"),
             Test("json(`{\"foo\":${{text:\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("json(`{\"foo\":${{\"text\":\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
+            Test("`{expr: hello all}`", "{expr: hello all}"),
+
             #endregion
 
             #region SetPathToProperty test
@@ -796,6 +799,15 @@ namespace AdaptiveExpressions.Tests
             Test("xPath(xmlStr,'sum(/produce/item/count)')", 30),
             Test("jPath(jsonStr,'Manufacturers[0].Products[0].Price')", 50),
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 50)].Name')", new[] { "Anvil", "Elbow Grease" }),
+            Test("{text: 'hello'}.text", "hello"),
+            Test("string(addProperty({'key1':'value1'}, 'key2','value2'))", "{\"key1\":\"value1\",\"key2\":\"value2\"}"),
+            Test("foreach(items, x, addProperty({}, 'a', x))[0].a", "zero"),
+            Test("string(setProperty({'key1':'value1'}, 'key1','value2'))", "{\"key1\":\"value2\"}"),
+            Test("string(setProperty({}, 'key1','value2'))", "{\"key1\":\"value2\"}"),
+            Test("string([{a: 1}, {b: 2}, {c: 3}][0])", "{\"a\":1}"),
+            Test("string({obj: {'name': 'adams'}})", "{\"obj\":{\"name\":\"adams\"}}"),
+            Test("string({obj: {'name': 'adams'}, txt: {utter: 'hello'}})", "{\"obj\":{\"name\":\"adams\"},\"txt\":{\"utter\":\"hello\"}}"),
+            Test("{a: 1, b: newExpr}.b", "new land"),
             #endregion
 
             #region  Memory access
