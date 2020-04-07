@@ -134,8 +134,9 @@ namespace Microsoft.Bot.Builder
         private static IActivity CloneActivity(IActivity activity)
         {
             activity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity, _jsonSettings));
-            
-            return EnsureActivityHasId(activity);
+            var activityWithId = EnsureActivityHasId(activity);
+
+            return activityWithId;
         }
 
         private static IActivity EnsureActivityHasId(IActivity activity)
@@ -144,7 +145,7 @@ namespace Microsoft.Bot.Builder
 
             if (activity == null)
             {
-                throw new ArgumentNullException("Cannot check Id on a null Activity.");
+                throw new ArgumentNullException("Cannot check or add Id on a null Activity.");
             }
 
             if (activity?.Id == null)
