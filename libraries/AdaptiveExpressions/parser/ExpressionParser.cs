@@ -231,22 +231,6 @@ namespace AdaptiveExpressions
                 return MakeExpression(ExpressionType.Concat, children.ToArray());
             }
 
-            public override Expression VisitConstantAtom([NotNull] ExpressionAntlrParser.ConstantAtomContext context)
-            {
-                var text = context.GetText();
-                if (text.StartsWith("[") && text.EndsWith("]") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2))) 
-                {
-                    return Expression.ConstantExpression(new JArray());
-                }
-
-                if (text.StartsWith("{") && text.EndsWith("}") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2)))
-                {
-                    return Expression.ConstantExpression(new JObject());
-                }
-
-                throw new Exception($"Unrecognized constant: {text}");
-            }
-
             private Expression MakeExpression(string functionType, params Expression[] children)
                 => Expression.MakeExpression(_lookupFunction(functionType) ?? throw new SyntaxErrorException($"{functionType} does not have an evaluator, it's not a built-in function or a custom function."), children);
 

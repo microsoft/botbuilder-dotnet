@@ -7,6 +7,8 @@ lexer grammar ExpressionAntlrLexer;
 fragment LETTER : [a-zA-Z];
 fragment DIGIT : [0-9];
 
+fragment OBJECT_DEFINITION: '{' ((WHITESPACE) | ((IDENTIFIER | STRING) ':' ( STRING | ~[{}\r\n'"`] | OBJECT_DEFINITION)+))* '}';
+
 STRING_INTERPOLATION_START : '`' { ignoreWS = false;} -> pushMode(STRING_INTERPOLATION_MODE);
 
 // operators
@@ -70,17 +72,13 @@ NEWLINE : '\r'? '\n' -> skip;
 
 STRING : ('\'' (('\\'('\''|'\\'))|(~'\''))*? '\'') | ('"' (('\\'('"'|'\\'))|(~'"'))*? '"');
 
-CONSTANT : ('{' WHITESPACE* '}');
-
 INVALID_TOKEN_DEFAULT_MODE : . ;
 
 mode STRING_INTERPOLATION_MODE;
 
 STRING_INTERPOLATION_END : '`' {ignoreWS = true;} -> type(STRING_INTERPOLATION_START), popMode;
 
-OBJECT_DEFINITION: '{' (IDENTIFIER ':' (STRING | ~[{}\r\n'"`] | OBJECT_DEFINITION)+)* '}';
-
-TEMPLATE : '$' '{' (STRING | ~[\r\n{}'"])*? '}';
+TEMPLATE : '$' '{' (STRING | OBJECT_DEFINITION | ~[\r\n{}'"`])+ '}';
 
 ESCAPE_CHARACTER : '\\' ~[\r\n]?;
 
