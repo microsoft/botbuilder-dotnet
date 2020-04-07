@@ -18,16 +18,16 @@ expression
     ;
  
 primaryExpression 
-    : OPEN_BRACKET expression CLOSE_BRACKET                                      #parenthesisExp
-    | OPEN_SQUARE_BRACKET argsList? CLOSE_SQUARE_BRACKET                         #arrayCreationExp
-    | OPEN_CURLY_BRACKET (keyValuePairList | expression)? CLOSE_CURLY_BRACKET    #jsonCreationExp
-    | NUMBER                                                                     #numericAtom
-    | STRING                                                                     #stringAtom
-    | IDENTIFIER                                                                 #idAtom
-    | stringInterpolation                                                        #stringInterpolationAtom
-    | primaryExpression DOT IDENTIFIER                                           #memberAccessExp
-    | primaryExpression NON? OPEN_BRACKET argsList? CLOSE_BRACKET                #funcInvokeExp
-    | primaryExpression OPEN_SQUARE_BRACKET expression CLOSE_SQUARE_BRACKET      #indexAccessExp
+    : OPEN_BRACKET expression CLOSE_BRACKET                                   #parenthesisExp
+    | OPEN_SQUARE_BRACKET argsList? CLOSE_SQUARE_BRACKET                      #arrayCreationExp
+    | OPEN_CURLY_BRACKET keyValuePairList? CLOSE_CURLY_BRACKET                #jsonCreationExp
+    | NUMBER                                                                  #numericAtom
+    | STRING                                                                  #stringAtom
+    | IDENTIFIER                                                              #idAtom
+    | stringInterpolation                                                     #stringInterpolationAtom
+    | primaryExpression DOT IDENTIFIER                                        #memberAccessExp
+    | primaryExpression NON? OPEN_BRACKET argsList? CLOSE_BRACKET             #funcInvokeExp
+    | primaryExpression OPEN_SQUARE_BRACKET expression CLOSE_SQUARE_BRACKET   #indexAccessExp
     ;
 
 stringInterpolation

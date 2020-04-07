@@ -293,6 +293,8 @@ namespace AdaptiveExpressions.Tests
             Test("`hello ${user.nickname}` != 'hello Dong'", true),
             Test("`hi\\`[1,2,3]`", "hi`[1,2,3]"),
             Test("`hi ${join([\'jack\\`\', \'queen\', \'king\'], ',')}`", "hi jack\\`,queen,king"),
+            Test("json(`{\"foo\":${{text:\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
+            Test("json(`{\"foo\":${{\"text\":\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             #endregion
 
             #region SetPathToProperty test
