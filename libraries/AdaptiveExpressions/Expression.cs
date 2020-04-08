@@ -23,27 +23,27 @@ namespace AdaptiveExpressions
         /// <summary>
         /// True or false boolean value.
         /// </summary>
-        Boolean,
+        Boolean = 1,
 
         /// <summary>
         /// Numerical value like int, float, double, ...
         /// </summary>
-        Number,
+        Number = 2,
 
         /// <summary>
         /// Any value is possible.
         /// </summary>
-        Object,
+        Object = 4,
 
         /// <summary>
         /// String value.
         /// </summary>
-        String,
+        String = 8,
 
         /// <summary>
         /// Array value.
         /// </summary>
-        Array,
+        Array = 16,
     }
 
     /// <summary>

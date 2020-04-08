@@ -44,5 +44,25 @@ namespace AdaptiveExpressions
             || value is uint
             || value is long
             || value is ulong;
+
+        /// <summary>
+        /// Get the type names of current return type contains.
+        /// </summary>
+        /// <param name="returntype">enum of ReturnType.</param>
+        /// <returns>The type names of current return type contains.</returns>
+        public static List<string> Names(this ReturnType returntype)
+        {
+            var result = new List<string>();
+
+            foreach (ReturnType type in Enum.GetValues(typeof(ReturnType)))
+            {
+                if ((returntype & type) != 0)
+                {
+                    result.Add(Enum.GetName(typeof(ReturnType), type));
+                }
+            }
+
+            return result;
+        }
     }
 }
