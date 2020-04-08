@@ -13,7 +13,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text.Sequence.English;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -270,7 +269,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(DialogTurnStatus.Waiting, _dmTurnResult.TurnResult.Status);
         }
 
-        private Dialog CreateTestDialog(string property = "user.name")
+        private Dialog CreateTestDialog(string property)
         {
             return new AskForNameDialog(property.Replace(".", string.Empty), property);
         }
@@ -291,7 +290,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 if (isSkillFlow)
                 {
-                    // Create a skill ClaimsIdentity and put it in turnstate so SkillValidation.IsSkillClaim() returns true.
+                    // Create a skill ClaimsIdentity and put it in TurnState so SkillValidation.IsSkillClaim() returns true.
                     var claimsIdentity = new ClaimsIdentity();
                     claimsIdentity.AddClaim(new Claim(AuthenticationConstants.VersionClaim, "2.0"));
                     claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, _skillBotId));
