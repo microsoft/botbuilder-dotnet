@@ -61,37 +61,42 @@ namespace Microsoft.Bot.Builder.Tests
         public static async Task EnsureToLogActivitiesWithIdsTest(ITranscriptStore transcriptStore)
         {
             var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
-            var adapter = new AllowNullIdAdapter(conversation)
+            var adapter = new AllowNullIdTestAdapter(conversation)
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
-
-            var activityWithId = new Activity
-            {
-                Id = "TestActivityWithId",
-                Text = "I am an activity with an Id.",
-                Type = ActivityTypes.Message
-            };
-            var activityWithNullId = new Activity
-            {
-                Id = null,
-                Text = "My Id is null.",
-                Type = ActivityTypes.Message
-            };
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
+                var activityWithId = new Activity
+                {
+                    Id = "TestActivityWithId",
+                    Text = "I am an activity with an Id.",
+                    Type = ActivityTypes.Message,
+                    RelatesTo = context.Activity.RelatesTo
+                };
+                var activityWithNullId = new Activity
+                {
+                    Id = null,
+                    Text = "My Id is null.",
+                    Type = ActivityTypes.Message
+                };
+                
                 await context.SendActivityAsync(activityWithId);
                 await context.SendActivityAsync(activityWithId);
 
                 await context.SendActivityAsync(activityWithNullId);
             })
-                .Send("inbound message to TestFlow")
-                   .AssertReply("I am an activity with an Id.")
 
-                .Send("2nd inbound message to TestFlow")
-                  .AssertReply((activity) => Assert.AreEqual(activity.Id, activityWithId.Id))
+                 .Send("inbound message to TestFlow")
+                    .AssertReply("I am an activity with an Id.")
 
-                 .Send("3rd inbound message to TestFlow")
-                     .AssertReply("My Id is null.")
+                 .Send("2nd inbound message to TestFlow")
+                   .AssertReply((activity) => Assert.AreEqual(activity.Id, "TestActivityWithId"))
+
+                  .Send("3rd inbound message to TestFlow")
+                      .AssertReply("My Id is null.")
+
+                //.Send("4th inbound message to TestFlow")
+                //    .AssertReply(activity => Assert.IsTrue(activity.Id.Contains("g_")))
 
                 .StartTestAsync();
 
