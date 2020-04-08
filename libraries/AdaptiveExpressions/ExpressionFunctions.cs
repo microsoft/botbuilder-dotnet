@@ -3858,8 +3858,26 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => CultureInvariantDoubleConvert(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.Base64, 
+                    Apply(
+                        (args) => 
+                        {
+                            byte[] byteArray;
+                            if (args[0] is byte[] byteArr)
+                            {
+                                byteArray = byteArr;
+                            }
+                            else
+                            {
+                                byteArray = System.Text.Encoding.UTF8.GetBytes(args[0].ToString());
+                            }
+
+                            return Convert.ToBase64String(byteArray);
+                        }), 
+                    ReturnType.String, 
+                    ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => Convert.FromBase64String(args[0].ToString()), VerifyString), ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.UriComponent, Apply(args => Uri.EscapeDataString(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
