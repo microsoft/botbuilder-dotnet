@@ -61,9 +61,9 @@
             "title": "Value",
             "description": "New value or expression.",
             "examples": [
-                "'milk'",
-                "dialog.favColor",
-                "dialog.favColor == 'red'"
+                "milk",
+                "=dialog.favColor",
+                "=dialog.favColor == 'red'"
             ]
         }
     }
