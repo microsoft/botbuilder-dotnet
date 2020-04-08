@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity
             {
                 Type = "message",
-                Text = "Test-GetTeamDetailsAsync",
+                Text = "Test-GetChannelsAsync",
                 ChannelId = Channels.Msteams,
                 ChannelData = new TeamsChannelData
                 {
