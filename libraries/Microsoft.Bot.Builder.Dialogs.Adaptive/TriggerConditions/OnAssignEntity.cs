@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
             Property = property;
             Entity = entity;
+            Operation = operation;
         }
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
             if (this.Operation != null)
             {
-                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.entity.operation == '{this.Operation}'"));
+                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.operation == '{this.Operation}'"));
             }
 
             return Expression.AndExpression(expressions.ToArray());

@@ -1016,7 +1016,7 @@ namespace AdaptiveExpressions
                         return (null, null, error);
                     }
 
-                    if (value is int)
+                    if (value.IsInteger())
                     {
                         path = $"[{value}]" + "." + path;
                     }
@@ -1146,8 +1146,9 @@ namespace AdaptiveExpressions
                 (idxValue, error) = index.TryEvaluate(state, new Options(options) { NullSubstitution = null });
                 if (error == null)
                 {
-                    if (idxValue is int idx)
+                    if (idxValue.IsInteger())
                     {
+                        var idx = Convert.ToInt32(idxValue);
                         (value, error) = AccessIndex(inst, idx);
                     }
                     else if (idxValue is string idxStr)
@@ -1274,7 +1275,7 @@ namespace AdaptiveExpressions
                 throw new ArgumentNullException();
             }
 
-            if (Convert.ToDouble(a) > Convert.ToDouble(b))
+            if (CultureInvariantDoubleConvert(a) > CultureInvariantDoubleConvert(b))
             {
                 return a;
             }
@@ -1291,7 +1292,7 @@ namespace AdaptiveExpressions
                 throw new ArgumentNullException();
             }
 
-            if (Convert.ToDouble(a) <= Convert.ToDouble(b))
+            if (CultureInvariantDoubleConvert(a) <= CultureInvariantDoubleConvert(b))
             {
                 return a;
             }
@@ -1300,6 +1301,8 @@ namespace AdaptiveExpressions
                 return b;
             }
         }
+
+        private static double CultureInvariantDoubleConvert(object numberObj) => Convert.ToDouble(numberObj, CultureInfo.InvariantCulture);
 
         private static object Add(object a, object b)
         {
@@ -1310,11 +1313,11 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt32(a) + Convert.ToInt32(b);
+                return Convert.ToInt64(a) + Convert.ToInt64(b);
             }
             else
             {
-                return Convert.ToDouble(a) + Convert.ToDouble(b);
+                return CultureInvariantDoubleConvert(a) + CultureInvariantDoubleConvert(b);
             }
         }
 
@@ -1327,11 +1330,11 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt32(a) - Convert.ToInt32(b);
+                return Convert.ToInt64(a) - Convert.ToInt64(b);
             }
             else
             {
-                return Convert.ToDouble(a) - Convert.ToDouble(b);
+                return CultureInvariantDoubleConvert(a) - CultureInvariantDoubleConvert(b);
             }
         }
 
@@ -1344,11 +1347,11 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt32(a) * Convert.ToInt32(b);
+                return Convert.ToInt64(a) * Convert.ToInt64(b);
             }
             else
             {
-                return Convert.ToDouble(a) * Convert.ToDouble(b);
+                return CultureInvariantDoubleConvert(a) * CultureInvariantDoubleConvert(b);
             }
         }
 
@@ -1361,11 +1364,11 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt32(a) % Convert.ToInt32(b);
+                return Convert.ToInt64(a) % Convert.ToInt64(b);
             }
             else
             {
-                return Convert.ToDouble(a) % Convert.ToDouble(b);
+                return CultureInvariantDoubleConvert(a) % CultureInvariantDoubleConvert(b);
             }
         }
 
@@ -1378,11 +1381,11 @@ namespace AdaptiveExpressions
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt32(a) / Convert.ToInt32(b);
+                return Convert.ToInt64(a) / Convert.ToInt64(b);
             }
             else
             {
-                return Convert.ToDouble(a) / Convert.ToDouble(b);
+                return CultureInvariantDoubleConvert(a) / CultureInvariantDoubleConvert(b);
             }
         }
 
@@ -1800,7 +1803,7 @@ namespace AdaptiveExpressions
             string error = null;
             try
             {
-                result = datetime.ToString(format);
+                result = datetime.ToString(format, CultureInfo.InvariantCulture.DateTimeFormat);
             }
             catch
             {
@@ -1865,7 +1868,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, string) AddToTime(string timestamp, int interval, string timeUnit, string format)
+        private static (string, string) AddToTime(string timestamp, long interval, string timeUnit, string format)
         {
             string result = null;
             string error = null;
@@ -2581,7 +2584,7 @@ namespace AdaptiveExpressions
 
             if (args[0].IsNumber() && args[0].IsNumber())
             {
-                if (Math.Abs(Convert.ToDouble(args[0]) - Convert.ToDouble(args[1])) < 0.00000001)
+                if (Math.Abs(CultureInvariantDoubleConvert(args[0]) - CultureInvariantDoubleConvert(args[1])) < 0.00000001)
                 {
                     return true;
                 }
@@ -2756,7 +2759,7 @@ namespace AdaptiveExpressions
 
                     return result;
                 }),
-                MultivariateNumeric(ExpressionType.Power, args => Math.Pow(Convert.ToDouble(args[0]), Convert.ToDouble(args[1]))),
+                MultivariateNumeric(ExpressionType.Power, args => Math.Pow(CultureInvariantDoubleConvert(args[0]), CultureInvariantDoubleConvert(args[1]))),
                 new ExpressionEvaluator(
                     ExpressionType.Mod,
                     ApplyWithError(
@@ -2764,7 +2767,7 @@ namespace AdaptiveExpressions
                         {
                             object value = null;
                             string error;
-                            if (Convert.ToInt32(args[1]) == 0)
+                            if (Convert.ToInt64(args[1]) == 0)
                             {
                                 error = $"Cannot mod by 0";
                             }
@@ -2828,7 +2831,7 @@ namespace AdaptiveExpressions
                         args =>
                         {
                             var operands = ResolveListValue(args[0]).OfType<object>().ToList();
-                            return operands.All(u => u.IsInteger()) ? operands.Sum(u => Convert.ToInt32(u)) : operands.Sum(u => Convert.ToSingle(u));
+                            return operands.All(u => u.IsInteger()) ? operands.Sum(u => Convert.ToInt64(u)) : operands.Sum(u => Convert.ToSingle(u));
                         },
                         VerifyNumericList),
                     ReturnType.Number,
@@ -2955,13 +2958,13 @@ namespace AdaptiveExpressions
                     (expression) => ValidateOrder(expression, null, ReturnType.Object)),
 
                 // Booleans
-                Comparison(ExpressionType.LessThan, args => Convert.ToDouble(args[0]) < Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.LessThanOrEqual, args => Convert.ToDouble(args[0]) <= Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.LessThan, args => CultureInvariantDoubleConvert(args[0]) < CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.LessThanOrEqual, args => CultureInvariantDoubleConvert(args[0]) <= CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
 
                 Comparison(ExpressionType.Equal, IsEqual, ValidateBinary),
                 Comparison(ExpressionType.NotEqual, args => !IsEqual(args), ValidateBinary),
-                Comparison(ExpressionType.GreaterThan, args => Convert.ToDouble(args[0]) > Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.GreaterThanOrEqual, args => Convert.ToDouble(args[0]) >= Convert.ToDouble(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.GreaterThan, args => CultureInvariantDoubleConvert(args[0]) > CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.GreaterThanOrEqual, args => CultureInvariantDoubleConvert(args[0]) >= CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNotNull),
                 new ExpressionEvaluator(
                     ExpressionType.Contains,
@@ -3331,7 +3334,7 @@ namespace AdaptiveExpressions
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Date,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Date.ToString("M/dd/yyyy")), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture)), VerifyString),
                     ReturnType.String,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
@@ -3353,14 +3356,21 @@ namespace AdaptiveExpressions
                             object timestamp = args[0];
                             if (Extensions.IsNumber(timestamp))
                             {
-                                if (double.TryParse(args[0].ToString(), out double unixTimestamp))
+                                if (double.TryParse(args[0].ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out double unixTimestamp))
                                 {
                                     var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
                                     timestamp = dateTime.AddSeconds(unixTimestamp);
                                 }
                             }
 
-                            (result, error) = ParseTimestamp((string)timestamp.ToString(), dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat));
+                            if (timestamp is string tsString)
+                            {
+                                (result, error) = ParseTimestamp(tsString, dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture));
+                            }
+                            else
+                            {
+                                (result, error) = ParseTimestamp((string)((DateTime)timestamp).ToString(CultureInfo.InvariantCulture), dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture));
+                            }
 
                             return (result, error);
                         }),
@@ -3380,7 +3390,7 @@ namespace AdaptiveExpressions
                             {
                                 var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(Convert.ToInt32(args[1]), string2);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[1]), string2);
                                 if (error == null)
                                 {
                                     (value, error) = ParseISOTimestamp(string0, dt => timeConverter(dt).ToString(format));
@@ -3477,7 +3487,7 @@ namespace AdaptiveExpressions
                             {
                                 var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(Convert.ToInt32(args[0]), string1, false);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1, false);
                                 if (error == null)
                                 {
                                     value = timeConverter(DateTime.Now).ToString(format);
@@ -3507,7 +3517,7 @@ namespace AdaptiveExpressions
                             {
                                 var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(Convert.ToInt32(args[0]), string1);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1);
                                 if (error == null)
                                 {
                                     value = timeConverter(DateTime.Now).ToString(format);
@@ -3586,7 +3596,7 @@ namespace AdaptiveExpressions
                             var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                             if (args[0] is string timestamp && args[1].IsInteger() && args[2] is string timeUnit)
                             {
-                                (value, error) = AddToTime(timestamp, Convert.ToInt32(args[1]), timeUnit, format);
+                                (value, error) = AddToTime(timestamp, Convert.ToInt64(args[1]), timeUnit, format);
                             }
                             else
                             {
@@ -3845,29 +3855,11 @@ namespace AdaptiveExpressions
                     ValidateUnary),
 
                 // Conversions
-                new ExpressionEvaluator(ExpressionType.Float, Apply(args => Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyStringOrNull), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(
-                    ExpressionType.Base64, 
-                    Apply(
-                        (args) => 
-                        {
-                            byte[] byteArray;
-                            if (args[0] is byte[] byteArr)
-                            {
-                                byteArray = byteArr;
-                            }
-                            else
-                            {
-                                byteArray = System.Text.Encoding.UTF8.GetBytes(args[0].ToString());
-                            }
-
-                            return Convert.ToBase64String(byteArray);
-                        }), 
-                    ReturnType.String, 
-                    ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => Convert.FromBase64String(args[0].ToString()), VerifyString), ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Float, Apply(args => CultureInvariantDoubleConvert(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.UriComponent, Apply(args => Uri.EscapeDataString(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
@@ -4039,12 +4031,12 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsInteger,
-                    Apply(args => Extensions.IsNumber(args[0]) && Convert.ToDouble(args[0]) % 1 == 0),
+                    Apply(args => Extensions.IsNumber(args[0]) && CultureInvariantDoubleConvert(args[0]) % 1 == 0),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsFloat,
-                    Apply(args => Extensions.IsNumber(args[0]) && Convert.ToDouble(args[0]) % 1 != 0),
+                    Apply(args => Extensions.IsNumber(args[0]) && CultureInvariantDoubleConvert(args[0]) % 1 != 0),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(

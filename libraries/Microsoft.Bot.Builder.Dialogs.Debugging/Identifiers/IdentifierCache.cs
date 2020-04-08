@@ -28,6 +28,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         bool IIdentifier<T>.TryGetValue(T item, out ulong code) => this.inner.TryGetValue(item, out code);
 
+        void IIdentifier<T>.Clear()
+        {
+            this.inner.Clear();
+            this.queue.Clear();
+        }
+
         ulong IIdentifier<T>.Add(T item)
         {
             if (this.inner.TryGetValue(item, out var code))
