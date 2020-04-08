@@ -80,20 +80,18 @@ namespace Microsoft.Bot.Builder.Tests
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
                 await context.SendActivityAsync(activityWithId);
+                await context.SendActivityAsync(activityWithId);
 
-                //await context.SendActivityAsync(activityWithNullId);
+                await context.SendActivityAsync(activityWithNullId);
             })
                 .Send("inbound message to TestFlow")
                    .AssertReply("I am an activity with an Id.")
 
                 .Send("2nd inbound message to TestFlow")
-                   .AssertReply((activity) => Assert.AreEqual(activity.Id, activityWithId.Id))
+                  .AssertReply((activity) => Assert.AreEqual(activity.Id, activityWithId.Id))
 
-                // .Send("3rd inbound message to TestFlow")
-                //     .AssertReply((activity) => Assert.AreEqual(activity.Id, activityWithNullId.Id))
-
-                .Send("4th inbound message to TestFlow")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Message))
+                 .Send("3rd inbound message to TestFlow")
+                     .AssertReply("My Id is null.")
 
                 .StartTestAsync();
 

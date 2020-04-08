@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Adapters
 {
     /// <summary>
     /// A mock adapter that can be used for unit testing bot logic.
-    /// Allows for activity IDs to remain null in <seealso cref="AllowNullIdAdapter.SendActivitiesAsync(turnContext, activities, cancellationToken)"/>.
+    /// Allows for Activity Ids to remain null.
     /// </summary>
     public class AllowNullIdAdapter : TestAdapter
     {
@@ -51,11 +51,6 @@ namespace Microsoft.Bot.Builder.Adapters
             for (var index = 0; index < activities.Length; index++)
             {
                 var activity = activities[index];
-
-                if (string.IsNullOrEmpty(activity.Id))
-                {
-                    activity.Id = Guid.NewGuid().ToString("n");
-                }
 
                 if (activity.Timestamp == null)
                 {
