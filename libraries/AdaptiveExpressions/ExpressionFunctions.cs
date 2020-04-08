@@ -2291,7 +2291,11 @@ namespace AdaptiveExpressions
         // conversion functions
         private static byte[] ToBinary(string strToConvert)
         {
-            var result = Encoding.UTF8.GetBytes(strToConvert);
+            if (strToConvert == null)
+            {
+                return new byte[] { };
+            }
+
             return Encoding.UTF8.GetBytes(strToConvert);
         }
 
@@ -3843,7 +3847,7 @@ namespace AdaptiveExpressions
                 // Conversions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt32(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyStringOrNull), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Base64, 
                     Apply(
