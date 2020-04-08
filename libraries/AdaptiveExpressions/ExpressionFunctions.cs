@@ -2289,15 +2289,10 @@ namespace AdaptiveExpressions
         }
 
         // conversion functions
-        private static string ToBinary(string strToConvert)
+        private static byte[] ToBinary(string strToConvert)
         {
-            var result = string.Empty;
-            foreach (var element in strToConvert.ToCharArray())
-            {
-                result += Convert.ToString(element, 2).PadLeft(8, '0');
-            }
-
-            return result;
+            var result = Encoding.UTF8.GetBytes(strToConvert);
+            return Encoding.UTF8.GetBytes(strToConvert);
         }
 
         private static (object, string) ToXml(object contentToConvert)
