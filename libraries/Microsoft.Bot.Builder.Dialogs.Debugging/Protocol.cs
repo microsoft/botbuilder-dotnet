@@ -289,6 +289,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             public string More { get; set; }
 
+            public JToken Designer { get; set; }
+
             public Source Source { get; set; }
 
             public int? Line { get; set; }

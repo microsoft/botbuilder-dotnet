@@ -36,6 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             if (source != null)
             {
+                target.Designer = source.Designer;
                 target.Source = new Protocol.Source(source.Path);
                 target.Line = source.StartPoint.LineIndex;
                 target.EndLine = source.EndPoint.LineIndex;
@@ -44,6 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else
             {
+                target.Designer = null;
                 target.Source = null;
                 target.Line = null;
                 target.EndLine = null;
