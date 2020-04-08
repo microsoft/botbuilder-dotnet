@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException("Cannot check or add Id on a null Activity.");
             }
 
-            if (activity?.Id == null)
+            if (activity.Id == null)
             {
                 var generatedId = $"g_{Guid.NewGuid()}";
                 activity.Id = generatedId;
