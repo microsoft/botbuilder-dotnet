@@ -77,7 +77,8 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     Id = null,
                     Text = "My Id is null.",
-                    Type = ActivityTypes.Message
+                    Type = ActivityTypes.Message,
+                    RelatesTo = context.Activity.RelatesTo
                 };
                 
                 await context.SendActivityAsync(activityWithId);
