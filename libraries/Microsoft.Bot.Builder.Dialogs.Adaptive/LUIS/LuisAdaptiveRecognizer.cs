@@ -139,10 +139,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
         protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dc)
         {
-            var dcState = dc.GetState();
-
-            var (logPersonalInfo, error) = this.LogPersonalInformation.TryGetValue(dcState);
-            var (applicationId, error2) = this.ApplicationId.TryGetValue(dcState);
+            var (logPersonalInfo, error) = this.LogPersonalInformation.TryGetValue(dc.State);
+            var (applicationId, error2) = this.ApplicationId.TryGetValue(dc.State);
 
             var topTwoIntents = (recognizerResult.Intents.Count > 0) ? recognizerResult.Intents.OrderByDescending(x => x.Value.Score).Take(2).ToArray() : null;
 

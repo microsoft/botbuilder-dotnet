@@ -146,10 +146,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
                 return qnaClient;
             }
 
-            var (epKey, error) = this.EndpointKey.TryGetValue(dcState);
-            var (hn, error2) = this.HostName.TryGetValue(dcState);
-            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dcState);
-            var (logPersonalInformation, error4) = this.LogPersonalInformation.TryGetValue(dcState);
+            var (epKey, error) = this.EndpointKey.TryGetValue(dc.State);
+            var (hn, error2) = this.HostName.TryGetValue(dc.State);
+            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dc.State);
+            var (logPersonalInformation, error4) = this.LogPersonalInformation.TryGetValue(dc.State);
 
             var endpoint = new QnAMakerEndpoint
             {

@@ -185,8 +185,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// which represents context from the previous query. To do so, the value should include a
         /// `context` property of type <see cref="QnAResponseContext"/>.</remarks>
         /// <seealso cref="DialogContext.BeginDialogAsync(string, object, CancellationToken)"/>
-
-
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
