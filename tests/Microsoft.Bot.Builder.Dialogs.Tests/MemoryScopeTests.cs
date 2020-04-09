@@ -71,6 +71,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }).StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task BotStateMemoryScopeTest()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                var dsm = dc.State as DialogStateManager;
+                var storage = new MemoryStorage();
+                var userState = new UserState(storage);
+                var conversationState = new ConversationState(storage);
+                var testBotState = new TestBotState(storage);
+
+                var stateScopes = new (BotState State, MemoryScope Scope)[]
+                {
+                    (userState, new UserMemoryScope()),
+                    (conversationState, new ConversationMemoryScope()),
+                    (testBotState, new BotStateMemoryScope<TestBotState>("test")),
+                };
+
+                foreach (var stateScope in stateScopes)
+                {
+                    const string Name = "test-name";
+                    const string Value = "test-value";
+
+                    await stateScope.State.CreateProperty<string>(Name).SetAsync(dc.Context, Value, ct);
+
+                    var memory = stateScope.Scope.GetMemory(dc);
+
+                    Assert.AreEqual(Value, ObjectPath.GetPathValue<string>(memory, Name), "Memory scope should have correct value");
+                }
+            }).StartTestAsync();
+        }
+
+        public class TestBotState : BotState
+        {
+            public TestBotState(IStorage storage)
+                : base(storage, $"BotState:{typeof(BotState).Namespace}.{typeof(BotState).Name}")
+            {
+            }
+
+            protected override string GetStorageKey(ITurnContext turnContext) => $"botstate/{turnContext.Activity.ChannelId}/{turnContext.Activity.Conversation.Id}/{typeof(BotState).Namespace}.{typeof(BotState).Name}";
+        }
+
         public class Foo
         {
             public Foo()
