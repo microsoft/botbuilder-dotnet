@@ -18,7 +18,7 @@ You can find out about a specific property by doing 'help <property>'.
 
 # help1(property)
 - IF: ${dialogClass.schema.properties[property].enum}
-- Possible values for ${name(property)} include: \[${join(possibleValues(property), ', ')}\]
+- Possible values for ${name(property)} include: [${join(possibleValues(property), ', ')}]
 - ELSEIF: ${dialogClass.schema.properties[property].type == 'number'}
 - Expect a number for ${name(property)}
 - ELSEIF: ${dialogClass.schema.properties[property].type == 'string'}

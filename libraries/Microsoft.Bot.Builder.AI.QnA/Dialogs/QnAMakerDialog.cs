@@ -15,17 +15,49 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 {
     /// <summary>
-    /// QnAMaker dialog which uses QnAMaker to get an answer.
+    /// A dialog that supports multi-step and adaptive-learning QnA Maker services.
     /// </summary>
+    /// <remarks>An instance of this class targets a specific QnA Maker knowledge base.
+    /// It supports knowledge bases that include follow-up prompt and active learning features.</remarks>
     public class QnAMakerDialog : WaterfallDialog
     {
+        /// <summary>
+        /// The path for storing and retrieving QnA Maker context data.
+        /// </summary>
+        /// <remarks>This represents context about the current or previous call to QnA Maker.
+        /// It is stored within the current step's <see cref="WaterfallStepContext"/>.
+        /// It supports QnA Maker's follow-up prompt and active learning features.</remarks>
         protected const string QnAContextData = "qnaContextData";
+
+        /// <summary>
+        /// The path for storing and retrieving the previous question ID.
+        /// </summary>
+        /// <remarks>This represents the QnA question ID from the previous turn.
+        /// It is stored within the current step's <see cref="WaterfallStepContext"/>.
+        /// It supports QnA Maker's follow-up prompt and active learning features.</remarks>
         protected const string PreviousQnAId = "prevQnAId";
+
+        /// <summary>
+        /// The path for storing and retrieving the options for this instance of the dialog.
+        /// </summary>
+        /// <remarks>This includes the options with which the dialog was started and options
+        /// expected by the QnA Maker service.
+        /// It is stored within the current step's <see cref="WaterfallStepContext"/>.
+        /// It supports QnA Maker and the dialog system.</remarks>
         protected const string Options = "options";
 
         // Dialog Options parameters
+
+        /// <summary>
+        /// The default threshold for answers returned, based on score.
+        /// </summary>
         protected const float DefaultThreshold = 0.3F;
+
+        /// <summary>
+        /// The default maximum number of answers to be returned for the question.
+        /// </summary>
         protected const int DefaultTopN = 3;
+
         private const string DefaultNoAnswer = "No QnAMaker answers found.";
 
         // Card parameters
@@ -44,6 +76,30 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private Activity cardNoMatchResponse;
         private Metadata[] strictFilters;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
+        /// </summary>
+        /// <param name="knowledgeBaseId">The ID of the QnA Maker knowledge base to query.</param>
+        /// <param name="endpointKey">The QnA Maker endpoint key to use to query the knowledge base.</param>
+        /// <param name="hostName">The QnA Maker host URL for the knowledge base, starting with "https://" and
+        /// ending with "/qnamaker".</param>
+        /// <param name="noAnswer">The activity to send the user when QnA Maker does not find an answer.</param>
+        /// <param name="threshold">The threshold for answers returned, based on score.</param>
+        /// <param name="activeLearningCardTitle">The card title to use when showing active learning options
+        /// to the user, if active learning is enabled.</param>
+        /// <param name="cardNoMatchText">The button text to use with active learning options,
+        /// allowing a user to indicate none of the options are applicable.</param>
+        /// <param name="top">The maximum number of answers to return from the knowledge base.</param>
+        /// <param name="cardNoMatchResponse">The activity to send the user if they select the no match option
+        /// on an active learning card.</param>
+        /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
+        /// knowledge base; or null to apply none.</param>
+        /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
+        /// or `null` to use a default client.</param>
+        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
+        /// of the source file that contains the caller.</param>
+        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
+        /// in the source file at which the method is called.</param>
         public QnAMakerDialog(
             string knowledgeBaseId,
             string endpointKey,
@@ -80,6 +136,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.AddStep(DisplayQnAResultAsync);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
+        /// The JSON serializer uses this constructor to deserialize objects of this class.
+        /// </summary>
+        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
+        /// of the source file that contains the caller.</param>
+        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
+        /// in the source file at which the method is called.</param>
         [JsonConstructor]
         public QnAMakerDialog([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base(nameof(QnAMakerDialog))
@@ -93,6 +157,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             this.AddStep(DisplayQnAResultAsync);
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="HttpClient"/> instance to use for requests to the QnA Maker service.
+        /// </summary>
+        /// <value>The HTTP client.</value>
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
@@ -101,6 +169,23 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// </summary>
         /// <value>If true, personal information is logged to Telemetry; otherwise the properties will be filtered.</value>
         public bool LogPersonalInformation { get; set; } = false;
+
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result indicates whether the dialog is still
+        /// active after the turn has been processed by the dialog.
+        /// 
+        /// You can use the <paramref name="options"/> parameter to include the QnA Maker context data,
+        /// which represents context from the previous query. To do so, the value should include a
+        /// `context` property of type <see cref="QnAResponseContext"/>.</remarks>
+        /// <seealso cref="DialogContext.BeginDialogAsync(string, object, CancellationToken)"/>
+
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -130,6 +215,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return await base.BeginDialogAsync(dc, dialogOptions, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets an <see cref="IQnAMakerClient"/> to use to access the QnA Maker knowledge base.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result contains the QnA Maker client to use.</remarks>
         protected async virtual Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
             var qnaClient = dc.Context.TurnState.Get<IQnAMakerClient>();
@@ -149,6 +240,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return new QnAMaker(endpoint, options, HttpClient, this.TelemetryClient, this.LogPersonalInformation);
         }
 
+        /// <summary>
+        /// Gets the options for the QnA Maker client that the dialog will use to query the knowledge base.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result contains the QnA Maker options to use.</remarks>
         protected virtual Task<QnAMakerOptions> GetQnAMakerOptionsAsync(DialogContext dc)
         {
             return Task.FromResult(new QnAMakerOptions
@@ -163,6 +260,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             });
         }
 
+        /// <summary>
+        /// Gets the options the dialog will use to display query results to the user.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result contains the response options to use.</remarks>
         protected virtual Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
             return Task.FromResult(new QnADialogResponseOptions
@@ -249,7 +352,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             stepContext.Values[ValueProperty.QnAData] = result;
             ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
-            // If card is not shown, move to next step with top qna response.
+            // If card is not shown, move to next step with top QnA response.
             return await stepContext.NextAsync(result, cancellationToken).ConfigureAwait(false);
         }
 
@@ -317,7 +420,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
                 // -Check if context is present and prompt exists 
-                // -If yes: Add reverse index of prompt display name and its corresponding qna id
+                // -If yes: Add reverse index of prompt display name and its corresponding QnA ID
                 // -Set PreviousQnAId as answer.Id
                 // -Display card for the prompt
                 // -Wait for the reply

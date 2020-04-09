@@ -12,11 +12,8 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
@@ -92,7 +89,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     turnContext.TurnState.Set(pair.Key, pair.Value);
                 }
 
-                var lg = turnContext.TurnState.Get<ILanguageGenerator>();
+                var lg = turnContext.TurnState.Get<LanguageGenerator>();
 
                 // en-us locale
                 turnContext.Activity.Locale = "en-us";
@@ -218,7 +215,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     turnContext.TurnState.Set(pair.Key, pair.Value);
                 }
 
-                var lg = turnContext.TurnState.Get<ILanguageGenerator>();
+                var lg = turnContext.TurnState.Get<LanguageGenerator>();
                 Assert.IsNotNull(lg, "ILanguageGenerator should not be null");
                 Assert.IsNotNull(turnContext.TurnState.Get<ResourceExplorer>(), "ResourceExplorer should not be null");
                 var text = await lg.Generate(turnContext, "${test()}", null);
@@ -238,17 +235,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
-                var generator = (ResourceMultiLanguageGenerator)dc.Context.TurnState.Get<ILanguageGenerator>();
+                var generator = (ResourceMultiLanguageGenerator)dc.Context.TurnState.Get<LanguageGenerator>();
                 Assert.AreEqual(ResourceId, generator.ResourceId);
-                await dc.Context.SendActivityAsync(generator.ResourceId);
+                await dc.Context.SendActivityAsync($"BeginDialog {Id}:{generator.ResourceId}");
                 return new DialogTurnResult(DialogTurnStatus.Waiting);
             }
 
             public async override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
             {
-                var generator = (ResourceMultiLanguageGenerator)dc.Context.TurnState.Get<ILanguageGenerator>();
+                var generator = (ResourceMultiLanguageGenerator)dc.Context.TurnState.Get<LanguageGenerator>();
                 Assert.AreEqual(ResourceId, generator.ResourceId);
-                await dc.Context.SendActivityAsync(generator.ResourceId);
+                await dc.Context.SendActivityAsync($"ContinueDialog {Id}:{generator.ResourceId}");
                 return await dc.EndDialogAsync();
             }
         }
@@ -258,6 +255,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var dialog = new AdaptiveDialog()
             {
+                Id = "AdaptiveDialog1",
                 Generator = new ResourceMultiLanguageGenerator("subDialog.lg"),
                 Triggers = new List<OnCondition>()
                 {
@@ -265,11 +263,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new AssertLGDialog() { ResourceId = "subDialog.lg" },
+                            new AssertLGDialog() { Id = "test1", ResourceId = "subDialog.lg" },
                             new BeginDialog()
                             {
                                 Dialog = new AdaptiveDialog()
                                 {
+                                    Id = "AdaptiveDialog2",
                                     Generator = new ResourceMultiLanguageGenerator("test.lg"),
                                     Triggers = new List<OnCondition>()
                                     {
@@ -277,13 +276,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                                         {
                                             Actions = new List<Dialog>()
                                             {
-                                                new AssertLGDialog() { ResourceId = "test.lg" },
+                                                new AssertLGDialog() { Id = "test2", ResourceId = "test.lg" },
                                             }
                                         }
                                     }
                                 }
                             },
-                            new AssertLGDialog() { ResourceId = "subDialog.lg" },
+                            new AssertLGDialog() { Id = "test3", ResourceId = "subDialog.lg" },
+                            new SendActivity("Done")
                         }
                     }
                 }
@@ -296,21 +296,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .UseLanguageGeneration("test.lg");
             await CreateFlow(async (turnContext, cancellationToken) =>
             {
+                System.Diagnostics.Trace.TraceInformation($"BEGIN TURN {turnContext.Activity.Text}");
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                System.Diagnostics.Trace.TraceInformation($"END TURN {turnContext.Activity.Text}");
             })
-            .Send("test")
-                // BeginDialog() outer dialog should be subDialog.lg
-                .AssertReply("subDialog.lg")
-            .Send("test")
-                // ContinueDialog() outer dialog should be subDialog.lg
-                .AssertReply("subDialog.lg")
-                // BeginDialog() on inner dialog should be test.lg
-                .AssertReply("test.lg")
-            .Send("test")
-                // ContinueDialog() on inner dialog should be test.lg
-                .AssertReply("test.lg")
-            // ResumeDialog() on outer dialog should be subDialog.lg
-            .AssertReply("subDialog.lg")
+            // inside AdaptiveDialog1
+            .Send("turn1")
+                .AssertReply("BeginDialog test1:subDialog.lg")
+            .Send("turn2")
+                .AssertReply("ContinueDialog test1:subDialog.lg")
+                // inside AdaptiveDialog2
+                .AssertReply("BeginDialog test2:test.lg")
+            .Send("turn3")
+                .AssertReply("ContinueDialog test2:test.lg")
+                // back out to AdaptiveDialog1
+                .AssertReply("BeginDialog test3:subDialog.lg")
+            .Send("turn4")
+                .AssertReply("ContinueDialog test3:subDialog.lg")
+                .AssertReply("Done")
             .StartTestAsync();
         }
 
@@ -343,7 +346,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             await CreateNoResourceExplorerFlow(async (turnContext, cancellationToken) =>
             {
-                var lg = dm.TurnState.Get<ILanguageGenerator>();
+                var lg = dm.TurnState.Get<LanguageGenerator>();
                 var result = await lg.Generate(turnContext, "This is ${test.name}", new
                 {
                     test = new
@@ -363,7 +366,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
         }
 
-        private ITurnContext GetTurnContext(string locale = null, ILanguageGenerator generator = null)
+        private ITurnContext GetTurnContext(string locale = null, LanguageGenerator generator = null)
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
 
@@ -373,7 +376,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             generator = generator ?? new MockLanguageGenerator();
             if (generator != null)
             {
-                context.TurnState.Add<ILanguageGenerator>(generator);
+                context.TurnState.Add<LanguageGenerator>(generator);
             }
 
             return context;
@@ -410,9 +413,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
     }
 
-    public class MockLanguageGenerator : ILanguageGenerator
+    public class MockLanguageGenerator : LanguageGenerator
     {
-        public Task<string> Generate(ITurnContext turnContext, string template, object data)
+        public override Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
             return Task.FromResult(template);
         }

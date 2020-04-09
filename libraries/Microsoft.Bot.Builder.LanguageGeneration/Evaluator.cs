@@ -22,7 +22,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
         public const string LGType = "lgType";
-        public static readonly Regex ExpressionRecognizeRegex = new Regex(@"(?<!\\)\${((\'[^\r\n\']*\')|(\""[^\""\r\n]*\"")|(\`(\\\`|[^\`])*\`)|([^\r\n{}'""`]))+}?", RegexOptions.Compiled);
+
+        // PCRE: (?<!\\)\${(('(\\('|\\)|[^'])*?')|("(\\("|\\)|[^"])*?")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'"`])|({\s*}))+}?
+        public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
+        public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly bool strictMode;
@@ -77,7 +80,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!(scope is CustomizedMemory))
             {
-                scope = new CustomizedMemory(SimpleObjectMemory.Wrap(scope));
+                scope = new CustomizedMemory(scope);
             }
 
             (var reExecute, var templateName) = ParseTemplateName(inputTemplateName);
@@ -301,6 +304,47 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return new CustomizedMemory(memory.GlobalMemory, new SimpleObjectMemory(newScope));
         }
 
+        internal static string ConcatErrorMsg(string firstError, string secondError)
+        {
+            string errorMsg;
+            if (string.IsNullOrEmpty(firstError))
+            {
+                errorMsg = secondError;
+            }
+            else if (string.IsNullOrEmpty(secondError))
+            {
+                errorMsg = firstError;
+            }
+            else
+            {
+                errorMsg = firstError + " " + secondError;
+            }
+
+            return errorMsg;
+        }
+
+        internal static void CheckExpressionResult(string exp, string error, object result, string templateName, ParserRuleContext context = null, string errorPrefix = "")
+        {
+            var errorMsg = string.Empty;
+
+            var childErrorMsg = string.Empty;
+            if (error != null)
+            {
+                childErrorMsg = ConcatErrorMsg(childErrorMsg, error);
+            }
+            else if (result == null)
+            {
+                childErrorMsg = ConcatErrorMsg(childErrorMsg, TemplateErrors.NullExpression(exp));
+            }
+
+            if (context != null)
+            {
+                errorMsg = ConcatErrorMsg(errorMsg, TemplateErrors.ErrorExpression(context.GetText(), templateName, errorPrefix));
+            }
+
+            throw new Exception(ConcatErrorMsg(childErrorMsg, errorMsg));
+        }
+
         private object VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
         {
             var values = context.keyValueStructureValue();
@@ -320,7 +364,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         switch (node.Symbol.Type)
                         {
                             case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                                itemStringResult.Append(node.GetText().Escape());
+                                itemStringResult.Append(node.GetText().Replace(@"\|", "|").Escape());
                                 break;
                             case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
@@ -358,29 +402,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (strictMode && (error != null || result == null))
             {
-                var errorMsg = string.Empty;
-
-                var childErrorMsg = string.Empty;
-                if (error != null)
-                {
-                    childErrorMsg += error;
-                }
-                else if (result == null)
-                {
-                    childErrorMsg += TemplateErrors.NullExpression(exp);
-                }
-
-                if (context != null)
-                {
-                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
-                }
-
+                var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
                 {
                     evaluationTargetStack.Pop();
                 }
 
-                throw new Exception(childErrorMsg + errorMsg);
+                CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
             }
             else if (error != null
                 || result == null
@@ -400,29 +428,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (error != null || (result == null && strictMode))
             {
-                var errorMsg = string.Empty;
-
-                var childErrorMsg = string.Empty;
-                if (error != null)
-                {
-                    childErrorMsg += error;
-                }
-                else if (result == null)
-                {
-                    childErrorMsg += TemplateErrors.NullExpression(exp);
-                }
-
-                if (context != null)
-                {
-                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
-                }
-
+                var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
                 {
                     evaluationTargetStack.Pop();
                 }
 
-                throw new Exception(childErrorMsg + errorMsg);
+                CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
             }
             else if (result == null && !strictMode)
             {

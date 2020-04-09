@@ -1,0 +1,11 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "title": "Microsoft Recognizer",
+    "description": "Components which derive from Recognizer class",
+    "$role": "interface",
+    "oneOf": [
+        {
+            "type": "string"
+        }
+    ]
+}

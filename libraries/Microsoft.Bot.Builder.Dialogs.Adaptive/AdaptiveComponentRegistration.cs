@@ -1,7 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -13,6 +17,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Skills;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -23,9 +28,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-    public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes, IComponentMemoryScopes, IComponentPathResolvers, IComponentExpressionFunctions
+    public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes, IComponentMemoryScopes, IComponentPathResolvers
     {
-        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes()
+        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Conditionals
             yield return new DeclarativeType<OnCondition>(OnCondition.DeclarativeType);
@@ -57,7 +62,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<OnEndOfActions>(OnEndOfActions.DeclarativeType);
             yield return new DeclarativeType<OnChooseProperty>(OnChooseProperty.DeclarativeType);
             yield return new DeclarativeType<OnChooseEntity>(OnChooseEntity.DeclarativeType);
-            yield return new DeclarativeType<OnClearProperty>(OnClearProperty.DeclarativeType);
             yield return new DeclarativeType<OnAssignEntity>(OnAssignEntity.DeclarativeType);
 
             // Actions
@@ -145,20 +149,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Dialogs
             yield return new DeclarativeType<AdaptiveDialog>(AdaptiveDialog.DeclarativeType);
             yield return new DeclarativeType<AdaptiveSkillDialog>(AdaptiveSkillDialog.DeclarativeType);
+
+            // register x.dialog.schema/x.dialog as DynamicBeginDialog $kind="x" => DynamicBeginDialog(x.dialog) resource.
+            foreach (var schema in resourceExplorer.GetResources(".schema").Where(s => resourceExplorer.GetTypeForKind(Path.GetFileNameWithoutExtension(s.Id)) == null))
+            {
+                // x.dialog.schema => resourceType=dialog resourceId=x.dialog $kind=x
+                var resourceId = Path.GetFileNameWithoutExtension(schema.Id);
+                var resourceType = Path.GetExtension(resourceId).TrimStart('.').ToLowerInvariant();
+                var kind = Path.GetFileNameWithoutExtension(resourceId);
+
+                // load dynamic dialogs
+                switch (resourceType)
+                {
+                    case "dialog":
+                        yield return new DeclarativeType<DynamicBeginDialog>(kind) { CustomDeserializer = new DynamicBeginDialogDeserializer(resourceExplorer, resourceId) };
+                        break;
+                }
+            }
         }
 
-        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
+        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
         {
-            yield return new InterfaceConverter<OnCondition>(resourceExplorer, paths);
-            yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, paths);
-            yield return new InterfaceConverter<ITriggerSelector>(resourceExplorer, paths);
+            yield return new InterfaceConverter<OnCondition>(resourceExplorer, context);
+            yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, context);
+            yield return new InterfaceConverter<TriggerSelector>(resourceExplorer, context);
 
             yield return new IntExpressionConverter();
             yield return new NumberExpressionConverter();
             yield return new StringExpressionConverter();
             yield return new ValueExpressionConverter();
             yield return new BoolExpressionConverter();
-            yield return new DialogExpressionConverter(resourceExplorer, paths);
+            yield return new DialogExpressionConverter(resourceExplorer, context);
 
             yield return new ObjectExpressionConverter<ChoiceSet>();
             yield return new ObjectExpressionConverter<ChoiceFactoryOptions>();
@@ -175,7 +196,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             yield return new ChoiceSetConverter();
             yield return new ActivityTemplateConverter();
-            yield return new JObjectConverter(resourceExplorer);
+            yield return new JObjectConverter(resourceExplorer, context);
         }
 
         public virtual IEnumerable<MemoryScope> GetMemoryScopes()
@@ -197,11 +218,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new AtAtPathResolver();
             yield return new AtPathResolver();
             yield return new PercentPathResolver();
-        }
-
-        public IEnumerable<ExpressionEvaluator> GetExpressionEvaluators()
-        {
-            yield break;
         }
     }
 }

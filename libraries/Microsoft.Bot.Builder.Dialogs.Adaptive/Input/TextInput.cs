@@ -27,13 +27,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var dcState = dc.GetState();
-
-            var input = dcState.GetValue<string>(VALUE_PROPERTY);
+            var input = dc.State.GetValue<string>(VALUE_PROPERTY);
 
             if (this.OutputFormat != null)
             {
-                var (outputValue, error) = this.OutputFormat.TryGetValue(dcState);
+                var (outputValue, error) = this.OutputFormat.TryGetValue(dc.State);
                 if (error == null)
                 {
                     input = outputValue.ToString();
@@ -44,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
             }
 
-            dcState.SetValue(VALUE_PROPERTY, input);
+            dc.State.SetValue(VALUE_PROPERTY, input);
             return input.Length > 0 ? Task.FromResult(InputState.Valid) : Task.FromResult(InputState.Unrecognized);
         }
     }

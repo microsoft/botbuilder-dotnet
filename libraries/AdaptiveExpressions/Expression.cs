@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using AdaptiveExpressions.Converters;
@@ -17,27 +18,33 @@ namespace AdaptiveExpressions
     /// <summary>
     /// Type expected from evaluating an expression.
     /// </summary>
+    [Flags]
     public enum ReturnType
     {
         /// <summary>
         /// True or false boolean value.
         /// </summary>
-        Boolean,
+        Boolean = 1,
 
         /// <summary>
         /// Numerical value like int, float, double, ...
         /// </summary>
-        Number,
+        Number = 2,
 
         /// <summary>
         /// Any value is possible.
         /// </summary>
-        Object,
+        Object = 4,
 
         /// <summary>
         /// String value.
         /// </summary>
-        String,
+        String = 8,
+
+        /// <summary>
+        /// Array value.
+        /// </summary>
+        Array = 16,
     }
 
     /// <summary>
@@ -57,7 +64,7 @@ namespace AdaptiveExpressions
         /// This is all available functions, you can add custom functions to it, but you cannot
         /// replace builtin functions.  If you clear the dictionary, it will be reset to the built in functions.
         /// </remarks>
-        public static readonly IDictionary<string, ExpressionEvaluator> Functions = new FunctionTable();
+        public static readonly FunctionTable Functions = new FunctionTable();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Expression"/> class.
@@ -177,7 +184,7 @@ namespace AdaptiveExpressions
         /// <param name="function">Lambda expression to evaluate.</param>
         /// <returns>New expression.</returns>
         public static Expression Lambda(Func<object, object> function)
-            => new Expression(new ExpressionEvaluator(ExpressionType.Lambda, (expression, state) =>
+            => new Expression(new ExpressionEvaluator(ExpressionType.Lambda, (expression, state, _) =>
             {
                 object value = null;
                 string error = null;
@@ -286,6 +293,178 @@ namespace AdaptiveExpressions
             : MakeExpression(ExpressionType.Accessor, ConstantExpression(property), instance);
 
         /// <summary>
+        /// Do a deep equality between expressions.
+        /// </summary>
+        /// <param name="other">Other expression.</param>
+        /// <returns>True if expressions are the same.</returns>
+        public virtual bool DeepEquals(Expression other)
+        {
+            var eq = false;
+            if (other != null)
+            {
+                eq = this.Type == other.Type;
+                if (eq)
+                {
+                    eq = this.Children.Count() == other.Children.Count();
+                    if (this.Type == ExpressionType.And || this.Type == ExpressionType.Or)
+                    {
+                        // And/Or do not depend on order
+                        for (var i = 0; eq && i < this.Children.Count(); ++i)
+                        {
+                            var primary = this.Children[i];
+                            var found = false;
+                            for (var j = 0; j < this.Children.Count(); ++j)
+                            {
+                                if (primary.DeepEquals(other.Children[j]))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            eq = found;
+                        }
+                    }
+                    else
+                    {
+                        for (var i = 0; eq && i < this.Children.Count(); ++i)
+                        {
+                            eq = this.Children[i].DeepEquals(other.Children[i]);
+                        }
+                    }
+                }
+            }
+
+            return eq;
+        }
+
+        /// <summary>
+        /// Return the static reference paths to memory.
+        /// </summary>
+        /// <remarks>
+        /// Return all static paths to memory.  If there is a computed element index, then the path is terminated there,
+        /// but you might get other paths from the computed part as well.
+        /// </remarks>
+        /// <param name="expression">Expression to get references from.</param>
+        /// <returns>List of the static reference paths.</returns>
+        public IReadOnlyList<string> References()
+        {
+            var (path, refs) = ReferenceWalk(this);
+            if (path != null)
+            {
+                refs.Add(path);
+            }
+
+            return refs.ToList();
+        }
+
+        /// <summary>
+        /// Walking function for identifying static memory references in an expression.
+        /// </summary>
+        /// <param name="expression">Expression to analyze.</param>
+        /// <param name="extension">If present, called to override lookup for things like template expansion.</param>
+        /// <returns>Accessor path of expression which is a potential partial path and the full path found so far.</returns>
+        public (string path, HashSet<string> references) ReferenceWalk(Expression expression, Func<Expression, bool> extension = null)
+        {
+            string path = null;
+            var refs = new HashSet<string>();
+            if (extension == null || !extension(expression))
+            {
+                var children = expression.Children;
+                if (expression.Type == ExpressionType.Accessor)
+                {
+                    var prop = (string)((Constant)children[0]).Value;
+
+                    if (children.Length == 1)
+                    {
+                        path = prop;
+                    }
+
+                    if (children.Length == 2)
+                    {
+                        (path, refs) = ReferenceWalk(children[1], extension);
+                        if (path != null)
+                        {
+                            path = path + "." + prop;
+                        }
+
+                        // if path is null we still keep it null, won't append prop
+                        // because for example, first(items).x should not return x as refs
+                    }
+                }
+                else if (expression.Type == ExpressionType.Element)
+                {
+                    (path, refs) = ReferenceWalk(children[0], extension);
+                    if (path != null)
+                    {
+                        if (children[1] is Constant cnst)
+                        {
+                            if (cnst.ReturnType == ReturnType.String)
+                            {
+                                path += $".{cnst.Value}";
+                            }
+                            else
+                            {
+                                path += $"[{cnst.Value}]";
+                            }
+                        }
+                        else
+                        {
+                            refs.Add(path);
+                        }
+                    }
+
+                    var (idxPath, refs1) = ReferenceWalk(children[1], extension);
+                    refs.UnionWith(refs1);
+
+                    if (idxPath != null)
+                    {
+                        refs.Add(idxPath);
+                    }
+                }
+                else if (expression.Type == ExpressionType.Foreach ||
+                         expression.Type == ExpressionType.Where ||
+                         expression.Type == ExpressionType.Select)
+                {
+                    var (child0Path, refs0) = ReferenceWalk(children[0], extension);
+                    if (child0Path != null)
+                    {
+                        refs0.Add(child0Path);
+                    }
+
+                    var (child2Path, refs2) = ReferenceWalk(children[2], extension);
+                    if (child2Path != null)
+                    {
+                        refs2.Add(child2Path);
+                    }
+
+                    var iteratorName = (string)(children[1].Children[0] as Constant).Value;
+
+                    // filter references found in children 2 with iterator name
+                    var nonLocalRefs2 = refs2.Where(x => !(x.Equals(iteratorName) || x.StartsWith(iteratorName + '.') || x.StartsWith(iteratorName + '[')))
+                                             .ToList();
+
+                    refs.UnionWith(refs0);
+                    refs.UnionWith(nonLocalRefs2);
+                }
+                else
+                {
+                    foreach (var child in expression.Children)
+                    {
+                        var (childPath, refs0) = ReferenceWalk(child, extension);
+                        refs.UnionWith(refs0);
+                        if (childPath != null)
+                        {
+                            refs.Add(childPath);
+                        }
+                    }
+                }
+            }
+
+            return (path, refs);
+        }
+
+        /// <summary>
         /// Validate immediate expression.
         /// </summary>
         public void Validate() => Evaluator.ValidateExpression(this);
@@ -309,9 +488,10 @@ namespace AdaptiveExpressions
         /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
+        /// <param name="options">Options used in the evaluation. </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (object value, string error) TryEvaluate(object state)
-            => this.TryEvaluate<object>(state);
+        public (object value, string error) TryEvaluate(object state, Options options = null)
+            => this.TryEvaluate<object>(MemoryFactory.Create(state), options);
 
         /// <summary>
         /// Evaluate the expression.
@@ -320,21 +500,10 @@ namespace AdaptiveExpressions
         /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
+        /// <param name="options">Options used in the evaluation. </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (object value, string error) TryEvaluate(IMemory state)
-            => this.TryEvaluate<object>(state);
-
-        /// <summary>
-        /// Evaluate the expression.
-        /// </summary>
-        /// <typeparam name="T">type of result of the expression.</typeparam>
-        /// <param name="state">
-        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
-        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
-        /// </param>
-        /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (T value, string error) TryEvaluate<T>(object state)
-        => this.TryEvaluate<T>(SimpleObjectMemory.Wrap(state));
+        public (object value, string error) TryEvaluate(IMemory state, Options options = null)
+            => this.TryEvaluate<object>(state, options);
 
         /// <summary>
         /// Evaluate the expression.
@@ -344,10 +513,25 @@ namespace AdaptiveExpressions
         /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
+        /// <param name="options">Options used in the evaluation. </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (T value, string error) TryEvaluate<T>(IMemory state)
+        public (T value, string error) TryEvaluate<T>(object state, Options options = null)
+        => this.TryEvaluate<T>(MemoryFactory.Create(state), options);
+
+        /// <summary>
+        /// Evaluate the expression.
+        /// </summary>
+        /// <typeparam name="T">type of result of the expression.</typeparam>
+        /// <param name="state">
+        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
+        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
+        /// </param>
+        /// <param name="options">Options used in the evaluation. </param>
+        /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
+        public (T value, string error) TryEvaluate<T>(IMemory state, Options options = null)
         {
-            var (result, error) = Evaluator.TryEvaluate(this, state);
+            var opts = options ?? new Options();
+            var (result, error) = Evaluator.TryEvaluate(this, state, opts);
             if (error != null)
             {
                 return (default(T), error);
@@ -527,7 +711,7 @@ namespace AdaptiveExpressions
         /// <summary>
         /// FunctionTable is a dictionary which merges BuiltinFunctions.Functions with a CustomDictionary.
         /// </summary>
-        private class FunctionTable : IDictionary<string, ExpressionEvaluator>
+        public class FunctionTable : IDictionary<string, ExpressionEvaluator>
         {
             private readonly ConcurrentDictionary<string, ExpressionEvaluator> customFunctions = new ConcurrentDictionary<string, ExpressionEvaluator>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -568,6 +752,11 @@ namespace AdaptiveExpressions
             }
 
             public void Add(string key, ExpressionEvaluator value) => this[key] = value;
+
+            public void Add(string key, Func<IReadOnlyList<dynamic>, object> func)
+            {
+                Add(key, new ExpressionEvaluator(key, ExpressionFunctions.Apply(func)));
+            }
 
             public void Add(KeyValuePair<string, ExpressionEvaluator> item) => this[item.Key] = item.Value;
 

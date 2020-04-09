@@ -59,13 +59,13 @@ NUMBER : DIGIT + ( '.' DIGIT +)? ;
 
 WHITESPACE : (' '|'\t'|'\ufeff'|'\u00a0') {ignoreWS}? -> skip;
 
-IDENTIFIER : (LETTER | '_' | '#' | '@' | '@@' | '$' | '%') (LETTER | DIGIT | '-' | '_')* '!'?;
+IDENTIFIER : (LETTER | '_' | '#' | '@' | '@@' | '$' | '%') (LETTER | DIGIT | '-' | '_')*;
 
 NEWLINE : '\r'? '\n' -> skip;
 
-STRING : ('\'' (~'\'')* '\'') | ('"' (~'"')* '"');
+STRING : ('\'' (('\\'('\''|'\\'))|(~'\''))*? '\'') | ('"' (('\\'('"'|'\\'))|(~'"'))*? '"');
 
-CONSTANT : ('[' WHITESPACE* ']') | ('{' WHITESPACE* '}');
+CONSTANT : ('{' WHITESPACE* '}');
 
 INVALID_TOKEN_DEFAULT_MODE : . ;
 
@@ -77,6 +77,6 @@ TEMPLATE : '$' '{' (STRING | ~[\r\n{}'"])*? '}';
 
 ESCAPE_CHARACTER : '\\' ~[\r\n]?;
 
-TEXT_CONTENT :  '\\`' | ~[\r\n];
+TEXT_CONTENT :  ~[\r\n];
 
 

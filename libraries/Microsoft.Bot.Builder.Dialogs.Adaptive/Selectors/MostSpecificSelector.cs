@@ -11,9 +11,9 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
     /// <summary>
-    /// Select the most specific true rule implementation of <see cref="ITriggerSelector"/>.
+    /// Select the most specific true rule implementation of <see cref="TriggerSelector"/>.
     /// </summary>
-    public class MostSpecificSelector : ITriggerSelector
+    public class MostSpecificSelector : TriggerSelector
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.MostSpecificSelector";
@@ -27,9 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// Optional rule selector to use when more than one most specific rule is true.
         /// </value>
         [JsonProperty("selector")]
-        public ITriggerSelector Selector { get; set; }
+        public TriggerSelector Selector { get; set; }
 
-        public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
+        public override void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             foreach (var conditional in conditionals)
             {
@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public virtual async Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel)
+        public override async Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel)
         {
-            var triggers = _tree.Matches(context.GetState());
+            var triggers = _tree.Matches(context.State);
             var matches = new List<OnCondition>();
             foreach (var trigger in triggers)
             {

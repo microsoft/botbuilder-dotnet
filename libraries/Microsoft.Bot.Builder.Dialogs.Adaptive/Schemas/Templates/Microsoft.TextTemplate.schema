@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
     "$role": "implements(Microsoft.ITextTemplate)",
     "title": "Microsoft TextTemplate",
-    "description": "Lg tempalte to evaluate to create text",
+    "description": "Use LG Templates to create text",
     "type": "object",
     "properties": {
         "template": {

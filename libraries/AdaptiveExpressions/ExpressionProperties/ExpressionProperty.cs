@@ -47,7 +47,7 @@ namespace AdaptiveExpressions.Properties
 
         public static implicit operator ExpressionProperty<T>(Expression expression) => new ExpressionProperty<T>(expression);
 
-        public new string ToString()
+        public override string ToString()
         {
             if (this.ExpressionText != null)
             {

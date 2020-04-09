@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.EntityRecognizers)",
+    "$role": "implements(Microsoft.IEntityRecognizer)",
     "title": "Regex Entity Recognizer",
     "description": "Recognizer which recognizes patterns of input based on regex.",
     "type": "object",

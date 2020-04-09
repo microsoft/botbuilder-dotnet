@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly Dictionary<object, SourceRange> sourceByItem = new Dictionary<object, SourceRange>(ReferenceEquality<object>.Instance);
         private bool dirty = true;
 
-        private readonly Identifier<Row> rows = new Identifier<Row>();
+        private readonly IIdentifier<Row> rows = new Identifier<Row>();
         private readonly HashSet<object> items = new HashSet<object>(ReferenceEquality<object>.Instance);
 
         public DebuggerSourceMap(ICodeModel codeModel)
@@ -36,6 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             if (source != null)
             {
+                target.Designer = source.Designer;
                 target.Source = new Protocol.Source(source.Path);
                 target.Line = source.StartPoint.LineIndex;
                 target.EndLine = source.EndPoint.LineIndex;
@@ -44,12 +45,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else
             {
+                target.Designer = null;
                 target.Source = null;
                 target.Line = null;
                 target.EndLine = null;
                 target.Column = null;
                 target.EndColumn = null;
             }
+        }
+
+        public static void Assign(Protocol.Range target, string item, string more)
+        {
+            target.Item = item;
+            target.More = more;
         }
 
         void ISourceMap.Add(object item, SourceRange range)
@@ -79,6 +87,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     range = default(SourceRange);
                     return false;
                 }
+            }
+        }
+
+        void IBreakpoints.Clear()
+        {
+            lock (gate)
+            {
+                this.rows.Clear();
+                this.items.Clear();
+                this.dirty = true;
             }
         }
 
@@ -200,6 +218,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             row.Item = item;
             row.Breakpoint.Verified = source != null;
             Assign(row.Breakpoint, source);
+
+            var name = this.codeModel.NameFor(row.Item);
+            Assign(row.Breakpoint, name, null);
+
             return true;
         }
 

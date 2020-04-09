@@ -81,6 +81,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestMultiLineExprInLG()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("MultiLineExpr.lg"));
+
+            string evaled = templates.Evaluate("ExprInCondition", new { userName = "Henry", day = "Monday" }).ToString();
+            Assert.IsTrue(evaled == "Not today", $"Evaled is {evaled}");
+
+            evaled = templates.Evaluate("definition").ToString();
+            Assert.IsTrue(evaled == "10", $"Evaled is {evaled}");
+
+            evaled = templates.Evaluate("template").ToString();
+            Assert.IsTrue(evaled == "15", $"Evaled is {evaled}");
+        }
+
+        [TestMethod]
         public void TestBasicSwitchCaseTemplate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("switchcase.lg"));
@@ -235,13 +250,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("EscapeCharacter.lg"));
             var evaled = templates.Evaluate("wPhrase", null);
-            Assert.AreEqual(evaled, "Hi \r\n\t[]{}\\");
+            Assert.AreEqual(evaled, "Hi \r\n\t\\");
 
             evaled = templates.Evaluate("AtEscapeChar", null);
-            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1} ");
+            Assert.AreEqual(evaled, "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1}");
 
             evaled = templates.Evaluate("otherEscape", null);
-            Assert.AreEqual(evaled, "Hi y ");
+            Assert.AreEqual(evaled, @"Hi \y \");
 
             evaled = templates.Evaluate("escapeInExpression", null);
             Assert.AreEqual(evaled, "Hi hello\\\\");
@@ -267,6 +282,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             
             evaled = templates.Evaluate("showTodo", null);
             Assert.AreEqual(((string)evaled).Replace("\r\n", "\n"), "\n    You don't have any \"t\\\\odo'\".\n    ");
+
+            evaled = templates.Evaluate("getUserName", null);
+            Assert.AreEqual(evaled, "super \"x man\"");
+
+            evaled = templates.Evaluate("structure1", null);
+            Assert.AreEqual(evaled.ToString().Replace("\r\n", "\n").Replace("\n", string.Empty), "{  \"lgType\": \"struct\",  \"list\": [    \"a\",    \"b|c\"  ]}");
+
+            evaled = templates.Evaluate("nestedSample", null);
+            Assert.AreEqual(evaled.ToString(), "i like three movies, they are \"\\\"name1\", \"name2\" and \"{name3\"");
+
+            evaled = templates.Evaluate("dollarsymbol");
+            Assert.AreEqual("$ $ ${'hi'} hi", evaled);
         }
 
         [TestMethod]
@@ -590,12 +617,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(templates[1].Parameters.Count, 2);
             Assert.AreEqual(templates[1].Parameters[0], "age");
             Assert.AreEqual(templates[1].Parameters[1], "name");
-            Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- hi \n");
+            Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- hi ");
 
             templates.AddTemplate("newtemplate2", null, "- hi2 ");
             Assert.AreEqual(templates.Count, 3);
             Assert.AreEqual(templates[2].Name, "newtemplate2");
-            Assert.AreEqual(templates[2].Body.Replace("\r\n", "\n"), "- hi2 \n");
+            Assert.AreEqual(templates[2].Body.Replace("\r\n", "\n"), "- hi2 ");
 
             templates.UpdateTemplate("newtemplate", "newtemplateName", new List<string> { "newage", "newname" }, "- new hi\r\n#hi");
             Assert.AreEqual(templates.Count, 3);
@@ -604,9 +631,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(templates[1].Parameters.Count, 2);
             Assert.AreEqual(templates[1].Parameters[0], "newage");
             Assert.AreEqual(templates[1].Parameters[1], "newname");
-            Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- new hi\n- #hi\n");
+            Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- new hi\n- #hi");
 
-            templates.UpdateTemplate("newtemplate2", "newtemplateName2", new List<string> { "newage2", "newname2" }, "- new hi\r\n#hi2");
+            templates.UpdateTemplate("newtemplate2", "newtemplateName2", new List<string> { "newage2", "newname2" }, "- new hi\r\n#hi2\r\n");
             Assert.AreEqual(templates.Count, 3);
             Assert.AreEqual(templates.Imports.Count, 0);
             Assert.AreEqual(templates[2].Name, "newtemplateName2");
@@ -989,7 +1016,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             { 
                 if (func == "custom")
                 {
-                    return ExpressionFunctions.Numeric("custom", (args) => args[0] + args[1]);
+                    return ExpressionFunctions.Numeric("custom", (args) => (int)args[0] + (int)args[1]);
                 }
                 else
                 {
@@ -1001,6 +1028,28 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(3, evaled);
             evaled = templates.Evaluate("callRef");
             Assert.AreEqual(12, evaled);
+        }
+
+        [TestMethod]
+        public void TestCustomFunction2()
+        {
+            Expression.Functions.Add("contoso.sqrt", (args) =>
+            {
+                object retValue = null;
+                if (args[0] != null)
+                {
+                    double dblValue;
+                    if (double.TryParse(args[0], out dblValue))
+                    {
+                        retValue = Math.Sqrt(dblValue);
+                    }
+                }
+
+                return retValue;
+            });
+            var templates = Templates.ParseFile(GetExampleFilePath("CustomFunction2.lg"), null);
+            var evaled = templates.Evaluate("custom");
+            Assert.AreEqual(6.0, evaled);
         }
 
         public class LoopClass

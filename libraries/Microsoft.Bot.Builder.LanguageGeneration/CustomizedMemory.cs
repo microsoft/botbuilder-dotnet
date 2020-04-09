@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime;
 using AdaptiveExpressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="scope">scope.</param>
         public CustomizedMemory(object scope)
         {
-            this.GlobalMemory = scope == null ? null : SimpleObjectMemory.Wrap(scope);
+            this.GlobalMemory = scope == null ? null : MemoryFactory.Create(scope);
             this.LocalMemory = null;
         }
 

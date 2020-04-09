@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!(scope is CustomizedMemory))
             {
-                scope = new CustomizedMemory(SimpleObjectMemory.Wrap(scope));
+                scope = new CustomizedMemory(scope);
             }
 
             if (!TemplateMap.ContainsKey(templateName))
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         switch (node.Symbol.Type)
                         {
                             case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                                itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Escape() });
+                                itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Replace(@"\|", "|").Escape() });
                                 break;
                             case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
@@ -359,29 +359,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (strictMode && (error != null || result == null))
             {
-                var errorMsg = string.Empty;
-
-                var childErrorMsg = string.Empty;
-                if (error != null)
-                {
-                    childErrorMsg += error;
-                }
-                else if (result == null)
-                {
-                    childErrorMsg += TemplateErrors.NullExpression(exp);
-                }
-
-                if (context != null)
-                {
-                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
-                }
-
+                var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
                 {
                     evaluationTargetStack.Pop();
                 }
 
-                throw new Exception(childErrorMsg + errorMsg);
+                Evaluator.CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
             }
             else if (error != null
                 || result == null
@@ -401,29 +385,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (error != null || (result == null && strictMode))
             {
-                var errorMsg = string.Empty;
-
-                var childErrorMsg = string.Empty;
-                if (error != null)
-                {
-                    childErrorMsg += error;
-                }
-                else if (result == null)
-                {
-                    childErrorMsg += TemplateErrors.NullExpression(exp);
-                }
-
-                if (context != null)
-                {
-                    errorMsg += TemplateErrors.ErrorExpression(context.GetText(), CurrentTarget().TemplateName, errorPrefix);
-                }
-
+                var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
                 {
                     evaluationTargetStack.Pop();
                 }
 
-                throw new Exception(childErrorMsg + errorMsg);
+                Evaluator.CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
             }
             else if (result == null && !strictMode)
             {

@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.EntityRecognizers)",
+    "$role": "implements(Microsoft.IEntityRecognizer)",
     "title": "Ip Entity Recognizer",
     "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
     "type": "object",

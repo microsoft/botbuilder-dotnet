@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.EntityRecognizers)",
+    "$role": "implements(Microsoft.IEntityRecognizer)",
     "title": "NumberRange Entity Recognizer",
     "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
     "type": "object",

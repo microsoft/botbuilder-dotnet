@@ -133,8 +133,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
-            var dcState = dialogContext.GetState();
-
             // Identify matched intents
             var recognizerResult = new RecognizerResult()
             {
@@ -149,13 +147,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
             }
 
             List<Metadata> filters = new List<Metadata>();
-            if (IncludeDialogNameInMetadata.GetValue(dcState))
+            if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
             {
                 filters.Add(new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id });
             }
 
             // if there is $qna.metadata set add to filters
-            var externalMetadata = this.Metadata?.GetValue(dcState);
+            var externalMetadata = this.Metadata?.GetValue(dialogContext.State);
             if (externalMetadata != null)
             {
                 filters.AddRange(externalMetadata);
@@ -167,12 +165,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 dialogContext.Context,
                 new QnAMakerOptions
                 {
-                    Context = this.Context?.GetValue(dcState),
-                    ScoreThreshold = this.Threshold.GetValue(dcState),
+                    Context = this.Context?.GetValue(dialogContext.State),
+                    ScoreThreshold = this.Threshold.GetValue(dialogContext.State),
                     StrictFilters = filters.ToArray(),
-                    Top = this.Top.GetValue(dcState),
-                    QnAId = this.QnAId.GetValue(dcState),
-                    RankerType = this.RankerType.GetValue(dcState),
+                    Top = this.Top.GetValue(dialogContext.State),
+                    QnAId = this.QnAId.GetValue(dialogContext.State),
+                    RankerType = this.RankerType.GetValue(dialogContext.State),
                     IsTest = this.IsTest
                 },
                 null).ConfigureAwait(false);
@@ -226,11 +224,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 return Task.FromResult(qnaClient);
             }
 
-            var dcState = dc.GetState();
-
-            var (epKey, error) = this.EndpointKey.TryGetValue(dcState);
-            var (hn, error2) = this.HostName.TryGetValue(dcState);
-            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dcState);
+            var (epKey, error) = this.EndpointKey.TryGetValue(dc.State);
+            var (hn, error2) = this.HostName.TryGetValue(dc.State);
+            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dc.State);
 
             var endpoint = new QnAMakerEndpoint
             {

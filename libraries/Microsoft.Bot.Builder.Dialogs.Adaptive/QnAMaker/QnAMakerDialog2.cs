@@ -139,8 +139,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
 
         protected async override Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
-            var dcState = dc.GetState();
-
             var qnaClient = dc.Context.TurnState.Get<IQnAMakerClient>();
             if (qnaClient != null)
             {
@@ -166,24 +164,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
 
         protected override Task<QnAMakerOptions> GetQnAMakerOptionsAsync(DialogContext dc)
         {
-            var dcState = dc.GetState();
-
             return Task.FromResult(new QnAMakerOptions
             {
-                ScoreThreshold = this.Threshold.GetValue(dcState),
-                StrictFilters = this.StrictFilters?.GetValue(dcState)?.ToArray(),
-                Top = this.Top.GetValue(dcState),
+                ScoreThreshold = this.Threshold.GetValue(dc.State),
+                StrictFilters = this.StrictFilters?.GetValue(dc.State)?.ToArray(),
+                Top = this.Top.GetValue(dc.State),
                 QnAId = 0,
-                RankerType = this.RankerType.GetValue(dcState),
+                RankerType = this.RankerType.GetValue(dc.State),
                 IsTest = this.IsTest
             });
         }
 
         protected async override Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
-            var dcState = dc.GetState();
-            var noAnswer = (this.NoAnswer != null) ? await this.NoAnswer.BindToData(dc.Context, dcState).ConfigureAwait(false) : null;
-            var cardNoMatchResponse = (this.CardNoMatchResponse != null) ? await this.CardNoMatchResponse.BindToData(dc.Context, dcState).ConfigureAwait(false) : null;
+            var noAnswer = (this.NoAnswer != null) ? await this.NoAnswer.BindToData(dc.Context, dc.State).ConfigureAwait(false) : null;
+            var cardNoMatchResponse = (this.CardNoMatchResponse != null) ? await this.CardNoMatchResponse.BindToData(dc.Context, dc.State).ConfigureAwait(false) : null;
 
             if (noAnswer != null)
             {
@@ -207,8 +202,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
 
             var responseOptions = new QnADialogResponseOptions
             {
-                ActiveLearningCardTitle = this.ActiveLearningCardTitle.GetValue(dcState),
-                CardNoMatchText = this.CardNoMatchText.GetValue(dcState),
+                ActiveLearningCardTitle = this.ActiveLearningCardTitle.GetValue(dc.State),
+                CardNoMatchText = this.CardNoMatchText.GetValue(dc.State),
                 NoAnswer = noAnswer,
                 CardNoMatchResponse = cardNoMatchResponse,
             };
