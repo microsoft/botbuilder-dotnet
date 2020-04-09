@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Adapters
 {
     /// <summary>
     /// A mock adapter that can be used for unit testing bot logic.
-    /// `AllowNullIdTestAdapter` created to rewrite some methods off of  <seealso cref="TestAdapter" />, to allow for Activity Ids to remain null for testing.
+    /// This class was created to rewrite some methods off of  <seealso cref="TestAdapter" />, to allow for Activity Ids to remain null for testing.
     /// </summary>
     public class AllowNullIdTestAdapter : TestAdapter
     {
@@ -23,8 +23,6 @@ namespace Microsoft.Bot.Builder.Adapters
         private readonly object _conversationLock = new object();
         private readonly object _activeQueueLock = new object();
         private Queue<TaskCompletionSource<IActivity>> _queuedRequests = new Queue<TaskCompletionSource<IActivity>>();
-
-        // TODO: investigate if I can delete this, since we are trying to not obscure actual null ids
         private int _nextId = 0;
 
         /// <summary>
