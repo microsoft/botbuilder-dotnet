@@ -574,6 +574,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestExpandTemplateWithIsTemplateFunction()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Expand.lg"));
+
+            var evaled = templates.ExpandTemplate("template2", new { templateName = "Greeting" });
+            Assert.AreEqual(2, evaled.Count);
+            Assert.AreEqual("Hi", evaled[0]);
+            Assert.AreEqual("Hello", evaled[1]);
+
+            evaled = templates.ExpandTemplate("template2", new { templateName = "xxx" });
+            Assert.AreEqual(2, evaled.Count);
+            Assert.AreEqual("Morning", evaled[0]);
+            Assert.AreEqual("Evening", evaled[1]);
+        }
+
+        [TestMethod]
+        public void TestExpandTemplateWithTemplateFunction()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Expand.lg"));
+
+            var evaled = templates.ExpandTemplate("template3", new { templateName = "Greeting" });
+            Assert.AreEqual(2, evaled.Count);
+            Assert.AreEqual("Hi", evaled[0]);
+            Assert.AreEqual("Hello", evaled[1]);
+        }
+
+        [TestMethod]
         public void TestEvalExpression()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("EvalExpression.lg"));
