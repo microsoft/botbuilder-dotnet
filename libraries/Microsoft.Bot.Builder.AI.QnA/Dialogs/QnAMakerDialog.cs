@@ -96,6 +96,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
+        /// </summary>
+        /// <value>If true, personal information is logged to Telemetry; otherwise the properties will be filtered.</value>
+        public bool LogPersonalInformation { get; set; } = false;
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -140,7 +146,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 KnowledgeBaseId = this.knowledgeBaseId
             };
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
-            return new QnAMaker(endpoint, options, HttpClient);
+            return new QnAMaker(endpoint, options, HttpClient, this.TelemetryClient, this.LogPersonalInformation);
         }
 
         protected virtual Task<QnAMakerOptions> GetQnAMakerOptionsAsync(DialogContext dc)

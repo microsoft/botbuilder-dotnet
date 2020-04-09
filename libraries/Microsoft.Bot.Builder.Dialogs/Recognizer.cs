@@ -70,22 +70,39 @@ namespace Microsoft.Bot.Builder.Dialogs
             return result;
         }
 
-        protected virtual Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, ITurnContext turnContext = null)
+        protected virtual Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dialogContext = null)
         {
-            if (telemetryProperties == null)
+            var properties = new Dictionary<string, string>()
             {
-                telemetryProperties = new Dictionary<string, string>();
+                { "Text", recognizerResult.Text },
+                { "AlteredText", recognizerResult.AlteredText },
+                { "TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null },
+                { "TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.ToString() : null },
+                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
+                { "Entities", recognizerResult.Entities != null ? recognizerResult.Entities.ToString() : null },
+                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
+            };
+
+            // Additional Properties can override "stock" properties.
+            if (telemetryProperties != null)
+            {
+                return telemetryProperties.Concat(properties)
+                           .GroupBy(kv => kv.Key)
+                           .ToDictionary(g => g.Key, g => g.First().Value);
             }
 
-            telemetryProperties.Add("Text", recognizerResult.Text);
-            telemetryProperties.Add("AlteredText", recognizerResult.AlteredText);
-            telemetryProperties.Add("TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null);
-            telemetryProperties.Add("TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.ToString() : null);
-            telemetryProperties.Add("Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null);
-            telemetryProperties.Add("Entities", recognizerResult.Entities != null ? recognizerResult.Entities.ToString() : null);
-            telemetryProperties.Add("AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null);
+            return properties;
+        }
 
-            return telemetryProperties;
+        protected void TrackRecognizerResult(DialogContext dialogContext, string eventName, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics)
+        {
+            if (this.TelemetryClient is NullBotTelemetryClient)
+            {
+                var turnStateTelemetryClient = dialogContext.Context.TurnState.Get<IBotTelemetryClient>();
+                this.TelemetryClient = turnStateTelemetryClient ?? this.TelemetryClient;
+            }
+
+            this.TelemetryClient.TrackEvent(eventName, telemetryProperties, telemetryMetrics);
         }
     }
 }

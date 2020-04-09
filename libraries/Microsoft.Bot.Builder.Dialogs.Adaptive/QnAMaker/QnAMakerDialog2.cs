@@ -111,6 +111,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         public ArrayExpression<Metadata> StrictFilters { get; set; }
 
         /// <summary>
+        /// Gets or sets the flag to determine if personal information should be logged in telemetry.
+        /// </summary>
+        /// <value>
+        /// The flag to indicate in personal information should be logged in telemetry.
+        /// </value>
+        [JsonProperty("logPersonalInformation")]
+        public new BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
+
+        /// <summary>
         /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
         /// </summary>
         /// <value>
@@ -142,6 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
             var (epKey, error) = this.EndpointKey.TryGetValue(dcState);
             var (hn, error2) = this.HostName.TryGetValue(dcState);
             var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dcState);
+            var (logPersonalInformation, error4) = this.LogPersonalInformation.TryGetValue(dcState);
 
             var endpoint = new QnAMakerEndpoint
             {
@@ -150,7 +160,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
                 KnowledgeBaseId = (string)kbId
             };
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
-            return new QnAMaker(endpoint, options, this.HttpClient);
+
+            return new QnAMaker(endpoint, options, this.HttpClient, this.TelemetryClient, (bool)logPersonalInformation);
         }
 
         protected override Task<QnAMakerOptions> GetQnAMakerOptionsAsync(DialogContext dc)

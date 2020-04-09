@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 recognizerResult.Intents.Add("None", new IntentScore() { Score = 1.0f });
             }
 
-            this.TelemetryClient.TrackEvent("QnAMakerRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "QnAMakerRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
 
             return recognizerResult;
         }
@@ -239,7 +239,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 KnowledgeBaseId = (string)kbId ?? throw new ArgumentNullException(nameof(KnowledgeBaseId), error3)
             };
 
-            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, httpClient: this.HttpClient));
+            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), this.HttpClient, this.TelemetryClient));
         }
     }
 }
