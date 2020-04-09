@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using AdaptiveExpressions;
 using AdaptiveExpressions.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
@@ -21,14 +18,11 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Memory;
-using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
-using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-    public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes, IComponentMemoryScopes, IComponentPathResolvers
+    public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
         public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
@@ -168,18 +162,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
+        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
-            yield return new InterfaceConverter<OnCondition>(resourceExplorer, context);
-            yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, context);
-            yield return new InterfaceConverter<TriggerSelector>(resourceExplorer, context);
+            yield return new InterfaceConverter<OnCondition>(resourceExplorer, sourceContext);
+            yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, sourceContext);
+            yield return new InterfaceConverter<TriggerSelector>(resourceExplorer, sourceContext);
 
             yield return new IntExpressionConverter();
             yield return new NumberExpressionConverter();
             yield return new StringExpressionConverter();
             yield return new ValueExpressionConverter();
             yield return new BoolExpressionConverter();
-            yield return new DialogExpressionConverter(resourceExplorer, context);
+            yield return new DialogExpressionConverter(resourceExplorer, sourceContext);
 
             yield return new ObjectExpressionConverter<ChoiceSet>();
             yield return new ObjectExpressionConverter<ChoiceFactoryOptions>();
@@ -196,28 +190,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             yield return new ChoiceSetConverter();
             yield return new ActivityTemplateConverter();
-            yield return new JObjectConverter(resourceExplorer, context);
-        }
-
-        public virtual IEnumerable<MemoryScope> GetMemoryScopes()
-        {
-            yield return new TurnMemoryScope();
-            yield return new SettingsMemoryScope();
-            yield return new DialogMemoryScope();
-            yield return new DialogClassMemoryScope();
-            yield return new ClassMemoryScope();
-            yield return new ThisMemoryScope();
-            yield return new ConversationMemoryScope();
-            yield return new UserMemoryScope();
-        }
-
-        public virtual IEnumerable<IPathResolver> GetPathResolvers()
-        {
-            yield return new DollarPathResolver();
-            yield return new HashPathResolver();
-            yield return new AtAtPathResolver();
-            yield return new AtPathResolver();
-            yield return new PercentPathResolver();
+            yield return new JObjectConverter(resourceExplorer, sourceContext);
         }
     }
 }
