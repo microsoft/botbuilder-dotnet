@@ -3018,19 +3018,19 @@ namespace AdaptiveExpressions
                     ExpressionType.Length,
                     Apply(
                         args =>
-                            {
-                                var result = 0;
-                                if (args[0] is string str)
-                                    {
-                                        result = str.Length;
-                                    }
-                                else
-                                    {
-                                        result = 0;
-                                    }
+                        {
+                            var result = 0;
+                            if (args[0] is string str)
+                                {
+                                    result = str.Length;
+                                }
+                            else
+                                {
+                                    result = 0;
+                                }
 
-                                return result;
-                            }, VerifyStringOrNull),
+                            return result;
+                        }, VerifyStringOrNull),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
