@@ -41,7 +41,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             }
 
             var cachedState = dialogContext.Context.TurnState.Get<object>(typeof(T).Name);
-            return cachedState.GetType().GetProperty("State").GetValue(cachedState);
+            if (cachedState != null)
+            {
+                return cachedState.GetType().GetProperty("State").GetValue(cachedState);
+            }
+
+            // this memory scope is not available
+            return null;
         }
 
         /// <summary>
@@ -56,19 +62,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException($"{nameof(dialogContext)} is null");
             }
 
+            var botState = dialogContext.Context.TurnState.Get<T>();
+            if (botState == null)
+            {
+                throw new ArgumentException($"{typeof(T).Name} is not available.");
+            }
+
             throw new NotSupportedException("You cannot replace the root BotState object");
         }
 
         public override async Task LoadAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
             var botState = dialogContext.Context.TurnState.Get<T>();
-            await botState.LoadAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
+            if (botState != null)
+            {
+                await botState.LoadAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         public override async Task SaveChangesAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
             var botState = dialogContext.Context.TurnState.Get<T>();
-            await botState.SaveChangesAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
+            if (botState != null)
+            {
+                await botState.SaveChangesAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         public override Task DeleteAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
