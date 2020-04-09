@@ -1030,32 +1030,14 @@ namespace AdaptiveExpressions
         private static string BuildTypeValidatorError(ReturnType returnType, Expression childExpr, Expression expr)
         {
             string result;
-            var names = returnType.Names();
-            if (names.Count == 1)
+            var names = returnType.ToString();
+            if (!names.Contains(","))
             {
-                result = $"{childExpr} is not a {names[0]} expression in {expr}.";
+                result = $"{childExpr} is not a {names} expression in {expr}.";
             }
             else
             {
-                var builder = new StringBuilder();
-                builder.Append($"{childExpr} in {expr} is not any of [");
-                var first = true;
-                foreach (var type in names)
-                {
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        builder.Append(", ");
-                    }
-
-                    builder.Append(type);
-                }
-
-                builder.Append("].");
-                result = builder.ToString();
+                result = $"{childExpr} in {expr} is not any of [{names}].";
             }
 
             return result;

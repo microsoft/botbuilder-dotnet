@@ -18,6 +18,7 @@ namespace AdaptiveExpressions
     /// <summary>
     /// Type expected from evaluating an expression.
     /// </summary>
+    [Flags]
     public enum ReturnType
     {
         /// <summary>
