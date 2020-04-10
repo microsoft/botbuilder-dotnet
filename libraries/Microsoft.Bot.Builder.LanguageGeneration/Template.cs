@@ -17,45 +17,58 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </remarks>
     public class Template
     {
-        private readonly LGFileParser.TemplateDefinitionContext templateParseTree;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Template"/> class.
         /// </summary>
-        /// <param name="parseTree">The parse tree of this template.</param>
+        /// <param name="templateName">Template name without parameters.</param>
+        /// <param name="parameters">Parameter list.</param>
+        /// <param name="templateBody">Template content.</param>
+        /// <param name="startLine">StartLine of template (zero based).</param>
+        /// <param name="stopLine">Stop line of template (zero based).</param>
         /// <param name="source">Source of this template.</param>
-        internal Template(LGFileParser.TemplateDefinitionContext parseTree, string source = "")
+        internal Template(
+            string templateName,
+            List<string> parameters,
+            string templateBody,
+            int startLine,
+            int stopLine,
+            string source = "")
         {
-            templateParseTree = parseTree;
-            Source = source;
-
-            ExtractNameAndParameters();
-            ExtractBody();
+            this.Name = templateName ?? string.Empty;
+            this.Parameters = parameters ?? new List<string>();
+            this.Body = templateBody ?? string.Empty;
+            this.StartLine = startLine;
+            this.StopLine = stopLine;
+            this.Source = source ?? string.Empty;
         }
 
+        public int StartLine { get; }
+
+        public int StopLine { get; }
+
         /// <summary>
-        /// Gets or sets name of the template, what's followed by '#' in a LG file.
+        /// Gets name of the template, what's followed by '#' in a LG file.
         /// </summary>
         /// <value>
         /// Name of the template, what's followed by '#' in a LG file.
         /// </value>
-        public string Name { get; set; }
+        public string Name { get; }
 
         /// <summary>
-        /// Gets or sets parameter list of this template.
+        /// Gets parameter list of this template.
         /// </summary>
         /// <value>
         /// Parameter list of this template.
         /// </value>
-        public List<string> Parameters { get; set; }
+        public List<string> Parameters { get; }
 
         /// <summary>
-        /// Gets or sets text format of Body of this template. All content except Name and Parameters.
+        /// Gets text format of Body of this template. All content except Name and Parameters.
         /// </summary>
         /// <value>
         /// Text format of Body of this template. All content except Name and Parameters.
         /// </value>
-        public string Body { get; set; }
+        public string Body { get; }
 
         /// <summary>
         /// Gets source of this template, source file path if it's from a certain file.
@@ -66,68 +79,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Source { get; }
 
         /// <summary>
-        /// Gets or sets the parse tree of this template.
+        /// Gets the parse tree of this template.
         /// </summary>
         /// <value>
         /// The parse tree of this template.
         /// </value>
-        public LGTemplateParser.TemplateBodyContext TemplateBodyParseTree { get; set; }
+        public LGTemplateParser.TemplateBodyContext TemplateBodyParseTree => GetTemplateContext(Body, Source);
 
         public override string ToString() => $"[{Name}({string.Join(", ", Parameters)})]\"{Body}\"";
-
-        /// <summary>
-        /// Get the startLine and stopLine of template.
-        /// </summary>
-        /// <returns>template content range.</returns>
-        public (int startLine, int stopLine) GetTemplateRange()
-        {
-            var startLine = templateParseTree.Start.Line - 1;
-            var stopLine = templateParseTree.Stop.Line - 1;
-
-            return (startLine, stopLine);
-        }
-
-        private void ExtractBody()
-        {
-            var templateBodyLines = templateParseTree.templateBodyLine()
-                                    .Select(u =>
-                                    { 
-                                        if (u.TEMPLATE_BODY_LINE() != null)
-                                        {
-                                            return u.TEMPLATE_BODY_LINE().GetText();
-                                        }
-                                        else
-                                        {
-                                            return string.Empty;
-                                        }
-                                    });
-            var templateBody = string.Join("\r\n", templateBodyLines);
-            this.Body = templateBody;
-            this.TemplateBodyParseTree = GetTemplateContext(templateBody, this.Source);
-        }
-
-        private void ExtractNameAndParameters()
-        {
-            var templateNameLine = templateParseTree.templateNameLine().TEMPLATE_NAME_LINE().GetText();
-            var hashIndex = templateNameLine.IndexOf('#');
-            templateNameLine = templateNameLine.Substring(hashIndex + 1).Trim();
-
-            var templateName = templateNameLine;
-            var parameters = new List<string>();
-            var leftBracketIndex = templateNameLine.IndexOf("(");
-            if (leftBracketIndex >= 0)
-            {
-                templateName = templateNameLine.Substring(0, leftBracketIndex).Trim();
-                if (templateNameLine.EndsWith(")"))
-                {
-                    var parameterString = templateNameLine.Substring(leftBracketIndex + 1, templateNameLine.Length - leftBracketIndex - 2);
-                    parameters = parameterString.Split(',').Select(u => u.Trim()).ToList();
-                }
-            }
-
-            this.Name = templateName;
-            this.Parameters = parameters;
-        }
 
         private LGTemplateParser.TemplateBodyContext GetTemplateContext(string text, string id)
         {

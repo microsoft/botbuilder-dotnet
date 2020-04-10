@@ -191,7 +191,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var imports = ExtractImports(fileContext, id);
             var options = ExtractOptions(fileContext);
 
+            //currently we just ignore the comments.
             //var comments = ExtractComments(fileContext);
+
             var diagnostics = GetInvalidLineErrors(fileContext, id);
 
             return (templates, imports, diagnostics, options);
@@ -255,8 +257,47 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    file.paragraph()
                    .Select(x => x.templateDefinition())
                    .Where(x => x != null)
-                   .Select(t => new Template(t, source))
+                   .Select(t => ExtractTemplate(t, source))
                    .ToList();
+        }
+
+        private static Template ExtractTemplate(LGFileParser.TemplateDefinitionContext context, string source = "")
+        {
+            var templateNameLine = context.templateNameLine().TEMPLATE_NAME_LINE().GetText();
+            var hashIndex = templateNameLine.IndexOf('#');
+            templateNameLine = templateNameLine.Substring(hashIndex + 1).Trim();
+
+            var templateName = templateNameLine;
+            var parameters = new List<string>();
+            var leftBracketIndex = templateNameLine.IndexOf("(");
+            if (leftBracketIndex >= 0)
+            {
+                templateName = templateNameLine.Substring(0, leftBracketIndex).Trim();
+                if (templateNameLine.EndsWith(")"))
+                {
+                    var parameterString = templateNameLine.Substring(leftBracketIndex + 1, templateNameLine.Length - leftBracketIndex - 2);
+                    parameters = parameterString.Split(',').Select(u => u.Trim()).ToList();
+                }
+            }
+
+            var templateBodyLines = context.templateBodyLine()
+            .Select(u =>
+            {
+                if (u.TEMPLATE_BODY_LINE() != null)
+                {
+                    return u.TEMPLATE_BODY_LINE().GetText();
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            });
+            var templateBody = string.Join("\r\n", templateBodyLines);
+
+            var startLine = context.Start.Line - 1;
+            var stopLine = context.Stop.Line - 1;
+
+            return new Template(templateName, parameters, templateBody, startLine, stopLine, source);
         }
 
         /// <summary>
@@ -304,8 +345,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    file.paragraph()
                    .Select(x => x.importDefinition())
                    .Where(x => x != null)
-                   .Select(t => new TemplateImport(t.IMPORT().GetText(), source))
+                   .Select(t => ExtractImport(t.IMPORT().GetText(), source))
                    .ToList();
+        }
+
+        private static TemplateImport ExtractImport(string importStr, string source = "")
+        {
+            var openSquareBracketIndex = importStr.IndexOf('[');
+            var closeSquareBracketIndex = importStr.IndexOf(']');
+            var description = importStr.Substring(openSquareBracketIndex + 1, closeSquareBracketIndex - openSquareBracketIndex - 1);
+
+            var lastOpenBracketIndex = importStr.LastIndexOf('(');
+            var lastCloseBracketIndex = importStr.LastIndexOf(')');
+            var id = importStr.Substring(lastOpenBracketIndex + 1, lastCloseBracketIndex - lastOpenBracketIndex - 1);
+
+            return new TemplateImport(description, id, source);
         }
 
         private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null)

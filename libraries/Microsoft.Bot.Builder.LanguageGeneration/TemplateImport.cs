@@ -13,14 +13,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateImport"/> class.
         /// </summary>
-        /// <param name="importStr">import string.</param>
-        /// <param name="source">Source of this import.</param>
-        internal TemplateImport(string importStr, string source = "")
+        /// <param name="description">import description, which is in [].</param>
+        /// <param name="id">import id, which is a path, in ().</param>
+        /// <param name="source">Source of this item.</param>
+        internal TemplateImport(string description, string id, string source = "")
         {
-            Source = source;
-
-            Description = ExtractDescription(importStr);
-            Id = ExtractId(importStr);
+            this.Source = source;
+            this.Description = description;
+            this.Id = id;
         }
 
         /// <summary>
@@ -47,20 +47,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public string Source { get; }
 
-        private string ExtractDescription(string importString)
+        public override string ToString()
         {
-            // content: [xxx](yyy)
-            var openSquareBracketIndex = importString.IndexOf('[');
-            var closeSquareBracketIndex = importString.IndexOf(']');
-            return importString.Substring(openSquareBracketIndex + 1, closeSquareBracketIndex - openSquareBracketIndex - 1);
-        }
-
-        private string ExtractId(string importString)
-        {
-            // content: [xxx](yyy)
-            var lastOpenBracketIndex = importString.LastIndexOf('(');
-            var lastCloseBracketIndex = importString.LastIndexOf(')');
-            return importString.Substring(lastOpenBracketIndex + 1, lastCloseBracketIndex - lastOpenBracketIndex - 1);
+            return $"[{Description}]({Id})";
         }
     }
 }

@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">expressionEngine parser engine for parsing expressions.</param>
-        /// <returns>new <see cref="LanguageGeneration.Templates"/> entity.</returns>
+        /// <returns>new <see cref="Templates"/> entity.</returns>
         public static Templates ParseText(
             string content,
             string id = "",
@@ -256,9 +256,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
                 var newTemplateBody = ConvertTemplateBody(templateBody);
                 var content = $"{templateNameLine}{newLine}{newTemplateBody}";
-                var (startLine, stopLine) = template.GetTemplateRange();
 
-                var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
+                var newContent = ReplaceRangeContent(Content, template.StartLine, template.StopLine, content);
                 Initialize(ParseText(newContent, Id, ImportResolver));
             }
 
@@ -298,9 +297,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
-                var (startLine, stopLine) = template.GetTemplateRange();
-
-                var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
+                var newContent = ReplaceRangeContent(Content, template.StartLine, template.StopLine, null);
                 Initialize(ParseText(newContent, Id, ImportResolver));
             }
 
