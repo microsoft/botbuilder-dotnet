@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
@@ -15,14 +16,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
     public class JObjectConverter : JsonConverter
     {
         private readonly ResourceExplorer resourceExplorer;
+        private readonly Stack<SourceRange> context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JObjectConverter"/> class.
         /// </summary>
         /// <param name="resourceExplorer">ResourceExplorer to use to resolve references.</param>
-        public JObjectConverter(ResourceExplorer resourceExplorer)
+        /// <param name="context">source range context stack to build debugger source map.</param>
+        public JObjectConverter(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
         {
             this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public override bool CanRead => true;
@@ -37,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             if (resourceExplorer.IsRef(jsonObject))
             {
                 // We can't do this asynchronously as the Json.NET interface is synchronous
-                jsonObject = resourceExplorer.ResolveRefAsync(jsonObject).GetAwaiter().GetResult();
+                jsonObject = resourceExplorer.ResolveRefAsync(jsonObject, context).GetAwaiter().GetResult();
             }
 
             return jsonObject as JObject;

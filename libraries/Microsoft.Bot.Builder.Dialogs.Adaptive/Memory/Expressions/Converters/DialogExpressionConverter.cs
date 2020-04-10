@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
@@ -21,10 +22,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
         /// Initializes a new instance of the <see cref="DialogExpressionConverter"/> class.
         /// </summary>
         /// <param name="resourceExplorer">resource explorer to use for resolving references.</param>
-        /// <param name="paths">Path stack to use for building debugger call graph.</param>
-        public DialogExpressionConverter(ResourceExplorer resourceExplorer, Stack<string> paths)
+        /// <param name="context">source range context stack to build debugger source map.</param>
+        public DialogExpressionConverter(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
         {
-            this.converter = new InterfaceConverter<Dialog>(resourceExplorer, paths);
+            this.converter = new InterfaceConverter<Dialog>(resourceExplorer, context);
         }
 
         public override bool CanRead => true;

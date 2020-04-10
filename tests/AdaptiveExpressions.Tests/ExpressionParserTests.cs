@@ -78,6 +78,8 @@ namespace AdaptiveExpressions.Tests
                 "user",
                 new
                 {
+                    income = 100.1,
+                    outcome = 120.1,
                     nickname = "John",
                     lists = new
                     {
@@ -91,6 +93,7 @@ namespace AdaptiveExpressions.Tests
                     listType = "todo",
                 }
             },
+            { "byteArr", new byte[] { 3, 5, 1, 12 } },
             { "timestamp", "2018-03-15T13:00:00.000Z" },
             { "notISOTimestamp", "2018/03/15 13:00:00" },
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
@@ -311,6 +314,12 @@ namespace AdaptiveExpressions.Tests
             #endregion
 
             #region Operators test
+            Test("user.income-user.outcome", -20.0),
+            Test("user.income - user.outcome", -20.0),
+            Test("user.income != user.outcome", true),
+            Test("user.income!=user.outcome", true),
+            Test("user.income == user.outcome", false),
+            Test("user.income==user.outcome", false),
             Test("1 + 2", 3),
             Test("1 +\r\n 2", 3),
             Test("- 1 + 2", 1),
@@ -585,13 +594,15 @@ namespace AdaptiveExpressions.Tests
             Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object> { 1, true, "true", 10.0f }),
             Test("createArray()", new List<object> { }),
             Test("[]", new List<object> { }),
-            Test("binary(hello)", "0110100001100101011011000110110001101111"),
-            Test("length(binary(hello))", 40),
+            Test("binary(hello)", new byte[] { 104, 101, 108, 108, 111 }),
+            Test("count(binary(hello))", 5),
             Test("base64(hello)", "aGVsbG8="),
-            Test("base64ToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("base64(byteArr)", "AwUBDA=="),
+            Test("base64ToBinary(base64(byteArr))", new byte[] { 3, 5, 1, 12 }),
             Test("base64ToString(base64(hello))", "hello"),
+            Test("base64(base64ToBinary(\"AwUBDA==\"))", "AwUBDA=="), 
             Test("dataUri(hello)", "data:text/plain;charset=utf-8;base64,aGVsbG8="),
-            Test("dataUriToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("dataUriToBinary(base64(hello))", new byte[] { 97, 71, 86, 115, 98, 71, 56, 61 }),
             Test("dataUriToString(dataUri(hello))", "hello"),
             Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
             Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
