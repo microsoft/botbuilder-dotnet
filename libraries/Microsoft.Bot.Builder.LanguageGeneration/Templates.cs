@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
         /// <returns>Expand result.</returns>
-        public IList<string> ExpandTemplate(string templateName, object scope = null)
+        public IList<object> ExpandTemplate(string templateName, object scope = null)
         {
             CheckErrors();
             var expander = new Expander(AllTemplates.ToList(), ExpressionParser, StrictMode);
