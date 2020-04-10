@@ -77,10 +77,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateDialogContext(async (dc, ct) =>
             {
                 var dsm = dc.State as DialogStateManager;
-                var storage = new MemoryStorage();
-                var userState = new UserState(storage);
-                var conversationState = new ConversationState(storage);
+                var storage = dc.Context.TurnState.Get<IStorage>();
+                var userState = dc.Context.TurnState.Get<UserState>();
+                var conversationState = dc.Context.TurnState.Get<ConversationState>();
                 var testBotState = new TestBotState(storage);
+
+                dc.Context.TurnState.Add(testBotState);
 
                 var stateScopes = new (BotState State, MemoryScope Scope)[]
                 {
