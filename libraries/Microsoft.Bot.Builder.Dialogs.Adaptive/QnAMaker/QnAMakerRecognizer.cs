@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
     public class QnAMakerRecognizer : Recognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.QnAMakerRecognizer";
+        public const string Kind = "Microsoft.QnAMakerRecognizer";
 
         public const string QnAMatchIntent = "QnAMatch";
 

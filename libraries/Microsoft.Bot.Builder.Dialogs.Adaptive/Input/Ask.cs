@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class Ask : SendActivity
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.Ask";
+        public new const string Kind = "Microsoft.Ask";
 
         [JsonConstructor]
         public Ask(

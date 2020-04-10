@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class OrdinalEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.OrdinalEntityRecognizer";
+        public const string Kind = "Microsoft.OrdinalEntityRecognizer";
 
         public OrdinalEntityRecognizer()
         {

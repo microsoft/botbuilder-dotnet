@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
     public class AdaptiveSkillDialog : SkillDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.SkillDialog";
+        public const string Kind = "Microsoft.SkillDialog";
 
         [JsonConstructor]
         public AdaptiveSkillDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

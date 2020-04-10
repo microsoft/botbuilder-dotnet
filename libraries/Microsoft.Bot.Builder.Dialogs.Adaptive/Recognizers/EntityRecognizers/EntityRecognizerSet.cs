@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class EntityRecognizerSet : List<EntityRecognizer>
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.EntityRecognizerSet";
+        public const string Kind = "Microsoft.EntityRecognizerSet";
 
         public EntityRecognizerSet()
         {

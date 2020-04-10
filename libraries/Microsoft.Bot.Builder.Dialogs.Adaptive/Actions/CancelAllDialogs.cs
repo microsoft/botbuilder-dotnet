@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class CancelAllDialogs : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.CancelAllDialogs";
+        public const string Kind = "Microsoft.CancelAllDialogs";
 
         [JsonConstructor]
         public CancelAllDialogs([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

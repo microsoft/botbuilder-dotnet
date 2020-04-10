@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class GuidEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.GuidEntityRecognizer";
+        public const string Kind = "Microsoft.GuidEntityRecognizer";
 
         public GuidEntityRecognizer()
         {
