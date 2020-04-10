@@ -38,51 +38,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         }
 
         /// <summary>
-        /// Gets or sets the path for storing and retrieving the
-        /// QnA Maker knowledge base ID to query.
+        /// Gets or sets the QnA Maker knowledge base ID to query.
         /// </summary>
         /// <value>
-        /// The path for the knowledge base ID.
+        /// The knowledge base ID or an expression which evaluates to the knowledge base ID.
         /// </value>
         [JsonProperty("knowledgeBaseId")]
         public StringExpression KnowledgeBaseId { get; set; }
 
         /// <summary>
-        /// Gets or sets the path for storing and retrieving the
-        /// QnA Maker host URL for the knowledge base.
+        /// Gets or sets the QnA Maker host URL for the knowledge base.
         /// </summary>
         /// <value>
-        /// The path for the QnA Maker host URL for the knowledge base.
+        /// The QnA Maker host URL or an expression which evaluates to the host URL.
         /// </value>
         [JsonProperty("hostname")]
         public StringExpression HostName { get; set; }
 
         /// <summary>
-        /// Gets or sets the path for storing and retrieving the
-        /// QnA Maker endpoint key to use to query the knowledge base.
+        /// Gets or sets the QnA Maker endpoint key to use to query the knowledge base.
         /// </summary>
         /// <value>
-        /// The path for the QnA Maker endpoint key to use to query the knowledge base.
+        /// The QnA Maker endpoint key to use or an expression which evaluates to the endpoint key.
         /// </value>
         [JsonProperty("endpointKey")]
         public StringExpression EndpointKey { get; set; }
 
         /// <summary>
-        /// Gets or sets the path for storing and retrieving the
-        /// threshold for answers returned, based on score.
+        /// Gets or sets the threshold for answers returned, based on score.
         /// </summary>
         /// <value>
-        /// The path for the threshold for answers returned, based on score.
+        /// The threshold for answers returned or an expression which evaluates to the threshold.
         /// </value>
         [JsonProperty("threshold")]
         public NumberExpression Threshold { get; set; } = DefaultThreshold;
 
         /// <summary>
-        /// Gets or sets the path for storing and retrieving the
-        /// maximum number of answers to return from the knowledge base.
+        /// Gets or sets the maximum number of answers to return from the knowledge base.
         /// </summary>
         /// <value>
-        /// The path for the maximum number of answers to return from the knowledge base.
+        /// The maximum number of answers to return from the knowledge base or an expression which
+        /// evaluates to the maximum number to return.
         /// </value>
         [JsonProperty("top")]
         public IntExpression Top { get; set; } = DefaultTopN;
@@ -97,25 +93,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         public ITemplate<Activity> NoAnswer { get; set; }
 
         /// <summary>
-        /// Gets or sets the path for storing and retrieving the
-        /// card title to use when showing active learning options to the user, if active learning
-        /// is enabled.
+        /// Gets or sets the card title to use when showing active learning options to the user,
+        /// if active learning is enabled.
         /// </summary>
         /// <value>
-        /// The path for the card title to use when showing active learning options to the user, if
-        /// active learning is enabled.
+        /// The path card title to use when showing active learning options to the user or an
+        /// expression which evaluates to the card title.
         /// </value>
         [JsonProperty("activeLearningCardTitle")]
         public StringExpression ActiveLearningCardTitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the path for storing and retrieving the
-        /// button text to use with active learning options, allowing a user to indicate none of
-        /// the options are applicable.
+        /// Gets or sets the button text to use with active learning options, allowing a user to
+        /// indicate none of the options are applicable.
         /// </summary>
         /// <value>
-        /// The path for the button text to use with active learning options, allowing a user to
-        /// indicate none of the options are applicable.
+        /// The button text to use with active learning options or an expression which evaluates to
+        /// the button text.
         /// </value>
         [JsonProperty("cardNoMatchText")]
         public StringExpression CardNoMatchText { get; set; }
@@ -131,13 +125,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         public ITemplate<Activity> CardNoMatchResponse { get; set; }
 
         /// <summary>
-        /// Gets or sets the path for storing and retrieving the
-        /// QnA Maker metadata with which to filter or boost queries to the knowledge base;
+        /// Gets or sets the QnA Maker metadata with which to filter or boost queries to the knowledge base;
         /// or null to apply none.
         /// </summary>
         /// <value>
-        /// The path for the QnA Maker metadata with which to filter or boost queries to the
-        /// knowledge base; or null to apply none.
+        /// The QnA Maker metadata with which to filter or boost queries to the knowledge base
+        /// or an expression which evaluates to the QnA Maker metadata.
         /// </value>
         [JsonProperty("strictFilters")]
         public ArrayExpression<Metadata> StrictFilters { get; set; }
