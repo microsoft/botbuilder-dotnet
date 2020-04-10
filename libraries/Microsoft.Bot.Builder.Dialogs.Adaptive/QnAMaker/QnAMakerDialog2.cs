@@ -145,11 +145,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         public bool IsTest { get; set; }
 
         /// <summary>
-        /// Gets or sets the path for storing and retrieving the
-        /// QnA Maker ranker type to use.
+        /// Gets or sets the QnA Maker ranker type to use.
         /// </summary>
         /// <value>
-        /// The path for the QnA Maker ranker type to use.
+        /// The QnA Maker ranker type to use or an expression which evaluates to the ranker type.
         /// </value>
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
