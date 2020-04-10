@@ -4,8 +4,7 @@
     "$kind": "Microsoft.ResourceMultiLanguageGenerator",
     "resourceId": "root.lg",
     "languagePolicy": {
-      "en-us": [ "en-us", "fr-fr", ""],
-      "": [ "en-us" ]
+      "": [ "fr-fr", ""]
     }
   },
     "triggers": [

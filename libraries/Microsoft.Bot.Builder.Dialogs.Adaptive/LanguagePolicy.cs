@@ -13,28 +13,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class LanguagePolicy : Dictionary<string, string[]>
     {
-        private static LanguagePolicy defaultPolicy = new LanguagePolicy(GetDefaultPolicy());
-
-        // though not refered directly in code, this is still required for JSON conversion 
-        public LanguagePolicy()
-            : base(StringComparer.OrdinalIgnoreCase)
-        {
-        }
-
-        public LanguagePolicy(Dictionary<string, string[]> value)
-            : base(value, StringComparer.OrdinalIgnoreCase)
-        {
-        }
-
-        public static LanguagePolicy DefaultPolicy => defaultPolicy;
-
         // walk through all of the cultures and create a dictionary map with most specific to least specific
         // Example output "en-us" will generate fallback rule like this:
         //   "en-us" -> "en" -> "" 
         //   "en" -> ""
         // So that when we get a locale such as en-gb, we can try to resolve to "en-gb" then "en" then ""
         // See commented section for full sample of output of this function
-        private static Dictionary<string, string[]> GetDefaultPolicy()
+        private static Lazy<IDictionary<string, string[]>> defaultPolicy = new Lazy<IDictionary<string, string[]>>(() =>
         {
             var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLower()).ToList();
             var policy = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
@@ -62,6 +47,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return policy;
+        });
+
+        public LanguagePolicy()
+            : base(defaultPolicy.Value, StringComparer.OrdinalIgnoreCase)
+        {
         }
     }
 }

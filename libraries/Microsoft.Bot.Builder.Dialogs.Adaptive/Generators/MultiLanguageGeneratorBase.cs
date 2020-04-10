@@ -42,28 +42,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>The generator.</returns>
         public override async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            // see if we have any locales that match
             var targetLocale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
 
             // priority 
             // 1. local policy
             // 2. shared policy in turnContext
             // 3. default policy
-            var langagePolicy = this.LanguagePolicy ?? 
+            var languagePolicy = this.LanguagePolicy ?? 
                                 turnContext.TurnState.Get<LanguagePolicy>() ?? 
-                                LanguagePolicy.DefaultPolicy;
+                                new LanguagePolicy();
 
-            var locales = new string[] { string.Empty };
-            if (!langagePolicy.TryGetValue(targetLocale, out locales))
+            // see if we have any locales that match, if not, use empty as fallback
+            var fallbackLocales = new List<string>();
+            if (languagePolicy.ContainsKey(targetLocale))
             {
-                if (!langagePolicy.TryGetValue(string.Empty, out locales))
+                fallbackLocales.AddRange(languagePolicy[targetLocale]);
+            }
+            else
+            {
+                fallbackLocales.AddRange(languagePolicy[string.Empty]);
+            }
+
+            if (fallbackLocales.Count == 0)
+            {
+                throw new Exception($"No supported language found for {targetLocale}");
+            }
+            else
+            {
+                // if last locale point to "", we do one more re-direct
+                if (fallbackLocales.Last() == string.Empty)
                 {
-                    throw new Exception($"No supported language found for {targetLocale}");
+                    fallbackLocales.RemoveAt(fallbackLocales.Count - 1);
+                    fallbackLocales.AddRange(languagePolicy[string.Empty]);
                 }
             }
 
             var generators = new List<LanguageGenerator>();
-            foreach (var locale in locales)
+            foreach (var locale in fallbackLocales)
             {
                 if (this.TryGetGenerator(turnContext, locale, out LanguageGenerator generator))
                 {
