@@ -1,26 +1,26 @@
 # test
 - english
 
-# tag1-test2
+# tag1_test2
 - tag1 test2
 
-# tag1-test
+# tag1_test
 - tag1 test
 
-# tag2-test
+# tag2_test
 - tag2 test
 
-# x-property
+# x_property
 - test x
 
-# y-property
+# y_property
 - test y
 
-# z-property
+# z_property
 - test z
 
-# tag2-y-property
+# tag2_y_property
 - test tag2 y
 
-# x-property2
+# x_property2
 - test2 x

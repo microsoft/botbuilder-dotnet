@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("ErrorTemplateName.lg");
 
-            Assert.AreEqual(5, diagnostics.Count);
+            Assert.AreEqual(6, diagnostics.Count);
             foreach (var diagnostic in diagnostics)
             {
                 Assert.AreEqual(DiagnosticSeverity.Error, diagnostic.Severity);

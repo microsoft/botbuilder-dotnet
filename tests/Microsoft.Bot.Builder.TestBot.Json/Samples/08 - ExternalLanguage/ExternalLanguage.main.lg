@@ -4,11 +4,11 @@
     suggestedActions = Joke|Fortune|Help
 ]
 
-# welcome-user
+# welcome_user
 - Hello ${user.name}, nice talking to you!
 - Howdy ${user.name}!
 
-# prompt-name
+# prompt_name
 - What's your name?
 
 # welcome

@@ -78,6 +78,8 @@ namespace AdaptiveExpressions.Tests
                 "user",
                 new
                 {
+                    income = 100.1,
+                    outcome = 120.1,
                     nickname = "John",
                     lists = new
                     {
@@ -312,6 +314,12 @@ namespace AdaptiveExpressions.Tests
             #endregion
 
             #region Operators test
+            Test("user.income-user.outcome", -20.0),
+            Test("user.income - user.outcome", -20.0),
+            Test("user.income != user.outcome", true),
+            Test("user.income!=user.outcome", true),
+            Test("user.income == user.outcome", false),
+            Test("user.income==user.outcome", false),
             Test("1 + 2", 3),
             Test("1 +\r\n 2", 3),
             Test("- 1 + 2", 1),

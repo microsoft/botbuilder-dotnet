@@ -18,3 +18,7 @@
 # t2($%^)
 - hi
 
+> template name can not contains '-'
+# the-name-of-template
+- the body of template
+

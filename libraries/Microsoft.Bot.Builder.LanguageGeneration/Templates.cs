@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             CheckErrors();
 
             // wrap inline string with "# name and -" to align the evaluation process
-            var fakeTemplateId = Guid.NewGuid().ToString();
+            var fakeTemplateId = "__temp__";
             var multiLineMark = "```";
 
             text = !text.Trim().StartsWith(multiLineMark) && text.Contains('\n')
