@@ -439,9 +439,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                     dc.Context.Activity.ServiceUrl = state.CallerServiceUrl;
 
                     // recreate a ConnectorClient and set it in TurnState so replies use the correct one
-                    var provider = turnContext.Adapter as IExtendedUserTokenProvider;
+                    var adapter = turnContext.Adapter as BotFrameworkAdapter;
                     var claimsIdentity = turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey);
-                    var connectorClient = await provider.CreateConnectorClientAsync(dc.Context.Activity.ServiceUrl, claimsIdentity, state.Scope, cancellationToken).ConfigureAwait(false);
+                    var connectorClient = await adapter.ClientManager.CreateConnectorClientAsync(dc.Context.Activity.ServiceUrl, claimsIdentity, state.Scope, cancellationToken).ConfigureAwait(false);
                     if (turnContext.TurnState.Get<IConnectorClient>() != null)
                     {
                         turnContext.TurnState.Set(connectorClient);

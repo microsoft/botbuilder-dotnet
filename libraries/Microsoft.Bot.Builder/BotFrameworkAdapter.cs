@@ -136,6 +136,8 @@ namespace Microsoft.Bot.Builder
             // thus should be future friendly.  However, once the transition is complete. we can remove this.
             Use(new TenantIdWorkaroundForTeamsMiddleware());
 
+            ClientManager = new ClientManager(this);
+
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
@@ -183,8 +185,18 @@ namespace Microsoft.Bot.Builder
             // thus should be future friendly.  However, once the transition is complete. we can remove this.
             Use(new TenantIdWorkaroundForTeamsMiddleware());
 
+            ClientManager = new ClientManager(this);
+
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+        }
+
+        /// <summary>
+        /// Gets the ClientManger for this adapter.
+        /// </summary>
+        public ClientManager ClientManager
+        {
+            get; private set;
         }
 
         /// <summary>
@@ -1422,7 +1434,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>ConnectorClient instance.</returns>
         /// <exception cref="NotSupportedException">ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
-        private async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken = default)
+        internal async Task<IConnectorClient> CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken = default)
         {
             if (claimsIdentity == null)
             {
