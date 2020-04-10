@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class EditArray : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.EditArray";
+        public const string Kind = "Microsoft.EditArray";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EditArray"/> class.

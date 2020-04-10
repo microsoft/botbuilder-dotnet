@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     public class AdaptiveDialog : DialogContainer, IDialogDependencies
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.AdaptiveDialog";
+        public const string Kind = "Microsoft.AdaptiveDialog";
 
         internal const string ConditionTracker = "dialog._tracker.conditions";
 
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
-                    { "Kind", DeclarativeType }
+                    { "Kind", Kind }
                 };
             TelemetryClient.TrackEvent("AdaptiveDialogStart", properties);
             TelemetryClient.TrackDialogView(Id);
@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
-                    { "Kind", DeclarativeType }
+                    { "Kind", Kind }
                 };
 
             if (reason == DialogReason.CancelCalled)

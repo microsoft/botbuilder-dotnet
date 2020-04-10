@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     public class ConfirmInput : InputDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.ConfirmInput";
+        public const string Kind = "Microsoft.ConfirmInput";
 
         private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>(StringComparer.OrdinalIgnoreCase)
         {

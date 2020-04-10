@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     public class OAuthInput : InputDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.OAuthInput";
+        public const string Kind = "Microsoft.OAuthInput";
 
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";

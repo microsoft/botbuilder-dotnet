@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class NumberEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.NumberEntityRecognizer";
+        public const string Kind = "Microsoft.NumberEntityRecognizer";
 
         public NumberEntityRecognizer()
         {

@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class RegexRecognizer : Recognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.RegexRecognizer";
+        public const string Kind = "Microsoft.RegexRecognizer";
 
         [JsonConstructor]
         public RegexRecognizer()

@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     public class AttachmentInput : InputDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.AttachmentInput";
+        public const string Kind = "Microsoft.AttachmentInput";
 
         public AttachmentInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {

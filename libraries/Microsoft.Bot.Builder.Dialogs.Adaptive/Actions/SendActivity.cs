@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class SendActivity : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.SendActivity";
+        public const string Kind = "Microsoft.SendActivity";
 
         public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {

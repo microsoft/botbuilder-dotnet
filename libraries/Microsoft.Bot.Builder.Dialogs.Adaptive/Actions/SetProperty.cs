@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class SetProperty : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.SetProperty";
+        public const string Kind = "Microsoft.SetProperty";
 
         [JsonConstructor]
         public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

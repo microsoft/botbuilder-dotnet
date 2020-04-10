@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnChooseEntity : OnDialogEvent
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.OnChooseEntity";
+        public new const string Kind = "Microsoft.OnChooseEntity";
         
         [JsonConstructor]
         public OnChooseEntity(string property = null, string entity = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

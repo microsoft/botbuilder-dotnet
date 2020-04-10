@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
     public class QnAMakerDialog2 : QnAMakerDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.QnAMakerDialog";
+        public const string Kind = "Microsoft.QnAMakerDialog";
 
         [JsonConstructor]
         public QnAMakerDialog2([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)

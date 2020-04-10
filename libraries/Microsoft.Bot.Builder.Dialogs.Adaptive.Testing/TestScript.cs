@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     public class TestScript
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.Test.Script";
+        public const string Kind = "Microsoft.Test.Script";
 
         private static JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
         {
