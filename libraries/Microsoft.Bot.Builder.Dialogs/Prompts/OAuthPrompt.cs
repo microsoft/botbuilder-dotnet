@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Logging.Internal;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -59,6 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
         private const string PersistedExpires = "expires";
+        private const string PersistedCaller = "caller";
 
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
@@ -142,6 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
 
             state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
+            state[PersistedCaller] = CreateCallerInfo(dc.Context);
 
             // Attempt to get the users token
             if (!(dc.Context.Adapter is IExtendedUserTokenProvider adapter))
@@ -180,7 +183,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Recognize token
-            var recognized = await RecognizeTokenAsync(dc.Context, cancellationToken).ConfigureAwait(false);
+            var recognized = await RecognizeTokenAsync(dc, cancellationToken).ConfigureAwait(false);
 
             // Check for timeout
             var state = dc.ActiveDialog.State;
@@ -262,6 +265,21 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Sign out user
             await adapter.SignOutUserAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
+        }
+
+        private static CallerInfo CreateCallerInfo(ITurnContext turnContext)
+        {
+            var botIdentity = turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey);
+            if (botIdentity != null && SkillValidation.IsSkillClaim(botIdentity.Claims))
+            {
+                return new CallerInfo()
+                {
+                    CallerServiceUrl = turnContext.Activity.ServiceUrl,
+                    Scope = JwtTokenValidation.GetAppIdFromClaims(botIdentity.Claims),
+                };
+            }
+
+            return null;
         }
 
         private static bool IsTokenResponseEvent(ITurnContext turnContext)
@@ -402,8 +420,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             await turnContext.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var turnContext = dc.Context;
             var result = new PromptRecognizerResult<TokenResponse>();
             if (IsTokenResponseEvent(turnContext))
             {
@@ -411,6 +430,27 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var token = tokenResponseObject?.ToObject<TokenResponse>();
                 result.Succeeded = true;
                 result.Value = token;
+
+                // fixup the turnContext's state context if this was received from a skill host caller
+                var state = (CallerInfo)dc.ActiveDialog.State[PersistedCaller];
+                if (state != null)
+                {
+                    // set the ServiceUrl to the skill host's Url
+                    dc.Context.Activity.ServiceUrl = state.CallerServiceUrl;
+
+                    // recreate a ConnectorClient and set it in TurnState so replies use the correct one
+                    var provider = turnContext.Adapter as IExtendedUserTokenProvider;
+                    var claimsIdentity = turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey);
+                    var connectorClient = await provider.CreateConnectorClientAsync(dc.Context.Activity.ServiceUrl, claimsIdentity, state.Scope, cancellationToken).ConfigureAwait(false);
+                    if (turnContext.TurnState.Get<IConnectorClient>() != null)
+                    {
+                        turnContext.TurnState.Set(connectorClient);
+                    }
+                    else
+                    {
+                        turnContext.TurnState.Add(connectorClient);
+                    }
+                }
             }
             else if (IsTeamsVerificationInvoke(turnContext))
             {
@@ -575,6 +615,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                         Body = body,
                     },
                 }, cancellationToken).ConfigureAwait(false);
+        }
+
+        private class CallerInfo
+        {
+            public string CallerServiceUrl { get; set; }
+
+            public string Scope { get; set; }
         }
     }
 }
