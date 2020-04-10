@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -13,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
     public class TestingComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
-        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes()
+        public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Action
             yield return new DeclarativeType<AssertCondition>(AssertCondition.DeclarativeType);
@@ -30,9 +31,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             yield return new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.DeclarativeType);
         }
 
-        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
+        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
         {
-            yield return new InterfaceConverter<TestAction>(resourceExplorer, paths);
+            yield return new InterfaceConverter<TestAction>(resourceExplorer, context);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
             {
-                explorer.AddResourceProvider(new FolderResourceProvider(path));
+                explorer.AddResourceProvider(new FolderResourceProvider(explorer, path));
 
                 await AssertResourceType(path, explorer, "dialog");
                 var resources = explorer.GetResources("foo").ToArray();
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
             {
-                explorer.AddResourceProvider(new FolderResourceProvider(path));
+                explorer.AddResourceProvider(new FolderResourceProvider(explorer, path));
                 try
                 {
                     explorer.GetResource("bogus.dialog");
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
             {
-                explorer.AddResourceProvider(new FolderResourceProvider(path, monitorChanges: true));
+                explorer.AddResourceProvider(new FolderResourceProvider(explorer, path, monitorChanges: true));
 
                 AssertResourceFound(explorer, testId);
 
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
             {
-                explorer.AddResourceProvider(new FolderResourceProvider(path, monitorChanges: true));
+                explorer.AddResourceProvider(new FolderResourceProvider(explorer, path, monitorChanges: true));
 
                 AssertResourceFound(explorer, testId);
 

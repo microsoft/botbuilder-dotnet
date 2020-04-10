@@ -91,6 +91,7 @@ namespace AdaptiveExpressions.Tests
                     listType = "todo",
                 }
             },
+            { "byteArr", new byte[] { 3, 5, 1, 12 } },
             { "timestamp", "2018-03-15T13:00:00.000Z" },
             { "notISOTimestamp", "2018/03/15 13:00:00" },
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
@@ -585,13 +586,15 @@ namespace AdaptiveExpressions.Tests
             Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object> { 1, true, "true", 10.0f }),
             Test("createArray()", new List<object> { }),
             Test("[]", new List<object> { }),
-            Test("binary(hello)", "0110100001100101011011000110110001101111"),
-            Test("length(binary(hello))", 40),
+            Test("binary(hello)", new byte[] { 104, 101, 108, 108, 111 }),
+            Test("count(binary(hello))", 5),
             Test("base64(hello)", "aGVsbG8="),
-            Test("base64ToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("base64(byteArr)", "AwUBDA=="),
+            Test("base64ToBinary(base64(byteArr))", new byte[] { 3, 5, 1, 12 }),
             Test("base64ToString(base64(hello))", "hello"),
+            Test("base64(base64ToBinary(\"AwUBDA==\"))", "AwUBDA=="), 
             Test("dataUri(hello)", "data:text/plain;charset=utf-8;base64,aGVsbG8="),
-            Test("dataUriToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("dataUriToBinary(base64(hello))", new byte[] { 97, 71, 86, 115, 98, 71, 56, 61 }),
             Test("dataUriToString(dataUri(hello))", "hello"),
             Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
             Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
@@ -679,15 +682,16 @@ namespace AdaptiveExpressions.Tests
             Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.Now.AddMonths(1).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(7).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.Now.AddDays(1).ToString("MM-dd-yy")),
-            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D')", "Monday, January 1, 2018"),
-            Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D')", "Monday, January 1, 2018"),
+            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D')", "Monday, 01 January 2018"),
+            Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D')", "Monday, 01 January 2018"),
             Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time')", "2018-01-01T08:00:00.000Z"),
-            Test("addToTime('2018-01-01T08:00:00.000Z', 1, 'Day', 'D')", "Tuesday, January 2, 2018"),
+            Test("addToTime('2018-01-01T08:00:00.000Z', 1, 'Day', 'D')", "Tuesday, 02 January 2018"),
             Test("addToTime('2018-01-01T00:00:00.000Z', 1, 'Week')", "2018-01-08T00:00:00.000Z"),
             Test("startOfDay('2018-03-15T13:30:30.000Z')", "2018-03-15T00:00:00.000Z"),
             Test("startOfHour('2018-03-15T13:30:30.000Z')", "2018-03-15T13:00:00.000Z"),
             Test("startOfMonth('2018-03-15T13:30:30.000Z')", "2018-03-01T00:00:00.000Z"),
             Test("ticks('2018-01-01T08:00:00.000Z')", 636503904000000000),
+            Test("formatDateTime((ticks('2018-01-01T08:00:00.000Z') - ticks('1970-01-01T00:00:00.000Z'))/10000000)", "2018-01-01T08:00:00.000Z"),
             #endregion
 
             #region uri parsing function test
@@ -902,6 +906,35 @@ namespace AdaptiveExpressions.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(Data))]
+        public void EvaluateInOtherCultures(string input, object expected, HashSet<string> expectedRefs)
+        { 
+            var cultureList = new List<string>() { "de-DE", "fr-FR", "es-ES" };
+            foreach (var newCultureInfo in cultureList)
+            {
+                var originalCuture = Thread.CurrentThread.CurrentCulture;
+                Thread.CurrentThread.CurrentCulture = new CultureInfo(newCultureInfo);
+                var parsed = Expression.Parse(input);
+                Assert.IsNotNull(parsed);
+                var (actual, msg) = parsed.TryEvaluate(scope);
+                Assert.AreEqual(null, msg);
+                AssertObjectEquals(expected, actual);
+                if (expectedRefs != null)
+                {
+                    var actualRefs = parsed.References();
+                    Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+                }
+
+                // ToString re-parse
+                var newExpression = Expression.Parse(parsed.ToString());
+                var newActual = newExpression.TryEvaluate(scope).value;
+                AssertObjectEquals(actual, newActual);
+
+                Thread.CurrentThread.CurrentCulture = originalCuture;
+            } 
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(Data))]
         public void EvaluateJson(string input, object expected, HashSet<string> expectedRefs)
         {
             var jsonScope = JToken.FromObject(scope);
@@ -945,22 +978,22 @@ namespace AdaptiveExpressions.Tests
 
             // normal case, note, we doesn't append a " yet
             var exp = Expression.Parse("a[f].b[n].z");
-            var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
+            var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
             Assert.AreEqual(path, "a['foo'].b[2].z");
 
             // normal case
             exp = Expression.Parse("a[z.z][z.z].y");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
+            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
             Assert.AreEqual(path, "a['zar']['zar'].y");
 
             // normal case
             exp = Expression.Parse("a.b[z.z]");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
+            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
             Assert.AreEqual(path, "a.b['zar']");
 
             // stop evaluate at middle
             exp = Expression.Parse("json(x).b");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory);
+            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
             Assert.AreEqual(path, "b");
         }
 
@@ -977,8 +1010,67 @@ namespace AdaptiveExpressions.Tests
             AssertResult<ushort>(ushort.MaxValue.ToString(), ushort.MaxValue);
             AssertResult<uint>(uint.MaxValue.ToString(), uint.MaxValue);
             AssertResult<ulong>(uint.MaxValue.ToString(), uint.MaxValue);
-            AssertResult<float>(15.32322F.ToString(), 15.32322F);
-            AssertResult<double>(15.32322.ToString(), 15.32322);
+            AssertResult<float>(15.32322F.ToString(CultureInfo.InvariantCulture), 15.32322F);
+            AssertResult<double>(15.32322.ToString(CultureInfo.InvariantCulture), 15.32322);
+        }
+
+        [TestMethod]
+        public void TestEvaluationOptions()
+        {
+            var mockMemory = new Dictionary<string, object>();
+
+            var options = new Options
+            {
+                NullSubstitution = (path) => $"{path} is undefined"
+            };
+                
+            object value = null;
+            string error = null;
+
+            // normal case null value is substituted
+            var exp = Expression.Parse("foo");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            AssertObjectEquals("foo is undefined", value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("if(foo, 1, 2)");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            AssertObjectEquals(2, value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("foo && true");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            AssertObjectEquals(false, value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("foo || true");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            AssertObjectEquals(true, value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("foo == 'foo is undefined'");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            AssertObjectEquals(false, value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("bool(foo)");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            AssertObjectEquals(false, value);
+
+            // in boolean context, substitution is not allowed, use raw value instead
+            exp = Expression.Parse("not(foo)");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            AssertObjectEquals(true, value);
+
+            // concat is evaluated in boolean context also, use raw value
+            exp = Expression.Parse("if(concat(foo, 'bar'), 1, 2)");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            AssertObjectEquals(1, value);
+
+            // index is not boolean context, but it also requires raw value
+            exp = Expression.Parse("a[b]");
+            (value, error) = exp.TryEvaluate(mockMemory, options);
+            Assert.IsTrue(error != null);
         }
 
         private void AssertResult<T>(string text, T expected)

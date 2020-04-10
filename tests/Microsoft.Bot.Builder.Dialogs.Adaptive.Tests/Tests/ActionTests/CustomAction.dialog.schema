@@ -1,0 +1,30 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Custom Action",
+    "description": "My Custom Action.",
+    "type": "object",
+    "properties": {
+        "age": {
+            "$role": "expression",
+            "type": "number",
+            "title": "Age",
+            "description": "The age."
+        },
+        "name": {
+            "$role": "expression",
+            "type": "string",
+            "title": "Name",
+            "description": "The name."
+        },
+        "resultProperty": {
+            "$role": "expression",
+            "type": "string",
+            "title": "Property",
+            "description": "Property to store any value returned by the dialog that is called.",
+            "examples": [
+                "dialog.userName"
+            ]
+        }
+    }
+}
