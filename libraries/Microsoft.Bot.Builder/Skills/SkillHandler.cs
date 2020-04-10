@@ -125,6 +125,7 @@ namespace Microsoft.Bot.Builder.Skills
             turnContext.Activity.ReplyToId = endOfConversationActivity.ReplyToId;
             turnContext.Activity.Value = endOfConversationActivity.Value;
             turnContext.Activity.Entities = endOfConversationActivity.Entities;
+            turnContext.Activity.Locale = endOfConversationActivity.Locale;
             turnContext.Activity.LocalTimestamp = endOfConversationActivity.LocalTimestamp;
             turnContext.Activity.Timestamp = endOfConversationActivity.Timestamp;
             turnContext.Activity.ChannelData = endOfConversationActivity.ChannelData;
@@ -142,6 +143,7 @@ namespace Microsoft.Bot.Builder.Skills
             turnContext.Activity.ReplyToId = eventActivity.ReplyToId;
             turnContext.Activity.Value = eventActivity.Value;
             turnContext.Activity.Entities = eventActivity.Entities;
+            turnContext.Activity.Locale = eventActivity.Locale;
             turnContext.Activity.LocalTimestamp = eventActivity.LocalTimestamp;
             turnContext.Activity.Timestamp = eventActivity.Timestamp;
             turnContext.Activity.ChannelData = eventActivity.ChannelData;
