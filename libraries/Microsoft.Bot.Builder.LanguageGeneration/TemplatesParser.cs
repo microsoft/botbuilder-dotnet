@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using AdaptiveExpressions;
 using Antlr4.Runtime;
@@ -186,22 +187,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private static (IList<Template> templates, IList<TemplateImport> imports, IList<Diagnostic> diagnostics, IList<string> options) AntlrParse(string content, string id = "")
         {
             var fileContext = GetFileContentContext(content, id);
-            var templates = ExtractLGTemplates(fileContext, content, id);
-            var imports = ExtractLGImports(fileContext, id);
-            var options = ExtractLGOptions(fileContext);
-            var diagnostics = GetInvalidTemplateErrors(fileContext, id);
+            var templates = ExtractTemplates(fileContext, content, id);
+            var imports = ExtractImports(fileContext, id);
+            var options = ExtractOptions(fileContext);
+
+            //var comments = ExtractComments(fileContext);
+            var diagnostics = GetInvalidLineErrors(fileContext, id);
 
             return (templates, imports, diagnostics, options);
         }
 
-        private static IList<Diagnostic> GetInvalidTemplateErrors(LGFileParser.FileContext fileContext, string id)
+        private static IList<Diagnostic> GetInvalidLineErrors(LGFileParser.FileContext fileContext, string id)
         {
-            var errorTemplates = fileContext == null ? new List<LGFileParser.ErrorTemplateContext>() :
+           return fileContext == null ? new List<Diagnostic>() :
                    fileContext.paragraph()
-                   .Select(x => x.errorTemplate())
-                   .Where(x => x != null);
-
-            return errorTemplates.Select(u => BuildDiagnostic("error context.", u, id)).ToList();
+                   .Select(x => x.errorDefinition())
+                   .Where(x => x != null)
+                   .Select(u => BuildDiagnostic(u.INVALID_LINE().GetText(), u, id))
+                   .ToList();
         }
 
         private static Diagnostic BuildDiagnostic(string errorMessage, ParserRuleContext context = null, string source = null)
@@ -246,13 +249,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="lgfileContent">LG file content.</param>
         /// <param name="source">text source.</param>
         /// <returns>LG template list.</returns>
-        private static IList<Template> ExtractLGTemplates(LGFileParser.FileContext file, string lgfileContent, string source = "")
+        private static IList<Template> ExtractTemplates(LGFileParser.FileContext file, string lgfileContent, string source = "")
         {
             return file == null ? new List<Template>() :
                    file.paragraph()
                    .Select(x => x.templateDefinition())
                    .Where(x => x != null)
-                   .Select(t => new Template(t, lgfileContent, source))
+                   .Select(t => new Template(t, source))
                    .ToList();
         }
 
@@ -261,13 +264,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="file">LG file context from ANTLR parser.</param>
         /// <returns>Option list.</returns>
-        private static IList<string> ExtractLGOptions(LGFileParser.FileContext file)
+        private static IList<string> ExtractOptions(LGFileParser.FileContext file)
         {
             return file == null ? new List<string>() :
                    file.paragraph()
-                   .Select(x => x.optionsDefinition())
+                   .Select(x => x.optionDefinition())
                    .Where(x => x != null)
-                   .Select(t => ExtractOption(t.GetText()))
+                   .Select(t => ExtractOption(t.OPTION().GetText()))
                    .Where(t => !string.IsNullOrEmpty(t))
                    .ToList();
         }
@@ -295,13 +298,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="file">LG file context from ANTLR parser.</param>
         /// <param name="source">text source.</param>
         /// <returns>lg template list.</returns>
-        private static IList<TemplateImport> ExtractLGImports(LGFileParser.FileContext file, string source = "")
+        private static IList<TemplateImport> ExtractImports(LGFileParser.FileContext file, string source = "")
         {
             return file == null ? new List<TemplateImport>() :
                    file.paragraph()
                    .Select(x => x.importDefinition())
                    .Where(x => x != null)
-                   .Select(t => new TemplateImport(t, source))
+                   .Select(t => new TemplateImport(t.IMPORT().GetText(), source))
                    .ToList();
         }
 

@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG template expander.
     /// </summary>
-    public class Expander : LGFileParserBaseVisitor<List<string>>
+    public class Expander : LGTemplateParserBaseVisitor<List<string>>
     {
         private readonly ExpressionParser expanderExpressionParser;
         private readonly ExpressionParser evaluatorExpressionParser;
@@ -83,26 +83,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
-            var result = Visit(TemplateMap[templateName].ParseTree);
+            var result = Visit(TemplateMap[templateName].TemplateBodyParseTree);
             evaluationTargetStack.Pop();
 
             return result;
         }
 
-        public override List<string> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
-        {
-            var templateNameContext = context.templateNameLine();
-            if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
-            {
-                return Visit(context.templateBody());
-            }
+        public override List<string> VisitNormalBody([NotNull] LGTemplateParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
-            return null;
-        }
-
-        public override List<string> VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
-
-        public override List<string> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        public override List<string> VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var normalTemplateStrs = context.templateString();
             var result = new List<string>();
@@ -115,7 +104,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<string> VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
+        public override List<string> VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
         {
             var ifRules = context.ifElseTemplateBody().ifConditionRule();
             foreach (var ifRule in ifRules)
@@ -129,7 +118,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override List<string> VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        public override List<string> VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
         {
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             var length = switchCaseNodes.Length;
@@ -172,7 +161,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override List<string> VisitStructuredBody([NotNull] LGFileParser.StructuredBodyContext context)
+        public override List<string> VisitStructuredBody([NotNull] LGTemplateParser.StructuredBodyContext context)
         {
             var templateRefValues = new Dictionary<string, List<string>>();
             var stb = context.structuredTemplateBody();
@@ -260,7 +249,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return finalResult;
         }
 
-        public override List<string> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        public override List<string> VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
             var result = new List<string>() { string.Empty };
@@ -268,14 +257,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 switch (node.Symbol.Type)
                 {
-                    case LGFileParser.DASH:
-                    case LGFileParser.MULTILINE_PREFIX:
-                    case LGFileParser.MULTILINE_SUFFIX:
+                    case LGTemplateParser.DASH:
+                    case LGTemplateParser.MULTILINE_PREFIX:
+                    case LGTemplateParser.MULTILINE_SUFFIX:
                         break;
-                    case LGFileParser.ESCAPE_CHARACTER:
+                    case LGTemplateParser.ESCAPE_CHARACTER:
                         result = StringListConcat(result, new List<string>() { node.GetText().Escape() });
                         break;
-                    case LGFileParser.EXPRESSION:
+                    case LGTemplateParser.EXPRESSION:
                         result = StringListConcat(result, EvalExpression(node.GetText(), context, prefixErrorMsg));
                         break;
                     default:
@@ -302,7 +291,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return newScope;
         }
 
-        private bool EvalCondition(LGFileParser.IfConditionContext condition)
+        private bool EvalCondition(LGTemplateParser.IfConditionContext condition)
         {
             var expression = condition.EXPRESSION(0);
             if (expression == null || // no expression means it's else
@@ -314,7 +303,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return false;
         }
 
-        private List<List<string>> VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
+        private List<List<string>> VisitStructureValue(LGTemplateParser.KeyValueStructureLineContext context)
         {
             var values = context.keyValueStructureValue();
 
@@ -332,10 +321,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         switch (node.Symbol.Type)
                         {
-                            case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                            case LGTemplateParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
                                 itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Replace(@"\|", "|").Escape() });
                                 break;
-                            case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                            case LGTemplateParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
                                 itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText(), item, errorPrefix));
                                 break;

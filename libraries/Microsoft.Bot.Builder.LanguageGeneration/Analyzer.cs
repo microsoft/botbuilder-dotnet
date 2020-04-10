@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG template analyzer.
     /// </summary>
-    public class Analyzer : LGFileParserBaseVisitor<AnalyzerResult>
+    public class Analyzer : LGTemplateParserBaseVisitor<AnalyzerResult>
     {
         private readonly Dictionary<string, Template> templateMap;
 
@@ -67,29 +67,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // because given we don't track down for templates have parameters
             // the only scenario that we are still analyzing an parameterized template is
             // this template is root template to analyze, in this we also don't have exclude parameters
-            var dependencies = Visit(templateMap[templateName].ParseTree);
+            var dependencies = Visit(templateMap[templateName].TemplateBodyParseTree);
             evaluationTargetStack.Pop();
 
             return dependencies;
         }
 
-        public override AnalyzerResult VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
-        {
-            var templateNameContext = context.templateNameLine();
-            if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
-            {
-                if (context.templateBody() != null)
-                {
-                    return Visit(context.templateBody());
-                }
-            }
+        public override AnalyzerResult VisitNormalBody([NotNull] LGTemplateParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
-            return new AnalyzerResult();
-        }
-
-        public override AnalyzerResult VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
-
-        public override AnalyzerResult VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        public override AnalyzerResult VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var result = new AnalyzerResult();
 
@@ -102,7 +88,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override AnalyzerResult VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
+        public override AnalyzerResult VisitStructuredTemplateBody([NotNull] LGTemplateParser.StructuredTemplateBodyContext context)
         {
             var result = new AnalyzerResult();
 
@@ -123,7 +109,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override AnalyzerResult VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
+        public override AnalyzerResult VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
         {
             var result = new AnalyzerResult();
 
@@ -145,7 +131,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override AnalyzerResult VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        public override AnalyzerResult VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
         {
             var result = new AnalyzerResult();
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
@@ -166,7 +152,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override AnalyzerResult VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        public override AnalyzerResult VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var result = new AnalyzerResult();
             foreach (var expression in context.EXPRESSION())
@@ -177,7 +163,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        private AnalyzerResult VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
+        private AnalyzerResult VisitStructureValue(LGTemplateParser.KeyValueStructureLineContext context)
         {
             var values = context.keyValueStructureValue();
 

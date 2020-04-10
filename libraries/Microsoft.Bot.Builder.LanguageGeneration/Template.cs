@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
+using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -17,37 +17,37 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </remarks>
     public class Template
     {
+        private readonly LGFileParser.TemplateDefinitionContext templateParseTree;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Template"/> class.
         /// </summary>
         /// <param name="parseTree">The parse tree of this template.</param>
-        /// <param name="lgfileContent">lg file content.</param>
         /// <param name="source">Source of this template.</param>
-        internal Template(LGFileParser.TemplateDefinitionContext parseTree, string lgfileContent, string source = "")
+        internal Template(LGFileParser.TemplateDefinitionContext parseTree, string source = "")
         {
-            ParseTree = parseTree;
+            templateParseTree = parseTree;
             Source = source;
 
-            Name = ExtractName();
-            Parameters = ExtractParameters();
-            Body = ExtractBody(lgfileContent);
+            ExtractNameAndParameters();
+            ExtractBody();
         }
 
         /// <summary>
-        /// Gets name of the template, what's followed by '#' in a LG file.
+        /// Gets or sets name of the template, what's followed by '#' in a LG file.
         /// </summary>
         /// <value>
         /// Name of the template, what's followed by '#' in a LG file.
         /// </value>
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
-        /// Gets parameter list of this template.
+        /// Gets or sets parameter list of this template.
         /// </summary>
         /// <value>
         /// Parameter list of this template.
         /// </value>
-        public List<string> Parameters { get; }
+        public List<string> Parameters { get; set; }
 
         /// <summary>
         /// Gets or sets text format of Body of this template. All content except Name and Parameters.
@@ -66,12 +66,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Source { get; }
 
         /// <summary>
-        /// Gets the parse tree of this template.
+        /// Gets or sets the parse tree of this template.
         /// </summary>
         /// <value>
         /// The parse tree of this template.
         /// </value>
-        public LGFileParser.TemplateDefinitionContext ParseTree { get; }
+        public LGTemplateParser.TemplateBodyContext TemplateBodyParseTree { get; set; }
 
         public override string ToString() => $"[{Name}({string.Join(", ", Parameters)})]\"{Body}\"";
 
@@ -81,79 +81,74 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>template content range.</returns>
         public (int startLine, int stopLine) GetTemplateRange()
         {
-            var startLine = ParseTree.Start.Line - 1;
-            var stopLine = ParseTree.Stop.Line - 1;
-            if (ParseTree?.Parent?.Parent is LGFileParser.FileContext fileContext)
-            {
-                var templateDefinitions = fileContext
-                        .paragraph()
-                        .Select(u => u.templateDefinition())
-                        .Where(u => u != null)
-                        .ToList();
-                var currentIndex = -1;
-                for (var i = 0; i < templateDefinitions.Count; i++)
-                {
-                    if (templateDefinitions[i] == ParseTree)
-                    {
-                        currentIndex = i;
-                        break;
-                    }
-                }
-
-                if (currentIndex >= 0 && currentIndex < templateDefinitions.Count - 1)
-                {
-                    // in the middle of templates
-                    stopLine = templateDefinitions[currentIndex + 1].Start.Line - 2;
-                }
-                else
-                {
-                    // last item
-                    stopLine = fileContext.Stop.Line - 1;
-                }
-            }
-
-            if (stopLine <= startLine)
-            {
-                stopLine = startLine;
-            }
+            var startLine = templateParseTree.Start.Line - 1;
+            var stopLine = templateParseTree.Stop.Line - 1;
 
             return (startLine, stopLine);
         }
 
-        private string ExtractBody(string lgfileContent)
+        private void ExtractBody()
         {
-            var (startLine, stopLine) = GetTemplateRange();
-            return startLine >= stopLine ? string.Empty : GetRangeContent(lgfileContent, startLine + 1, stopLine);
+            var templateBodyLines = templateParseTree.templateBodyLine()
+                                    .Select(u =>
+                                    { 
+                                        if (u.TEMPLATE_BODY_LINE() != null)
+                                        {
+                                            return u.TEMPLATE_BODY_LINE().GetText();
+                                        }
+                                        else
+                                        {
+                                            return string.Empty;
+                                        }
+                                    });
+            var templateBody = string.Join("\r\n", templateBodyLines);
+            this.Body = templateBody;
+            this.TemplateBodyParseTree = GetTemplateContext(templateBody, this.Source);
         }
 
-        private string ExtractName()
+        private void ExtractNameAndParameters()
         {
-            var name = ParseTree.templateNameLine().templateName()?.GetText();
-            return name ?? string.Empty;
-        }
+            var templateNameLine = templateParseTree.templateNameLine().TEMPLATE_NAME_LINE().GetText();
+            var hashIndex = templateNameLine.IndexOf('#');
+            templateNameLine = templateNameLine.Substring(hashIndex + 1).Trim();
 
-        private List<string> ExtractParameters()
-        {
-            var parameters = ParseTree.templateNameLine().parameters();
-            if (parameters != null)
+            var templateName = templateNameLine;
+            var parameters = new List<string>();
+            var leftBracketIndex = templateNameLine.IndexOf("(");
+            if (leftBracketIndex >= 0)
             {
-                return parameters.IDENTIFIER().Select(param => param.GetText()).ToList();
+                templateName = templateNameLine.Substring(0, leftBracketIndex).Trim();
+                if (templateNameLine.EndsWith(")"))
+                {
+                    var parameterString = templateNameLine.Substring(leftBracketIndex + 1, templateNameLine.Length - leftBracketIndex - 2);
+                    parameters = parameterString.Split(',').Select(u => u.Trim()).ToList();
+                }
             }
 
-            return new List<string>();
+            this.Name = templateName;
+            this.Parameters = parameters;
         }
 
-        private string GetRangeContent(string originString, int startLine, int stopLine)
+        private LGTemplateParser.TemplateBodyContext GetTemplateContext(string text, string id)
         {
-            var originList = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
-            if (startLine < 0 || startLine > stopLine || stopLine >= originList.Length)
+            if (string.IsNullOrEmpty(text))
             {
-                throw new Exception("index out of range.");
+                return null;
             }
 
-            var destList = originList.Skip(startLine).Take(stopLine - startLine + 1);
+            var input = new AntlrInputStream(text);
+            var lexer = new LGTemplateLexer(input);
+            lexer.RemoveErrorListeners();
 
-            return string.Join("\r\n", destList);
+            var tokens = new CommonTokenStream(lexer);
+            var parser = new LGTemplateParser(tokens);
+            parser.RemoveErrorListeners();
+            var listener = new ErrorListener(id);
+
+            parser.AddErrorListener(listener);
+            parser.BuildParseTree = true;
+
+            return parser.templateBody();
         }
     }
 }

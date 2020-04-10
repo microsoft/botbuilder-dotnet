@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG managed code checker.
     /// </summary>
-    internal class StaticChecker : LGFileParserBaseVisitor<List<Diagnostic>>
+    internal class StaticChecker : LGTemplateParserBaseVisitor<List<Diagnostic>>
     {
         private readonly ExpressionParser baseExpressionParser;
         private readonly Templates templates;
@@ -68,63 +68,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             templates.ToList().ForEach(t =>
             {
-                result.AddRange(Visit(t.ParseTree));
+                result.AddRange(Visit(t.TemplateBodyParseTree));
             });
 
             return result;
         }
 
-        public override List<Diagnostic> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
-        {
-            var result = new List<Diagnostic>();
-            var templateNameLine = context.templateNameLine();
-            var errorTemplateName = templateNameLine.errorTemplateName();
-            if (errorTemplateName != null)
-            {
-                result.Add(BuildLGDiagnostic(TemplateErrors.InvalidTemplateName, context: errorTemplateName, includeTemplateNameInfo: false));
-            }
-            else
-            {
-                var templateName = context.templateNameLine().templateName().GetText();
-
-                if (visitedTemplateNames.Contains(templateName))
-                {
-                    result.Add(BuildLGDiagnostic(TemplateErrors.DuplicatedTemplateInSameTemplate(templateName), context: templateNameLine));
-                }
-                else
-                {
-                    visitedTemplateNames.Add(templateName);
-                    foreach (var reference in templates.References)
-                    {
-                        var sameTemplates = reference.Where(u => u.Name == templateName);
-                        foreach (var sameTemplate in sameTemplates)
-                        {
-                            result.Add(BuildLGDiagnostic(TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.Source), context: templateNameLine));
-                        }
-                    }
-
-                    if (result.Count > 0)
-                    {
-                        return result;
-                    }
-                    else
-                    {
-                        if (context.templateBody() == null)
-                        {
-                            result.Add(BuildLGDiagnostic(TemplateErrors.NoTemplateBody(templateName), DiagnosticSeverity.Warning, context.templateNameLine()));
-                        }
-                        else
-                        {
-                            result.AddRange(Visit(context.templateBody()));
-                        }
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        public override List<Diagnostic> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        public override List<Diagnostic> VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var result = new List<Diagnostic>();
 
@@ -144,7 +94,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<Diagnostic> VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
+        public override List<Diagnostic> VisitStructuredTemplateBody([NotNull] LGTemplateParser.StructuredTemplateBodyContext context)
         {
             var result = new List<Diagnostic>();
 
@@ -202,7 +152,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<Diagnostic> VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
+        public override List<Diagnostic> VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
         {
             var result = new List<Diagnostic>();
 
@@ -277,7 +227,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<Diagnostic> VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        public override List<Diagnostic> VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
         {
             var result = new List<Diagnostic>();
             var switchCaseRules = context.switchCaseTemplateBody().switchCaseRule();
@@ -364,7 +314,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<Diagnostic> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        public override List<Diagnostic> VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
             var result = new List<Diagnostic>();

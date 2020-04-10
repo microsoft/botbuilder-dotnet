@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="context">Key value structure value context.</param>
         /// <param name="expression">string expression.</param>
         /// <returns>is pure expression or not.</returns>
-        public static bool IsPureExpression(this LGFileParser.KeyValueStructureValueContext context, out string expression)
+        public static bool IsPureExpression(this LGTemplateParser.KeyValueStructureValueContext context, out string expression)
         {
             expression = context.GetText();
 
@@ -30,9 +30,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 switch (node.Symbol.Type)
                 {
-                    case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                    case LGTemplateParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
                         return false;
-                    case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                    case LGTemplateParser.EXPRESSION_IN_STRUCTURE_BODY:
                         if (hasExpression)
                         {
                             return false;
@@ -131,16 +131,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="context">normal template sting context.</param>
         /// <returns>prefix error message.</returns>
-        public static string GetPrefixErrorMessage(this LGFileParser.NormalTemplateStringContext context)
+        public static string GetPrefixErrorMessage(this LGTemplateParser.NormalTemplateStringContext context)
         {
             var errorPrefix = string.Empty;
-            if (context.Parent?.Parent?.Parent is LGFileParser.IfConditionRuleContext conditionContext)
+            if (context.Parent?.Parent?.Parent is LGTemplateParser.IfConditionRuleContext conditionContext)
             {
                 errorPrefix = "Condition '" + conditionContext.ifCondition()?.EXPRESSION(0)?.GetText() + "': ";
             }
             else
             {
-                if (context.Parent?.Parent?.Parent is LGFileParser.SwitchCaseRuleContext switchCaseContext)
+                if (context.Parent?.Parent?.Parent is LGTemplateParser.SwitchCaseRuleContext switchCaseContext)
                 {
                     var state = switchCaseContext.switchCaseStat();
                     if (state?.DEFAULT() != null)

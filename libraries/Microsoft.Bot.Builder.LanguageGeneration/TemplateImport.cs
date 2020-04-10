@@ -13,15 +13,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateImport"/> class.
         /// </summary>
-        /// <param name="parseTree">The parse tree of this template.</param>
+        /// <param name="importStr">import string.</param>
         /// <param name="source">Source of this import.</param>
-        internal TemplateImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
+        internal TemplateImport(string importStr, string source = "")
         {
-            ParseTree = parseTree;
             Source = source;
 
-            Description = ExtractDescription(parseTree);
-            Id = ExtractId(parseTree);
+            Description = ExtractDescription(importStr);
+            Id = ExtractId(importStr);
         }
 
         /// <summary>
@@ -48,28 +47,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public string Source { get; }
 
-        /// <summary>
-        /// Gets the parse tree of this lg file.
-        /// </summary>
-        /// <value>
-        /// The parse tree of this lg file.
-        /// </value>
-        public LGFileParser.ImportDefinitionContext ParseTree { get; }
-
-        private string ExtractDescription(LGFileParser.ImportDefinitionContext parseTree)
+        private string ExtractDescription(string importString)
         {
             // content: [xxx](yyy)
-            var content = parseTree.GetText();
-            var closeSquareBracketIndex = content.IndexOf(']');
-            return content.Substring(1, closeSquareBracketIndex - 1);
+            var openSquareBracketIndex = importString.IndexOf('[');
+            var closeSquareBracketIndex = importString.IndexOf(']');
+            return importString.Substring(openSquareBracketIndex + 1, closeSquareBracketIndex - openSquareBracketIndex - 1);
         }
 
-        private string ExtractId(LGFileParser.ImportDefinitionContext parseTree)
+        private string ExtractId(string importString)
         {
             // content: [xxx](yyy)
-            var content = parseTree.GetText();
-            var lastOpenBracketIndex = content.LastIndexOf('(');
-            return content.Substring(lastOpenBracketIndex + 1, content.Length - lastOpenBracketIndex - 2);
+            var lastOpenBracketIndex = importString.LastIndexOf('(');
+            var lastCloseBracketIndex = importString.LastIndexOf(')');
+            return importString.Substring(lastOpenBracketIndex + 1, lastCloseBracketIndex - lastOpenBracketIndex - 1);
         }
     }
 }
