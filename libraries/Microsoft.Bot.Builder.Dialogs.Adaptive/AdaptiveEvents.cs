@@ -36,11 +36,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public const string ChooseEntity = "chooseEntity";
 
         /// <summary>
-        /// Raised when a property should be cleared.
-        /// </summary>
-        public const string ClearProperty = "clearProperty";
-
-        /// <summary>
         /// Raised when an entity should be assigned to a property.
         /// </summary>
         public const string AssignEntity = "assignEntity";

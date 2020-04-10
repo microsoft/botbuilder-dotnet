@@ -6,6 +6,7 @@ using AdaptiveExpressions.Converters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
@@ -22,7 +23,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             yield return new DeclarativeType<LuisAdaptiveRecognizer>(LuisAdaptiveRecognizer.DeclarativeType);
         }
 
-        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
+        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
         {
             yield return new ArrayExpressionConverter<DynamicList>();
         }
