@@ -40,8 +40,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException($"{nameof(dialogContext)} is null");
             }
 
-            var cachedState = dialogContext.Context.TurnState.Get<object>(typeof(T).Name);
-            return cachedState.GetType().GetProperty("State").GetValue(cachedState);
+            var botState = GetBotState(dialogContext);
+            return botState.Get(dialogContext.Context);
         }
 
         /// <summary>
@@ -61,13 +61,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         public override async Task LoadAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
-            var botState = dialogContext.Context.TurnState.Get<T>();
+            var botState = GetBotState(dialogContext);
             await botState.LoadAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task SaveChangesAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
-            var botState = dialogContext.Context.TurnState.Get<T>();
+            var botState = GetBotState(dialogContext);
             await botState.SaveChangesAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
         }
 
@@ -75,5 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         {
             return Task.CompletedTask;
         }
+
+        private static T GetBotState(DialogContext dialogContext) => dialogContext.Context.TurnState.Get<T>();
     }
 }

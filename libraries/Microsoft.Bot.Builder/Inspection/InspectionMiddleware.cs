@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder
                 var task2 = _conversationState?.LoadAsync(turnContext, false, cancellationToken) ?? Task.CompletedTask;
                 await Task.WhenAll(task1, task2).ConfigureAwait(false);
 
-                var botState = new JObject();
+                var botState = new Dictionary<string, object>();
 
                 if (_userState != null)
                 {
