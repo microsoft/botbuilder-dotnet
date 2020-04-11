@@ -80,15 +80,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var storage = dc.Context.TurnState.Get<IStorage>();
                 var userState = dc.Context.TurnState.Get<UserState>();
                 var conversationState = dc.Context.TurnState.Get<ConversationState>();
-                var testBotState = new CustomBotState(storage);
+                var customState = new CustomState(storage);
 
-                dc.Context.TurnState.Add(testBotState);
+                dc.Context.TurnState.Add(customState);
 
                 var stateScopes = new (BotState State, MemoryScope Scope)[]
                 {
                     (userState, new UserMemoryScope()),
                     (conversationState, new ConversationMemoryScope()),
-                    (testBotState, new BotStateMemoryScope<CustomBotState>("test")),
+                    (customState, new BotStateMemoryScope<CustomState>("test")),
                 };
 
                 foreach (var stateScope in stateScopes)
@@ -105,9 +105,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }).StartTestAsync();
         }
 
-        public class CustomBotState : BotState
+        public class CustomState : BotState
         {
-            public CustomBotState(IStorage storage)
+            public CustomState(IStorage storage)
                 : base(storage, "Not the name of the type")
             {
             }
