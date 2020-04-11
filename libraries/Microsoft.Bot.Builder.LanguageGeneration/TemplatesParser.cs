@@ -280,19 +280,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            var templateBodyLines = context.templateBodyLine()
-            .Select(u =>
-            {
-                if (u.TEMPLATE_BODY_LINE() != null)
-                {
-                    return u.TEMPLATE_BODY_LINE().GetText();
-                }
-                else
-                {
-                    return string.Empty;
-                }
-            });
-            var templateBody = string.Join("\r\n", templateBodyLines);
+            var templateBody = context.templateBody().GetText();
 
             var startLine = context.Start.Line - 1;
             var stopLine = context.Stop.Line - 1;
@@ -311,7 +299,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    file.paragraph()
                    .Select(x => x.optionDefinition())
                    .Where(x => x != null)
-                   .Select(t => ExtractOption(t.OPTION().GetText()))
+                   .Select(t => ExtractOption(t.GetText()))
                    .Where(t => !string.IsNullOrEmpty(t))
                    .ToList();
         }
@@ -345,7 +333,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    file.paragraph()
                    .Select(x => x.importDefinition())
                    .Where(x => x != null)
-                   .Select(t => ExtractImport(t.IMPORT().GetText(), source))
+                   .Select(t => ExtractImport(t.GetText(), source))
                    .ToList();
         }
 
