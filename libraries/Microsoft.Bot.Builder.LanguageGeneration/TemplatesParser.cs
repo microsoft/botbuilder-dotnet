@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
-            var listener = new ErrorListener(id);
+            var listener = new LGErrorListener(id);
 
             parser.AddErrorListener(listener);
             parser.BuildParseTree = true;
@@ -253,15 +253,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>LG template list.</returns>
         private static IList<Template> ExtractTemplates(LGFileParser.FileContext file, string lgfileContent, string source = "")
         {
-            return file == null ? new List<Template>() :
+            var templateContext = file == null ? new List<LGFileParser.TemplateDefinitionContext>() :
                    file.paragraph()
                    .Select(x => x.templateDefinition())
-                   .Where(x => x != null)
-                   .Select(t => ExtractTemplate(t, source))
-                   .ToList();
+                   .Where(x => x != null).ToList();
+
+            var result = new List<Template>();
+            for (var i = 0; i < templateContext.Count; i++)
+            {
+                if (i < templateContext.Count() - 1)
+                {
+                    result.Add(ExtractTemplate(templateContext[i], false, source));
+                }
+                else
+                {
+                    result.Add(ExtractTemplate(templateContext[i], true, source));
+                }
+            }
+
+            return result;
         }
 
-        private static Template ExtractTemplate(LGFileParser.TemplateDefinitionContext context, string source = "")
+        private static Template ExtractTemplate(LGFileParser.TemplateDefinitionContext context, bool isLast, string source = "")
         {
             var templateNameLine = context.templateNameLine().TEMPLATE_NAME_LINE().GetText();
             var hashIndex = templateNameLine.IndexOf('#');
@@ -282,6 +295,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var templateBody = context.templateBody().GetText();
 
+            if (!isLast && templateBody.EndsWith("\n"))
+            {
+                templateBody = templateBody.Substring(0, templateBody.Length - 1);
+                if (templateBody.EndsWith("\r"))
+                {
+                    templateBody = templateBody.Substring(0, templateBody.Length - 1);
+                }
+            }
+
             var startLine = context.Start.Line - 1;
             var stopLine = context.Stop.Line - 1;
 
@@ -299,7 +321,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    file.paragraph()
                    .Select(x => x.optionDefinition())
                    .Where(x => x != null)
-                   .Select(t => ExtractOption(t.GetText()))
+                   .Select(t => ExtractOption(t.OPTION().GetText()))
                    .Where(t => !string.IsNullOrEmpty(t))
                    .ToList();
         }
@@ -333,7 +355,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    file.paragraph()
                    .Select(x => x.importDefinition())
                    .Where(x => x != null)
-                   .Select(t => ExtractImport(t.GetText(), source))
+                   .Select(t => ExtractImport(t.IMPORT().GetText(), source))
                    .ToList();
         }
 

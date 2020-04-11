@@ -3,7 +3,7 @@ parser grammar LGFileParser;
 options { tokenVocab=LGFileLexer; }
 
 file
-    : (paragraph? NEWLINE)* paragraph EOF
+    : paragraph+? EOF
     ;
 
 paragraph
@@ -17,19 +17,19 @@ paragraph
     ;
 
 commentDefinition
-    : COMMENT
+    : COMMENT NEWLINE?
     ;
 
 importDefinition
-    : IMPORT
+    : IMPORT NEWLINE?
     ;
 
 optionDefinition
-    : OPTION
+    : OPTION NEWLINE?
     ;
 
 errorDefinition
-    : INVALID_LINE
+    : INVALID_LINE NEWLINE?
     ;
 
 templateDefinition
@@ -47,4 +47,3 @@ templateNameLine
 templateBodyLine
     : (TEMPLATE_BODY_LINE NEWLINE?) | NEWLINE
     ;
-

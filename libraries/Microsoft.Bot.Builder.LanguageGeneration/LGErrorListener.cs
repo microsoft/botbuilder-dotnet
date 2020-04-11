@@ -11,11 +11,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG parser error listener.
     /// </summary>
-    public class ErrorListener : BaseErrorListener
+    public class LGErrorListener : BaseErrorListener
     {
         private readonly string source;
 
-        public ErrorListener(string errorSource)
+        public LGErrorListener(string errorSource)
         {
             source = errorSource;
         }

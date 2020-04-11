@@ -84,25 +84,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// The parse tree of this template.
         /// </value>
-        public LGTemplateParser.TemplateBodyContext TemplateBodyParseTree => GetTemplateContext(Body, Source);
+        public LGTemplateParser.TemplateBodyContext TemplateBodyParseTree => GetTemplateContext();
 
         public override string ToString() => $"[{Name}({string.Join(", ", Parameters)})]\"{Body}\"";
 
-        private LGTemplateParser.TemplateBodyContext GetTemplateContext(string text, string id)
+        private LGTemplateParser.TemplateBodyContext GetTemplateContext()
         {
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(Source))
             {
                 return null;
             }
 
-            var input = new AntlrInputStream(text);
+            var input = new AntlrInputStream(Body);
             var lexer = new LGTemplateLexer(input);
             lexer.RemoveErrorListeners();
 
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGTemplateParser(tokens);
             parser.RemoveErrorListeners();
-            var listener = new ErrorListener(id);
+            var listener = new TemplateErrorListener(Source, StartLine);
 
             parser.AddErrorListener(listener);
             parser.BuildParseTree = true;
