@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             var storageKey = GetStorageKey(turnContext);
             if (force || cachedState == null || cachedState.State == null)
             {
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             if (cachedState != null && (force || cachedState.IsChanged()))
             {
                 var key = GetStorageKey(turnContext);
@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             if (cachedState != null)
             {
                 turnContext.TurnState.Remove(_contextServiceKey);
@@ -202,16 +202,15 @@ namespace Microsoft.Bot.Builder
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>A JSON representation of the cached state.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
-        public JToken Get(ITurnContext turnContext)
+        public IDictionary<string, object> Get(ITurnContext turnContext)
         {
             if (turnContext == null)
             {
                 throw new ArgumentNullException(nameof(turnContext));
             }
 
-            var stateKey = this.GetType().Name;
-            var cachedState = turnContext.TurnState.Get<object>(stateKey);
-            return JObject.FromObject(cachedState)["State"];
+            var cachedState = GetCachedState(turnContext);
+            return cachedState.State;
         }
 
         /// <summary>
@@ -245,7 +244,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
 
             if (cachedState.State.TryGetValue(propertyName, out object result))
             {
@@ -305,7 +304,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             cachedState.State.Remove(propertyName);
             return Task.CompletedTask;
         }
@@ -333,10 +332,12 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             cachedState.State[propertyName] = value;
             return Task.CompletedTask;
         }
+
+        private CachedBotState GetCachedState(ITurnContext turnContext) => turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
 
         /// <summary>
         /// Internal cached bot state.
