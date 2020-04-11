@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var storage = dc.Context.TurnState.Get<IStorage>();
                 var userState = dc.Context.TurnState.Get<UserState>();
                 var conversationState = dc.Context.TurnState.Get<ConversationState>();
-                var testBotState = new TestBotState(storage);
+                var testBotState = new CustomBotState(storage);
 
                 dc.Context.TurnState.Add(testBotState);
 
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     (userState, new UserMemoryScope()),
                     (conversationState, new ConversationMemoryScope()),
-                    (testBotState, new BotStateMemoryScope<TestBotState>("test")),
+                    (testBotState, new BotStateMemoryScope<CustomBotState>("test")),
                 };
 
                 foreach (var stateScope in stateScopes)
@@ -105,14 +105,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }).StartTestAsync();
         }
 
-        public class TestBotState : BotState
+        public class CustomBotState : BotState
         {
-            public TestBotState(IStorage storage)
-                : base(storage, $"BotState:{typeof(BotState).Namespace}.{typeof(BotState).Name}")
+            public CustomBotState(IStorage storage)
+                : base(storage, "Not the name of the type")
             {
             }
 
-            protected override string GetStorageKey(ITurnContext turnContext) => $"botstate/{turnContext.Activity.ChannelId}/{turnContext.Activity.Conversation.Id}/{typeof(BotState).Namespace}.{typeof(BotState).Name}";
+            protected override string GetStorageKey(ITurnContext turnContext) => $"botstate/custom/etc";
         }
 
         public class Foo
