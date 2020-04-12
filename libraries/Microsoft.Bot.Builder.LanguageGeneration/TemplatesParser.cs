@@ -283,14 +283,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateName = templateNameLine;
             var parameters = new List<string>();
             var leftBracketIndex = templateNameLine.IndexOf("(");
-            if (leftBracketIndex >= 0)
+            if (leftBracketIndex >= 0 && templateNameLine.EndsWith(")"))
             {
                 templateName = templateNameLine.Substring(0, leftBracketIndex).Trim();
-                if (templateNameLine.EndsWith(")"))
-                {
-                    var parameterString = templateNameLine.Substring(leftBracketIndex + 1, templateNameLine.Length - leftBracketIndex - 2);
-                    parameters = parameterString.Split(',').Select(u => u.Trim()).ToList();
-                }
+                var paramString = templateNameLine.Substring(leftBracketIndex + 1, templateNameLine.Length - leftBracketIndex - 2);
+
+                parameters = paramString.Split(',').Select(u => u.Trim()).ToList();
             }
 
             var templateBody = context.templateBody().GetText();

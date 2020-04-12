@@ -68,14 +68,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var template in templates)
             {
-                try
+                result.AddRange(template.Diagnostics);
+                if (template.TemplateBodyParseTree != null)
                 {
-                    var parseTree = template.TemplateBodyParseTree;
-                    result.AddRange(Visit(parseTree));
-                }
-                catch (TemplateException e)
-                {
-                    result.AddRange(e.Diagnostics);
+                    result.AddRange(Visit(template.TemplateBodyParseTree));
                 }
             }
 

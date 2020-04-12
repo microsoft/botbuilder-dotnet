@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -17,6 +18,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </remarks>
     public class Template
     {
+#pragma warning disable SA1401 // Fields should be private
+        internal List<Diagnostic> Diagnostics;
+#pragma warning restore SA1401 // Fields should be private
+        private static readonly Regex IdentifierRegex = new Regex(@"^[0-9a-zA-Z_]+$");
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Template"/> class.
         /// </summary>
@@ -40,6 +46,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.StartLine = startLine;
             this.StopLine = stopLine;
             this.Source = source ?? string.Empty;
+            CheckTemplate();
         }
 
         public int StartLine { get; }
@@ -79,14 +86,62 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Source { get; }
 
         /// <summary>
-        /// Gets the parse tree of this template.
+        /// Gets or sets the parse tree of this template.
         /// </summary>
         /// <value>
         /// The parse tree of this template.
         /// </value>
-        public LGTemplateParser.TemplateBodyContext TemplateBodyParseTree => GetTemplateContext();
+        public LGTemplateParser.TemplateBodyContext TemplateBodyParseTree { get; set; }
 
         public override string ToString() => $"[{Name}({string.Join(", ", Parameters)})]\"{Body}\"";
+
+        public void CheckTemplate()
+        {
+            var diagnostics = new List<Diagnostic>();
+
+            // check template name
+            var functionNameSplitDot = Name.Split('.');
+            foreach (var id in functionNameSplitDot)
+            {
+                if (!IdentifierRegex.IsMatch(id))
+                {
+                    var diagnotic = new Diagnostic(new Range(new Position(StartLine, 0), new Position(StartLine, 100)), TemplateErrors.InvalidTemplateName, DiagnosticSeverity.Error, Source);
+                    diagnostics.Add(diagnotic);
+                }
+            }
+
+            // check template parameters
+
+            foreach (var parameter in Parameters)
+            {
+                if (!IdentifierRegex.IsMatch(parameter))
+                {
+                    var diagnotic = new Diagnostic(new Range(new Position(StartLine, 0), new Position(StartLine, 100)), TemplateErrors.InvalidTemplateName, DiagnosticSeverity.Error, Source);
+                    diagnostics.Add(diagnotic);
+                }
+            }
+
+            // check template body
+            if (string.IsNullOrWhiteSpace(Body))
+            {
+                var diagnotic = new Diagnostic(new Range(new Position(StartLine + 1, 0), new Position(StartLine + 1, 0)), TemplateErrors.NoTemplateBody(Name), DiagnosticSeverity.Warning, Source);
+                diagnostics.Add(diagnotic);
+            }
+            else
+            {
+                try
+                {
+                    var parseTree = GetTemplateContext();
+                    this.TemplateBodyParseTree = parseTree;
+                }
+                catch (TemplateException e)
+                {
+                    diagnostics.AddRange(e.Diagnostics);
+                }
+            }
+
+            this.Diagnostics = diagnostics;
+        }
 
         private LGTemplateParser.TemplateBodyContext GetTemplateContext()
         {

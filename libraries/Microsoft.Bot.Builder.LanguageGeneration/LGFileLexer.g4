@@ -12,7 +12,7 @@ OPTION : WHITESPACE* '>' WHITESPACE* '!#' ~('\r'|'\n')+ { inTemplate = false; };
 
 COMMENT : WHITESPACE* '>' ~('\r'|'\n')* { !inTemplate }?;
 
-IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' { inTemplate = false;};
+IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' WHITESPACE* { inTemplate = false;};
 
 TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { inTemplate = true; };
 
