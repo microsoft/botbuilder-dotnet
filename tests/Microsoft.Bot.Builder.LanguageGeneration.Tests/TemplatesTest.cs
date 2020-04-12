@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("3.lg"));
 
-            var evaled = templates.Evaluate("welcome-user", null);
+            var evaled = templates.Evaluate("welcome_user", null);
             var options = new List<string> { "Hi", "Hello", "Hiya", "Hi :)", "Hello :)", "Hiya :)" };
 
             Assert.IsTrue(options.Contains(evaled), $"The result {evaled} is not in those options [{string.Join(",", options)}]");
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var templates = Templates.ParseFile(GetExampleFilePath("4.lg"));
 
             var userName = "DL";
-            var evaled = templates.Evaluate("welcome-user", new { userName = userName }).ToString();
+            var evaled = templates.Evaluate("welcome_user", new { userName = userName }).ToString();
             var options = new List<string> { "Hi", "Hello", "Hiya ", "Hi :)", "Hello :)", "Hiya  :)" };
 
             Assert.IsTrue(evaled.Contains(userName), $"The result {evaled} does not contiain `{userName}`");
@@ -58,10 +58,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("5.lg"));
 
-            string evaled = templates.Evaluate("time-of-day-readout", new { timeOfDay = "morning" }).ToString();
+            string evaled = templates.Evaluate("time_of_day_readout", new { timeOfDay = "morning" }).ToString();
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
 
-            evaled = templates.Evaluate("time-of-day-readout", new { timeOfDay = "evening" }).ToString();
+            evaled = templates.Evaluate("time_of_day_readout", new { timeOfDay = "evening" }).ToString();
             Assert.IsTrue(evaled == "Good evening" || evaled == "Evening! ", $"Evaled is {evaled}");
         }
 
@@ -70,13 +70,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("5.lg"));
 
-            string evaled = templates.Evaluate("time-of-day-readout-without-default", new { timeOfDay = "morning" }).ToString();
+            string evaled = templates.Evaluate("time_of_day_readout_without_default", new { timeOfDay = "morning" }).ToString();
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
 
-            evaled = templates.Evaluate("time-of-day-readout-without-default2", new { timeOfDay = "morning" }).ToString();
+            evaled = templates.Evaluate("time_of_day_readout_without_default2", new { timeOfDay = "morning" }).ToString();
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
 
-            object evaledNull = templates.Evaluate("time-of-day-readout-without-default2", new { timeOfDay = "evening" });
+            object evaledNull = templates.Evaluate("time_of_day_readout_without_default2", new { timeOfDay = "evening" });
             Assert.IsNull(evaledNull, "Evaled is not null");
         }
 
@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 },
                 new
                 {
-                    name = "coffee-to-go-order",
+                    name = "coffee_to_go_order",
                     variableOptions = new string[] { "coffee", "userName", "size", "price" },
                     templateRefOptions = new string[] { "wPhrase", "LatteOrderConfirmation", "MochaOrderConfirmation", "CuppuccinoOrderConfirmation" }
                 },

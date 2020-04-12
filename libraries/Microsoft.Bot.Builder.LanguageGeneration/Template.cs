@@ -145,11 +145,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private LGTemplateParser.TemplateBodyContext GetTemplateContext()
         {
-            if (string.IsNullOrEmpty(Source))
-            {
-                return null;
-            }
-
             var input = new AntlrInputStream(Body);
             var lexer = new LGTemplateLexer(input);
             lexer.RemoveErrorListeners();

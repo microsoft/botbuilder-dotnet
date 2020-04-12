@@ -7,15 +7,15 @@
  
 > Using a template in another template
 > Sometimes the bot will say 'Hi' and other times it will say 'Hi :)'
-# welcome-user(userName)
+# welcome_user(userName)
 - ${wPhrase()} ${userName} :)
  
 > Using entity references
 # welcome
 - IF: ${userName}
-    - ${welcome-user(userName)}
+    - ${welcome_user(userName)}
 - ELSE:
-    - ${welcome-user('DongLei')}
+    - ${welcome_user('DongLei')}
 
 
 

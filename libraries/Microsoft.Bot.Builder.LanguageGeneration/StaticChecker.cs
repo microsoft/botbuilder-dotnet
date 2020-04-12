@@ -68,11 +68,35 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var template in templates)
             {
-                result.AddRange(template.Diagnostics);
-                if (template.TemplateBodyParseTree != null)
+                var templateDiagnostics = new List<Diagnostic>();
+                if (visitedTemplateNames.Contains(template.Name))
                 {
-                    result.AddRange(Visit(template.TemplateBodyParseTree));
+                    templateDiagnostics.Add(BuildLGDiagnostic(TemplateErrors.DuplicatedTemplateInSameTemplate(template.Name)));
                 }
+                else
+                {
+                    visitedTemplateNames.Add(template.Name);
+
+                    foreach (var reference in templates.References)
+                    {
+                        var sameTemplates = reference.Where(u => u.Name == template.Name);
+                        foreach (var sameTemplate in sameTemplates)
+                        {
+                            templateDiagnostics.Add(BuildLGDiagnostic(TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.Source)));
+                        }
+                    }
+
+                    if (templateDiagnostics.Count == 0)
+                    {
+                        templateDiagnostics.AddRange(template.Diagnostics);
+                        if (template.TemplateBodyParseTree != null)
+                        {
+                            templateDiagnostics.AddRange(Visit(template.TemplateBodyParseTree));
+                        }
+                    }
+                }
+
+                result.AddRange(templateDiagnostics);
             }
 
             return result;

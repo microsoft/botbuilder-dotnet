@@ -137,11 +137,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(1, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
-
-            diagnostics = Templates.ParseText("#Demo4\r\n- ${createArray(1,\r\n2,3)\r\n#AnotherTemplate").Diagnostics;
-            Assert.AreEqual(1, diagnostics.Count);
-            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
         }
 
         [TestMethod]
@@ -149,7 +144,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("ErrorTemplateName.lg");
 
-            Assert.AreEqual(5, diagnostics.Count);
+            Assert.AreEqual(6, diagnostics.Count);
             foreach (var diagnostic in diagnostics)
             {
                 Assert.AreEqual(DiagnosticSeverity.Error, diagnostic.Severity);
