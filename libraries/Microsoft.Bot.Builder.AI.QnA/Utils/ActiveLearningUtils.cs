@@ -56,6 +56,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 filteredQnaSearchResult.Add(qnaSearchResults[0]);
                 return filteredQnaSearchResult;
             }
+            
             var prevScore = topAnswerScore;
 
             if (topAnswerScore > MinimumScoreForLowScoreVariation) 
