@@ -119,6 +119,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser expressionParser = null,
             Dictionary<string, Templates> cachedTemplates = null)
         {
+            if (id.Contains("sandwichTest.en-us.lg"))
+            {
+                var s = "s";
+            }
+
             cachedTemplates = cachedTemplates ?? new Dictionary<string, Templates>();
             if (cachedTemplates.ContainsKey(id))
             {
@@ -255,11 +260,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             public override object VisitErrorDefinition([NotNull] LGFileParser.ErrorDefinitionContext context)
             {
-                var errorMessage = TemplateErrors.StaticFailure + "- " + context.INVALID_LINE().GetText();
-                var startPosition = new Position(context.Start.Line, context.Start.Column);
-                var stopPosition = new Position(context.Start.Line, context.Stop.Column + context.Stop.Text.Length);
-                var diagnostic = new Diagnostic(new Range(startPosition, stopPosition), errorMessage, source: templates.Id);
-                this.templates.Diagnostics.Add(diagnostic);
+                var lineContent = context.INVALID_LINE().GetText();
+                if (!string.IsNullOrWhiteSpace(lineContent))
+                {
+                    var errorMessage = TemplateErrors.StaticFailure + "- " + context.INVALID_LINE().GetText();
+                    var startPosition = new Position(context.Start.Line, context.Start.Column);
+                    var stopPosition = new Position(context.Start.Line, context.Stop.Column + context.Stop.Text.Length);
+                    var diagnostic = new Diagnostic(new Range(startPosition, stopPosition), errorMessage, source: templates.Id);
+                    this.templates.Diagnostics.Add(diagnostic);
+                }
+
                 return null;
             }
 
