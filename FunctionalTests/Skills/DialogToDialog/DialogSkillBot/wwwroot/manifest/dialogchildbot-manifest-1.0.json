@@ -26,7 +26,7 @@
   ],
   "activities": {
     "bookFlight": {
-      "description": "Books a flight (multi turn)",
+      "description": "Books a flight (multi turn).",
       "type": "event",
       "name": "BookFlight",
       "value": {
@@ -47,8 +47,8 @@
       "name": "EchoSkillBot"
     },
     "getWeather": {
-      "description": "Retrieves and returns the weather for the user's location (single turn, invoke)",
-      "type": "invoke",
+      "description": "Retrieves and returns the weather for the user's location.",
+      "type": "event",
       "name": "GetWeather",
       "value": {
         "$ref": "#/definitions/location"
@@ -97,7 +97,7 @@
     },
     "location": {
       "type": "object",
-      "description": "Location metadata",
+      "description": "Location metadata.",
       "properties": {
         "latitude": {
           "type": "number",

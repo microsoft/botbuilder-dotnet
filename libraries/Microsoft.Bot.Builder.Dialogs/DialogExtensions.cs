@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -35,12 +36,26 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
-            if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims))
+            // Handle messages from the channel to a bot
+            if (IsFromChannel(turnContext))
             {
-                // The bot is running as a skill.
-                if (turnContext.Activity.Type == ActivityTypes.EndOfConversation && dialogContext.Stack.Any() && IsEocComingFromParent(turnContext))
+                // The bot is running as a standard bot.
+                await ContinueOrBeginDialogAsync(dialog, dialogContext, cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
+            // Handle messages from a parent bot (can be parent to skill or skill to skill)
+            if (IsFromParentToSkill(turnContext))
+            {
+                // Handle remote cancellation request from parent.
+                if (turnContext.Activity.Type == ActivityTypes.EndOfConversation)
                 {
-                    // Handle remote cancellation request from parent.
+                    if (!dialogContext.Stack.Any())
+                    {
+                        // No dialogs to cancel, just return.
+                        return;
+                    }
+
                     var activeDialogContext = GetActiveDialogContext(dialogContext);
 
                     var remoteCancelText = "Skill was canceled through an EndOfConversation activity from the parent.";
@@ -48,52 +63,168 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     // Send cancellation message to the top dialog in the stack to ensure all the parents are canceled in the right order. 
                     await activeDialogContext.CancelAllDialogsAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                    return;
                 }
-                else
+
+                // Handle a reprompt event sent from the parent.
+                if (turnContext.Activity.Type == ActivityTypes.Event && turnContext.Activity.Name == DialogEvents.RepromptDialog)
                 {
-                    // Process a reprompt event sent from the parent.
-                    if (turnContext.Activity.Type == ActivityTypes.Event && turnContext.Activity.Name == DialogEvents.RepromptDialog && dialogContext.Stack.Any())
+                    if (!dialogContext.Stack.Any())
                     {
-                        await dialogContext.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
+                        // No dialogs to cancel, just return.
                         return;
                     }
 
-                    // Run the Dialog with the new message Activity and capture the results so we can send end of conversation if needed.
-                    var result = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
-                    if (result.Status == DialogTurnStatus.Empty)
-                    {
-                        var startMessageText = $"Starting {dialog.Id}.";
-                        await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{startMessageText}", cancellationToken: cancellationToken).ConfigureAwait(false);
-                        result = await dialogContext.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
-                    }
-
-                    // Send end of conversation if it is completed or cancelled.
-                    if (result.Status == DialogTurnStatus.Complete || result.Status == DialogTurnStatus.Cancelled)
-                    {
-                        var endMessageText = $"Dialog {dialog.Id} has **completed**. Sending EndOfConversation.";
-                        await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{endMessageText}", value: result.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-                        // Send End of conversation at the end.
-                        var activity = new Activity(ActivityTypes.EndOfConversation) { Value = result.Result };
-                        await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-                    }
+                    await dialogContext.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
+                    return;
                 }
+
+                // Handle flow for any other activities sent from a parent.
+                var result = await ContinueOrBeginDialogAsync(dialog, dialogContext, cancellationToken).ConfigureAwait(false);
+                
+                // Send end of conversation if it is completed or cancelled.
+                if (result.Status == DialogTurnStatus.Complete || result.Status == DialogTurnStatus.Cancelled)
+                {
+                    var endMessageText = $"Dialog {dialog.Id} has **completed**. Sending EndOfConversation.";
+                    await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{endMessageText}", value: result.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                    // Send End of conversation at the end.
+                    var activity = new Activity(ActivityTypes.EndOfConversation) { Value = result.Result };
+                    await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                }
+
+                return;
             }
-            else
+
+            if (IsFromASkillToAChannel())
             {
                 // The bot is running as a standard bot.
-                var results = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
-                if (results.Status == DialogTurnStatus.Empty)
+                await ContinueOrBeginDialogAsync(dialog, dialogContext, cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
+            if (IsFromASkillToAParentBot())
+            {
+                // The bot is running as a standard bot.
+                var result = await ContinueOrBeginDialogAsync(dialog, dialogContext, cancellationToken).ConfigureAwait(false);
+                
+                // Send end of conversation if it is completed or cancelled.
+                if (result.Status == DialogTurnStatus.Complete || result.Status == DialogTurnStatus.Cancelled)
                 {
-                    await dialogContext.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
+                    var endMessageText = $"Dialog {dialog.Id} has **completed**. Sending EndOfConversation.";
+                    await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{endMessageText}", value: result.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                    // Send End of conversation at the end.
+                    var activity = new Activity(ActivityTypes.EndOfConversation) { Value = result.Result };
+                    await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
             }
+
+            //var skillConvReference = turnContext.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey);
+
+            //if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims))
+            //{
+            //    // The bot is running as a skill.
+            //    if (turnContext.Activity.Type == ActivityTypes.EndOfConversation && dialogContext.Stack.Any() && IsComingFromParent(turnContext))
+            //    {
+            //        // Handle remote cancellation request from parent.
+            //        var activeDialogContext = GetActiveDialogContext(dialogContext);
+
+            //        var remoteCancelText = "Skill was canceled through an EndOfConversation activity from the parent.";
+            //        await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{remoteCancelText}", cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            //        // Send cancellation message to the top dialog in the stack to ensure all the parents are canceled in the right order. 
+            //        await activeDialogContext.CancelAllDialogsAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            //        return;
+            //    }
+
+            //    // Process a reprompt event sent from the parent.
+            //    if (turnContext.Activity.Type == ActivityTypes.Event && turnContext.Activity.Name == DialogEvents.RepromptDialog && dialogContext.Stack.Any())
+            //    {
+            //        await dialogContext.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
+            //        return;
+            //    }
+
+            //    // Run the Dialog with the new message Activity and capture the results so we can send end of conversation if needed.
+            //    var result = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+            //    if (result.Status == DialogTurnStatus.Empty)
+            //    {
+            //        var startMessageText = $"Starting {dialog.Id}.";
+            //        await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{startMessageText}", cancellationToken: cancellationToken).ConfigureAwait(false);
+            //        result = await dialogContext.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
+            //    }
+
+            //    // Send end of conversation if it is completed or cancelled.
+            //    if (result.Status == DialogTurnStatus.Complete || result.Status == DialogTurnStatus.Cancelled)
+            //    {
+            //        var endMessageText = $"Dialog {dialog.Id} has **completed**. Sending EndOfConversation.";
+            //        await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{endMessageText}", value: result.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            //        // Send End of conversation at the end.
+            //        var activity = new Activity(ActivityTypes.EndOfConversation) { Value = result.Result };
+            //        await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            //    }
+            //}
+            //else
+            //{
+            //    // The bot is running as a standard bot.
+            //    var results = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+            //    if (results.Status == DialogTurnStatus.Empty)
+            //    {
+            //        await dialogContext.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
+            //    }
+            //}
+        }
+
+        private static bool IsFromASkillToAParentBot()
+        {
+            // Events and EoCs returned from a skill are bounced back to the bot
+            // for processing and should be consumed by parent bot.
+            return false;
+        }
+
+        private static bool IsFromASkillToAChannel()
+        {
+            // EoC should not be sent back to the channel.
+            return false;
+        }
+
+        private static bool IsFromParentToSkill(ITurnContext turnContext)
+        {
+            if (turnContext.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey) != null)
+            {
+                return false;
+            }
+
+            return turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims);
+        }
+
+        private static bool IsFromChannel(ITurnContext turnContext)
+        {
+            if (turnContext.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey) != null)
+            {
+                return false;
+            }
+
+            return !(turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims));
+        }
+
+        private static async Task<DialogTurnResult> ContinueOrBeginDialogAsync(Dialog dialog, DialogContext dialogContext, CancellationToken cancellationToken)
+        {
+            var result = await dialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+            if (result.Status == DialogTurnStatus.Empty)
+            {
+                await dialogContext.BeginDialogAsync(dialog.Id, null, cancellationToken).ConfigureAwait(false);
+            }
+
+            return result;
         }
 
         // We should only cancel the current dialog stack if the EoC activity is coming from a parent (a root bot or another skill).
         // When the EoC is coming back from a child, we should just process that EoC normally through the 
         // dialog stack and let the child dialogs handle that.
-        private static bool IsEocComingFromParent(ITurnContext turnContext)
+        private static bool IsComingFromParent(ITurnContext turnContext)
         {
             // To determine the direction we check callerId property which is set to the parent bot
             // by the BotFrameworkHttpClient on outgoing requests.

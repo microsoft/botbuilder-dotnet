@@ -3,7 +3,6 @@
 
 using System;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +13,7 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.BotBuilderSamples.DialogSkillBot.CognitiveModels;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
@@ -80,14 +80,11 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot.Dialogs
 
             switch (stepContext.Context.Activity.Type)
             {
-                case ActivityTypes.Message:
-                    return await OnMessageActivityAsync(stepContext, cancellationToken);
-
                 case ActivityTypes.Event:
                     return await OnEventActivityAsync(stepContext, cancellationToken);
 
-                case ActivityTypes.Invoke:
-                    return await OnInvokeActivityAsync(stepContext, cancellationToken);
+                case ActivityTypes.Message:
+                    return await OnMessageActivityAsync(stepContext, cancellationToken);
 
                 default:
                     // We didn't get an activity type we can handle.
@@ -106,15 +103,10 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot.Dialogs
             switch (activity.Name)
             {
                 case "BookFlight":
-                    var bookingDetails = new BookingDetails();
-                    if (activity.Value != null)
-                    {
-                        bookingDetails = JsonConvert.DeserializeObject<BookingDetails>(JsonConvert.SerializeObject(activity.Value));
-                    }
+                    return await BeginBookFlight(stepContext, cancellationToken);
 
-                    // Start the booking dialog
-                    var bookingDialog = FindDialog(nameof(BookingDialog));
-                    return await stepContext.BeginDialogAsync(bookingDialog.Id, bookingDetails, cancellationToken);
+                case "GetWeather":
+                    return await BeginGetWeather(stepContext, cancellationToken);
 
                 case "OAuthTest":
                     // Start the OAuthTestDialog
@@ -134,52 +126,7 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot.Dialogs
             }
         }
 
-        // This method responds right away using an invokeResponse based on the activity name property.
-        private async Task<DialogTurnResult> OnInvokeActivityAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var activity = stepContext.Context.Activity;
-            await stepContext.Context.TraceActivityAsync($"{GetType().Name}.OnInvokeActivityAsync()", label: $"Name: {activity.Name}. Value: {GetObjectAsJsonString(activity.Value)}", cancellationToken: cancellationToken);
-
-            // Resolve what to execute based on the invoke name.
-            switch (activity.Name)
-            {
-                case "GetWeather":
-                    var location = new Location();
-                    if (activity.Value != null)
-                    {
-                        location = JsonConvert.DeserializeObject<Location>(JsonConvert.SerializeObject(activity.Value));
-                    }
-
-                    var lookingIntoItMessage = "Getting your weather forecast...";
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text($"{lookingIntoItMessage} \n\nValue parameters: {JsonConvert.SerializeObject(location)}", lookingIntoItMessage, inputHint: InputHints.IgnoringInput), cancellationToken);
-
-                    // Create and return an invoke activity with the weather results.
-                    var invokeResponseActivity = new Activity(type: "invokeResponse")
-                    {
-                        Value = new InvokeResponse
-                        {
-                            Body = new[]
-                            {
-                                "New York, NY, Clear, 56 F",
-                                "Bellevue, WA, Mostly Cloudy, 48 F"
-                            },
-                            Status = (int)HttpStatusCode.OK
-                        }
-                    };
-                    await stepContext.Context.SendActivityAsync(invokeResponseActivity, cancellationToken);
-                    break;
-
-                default:
-                    // We didn't get an invoke name we can handle.
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Unrecognized InvokeName: \"{activity.Name}\".", inputHint: InputHints.IgnoringInput), cancellationToken);
-                    break;
-            }
-
-            return new DialogTurnResult(DialogTurnStatus.Complete);
-        }
-
         // This method just gets a message activity and runs it through LUIS. 
-        // A developer can chose to start a dialog based on the LUIS results (not implemented here).
         private async Task<DialogTurnResult> OnMessageActivityAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var activity = stepContext.Context.Activity;
@@ -192,31 +139,67 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot.Dialogs
             else
             {
                 // Call LUIS with the utterance.
-                var luisResult = await _luisRecognizer.RecognizeAsync(stepContext.Context, cancellationToken);
+                var luisResult = await _luisRecognizer.RecognizeAsync<FlightBooking>(stepContext.Context, cancellationToken);
 
                 // Create a message showing the LUIS results.
                 var sb = new StringBuilder();
                 sb.AppendLine($"LUIS results for \"{activity.Text}\":");
                 var (intent, intentScore) = luisResult.Intents.FirstOrDefault(x => x.Value.Equals(luisResult.Intents.Values.Max()));
                 sb.AppendLine($"Intent: \"{intent}\" Score: {intentScore.Score}");
-                sb.AppendLine($"Entities found: {luisResult.Entities.Count - 1}");
-                foreach (var luisResultEntity in luisResult.Entities)
-                {
-                    if (!luisResultEntity.Key.Equals("$instance"))
-                    {
-                        sb.AppendLine($"* {luisResultEntity.Key}");
-                    }
-                }
 
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(sb.ToString(), inputHint: InputHints.IgnoringInput), cancellationToken);
+
+                // Start a dialog if we recognize the intent.
+                switch (luisResult.TopIntent().intent)
+                {
+                    case FlightBooking.Intent.BookFlight:
+                        return await BeginBookFlight(stepContext, cancellationToken);
+
+                    case FlightBooking.Intent.GetWeather:
+                        return await BeginGetWeather(stepContext, cancellationToken);
+
+                    default:
+                        // Catch all for unhandled intents.
+                        var didntUnderstandMessageText = $"Sorry, I didn't get that. Please try asking in a different way (intent was {luisResult.TopIntent().intent})";
+                        var didntUnderstandMessage = MessageFactory.Text(didntUnderstandMessageText, didntUnderstandMessageText, InputHints.IgnoringInput);
+                        await stepContext.Context.SendActivityAsync(didntUnderstandMessage, cancellationToken);
+                        break;
+                }
             }
 
             return new DialogTurnResult(DialogTurnStatus.Complete);
         }
 
-        private string GetObjectAsJsonString(object value)
+        private async Task<DialogTurnResult> BeginGetWeather(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return value == null ? string.Empty : JsonConvert.SerializeObject(value);
+            var activity = stepContext.Context.Activity;
+            var location = new Location();
+            if (activity.Value != null)
+            {
+                location = JsonConvert.DeserializeObject<Location>(JsonConvert.SerializeObject(activity.Value));
+            }
+
+            // We haven't implemented the GetWeatherDialog so we just display a TODO message.
+            var getWeatherMessageText = $"TODO: get weather for here (lat: {location.Latitude}, long: {location.Longitude}";
+            var getWeatherMessage = MessageFactory.Text(getWeatherMessageText, getWeatherMessageText, InputHints.IgnoringInput);
+            await stepContext.Context.SendActivityAsync(getWeatherMessage, cancellationToken);
+            return new DialogTurnResult(DialogTurnStatus.Complete);
         }
+
+        private async Task<DialogTurnResult> BeginBookFlight(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var activity = stepContext.Context.Activity;
+            var bookingDetails = new BookingDetails();
+            if (activity.Value != null)
+            {
+                bookingDetails = JsonConvert.DeserializeObject<BookingDetails>(JsonConvert.SerializeObject(activity.Value));
+            }
+
+            // Start the booking dialog.
+            var bookingDialog = FindDialog(nameof(BookingDialog));
+            return await stepContext.BeginDialogAsync(bookingDialog.Id, bookingDetails, cancellationToken);
+        }
+
+        private string GetObjectAsJsonString(object value) => value == null ? string.Empty : JsonConvert.SerializeObject(value);
     }
 }
