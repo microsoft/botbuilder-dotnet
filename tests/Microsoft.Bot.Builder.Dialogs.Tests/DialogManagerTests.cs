@@ -269,6 +269,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(DialogTurnStatus.Waiting, _dmTurnResult.TurnResult.Status);
         }
 
+        [TestMethod]
+        public async Task SkillShouldReturnEmptyOnRepromptWithNoDialog()
+        {
+            var firstConversationId = Guid.NewGuid().ToString();
+            var storage = new MemoryStorage();
+
+            var adaptiveDialog = CreateTestDialog(property: "conversation.name");
+
+            var repromptEvent = new Activity(ActivityTypes.Event) { Name = DialogEvents.RepromptDialog };
+
+            await CreateFlow(adaptiveDialog, storage, firstConversationId, isSkillFlow: true)
+                .Send(repromptEvent)
+                .StartTestAsync();
+
+            Assert.AreEqual(DialogTurnStatus.Empty, _dmTurnResult.TurnResult.Status);
+        }
+
         private Dialog CreateTestDialog(string property)
         {
             return new AskForNameDialog(property.Replace(".", string.Empty), property);

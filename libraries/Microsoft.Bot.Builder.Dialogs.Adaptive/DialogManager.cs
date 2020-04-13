@@ -285,9 +285,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Process a reprompt event sent from the parent.
             if (turnContext.Activity.Type == ActivityTypes.Event && turnContext.Activity.Name == DialogEvents.RepromptDialog)
             {
-                await dc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
+                if (dc.ActiveDialog == null)
+                {
+                    return new DialogTurnResult(DialogTurnStatus.Empty);
+                }
 
-                // TODO: check with steve what we return here.
+                await dc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
                 return new DialogTurnResult(DialogTurnStatus.Waiting);
             }
 
