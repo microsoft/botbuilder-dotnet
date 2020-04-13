@@ -302,8 +302,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             public override object VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
             {
-                var startLine = context.Start.Line - 1;
-                var stopLine = context.Stop.Line - 1;
+                var startLine = context.Start.Line;
+                var stopLine = context.Stop.Line;
 
                 var file = context.Parent.Parent as LGFileParser.FileContext;
                 var isLast = file.paragraph().Select(u => u.templateDefinition()).Where(u => u != null).Last() == context;
@@ -327,7 +327,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (this.templates.Any(u => u.Name == templateName))
                 {
-                    var diagnostic = BuildTemplateDiagnostic(TemplateErrors.DuplicatedTemplateInSameTemplate(templateName), context.templateNameLine(), startLine);
+                    var diagnostic = BuildTemplateDiagnostic(TemplateErrors.DuplicatedTemplateInSameTemplate(templateName), context.templateNameLine());
                     this.templates.Diagnostics.Add(diagnostic);
                 }
                 else
@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         if (!IdentifierRegex.IsMatch(id))
                         {
-                            var diagnostic = BuildTemplateDiagnostic(TemplateErrors.InvalidTemplateName, context.templateNameLine(), startLine);
+                            var diagnostic = BuildTemplateDiagnostic(TemplateErrors.InvalidTemplateName, context.templateNameLine());
                             this.templates.Diagnostics.Add(diagnostic);
                         }
                     }
@@ -362,7 +362,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         if (!IdentifierRegex.IsMatch(parameter))
                         {
-                            var diagnostic = BuildTemplateDiagnostic(TemplateErrors.InvalidTemplateName, context.templateNameLine(), startLine);
+                            var diagnostic = BuildTemplateDiagnostic(TemplateErrors.InvalidTemplateName, context.templateNameLine());
                             this.templates.Diagnostics.Add(diagnostic);
                         }
                     }
@@ -370,7 +370,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     // check template body
                     if (string.IsNullOrWhiteSpace(templateBody))
                     {
-                        var diagnostic = BuildTemplateDiagnostic(TemplateErrors.NoTemplateBody(templateName), context.templateBody(), startLine + 1, DiagnosticSeverity.Warning);
+                        var diagnostic = BuildTemplateDiagnostic(TemplateErrors.NoTemplateBody(templateName), context.templateBody(), DiagnosticSeverity.Warning);
                         this.templates.Diagnostics.Add(diagnostic);
                     }
                     else
@@ -409,10 +409,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return parser.templateBody();
             }
 
-            private Diagnostic BuildTemplateDiagnostic(string errorMessage, ParserRuleContext context, int lineOffset = 0, DiagnosticSeverity severity = DiagnosticSeverity.Error)
+            private Diagnostic BuildTemplateDiagnostic(string errorMessage, ParserRuleContext context, DiagnosticSeverity severity = DiagnosticSeverity.Error)
             {
-                var startPosition = new Position(context.Start.Line + lineOffset, context.Start.Column);
-                var stopPosition = new Position(context.Stop.Line + lineOffset, context.Stop.Column + context.Stop.Text.Length);
+                var startPosition = new Position(context.Start.Line, context.Start.Column);
+                var stopPosition = new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
                 return new Diagnostic(new Range(startPosition, stopPosition), errorMessage, severity, this.templates.Id);
             }
         }

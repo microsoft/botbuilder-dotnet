@@ -320,18 +320,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
         {
+            var startLineIndex = startLine - 1;
+            var endLineIndex = stopLine - 1;
             var originList = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
 
-            if (startLine < 0 || startLine > stopLine || stopLine >= originList.Length)
+            if (startLineIndex < 0 || startLineIndex > endLineIndex || endLineIndex >= originList.Length)
             {
                 throw new Exception("index out of range.");
             }
 
             var destList = new List<string>();
 
-            destList.AddRange(originList.Take(startLine));
+            destList.AddRange(originList.Take(startLineIndex));
             destList.Add(replaceString);
-            destList.AddRange(originList.Skip(stopLine + 1));
+            destList.AddRange(originList.Skip(endLineIndex + 1));
 
             return string.Join(newLine, destList);
         }

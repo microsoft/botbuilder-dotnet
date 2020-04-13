@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     foreach (var sameTemplate in sameTemplates)
                     {
                         var startPosition = new Position(template.StartLine, 0);
-                        var stopPosition = new Position(template.StartLine, 100);
+                        var stopPosition = new Position(template.StartLine, template.Name.Length + 1);
                         var diagnostic = new Diagnostic(new Range(startPosition, stopPosition), TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.Source), source: templates.Id);
                         templateDiagnostics.Add(diagnostic);
                     }
@@ -392,7 +392,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             DiagnosticSeverity severity = DiagnosticSeverity.Error,
             ParserRuleContext context = null)
         {
-            var lineOffset = this.currentTemplate != null ? this.currentTemplate.StartLine + 1 : 0;
+            var lineOffset = this.currentTemplate != null ? this.currentTemplate.StartLine : 0;
             message = this.currentTemplate != null ? $"[{this.currentTemplate.Name}]" + message : message;
             var startPosition = context == null ? new Position(lineOffset, 0) : new Position(lineOffset + context.Start.Line, context.Start.Column);
             var stopPosition = context == null ? new Position(lineOffset, 0) : new Position(lineOffset + context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
