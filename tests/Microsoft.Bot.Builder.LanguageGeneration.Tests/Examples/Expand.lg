@@ -76,3 +76,28 @@ They are ${ShowAlarm(alarms[1])}
 
 # T4
 - ${substring(T1(), 1, 2)}
+
+# template2(templateName)
+- IF: ${isTemplate(templateName)}
+    - ${Greeting()}
+- ELSE:
+    - ${TimeOfDay()}
+
+# template3(templateName)
+  - ${template(templateName)}
+
+# GetAge
+- how old are you?
+- what's your age?
+
+# ExpanderT1
+[MyStruct
+    Text = Hi "quotes" allowed
+    ${ExpanderT2()}
+]
+
+# ExpanderT2
+[MyStruct
+    Speak = ${GetAge()}
+    Text = zoo
+]
