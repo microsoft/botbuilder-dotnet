@@ -2,12 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Runtime.CompilerServices;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
@@ -41,7 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             }
 
             var botState = GetBotState(dialogContext);
-            return botState.Get(dialogContext.Context);
+            var contextServiceKey = typeof(BotState).GetField("_contextServiceKey", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(botState);
+            var cachedState = dialogContext.Context.TurnState.Get<object>((string)contextServiceKey);
+            return cachedState.GetType().GetProperty("State").GetValue(cachedState);
         }
 
         /// <summary>

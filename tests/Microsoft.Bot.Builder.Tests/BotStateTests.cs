@@ -758,7 +758,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var json = botState.Get(turnContext);
 
-            Assert.AreEqual("test-value", JToken.FromObject(json)["test-name"]["Value"].ToString());
+            Assert.AreEqual("test-value", json["test-name"]["Value"].ToString());
         }
 
         [TestMethod]

@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>A JSON representation of the cached state.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
-        public IDictionary<string, object> Get(ITurnContext turnContext)
+        public JToken Get(ITurnContext turnContext)
         {
             if (turnContext == null)
             {
@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var cachedState = GetCachedState(turnContext);
-            return cachedState.State;
+            return JObject.FromObject(cachedState.State);
         }
 
         /// <summary>

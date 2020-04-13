@@ -2,8 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -14,7 +15,7 @@ namespace Microsoft.Bot.Builder
             return (Activity)Activity.CreateTraceActivity("Command", "https://www.botframework.com/schemas/command", command, "Command");
         }
 
-        public static Activity TraceActivity(this IDictionary<string, object> state)
+        public static Activity TraceActivity(this JObject state)
         {
             return (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", state, "Bot State");
         }
