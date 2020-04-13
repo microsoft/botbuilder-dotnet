@@ -119,11 +119,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser expressionParser = null,
             Dictionary<string, Templates> cachedTemplates = null)
         {
-            if (id.Contains("sandwichTest.en-us.lg"))
-            {
-                var s = "s";
-            }
-
             cachedTemplates = cachedTemplates ?? new Dictionary<string, Templates>();
             if (cachedTemplates.ContainsKey(id))
             {
@@ -320,6 +315,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 var templateNameLine = context.templateNameLine().TEMPLATE_NAME_LINE().GetText();
                 var hashIndex = templateNameLine.IndexOf('#');
+
                 templateNameLine = templateNameLine.Substring(hashIndex + 1).Trim();
 
                 var templateName = templateNameLine;
