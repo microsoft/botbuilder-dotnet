@@ -82,8 +82,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public static string ArgumentMismatch(string templateName, int expectedCount, int actualCount) => $"arguments mismatch for template '{templateName}'. Expecting '{expectedCount}' arguments, actual '{actualCount}'.";
 
-        public static string ErrorTemplateNameformat(string templateName) => $"'{templateName}' cannot be used as a template name. Template names must be avalid string.";
-
         public static string TemplateExist(string templateName) => $"template '{templateName}' already exists.";
 
         public static string ExpressionParseError(string exp) => $"Error occurred when parsing expression '{exp}'.";

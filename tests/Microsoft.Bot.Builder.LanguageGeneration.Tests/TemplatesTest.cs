@@ -4,7 +4,6 @@
 #pragma warning disable SA1202 // Elements should be ordered by access
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using AdaptiveExpressions;
