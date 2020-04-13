@@ -1,0 +1,6 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "title": "Microsoft Test ITestAction",
+    "description": "Components which derive from TestAction class",
+    "$role": "interface"
+}

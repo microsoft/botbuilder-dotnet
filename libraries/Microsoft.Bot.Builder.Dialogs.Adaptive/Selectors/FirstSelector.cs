@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// <summary>
     /// Select the first ordered by priority true OnCondition.
     /// </summary>
-    public class FirstSelector : ITriggerSelector
+    public class FirstSelector : TriggerSelector
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.FirstSelector";
@@ -21,13 +21,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private List<OnCondition> _conditionals;
         private bool _evaluate;
 
-        public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
+        public override void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             _conditionals = conditionals.ToList();
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel)
+        public override Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel)
         {
             OnCondition selection = null;
             var lowestPriority = int.MaxValue;
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 {
                     var conditional = _conditionals[i];
                     var expression = conditional.GetExpression();
-                    var (value, error) = expression.TryEvaluate(context.GetState());
+                    var (value, error) = expression.TryEvaluate(context.State);
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {

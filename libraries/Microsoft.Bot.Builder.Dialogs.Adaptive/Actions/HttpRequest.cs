@@ -184,9 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var dcState = dc.GetState();
-
-            if (this.Disabled != null && this.Disabled.GetValue(dcState) == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -199,7 +197,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             JToken instanceBody = null;
             if (this.Body != null)
             {
-                var (body, err) = this.Body.TryGetValue(dcState);
+                var (body, err) = this.Body.TryGetValue(dc.State);
                 if (err != null)
                 {
                     throw new ArgumentException(err);
@@ -208,9 +206,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 instanceBody = (JToken)JToken.FromObject(body).DeepClone();
             }
 
-            var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dcState));
+            var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dc.State));
 
-            var (instanceUrl, instanceUrlError) = this.Url.TryGetValue(dcState);
+            var (instanceUrl, instanceUrlError) = this.Url.TryGetValue(dc.State);
             if (instanceUrlError != null)
             {
                 throw new ArgumentException(instanceUrlError);
@@ -238,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             traceInfo.request.url = instanceUrl;
 
             HttpResponseMessage response = null;
-            string contentType = ContentType?.GetValue(dcState) ?? "application/json";
+            string contentType = ContentType?.GetValue(dc.State) ?? "application/json";
 
             switch (this.Method)
             {
@@ -306,7 +304,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             object content = (object)await response.Content.ReadAsStringAsync();
 
-            switch (this.ResponseType.GetValue(dcState))
+            switch (this.ResponseType.GetValue(dc.State))
             {
                 case ResponseTypes.Activity:
                     var activity = JsonConvert.DeserializeObject<Activity>((string)content);
@@ -346,7 +344,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.ResultProperty != null)
             {
-                dcState.SetValue(this.ResultProperty.GetValue(dcState), requestResult);
+                dc.State.SetValue(this.ResultProperty.GetValue(dc.State), requestResult);
             }
 
             // return the actionResult as the result of this operation
@@ -360,8 +358,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
         {
-            var dcState = dc.GetState();
-
             switch (token.Type)
             {
                 case JTokenType.Object:
@@ -391,7 +387,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         var text = token.ToString();
 
                         // if it is a "{bindingpath}" then run through expression parser and treat as a value
-                        var (result, error) = new ValueExpression(text).TryGetValue(dcState);
+                        var (result, error) = new ValueExpression(text).TryGetValue(dc.State);
                         if (error == null)
                         {
                             token.Replace(JToken.FromObject(result));

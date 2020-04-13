@@ -69,13 +69,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return EscapeRegex.Replace(text, new MatchEvaluator(m =>
             {
                 var value = m.Value;
-                var commonEscapes = new List<string>() { "\\r", "\\n", "\\t" };
+                var commonEscapes = new List<string>() { "\\r", "\\n", "\\t", "\\\\" };
                 if (commonEscapes.Contains(value))
                 {
                     return Regex.Unescape(value);
                 }
 
-                return value.Substring(1);
+                // $ -> expression escape
+                if (value == "\\$")
+                {
+                    return value.Substring(1);
+                }
+
+                return value;
             }));
         }
 

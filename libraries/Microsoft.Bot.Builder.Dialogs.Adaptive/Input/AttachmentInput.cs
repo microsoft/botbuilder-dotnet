@@ -43,8 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var dcState = dc.GetState();
-            var input = dcState.GetValue<List<Attachment>>(VALUE_PROPERTY);
+            var input = dc.State.GetValue<List<Attachment>>(VALUE_PROPERTY);
             var first = input.Count > 0 ? input[0] : null;
 
             if (first == null || (string.IsNullOrEmpty(first.ContentUrl) && first.Content == null))
@@ -52,13 +51,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Task.FromResult(InputState.Unrecognized);
             }
 
-            switch (this.OutputFormat.GetValue(dcState))
+            switch (this.OutputFormat.GetValue(dc.State))
             {
                 case AttachmentOutputFormat.All:
-                    dcState.SetValue(VALUE_PROPERTY, input);
+                    dc.State.SetValue(VALUE_PROPERTY, input);
                     break;
                 case AttachmentOutputFormat.First:
-                    dcState.SetValue(VALUE_PROPERTY, first);
+                    dc.State.SetValue(VALUE_PROPERTY, first);
                     break;
             }
 

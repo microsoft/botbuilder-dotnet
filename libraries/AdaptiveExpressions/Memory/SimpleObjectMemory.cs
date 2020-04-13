@@ -3,6 +3,8 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
+using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -27,21 +29,6 @@ namespace AdaptiveExpressions.Memory
         }
 
         /// <summary>
-        /// Transfer an common object to simple memory.
-        /// </summary>
-        /// <param name="obj">Common object.</param>
-        /// <returns>Simple memory instance.</returns>
-        public static IMemory Wrap(object obj)
-        {
-            if (obj is IMemory)
-            {
-                return (IMemory)obj;
-            }
-
-            return new SimpleObjectMemory(obj);
-        }
-
-        /// <summary>
         /// Try get value from a given path.
         /// </summary>
         /// <param name="path">Given path.</param>
@@ -50,14 +37,14 @@ namespace AdaptiveExpressions.Memory
         public bool TryGetValue(string path, out object value)
         {
             value = null;
-            if (memory == null || path.Length == 0 || (path[0] != '[' && !char.IsLetter(path[0])))
+            if (memory == null || path.Length == 0)
             {
                 return false;
             }
 
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                             .Select(x => x.Trim('\'', '"'))
-                            .ToArray(); 
+                            .ToArray();
 
             var curScope = memory;
 
@@ -81,6 +68,11 @@ namespace AdaptiveExpressions.Memory
                 }
 
                 curScope = value;
+            }
+
+            if (value is IExpressionProperty ep)
+            {
+                value = ep.GetObject(memory);
             }
 
             return true;

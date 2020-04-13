@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="dialogManager">botAdapter to add services to.</param>
         /// <param name="languageGenerator">LanguageGenerator to use.</param>
         /// <returns>botAdapter.</returns>
-        public static DialogManager UseLanguageGeneration(this DialogManager dialogManager, ILanguageGenerator languageGenerator)
+        public static DialogManager UseLanguageGeneration(this DialogManager dialogManager, LanguageGenerator languageGenerator)
         {
             var resourceExplorer = dialogManager.TurnState.Get<ResourceExplorer>();
 
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
 
                 dialogManager.TurnState.Add<LanguageGeneratorManager>(lgm);
-                dialogManager.TurnState.Add<ILanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator)));
+                dialogManager.TurnState.Add<LanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator)));
 
                 return dialogManager;
             }

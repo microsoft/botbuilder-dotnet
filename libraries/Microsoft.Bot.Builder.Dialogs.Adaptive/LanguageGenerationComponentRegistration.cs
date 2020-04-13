@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
@@ -17,8 +18,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Return declarative types for Language Generation.
         /// </summary>
+        /// <param name="resourceExplorer">resource explorer to use for resolving references.</param>
         /// <returns>DeclarativeTypes enumeration.</returns>
-        public IEnumerable<DeclarativeType> GetDeclarativeTypes()
+        public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             yield return new DeclarativeType<TextTemplate>(TextTemplate.DeclarativeType);
             yield return new DeclarativeType<ActivityTemplate>(ActivityTemplate.DeclarativeType);
@@ -29,11 +31,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Return JsonConverters for LanguageGeneration resources.
         /// </summary>
         /// <param name="resourceExplorer">resource explorer to use for resolving references.</param>
-        /// <param name="paths">contextual path stack to use to build debugger.sourcemap.</param>
+        /// <param name="context">source range context stack to build debugger source map.</param>
         /// <returns>enumeration of jsonconverters.</returns>
-        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<string> paths)
+        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
         {
-            yield return new LanguageGeneratorConverter(resourceExplorer, paths);
+            yield return new LanguageGeneratorConverter(resourceExplorer, context);
             yield return new ActivityTemplateConverter();
         }
     }

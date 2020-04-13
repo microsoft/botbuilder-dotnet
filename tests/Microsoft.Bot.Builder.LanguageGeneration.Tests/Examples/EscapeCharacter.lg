@@ -1,10 +1,10 @@
 ﻿﻿> Welcome Phrase template
 > LG runtime will pick a text value from the one-of collection list at random.
 # wPhrase
-- Hi \r\n\t\[\]\{\}\\
+- Hi \r\n\t\\
 
 # AtEscapeChar
-- Hi{1+1}[wPhrase]{wPhrase()}\${wPhrase()}${1+1}\${1+1}\ \
+- Hi{1+1}[wPhrase]{wPhrase()}\${wPhrase()}${1+1}\${1+1}
 
 # otherEscape
 - Hi \y \
@@ -13,16 +13,16 @@
 - Hi ${replace('hello\\', '\\', '\\\\')}
 
 # escapeInExpression2
-- Hi ${replace('hello\"', '\"', "'")}
+- Hi ${replace('hello"', '"', '\'')}
 
 # escapeInExpression3
-- Hi ${replace("hello'", "'", '\"')}
+- Hi ${replace("hello'", "'", "\"")}
 
 # escapeInExpression4
-- Hi ${replace("hello\n", "\n", '\"')}
+- Hi ${replace("hello\n", "\n", "\"")}
 
 # escapeInExpression5
-- Hi ${replace('hello\"', '\"', '\n')}
+- Hi ${replace('hello\'', '\'', '\n')}
 
 # escapeInExpression6
 - Hi ${replace("hello'", "'", '\n')}
@@ -40,3 +40,31 @@
 
 # showSingleTodo(x)
 - * ${x}
+
+# getUserName
+- ${json(userInfoStr()).name}
+
+# userInfoStr
+- {"age":1, "name":"super \"x man\""}
+
+# structure1
+[struct
+   list=a|b\|c
+]
+
+# nestedSample
+- i like three movies, they are ${join(movies().list, ', ', ' and ')}
+
+# movies
+[struct
+   list=${foreach(split(movieNames(), '$'), name, `"${name}"`)}
+]
+
+> 1. "name1
+> 2. name2
+> 3. {name3
+# movieNames
+- \"name1\$name2\${name3
+
+# dollarsymbol
+- \$ $ \${'hi'} ${'hi'}

@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using AdaptiveExpressions.Memory;
+using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -77,8 +78,8 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression to validate.</param>
         /// <param name="minArity">Minimum number of children.</param>
         /// <param name="maxArity">Maximum number of children.</param>
-        /// <param name="types">Allowed return types for children.</param>
-        public static void ValidateArityAndAnyType(Expression expression, int minArity, int maxArity, params ReturnType[] types)
+        /// <param name="returnType">Allowed return types for children.</param>
+        public static void ValidateArityAndAnyType(Expression expression, int minArity, int maxArity, ReturnType returnType = ReturnType.Object)
         {
             if (expression.Children.Length < minArity)
             {
@@ -90,38 +91,13 @@ namespace AdaptiveExpressions
                 throw new ArgumentException($"{expression} can't have more than {maxArity} children.");
             }
 
-            if (types.Length > 0)
+            if ((returnType & ReturnType.Object) == 0)
             {
                 foreach (var child in expression.Children)
                 {
-                    if (child.ReturnType != ReturnType.Object && !types.Contains(child.ReturnType))
+                    if ((child.ReturnType & ReturnType.Object) == 0 && (returnType & child.ReturnType) == 0)
                     {
-                        if (types.Count() == 1)
-                        {
-                            throw new ArgumentException($"{child} is not a {types[0]} expression in {expression}.");
-                        }
-                        else
-                        {
-                            var builder = new StringBuilder();
-                            builder.Append($"{child} in {expression} is not any of [");
-                            var first = true;
-                            foreach (var type in types)
-                            {
-                                if (first)
-                                {
-                                    first = false;
-                                }
-                                else
-                                {
-                                    builder.Append(", ");
-                                }
-
-                                builder.Append(type);
-                            }
-
-                            builder.Append("].");
-                            throw new ArgumentException(builder.ToString());
-                        }
+                        throw new ArgumentException(BuildTypeValidatorError(returnType, child, expression));
                     }
                 }
             }
@@ -151,9 +127,11 @@ namespace AdaptiveExpressions
             {
                 var child = expression.Children[i];
                 var type = types[i];
-                if (type != ReturnType.Object && child.ReturnType != ReturnType.Object && child.ReturnType != type)
+                if ((type & ReturnType.Object) == 0
+                    && (child.ReturnType & ReturnType.Object) == 0
+                    && (type & child.ReturnType) == 0)
                 {
-                    throw new ArgumentException($"{child} in {expression} is not a {type}.");
+                    throw new ArgumentException(BuildTypeValidatorError(type, child, expression));
                 }
             }
 
@@ -167,9 +145,11 @@ namespace AdaptiveExpressions
 
                 var child = expression.Children[ic];
                 var type = optional[i];
-                if (type != ReturnType.Object && child.ReturnType != ReturnType.Object && child.ReturnType != type)
+                if ((type & ReturnType.Object) == 0
+                    && (child.ReturnType & ReturnType.Object) == 0
+                    && (type & child.ReturnType) == 0)
                 {
-                    throw new ArgumentException($"{child} in {expression} is not a {type}.");
+                    throw new ArgumentException(BuildTypeValidatorError(type, child, expression));
                 }
             }
         }
@@ -221,7 +201,7 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
         public static void ValidateBinaryNumberOrString(Expression expression)
-            => ValidateArityAndAnyType(expression, 2, 2, ReturnType.Number, ReturnType.String);
+            => ValidateArityAndAnyType(expression, 2, 2, ReturnType.Number | ReturnType.String);
 
         /// <summary>
         /// Validate there is a single argument.
@@ -512,17 +492,18 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="expression">Expression with children.</param>
         /// <param name="state">Global state.</param>
+        /// <param name="options">Options used in evaluation. </param>
         /// <param name="verify">Optional function to verify each child's result.</param>
         /// <returns>List of child values or error message.</returns>
-        public static (IReadOnlyList<dynamic>, string error) EvaluateChildren(Expression expression, IMemory state, VerifyExpression verify = null)
+        public static (IReadOnlyList<object>, string error) EvaluateChildren(Expression expression, IMemory state, Options options, VerifyExpression verify = null)
         {
-            var args = new List<dynamic>();
+            var args = new List<object>();
             object value;
             string error = null;
             var pos = 0;
             foreach (var child in expression.Children)
             {
-                (value, error) = child.TryEvaluate(state);
+                (value, error) = child.TryEvaluate(state, options);
                 if (error != null)
                 {
                     break;
@@ -553,14 +534,14 @@ namespace AdaptiveExpressions
         /// <param name="function">Function to apply.</param>
         /// <param name="verify">Function to check each arg for validity.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static EvaluateExpressionDelegate Apply(Func<IReadOnlyList<dynamic>, object> function, VerifyExpression verify = null)
+        public static EvaluateExpressionDelegate Apply(Func<IReadOnlyList<object>, object> function, VerifyExpression verify = null)
             =>
-            (expression, state) =>
+            (expression, state, options) =>
             {
                 object value = null;
                 string error = null;
-                IReadOnlyList<dynamic> args;
-                (args, error) = EvaluateChildren(expression, state, verify);
+                IReadOnlyList<object> args;
+                (args, error) = EvaluateChildren(expression, state, options, verify);
                 if (error == null)
                 {
                     try
@@ -584,14 +565,14 @@ namespace AdaptiveExpressions
         /// <param name="function">Function to apply.</param>
         /// <param name="verify">Function to check each arg for validity.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static EvaluateExpressionDelegate ApplyWithError(Func<IReadOnlyList<dynamic>, (object, string)> function, VerifyExpression verify = null)
+        public static EvaluateExpressionDelegate ApplyWithError(Func<IReadOnlyList<object>, (object, string)> function, VerifyExpression verify = null)
             =>
-            (expression, state) =>
+            (expression, state, options) =>
             {
                 object value = null;
                 string error = null;
-                IReadOnlyList<dynamic> args;
-                (args, error) = EvaluateChildren(expression, state, verify);
+                IReadOnlyList<object> args;
+                (args, error) = EvaluateChildren(expression, state, options, verify);
                 if (error == null)
                 {
                     try
@@ -615,7 +596,7 @@ namespace AdaptiveExpressions
         /// <param name="function">Function to apply.</param>
         /// <param name="verify">Function to check each arg for validity.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static EvaluateExpressionDelegate ApplySequence(Func<IReadOnlyList<dynamic>, object> function, VerifyExpression verify = null)
+        public static EvaluateExpressionDelegate ApplySequence(Func<IReadOnlyList<object>, object> function, VerifyExpression verify = null)
             => Apply(
                 args =>
                 {
@@ -637,7 +618,7 @@ namespace AdaptiveExpressions
         /// <param name="function">Function to apply.</param>
         /// <param name="verify">Function to check each arg for validity.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static EvaluateExpressionDelegate ApplySequenceWithError(Func<IReadOnlyList<dynamic>, (object, string)> function, VerifyExpression verify = null)
+        public static EvaluateExpressionDelegate ApplySequenceWithError(Func<IReadOnlyList<object>, (object, string)> function, VerifyExpression verify = null)
             => ApplyWithError(
                 args =>
                 {
@@ -667,7 +648,7 @@ namespace AdaptiveExpressions
         /// <param name="type">Expression type.</param>
         /// <param name="function">Function to apply.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator Numeric(string type, Func<IReadOnlyList<dynamic>, object> function)
+        public static ExpressionEvaluator Numeric(string type, Func<IReadOnlyList<object>, object> function)
             => new ExpressionEvaluator(type, ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateNumber);
 
         /// <summary>
@@ -677,7 +658,7 @@ namespace AdaptiveExpressions
         /// <param name="type">Expression type.</param>
         /// <param name="function">Function to apply.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator NumericOrCollection(string type, Func<IReadOnlyList<dynamic>, object> function)
+        public static ExpressionEvaluator NumericOrCollection(string type, Func<IReadOnlyList<object>, object> function)
             => new ExpressionEvaluator(type, Apply(function, VerifyNumericListOrNumber), ReturnType.Number, ValidateAtLeastOne);
 
         /// <summary>
@@ -687,7 +668,7 @@ namespace AdaptiveExpressions
         /// <param name="function">Function to apply.</param>
         /// <param name="verify">Function to verify arguments.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator MultivariateNumeric(string type, Func<IReadOnlyList<dynamic>, object> function, VerifyExpression verify = null)
+        public static ExpressionEvaluator MultivariateNumeric(string type, Func<IReadOnlyList<object>, object> function, VerifyExpression verify = null)
             => new ExpressionEvaluator(type, ApplySequence(function, verify ?? VerifyNumber), ReturnType.Number, ValidateTwoOrMoreThanTwoNumbers);
 
         /// <summary>
@@ -703,24 +684,24 @@ namespace AdaptiveExpressions
         /// <returns>Delegate for evaluating an expression.</returns>
         public static ExpressionEvaluator Comparison(
             string type,
-            Func<IReadOnlyList<dynamic>, bool> function,
+            Func<IReadOnlyList<object>, bool> function,
             ValidateExpressionDelegate validator,
             VerifyExpression verify = null)
             => new ExpressionEvaluator(
                 type,
-                (expression, state) =>
+                (expression, state, options) =>
                 {
                     var result = false;
                     string error = null;
-                    IReadOnlyList<dynamic> args;
-                    (args, error) = EvaluateChildren(expression, state, verify);
+                    IReadOnlyList<object> args;
+                    (args, error) = EvaluateChildren(expression, state, new Options(options) { NullSubstitution = null }, verify);
                     if (error == null)
                     {
                         // Ensure args are all of same type
                         bool? isNumber = null;
                         foreach (var arg in args)
                         {
-                            var obj = (object)arg;
+                            var obj = arg;
                             if (isNumber.HasValue)
                             {
                                 if (obj != null && obj.IsNumber() != isNumber.Value)
@@ -765,7 +746,7 @@ namespace AdaptiveExpressions
         /// <param name="type">Expression type.</param>
         /// <param name="function">Function to apply.</param>
         /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<dynamic>, object> function)
+        public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<object>, object> function)
             => new ExpressionEvaluator(type, Apply(function, VerifyStringOrNull), ReturnType.String, ValidateUnaryString);
 
         /// <summary>
@@ -777,18 +758,18 @@ namespace AdaptiveExpressions
         public static ExpressionEvaluator TimeTransform(string type, Func<DateTime, int, DateTime> function)
             => new ExpressionEvaluator(
                 type,
-                (expr, state) =>
+                (expr, state, options) =>
                 {
                     object value = null;
                     string error = null;
-                    IReadOnlyList<dynamic> args;
-                    (args, error) = EvaluateChildren(expr, state);
+                    IReadOnlyList<object> args;
+                    (args, error) = EvaluateChildren(expr, state, options);
                     if (error == null)
                     {
-                        if (args[0] is string string0 && args[1] is int int1)
+                        if (args[0] is string string0 && args[1].IsInteger())
                         {
                             var formatString = (args.Count() == 3 && args[2] is string string1) ? string1 : DefaultDateTimeFormat;
-                            (value, error) = ParseISOTimestamp(string0, dt => function(dt, int1).ToString(formatString));
+                            (value, error) = ParseISOTimestamp(string0, dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
                         }
                         else
                         {
@@ -799,7 +780,7 @@ namespace AdaptiveExpressions
                     return (value, error);
                 },
                 ReturnType.String,
-                expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String, ReturnType.Number));
+                expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number));
 
         /// <summary>
         /// Lookup an index property of instance.
@@ -818,24 +799,15 @@ namespace AdaptiveExpressions
             object value = null;
             string error = null;
 
-            var count = -1;
             if (TryParseList(instance, out var list))
             {
-                count = list.Count;
-            }
-
-            var itype = instance.GetType();
-            var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
-            if (count != -1 && indexer != null)
-            {
-                if (index >= 0 && count > index)
+                if (index >= 0 && index < list.Count)
                 {
-                    dynamic idyn = instance;
-                    value = idyn[index];
+                    value = list[index];
                 }
                 else
                 {
-                    error = $"{index} is out of range for ${instance}";
+                    error = $"Index was out of range.";
                 }
             }
             else
@@ -915,7 +887,7 @@ namespace AdaptiveExpressions
         /// <returns>Value and error information if any.</returns>
         public static (object result, string error) SetProperty(object instance, string property, object value)
         {
-            object result = value;
+            var result = value;
             string error = null;
 
             if (instance is IDictionary<string, object> idict)
@@ -1000,10 +972,11 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="expression">expression.</param>
         /// <param name="state">scope.</param>
+        /// <param name="options">Options used in evaluation. </param>
         /// <returns>return the accumulated path and the expression left unable to accumulate.</returns>
-        public static (string path, Expression left, string error) TryAccumulatePath(Expression expression, IMemory state)
+        public static (string path, Expression left, string error) TryAccumulatePath(Expression expression, IMemory state, Options options)
         {
-            string path = string.Empty;
+            var path = string.Empty;
             var left = expression;
 
             // get path from Accessor or Element+Accessor
@@ -1016,13 +989,13 @@ namespace AdaptiveExpressions
                 }
                 else if (left.Type == ExpressionType.Element)
                 {
-                    var (value, error) = left.Children[1].TryEvaluate(state);
+                    var (value, error) = left.Children[1].TryEvaluate(state, options);
                     if (error != null)
                     {
                         return (null, null, error);
                     }
 
-                    if (value is int)
+                    if (value.IsInteger())
                     {
                         path = $"[{value}]" + "." + path;
                     }
@@ -1054,6 +1027,22 @@ namespace AdaptiveExpressions
             return (path, left, null);
         }
 
+        private static string BuildTypeValidatorError(ReturnType returnType, Expression childExpr, Expression expr)
+        {
+            string result;
+            var names = returnType.ToString();
+            if (!names.Contains(","))
+            {
+                result = $"{childExpr} is not a {names} expression in {expr}.";
+            }
+            else
+            {
+                result = $"{childExpr} in {expr} is not any of [{names}].";
+            }
+
+            return result;
+        }
+
         private static void ValidateAccessor(Expression expression)
         {
             var children = expression.Children;
@@ -1069,15 +1058,15 @@ namespace AdaptiveExpressions
                 throw new Exception($"{expression} has more than 2 children.");
             }
 
-            if (children.Length == 2 && children[1].ReturnType != ReturnType.Object)
+            if (children.Length == 2 && (children[1].ReturnType & ReturnType.Object) == 0)
             {
                 throw new Exception($"{expression} must have an object as its second argument.");
             }
         }
 
-        private static (object value, string error) Accessor(Expression expression, IMemory state)
+        private static (object value, string error) Accessor(Expression expression, IMemory state, Options options)
         {
-            var (path, left, error) = TryAccumulatePath(expression, state);
+            var (path, left, error) = TryAccumulatePath(expression, state, options);
 
             if (error != null)
             {
@@ -1087,22 +1076,22 @@ namespace AdaptiveExpressions
             if (left == null)
             {
                 // fully converted to path, so we just delegate to memory scope
-                return WrapGetValue(state, path);
+                return WrapGetValue(state, path, options);
             }
             else
             {
                 // stop at somewhere, so we figure out what's left
-                var (newScope, err) = left.TryEvaluate(state);
+                var (newScope, err) = left.TryEvaluate(state, options);
                 if (err != null)
                 {
                     return (null, err);
                 }
 
-                return WrapGetValue(new SimpleObjectMemory(newScope), path);
+                return WrapGetValue(MemoryFactory.Create(newScope), path, options);
             }
         }
 
-        private static (object value, string error) GetProperty(Expression expression, IMemory state)
+        private static (object value, string error) GetProperty(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error;
@@ -1110,45 +1099,51 @@ namespace AdaptiveExpressions
             object property;
 
             var children = expression.Children;
-            (instance, error) = children[0].TryEvaluate(state);
+            (instance, error) = children[0].TryEvaluate(state, options);
             if (error == null)
             {
-                (property, error) = children[1].TryEvaluate(state);
+                (property, error) = children[1].TryEvaluate(state, options);
                 if (error == null)
                 {
-                    (value, error) = WrapGetValue(new SimpleObjectMemory(instance), (string)property);
+                    (value, error) = WrapGetValue(MemoryFactory.Create(instance), (string)property, options);
                 }
             }
 
             return (value, error);
         }
 
-        private static (object value, string error) WrapGetValue(IMemory memory, string property)
+        private static (object value, string error) WrapGetValue(IMemory memory, string property, Options options)
         {
-            if (memory.TryGetValue(property, out var result))
+            if (memory.TryGetValue(property, out var result) && result != null)
             {
                 return (result, null);
+            }
+
+            if (options.NullSubstitution != null)
+            {
+                return (options.NullSubstitution(property), null);
             }
 
             return (null, null);
         }
 
-        private static (object value, string error) ExtractElement(Expression expression, IMemory state)
+        private static (object value, string error) ExtractElement(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error;
             var instance = expression.Children[0];
             var index = expression.Children[1];
             object inst;
-            (inst, error) = instance.TryEvaluate(state);
+            (inst, error) = instance.TryEvaluate(state, options);
             if (error == null)
             {
                 object idxValue;
-                (idxValue, error) = index.TryEvaluate(state);
+                (idxValue, error) = index.TryEvaluate(state, new Options(options) { NullSubstitution = null });
                 if (error == null)
                 {
-                    if (idxValue is int idx)
+                    if (idxValue.IsInteger())
                     {
+                        var idx = Convert.ToInt32(idxValue);
                         (value, error) = AccessIndex(inst, idx);
                     }
                     else if (idxValue is string idxStr)
@@ -1157,7 +1152,7 @@ namespace AdaptiveExpressions
                     }
                     else
                     {
-                        error = $"Could not coerce {index}<{idxValue.GetType()}> to an int or string";
+                        error = $"Could not coerce {index}<{idxValue?.GetType()}> to an int or string";
                     }
                 }
             }
@@ -1165,34 +1160,9 @@ namespace AdaptiveExpressions
             return (value, error);
         }
 
-        private static bool CanBeModified(object value, string property, int? expected)
+        private static (object value, string error) SetPathToValue(Expression expr, IMemory state, Options options)
         {
-            var modifiable = false;
-            if (expected.HasValue)
-            {
-                // Modifiable list
-                modifiable = TryParseList(value, out var _);
-            }
-            else
-            {
-                // Modifiable object
-                modifiable = value is IDictionary<string, object>
-                    || value is IDictionary
-                    || value is JObject;
-                if (!modifiable)
-                {
-                    var type = value.GetType();
-                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
-                    modifiable = prop != null;
-                }
-            }
-
-            return modifiable;
-        }
-
-        private static (object value, string error) SetPathToValue(Expression expr, IMemory state)
-        {
-            var (path, left, error) = TryAccumulatePath(expr.Children[0], state);
+            var (path, left, error) = TryAccumulatePath(expr.Children[0], state, options);
 
             if (error != null)
             {
@@ -1205,7 +1175,7 @@ namespace AdaptiveExpressions
                 return (null, $"{expr.Children[0].ToString()} is not a valid path to set value");
             }
 
-            var (value, err) = expr.Children[1].TryEvaluate(state);
+            var (value, err) = expr.Children[1].TryEvaluate(state, options);
             if (err != null)
             {
                 return (null, err);
@@ -1217,7 +1187,7 @@ namespace AdaptiveExpressions
 
         private static string ParseStringOrNull(object value)
         {
-            string result = null;
+            string result;
             if (value is string str)
             {
                 result = str;
@@ -1244,7 +1214,7 @@ namespace AdaptiveExpressions
             }
             else if (TryParseList(instance, out var list))
             {
-                result = (IList)list;
+                result = list;
             }
 
             return result;
@@ -1293,13 +1263,134 @@ namespace AdaptiveExpressions
             return result;
         }
 
-        private static (object value, string error) And(Expression expression, IMemory state)
+        private static object Max(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (CultureInvariantDoubleConvert(a) > CultureInvariantDoubleConvert(b))
+            {
+                return a;
+            }
+            else
+            {
+                return b;
+            }
+        }
+
+        private static object Min(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (CultureInvariantDoubleConvert(a) <= CultureInvariantDoubleConvert(b))
+            {
+                return a;
+            }
+            else
+            {
+                return b;
+            }
+        }
+
+        private static double CultureInvariantDoubleConvert(object numberObj) => Convert.ToDouble(numberObj, CultureInfo.InvariantCulture);
+
+        private static object Add(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (a.IsInteger() && b.IsInteger())
+            {
+                return Convert.ToInt64(a) + Convert.ToInt64(b);
+            }
+            else
+            {
+                return CultureInvariantDoubleConvert(a) + CultureInvariantDoubleConvert(b);
+            }
+        }
+
+        private static object Subtract(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (a.IsInteger() && b.IsInteger())
+            {
+                return Convert.ToInt64(a) - Convert.ToInt64(b);
+            }
+            else
+            {
+                return CultureInvariantDoubleConvert(a) - CultureInvariantDoubleConvert(b);
+            }
+        }
+
+        private static object Multiply(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (a.IsInteger() && b.IsInteger())
+            {
+                return Convert.ToInt64(a) * Convert.ToInt64(b);
+            }
+            else
+            {
+                return CultureInvariantDoubleConvert(a) * CultureInvariantDoubleConvert(b);
+            }
+        }
+
+        private static object Mod(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (a.IsInteger() && b.IsInteger())
+            {
+                return Convert.ToInt64(a) % Convert.ToInt64(b);
+            }
+            else
+            {
+                return CultureInvariantDoubleConvert(a) % CultureInvariantDoubleConvert(b);
+            }
+        }
+
+        private static object Divide(object a, object b)
+        {
+            if (a == null || b == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (a.IsInteger() && b.IsInteger())
+            {
+                return Convert.ToInt64(a) / Convert.ToInt64(b);
+            }
+            else
+            {
+                return CultureInvariantDoubleConvert(a) / CultureInvariantDoubleConvert(b);
+            }
+        }
+
+        private static (object value, string error) And(Expression expression, IMemory state, Options options)
         {
             object result = true;
             string error = null;
             foreach (var child in expression.Children)
             {
-                (result, error) = child.TryEvaluate(state);
+                (result, error) = child.TryEvaluate(state, new Options(options) { NullSubstitution = null });
                 if (error == null)
                 {
                     if (IsLogicTrue(result))
@@ -1324,13 +1415,13 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object value, string error) Or(Expression expression, IMemory state)
+        private static (object value, string error) Or(Expression expression, IMemory state, Options options)
         {
             object result = false;
             string error = null;
             foreach (var child in expression.Children)
             {
-                (result, error) = child.TryEvaluate(state);
+                (result, error) = child.TryEvaluate(state, new Options(options) { NullSubstitution = null });
                 if (error == null)
                 {
                     if (IsLogicTrue(result))
@@ -1349,11 +1440,11 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object value, string error) Not(Expression expression, IMemory state)
+        private static (object value, string error) Not(Expression expression, IMemory state, Options options)
         {
             object result;
             string error;
-            (result, error) = expression.Children[0].TryEvaluate(state);
+            (result, error) = expression.Children[0].TryEvaluate(state, new Options(options) { NullSubstitution = null });
             if (error == null)
             {
                 result = !IsLogicTrue(result);
@@ -1367,30 +1458,30 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object value, string error) If(Expression expression, IMemory state)
+        private static (object value, string error) If(Expression expression, IMemory state, Options options)
         {
             object result;
             string error;
-            (result, error) = expression.Children[0].TryEvaluate(state);
+            (result, error) = expression.Children[0].TryEvaluate(state, new Options(options) { NullSubstitution = null });
             if (error == null && IsLogicTrue(result))
             {
-                (result, error) = expression.Children[1].TryEvaluate(state);
+                (result, error) = expression.Children[1].TryEvaluate(state, options);
             }
             else
             {
                 // Swallow error and treat as false
-                (result, error) = expression.Children[2].TryEvaluate(state);
+                (result, error) = expression.Children[2].TryEvaluate(state, options);
             }
 
             return (result, error);
         }
 
-        private static (object value, string error) Substring(Expression expression, IMemory state)
+        private static (object value, string error) Substring(Expression expression, IMemory state, Options options)
         {
             string result = null;
             string error;
             string str;
-            (str, error) = expression.Children[0].TryEvaluate<string>(state);
+            (str, error) = expression.Children[0].TryEvaluate<string>(state, options);
             if (error == null)
             {
                 if (str == null)
@@ -1401,7 +1492,7 @@ namespace AdaptiveExpressions
                 {
                     int start;
                     var startExpr = expression.Children[1];
-                    (start, error) = startExpr.TryEvaluate<int>(state);
+                    (start, error) = startExpr.TryEvaluate<int>(state, options);
                     if (error == null && (start < 0 || start >= str.Length))
                     {
                         error = $"{startExpr}={start} which is out of range for {str}.";
@@ -1418,7 +1509,7 @@ namespace AdaptiveExpressions
                         else
                         {
                             var lengthExpr = expression.Children[2];
-                            (length, error) = lengthExpr.TryEvaluate<int>(state);
+                            (length, error) = lengthExpr.TryEvaluate<int>(state, options);
                             if (error == null && (length < 0 || start + length > str.Length))
                             {
                                 error = $"{lengthExpr}={length} which is out of range for {str}.";
@@ -1436,13 +1527,13 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object value, string error) Foreach(Expression expression, IMemory state)
+        private static (object value, string error) Foreach(Expression expression, IMemory state, Options options)
         {
             object result = null;
             string error;
 
-            dynamic instance;
-            (instance, error) = expression.Children[0].TryEvaluate(state);
+            object instance;
+            (instance, error) = expression.Children[0].TryEvaluate(state, options);
             if (instance == null)
             {
                 error = $"'{expression.Children[0]}' evaluated to null.";
@@ -1480,8 +1571,8 @@ namespace AdaptiveExpressions
                         };
 
                         // the local iterator is pushed as one memory layer in the memory stack
-                        stackedMemory.Push(SimpleObjectMemory.Wrap(local));
-                        (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory);
+                        stackedMemory.Push(new SimpleObjectMemory(local));
+                        (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory, options);
                         stackedMemory.Pop();
 
                         if (e != null)
@@ -1497,13 +1588,13 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object value, string error) Where(Expression expression, IMemory state)
+        private static (object value, string error) Where(Expression expression, IMemory state, Options options)
         {
             object result = null;
             string error;
 
-            dynamic instance;
-            (instance, error) = expression.Children[0].TryEvaluate(state);
+            object instance;
+            (instance, error) = expression.Children[0].TryEvaluate(state, options);
             if (error == null)
             {
                 var isInstanceList = false;
@@ -1539,11 +1630,11 @@ namespace AdaptiveExpressions
                         };
 
                         // the local iterator is pushed as one memory layer in the memory stack
-                        stackedMemory.Push(SimpleObjectMemory.Wrap(local));
-                        var (r, _) = expression.Children[2].TryEvaluate<bool>(stackedMemory);
+                        stackedMemory.Push(new SimpleObjectMemory(local));
+                        var (r, e) = expression.Children[2].TryEvaluate(stackedMemory, new Options(options) { NullSubstitution = null });
                         stackedMemory.Pop();
 
-                        if (r)
+                        if (IsLogicTrue(r) && e == null)
                         {
                             // add if only if it evaluates to true
                             ((List<object>)result).Add(local[iteratorName]);
@@ -1620,8 +1711,8 @@ namespace AdaptiveExpressions
                 case "hour": converter = (dateTime) => dateTime.AddHours(multiFlag * interval); break;
                 case "day": converter = (dateTime) => dateTime.AddDays(multiFlag * interval); break;
                 case "week": converter = (dateTime) => dateTime.AddDays(multiFlag * (interval * 7)); break;
-                case "month": converter = (dateTime) => dateTime.AddMonths(multiFlag * (int)interval); break;
-                case "year": converter = (dateTime) => dateTime.AddYears(multiFlag * (int)interval); break;
+                case "month": converter = (dateTime) => dateTime.AddMonths(multiFlag * Convert.ToInt32(interval)); break;
+                case "year": converter = (dateTime) => dateTime.AddYears(multiFlag * Convert.ToInt32(interval)); break;
                 default: error = $"{timeUnit} is not a valid time unit."; break;
             }
 
@@ -1707,7 +1798,7 @@ namespace AdaptiveExpressions
             string error = null;
             try
             {
-                result = datetime.ToString(format);
+                result = datetime.ToString(format, CultureInfo.InvariantCulture.DateTimeFormat);
             }
             catch
             {
@@ -1772,7 +1863,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, string) AddToTime(string timestamp, int interval, string timeUnit, string format)
+        private static (string, string) AddToTime(string timestamp, long interval, string timeUnit, string format)
         {
             string result = null;
             string error = null;
@@ -1926,7 +2017,7 @@ namespace AdaptiveExpressions
         {
             object result = null;
             string error = null;
-            dynamic uriBase = null;
+            Uri uriBase = null;
             try
             {
                 uriBase = new Uri(uri);
@@ -1961,7 +2052,7 @@ namespace AdaptiveExpressions
                 {
                     var uriBase = (Uri)result;
                     var port = uriBase.Port;
-                    result = (int)port;
+                    result = Convert.ToInt32(port);
                 }
                 catch
                 {
@@ -2196,15 +2287,14 @@ namespace AdaptiveExpressions
         }
 
         // conversion functions
-        private static string ToBinary(string strToConvert)
+        private static byte[] ToBinary(string strToConvert)
         {
-            var result = string.Empty;
-            foreach (var element in strToConvert.ToCharArray())
+            if (strToConvert == null)
             {
-                result += Convert.ToString(element, 2).PadLeft(8, '0');
+                return new byte[] { };
             }
 
-            return result;
+            return Encoding.UTF8.GetBytes(strToConvert);
         }
 
         private static (object, string) ToXml(object contentToConvert)
@@ -2234,12 +2324,12 @@ namespace AdaptiveExpressions
         }
 
         // collection functions
-        private static (object value, string error) Skip(Expression expression, object state)
+        private static (object value, string error) Skip(Expression expression, object state, Options options)
         {
             object result = null;
             string error;
             object arr;
-            (arr, error) = expression.Children[0].TryEvaluate(state);
+            (arr, error) = expression.Children[0].TryEvaluate(state, options);
 
             if (error == null)
             {
@@ -2247,7 +2337,7 @@ namespace AdaptiveExpressions
                 {
                     int start = 0;
                     var startExpr = expression.Children[1];
-                    (start, error) = startExpr.TryEvaluate<int>(state);
+                    (start, error) = startExpr.TryEvaluate<int>(state, options);
                     if (error == null && (start < 0 || start >= list.Count))
                     {
                         error = $"{startExpr}={start} which is out of range for {arr}";
@@ -2267,12 +2357,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) Take(Expression expression, object state)
+        private static (object, string) Take(Expression expression, object state, Options options)
         {
             object result = null;
             string error;
             object arr;
-            (arr, error) = expression.Children[0].TryEvaluate(state);
+            (arr, error) = expression.Children[0].TryEvaluate(state, options);
             if (error == null)
             {
                 var arrIsList = TryParseList(arr, out var list);
@@ -2281,7 +2371,7 @@ namespace AdaptiveExpressions
                 {
                     int count;
                     var countExpr = expression.Children[1];
-                    (count, error) = countExpr.TryEvaluate<int>(state);
+                    (count, error) = countExpr.TryEvaluate<int>(state, options);
                     if (error == null)
                     {
                         if (arrIsList)
@@ -2317,12 +2407,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) SubArray(Expression expression, object state)
+        private static (object, string) SubArray(Expression expression, object state, Options options)
         {
             object result = null;
             string error;
             object arr;
-            (arr, error) = expression.Children[0].TryEvaluate(state);
+            (arr, error) = expression.Children[0].TryEvaluate(state, options);
 
             if (error == null)
             {
@@ -2330,7 +2420,7 @@ namespace AdaptiveExpressions
                 {
                     var startExpr = expression.Children[1];
                     int start;
-                    (start, error) = startExpr.TryEvaluate<int>(state);
+                    (start, error) = startExpr.TryEvaluate<int>(state, options);
                     if (error == null)
                     {
                         if (error == null && (start < 0 || start > list.Count))
@@ -2348,7 +2438,7 @@ namespace AdaptiveExpressions
                             else
                             {
                                 var endExpr = expression.Children[2];
-                                (end, error) = endExpr.TryEvaluate<int>(state);
+                                (end, error) = endExpr.TryEvaluate<int>(state, options);
                                 if (error == null && (end < 0 || end > list.Count))
                                 {
                                     error = $"{endExpr}={end} which is out of range for {arr}";
@@ -2364,7 +2454,7 @@ namespace AdaptiveExpressions
                 }
                 else
                 {
-                    error = $"{expression.Children[0]} is not array or string.";
+                    error = $"{expression.Children[0]} is not array.";
                 }
             }
 
@@ -2372,12 +2462,12 @@ namespace AdaptiveExpressions
         }
 
         private static EvaluateExpressionDelegate SortBy(bool isDescending)
-           => (expression, state) =>
+           => (expression, state, options) =>
            {
                object result = null;
                string error;
                object arr;
-               (arr, error) = expression.Children[0].TryEvaluate(state);
+               (arr, error) = expression.Children[0].TryEvaluate(state, options);
 
                if (error == null)
                {
@@ -2399,7 +2489,7 @@ namespace AdaptiveExpressions
                            var jarray = JArray.FromObject(list.OfType<object>().ToList());
                            var propertyNameExpression = expression.Children[1];
                            string propertyName;
-                           (propertyName, error) = propertyNameExpression.TryEvaluate<string>(state);
+                           (propertyName, error) = propertyNameExpression.TryEvaluate<string>(state, options);
                            if (error == null)
                            {
                                propertyName = propertyName ?? string.Empty;
@@ -2435,12 +2525,12 @@ namespace AdaptiveExpressions
             return tempList;
         }
 
-        private static (object, string) IndicesAndValues(Expression expression, object state)
+        private static (object, string) IndicesAndValues(Expression expression, object state, Options options)
         {
             object result = null;
             string error;
             object instance;
-            (instance, error) = expression.Children[0].TryEvaluate(state);
+            (instance, error) = expression.Children[0].TryEvaluate(state, options);
             if (error == null)
             {
                 if (TryParseList(instance, out var list))
@@ -2470,9 +2560,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static bool IsSameDay(DateTime date1, DateTime date2) => date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
-
-        private static bool IsEqual(IReadOnlyList<dynamic> args)
+        private static bool IsEqual(IReadOnlyList<object> args)
         {
             if (args[0] == null)
             {
@@ -2489,9 +2577,17 @@ namespace AdaptiveExpressions
                 return true;
             }
 
+            if (args[0].IsNumber() && args[0].IsNumber())
+            {
+                if (Math.Abs(CultureInvariantDoubleConvert(args[0]) - CultureInvariantDoubleConvert(args[1])) < 0.00000001)
+                {
+                    return true;
+                }
+            }
+
             try
             {
-                return args[0] == args[1];
+                return args[0] == args[1] || (args[0] != null && args[0].Equals(args[1]));
             }
             catch
             {
@@ -2504,7 +2600,7 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="obj">input object.</param>
         /// <returns>property count.</returns>
-        private static int GetPropertyCount(dynamic obj)
+        private static int GetPropertyCount(object obj)
         {
             if (obj is IDictionary dictionary)
             {
@@ -2569,11 +2665,11 @@ namespace AdaptiveExpressions
             {
                 // Math
                 new ExpressionEvaluator(ExpressionType.Element, ExtractElement, ReturnType.Object, ValidateBinary),
-                MultivariateNumeric(ExpressionType.Subtract, args => args[0] - args[1]),
-                MultivariateNumeric(ExpressionType.Multiply, args => args[0] * args[1]),
+                MultivariateNumeric(ExpressionType.Subtract, args => Subtract(args[0], args[1])),
+                MultivariateNumeric(ExpressionType.Multiply, args => Multiply(args[0], args[1])),
                 MultivariateNumeric(
                     ExpressionType.Divide,
-                    args => args[0] / args[1],
+                    args => Divide(args[0], args[1]),
                     (val, expression, pos) =>
                     {
                         var error = VerifyNumber(val, expression, pos);
@@ -2586,19 +2682,19 @@ namespace AdaptiveExpressions
                     }),
                 NumericOrCollection(ExpressionType.Min, (args) =>
                 {
-                    var result = double.MaxValue;
+                    object result = double.MaxValue;
                     if (args.Count == 1)
                     {
                         if (TryParseList(args[0], out IList ilist))
                         {
-                            foreach (var value in args[0])
+                            foreach (var value in ilist)
                             {
-                                result = Math.Min(result, value);
+                                result = Min(result, value);
                             }
                         }
                         else
                         {
-                            result = Math.Min(result, args[0]);
+                            result = Min(result, args[0]);
                         }
                     }
                     else
@@ -2607,14 +2703,14 @@ namespace AdaptiveExpressions
                         {
                             if (TryParseList(arg, out IList ilist))
                             {
-                                foreach (var value in arg)
+                                foreach (var value in ilist)
                                 {
-                                    result = Math.Min(result, value);
+                                    result = Min(result, value);
                                 }
                             }
                             else
                             {
-                                result = Math.Min(result, arg);
+                                result = Min(result, arg);
                             }
                         }
                     }
@@ -2623,19 +2719,19 @@ namespace AdaptiveExpressions
                 }),
                 NumericOrCollection(ExpressionType.Max, args =>
                 {
-                    var result = double.MinValue;
+                    object result = double.MinValue;
                     if (args.Count == 1)
                     {
                         if (TryParseList(args[0], out IList ilist))
                         {
-                            foreach (var value in args[0])
+                            foreach (var value in ilist)
                             {
-                                result = Math.Max(result, value);
+                                result = Max(result, value);
                             }
                         }
                         else
                         {
-                            result = Math.Max(result, args[0]);
+                            result = Max(result, args[0]);
                         }
                     }
                     else
@@ -2644,21 +2740,21 @@ namespace AdaptiveExpressions
                         {
                             if (TryParseList(arg, out IList ilist))
                             {
-                                foreach (var value in arg)
+                                foreach (var value in ilist)
                                 {
-                                    result = Math.Max(result, value);
+                                    result = Max(result, value);
                                 }
                             }
                             else
                             {
-                                result = Math.Max(result, arg);
+                                result = Max(result, arg);
                             }
                         }
                     }
 
                     return result;
                 }),
-                MultivariateNumeric(ExpressionType.Power, args => Math.Pow(args[0], args[1])),
+                MultivariateNumeric(ExpressionType.Power, args => Math.Pow(CultureInvariantDoubleConvert(args[0]), CultureInvariantDoubleConvert(args[1]))),
                 new ExpressionEvaluator(
                     ExpressionType.Mod,
                     ApplyWithError(
@@ -2666,14 +2762,14 @@ namespace AdaptiveExpressions
                         {
                             object value = null;
                             string error;
-                            if (Convert.ToInt64(args[1]) == 0L)
+                            if (Convert.ToInt64(args[1]) == 0)
                             {
                                 error = $"Cannot mod by 0";
                             }
                             else
                             {
                                 error = null;
-                                value = args[0] % args[1];
+                                value = Mod(args[0], args[1]);
                             }
 
                             return (value, error);
@@ -2686,7 +2782,7 @@ namespace AdaptiveExpressions
                     Apply(
                         args =>
                         {
-                            List<object> operands = ResolveListValue(args[0]);
+                            var operands = ResolveListValue(args[0]).OfType<object>().ToList();
                             return operands.Average(u => Convert.ToSingle(u));
                         },
                         VerifyNumericList),
@@ -2699,8 +2795,8 @@ namespace AdaptiveExpressions
                         {
                             object result = null;
                             string error = null;
-                            var firstItem = (object)args[0];
-                            var secondItem = (object)args[1];
+                            var firstItem = args[0];
+                            var secondItem = args[1];
                             var stringConcat = !firstItem.IsNumber() || !secondItem.IsNumber();
 
                             if ((firstItem == null && secondItem.IsNumber())
@@ -2710,47 +2806,53 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                result = stringConcat ? firstItem?.ToString() + secondItem?.ToString()
-                                                : args[0] + args[1];
+                                if (stringConcat)
+                                {
+                                    result = $"{firstItem?.ToString()}{secondItem?.ToString()}";
+                                }
+                                else
+                                {
+                                    result = Add(args[0], args[1]);
+                                }
                             }
 
                             return (result, error);
                         }, VerifyNumberOrStringOrNull),
-                    ReturnType.Object,
-                    (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
+                    ReturnType.String | ReturnType.Number,
+                    (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue, ReturnType.String | ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.Sum,
                     Apply(
                         args =>
                         {
-                            List<object> operands = ResolveListValue(args[0]);
-                            return operands.All(u => (u is int)) ? operands.Sum(u => (int)u) : operands.Sum(u => Convert.ToSingle(u));
+                            var operands = ResolveListValue(args[0]).OfType<object>().ToList();
+                            return operands.All(u => u.IsInteger()) ? operands.Sum(u => Convert.ToInt64(u)) : operands.Sum(u => Convert.ToSingle(u));
                         },
                         VerifyNumericList),
                     ReturnType.Number,
-                    ValidateUnary),
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Range,
-                    ExpressionFunctions.ApplyWithError(
+                    ApplyWithError(
                         args =>
                         {
                             string error = null;
                             IList result = null;
-                            var count = (int)args[1];
+                            var count = Convert.ToInt32(args[1]);
                             if (count <= 0)
                             {
                                 error = $"The second parameter should be more than zero";
                             }
                             else
                             {
-                                result = Enumerable.Range((int)args[0], count).ToList();
+                                result = Enumerable.Range(Convert.ToInt32(args[0]), count).ToList();
                             }
 
                             return (result, error);
                         },
-                        ExpressionFunctions.VerifyInteger),
-                    ReturnType.Object,
-                    ExpressionFunctions.ValidateBinaryNumber),
+                        VerifyInteger),
+                    ReturnType.Array,
+                    ValidateBinaryNumber),
 
                 // Collection Functions
                 new ExpressionEvaluator(
@@ -2771,102 +2873,100 @@ namespace AdaptiveExpressions
                             return count;
                         }, VerifyContainer),
                     ReturnType.Number,
-                    ValidateUnary),
+                    (expression) => ValidateOrder(expression, null, ReturnType.String | ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Union,
                     Apply(
                         args =>
                         {
-                        IEnumerable<object> result = args[0];
+                        var result = (IEnumerable<object>)args[0];
                         for (var i = 1; i < args.Count; i++)
                         {
-                            IEnumerable<object> nextItem = args[i];
+                            var nextItem = (IEnumerable<object>)args[i];
                             result = result.Union(nextItem);
                         }
 
                         return result.ToList();
                         }, VerifyList),
-                    ReturnType.Object,
-                    ValidateAtLeastOne),
+                    ReturnType.Array,
+                    (expression) => ValidateArityAndAnyType(expression, 1, int.MaxValue, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Intersection,
                     Apply(
                         args =>
                         {
-                        IEnumerable<object> result = args[0];
+                        var result = (IEnumerable<object>)args[0];
                         for (var i = 1; i < args.Count; i++)
                         {
-                            IEnumerable<object> nextItem = args[i];
+                            var nextItem = (IEnumerable<object>)args[i];
                             result = result.Intersect(nextItem);
                         }
 
                         return result.ToList();
                         }, VerifyList),
-                    ReturnType.Object,
-                    ValidateAtLeastOne),
+                    ReturnType.Array,
+                    (expression) => ValidateArityAndAnyType(expression, 1, int.MaxValue, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Skip,
-                    ExpressionFunctions.Skip,
-                    ReturnType.Object,
-                    (expression) => ExpressionFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                    Skip,
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.Take,
-                    ExpressionFunctions.Take,
-                    ReturnType.Object,
-                    (expression) => ExpressionFunctions.ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                    Take,
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SubArray,
-                    ExpressionFunctions.SubArray,
-                    ReturnType.Object,
-                    (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object, ReturnType.Number)),
+                    SubArray,
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Array, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SortBy,
                     SortBy(false),
-                    ReturnType.Object,
-                    (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.SortByDescending,
                     SortBy(true),
-                    ReturnType.Object,
-                    (expression) => ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
-                new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Object, ValidateUnary),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Array)),
+                new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Array, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Flatten,
                     Apply(
                         args =>
                         {
-                            IEnumerable<object> result = args[0];
-                            var depth = args.Count > 1 ? args[1] : 100;
-                            return ExpressionFunctions.Flatten(result, depth);
+                            var depth = args.Count > 1 ? Convert.ToInt32(args[1]) : 100;
+                            return Flatten((IEnumerable<object>)args[0], depth);
                         }),
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Unique,
                     Apply(
                         args =>
                         {
-                            IEnumerable<object> result = args[0];
-                            return result.Distinct().ToList();
+                            return ((IEnumerable<object>)args[0]).Distinct().ToList();
                         }, VerifyList),
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, null, ReturnType.Object)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array)),
 
                 // Booleans
-                Comparison(ExpressionType.LessThan, args => args[0] < args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.LessThanOrEqual, args => args[0] <= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.LessThan, args => CultureInvariantDoubleConvert(args[0]) < CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.LessThanOrEqual, args => CultureInvariantDoubleConvert(args[0]) <= CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
 
                 Comparison(ExpressionType.Equal, IsEqual, ValidateBinary),
                 Comparison(ExpressionType.NotEqual, args => !IsEqual(args), ValidateBinary),
-                Comparison(ExpressionType.GreaterThan, args => args[0] > args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.GreaterThanOrEqual, args => args[0] >= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.GreaterThan, args => CultureInvariantDoubleConvert(args[0]) > CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
+                Comparison(ExpressionType.GreaterThanOrEqual, args => CultureInvariantDoubleConvert(args[0]) >= CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNotNull),
                 new ExpressionEvaluator(
                     ExpressionType.Contains,
-                    (expression, state) =>
+                    (expression, state, options) =>
                     {
                         var found = false;
-                        var (args, error) = EvaluateChildren(expression, state);
+                        var (args, error) = EvaluateChildren(expression, state, options);
                         if (error == null)
                         {
                             if (args[0] is string string0 && args[1] is string string1)
@@ -2877,7 +2977,7 @@ namespace AdaptiveExpressions
                             {
                                 // list to find a value
                                 var operands = ResolveListValue(ilist);
-                                found = operands.Contains((object)args[1]);
+                                found = operands.Contains(args[1]);
                             }
                             else if (args[1] is string string2)
                             {
@@ -2890,9 +2990,9 @@ namespace AdaptiveExpressions
                     ReturnType.Boolean,
                     ValidateBinary),
                 Comparison(ExpressionType.Empty, args => IsEmpty(args[0]), ValidateUnary, VerifyContainer),
-                new ExpressionEvaluator(ExpressionType.And, (expression, state) => And(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
-                new ExpressionEvaluator(ExpressionType.Or, (expression, state) => Or(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
-                new ExpressionEvaluator(ExpressionType.Not, (expression, state) => Not(expression, state), ReturnType.Boolean, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.And, (expression, state, options) => And(expression, state, options), ReturnType.Boolean, ValidateAtLeastOne),
+                new ExpressionEvaluator(ExpressionType.Or, (expression, state, options) => Or(expression, state, options), ReturnType.Boolean, ValidateAtLeastOne),
+                new ExpressionEvaluator(ExpressionType.Not, (expression, state, options) => Not(expression, state, options), ReturnType.Boolean, ValidateUnary),
 
                 // String
                 new ExpressionEvaluator(
@@ -2917,21 +3017,21 @@ namespace AdaptiveExpressions
                     ExpressionType.Length,
                     Apply(
                         args =>
-                            {
-                                var result = 0;
-                                if (args[0] is string str)
-                                    {
-                                        result = str.Length;
-                                    }
-                                else
-                                    {
-                                        result = 0;
-                                    }
+                        {
+                            var result = 0;
+                            if (args[0] is string str)
+                                {
+                                    result = str.Length;
+                                }
+                            else
+                                {
+                                    result = 0;
+                                }
 
-                                return result;
-                            }, VerifyStringOrNull),
+                            return result;
+                        }, VerifyStringOrNull),
                     ReturnType.Number,
-                    ValidateAtLeastOne),
+                    ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Replace,
                     ApplyWithError(
@@ -3004,7 +3104,7 @@ namespace AdaptiveExpressions
 
                             return inputStr.Split(seperator.ToCharArray());
                         }, VerifyStringOrNull),
-                    ReturnType.Object,
+                    ReturnType.Array,
                     (expression) => ValidateArityAndAnyType(expression, 1, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.Substring,
@@ -3021,7 +3121,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToLower();
+                                        return args[0].ToString().ToLower();
                                     }
                                 }),
                 StringTransform(
@@ -3034,7 +3134,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToUpper();
+                                        return args[0].ToString().ToUpper();
                                     }
                                 }),
                 StringTransform(
@@ -3047,7 +3147,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].Trim();
+                                        return args[0].ToString().Trim();
                                     }
                                 }),
                 new ExpressionEvaluator(
@@ -3079,7 +3179,7 @@ namespace AdaptiveExpressions
                         {
                             if (args[0] is string)
                             {
-                                return Regex.Split(args[0].Trim(), @"\s{1,}").Length;
+                                return Regex.Split(args[0].ToString().Trim(), @"\s{1,}").Length;
                             }
                             else
                             {
@@ -3090,15 +3190,15 @@ namespace AdaptiveExpressions
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.AddOrdinal,
-                    Apply(args => AddOrdinal(args[0]), VerifyInteger),
-                    ReturnType.Number,
+                    Apply(args => AddOrdinal(Convert.ToInt32(args[0])), VerifyInteger),
+                    ReturnType.String,
                     (expression) => ValidateArityAndAnyType(expression, 1, 1, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.Join,
-                    (expression, state) =>
+                    (expression, state, options) =>
                     {
                         object result = null;
-                        var (args, error) = EvaluateChildren(expression, state);
+                        var (args, error) = EvaluateChildren(expression, state, options);
                         if (error == null)
                         {
                             if (!TryParseList(args[0], out IList list))
@@ -3109,17 +3209,17 @@ namespace AdaptiveExpressions
                             {
                                 if (args.Count == 2)
                                 {
-                                    result = string.Join(args[1], list.OfType<object>().Select(x => x.ToString()));
+                                    result = string.Join(args[1].ToString(), list.OfType<object>().Select(x => x.ToString()));
                                 }
                                 else
                                 {
                                     if (list.Count < 3)
                                     {
-                                        result = string.Join(args[2], list.OfType<object>().Select(x => x.ToString()));
+                                        result = string.Join(args[2].ToString(), list.OfType<object>().Select(x => x.ToString()));
                                     }
                                     else
                                     {
-                                        var firstPart = string.Join(args[1], list.OfType<object>().TakeWhile(o => o != null && o != list.OfType<object>().LastOrDefault()));
+                                        var firstPart = string.Join(args[1].ToString(), list.OfType<object>().TakeWhile(o => o != null && o != list.OfType<object>().LastOrDefault()));
                                         result = firstPart + args[2] + list.OfType<object>().Last().ToString();
                                     }
                                 }
@@ -3129,18 +3229,18 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.String,
-                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.String)),
+                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Array, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.NewGuid,
-                    ExpressionFunctions.Apply(args => Guid.NewGuid().ToString()),
+                    Apply(args => Guid.NewGuid().ToString()),
                     ReturnType.String,
-                    (exprssion) => ExpressionFunctions.ValidateArityAndAnyType(exprssion, 0, 0)),
+                    (exprssion) => ValidateArityAndAnyType(exprssion, 0, 0)),
                 new ExpressionEvaluator(
                     ExpressionType.IndexOf,
-                    (expression, state) =>
+                    (expression, state, options) =>
                     {
                         object result = -1;
-                        var (args, error) = EvaluateChildren(expression, state);
+                        var (args, error) = EvaluateChildren(expression, state, options);
                         if (error == null)
                         {
                             if (args[0] is string || args[0] == null)
@@ -3167,13 +3267,13 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
+                    expr => ValidateOrder(expr, null, ReturnType.Array | ReturnType.String, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.LastIndexOf,
-                    (expression, state) =>
+                    (expression, state, options) =>
                     {
                         object result = -1;
-                        var (args, error) = EvaluateChildren(expression, state);
+                        var (args, error) = EvaluateChildren(expression, state, options);
                         if (error == null)
                         {
                             if (args[0] is string || args[0] == null)
@@ -3200,7 +3300,7 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
+                    expr => ValidateOrder(expr, null, ReturnType.Array | ReturnType.String, ReturnType.Object)),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),
@@ -3214,7 +3314,7 @@ namespace AdaptiveExpressions
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfWeek,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => (int)dt.DayOfWeek), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => Convert.ToInt32(dt.DayOfWeek)), VerifyString),
                     ReturnType.Number,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
@@ -3229,7 +3329,7 @@ namespace AdaptiveExpressions
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Date,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Date.ToString("M/dd/yyyy")), VerifyString),
+                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture)), VerifyString),
                     ReturnType.String,
                     ValidateUnaryString),
                 new ExpressionEvaluator(
@@ -3239,7 +3339,7 @@ namespace AdaptiveExpressions
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.UtcNow,
-                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0] : DefaultDateTimeFormat), VerifyString),
+                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0].ToString() : DefaultDateTimeFormat), VerifyString),
                     ReturnType.String),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
@@ -3248,17 +3348,24 @@ namespace AdaptiveExpressions
                         {
                             object result = null;
                             string error = null;
-                            dynamic timestamp = args[0];
+                            object timestamp = args[0];
                             if (Extensions.IsNumber(timestamp))
                             {
-                                if (double.TryParse(args[0].ToString(), out double unixTimestamp))
+                                if (double.TryParse(args[0].ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out double unixTimestamp))
                                 {
                                     var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
                                     timestamp = dateTime.AddSeconds(unixTimestamp);
                                 }
                             }
 
-                            (result, error) = ParseTimestamp((string)timestamp.ToString(), dt => dt.ToString(args.Count() == 2 ? args[1] : DefaultDateTimeFormat));
+                            if (timestamp is string tsString)
+                            {
+                                (result, error) = ParseTimestamp(tsString, dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture));
+                            }
+                            else
+                            {
+                                (result, error) = ParseTimestamp((string)((DateTime)timestamp).ToString(CultureInfo.InvariantCulture), dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture));
+                            }
 
                             return (result, error);
                         }),
@@ -3266,19 +3373,19 @@ namespace AdaptiveExpressions
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.SubtractFromTime,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            if (args[0] is string string0 && args[1] is int int1 && args[2] is string string2)
+                            if (args[0] is string string0 && args[1].IsInteger() && args[2] is string string2)
                             {
                                 var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(int1, string2);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[1]), string2);
                                 if (error == null)
                                 {
                                     (value, error) = ParseISOTimestamp(string0, dt => timeConverter(dt).ToString(format));
@@ -3360,22 +3467,22 @@ namespace AdaptiveExpressions
                         },
                         VerifyString),
                     ReturnType.String,
-                    expr => ValidateOrder(expr, null, ReturnType.String)),
+                    ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.GetFutureTime,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            if (args[0] is int int1 && args[1] is string string1)
+                            if (args[0].IsInteger() && args[1] is string string1)
                             {
                                 var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(int1, string1, false);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1, false);
                                 if (error == null)
                                 {
                                     value = timeConverter(DateTime.Now).ToString(format);
@@ -3393,19 +3500,19 @@ namespace AdaptiveExpressions
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.GetPastTime,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            if (args[0] is int int1 && args[1] is string string1)
+                            if (args[0].IsInteger() && args[1] is string string1)
                             {
                                 var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
-                                (timeConverter, error) = DateTimeConverter(int1, string1);
+                                (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1);
                                 if (error == null)
                                 {
                                     value = timeConverter(DateTime.Now).ToString(format);
@@ -3423,18 +3530,18 @@ namespace AdaptiveExpressions
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.ConvertFromUtc,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                             if (args[0] is string timestamp && args[1] is string targetTimeZone)
                             {
-                                (value, error) = ExpressionFunctions.ConvertFromUTC(timestamp, targetTimeZone, format);
+                                (value, error) = ConvertFromUTC(timestamp, targetTimeZone, format);
                             }
                             else
                             {
@@ -3448,18 +3555,18 @@ namespace AdaptiveExpressions
                     expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.ConvertToUtc,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                             if (args[0] is string timestamp && args[1] is string sourceTimeZone)
                             {
-                                (value, error) = ExpressionFunctions.ConvertToUTC(timestamp, sourceTimeZone, format);
+                                (value, error) = ConvertToUTC(timestamp, sourceTimeZone, format);
                             }
                             else
                             {
@@ -3473,18 +3580,18 @@ namespace AdaptiveExpressions
                     expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.AddToTime,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp && args[1] is int interval && args[2] is string timeUnit)
+                            if (args[0] is string timestamp && args[1].IsInteger() && args[2] is string timeUnit)
                             {
-                                (value, error) = AddToTime(timestamp, interval, timeUnit, format);
+                                (value, error) = AddToTime(timestamp, Convert.ToInt64(args[1]), timeUnit, format);
                             }
                             else
                             {
@@ -3498,12 +3605,12 @@ namespace AdaptiveExpressions
                     expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.StartOfDay,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
@@ -3523,12 +3630,12 @@ namespace AdaptiveExpressions
                     expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.StartOfHour,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
@@ -3548,12 +3655,12 @@ namespace AdaptiveExpressions
                     expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.StartOfMonth,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
@@ -3573,12 +3680,12 @@ namespace AdaptiveExpressions
                     expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.Ticks,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string ts)
@@ -3599,12 +3706,12 @@ namespace AdaptiveExpressions
                 // URI Parsing
                 new ExpressionEvaluator(
                     ExpressionType.UriHost,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3623,12 +3730,12 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.UriPath,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3647,12 +3754,12 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.UriPathAndQuery,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3671,12 +3778,12 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.UriPort,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3695,12 +3802,12 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.UriQuery,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3719,12 +3826,12 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.UriScheme,
-                    (expr, state) =>
+                    (expr, state, options) =>
                     {
                         object value = null;
                         string error = null;
-                        IReadOnlyList<dynamic> args;
-                        (args, error) = EvaluateChildren(expr, state);
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0] is string uri)
@@ -3743,27 +3850,45 @@ namespace AdaptiveExpressions
                     ValidateUnary),
 
                 // Conversions
-                new ExpressionEvaluator(ExpressionType.Float, Apply(args => (float)Convert.ToDouble(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Int, Apply(args => (int)Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ExpressionFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ExpressionFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0])), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.UriComponent, Apply(args => Uri.EscapeDataString(args[0]), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0])), VerifyString), ReturnType.String, ExpressionFunctions.ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.DataUriToBinary, Apply(args => ExpressionFunctions.ToBinary(args[0]), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.DataUriToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].Substring(args[0].IndexOf(",") + 1))), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.UriComponentToString, Apply(args => Uri.UnescapeDataString(args[0]), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Float, Apply(args => CultureInvariantDoubleConvert(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.Base64, 
+                    Apply(
+                        (args) => 
+                        {
+                            byte[] byteArray;
+                            if (args[0] is byte[] byteArr)
+                            {
+                                byteArray = byteArr;
+                            }
+                            else
+                            {
+                                byteArray = System.Text.Encoding.UTF8.GetBytes(args[0].ToString());
+                            }
+
+                            return Convert.ToBase64String(byteArray);
+                        }), 
+                    ReturnType.String, 
+                    ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => Convert.FromBase64String(args[0].ToString()), VerifyString), ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.UriComponent, Apply(args => Uri.EscapeDataString(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.DataUriToBinary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.DataUriToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].ToString().Substring(args[0].ToString().IndexOf(",") + 1))), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.UriComponentToString, Apply(args => Uri.UnescapeDataString(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
 
                 // TODO: Is this really the best way?
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
                 Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ExpressionFunctions.ToXml(args[0])), ReturnType.String, ExpressionFunctions.ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ToXml(args[0])), ReturnType.String, ValidateUnary),
 
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
                 new ExpressionEvaluator(ExpressionType.GetProperty, GetProperty, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
-                new ExpressionEvaluator(ExpressionType.If, (expression, state) => If(expression, state), ReturnType.Object, (expression) => ValidateArityAndAnyType(expression, 3, 3)),
+                new ExpressionEvaluator(ExpressionType.If, (expression, state, options) => If(expression, state, options), ReturnType.Object, (expression) => ValidateArityAndAnyType(expression, 3, 3)),
                 new ExpressionEvaluator(
                     ExpressionType.Rand,
                     ApplyWithError(
@@ -3771,8 +3896,8 @@ namespace AdaptiveExpressions
                         {
                             object value = null;
                             string error = null;
-                            var min = (int)args[0];
-                            var max = (int)args[1];
+                            var min = Convert.ToInt32(args[0]);
+                            var max = Convert.ToInt32(args[1]);
                             if (min >= max)
                             {
                                 error = $"{min} is not < {max} for rand";
@@ -3790,7 +3915,7 @@ namespace AdaptiveExpressions
                         VerifyInteger),
                     ReturnType.Number,
                     ValidateBinaryNumber),
-                new ExpressionEvaluator(ExpressionType.CreateArray, Apply(args => new List<object>(args)), ReturnType.Object),
+                new ExpressionEvaluator(ExpressionType.CreateArray, Apply(args => new List<object>(args)), ReturnType.Array),
                 new ExpressionEvaluator(
                     ExpressionType.First,
                     Apply(
@@ -3831,7 +3956,7 @@ namespace AdaptiveExpressions
                     ValidateUnary),
 
                 // Object manipulation and construction functions
-                new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0].ToString())), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.AddProperty,
                     ApplyWithError(args =>
@@ -3845,7 +3970,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                newJobj[prop] = args[2];
+                                newJobj[prop] = JToken.FromObject(args[2]);
                             }
 
                             return (newJobj, error);
@@ -3856,8 +3981,9 @@ namespace AdaptiveExpressions
                     ExpressionType.SetProperty,
                     Apply(args =>
                         {
-                            var newJobj = (JObject)args[0];
-                            newJobj[args[1].ToString()] = args[2];
+                            var newJobj = (IDictionary<string, JToken>)args[0];
+                            newJobj[args[1].ToString()] = JToken.FromObject(args[2]);
+
                             return newJobj;
                         }),
                     ReturnType.Object,
@@ -3877,34 +4003,36 @@ namespace AdaptiveExpressions
                     SetPathToValue,
                     ReturnType.Object,
                     ValidateBinary),
-                new ExpressionEvaluator(ExpressionType.Select, Foreach, ReturnType.Object, ValidateForeach),
-                new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
-                new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Object, ValidateWhere),
-                new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
+                new ExpressionEvaluator(ExpressionType.Select, Foreach, ReturnType.Array, ValidateForeach),
+                new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Array, ValidateForeach),
+                new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Array, ValidateWhere),
+                new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
-                new ExpressionEvaluator(ExpressionType.JPath, ApplyWithError(args => JPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.JPath, ApplyWithError(args => JPath(args[0], args[1].ToString())), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
 
                 // Regex expression
                 new ExpressionEvaluator(
                     ExpressionType.IsMatch,
-                    ApplyWithError(args =>
+                    ApplyWithError(
+                        args =>
                         {
                             var value = false;
                             string error = null;
 
-                            if (string.IsNullOrEmpty(args[0]))
+                            string inputString = args[0]?.ToString();
+                            if (string.IsNullOrEmpty(inputString))
                             {
                                 value = false;
                                 error = "regular expression is empty.";
                             }
                             else
                             {
-                                var regex = CommonRegex.CreateRegex(args[1]);
-                                value = regex.IsMatch(args[0]);
+                                var regex = CommonRegex.CreateRegex(args[1].ToString());
+                                value = regex.IsMatch(inputString);
                             }
 
                             return (value, error);
-                        }),
+                        }, VerifyStringOrNull),
                     ReturnType.Boolean,
                     ValidateIsMatch),
 
@@ -3916,12 +4044,12 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsInteger,
-                    Apply(args => Extensions.IsNumber(args[0]) && args[0] % 1 == 0),
+                    Apply(args => Extensions.IsNumber(args[0]) && CultureInvariantDoubleConvert(args[0]) % 1 == 0),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsFloat,
-                    Apply(args => Extensions.IsNumber(args[0]) && args[0] % 1 != 0),
+                    Apply(args => Extensions.IsNumber(args[0]) && CultureInvariantDoubleConvert(args[0]) % 1 != 0),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
@@ -3961,11 +4089,11 @@ namespace AdaptiveExpressions
                     ValidateUnary),
             };
 
-            var eval = new ExpressionEvaluator(ExpressionType.Optional, (expression, state) => throw new NotImplementedException(), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
+            var eval = new ExpressionEvaluator(ExpressionType.Optional, (expression, state, options) => throw new NotImplementedException(), ReturnType.Boolean, ValidateUnaryBoolean);
             eval.Negation = eval;
             functions.Add(eval);
             
-            eval = new ExpressionEvaluator(ExpressionType.Ignore, (expression, state) => expression.Children[0].TryEvaluate(state), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryBoolean);
+            eval = new ExpressionEvaluator(ExpressionType.Ignore, (expression, state, options) => expression.Children[0].TryEvaluate(state, options), ReturnType.Boolean, ValidateUnaryBoolean);
             eval.Negation = eval;
             functions.Add(eval);
 

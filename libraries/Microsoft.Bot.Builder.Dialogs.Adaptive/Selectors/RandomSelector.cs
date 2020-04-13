@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// <summary>
     /// Select a random true triggerHandler implementation of IRuleSelector.
     /// </summary>
-    public class RandomSelector : ITriggerSelector
+    public class RandomSelector : TriggerSelector
     {
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.RandomSelector";
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
+        public override void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             _conditionals = conditionals.ToList();
             _evaluate = evaluate;
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel = default)
+        public override Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel = default)
         {
             var candidates = _conditionals;
             if (_evaluate)
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 foreach (var conditional in _conditionals)
                 {
                     var expression = conditional.GetExpression();
-                    var (value, error) = expression.TryEvaluate(context.GetState());
+                    var (value, error) = expression.TryEvaluate(context.State);
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {

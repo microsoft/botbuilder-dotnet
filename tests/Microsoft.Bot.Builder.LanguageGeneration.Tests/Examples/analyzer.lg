@@ -42,7 +42,7 @@ ${city} ${template5()}
 # CuppuccinoOrderConfirmation
 -Here is your ${size} Cuppuccino. You need to pay ${price} dollars! Thank you!
 
-# coffee-to-go-order
+# coffee_to_go_order
 -SWITCH:${coffee}
 - CASE: ${'Latte'}
     - ${wPhrase()} ${LatteOrderConfirmation()}
