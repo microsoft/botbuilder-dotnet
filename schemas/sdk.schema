@@ -3906,6 +3906,20 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
+                "pageIndex": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Index property",
+                    "description": "Property that holds the index of the page.",
+                    "default": "dialog.foreach.pageindex"
+                },
+                "page": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Page property",
+                    "description": "Property that holds the value of the page.",
+                    "default": "dialog.foreach.page"
+                },
                 "pageSize": {
                     "$role": "expression",
                     "title": "Page size",
