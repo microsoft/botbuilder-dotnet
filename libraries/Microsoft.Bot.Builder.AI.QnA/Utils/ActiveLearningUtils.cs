@@ -51,9 +51,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             var topAnswerScore = qnaSearchResults[0].Score * 100;
+            if (topAnswerScore > MaximumScoreForLowScoreVariation)
+            {
+                filteredQnaSearchResult.Add(qnaSearchResults[0]);
+                return filteredQnaSearchResult;
+            }
+            
             var prevScore = topAnswerScore;
 
-            if ((topAnswerScore > MinimumScoreForLowScoreVariation) && (topAnswerScore <= MaximumScoreForLowScoreVariation))
+            if (topAnswerScore > MinimumScoreForLowScoreVariation) 
             {
                 filteredQnaSearchResult.Add(qnaSearchResults[0]);
 
