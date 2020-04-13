@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         private readonly ExpressionParser baseExpressionParser;
         private readonly Templates templates;
-        private IList<string> visitedTemplateNames;
+        private Template currentTemplate;
 
         private IExpressionParser _expressionParser;
 
@@ -53,47 +53,36 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>report result.</returns>
         public List<Diagnostic> Check()
         {
-            visitedTemplateNames = new List<string>();
             var result = new List<Diagnostic>();
 
             if (templates.AllTemplates.Count == 0)
             {
-                result.Add(BuildLGDiagnostic(
-                    TemplateErrors.NoTemplate,
-                    DiagnosticSeverity.Warning,
-                    includeTemplateNameInfo: false));
-
+                var diagnostic = new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), TemplateErrors.NoTemplate, DiagnosticSeverity.Warning, templates.Id);
+                result.Add(diagnostic);
                 return result;
             }
 
             foreach (var template in templates)
             {
+                currentTemplate = template;
                 var templateDiagnostics = new List<Diagnostic>();
-                if (visitedTemplateNames.Contains(template.Name))
+
+                // checker duplicated in different files
+                foreach (var reference in templates.References)
                 {
-                    templateDiagnostics.Add(BuildLGDiagnostic(TemplateErrors.DuplicatedTemplateInSameTemplate(template.Name)));
+                    var sameTemplates = reference.Where(u => u.Name == template.Name);
+                    foreach (var sameTemplate in sameTemplates)
+                    {
+                        var startPosition = new Position(template.StartLine, 0);
+                        var stopPosition = new Position(template.StartLine, 100);
+                        var diagnostic = new Diagnostic(new Range(startPosition, stopPosition), TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.Source), source: templates.Id);
+                        templateDiagnostics.Add(diagnostic);
+                    }
                 }
-                else
+
+                if (templateDiagnostics.Count == 0 && template.TemplateBodyParseTree != null)
                 {
-                    visitedTemplateNames.Add(template.Name);
-
-                    foreach (var reference in templates.References)
-                    {
-                        var sameTemplates = reference.Where(u => u.Name == template.Name);
-                        foreach (var sameTemplate in sameTemplates)
-                        {
-                            templateDiagnostics.Add(BuildLGDiagnostic(TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.Source)));
-                        }
-                    }
-
-                    if (templateDiagnostics.Count == 0)
-                    {
-                        templateDiagnostics.AddRange(template.Diagnostics);
-                        if (template.TemplateBodyParseTree != null)
-                        {
-                            templateDiagnostics.AddRange(Visit(template.TemplateBodyParseTree));
-                        }
-                    }
+                    templateDiagnostics.AddRange(Visit(template.TemplateBodyParseTree));
                 }
 
                 result.AddRange(templateDiagnostics);
@@ -401,12 +390,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private Diagnostic BuildLGDiagnostic(
             string message,
             DiagnosticSeverity severity = DiagnosticSeverity.Error,
-            ParserRuleContext context = null,
-            bool includeTemplateNameInfo = true)
+            ParserRuleContext context = null)
         {
-            message = visitedTemplateNames.Count > 0 && includeTemplateNameInfo ? $"[{visitedTemplateNames.LastOrDefault()}]" + message : message;
-            var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
-            var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
+            var lineOffset = this.currentTemplate != null ? this.currentTemplate.StartLine + 1 : 0;
+            message = this.currentTemplate != null ? $"[{this.currentTemplate.Name}]" + message : message;
+            var startPosition = context == null ? new Position(lineOffset, 0) : new Position(lineOffset + context.Start.Line, context.Start.Column);
+            var stopPosition = context == null ? new Position(lineOffset, 0) : new Position(lineOffset + context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             var range = new Range(startPosition, stopPosition);
             return new Diagnostic(range, message, severity, templates.Id);
         }
