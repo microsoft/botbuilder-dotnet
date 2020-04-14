@@ -7,24 +7,30 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// Apply Delegation Pattern to services that implement IAuthenticator.
+    /// (https://en.wikipedia.org/wiki/Delegation_pattern).
+    /// This service composes multiple authenticators into a single authenticator.
+    /// </summary>
     internal sealed class Authenticators : IAuthenticator
     {
-        private readonly IAuthenticator[] inners;
+        private readonly IAuthenticator[] _inners;
 
         public Authenticators(params IAuthenticator[] inners)
         {
-            this.inners = inners ?? throw new ArgumentNullException(nameof(inners));
+            _inners = inners ?? throw new ArgumentNullException(nameof(inners));
         }
 
         async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
         {
             ExceptionDispatchInfo info = null;
 
-            for (int index = 0; index < this.inners.Length; ++index)
+            // iterate over the inner IAuthenticator services
+            foreach (var inner in _inners)
             {
-                var inner = this.inners[index];
                 try
                 {
+                    // delegate the method invocation to the inner IAuthenticator service
                     return await inner.GetTokenAsync(forceRefresh).ConfigureAwait(false);
                 }
                 catch (Exception error)
