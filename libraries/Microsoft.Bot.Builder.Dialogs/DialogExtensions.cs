@@ -14,8 +14,7 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Provides additional, `static` (Shared in Visual Basic) methods for <see cref="Dialog"/> and
-    /// derived classes.
+    /// Provides extension methods for <see cref="Dialog"/> and derived classes.
     /// </summary>
     public static class DialogExtensions
     {
