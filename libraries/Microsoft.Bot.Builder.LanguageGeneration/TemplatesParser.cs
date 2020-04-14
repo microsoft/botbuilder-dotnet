@@ -29,7 +29,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// option regex.
         /// </summary>
-        private static readonly Regex OptionRegex = new Regex(@"^> *!#(.*)$");
+        private static readonly Regex OptionRegex = new Regex(@"> *!#(.*)");
+        private static readonly Regex ImportRegex = new Regex(@"\[(.*)\]\((.*)\)");
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
@@ -97,7 +98,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception err)
             {
-                newLG.Diagnostics.Add(BuildDiagnostic(err.Message, source: id));
+                newLG.Diagnostics.Add(ConvertToDiagnostic(err.Message, source: id));
             }
 
             return newLG;
@@ -140,7 +141,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception err)
             {
-                lg.Diagnostics.Add(BuildDiagnostic(err.Message, source: id));
+                lg.Diagnostics.Add(ConvertToDiagnostic(err.Message, source: id));
             }
 
             return lg;
@@ -167,12 +168,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return (File.ReadAllText(importPath), importPath);
         }
 
-        private static Diagnostic BuildDiagnostic(string errorMessage, ParserRuleContext context = null, string source = null)
+        private static Diagnostic ConvertToDiagnostic(string errorMessage, string source = null)
         {
             errorMessage = TemplateErrors.StaticFailure + "- " + errorMessage;
-            var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
-            var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
-            return new Diagnostic(new Range(startPosition, stopPosition), errorMessage, source: source);
+            return new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), errorMessage, source: source);
         }
 
         /// <summary>
@@ -258,11 +257,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var lineContent = context.INVALID_LINE().GetText();
                 if (!string.IsNullOrWhiteSpace(lineContent))
                 {
-                    var errorMessage = TemplateErrors.StaticFailure + "- " + context.INVALID_LINE().GetText();
-                    var startPosition = new Position(context.Start.Line, context.Start.Column);
-                    var stopPosition = new Position(context.Start.Line, context.Stop.Column + context.Stop.Text.Length);
-                    var diagnostic = new Diagnostic(new Range(startPosition, stopPosition), errorMessage, source: templates.Id);
-                    this.templates.Diagnostics.Add(diagnostic);
+                    this.templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError, context));
                 }
 
                 return null;
@@ -271,16 +266,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             public override object VisitImportDefinition([NotNull] LGFileParser.ImportDefinitionContext context)
             {
                 var importStr = context.IMPORT().GetText();
-                var openSquareBracketIndex = importStr.IndexOf('[');
-                var closeSquareBracketIndex = importStr.IndexOf(']');
-                var description = importStr.Substring(openSquareBracketIndex + 1, closeSquareBracketIndex - openSquareBracketIndex - 1);
 
-                var lastOpenBracketIndex = importStr.LastIndexOf('(');
-                var lastCloseBracketIndex = importStr.LastIndexOf(')');
-                var id = importStr.Substring(lastOpenBracketIndex + 1, lastCloseBracketIndex - lastOpenBracketIndex - 1);
+                var matchResult = ImportRegex.Match(importStr);
+                if (matchResult.Success && matchResult.Groups.Count == 3)
+                {
+                    var description = matchResult.Groups[1].Value?.Trim();
+                    var id = matchResult.Groups[2].Value?.Trim();
+                    var import = new TemplateImport(description, id, this.templates.Id);
+                    this.templates.Imports.Add(import);
+                }
 
-                var import = new TemplateImport(description, id, this.templates.Id);
-                this.templates.Imports.Add(import);
                 return null;
             }
 
@@ -315,7 +310,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (this.templates.Any(u => u.Name == templateName))
                 {
-                    var diagnostic = BuildTemplateDiagnostic(TemplateErrors.DuplicatedTemplateInSameTemplate(templateName), context.templateNameLine());
+                    var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.DuplicatedTemplateInSameTemplate(templateName), context.templateNameLine());
                     this.templates.Diagnostics.Add(diagnostic);
                 }
                 else
@@ -344,7 +339,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (string.IsNullOrWhiteSpace(templateBody))
                 {
-                    var diagnostic = BuildTemplateDiagnostic(TemplateErrors.NoTemplateBody(templateName), context, DiagnosticSeverity.Warning);
+                    var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.NoTemplateBody(templateName), context, DiagnosticSeverity.Warning);
                     this.templates.Diagnostics.Add(diagnostic);
                 }
                 else
@@ -368,7 +363,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (!IdentifierRegex.IsMatch(parameter))
                     {
-                        var diagnostic = BuildTemplateDiagnostic(TemplateErrors.InvalidTemplateName, context);
+                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName, context);
                         this.templates.Diagnostics.Add(diagnostic);
                     }
                 }
@@ -381,7 +376,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (!IdentifierRegex.IsMatch(id))
                     {
-                        var diagnostic = BuildTemplateDiagnostic(TemplateErrors.InvalidTemplateName, context);
+                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName, context);
                         this.templates.Diagnostics.Add(diagnostic);
                     }
                 }
@@ -447,7 +442,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return parser.templateBody();
             }
 
-            private Diagnostic BuildTemplateDiagnostic(string errorMessage, ParserRuleContext context, DiagnosticSeverity severity = DiagnosticSeverity.Error)
+            private Diagnostic BuildTemplatesDiagnostic(string errorMessage, ParserRuleContext context, DiagnosticSeverity severity = DiagnosticSeverity.Error)
             {
                 var startPosition = new Position(context.Start.Line, context.Start.Column);
                 var stopPosition = new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
