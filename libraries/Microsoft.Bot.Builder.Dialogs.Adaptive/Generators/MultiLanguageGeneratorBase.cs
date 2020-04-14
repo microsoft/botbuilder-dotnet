@@ -67,15 +67,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 throw new Exception($"No supported language found for {targetLocale}");
             }
-            else
-            {
-                // if last locale point to "", we do one more re-direct
-                if (fallbackLocales.Last() == string.Empty)
-                {
-                    fallbackLocales.RemoveAt(fallbackLocales.Count - 1);
-                    fallbackLocales.AddRange(languagePolicy[string.Empty]);
-                }
-            }
 
             var generators = new List<LanguageGenerator>();
             foreach (var locale in fallbackLocales)
