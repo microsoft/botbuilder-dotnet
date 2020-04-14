@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// If strict mode is on, expression would throw exception instead of return
         /// null or make the condition failed.
         /// </value>
-        public bool StrictMode => GetStrictModeFromOptions(Options);
+        public LGOptions LgOptions => GetLGOptions(Options);
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             CheckErrors();
 
-            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, StrictMode);
+            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public IList<object> ExpandTemplate(string templateName, object scope = null)
         {
             CheckErrors();
-            var expander = new Expander(AllTemplates.ToList(), ExpressionParser, StrictMode);
+            var expander = new Expander(AllTemplates.ToList(), ExpressionParser, LgOptions.StrictMode);
             return expander.ExpandTemplate(templateName, scope);
         }
 
@@ -391,15 +391,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private bool GetStrictModeFromOptions(IList<string> options)
+        private LGOptions GetLGOptions(IList<string> options)
         {
-            var result = false;
+            var opt = new LGOptions();
             if (options == null)
             {
-                return result;
+                return opt;
             }
 
             var strictModeKey = "@strict";
+            var replaceNullKey = "@replaceNull";
+            var lineBreakKey = "@lineBreakStyle";
             foreach (var option in options)
             {
                 if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
@@ -411,17 +413,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         if (value == "true")
                         {
-                            result = true;
+                            opt.StrictMode = true;
                         }
-                        else if (value == "false")
-                        {
-                            result = false;
-                        }
+                    }
+
+                    if (key == replaceNullKey)
+                    {
+                        opt.NullSubstitution = (path) => Expression.Parse($"`{value}`");
+                    }
+
+                    if (key == lineBreakKey)
+                    {
+                        opt.LineBreakStyle = value;
                     }
                 }
             }
 
-            return result;
+            return opt;
         }
     }
 }

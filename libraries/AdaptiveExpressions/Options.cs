@@ -12,11 +12,13 @@ namespace AdaptiveExpressions
         public Options()
         {
             this.NullSubstitution = null;
+            this.StrictMode = false;
         }
 
         public Options(Options opt)
         {
             this.NullSubstitution = opt.NullSubstitution;
+            this.StrictMode = opt.StrictMode;
         }
 
         /// <summary>
@@ -26,5 +28,7 @@ namespace AdaptiveExpressions
         /// The delegate.</placeholder>
         /// </value>
         public Func<string, object> NullSubstitution { get; set; } = null;
+        
+        public bool StrictMode { get; set; } = false;
     }
 }
