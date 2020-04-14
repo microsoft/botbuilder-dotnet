@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace Microsoft.Bot.Connector.Authentication
     public class AdalAuthenticator : IAuthenticator
     {
         private const string MsalTemporarilyUnavailable = "temporarily_unavailable";
+        private const int HttpTooManyRequests = 429;
 
         // Semaphore to control concurrency while refreshing tokens from ADAL.
         // Whenever a token expires, we want only one request to retrieve a token.
@@ -218,11 +220,11 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // When the Service Token Server (STS) is too busy because of “too many requests”,
             // it returns an HTTP error 429
-            return adalServiceException.ErrorCode == MsalTemporarilyUnavailable || adalServiceException.StatusCode == 429;
+            return adalServiceException.ErrorCode == MsalTemporarilyUnavailable || adalServiceException.StatusCode == HttpTooManyRequests;
         }
 
         private bool IsAdalServiceInvalidRequest(Exception ex)
-            => ex is AdalServiceException adal && adal.StatusCode == 400;
+            => ex is AdalServiceException adal && adal.StatusCode == (int)HttpStatusCode.BadRequest;
 
         private RetryParams ComputeAdalRetry(Exception ex)
         {
@@ -232,7 +234,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 // When the Service Token Server (STS) is too busy because of “too many requests”,
                 // it returns an HTTP error 429 with a hint about when you can try again (Retry-After response field) as a delay in seconds
-                if (adalServiceException.ErrorCode == MsalTemporarilyUnavailable || adalServiceException.StatusCode == 429)
+                if (adalServiceException.ErrorCode == MsalTemporarilyUnavailable || adalServiceException.StatusCode == HttpTooManyRequests)
                 {
                     RetryConditionHeaderValue retryAfter = adalServiceException.Headers.RetryAfter;
 
