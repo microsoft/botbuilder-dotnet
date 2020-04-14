@@ -29,15 +29,13 @@ fragment NUMBER: '0'..'9';
 
 fragment WHITESPACE : ' '|'\t'|'\ufeff'|'\u00a0';
 
-fragment EMPTY_OBJECT: '{' WHITESPACE* '}';
-
 fragment STRING_LITERAL : ('\'' (('\\'('\''|'\\'))|(~'\''))*? '\'') | ('"' (('\\'('"'|'\\'))|(~'"'))*? '"');
 
 fragment STRING_INTERPOLATION : '`' (('\\'('`'|'\\'))|(~'`'))*? '`';
 
-fragment EXPRESSION_FRAGMENT : '$' '{' (STRING_LITERAL | STRING_INTERPOLATION | EMPTY_OBJECT | ~[}'"`] )+ '}'?;
-
 fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
+
+fragment IDENTIFIER : (LETTER | NUMBER | '_') (LETTER | NUMBER | '_')*;
 
 WS
   : WHITESPACE+ -> skip
@@ -53,6 +51,14 @@ COMMENTS
 
 DASH
   : '-' { beginOfTemplateLine = true; beginOfTemplateBody = false; } -> pushMode(NORMAL_TEMPLATE_BODY_MODE)
+  ;
+
+OBJECT_DEFINITION
+  : '{' ((WHITESPACE) | ((IDENTIFIER | STRING_LITERAL) ':' ( STRING_LITERAL | ~[{}\r\n'"`] | OBJECT_DEFINITION)+))* '}'
+  ;
+  
+EXPRESSION_FRAGMENT
+  : '$' '{' (STRING_LITERAL | STRING_INTERPOLATION | OBJECT_DEFINITION | ~[}'"`])+ '}'?
   ;
 
 LEFT_SQUARE_BRACKET

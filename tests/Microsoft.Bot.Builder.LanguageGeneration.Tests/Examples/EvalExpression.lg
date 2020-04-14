@@ -19,3 +19,18 @@ Hi${userName}
 
 # template6
 - ${'good'}${'morning'}
+
+# template7
+- ${string({a: "hello"})}
+
+# template8
+- ${string({user: {name: "Allen"}})}
+
+#template9
+- ${string({ctx: value})}
+
+#template10
+- ${(addProperty({a:12, c: 15}, 'b', 13)).b}
+
+#template11
+- ${(setProperty({}, 'user', {age: 18})).user.age}
