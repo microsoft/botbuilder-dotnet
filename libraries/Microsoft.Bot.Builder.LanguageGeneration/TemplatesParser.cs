@@ -340,12 +340,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     var templateBody = context.templateBody().GetText();
 
-                    if (!isLast && templateBody.EndsWith("\n"))
+                    if (!isLast)
                     {
-                        templateBody = templateBody.Substring(0, templateBody.Length - 1);
-                        if (templateBody.EndsWith("\r"))
+                        // this logic works in linux runtime.
+                        if (templateBody.EndsWith("\r\n"))
+                        {
+                            templateBody = templateBody.Substring(0, templateBody.Length - 2);
+                        }
+                        else if (templateBody.EndsWith("\n"))
                         {
                             templateBody = templateBody.Substring(0, templateBody.Length - 1);
+                            if (templateBody.EndsWith("\r"))
+                            {
+                                templateBody = templateBody.Substring(0, templateBody.Length - 1);
+                            }
                         }
                     }
 
