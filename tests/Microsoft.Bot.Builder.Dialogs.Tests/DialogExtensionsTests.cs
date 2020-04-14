@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,51 +22,76 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         // An App ID for a skill bot.
         private readonly string _skillBotId = Guid.NewGuid().ToString();
-        private ITurnContext _turnContext;
 
-        [TestMethod]
-        public async Task HandleActivitiesFromChannel()
+        // Captures an EndOfConversation if it was sent to help with assertions.
+        private Activity _eocSent;
+
+        /// <summary>
+        /// Enum to handle different test cases.
+        /// </summary>
+        public enum FlowTestCase
         {
-            var dialog = new SimpleComponentDialog();
-            var testFlow = CreateFlow(dialog);
-            await testFlow.Send("Hi")
-                .AssertReply("Hello, what is your name?")
-                .Send("SomeName")
-                .AssertReply("Hello SomeName, nice to meet you!")
-                .StartTestAsync();
+            /// <summary>
+            /// RunAsync is executing on a root bot with no skills (typical standalone bot).
+            /// </summary>
+            RootBotOnly,
 
-            Assert.AreEqual(DialogReason.EndCalled, dialog.EndReason);
+            /// <summary>
+            /// RunAsync is executing on a root bot handling replies from a skill.
+            /// </summary>
+            RootBotConsumingSkill,
+
+            /// <summary>
+            /// RunAsync is executing in a skill that is called from a root and calling another skill.
+            /// </summary>
+            MiddleSkill,
+
+            /// <summary>
+            /// RunAsync is executing in a skill that is called from a parent (a root or another skill) but doesn't call another skill.
+            /// </summary>
+            LeafSkill
         }
 
         [TestMethod]
-        public async Task SkillHandlesActivitiesFromParent()
+        [DataRow(FlowTestCase.RootBotOnly, false)]
+        [DataRow(FlowTestCase.RootBotConsumingSkill, false)]
+        [DataRow(FlowTestCase.MiddleSkill, true)]
+        [DataRow(FlowTestCase.LeafSkill, true)]
+        public async Task HandlesBotAndSkillsTestCases(FlowTestCase testCase, bool shouldSendEoc)
         {
             var dialog = new SimpleComponentDialog();
-            var testFlow = CreateFlow(dialog, true);
+            var testFlow = CreateTestFlow(dialog, testCase);
             await testFlow.Send("Hi")
                 .AssertReply("Hello, what is your name?")
                 .Send("SomeName")
                 .AssertReply("Hello SomeName, nice to meet you!")
-                .AssertReply(activity =>
-                {
-                    Assert.AreEqual(activity.Type, ActivityTypes.EndOfConversation);
-                    Assert.AreEqual(((Activity)activity).Value, "SomeName");
-                })
                 .StartTestAsync();
-
+            
             Assert.AreEqual(DialogReason.EndCalled, dialog.EndReason);
+
+            if (shouldSendEoc)
+            {
+                Assert.IsNotNull(_eocSent, "Skills should send EndConversation to channel");
+                Assert.AreEqual(ActivityTypes.EndOfConversation, _eocSent.Type);
+                Assert.AreEqual("SomeName", _eocSent.Value);
+            }
+            else
+            {
+                Assert.IsNull(_eocSent, "Root bot should not send EndConversation to channel");
+            }
         }
 
         [TestMethod]
         public async Task SkillHandlesEocFromParent()
         {
             var dialog = new SimpleComponentDialog();
-            var testFlow = CreateFlow(dialog, true);
+            var testFlow = CreateTestFlow(dialog, FlowTestCase.LeafSkill);
             await testFlow.Send("Hi")
                 .AssertReply("Hello, what is your name?")
                 .Send(new Activity(ActivityTypes.EndOfConversation) { CallerId = _parentBotId })
                 .StartTestAsync();
 
+            Assert.IsNull(_eocSent, "Skill should not send back EoC when an EoC is sent from a parent");
             Assert.AreEqual(DialogReason.CancelCalled, dialog.EndReason);
         }
 
@@ -72,17 +99,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task SkillHandlesRepromptFromParent()
         {
             var dialog = new SimpleComponentDialog();
-            var testFlow = CreateFlow(dialog, true);
+            var testFlow = CreateTestFlow(dialog, FlowTestCase.LeafSkill);
             await testFlow.Send("Hi")
                 .AssertReply("Hello, what is your name?")
-                .Send(new Activity(ActivityTypes.Event) { CallerId = _parentBotId, Name = DialogEvents.RepromptDialog })
+                .Send(new Activity(ActivityTypes.Event)
+                {
+                    CallerId = _parentBotId,
+                    Name = DialogEvents.RepromptDialog
+                })
                 .AssertReply("Hello, what is your name?")
                 .StartTestAsync();
 
             Assert.AreEqual(DialogReason.BeginCalled, dialog.EndReason);
         }
 
-        private TestFlow CreateFlow(Dialog dialog, bool isSkillFlow = false)
+        /// <summary>
+        /// Creates a TestFlow instance with state data to recreate and assert the different test case.
+        /// </summary>
+        private TestFlow CreateTestFlow(Dialog dialog, FlowTestCase testCase)
         {
             var conversationId = Guid.NewGuid().ToString();
             var storage = new MemoryStorage();
@@ -97,10 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                // Capture turnContext to help with assertions.
-                _turnContext = turnContext;
-
-                if (isSkillFlow)
+                if (testCase != FlowTestCase.RootBotOnly)
                 {
                     // Create a skill ClaimsIdentity and put it in TurnState so SkillValidation.IsSkillClaim() returns true.
                     var claimsIdentity = new ClaimsIdentity();
@@ -108,8 +139,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, _skillBotId));
                     claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AuthorizedParty, _parentBotId));
                     turnContext.TurnState.Add(BotAdapter.BotIdentityKey, claimsIdentity);
+
+                    if (testCase == FlowTestCase.RootBotConsumingSkill)
+                    {
+                        // Simulate the SkillConversationReference with a channel OAuthScope stored in TurnState.
+                        // This emulates a response coming to a root bot through SkillHandler. 
+                        turnContext.TurnState.Add(SkillHandler.SkillConversationReferenceKey, new SkillConversationReference { OAuthScope = AuthenticationConstants.ToChannelFromBotOAuthScope });
+                    }
+
+                    if (testCase == FlowTestCase.MiddleSkill)
+                    {
+                        // Simulate the SkillConversationReference with a parent Bot ID stored in TurnState.
+                        // This emulates a response coming to a skill from another skill through SkillHandler. 
+                        turnContext.TurnState.Add(SkillHandler.SkillConversationReferenceKey, new SkillConversationReference { OAuthScope = _parentBotId });
+                    }
                 }
 
+                // Interceptor to capture the EoC activity if it was sent so we can assert it in the tests.
+                turnContext.OnSendActivities(async (tc, activities, next) =>
+                {
+                    _eocSent = activities.FirstOrDefault(activity => activity.Type == ActivityTypes.EndOfConversation);
+                    return await next().ConfigureAwait(false);
+                });
+
+                // Invoke RunAsync on the dialog.
                 await dialog.RunAsync(turnContext, convoState.CreateProperty<DialogState>("DialogState"), cancellationToken);
             });
         }
@@ -162,16 +215,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 await stepContext.Context.SendActivityAsync($"Hello {stepContext.Result}, nice to meet you!", cancellationToken: cancellationToken);
                 return await stepContext.EndDialogAsync(stepContext.Result, cancellationToken);
-            }
-        }
-
-        // A simple dialog for testing.
-        private class SimpleDialog : Dialog
-        {
-            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
-            {
-                await dc.Context.SendActivityAsync("simple", cancellationToken: cancellationToken);
-                return await dc.EndDialogAsync(cancellationToken: cancellationToken);
             }
         }
     }

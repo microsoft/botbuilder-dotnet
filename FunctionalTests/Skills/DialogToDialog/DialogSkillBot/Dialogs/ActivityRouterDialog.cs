@@ -113,7 +113,7 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot.Dialogs
                     var oAuthDialog = FindDialog(nameof(OAuthTestDialog));
                     return await stepContext.BeginDialogAsync(oAuthDialog.Id, null, cancellationToken);
 
-                case "EchoSkillBot":
+                case "EchoSkill":
                     // Start the EchoSkillBot
                     var echoSkill = FindDialog(nameof(SkillDialog));
                     var messageActivity = MessageFactory.Text("Hello echo");
