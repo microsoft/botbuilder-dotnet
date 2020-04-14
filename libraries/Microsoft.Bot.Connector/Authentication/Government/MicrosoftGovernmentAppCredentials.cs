@@ -84,10 +84,10 @@ namespace Microsoft.Bot.Connector.Authentication
 
                     if (OAuthScope == GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope)
                     {
-                        var optionOld = Make(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope);
-                        var optionNew = Make("https://login.microsoftonline.us/botframework.onmicrosoft.us", "https://api.botframework.onmicrosoft.us");
+                        var optionV1 = Make(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope);
+                        var optionV2 = Make(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlV2, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScopeV2);
 
-                        return new Authenticators(optionOld, optionNew);
+                        return new Authenticators(optionV1, optionV2);
                     }
                     else
                     {

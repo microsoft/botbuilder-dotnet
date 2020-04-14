@@ -19,9 +19,19 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e";
 
         /// <summary>
+        /// TO GOVERNMENT CHANNEL FROM BOT: Login URL V2.
+        /// </summary>
+        public const string ToChannelFromBotLoginUrlV2 = "https://login.microsoftonline.us/botframework.onmicrosoft.us";
+
+        /// <summary>
         /// TO GOVERNMENT CHANNEL FROM BOT: OAuth scope to request.
         /// </summary>
         public const string ToChannelFromBotOAuthScope = "https://api.botframework.us";
+
+        /// <summary>
+        /// TO GOVERNMENT CHANNEL FROM BOT: OAuth scope to request V2.
+        /// </summary>
+        public const string ToChannelFromBotOAuthScopeV2 = "https://api.botframework.onmicrosoft.us";
 
         /// <summary>
         /// TO BOT FROM GOVERNMENT CHANNEL: Token issuer.
