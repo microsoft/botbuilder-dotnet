@@ -310,10 +310,85 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var startLine = context.Start.Line;
                 var stopLine = context.Stop.Line;
 
-                var file = context.Parent.Parent as LGFileParser.FileContext;
-                var isLast = file.paragraph().Select(u => u.templateDefinition()).Where(u => u != null).Last() == context;
-
                 var templateNameLine = context.templateNameLine().TEMPLATE_NAME_LINE().GetText();
+                var (templateName, parameters) = ExtractTemplateNameLine(templateNameLine);
+
+                if (this.templates.Any(u => u.Name == templateName))
+                {
+                    var diagnostic = BuildTemplateDiagnostic(TemplateErrors.DuplicatedTemplateInSameTemplate(templateName), context.templateNameLine());
+                    this.templates.Diagnostics.Add(diagnostic);
+                }
+                else
+                {
+                    var templateBody = context.templateBody().GetText();
+                    var file = context.Parent.Parent as LGFileParser.FileContext;
+                    var isLastTemplate = file.paragraph().Select(u => u.templateDefinition()).Where(u => u != null).Last() == context;
+                    if (!isLastTemplate)
+                    {
+                        templateBody = RemoveTailingNewline(templateBody);
+                    }
+
+                    var template = new Template(templateName, parameters, templateBody, startLine, stopLine, this.templates.Id);
+
+                    CheckTemplateName(templateName, context.templateNameLine());
+                    CheckTemplateParameters(parameters, context.templateNameLine());
+                    template.TemplateBodyParseTree = CheckTemplateBody(templateName, templateBody, context.templateBody(), startLine);
+
+                    this.templates.Add(template);
+                }
+
+                return null;
+            }
+
+            private LGTemplateParser.TemplateBodyContext CheckTemplateBody(string templateName, string templateBody, LGFileParser.TemplateBodyContext context, int startLine)
+            {
+                if (string.IsNullOrWhiteSpace(templateBody))
+                {
+                    var diagnostic = BuildTemplateDiagnostic(TemplateErrors.NoTemplateBody(templateName), context, DiagnosticSeverity.Warning);
+                    this.templates.Diagnostics.Add(diagnostic);
+                }
+                else
+                {
+                    try
+                    {
+                        return AntlrParseTemplate(templateBody, startLine);
+                    }
+                    catch (TemplateException e)
+                    {
+                        e.Diagnostics.ToList().ForEach(u => this.templates.Diagnostics.Add(u));
+                    }
+                }
+
+                return null;
+            }
+
+            private void CheckTemplateParameters(List<string> parameters, LGFileParser.TemplateNameLineContext context)
+            {
+                foreach (var parameter in parameters)
+                {
+                    if (!IdentifierRegex.IsMatch(parameter))
+                    {
+                        var diagnostic = BuildTemplateDiagnostic(TemplateErrors.InvalidTemplateName, context);
+                        this.templates.Diagnostics.Add(diagnostic);
+                    }
+                }
+            }
+
+            private void CheckTemplateName(string templateName, ParserRuleContext context)
+            {
+                var functionNameSplitDot = templateName.Split('.');
+                foreach (var id in functionNameSplitDot)
+                {
+                    if (!IdentifierRegex.IsMatch(id))
+                    {
+                        var diagnostic = BuildTemplateDiagnostic(TemplateErrors.InvalidTemplateName, context);
+                        this.templates.Diagnostics.Add(diagnostic);
+                    }
+                }
+            }
+
+            private (string templateName, List<string> parameters) ExtractTemplateNameLine(string templateNameLine)
+            {
                 var hashIndex = templateNameLine.IndexOf('#');
 
                 templateNameLine = templateNameLine.Substring(hashIndex + 1).Trim();
@@ -331,79 +406,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                 }
 
-                if (this.templates.Any(u => u.Name == templateName))
+                return (templateName, parameters);
+            }
+
+            private string RemoveTailingNewline(string line)
+            {
+                var result = line;
+
+                // this logic works in linux runtime.
+                if (result.EndsWith("\r\n"))
                 {
-                    var diagnostic = BuildTemplateDiagnostic(TemplateErrors.DuplicatedTemplateInSameTemplate(templateName), context.templateNameLine());
-                    this.templates.Diagnostics.Add(diagnostic);
+                    result = result.Substring(0, result.Length - 2);
                 }
-                else
+                else if (result.EndsWith("\n"))
                 {
-                    var templateBody = context.templateBody().GetText();
-
-                    if (!isLast)
+                    result = result.Substring(0, result.Length - 1);
+                    if (result.EndsWith("\r"))
                     {
-                        // this logic works in linux runtime.
-                        if (templateBody.EndsWith("\r\n"))
-                        {
-                            templateBody = templateBody.Substring(0, templateBody.Length - 2);
-                        }
-                        else if (templateBody.EndsWith("\n"))
-                        {
-                            templateBody = templateBody.Substring(0, templateBody.Length - 1);
-                            if (templateBody.EndsWith("\r"))
-                            {
-                                templateBody = templateBody.Substring(0, templateBody.Length - 1);
-                            }
-                        }
+                        result = result.Substring(0, result.Length - 1);
                     }
-
-                    var template = new Template(templateName, parameters, templateBody, startLine, stopLine, this.templates.Id);
-
-                    // check template name
-                    var functionNameSplitDot = templateName.Split('.');
-                    foreach (var id in functionNameSplitDot)
-                    {
-                        if (!IdentifierRegex.IsMatch(id))
-                        {
-                            var diagnostic = BuildTemplateDiagnostic(TemplateErrors.InvalidTemplateName, context.templateNameLine());
-                            this.templates.Diagnostics.Add(diagnostic);
-                        }
-                    }
-
-                    // check template parameters
-
-                    foreach (var parameter in parameters)
-                    {
-                        if (!IdentifierRegex.IsMatch(parameter))
-                        {
-                            var diagnostic = BuildTemplateDiagnostic(TemplateErrors.InvalidTemplateName, context.templateNameLine());
-                            this.templates.Diagnostics.Add(diagnostic);
-                        }
-                    }
-
-                    // check template body
-                    if (string.IsNullOrWhiteSpace(templateBody))
-                    {
-                        var diagnostic = BuildTemplateDiagnostic(TemplateErrors.NoTemplateBody(templateName), context.templateBody(), DiagnosticSeverity.Warning);
-                        this.templates.Diagnostics.Add(diagnostic);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            var parseTree = AntlrParseTemplate(templateBody, startLine);
-                            template.TemplateBodyParseTree = parseTree;
-                        }
-                        catch (TemplateException e)
-                        {
-                            e.Diagnostics.ToList().ForEach(u => this.templates.Diagnostics.Add(u));
-                        }
-                    }
-
-                    this.templates.Add(template);
                 }
 
-                return null;
+                return result;
             }
 
             private LGTemplateParser.TemplateBodyContext AntlrParseTemplate(string templateBody, int lineOffset)
