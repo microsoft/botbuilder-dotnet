@@ -317,6 +317,11 @@ namespace Microsoft.Bot.Builder
 
         public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
+            await ContinueConversationAsync(claimsIdentity, reference, audience, null, callback, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, string locale, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
             if (claimsIdentity == null)
             {
                 throw new ArgumentNullException(nameof(claimsIdentity));
@@ -364,6 +369,8 @@ namespace Microsoft.Bot.Builder
 
                 var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
+
+                context.Activity.Locale = locale;
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
