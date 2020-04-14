@@ -71,28 +71,26 @@ namespace Microsoft.Bot.Connector.Authentication
             return new Lazy<IAuthenticator>(
                 () =>
                 {
-                    var credential = new ClientCredential(MicrosoftAppId, MicrosoftAppPassword);
-
-                    IAuthenticator Make(string authority, string scope)
-                        => new AdalAuthenticator(
-                            credential,
-                            new OAuthConfiguration() { Authority = authority, Scope = scope },
-                            this.CustomHttpClient,
-                            this.Logger);
-
                     if (OAuthScope == GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope)
                     {
-                        var optionV1 = Make(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope);
-                        var optionV2 = Make(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlV2, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScopeV2);
+                        var optionV1 = AuthenticatorFor(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope);
+                        var optionV2 = AuthenticatorFor(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlV2, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScopeV2);
 
                         return new Authenticators(optionV2, optionV1);
                     }
                     else
                     {
-                        return Make(OAuthEndpoint, OAuthScope);
+                        return AuthenticatorFor(OAuthEndpoint, OAuthScope);
                     }
                 },
                 LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        private IAuthenticator AuthenticatorFor(string authority, string scope)
+        {
+            var credential = new ClientCredential(MicrosoftAppId, MicrosoftAppPassword);
+            var configuration = new OAuthConfiguration() { Authority = authority, Scope = scope };
+            return new AdalAuthenticator(credential, configuration, this.CustomHttpClient, this.Logger);
         }
     }
 }
