@@ -39,41 +39,53 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.Source = source ?? string.Empty;
         }
 
-        public int StartLine { get; }
-
-        public int StopLine { get; }
+        /// <summary>
+        /// Gets or sets start line of the tempalte in LG file.
+        /// </summary>
+        /// <value>
+        /// start line of the tempalte in LG file.
+        /// </value>
+        public int StartLine { get; set; }
 
         /// <summary>
-        /// Gets name of the template, what's followed by '#' in a LG file.
+        /// Gets or sets stop line of the tempalte in LG file.
+        /// </summary>
+        /// <value>
+        /// stop line of the tempalte in LG file.
+        /// </value>
+        public int StopLine { get; set; }
+
+        /// <summary>
+        /// Gets or sets name of the template, what's followed by '#' in a LG file.
         /// </summary>
         /// <value>
         /// Name of the template, what's followed by '#' in a LG file.
         /// </value>
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
-        /// Gets parameter list of this template.
+        /// Gets or sets parameter list of this template.
         /// </summary>
         /// <value>
         /// Parameter list of this template.
         /// </value>
-        public List<string> Parameters { get; }
+        public List<string> Parameters { get; set; }
 
         /// <summary>
-        /// Gets text format of Body of this template. All content except Name and Parameters.
+        /// Gets or sets text format of Body of this template. All content except Name and Parameters.
         /// </summary>
         /// <value>
         /// Text format of Body of this template. All content except Name and Parameters.
         /// </value>
-        public string Body { get; }
+        public string Body { get; set; }
 
         /// <summary>
-        /// Gets source of this template, source file path if it's from a certain file.
+        /// Gets or sets source of this template, source file path if it's from a certain file.
         /// </summary>
         /// <value>
         /// Source of this template, source file path if it's from a certain file.
         /// </value>
-        public string Source { get; }
+        public string Source { get; set; }
 
         /// <summary>
         /// Gets or sets the parse tree of this template.

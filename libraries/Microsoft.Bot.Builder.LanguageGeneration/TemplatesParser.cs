@@ -406,17 +406,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private string RemoveTailingNewline(string line)
             {
+                // remove the end newline of middle template.
                 var result = line;
 
-                // this logic works in linux runtime.
-                if (result.EndsWith("\r\n"))
-                {
-                    result = result.Substring(0, result.Length - 2);
-                }
-                else if (result.EndsWith("\n"))
+                if (result.EndsWith("\n", StringComparison.Ordinal))
                 {
                     result = result.Substring(0, result.Length - 1);
-                    if (result.EndsWith("\r"))
+                    if (result.EndsWith("\r", StringComparison.Ordinal))
                     {
                         result = result.Substring(0, result.Length - 1);
                     }

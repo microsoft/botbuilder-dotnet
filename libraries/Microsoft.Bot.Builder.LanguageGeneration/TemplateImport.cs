@@ -24,28 +24,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Gets description of the import, what's included by '[]' in a lg file.
+        /// Gets or sets description of the import, what's included by '[]' in a lg file.
         /// </summary>
         /// <value>
         /// Description of the import, what's included by '[]' in a lg file.
         /// </value>
-        public string Description { get; }
+        public string Description { get; set; }
 
         /// <summary>
-        /// Gets id of this import, what's included by '()' in a lg file.
+        /// Gets or sets id of this import, what's included by '()' in a lg file.
         /// </summary>
         /// <value>
         /// Id of this import.
         /// </value>
-        public string Id { get; }
+        public string Id { get; set; }
 
         /// <summary>
-        /// Gets origin root source of the import.
+        /// Gets or sets origin root source of the import.
         /// </summary>
         /// <value>
         /// origin root source of the import.
         /// </value>
-        public string Source { get; }
+        public string Source { get; set; }
 
         public override string ToString()
         {
