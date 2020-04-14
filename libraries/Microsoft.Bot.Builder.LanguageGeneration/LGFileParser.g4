@@ -36,12 +36,12 @@ templateDefinition
     : templateNameLine templateBody
     ;
 
-templateBody
-    : templateBodyLine*
-    ;
-
 templateNameLine
     : TEMPLATE_NAME_LINE NEWLINE?
+    ;
+
+templateBody
+    : templateBodyLine*
     ;
 
 templateBodyLine

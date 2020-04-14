@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public const string LoopDetected = "Loop detected:";
 
-        public const string SyntaxError = "Unexpected content. Expecting either a comment or a template definition or an import statement.";
+        public const string SyntaxError = "Unexpected content. Expecting either a comment or a template definition or an import statement or an option definition.";
 
         public const string InvalidMemory = "Scope is not a LG customized memory.";
 
