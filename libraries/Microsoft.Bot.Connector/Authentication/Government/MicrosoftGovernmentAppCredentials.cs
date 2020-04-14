@@ -1,8 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Net.Http;
+using System.Runtime.ExceptionServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -61,6 +66,73 @@ namespace Microsoft.Bot.Connector.Authentication
         public override string OAuthEndpoint
         {
             get { return GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl; }
+        }
+
+        protected override Lazy<IAuthenticator> BuildIAuthenticator()
+        {
+            return new Lazy<IAuthenticator>(
+                () =>
+                {
+                    var credential = new ClientCredential(MicrosoftAppId, MicrosoftAppPassword);
+
+                    IAuthenticator Make(string authority, string scope)
+                        => new AdalAuthenticator(
+                            credential,
+                            new OAuthConfiguration() { Authority = authority, Scope = scope },
+                            this.CustomHttpClient,
+                            this.Logger);
+
+                    if (OAuthScope == GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope)
+                    {
+                        var optionOld = Make(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope);
+                        var optionNew = Make("https://login.microsoftonline.us/botframework.onmicrosoft.us", "https://api.botframework.onmicrosoft.us");
+
+                        return new Authenticators(optionOld, optionNew);
+                    }
+                    else
+                    {
+                        return Make(OAuthEndpoint, OAuthScope);
+                    }
+                },
+                LazyThreadSafetyMode.ExecutionAndPublication);
+        }
+
+        private sealed class Authenticators : IAuthenticator
+        {
+            private readonly IAuthenticator[] inners;
+
+            public Authenticators(params IAuthenticator[] inners)
+            {
+                this.inners = inners ?? throw new ArgumentNullException(nameof(inners));
+            }
+
+            async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
+            {
+                ExceptionDispatchInfo info = null;
+
+                for (int index = 0; index < this.inners.Length; ++index)
+                {
+                    var inner = this.inners[index];
+                    try
+                    {
+                        return await inner.GetTokenAsync(forceRefresh).ConfigureAwait(false);
+                    }
+                    catch (Exception error)
+                    {
+                        if (info == null)
+                        {
+                            info = ExceptionDispatchInfo.Capture(error);
+                        }
+                    }
+                }
+
+                if (info != null)
+                {
+                    info.Throw();
+                }
+
+                throw new InvalidOperationException();
+            }
         }
     }
 }

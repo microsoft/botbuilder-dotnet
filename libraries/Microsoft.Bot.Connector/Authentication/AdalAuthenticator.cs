@@ -195,6 +195,10 @@ namespace Microsoft.Bot.Connector.Authentication
                 ThrottleException throttlException = (ThrottleException)ex;
                 return throttlException.RetryParams ?? RetryParams.DefaultBackOff(currentRetryCount);
             }
+            else if (IsAdalServiceInvalidRequest(ex))
+            {
+                return RetryParams.StopRetrying;
+            }
             else
             {
                 // We end up here is the exception is not an ADAL exception. An example, is under high traffic
@@ -216,6 +220,9 @@ namespace Microsoft.Bot.Connector.Authentication
             // it returns an HTTP error 429
             return adalServiceException.ErrorCode == MsalTemporarilyUnavailable || adalServiceException.StatusCode == 429;
         }
+
+        private bool IsAdalServiceInvalidRequest(Exception ex)
+            => ex is AdalServiceException adal && adal.StatusCode == 400;
 
         private RetryParams ComputeAdalRetry(Exception ex)
         {
