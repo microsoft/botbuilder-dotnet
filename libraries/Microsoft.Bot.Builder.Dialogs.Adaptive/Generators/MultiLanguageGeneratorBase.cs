@@ -52,13 +52,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                                 turnContext.TurnState.Get<LanguagePolicy>() ?? 
                                 new LanguagePolicy();
 
-            // see if we have any locales that match, if not, use empty as fallback
+            // see if we have any locales that match
             var fallbackLocales = new List<string>();
             if (languagePolicy.ContainsKey(targetLocale))
             {
                 fallbackLocales.AddRange(languagePolicy[targetLocale]);
             }
-            else
+            
+            // append empty as fallback to end
+            if (languagePolicy.ContainsKey(string.Empty))
             {
                 fallbackLocales.AddRange(languagePolicy[string.Empty]);
             }

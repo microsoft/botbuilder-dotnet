@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         { 
         }
 
-        public LanguagePolicy(string defaultLanguage)
+        public LanguagePolicy(params string[] defaultLanguage)
             : base(DefaultPolicy(defaultLanguage), StringComparer.OrdinalIgnoreCase)
         {
         }
@@ -30,11 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         //   "en" -> ""
         // So that when we get a locale such as en-gb, we can try to resolve to "en-gb" then "en" then ""
         // See commented section for full sample of output of this function
-        private static IDictionary<string, string[]> DefaultPolicy(string defaultLanguage = null)
+        private static IDictionary<string, string[]> DefaultPolicy(string[] defaultLanguages = null)
         {
-            if (defaultLanguage == null)
+            if (defaultLanguages == null)
             {
-                defaultLanguage = string.Empty;
+                defaultLanguages = new string[] { string.Empty };
             }
 
             var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLower()).ToList();
@@ -58,7 +58,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     }
                 }
 
-                fallback.Add(defaultLanguage);
+                if (language == string.Empty)
+                {
+                    // here we set the default
+                    fallback.AddRange(defaultLanguages);
+                }
 
                 policy.Add(language, fallback.ToArray());
             }
