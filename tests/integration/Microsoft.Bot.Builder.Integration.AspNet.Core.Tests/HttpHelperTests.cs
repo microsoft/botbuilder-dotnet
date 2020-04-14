@@ -20,19 +20,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             // Implementations MUST NOT add a byte order mark (U+FEFF) to the
             // beginning of a networked-transmitted JSON text. 
 
-            var responseStream = new MemoryStream();
-            var responseMock = new Mock<HttpResponse>();
-            responseMock.Setup(c => c.Body).Returns(responseStream);
+            using (var responseStream = new MemoryStream())
+            {
+                var responseMock = new Mock<HttpResponse>();
+                responseMock.Setup(c => c.Body).Returns(responseStream);
 
-            var invokeResponse = new InvokeResponse() { Status = 200, Body = new[] { "string one", "string two" } };
-            await HttpHelper.WriteResponseAsync(responseMock.Object, invokeResponse);
+                var invokeResponse = new InvokeResponse() { Status = 200, Body = new[] { "string one", "string two" } };
+                await HttpHelper.WriteResponseAsync(responseMock.Object, invokeResponse);
 
-            responseStream.Seek(0, SeekOrigin.Begin);
-            byte[] buffer = new byte[4];
-            await responseStream.ReadAsync(buffer, 0, 4);
+                responseStream.Seek(0, SeekOrigin.Begin);
+                var buffer = new byte[4];
+                await responseStream.ReadAsync(buffer, 0, 4);
 
-            bool noBomPresent = new UTF8Encoding(true).GetPreamble().Where((p, i) => p != buffer[i]).Any();
-            Assert.True(noBomPresent, "HttpHelper.WriteResponseAsync MUST NOT write a BOM to the beginning of the body");
+                bool noBomPresent = new UTF8Encoding(true).GetPreamble().Where((p, i) => p != buffer[i]).Any();
+                Assert.True(noBomPresent, "HttpHelper.WriteResponseAsync MUST NOT write a BOM to the beginning of the body");
+            }
         }
     }
 }
