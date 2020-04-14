@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Connector.Authentication
                         var optionV1 = Make(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope);
                         var optionV2 = Make(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlV2, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScopeV2);
 
-                        return new Authenticators(optionV1, optionV2);
+                        return new Authenticators(optionV2, optionV1);
                     }
                     else
                     {
@@ -119,18 +119,18 @@ namespace Microsoft.Bot.Connector.Authentication
                     }
                     catch (Exception error)
                     {
-                        if (info == null)
-                        {
-                            info = ExceptionDispatchInfo.Capture(error);
-                        }
+                        // always keep the last failure
+                        info = ExceptionDispatchInfo.Capture(error);
                     }
                 }
 
+                // if there were any failures, rethrow and preserve the stack trace
                 if (info != null)
                 {
                     info.Throw();
                 }
 
+                // we should not get here unless there were zero inner IAuthenticator
                 throw new InvalidOperationException();
             }
         }
