@@ -13,14 +13,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class LanguagePolicy : Dictionary<string, string[]>
     {
+        // Keep this method for JSON deserialization 
+        public LanguagePolicy()
+            : base(DefaultPolicy(), StringComparer.OrdinalIgnoreCase) 
+        { 
+        }
+
+        public LanguagePolicy(string defaultLanguage)
+            : base(DefaultPolicy(defaultLanguage), StringComparer.OrdinalIgnoreCase)
+        {
+        }
+
         // walk through all of the cultures and create a dictionary map with most specific to least specific
         // Example output "en-us" will generate fallback rule like this:
         //   "en-us" -> "en" -> "" 
         //   "en" -> ""
         // So that when we get a locale such as en-gb, we can try to resolve to "en-gb" then "en" then ""
         // See commented section for full sample of output of this function
-        public LanguagePolicy(string defaultLanguage = null)
-            : base(StringComparer.OrdinalIgnoreCase)
+        private static IDictionary<string, string[]> DefaultPolicy(string defaultLanguage = null)
         {
             if (defaultLanguage == null)
             {
@@ -50,8 +60,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 fallback.Add(defaultLanguage);
 
-                this.Add(language, fallback.ToArray());
+                policy.Add(language, fallback.ToArray());
             }
+
+            return policy;
         }
     }
 }

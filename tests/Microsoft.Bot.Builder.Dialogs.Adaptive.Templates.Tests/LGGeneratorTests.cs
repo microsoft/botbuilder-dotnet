@@ -323,7 +323,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
             DialogManager dm = new DialogManager()
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration("test.lg");
+                .UseLanguageGeneration("test.lg")
+                .UseLanguagePolicy(new LanguagePolicy("fr-fr"));
             dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("test.dialog");
 
             await CreateFlow(async (turnContext, cancellationToken) =>
@@ -332,7 +333,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             })
             .Send("hello")
                 .AssertReply("root")
-                .AssertReply("overriden")
+                .AssertReply("overriden in fr")
             .StartTestAsync();
         }
 
