@@ -3,9 +3,7 @@
 
 using System;
 using System.Net.Http;
-using System.Runtime.ExceptionServices;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
@@ -95,44 +93,6 @@ namespace Microsoft.Bot.Connector.Authentication
                     }
                 },
                 LazyThreadSafetyMode.ExecutionAndPublication);
-        }
-
-        private sealed class Authenticators : IAuthenticator
-        {
-            private readonly IAuthenticator[] inners;
-
-            public Authenticators(params IAuthenticator[] inners)
-            {
-                this.inners = inners ?? throw new ArgumentNullException(nameof(inners));
-            }
-
-            async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
-            {
-                ExceptionDispatchInfo info = null;
-
-                for (int index = 0; index < this.inners.Length; ++index)
-                {
-                    var inner = this.inners[index];
-                    try
-                    {
-                        return await inner.GetTokenAsync(forceRefresh).ConfigureAwait(false);
-                    }
-                    catch (Exception error)
-                    {
-                        // always keep the last failure
-                        info = ExceptionDispatchInfo.Capture(error);
-                    }
-                }
-
-                // if there were any failures, rethrow and preserve the stack trace
-                if (info != null)
-                {
-                    info.Throw();
-                }
-
-                // we should not get here unless there were zero inner IAuthenticator
-                throw new InvalidOperationException();
-            }
         }
     }
 }
