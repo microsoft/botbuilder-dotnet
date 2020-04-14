@@ -16,7 +16,7 @@
                     "title": "Output format",
                     "description": "Expression to format the datetime output.",
                     "examples": [
-                        "this.value[0].Value"
+                        "=this.value[0].Value"
                     ]
                 },
                 "defaultLocale": {
