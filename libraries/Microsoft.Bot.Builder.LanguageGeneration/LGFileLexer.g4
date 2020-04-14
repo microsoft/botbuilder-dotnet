@@ -102,7 +102,7 @@ NEWLINE_IN_NAME
   ;
 
 IDENTIFIER
-  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '-' | '_')*
+  : (LETTER | NUMBER | '_') (LETTER | NUMBER | '_')*
   ;
 
 DOT
