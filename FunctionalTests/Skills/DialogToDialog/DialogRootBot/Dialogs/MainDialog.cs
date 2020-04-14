@@ -217,8 +217,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             await _activeSkillProperty.DeleteAsync(stepContext.Context, cancellationToken);
 
             // Restart the main dialog with a different message the second time around.
-            //return await stepContext.ReplaceDialogAsync(InitialDialogId, $"Done with \"{activeSkill.Id}\". \n\n What skill would you like to call?", cancellationToken);
-            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+            return await stepContext.ReplaceDialogAsync(InitialDialogId, $"Done with \"{activeSkill.Id}\". \n\n What skill would you like to call?", cancellationToken);
         }
 
         // Helper method that creates and adds SkillDialog instances for the configured skills.
