@@ -21,11 +21,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// Initializes a new instance of the <see cref="ResourceMultiLanguageGenerator"/> class.
         /// </summary>
         /// <param name="resourceId">foo.lg.</param>
-        /// <param name="policy">language policy for fallback.</param>
-        public ResourceMultiLanguageGenerator(string resourceId = null, LanguagePolicy policy = null)
+        public ResourceMultiLanguageGenerator(string resourceId = null)
         {
             this.ResourceId = resourceId;
-            this.LanguagePolicy = policy;
         }
 
         [JsonProperty("resourceId")]
