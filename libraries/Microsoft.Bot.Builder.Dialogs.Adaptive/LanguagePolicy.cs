@@ -19,8 +19,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         //   "en" -> ""
         // So that when we get a locale such as en-gb, we can try to resolve to "en-gb" then "en" then ""
         // See commented section for full sample of output of this function
-        private static Lazy<IDictionary<string, string[]>> defaultPolicy = new Lazy<IDictionary<string, string[]>>(() =>
+        public LanguagePolicy(string defaultLanguage = null)
+            : base(StringComparer.OrdinalIgnoreCase)
         {
+            if (defaultLanguage == null)
+            {
+                defaultLanguage = string.Empty;
+            }
+
             var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLower()).ToList();
             var policy = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
             foreach (var language in cultureCodes.Distinct())
@@ -42,16 +48,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     }
                 }
 
-                fallback.Add(string.Empty);
-                policy.Add(language, fallback.ToArray());
+                fallback.Add(defaultLanguage);
+
+                this.Add(language, fallback.ToArray());
             }
-
-            return policy;
-        });
-
-        public LanguagePolicy()
-            : base(defaultPolicy.Value, StringComparer.OrdinalIgnoreCase)
-        {
         }
     }
 }
