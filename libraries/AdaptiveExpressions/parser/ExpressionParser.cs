@@ -201,6 +201,34 @@ namespace AdaptiveExpressions
                 return Expression.ConstantExpression(EvalEscape(text));
             }
 
+            public override Expression VisitJsonCreationExp([NotNull] ExpressionAntlrParser.JsonCreationExpContext context)
+            {
+                var expr = this.MakeExpression(ExpressionType.Json, new Constant("{}"));
+                if (context.keyValuePairList() != null)
+                {
+                    foreach (var kvPair in context.keyValuePairList().keyValuePair())
+                    {
+                        var key = string.Empty;
+                        var keyNode = kvPair.key().children[0];
+                        if (keyNode is ITerminalNode node)
+                        {
+                            if (node.Symbol.Type == ExpressionAntlrParser.IDENTIFIER)
+                            {
+                                key = node.GetText();
+                            }
+                            else
+                            {
+                                key = node.GetText().Substring(1, node.GetText().Length - 2);
+                            }
+                        }
+
+                        expr = this.MakeExpression(ExpressionType.SetProperty, expr, new Constant(key), this.Visit(kvPair.expression()));
+                    }
+                }
+
+                return expr;
+            }
+
             public override Expression VisitStringInterpolationAtom([NotNull] ExpressionAntlrParser.StringInterpolationAtomContext context)
             {
                 var children = new List<Expression>();
@@ -230,22 +258,6 @@ namespace AdaptiveExpressions
                 }
 
                 return MakeExpression(ExpressionType.Concat, children.ToArray());
-            }
-
-            public override Expression VisitConstantAtom([NotNull] ExpressionAntlrParser.ConstantAtomContext context)
-            {
-                var text = context.GetText();
-                if (text.StartsWith("[") && text.EndsWith("]") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2))) 
-                {
-                    return Expression.ConstantExpression(new JArray());
-                }
-
-                if (text.StartsWith("{") && text.EndsWith("}") && string.IsNullOrWhiteSpace(text.Substring(1, text.Length - 2)))
-                {
-                    return Expression.ConstantExpression(new JObject());
-                }
-
-                throw new Exception($"Unrecognized constant: {text}");
             }
 
             private Expression MakeExpression(string functionType, params Expression[] children)
