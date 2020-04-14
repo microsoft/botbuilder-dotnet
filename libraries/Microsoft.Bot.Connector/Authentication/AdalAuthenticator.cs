@@ -223,8 +223,25 @@ namespace Microsoft.Bot.Connector.Authentication
             return adalServiceException.ErrorCode == MsalTemporarilyUnavailable || adalServiceException.StatusCode == HttpTooManyRequests;
         }
 
+        /// <summary>
+        /// Determine whether exception represents an invalid request from AAD.
+        /// </summary>
+        /// <param name="ex">Exception.</param>
+        /// <returns>True if the exception represents an invalid request.</returns>
         private bool IsAdalServiceInvalidRequest(Exception ex)
-            => ex is AdalServiceException adal && adal.StatusCode == (int)HttpStatusCode.BadRequest;
+        {
+            if (ex is AdalServiceException adal)
+            {
+                // ErrorCode is "invalid_request"
+                // but HTTP StatusCode covers more non-retryable conditions
+                if (adal.StatusCode == (int)HttpStatusCode.BadRequest)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         private RetryParams ComputeAdalRetry(Exception ex)
         {
