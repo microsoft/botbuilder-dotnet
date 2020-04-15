@@ -31,9 +31,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             yield return new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.DeclarativeType);
         }
 
-        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
+        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
-            yield return new InterfaceConverter<TestAction>(resourceExplorer, context);
+            yield return new InterfaceConverter<TestAction>(resourceExplorer, sourceContext);
         }
     }
 }
