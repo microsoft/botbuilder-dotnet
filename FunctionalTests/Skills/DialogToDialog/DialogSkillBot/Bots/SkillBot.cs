@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.BotBuilderSamples.DialogSkillBot.Bots
 {
-    public class SkillBot<T> : IBot
+    public class SkillBot<T> : ActivityHandler
         where T : Dialog
     {
         private readonly ConversationState _conversationState;
@@ -20,11 +20,11 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot.Bots
             _mainDialog = mainDialog;
         }
 
-        public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             await _mainDialog.RunAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
 
-            // Save any state changes that might have occured during the turn.
+            // Save any state changes that might have occurred during the turn.
             await _conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
         }
     }
