@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (encoding == null)
             {
-                throw new ArgumentNullException(nameof(encoding));
+                throw new ArgumentNullException(nameof(encoding)); 
             }
 
             response.ContentType = "text/plain";
