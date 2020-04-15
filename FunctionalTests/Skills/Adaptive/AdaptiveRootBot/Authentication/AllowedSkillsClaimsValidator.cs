@@ -8,17 +8,17 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 
-namespace Microsoft.BotBuilderSamples.DialogRootBot.Authentication
+namespace Microsoft.BotBuilderSamples.AdaptiveRootBot.Authentication
 {
     /// <summary>
     /// Sample claims validator that loads an allowed list from configuration if present
     /// and checks that responses are coming from configured skills.
     /// </summary>
-    public class AllowedCallersClaimsValidator : ClaimsValidator
+    public class AllowedSkillsClaimsValidator : ClaimsValidator
     {
         private readonly List<string> _allowedSkills;
 
-        public AllowedCallersClaimsValidator(SkillsConfiguration skillsConfig)
+        public AllowedSkillsClaimsValidator(SkillsConfiguration skillsConfig)
         {
             if (skillsConfig == null)
             {

@@ -151,6 +151,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EchoSkillBot", "FunctionalTests\Skills\SimpleBotToBot\EchoSkillBot\EchoSkillBot.csproj", "{C8F3C6E5-6A21-4F77-ADF7-30119D836A4D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DialogToDialog", "DialogToDialog", "{3E023AB7-FE1F-41B1-9EF4-1550BCE1DC37}"
+	ProjectSection(SolutionItems) = preProject
+		FunctionalTests\Skills\DialogToDialog\README.md = FunctionalTests\Skills\DialogToDialog\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogRootBot", "FunctionalTests\Skills\DialogToDialog\DialogRootBot\DialogRootBot.csproj", "{E65DC262-CA77-41F6-8439-02C1917874DD}"
 EndProject
@@ -159,6 +162,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogSkillBot", "FunctionalTests\Skills\DialogToDialog\DialogSkillBot\DialogSkillBot.csproj", "{AB75F219-CFA4-4051-8A11-3EE7A128AF08}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Testing", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj", "{27ADE3CC-43B5-4563-B6D1-4103E8A6ECCD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adaptive", "Adaptive", "{AE7143FE-C460-449D-AA50-EFA4820EBADE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveRootBot", "FunctionalTests\Skills\Adaptive\AdaptiveRootBot\AdaptiveRootBot.csproj", "{1E638E89-43B9-4381-8CC7-B65548DB0070}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveSkillBot", "FunctionalTests\Skills\Adaptive\AdaptiveSkillBot\AdaptiveSkillBot.csproj", "{3EA28B80-440E-4919-9850-31236968BC04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -632,6 +641,22 @@ Global
 		{27ADE3CC-43B5-4563-B6D1-4103E8A6ECCD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{27ADE3CC-43B5-4563-B6D1-4103E8A6ECCD}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{27ADE3CC-43B5-4563-B6D1-4103E8A6ECCD}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{1E638E89-43B9-4381-8CC7-B65548DB0070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E638E89-43B9-4381-8CC7-B65548DB0070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E638E89-43B9-4381-8CC7-B65548DB0070}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E638E89-43B9-4381-8CC7-B65548DB0070}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{1E638E89-43B9-4381-8CC7-B65548DB0070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E638E89-43B9-4381-8CC7-B65548DB0070}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E638E89-43B9-4381-8CC7-B65548DB0070}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{1E638E89-43B9-4381-8CC7-B65548DB0070}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{3EA28B80-440E-4919-9850-31236968BC04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EA28B80-440E-4919-9850-31236968BC04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EA28B80-440E-4919-9850-31236968BC04}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EA28B80-440E-4919-9850-31236968BC04}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{3EA28B80-440E-4919-9850-31236968BC04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EA28B80-440E-4919-9850-31236968BC04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EA28B80-440E-4919-9850-31236968BC04}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{3EA28B80-440E-4919-9850-31236968BC04}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -702,6 +727,9 @@ Global
 		{31D0EA80-192C-4645-911D-F0393535B176} = {3E023AB7-FE1F-41B1-9EF4-1550BCE1DC37}
 		{AB75F219-CFA4-4051-8A11-3EE7A128AF08} = {3E023AB7-FE1F-41B1-9EF4-1550BCE1DC37}
 		{27ADE3CC-43B5-4563-B6D1-4103E8A6ECCD} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{AE7143FE-C460-449D-AA50-EFA4820EBADE} = {3C16F609-61D8-49C5-A243-9D32B9491D91}
+		{1E638E89-43B9-4381-8CC7-B65548DB0070} = {AE7143FE-C460-449D-AA50-EFA4820EBADE}
+		{3EA28B80-440E-4919-9850-31236968BC04} = {AE7143FE-C460-449D-AA50-EFA4820EBADE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
