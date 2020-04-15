@@ -1,5 +1,8 @@
 lexer grammar ExpressionAntlrLexer;
 
+@parser::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
+@lexer::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
+
 @lexer::members {
   bool ignoreWS = true;      // usually we ignore whitespace, but inside stringInterpolation, whitespace is significant
 }
