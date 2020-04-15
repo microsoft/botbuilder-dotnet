@@ -258,7 +258,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var content = $"{templateNameLine}{newLine}{newTemplateBody}";
 
                 var startLine = template.SourceRange.Range.Start.Line - 1;
-                var stopLine = template.SourceRange.Range.Start.Line - 1;
+                var stopLine = template.SourceRange.Range.End.Line - 1;
 
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
                 Initialize(ParseText(newContent, Id, ImportResolver));
@@ -301,7 +301,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (template != null)
             {
                 var startLine = template.SourceRange.Range.Start.Line - 1;
-                var stopLine = template.SourceRange.Range.Start.Line - 1;
+                var stopLine = template.SourceRange.Range.End.Line - 1;
                 var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
                 Initialize(ParseText(newContent, Id, ImportResolver));
             }
