@@ -101,12 +101,22 @@
         },
         "allowInterruptions": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
             "title": "Allow Interruptions",
             "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
             "default": "true",
             "examples": [
                 "true"
+            ]
+        },
+        "alwaysPrompt": {
+            "$role": "expression",
+            "type": [ "boolean", "string" ],
+            "title": "Always prompt",
+            "description": "Collect information even if the specified 'property' is not empty.",
+            "default": false,
+            "examples": [
+                false
             ]
         }
     },
