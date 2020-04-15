@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SlackAPI;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
@@ -32,5 +33,23 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
         [JsonProperty(PropertyName = "actions")]
         public List<SlackAction> Actions { get; } = new List<SlackAction>();
+
+        [JsonProperty(PropertyName = "trigger_id")]
+        public string TriggerId { get; set; }
+
+        [JsonProperty(PropertyName = "action_ts")]
+        public string ActionTs { get; set; }
+
+        [JsonProperty(PropertyName = "submission")]
+        public JObject Submission { get; set; }
+
+        [JsonProperty(PropertyName = "callback_id")]
+        public string CallbackId { get; set; }
+
+        [JsonProperty(PropertyName = "state")]
+        public string State { get; set; }
+
+        [JsonProperty(PropertyName = "response_url")]
+        public string ResponseUrl { get; set; }
     }
 }
