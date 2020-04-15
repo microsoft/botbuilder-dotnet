@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private const string RecognizerJson = @"{
             '$kind': 'Microsoft.LuisRecognizer',
-            'applicationId': '=settings.luis.DynamicLists_test_en-us_lu',
+            'applicationId': '=settings.luis.DynamicLists_test_en_us_lu',
             'endpoint': '=settings.luis.endpoint',
             'endpointKey': '=settings.luis.endpointKey', 'dynamicLists': " + DynamicListJSon + "}";
 

@@ -47,6 +47,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("itemsProperty")]
         public StringExpression ItemsProperty { get; set; }
 
+        // Expression used to compute the list that should be enumerated.
+        [JsonProperty("page")]
+        public StringExpression Page { get; set; } = "dialog.foreach.page";
+
+        // Expression used to compute the list that should be enumerated.
+        [JsonProperty("pageIndex")]
+        public StringExpression PageIndex { get; set; } = "dialog.foreach.pageindex";
+
         [JsonProperty("pageSize")]
         public IntExpression PageSize { get; set; } = 10;
 
@@ -62,6 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
+            dc.State.SetValue(PageIndex.GetValue(dc.State), 0);
             return await NextPageAsync(dc, cancellationToken).ConfigureAwait(false);
         }
 
@@ -87,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private async Task<DialogTurnResult> NextPageAsync(DialogContext dc, CancellationToken cancellationToken)
         {
-            int pageIndex = dc.State.GetIntValue(FOREACHPAGEINDEX, 0);
+            int pageIndex = dc.State.GetIntValue(PageIndex.GetValue(dc.State), 0);
             int pageSize = this.PageSize.GetValue(dc.State);
             int itemOffset = pageSize * pageIndex;
 
@@ -98,8 +107,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 if (page.Any())
                 {
-                    dc.State.SetValue(FOREACHPAGE, page);
-                    dc.State.SetValue(FOREACHPAGEINDEX, ++pageIndex);
+                    dc.State.SetValue(Page.GetValue(dc.State), page);
+                    dc.State.SetValue(PageIndex.GetValue(dc.State), ++pageIndex);
                     return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);
                 }
             }

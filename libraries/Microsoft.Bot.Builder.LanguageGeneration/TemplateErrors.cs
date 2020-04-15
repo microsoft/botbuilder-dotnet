@@ -10,11 +10,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string NoTemplate = "LG file must have at least one template definition.";
 
-        public const string InvalidTemplateName = "Invalid template name. Template name should start with letter/number/_ and can only contains letter/number/_/./-.";
+        public const string InvalidTemplateName = "Invalid template name. Template name should start with letter/number/_ and can only contains letter/number/./_.";
 
         public const string InvalidTemplateBody = "Invalid template body. Expecting '-' prefix. ";
 
-        public const string InvalidStrucName = "Invalid structure name. name should start with letter/number/_ and can only contains letter/number/_/./-.";
+        public const string InvalidStrucName = "Invalid structure name. name should start with letter/number/_ and can only contains letter/number/./_.";
 
         public const string MissingStrucEnd = "Invalid structure body. Expecting ']' at the end of the body.";
 

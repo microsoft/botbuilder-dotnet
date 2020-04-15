@@ -1504,7 +1504,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>App credentials.</returns>
         private async Task<AppCredentials> GetAppCredentialsAsync(string appId, string oAuthScope, CancellationToken cancellationToken = default)
         {
-            if (appId == null)
+            if (string.IsNullOrWhiteSpace(appId))
             {
                 return MicrosoftAppCredentials.Empty;
             }
