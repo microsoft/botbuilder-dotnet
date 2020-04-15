@@ -99,7 +99,7 @@
       "title": "Value",
       "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
       "examples": [
-        "@userName"
+        "=@userName"
       ]
     },
     "alwaysPrompt": {

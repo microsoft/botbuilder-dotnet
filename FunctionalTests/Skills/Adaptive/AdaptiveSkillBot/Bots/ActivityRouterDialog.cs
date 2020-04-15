@@ -10,11 +10,11 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
-using Microsoft.BotBuilderSamples.DialogSkillBot.Dialogs;
+using Microsoft.BotBuilderSamples.AdaptiveSkillBot.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace Microsoft.BotBuilderSamples.DialogSkillBot.Bots
+namespace Microsoft.BotBuilderSamples.AdaptiveSkillBot.Bots
 {
     /// <summary>
     /// A root dialog that can route activities sent to the skill to different dialogs.
