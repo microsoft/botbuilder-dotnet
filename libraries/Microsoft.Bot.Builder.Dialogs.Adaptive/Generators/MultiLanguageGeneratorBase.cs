@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             
             // append empty as fallback to end
-            if (languagePolicy.ContainsKey(string.Empty))
+            if (targetLocale != string.Empty && languagePolicy.ContainsKey(string.Empty))
             {
                 fallbackLocales.AddRange(languagePolicy[string.Empty]);
             }
