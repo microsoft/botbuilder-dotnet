@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -70,6 +68,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             return result;
         }
 
+        /// <summary>
+        /// Uses the RecognizerResult to create a list of propeties to be included when tracking the result in telemetry.
+        /// </summary>
+        /// <param name="recognizerResult">Recognizer Result.</param>
+        /// <param name="telemetryProperties">A list of properties to append or override the properties created using the RecognizerResult.</param>
+        /// <param name="dialogContext">Dialog Context.</param>
+        /// <returns>A dictionary that can be included when calling the TrackEvent method on the TelemetryClient.</returns>
         protected virtual Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dialogContext = null)
         {
             var properties = new Dictionary<string, string>()
