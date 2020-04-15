@@ -68,6 +68,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public const string StaticFailure = "Static failure with the following error.";
 
+        public const string ImportFail = "Import should be placed at the beginning of the file.";
+
+        public const string OptionFail = "Option should be placed at the beginning of the file.";
+
         public static string DuplicatedTemplateInSameTemplate(string templateName) => $"Duplicated definitions found for template: '{templateName}'.";
 
         public static string DuplicatedTemplateInDiffTemplate(string templateName, string source) => $"Duplicated definitions found for template: '{templateName}' in '{source}'.";

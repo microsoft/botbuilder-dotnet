@@ -257,7 +257,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var newTemplateBody = ConvertTemplateBody(templateBody);
                 var content = $"{templateNameLine}{newLine}{newTemplateBody}";
 
-                var newContent = ReplaceRangeContent(Content, template.StartLine, template.StopLine, content);
+                var startLine = template.SourceRange.Range.Start.Line - 1;
+                var stopLine = template.SourceRange.Range.Start.Line - 1;
+
+                var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
                 Initialize(ParseText(newContent, Id, ImportResolver));
             }
 
@@ -297,7 +300,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
-                var newContent = ReplaceRangeContent(Content, template.StartLine, template.StopLine, null);
+                var startLine = template.SourceRange.Range.Start.Line - 1;
+                var stopLine = template.SourceRange.Range.Start.Line - 1;
+                var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
                 Initialize(ParseText(newContent, Id, ImportResolver));
             }
 
@@ -320,20 +325,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
         {
-            var startLineIndex = startLine - 1;
-            var endLineIndex = stopLine - 1;
             var originList = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
 
-            if (startLineIndex < 0 || startLineIndex > endLineIndex || endLineIndex >= originList.Length)
+            if (startLine < 0 || startLine > stopLine || stopLine >= originList.Length)
             {
                 throw new Exception("index out of range.");
             }
 
             var destList = new List<string>();
 
-            destList.AddRange(originList.Take(startLineIndex));
+            destList.AddRange(originList.Take(startLine));
             destList.Add(replaceString);
-            destList.AddRange(originList.Skip(endLineIndex + 1));
+            destList.AddRange(originList.Skip(stopLine + 1));
 
             return string.Join(newLine, destList);
         }

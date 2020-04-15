@@ -647,7 +647,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             else
             {
                 var template = TemplateMap[CurrentTarget().TemplateName];
-                var sourcePath = template.Source.NormalizePath();
+                var sourcePath = template.SourceRange.Source.NormalizePath();
                 var baseFolder = Environment.CurrentDirectory;
                 if (Path.IsPathRooted(sourcePath))
                 {

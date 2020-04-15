@@ -1,0 +1,12 @@
+﻿# hi
+[]
+- hi
+
+# foo.bar
+[
+]
+-hi
+[import]
+
+# template
+[import](1.lg)

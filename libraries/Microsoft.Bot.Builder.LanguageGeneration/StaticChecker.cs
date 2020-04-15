@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (templates.AllTemplates.Count == 0)
             {
-                var diagnostic = new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), TemplateErrors.NoTemplate, DiagnosticSeverity.Warning, templates.Id);
+                var diagnostic = new Diagnostic(Range.DefaultRange, TemplateErrors.NoTemplate, DiagnosticSeverity.Warning, templates.Id);
                 result.Add(diagnostic);
                 return result;
             }
@@ -73,9 +73,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var sameTemplates = reference.Where(u => u.Name == template.Name);
                     foreach (var sameTemplate in sameTemplates)
                     {
-                        var startPosition = new Position(template.StartLine, 0);
-                        var stopPosition = new Position(template.StartLine, template.Name.Length + 1);
-                        var diagnostic = new Diagnostic(new Range(startPosition, stopPosition), TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.Source), source: templates.Id);
+                        var startLine = template.SourceRange.Range.Start.Line;
+                        var range = new Range(startLine, 0, startLine, template.Name.Length + 1);
+                        var diagnostic = new Diagnostic(range, TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.SourceRange.Source), source: templates.Id);
                         templateDiagnostics.Add(diagnostic);
                     }
                 }
@@ -392,11 +392,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             DiagnosticSeverity severity = DiagnosticSeverity.Error,
             ParserRuleContext context = null)
         {
-            var lineOffset = this.currentTemplate != null ? this.currentTemplate.StartLine : 0;
+            var lineOffset = this.currentTemplate != null ? this.currentTemplate.SourceRange.Range.Start.Line : 0;
             message = this.currentTemplate != null ? $"[{this.currentTemplate.Name}]" + message : message;
-            var startPosition = context == null ? new Position(lineOffset, 0) : new Position(lineOffset + context.Start.Line, context.Start.Column);
-            var stopPosition = context == null ? new Position(lineOffset, 0) : new Position(lineOffset + context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
-            var range = new Range(startPosition, stopPosition);
+            var range = context == null ? new Range(1 + lineOffset, 0, 1 + lineOffset, 0) : context.ConvertToRange(lineOffset);
             return new Diagnostic(range, message, severity, templates.Id);
         }
     }

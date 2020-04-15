@@ -5,6 +5,8 @@
 
 options { tokenVocab=LGTemplateLexer; }
 
+context: templateBody EOF;
+
 templateBody
     : normalTemplateBody                        #normalBody
     | ifElseTemplateBody                        #ifElseBody

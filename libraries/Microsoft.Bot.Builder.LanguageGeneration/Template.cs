@@ -20,40 +20,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">Template name without parameters.</param>
         /// <param name="parameters">Parameter list.</param>
         /// <param name="templateBody">Template content.</param>
-        /// <param name="startLine">StartLine of template (zero based).</param>
-        /// <param name="stopLine">Stop line of template (zero based).</param>
-        /// <param name="source">Source of this template.</param>
+        /// <param name="sourceRange">souerce range of template.</param>
         internal Template(
             string templateName,
             List<string> parameters,
             string templateBody,
-            int startLine,
-            int stopLine,
-            string source = "")
+            SourceRange sourceRange)
         {
             this.Name = templateName ?? string.Empty;
             this.Parameters = parameters ?? new List<string>();
             this.Body = templateBody ?? string.Empty;
-            this.StartLine = startLine;
-            this.StopLine = stopLine;
-            this.Source = source ?? string.Empty;
+            this.SourceRange = sourceRange;
         }
 
         /// <summary>
-        /// Gets or sets start line of the tempalte in LG file.
+        /// Gets or sets source range.
         /// </summary>
         /// <value>
         /// start line of the tempalte in LG file.
         /// </value>
-        public int StartLine { get; set; }
-
-        /// <summary>
-        /// Gets or sets stop line of the tempalte in LG file.
-        /// </summary>
-        /// <value>
-        /// stop line of the tempalte in LG file.
-        /// </value>
-        public int StopLine { get; set; }
+        public SourceRange SourceRange { get; set; }
 
         /// <summary>
         /// Gets or sets name of the template, what's followed by '#' in a LG file.
@@ -78,14 +64,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Text format of Body of this template. All content except Name and Parameters.
         /// </value>
         public string Body { get; set; }
-
-        /// <summary>
-        /// Gets or sets source of this template, source file path if it's from a certain file.
-        /// </summary>
-        /// <value>
-        /// Source of this template, source file path if it's from a certain file.
-        /// </value>
-        public string Source { get; set; }
 
         /// <summary>
         /// Gets or sets the parse tree of this template.

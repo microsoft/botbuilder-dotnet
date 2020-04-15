@@ -29,8 +29,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// option regex.
         /// </summary>
-        private static readonly Regex OptionRegex = new Regex(@"> *!#(.*)");
-        private static readonly Regex ImportRegex = new Regex(@"\[(.*)\]\((.*)\)");
+        public static readonly Regex OptionRegex = new Regex(@"> *!#(.*)");
+
+        /// <summary>
+        /// Import regex.
+        /// </summary>
+        public static readonly Regex ImportRegex = new Regex(@"\[(.*)\]\((.*)\)");
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
@@ -171,7 +175,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private static Diagnostic ConvertToDiagnostic(string errorMessage, string source = null)
         {
             errorMessage = TemplateErrors.StaticFailure + "- " + errorMessage;
-            return new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), errorMessage, source: source);
+            return new Diagnostic(Range.DefaultRange, errorMessage, source: source);
         }
 
         /// <summary>
@@ -272,7 +276,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     var description = matchResult.Groups[1].Value?.Trim();
                     var id = matchResult.Groups[2].Value?.Trim();
-                    var import = new TemplateImport(description, id, this.templates.Id);
+
+                    var sourceRange = new SourceRange(context.ConvertToRange(), this.templates.Id);
+                    var import = new TemplateImport(description, id, sourceRange);
                     this.templates.Imports.Add(import);
                 }
 
@@ -323,7 +329,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         templateBody = RemoveTailingNewline(templateBody);
                     }
 
-                    var template = new Template(templateName, parameters, templateBody, startLine, stopLine, this.templates.Id);
+                    var sourceRange = new SourceRange(context.ConvertToRange(), this.templates.Id);
+                    var template = new Template(templateName, parameters, templateBody, sourceRange);
 
                     CheckTemplateName(templateName, context.templateNameLine());
                     CheckTemplateParameters(parameters, context.templateNameLine());
@@ -435,14 +442,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 parser.AddErrorListener(listener);
                 parser.BuildParseTree = true;
 
-                return parser.templateBody();
+                return parser.context().templateBody();
             }
 
             private Diagnostic BuildTemplatesDiagnostic(string errorMessage, ParserRuleContext context, DiagnosticSeverity severity = DiagnosticSeverity.Error)
             {
-                var startPosition = new Position(context.Start.Line, context.Start.Column);
-                var stopPosition = new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
-                return new Diagnostic(new Range(startPosition, stopPosition), errorMessage, severity, this.templates.Id);
+                return new Diagnostic(context.ConvertToRange(), errorMessage, severity, this.templates.Id);
             }
         }
     }

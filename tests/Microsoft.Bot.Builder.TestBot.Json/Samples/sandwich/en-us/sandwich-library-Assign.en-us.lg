@@ -1,5 +1,6 @@
 [sandwich-library.lg](sandwich-library.lg)
 [sandwich-library-ReadForm.lg](sandwich-library-ReadForm.lg)
+
 # numberValidation(property, number)
 - IF: ${less(number, dialogClass.schema.properties[property].minimum)}
 - ${number} is less than the minimum value ${dialogClass.schema.properties[property].minimum}.

@@ -313,6 +313,23 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestErrorLine()
+        {
+            var diagnostics = GetDiagnostics("ErrorLine.lg");
+
+            Assert.AreEqual(4, diagnostics.Count);
+
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.InvalidStrucName));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
+            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.MissingStrucEnd));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
+            Assert.IsTrue(diagnostics[2].Message.Contains(TemplateErrors.InvalidStrucBody));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[3].Severity);
+            Assert.IsTrue(diagnostics[3].Message.Contains(TemplateErrors.SyntaxError));
+        }
+
+        [TestMethod]
         public void TestExpressionFormatError()
         {
             var diagnostics = GetDiagnostics("ExpressionFormatError.lg");

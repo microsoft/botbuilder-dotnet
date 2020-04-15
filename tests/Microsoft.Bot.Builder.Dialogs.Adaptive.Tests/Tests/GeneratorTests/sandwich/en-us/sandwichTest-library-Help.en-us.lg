@@ -1,4 +1,5 @@
 [sandwichTest-library.lg](sandwichTest-library.lg)
+
 # askHelp
 - IF: ${$retries > 0 && $lastIntent != 'Help'}
 - ${join(foreach($expectedProperties, expected, help1(expected)), '\n')}

@@ -15,10 +15,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="description">import description, which is in [].</param>
         /// <param name="id">import id, which is a path, in ().</param>
-        /// <param name="source">Source of this item.</param>
-        internal TemplateImport(string description, string id, string source = "")
+        /// <param name="sourceRange">souerce range of template.</param>
+        internal TemplateImport(string description, string id, SourceRange sourceRange)
         {
-            this.Source = source;
+            this.SourceRange = sourceRange;
             this.Description = description;
             this.Id = id;
         }
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// origin root source of the import.
         /// </value>
-        public string Source { get; set; }
+        public SourceRange SourceRange { get; set; }
 
         public override string ToString()
         {

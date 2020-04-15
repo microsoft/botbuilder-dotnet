@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -159,6 +160,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return errorPrefix;
+        }
+
+        /// <summary>
+        /// Convert antlr parser into Range.
+        /// </summary>
+        /// <param name="context">antlr parse context.</param>
+        /// <param name="lineOffset">line offset.</param>
+        /// <returns>Range object.</returns>
+        public static Range ConvertToRange(this ParserRuleContext context, int lineOffset = 0)
+        {
+            var startPosition = new Position(lineOffset + context.Start.Line, context.Start.Column);
+            var stopPosition = new Position(lineOffset + context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
+            return new Range(startPosition, stopPosition);
         }
     }
 }
