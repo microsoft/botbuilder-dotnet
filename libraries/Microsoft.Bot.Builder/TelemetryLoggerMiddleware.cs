@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -264,6 +265,11 @@ namespace Microsoft.Bot.Builder
                 if (!string.IsNullOrWhiteSpace(activity.Speak))
                 {
                     properties.Add(TelemetryConstants.SpeakProperty, activity.Speak);
+                }
+
+                if (activity.Attachments != null && activity.Attachments.Any())
+                {
+                    properties.Add(TelemetryConstants.AttachmentsProperty, JsonConvert.SerializeObject(activity.Attachments));
                 }
             }
 

@@ -2,7 +2,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
     "$kind": "Microsoft.LuisRecognizer",
-    "applicationId": "=settings.luis.sandwichTest_en-us_lu",
+    "applicationId": "=settings.luis.sandwichTest_en_us_lu",
     "endpoint": "=settings.luis.endpoint",
     "endpointKey": "=settings.luis.endpointKey",
     "predictionOptions": {
