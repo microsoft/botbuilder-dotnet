@@ -1094,6 +1094,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestLGOptions()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("LGOptionTest.lg"));
+
+            var evaled = templates.Evaluate("SayHello");
+
+            Assert.AreEqual("hi the user.name is undefined", evaled);
+
+            evaled = templates.Evaluate("testInlineString");
+            Assert.AreEqual("m\r\n\r\ns\r\n\r\nf\r\n\r\nt\r\n\r\n", evaled);
+        }
+
+        [TestMethod]
         public void TestInlineEvaluate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("2.lg"));

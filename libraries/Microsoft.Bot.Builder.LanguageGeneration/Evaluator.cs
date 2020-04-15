@@ -28,19 +28,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
-        private readonly bool strictMode;
+        private readonly LGOptions lgOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Evaluator"/> class.
         /// </summary>
         /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">expression parser.</param>
-        /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
-        public Evaluator(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
+        /// <param name="opt">Options for LG. including strictMode, replaceNull and lineBreakStyle. </param>
+        public Evaluator(List<Template> templates, ExpressionParser expressionParser, LGOptions opt = null)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
-            this.strictMode = strictMode;
+            this.lgOptions = opt;
 
             // generate a new customized expression parser by injecting the template as functions
             ExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup));
@@ -245,13 +245,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var prefixErrorMsg = context.GetPrefixErrorMessage();
 
             var result = new List<object>();
+            var ifMarmdownRendering = lgOptions.LineBreakStyle == LGLineBreakStyle.MARKDOWN;
+            var inMultiLineMode = false;
             foreach (ITerminalNode node in context.children)
             {
                 switch (node.Symbol.Type)
                 {
                     case LGFileParser.DASH:
+                        break;
                     case LGFileParser.MULTILINE_PREFIX:
                     case LGFileParser.MULTILINE_SUFFIX:
+                        inMultiLineMode = true;
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
                         result.Add(node.GetText().Escape());
@@ -260,7 +264,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         result.Add(EvalExpression(node.GetText(), context, prefixErrorMsg));
                         break;
                     default:
-                        result.Add(node.GetText());
+                        var currentChar = node.GetText();
+                        if (ifMarmdownRendering && inMultiLineMode && (currentChar == "\n" || currentChar == "\r\n"))
+                        {
+                            result.Add(currentChar + currentChar);
+                        }
+                        else
+                        {
+                            result.Add(currentChar);
+                        }
+                        
                         break;
                 }
             }
@@ -400,7 +413,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (strictMode && (error != null || result == null))
+            if (lgOptions.StrictMode && (error != null || result == null))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -426,7 +439,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (error != null || (result == null && strictMode))
+            if (error != null || (result == null && lgOptions.StrictMode))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -436,7 +449,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
             }
-            else if (result == null && !strictMode)
+            else if (result == null && !lgOptions.StrictMode)
             {
                 result = "null";
             }
@@ -452,7 +465,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
             var parse = this.ExpressionParser.Parse(exp);
-            return parse.TryEvaluate(scope);
+            return parse.TryEvaluate(scope, lgOptions);
         }
 
         // Generate a new lookup function based on one lookup function

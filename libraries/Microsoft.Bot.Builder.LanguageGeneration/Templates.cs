@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Templates : List<Template>
     {
         private readonly string newLine = "\r\n";
+        private readonly string markdownMode = "markdown";
 
         public Templates(
             IList<Template> templates = null,
@@ -416,15 +417,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                             opt.StrictMode = true;
                         }
                     }
-
-                    if (key == replaceNullKey)
+                    else if (key == replaceNullKey)
                     {
-                        opt.NullSubstitution = (path) => Expression.Parse($"`{value}`");
+                        var pathStr = "${path}";
+                        if (value.Contains(pathStr))
+                        {
+                            var startIndex = value.IndexOf(pathStr);
+                            opt.NullSubstitution = (path) => value.Substring(0, startIndex) + $"{path}" + value.Substring(startIndex + pathStr.Length);
+                        }
                     }
-
-                    if (key == lineBreakKey)
+                    else if (key == lineBreakKey)
                     {
-                        opt.LineBreakStyle = value;
+                        opt.LineBreakStyle = value == markdownMode ? LGLineBreakStyle.MARKDOWN : LGLineBreakStyle.DEFAULT;
                     }
                 }
             }
