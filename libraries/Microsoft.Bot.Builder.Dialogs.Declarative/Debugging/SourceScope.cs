@@ -10,25 +10,25 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Debugging
 {
-    public sealed class SourceContext : IDisposable
+    internal sealed class SourceScope : IDisposable
     {
-        private readonly Stack<SourceRange> context;
+        private readonly SourceContext sourceContext;
 
-        public SourceContext(Stack<SourceRange> context, SourceRange range)
+        internal SourceScope(SourceContext sourceContext, SourceRange range)
         {
-            this.context = context ?? throw new ArgumentNullException(nameof(context));
-            this.context.Push(range);
+            this.sourceContext = sourceContext ?? throw new ArgumentNullException(nameof(sourceContext));
+            this.sourceContext.CallStack.Push(range);
         }
 
         public void Dispose()
         {
-            this.context.Pop();
+            this.sourceContext.CallStack.Pop();
         }
 
-        internal static (JToken, SourceRange) ReadTokenRange(JsonReader reader, Stack<SourceRange> context)
+        internal static (JToken, SourceRange) ReadTokenRange(JsonReader reader, SourceContext sourceContext)
         {
-            var range = context.Count > 0
-                ? context.Peek().DeepClone()
+            var range = sourceContext.CallStack.Count > 0
+                ? sourceContext.CallStack.Peek().DeepClone()
                 : new SourceRange();
 
             var token = SourcePoint.ReadObjectWithSourcePoints(reader, JToken.Load, out var start, out var end);
