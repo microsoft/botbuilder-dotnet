@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
 namespace Microsoft.BotBuilderSamples.DialogRootBot.Controllers
 {
-    // This ASP Controller is created to handle a request. Dependency Injection will provide the Adapter and IBot
+    // This ASP Controller is created to handle a request. Dependency injection will provide the Adapter and IBot
     // implementation at runtime. Multiple different IBot implementations running at different endpoints can be
     // achieved by specifying a more specific type for the bot constructor argument.
     [Route("api/messages")]
@@ -25,6 +25,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Controllers
         }
 
         [HttpPost]
+        [HttpGet]
         public async Task PostAsync()
         {
             // Delegate the processing of the HTTP POST to the adapter.

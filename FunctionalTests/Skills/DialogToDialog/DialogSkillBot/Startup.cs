@@ -4,7 +4,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
+using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector.Authentication;
+using Microsoft.BotBuilderSamples.DialogSkillBot.Authentication;
 using Microsoft.BotBuilderSamples.DialogSkillBot.Bots;
 using Microsoft.BotBuilderSamples.DialogSkillBot.Dialogs;
 using Microsoft.Extensions.Configuration;
@@ -28,8 +33,21 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot
             services.AddControllers()
                 .AddNewtonsoftJson();
 
-            // Create the Bot Framework Adapter with error handling enabled.
-            services.AddSingleton<IBotFrameworkHttpAdapter, SkillAdapterWithErrorHandler>();
+            // Configure credentials.
+            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
+
+            // Register AuthConfiguration to enable custom claim validation.
+            services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(sp.GetService<IConfiguration>()) });
+            
+            // Register the Bot Framework Adapter with error handling enabled.
+            // Note: some classes use the base BotAdapter so we add an extra registration that pulls the same instance.
+            services.AddSingleton<BotFrameworkHttpAdapter, SkillAdapterWithErrorHandler>();
+            services.AddSingleton<BotAdapter>(sp => sp.GetService<BotFrameworkHttpAdapter>());
+
+            // Register the skills conversation ID factory, the client and the request handler.
+            services.AddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
+            services.AddHttpClient<SkillHttpClient>();
+            services.AddSingleton<ChannelServiceHandler, SkillHandler>();
 
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
@@ -37,7 +55,7 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
 
-            // Register LUIS recognizer
+            // Register LUIS recognizer.
             services.AddSingleton<DialogSkillBotRecognizer>();
 
             // The Dialog that will be run by the bot.
@@ -55,21 +73,18 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseWebSockets()
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
 
-            //app.UseHttpsRedirection(); Enable this to support https
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            // Uncomment this to support HTTPS.
+            // app.UseHttpsRedirection();
         }
     }
 }
