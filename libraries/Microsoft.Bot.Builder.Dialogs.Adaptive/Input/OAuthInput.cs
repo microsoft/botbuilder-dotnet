@@ -108,9 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
 
             // If AlwaysPrompt is set to true, then clear Property value for turn 0.
-            var (alwaysPrompt, _) = this.AlwaysPrompt.TryGetValue(dc.State);
-
-            if (this.Property != null && alwaysPrompt)
+            if (this.Property != null && this.AlwaysPrompt != null && this.AlwaysPrompt.GetValue(dc.State))
             {
                 dc.State.SetValue(this.Property.GetValue(dc.State), null);
             }
