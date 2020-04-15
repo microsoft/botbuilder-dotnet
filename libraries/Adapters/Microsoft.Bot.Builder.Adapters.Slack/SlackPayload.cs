@@ -41,9 +41,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         [JsonProperty(PropertyName = "action_ts")]
         public string ActionTs { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set SlackHelper.PayloadToActivity method")]
         [JsonProperty(PropertyName = "submission")]
-        public JObject Submission { get; set; }
+        public JObject Submission { get; } = new JObject();
 
         [JsonProperty(PropertyName = "callback_id")]
         public string CallbackId { get; set; }
