@@ -2254,7 +2254,7 @@
         },
         "Microsoft.ContinueLoop": {
             "$role": "implements(Microsoft.IDialog)",
-            "title": "Continune Loop",
+            "title": "Continue Loop",
             "description": "Stop executing this template and continue with the next iteration of the loop.",
             "type": "object",
             "properties": {
