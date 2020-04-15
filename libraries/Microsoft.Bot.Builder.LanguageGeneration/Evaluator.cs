@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
-        private readonly LGOptions lgOptions;
+        private readonly EvaluationOptions lgOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Evaluator"/> class.
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">expression parser.</param>
         /// <param name="opt">Options for LG. including strictMode, replaceNull and lineBreakStyle. </param>
-        public Evaluator(List<Template> templates, ExpressionParser expressionParser, LGOptions opt = null)
+        public Evaluator(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
@@ -465,7 +465,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
             var parse = this.ExpressionParser.Parse(exp);
-            return parse.TryEvaluate(scope, lgOptions);
+            var opt = new Options();
+            opt.NullSubstitution = lgOptions.NullSubstitution;
+            return parse.TryEvaluate(scope, opt);
         }
 
         // Generate a new lookup function based on one lookup function

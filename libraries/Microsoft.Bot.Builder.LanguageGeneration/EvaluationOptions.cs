@@ -1,4 +1,4 @@
-﻿using AdaptiveExpressions;
+﻿using System;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -18,16 +18,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// Options for evaluation of LG template <see cref="LGOptions"/> class.
     /// </summary>
-    public class LGOptions : Options 
+    public class EvaluationOptions
     {
-        public LGOptions()
+        public EvaluationOptions()
         {
             this.StrictMode = false;
             this.NullSubstitution = null;
             this.LineBreakStyle = LGLineBreakStyle.DEFAULT;
         }
 
-        public LGOptions(LGOptions opt)
+        public EvaluationOptions(EvaluationOptions opt)
         {
             this.StrictMode = opt.StrictMode;
             this.NullSubstitution = opt.NullSubstitution;
@@ -37,5 +37,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public LGLineBreakStyle LineBreakStyle { get; set; } = LGLineBreakStyle.DEFAULT;
 
         public bool StrictMode { get; set; } = false;
+
+        public Func<string, object> NullSubstitution { get; set; } = null;
     }
 }

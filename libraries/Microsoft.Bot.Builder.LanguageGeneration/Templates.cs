@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// lineBreakStyle = markdown means one line break will be translated to two line breaks, 
         /// any other value will keep the same.
         /// </value>
-        public LGOptions LgOptions => GetLGOptions(Options);
+        public EvaluationOptions LgOptions => GetEvaluationOptions(Options);
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -177,8 +177,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
+        /// <param name="opt">The EvaluationOptions in evaluating a template.</param>
         /// <returns>Evaluate result.</returns>
-        public object Evaluate(string templateName, object scope = null)
+        public object Evaluate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
 
@@ -393,9 +394,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private LGOptions GetLGOptions(IList<string> options)
+        private EvaluationOptions GetEvaluationOptions(IList<string> options)
         {
-            var opt = new LGOptions();
+            var opt = new EvaluationOptions();
             if (options == null)
             {
                 return opt;

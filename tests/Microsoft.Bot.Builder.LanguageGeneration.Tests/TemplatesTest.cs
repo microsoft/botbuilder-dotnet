@@ -1096,6 +1096,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestLGOptions()
         {
+            var eof = Environment.NewLine;
             var templates = Templates.ParseFile(GetExampleFilePath("LGOptionTest.lg"));
 
             var evaled = templates.Evaluate("SayHello");
@@ -1103,7 +1104,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("hi the user.name is undefined", evaled);
 
             evaled = templates.Evaluate("testInlineString");
-            Assert.AreEqual("m\r\n\r\ns\r\n\r\nf\r\n\r\nt\r\n\r\n", evaled);
+
+            Assert.AreEqual($"m{eof}{eof}s{eof}{eof}f{eof}{eof}t{eof}{eof}", evaled);
         }
 
         [TestMethod]
