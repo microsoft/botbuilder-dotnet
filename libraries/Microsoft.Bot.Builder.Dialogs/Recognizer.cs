@@ -94,6 +94,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             return properties;
         }
 
+        /// <summary>
+        /// Tracks an event with the event name provided using the TelemetryClient attaching the properties / metrics.
+        /// </summary>
+        /// <param name="dialogContext">Dialog Context.</param>
+        /// <param name="eventName">The name of the event to track.</param>
+        /// <param name="telemetryProperties">The properties to be included as part of the event tracking.</param>
+        /// <param name="telemetryMetrics">The metrics to be included as part of the event tracking.</param>
         protected void TrackRecognizerResult(DialogContext dialogContext, string eventName, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics)
         {
             if (this.TelemetryClient is NullBotTelemetryClient)
