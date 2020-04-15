@@ -16,6 +16,9 @@ namespace Microsoft.Bot.Connector.Authentication
     public class AdalAuthenticator : IAuthenticator
     {
         private const string MsalTemporarilyUnavailable = "temporarily_unavailable";
+
+        // When TargetFramework moves to netstandard2.1, use HttpStatusCode.TooManyRequests
+        // https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?view=netstandard-2.1#System_Net_HttpStatusCode_TooManyRequests
         private const int HttpTooManyRequests = 429;
 
         // Semaphore to control concurrency while refreshing tokens from ADAL.
