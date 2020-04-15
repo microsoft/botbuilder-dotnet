@@ -14,7 +14,7 @@
                     "$role": "expression",
                     "type": "string",
                     "title": "Output format",
-                    "description": "Expression to format the confirm output.",
+                    "description": "Optional expression to use to format the output.",
                     "examples": [
                         "=concat('confirmation:', this.value)"
                     ]
@@ -23,12 +23,14 @@
                     "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
-                    "description": "Default locale.",
+                    "description": "The Default locale or an expression which provides the default locale to use as default if not found in the activity.",
                     "default": "en-us"
                 },
                 "style": {
                     "$role": "expression",
                     "type": "string",
+                    "title": "List style",
+                    "description": "The style or an expression to the style to use to render choices.",
                     "enum": [
                         "None",
                         "Auto",
@@ -37,30 +39,30 @@
                         "SuggestedAction",
                         "HeroCard"
                     ],
-                    "title": "List style",
-                    "description": "Style to render choices.",
                     "default": "Auto"
                 },
                 "choiceOptions": {
                     "$role": "expression",
                     "type": "object",
+                    "title": "Choice Options",
+                    "description": "Choice Options or expression which provides Choice Options to control display choices to the user.",
                     "properties": {
                         "inlineSeparator": {
                             "type": "string",
                             "title": "Inline separator",
-                            "description": "Character used to separate individual choices when there are more than 2 choices",
+                            "description": "Text to separate individual choices when there are more than 2 choices",
                             "default": ", "
                         },
                         "inlineOr": {
                             "type": "string",
                             "title": "Inline or",
-                            "description": "Separator inserted between the choices when their are only 2 choices",
+                            "description": "Text to be inserted between the choices when their are only 2 choices",
                             "default": " or "
                         },
                         "inlineOrMore": {
                             "type": "string",
                             "title": "Inline or more",
-                            "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
+                            "description": "Text to be inserted between the last 2 choices when their are more than 2 choices.",
                             "default": ", or "
                         },
                         "includeNumbers": {
@@ -71,13 +73,35 @@
                         }
                     }
                 },
+                "defaultValue": {
+                    "$role": "expression",
+                    "type": "boolean", 
+                    "title": "Default value",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+                    "examples": [
+                        "true",
+                        "=user.isVip"
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "type": "boolean", 
+                    "title": "Value",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+                    "examples": [
+                        "true",
+                        "=user.isVip"
+                    ]
+                },
                 "confirmChoices": {
                     "$role": "expression",
                     "type": "array",
+                    "title": "Array of or expression which binds to choice definitions to present to the user.",
                     "items": [
                         {
-                            "title": "Array of confirm choice objects",
                             "type": "object",
+                            "title": "Choice",
+                            "description": "Choice definition to present to the user.",
                             "properties": {
                                 "value": {
                                     "type": "string",

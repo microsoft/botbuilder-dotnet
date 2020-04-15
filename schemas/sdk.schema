@@ -901,13 +901,20 @@
                 "expectedProperties": {
                     "$role": "expression",
                     "title": "Expected Properties",
-                    "description": "Properties expected to be filled by entities from the user",
+                    "description": "Properties expected from the user.",
+                    "examples": [
+                        [
+                            "age",
+                            "name"
+                        ]
+                    ],
                     "oneOf": [
                         {
                             "type": "array",
                             "items": {
                                 "type": "string",
-                                "title": "string"
+                                "title": "Name",
+                                "description": "Name of the property"
                             },
                             "title": "array"
                         },
@@ -918,11 +925,14 @@
                         }
                     ]
                 },
-                "expectedOperation": {
+                "defaultOperation": {
                     "$role": "expression",
                     "type": "string",
-                    "title": "Expected operation to assign entity to property",
-                    "description": "Operation to apply to entities by default."
+                    "title": "Default Operation",
+                    "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
+                    "examples": [
+                        "add"
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -950,6 +960,38 @@
             "$role": "implements(Microsoft.IDialog)",
             "title": "Attachment input dialog",
             "description": "Collect information - Ask for a file or image.",
+            "definitions": {
+                "attachment": {
+                    "type": "object",
+                    "properties": {
+                        "contentType": {
+                            "type": "string",
+                            "title": "Content Type",
+                            "description": "mimetype/contenttype for the attachment"
+                        },
+                        "contentUrl": {
+                            "type": "string",
+                            "title": "Content Url",
+                            "description": "the url for the content"
+                        },
+                        "content": {
+                            "type": "object",
+                            "title": "Content",
+                            "description": "object content"
+                        },
+                        "name": {
+                            "type": "string",
+                            "title": "name",
+                            "description": "optional name for the attachment"
+                        },
+                        "thumbnailUrl": {
+                            "type": "string",
+                            "title": "Thumenail Url",
+                            "description": "The optional thumbnail url for the content"
+                        }
+                    }
+                }
+            },
             "type": "object",
             "properties": {
                 "$kind": {
@@ -983,14 +1025,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
-                    "description": "Optional condition which if true will disable this action.",
+                    "description": "Sets whether this action should be disabled",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -1031,28 +1082,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -1067,63 +1127,130 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "defaultValue": {
+                    "$role": "expression",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded.",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "contentType": {
+                                    "type": "string",
+                                    "title": "Content Type",
+                                    "description": "mimetype/contenttype for the attachment"
+                                },
+                                "contentUrl": {
+                                    "type": "string",
+                                    "title": "Content Url",
+                                    "description": "the url for the content"
+                                },
+                                "content": {
+                                    "type": "object",
+                                    "title": "Content",
+                                    "description": "object content"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "title": "name",
+                                    "description": "optional name for the attachment"
+                                },
+                                "thumbnailUrl": {
+                                    "type": "string",
+                                    "title": "Thumenail Url",
+                                    "description": "The optional thumbnail url for the content"
+                                }
+                            },
+                            "title": "object"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
+                        }
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null.",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "contentType": {
+                                    "type": "string",
+                                    "title": "Content Type",
+                                    "description": "mimetype/contenttype for the attachment"
+                                },
+                                "contentUrl": {
+                                    "type": "string",
+                                    "title": "Content Url",
+                                    "description": "the url for the content"
+                                },
+                                "content": {
+                                    "type": "object",
+                                    "title": "Content",
+                                    "description": "object content"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "title": "name",
+                                    "description": "optional name for the attachment"
+                                },
+                                "thumbnailUrl": {
+                                    "type": "string",
+                                    "title": "Thumenail Url",
+                                    "description": "The optional thumbnail url for the content"
+                                }
+                            },
+                            "title": "object"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
+                        }
                     ]
                 },
                 "outputFormat": {
@@ -1511,14 +1638,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
-                    "description": "Optional condition which if true will disable this action.",
+                    "description": "Sets whether this action should be disabled",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -1559,28 +1695,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -1595,63 +1740,44 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "outputFormat": {
@@ -1662,14 +1788,14 @@
                         "index"
                     ],
                     "title": "Output format",
-                    "description": "Choice output format.",
+                    "description": "Sets the desired choice output format (either value or index into choices).",
                     "default": "value"
                 },
                 "choices": {
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "title": "Array of strings",
+                            "title": "Array of choices",
                             "type": "array",
                             "items": [
                                 {
@@ -1702,7 +1828,7 @@
                                             "description": "List of synonyms to recognize in addition to the value (optional).",
                                             "items": {
                                                 "type": "string",
-                                                "title": "string"
+                                                "title": "Synonym"
                                             }
                                         }
                                     }
@@ -1715,19 +1841,18 @@
                         }
                     ]
                 },
-                "appendChoices": {
-                    "type": "boolean",
-                    "title": "Append choices",
-                    "description": "Compose an output activity containing a set of choices",
-                    "default": "true"
-                },
                 "defaultLocale": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
-                    "description": "Default locale.",
-                    "default": "en-us"
+                    "description": "The default locale to use to parse confirmation choices if there is not one passed by the caller.",
+                    "default": "en-us",
+                    "examples": [
+                        "en-us"
+                    ]
                 },
                 "style": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
                         "None",
@@ -1738,54 +1863,92 @@
                         "HeroCard"
                     ],
                     "title": "List style",
-                    "description": "Style to render choices.",
+                    "description": "Sets the ListStyle to control how choices are rendered.",
                     "default": "Auto"
                 },
                 "choiceOptions": {
-                    "type": "object",
-                    "properties": {
-                        "inlineSeparator": {
-                            "type": "string",
-                            "title": "Inline separator",
-                            "description": "Character used to separate individual choices when there are more than 2 choices",
-                            "default": ", "
+                    "$role": "expression",
+                    "title": "Choice options",
+                    "description": "Sets the choice options used for controlling how choices are combined.",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "inlineSeparator": {
+                                    "type": "string",
+                                    "title": "Inline separator",
+                                    "description": "Character used to separate individual choices when there are more than 2 choices",
+                                    "default": ", "
+                                },
+                                "inlineOr": {
+                                    "type": "string",
+                                    "title": "Inline or",
+                                    "description": "Separator inserted between the choices when there are only 2 choices",
+                                    "default": " or "
+                                },
+                                "inlineOrMore": {
+                                    "type": "string",
+                                    "title": "Inline or more",
+                                    "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
+                                    "default": ", or "
+                                },
+                                "includeNumbers": {
+                                    "type": "boolean",
+                                    "title": "Include numbers",
+                                    "description": "If true, 'inline' and 'list' list style will be prefixed with the index of the choice.",
+                                    "default": true
+                                }
+                            },
+                            "title": "object"
                         },
-                        "inlineOr": {
+                        {
                             "type": "string",
-                            "title": "Inline or",
-                            "description": "Separator inserted between the choices when there are only 2 choices",
-                            "default": " or "
-                        },
-                        "inlineOrMore": {
-                            "type": "string",
-                            "title": "Inline or more",
-                            "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
-                            "default": ", or "
-                        },
-                        "includeNumbers": {
-                            "type": "boolean",
-                            "title": "Include numbers",
-                            "description": "If true, 'inline' and 'list' list style will be prefixed with the index of the choice.",
-                            "default": true
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
                         }
-                    }
+                    ]
                 },
                 "recognizerOptions": {
-                    "type": "object",
-                    "properties": {
-                        "noValue": {
-                            "type": "boolean",
-                            "title": "No value",
-                            "description": "If true, the choices value field will NOT be search over",
-                            "default": false
+                    "$role": "expression",
+                    "title": "Recognizer options",
+                    "description": "Sets how to recognize choices in the response",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "noValue": {
+                                    "type": "boolean",
+                                    "title": "No value",
+                                    "description": "If true, the choices value field will NOT be search over",
+                                    "default": false
+                                },
+                                "noAction": {
+                                    "type": "boolean",
+                                    "title": "No action",
+                                    "description": "If true, the choices action.title field will NOT be searched over",
+                                    "default": false
+                                },
+                                "recognizeNumbers": {
+                                    "type": "boolean",
+                                    "title": "Recognize numbers",
+                                    "description": "If true, the number recognizer will be used to recognize an index response (1,2,3...) to the prompt.",
+                                    "default": true
+                                },
+                                "recognizeOrdinals": {
+                                    "type": "boolean",
+                                    "title": "Recognize ordinals",
+                                    "description": "If true, the ordinal recognizer will be used to recognize ordinal response (first/second/...) to the prompt.",
+                                    "default": true
+                                }
+                            },
+                            "title": "object"
                         },
-                        "noAction": {
-                            "type": "boolean",
-                            "title": "No action",
-                            "description": "If true, the the choices action.title field will NOT be searched over",
-                            "default": false
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
                         }
-                    }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -1923,14 +2086,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
-                    "description": "Optional condition which if true will disable this action.",
+                    "description": "Sets whether this action should be disabled",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -1971,28 +2143,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -2007,70 +2188,51 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",
                     "title": "Output format",
-                    "description": "Expression to format the confirm output.",
+                    "description": "Optional expression to use to format the output.",
                     "examples": [
                         "=concat('confirmation:', this.value)"
                     ]
@@ -2079,12 +2241,14 @@
                     "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
-                    "description": "Default locale.",
+                    "description": "The Default locale or an expression which provides the default locale to use as default if not found in the activity.",
                     "default": "en-us"
                 },
                 "style": {
                     "$role": "expression",
                     "type": "string",
+                    "title": "List style",
+                    "description": "The style or an expression to the style to use to render choices.",
                     "enum": [
                         "None",
                         "Auto",
@@ -2093,12 +2257,12 @@
                         "SuggestedAction",
                         "HeroCard"
                     ],
-                    "title": "List style",
-                    "description": "Style to render choices.",
                     "default": "Auto"
                 },
                 "choiceOptions": {
                     "$role": "expression",
+                    "title": "Choice Options",
+                    "description": "Choice Options or expression which provides Choice Options to control display choices to the user.",
                     "oneOf": [
                         {
                             "type": "object",
@@ -2106,19 +2270,19 @@
                                 "inlineSeparator": {
                                     "type": "string",
                                     "title": "Inline separator",
-                                    "description": "Character used to separate individual choices when there are more than 2 choices",
+                                    "description": "Text to separate individual choices when there are more than 2 choices",
                                     "default": ", "
                                 },
                                 "inlineOr": {
                                     "type": "string",
                                     "title": "Inline or",
-                                    "description": "Separator inserted between the choices when their are only 2 choices",
+                                    "description": "Text to be inserted between the choices when their are only 2 choices",
                                     "default": " or "
                                 },
                                 "inlineOrMore": {
                                     "type": "string",
                                     "title": "Inline or more",
-                                    "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
+                                    "description": "Text to be inserted between the last 2 choices when their are more than 2 choices.",
                                     "default": ", or "
                                 },
                                 "includeNumbers": {
@@ -2137,15 +2301,57 @@
                         }
                     ]
                 },
+                "defaultValue": {
+                    "$role": "expression",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+                    "examples": [
+                        "true",
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+                    "examples": [
+                        "true",
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
                 "confirmChoices": {
                     "$role": "expression",
+                    "title": "Array of or expression which binds to choice definitions to present to the user.",
                     "oneOf": [
                         {
                             "type": "array",
                             "items": [
                                 {
-                                    "title": "Array of confirm choice objects",
                                     "type": "object",
+                                    "title": "Choice",
+                                    "description": "Choice definition to present to the user.",
                                     "properties": {
                                         "value": {
                                             "type": "string",
@@ -2536,14 +2742,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
-                    "description": "Optional condition which if true will disable this action.",
+                    "description": "Sets whether this action should be disabled",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -2584,28 +2799,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -2620,80 +2844,75 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "defaultValue": {
+                    "$role": "expression",
+                    "type": "string",
+                    "foramt": "date",
+                    "title": "Default Date",
+                    "description": "'Property' will be set to the value or the result of the expression when max turn count is exceeded.",
+                    "examples": [
+                        "=user.birthday"
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "type": "string",
+                    "foramt": "date",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value or the result of the expression unless it evaluates to null.",
+                    "examples": [
+                        "=user.birthday"
                     ]
                 },
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",
+                    "format": "date",
                     "title": "Output format",
-                    "description": "Expression to format the datetime output.",
+                    "description": "Expression to use format the datetime output.",
                     "examples": [
                         "this.value[0].Value"
                     ]
-                },
-                "defaultLocale": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Default locale",
-                    "description": "Default locale.",
-                    "default": "en-us"
                 }
             },
             "additionalProperties": false,
@@ -5803,14 +6022,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
-                    "description": "Optional condition which if true will disable this action.",
+                    "description": "Sets whether this action should be disabled",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -5851,28 +6079,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -5887,63 +6124,84 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "defaultValue": {
+                    "$role": "expression",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+                    "examples": [
+                        13,
+                        "=user.age"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "title": "number"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to number."
+                        }
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+                    "examples": [
+                        13,
+                        "=user.age"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "title": "number"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to number."
+                        }
                     ]
                 },
                 "outputFormat": {
@@ -5960,7 +6218,7 @@
                     "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
-                    "description": "Default locale.",
+                    "description": "Default locale to use if there is no locale available..",
                     "default": "en-us"
                 }
             },
@@ -6179,14 +6437,7 @@
                 },
                 "defaultValue": {
                     "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
+                    "type": "string",
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
@@ -9197,7 +9448,7 @@
                     "description": "Text for no match option.",
                     "default": "None of the above."
                 },
-                "cardNoMatchResponse ": {
+                "cardNoMatchResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Card no match response",
                     "description": "Custom response when no match option was selected.",
@@ -11672,14 +11923,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
-                    "description": "Optional condition which if true will disable this action.",
+                    "description": "Sets whether this action should be disabled",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -11720,28 +11980,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -11756,63 +12025,66 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "defaultValue": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+                    "examples": [
+                        "hello world",
+                        "Hello ${user.name}",
+                        "=concat(user.firstname, user.lastName)"
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+                    "examples": [
+                        "hello world",
+                        "Hello ${user.name}",
+                        "=concat(user.firstname, user.lastName)"
                     ]
                 },
                 "outputFormat": {

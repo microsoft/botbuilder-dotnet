@@ -85,14 +85,7 @@
         },
         "defaultValue": {
             "$role": "expression",
-            "type": [
-                "object",
-                "array",
-                "number",
-                "integer",
-                "boolean",
-                "string"
-            ],
+            "type": "string",
             "title": "Default value",
             "description": "Expression to examine on each turn of the conversation as possible value to the property.",
             "examples": [

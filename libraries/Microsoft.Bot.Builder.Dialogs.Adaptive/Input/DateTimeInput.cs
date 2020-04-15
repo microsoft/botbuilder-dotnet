@@ -12,6 +12,11 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// Input dialog to collect a datetime from the user.
+    /// </summary>
+    /// <remarks>
+    /// The value that is output from a DateTimeInput is an array of DateTimeResolutions, or the output of OutputFormat.</remarks>
     public class DateTimeInput : InputDialog
     {
         [JsonProperty("$kind")]
@@ -22,11 +27,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        /// <summary>
+        /// Gets or sets the DefaultLocale to use to parse confirmation choices if there is not one passed by the caller.
+        /// </summary>
+        /// <value>
+        /// string or expression which evaluates to a string with locale.
+        /// </value>
         [JsonProperty("defaultLocale")]
         public StringExpression DefaultLocale { get; set; } = null;
 
+        /// <summary>
+        /// Gets or sets the expression to use to format the result.
+        /// </summary>
+        /// <remarks>The default output is an array of DateTimeResolutions, if this property is set then the output of the expression is the value returned by the dialog.</remarks>
+        /// <value>an expression.</value>
         [JsonProperty("outputFormat")]
-        public StringExpression OutputFormat { get; set; }
+        public ValueExpression OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {

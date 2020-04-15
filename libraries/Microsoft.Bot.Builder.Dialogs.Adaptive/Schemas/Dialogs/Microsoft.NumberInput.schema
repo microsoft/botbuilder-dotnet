@@ -10,6 +10,26 @@
         },
         {
             "properties": {
+                "defaultValue": {
+                    "$role": "expression",
+                    "type": "number",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+                    "examples": [
+                        13,
+                        "=user.age"
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "type": "number",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+                    "examples": [
+                        13,
+                        "=user.age"
+                    ]
+                },
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",
@@ -24,7 +44,7 @@
                     "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
-                    "description": "Default locale.",
+                    "description": "Default locale to use if there is no locale available..",
                     "default": "en-us"
                 }
             }
