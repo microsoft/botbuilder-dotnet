@@ -66,5 +66,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 return dialogManager;
             }
         }
+
+        /// <summary>
+        /// Register language policy as default policy.
+        /// </summary>
+        /// <param name="dialogManager">botAdapter to add services to.</param>
+        /// <param name="policy">policy to use.</param>
+        /// <returns>botAdapter.</returns>
+        public static DialogManager UseLanguagePolicy(this DialogManager dialogManager, LanguagePolicy policy)
+        {
+            dialogManager.TurnState.Add<LanguagePolicy>(policy);
+            return dialogManager;
+        }
     }
 }

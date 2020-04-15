@@ -78,8 +78,8 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression to validate.</param>
         /// <param name="minArity">Minimum number of children.</param>
         /// <param name="maxArity">Maximum number of children.</param>
-        /// <param name="types">Allowed return types for children.</param>
-        public static void ValidateArityAndAnyType(Expression expression, int minArity, int maxArity, params ReturnType[] types)
+        /// <param name="returnType">Allowed return types for children.</param>
+        public static void ValidateArityAndAnyType(Expression expression, int minArity, int maxArity, ReturnType returnType = ReturnType.Object)
         {
             if (expression.Children.Length < minArity)
             {
@@ -91,38 +91,13 @@ namespace AdaptiveExpressions
                 throw new ArgumentException($"{expression} can't have more than {maxArity} children.");
             }
 
-            if (types.Length > 0)
+            if ((returnType & ReturnType.Object) == 0)
             {
                 foreach (var child in expression.Children)
                 {
-                    if (child.ReturnType != ReturnType.Object && !types.Contains(child.ReturnType))
+                    if ((child.ReturnType & ReturnType.Object) == 0 && (returnType & child.ReturnType) == 0)
                     {
-                        if (types.Count() == 1)
-                        {
-                            throw new ArgumentException($"{child} is not a {types[0]} expression in {expression}.");
-                        }
-                        else
-                        {
-                            var builder = new StringBuilder();
-                            builder.Append($"{child} in {expression} is not any of [");
-                            var first = true;
-                            foreach (var type in types)
-                            {
-                                if (first)
-                                {
-                                    first = false;
-                                }
-                                else
-                                {
-                                    builder.Append(", ");
-                                }
-
-                                builder.Append(type);
-                            }
-
-                            builder.Append("].");
-                            throw new ArgumentException(builder.ToString());
-                        }
+                        throw new ArgumentException(BuildTypeValidatorError(returnType, child, expression));
                     }
                 }
             }
@@ -152,9 +127,11 @@ namespace AdaptiveExpressions
             {
                 var child = expression.Children[i];
                 var type = types[i];
-                if (type != ReturnType.Object && child.ReturnType != ReturnType.Object && child.ReturnType != type)
+                if ((type & ReturnType.Object) == 0
+                    && (child.ReturnType & ReturnType.Object) == 0
+                    && (type & child.ReturnType) == 0)
                 {
-                    throw new ArgumentException($"{child} in {expression} is not a {type}.");
+                    throw new ArgumentException(BuildTypeValidatorError(type, child, expression));
                 }
             }
 
@@ -168,9 +145,11 @@ namespace AdaptiveExpressions
 
                 var child = expression.Children[ic];
                 var type = optional[i];
-                if (type != ReturnType.Object && child.ReturnType != ReturnType.Object && child.ReturnType != type)
+                if ((type & ReturnType.Object) == 0
+                    && (child.ReturnType & ReturnType.Object) == 0
+                    && (type & child.ReturnType) == 0)
                 {
-                    throw new ArgumentException($"{child} in {expression} is not a {type}.");
+                    throw new ArgumentException(BuildTypeValidatorError(type, child, expression));
                 }
             }
         }
@@ -222,7 +201,7 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
         public static void ValidateBinaryNumberOrString(Expression expression)
-            => ValidateArityAndAnyType(expression, 2, 2, ReturnType.Number, ReturnType.String);
+            => ValidateArityAndAnyType(expression, 2, 2, ReturnType.Number | ReturnType.String);
 
         /// <summary>
         /// Validate there is a single argument.
@@ -801,7 +780,7 @@ namespace AdaptiveExpressions
                     return (value, error);
                 },
                 ReturnType.String,
-                expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String, ReturnType.Number));
+                expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number));
 
         /// <summary>
         /// Lookup an index property of instance.
@@ -1048,6 +1027,22 @@ namespace AdaptiveExpressions
             return (path, left, null);
         }
 
+        private static string BuildTypeValidatorError(ReturnType returnType, Expression childExpr, Expression expr)
+        {
+            string result;
+            var names = returnType.ToString();
+            if (!names.Contains(","))
+            {
+                result = $"{childExpr} is not a {names} expression in {expr}.";
+            }
+            else
+            {
+                result = $"{childExpr} in {expr} is not any of [{names}].";
+            }
+
+            return result;
+        }
+
         private static void ValidateAccessor(Expression expression)
         {
             var children = expression.Children;
@@ -1063,7 +1058,7 @@ namespace AdaptiveExpressions
                 throw new Exception($"{expression} has more than 2 children.");
             }
 
-            if (children.Length == 2 && children[1].ReturnType != ReturnType.Object)
+            if (children.Length == 2 && (children[1].ReturnType & ReturnType.Object) == 0)
             {
                 throw new Exception($"{expression} must have an object as its second argument.");
             }
@@ -2292,15 +2287,14 @@ namespace AdaptiveExpressions
         }
 
         // conversion functions
-        private static string ToBinary(string strToConvert)
+        private static byte[] ToBinary(string strToConvert)
         {
-            var result = string.Empty;
-            foreach (var element in strToConvert.ToCharArray())
+            if (strToConvert == null)
             {
-                result += Convert.ToString(element, 2).PadLeft(8, '0');
+                return new byte[] { };
             }
 
-            return result;
+            return Encoding.UTF8.GetBytes(strToConvert);
         }
 
         private static (object, string) ToXml(object contentToConvert)
@@ -2824,8 +2818,8 @@ namespace AdaptiveExpressions
 
                             return (result, error);
                         }, VerifyNumberOrStringOrNull),
-                    ReturnType.Object,
-                    (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
+                    ReturnType.String | ReturnType.Number,
+                    (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue, ReturnType.String | ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.Sum,
                     Apply(
@@ -2836,7 +2830,7 @@ namespace AdaptiveExpressions
                         },
                         VerifyNumericList),
                     ReturnType.Number,
-                    ValidateUnary),
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Range,
                     ApplyWithError(
@@ -2857,7 +2851,7 @@ namespace AdaptiveExpressions
                             return (result, error);
                         },
                         VerifyInteger),
-                    ReturnType.Object,
+                    ReturnType.Array,
                     ValidateBinaryNumber),
 
                 // Collection Functions
@@ -2879,7 +2873,7 @@ namespace AdaptiveExpressions
                             return count;
                         }, VerifyContainer),
                     ReturnType.Number,
-                    ValidateUnary),
+                    (expression) => ValidateOrder(expression, null, ReturnType.String | ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Union,
                     Apply(
@@ -2894,8 +2888,8 @@ namespace AdaptiveExpressions
 
                         return result.ToList();
                         }, VerifyList),
-                    ReturnType.Object,
-                    ValidateAtLeastOne),
+                    ReturnType.Array,
+                    (expression) => ValidateArityAndAnyType(expression, 1, int.MaxValue, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Intersection,
                     Apply(
@@ -2910,34 +2904,34 @@ namespace AdaptiveExpressions
 
                         return result.ToList();
                         }, VerifyList),
-                    ReturnType.Object,
-                    ValidateAtLeastOne),
+                    ReturnType.Array,
+                    (expression) => ValidateArityAndAnyType(expression, 1, int.MaxValue, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Skip,
                     Skip,
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.Take,
                     Take,
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, null, ReturnType.Object, ReturnType.Number)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SubArray,
                     SubArray,
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object, ReturnType.Number)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Array, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SortBy,
                     SortBy(false),
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.SortByDescending,
                     SortBy(true),
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object)),
-                new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Object, ValidateUnary),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Array)),
+                new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Array, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Flatten,
                     Apply(
@@ -2946,8 +2940,8 @@ namespace AdaptiveExpressions
                             var depth = args.Count > 1 ? Convert.ToInt32(args[1]) : 100;
                             return Flatten((IEnumerable<object>)args[0], depth);
                         }),
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Object)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Array)),
                 new ExpressionEvaluator(
                     ExpressionType.Unique,
                     Apply(
@@ -2955,8 +2949,8 @@ namespace AdaptiveExpressions
                         {
                             return ((IEnumerable<object>)args[0]).Distinct().ToList();
                         }, VerifyList),
-                    ReturnType.Object,
-                    (expression) => ValidateOrder(expression, null, ReturnType.Object)),
+                    ReturnType.Array,
+                    (expression) => ValidateOrder(expression, null, ReturnType.Array)),
 
                 // Booleans
                 Comparison(ExpressionType.LessThan, args => CultureInvariantDoubleConvert(args[0]) < CultureInvariantDoubleConvert(args[1]), ValidateBinaryNumberOrString, VerifyNumberOrString),
@@ -3023,21 +3017,21 @@ namespace AdaptiveExpressions
                     ExpressionType.Length,
                     Apply(
                         args =>
-                            {
-                                var result = 0;
-                                if (args[0] is string str)
-                                    {
-                                        result = str.Length;
-                                    }
-                                else
-                                    {
-                                        result = 0;
-                                    }
+                        {
+                            var result = 0;
+                            if (args[0] is string str)
+                                {
+                                    result = str.Length;
+                                }
+                            else
+                                {
+                                    result = 0;
+                                }
 
-                                return result;
-                            }, VerifyStringOrNull),
+                            return result;
+                        }, VerifyStringOrNull),
                     ReturnType.Number,
-                    ValidateAtLeastOne),
+                    ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Replace,
                     ApplyWithError(
@@ -3110,7 +3104,7 @@ namespace AdaptiveExpressions
 
                             return inputStr.Split(seperator.ToCharArray());
                         }, VerifyStringOrNull),
-                    ReturnType.Object,
+                    ReturnType.Array,
                     (expression) => ValidateArityAndAnyType(expression, 1, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.Substring,
@@ -3197,7 +3191,7 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(
                     ExpressionType.AddOrdinal,
                     Apply(args => AddOrdinal(Convert.ToInt32(args[0])), VerifyInteger),
-                    ReturnType.Number,
+                    ReturnType.String,
                     (expression) => ValidateArityAndAnyType(expression, 1, 1, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.Join,
@@ -3235,7 +3229,7 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.String,
-                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.String)),
+                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Array, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.NewGuid,
                     Apply(args => Guid.NewGuid().ToString()),
@@ -3273,7 +3267,7 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
+                    expr => ValidateOrder(expr, null, ReturnType.Array | ReturnType.String, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.LastIndexOf,
                     (expression, state, options) =>
@@ -3306,7 +3300,7 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.Number,
-                    (expression) => ValidateArityAndAnyType(expression, 2, 2, ReturnType.String, ReturnType.Boolean, ReturnType.Number, ReturnType.Object)),
+                    expr => ValidateOrder(expr, null, ReturnType.Array | ReturnType.String, ReturnType.Object)),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),
@@ -3473,7 +3467,7 @@ namespace AdaptiveExpressions
                         },
                         VerifyString),
                     ReturnType.String,
-                    expr => ValidateOrder(expr, null, ReturnType.String)),
+                    ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.GetFutureTime,
                     (expr, state, options) =>
@@ -3859,8 +3853,26 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.Float, Apply(args => CultureInvariantDoubleConvert(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64, Apply(args => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
-                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.Base64, 
+                    Apply(
+                        (args) => 
+                        {
+                            byte[] byteArray;
+                            if (args[0] is byte[] byteArr)
+                            {
+                                byteArray = byteArr;
+                            }
+                            else
+                            {
+                                byteArray = System.Text.Encoding.UTF8.GetBytes(args[0].ToString());
+                            }
+
+                            return Convert.ToBase64String(byteArray);
+                        }), 
+                    ReturnType.String, 
+                    ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => Convert.FromBase64String(args[0].ToString()), VerifyString), ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.UriComponent, Apply(args => Uri.EscapeDataString(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.DataUri, Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
@@ -3903,7 +3915,7 @@ namespace AdaptiveExpressions
                         VerifyInteger),
                     ReturnType.Number,
                     ValidateBinaryNumber),
-                new ExpressionEvaluator(ExpressionType.CreateArray, Apply(args => new List<object>(args)), ReturnType.Object),
+                new ExpressionEvaluator(ExpressionType.CreateArray, Apply(args => new List<object>(args)), ReturnType.Array),
                 new ExpressionEvaluator(
                     ExpressionType.First,
                     Apply(
@@ -3991,10 +4003,10 @@ namespace AdaptiveExpressions
                     SetPathToValue,
                     ReturnType.Object,
                     ValidateBinary),
-                new ExpressionEvaluator(ExpressionType.Select, Foreach, ReturnType.Object, ValidateForeach),
-                new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
-                new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Object, ValidateWhere),
-                new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
+                new ExpressionEvaluator(ExpressionType.Select, Foreach, ReturnType.Array, ValidateForeach),
+                new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Array, ValidateForeach),
+                new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Array, ValidateWhere),
+                new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(ExpressionType.JPath, ApplyWithError(args => JPath(args[0], args[1].ToString())), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
 

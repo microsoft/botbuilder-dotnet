@@ -1,10 +1,10 @@
 ﻿> Welcome Phrase template
 > LG runtime will pick a text value from the one-of collection list at random.
 # wPhrase
-- ${welcome-user()}
+- ${welcome_user()}
  
 > Using a template in another template
 > Sometimes the bot will say 'Hi' and other times it will say 'Hi :)'
-# welcome-user
+# welcome_user
 - ${wPhrase()}
 

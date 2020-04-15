@@ -134,7 +134,7 @@ namespace AdaptiveExpressions.Tests
             Test("binary(hello, world)"),      // shoule have 1 param
             Test("binary(one)"), // should have string param
             Test("base64(hello, world)"),      // shoule have 1 param
-            Test("base64(one)"), // should have string param
+            Test("base64(createArray('a', 'b')"), // should have string param or byte array
             Test("base64ToBinary(hello, world)"), // shoule have 1 param
             Test("base64ToBinary(one)"), // should have string param
             Test("base64ToString(hello, world)"), // shoule have 1 param
