@@ -7,19 +7,19 @@
  
 > Using a template in another template
 > Sometimes the bot will say 'Hi' and other times it will say 'Hi :)'
-# welcome-user
+# welcome_user
 - ${wPhrase()}
 - ${wPhrase()} :)
  
 > Using entity references
-# welcome-user2
+# welcome_user2
 - ${wPhrase()}
 - ${wPhrase()} ${userName}
 - ${wPhrase()} ${userName} :)
 
 > Conditional response template
 > Outer list is condition expression; L2 list is one-of collection
-# time-of-day-readout
+# time_of_day_readout
 - IF: ${timeOfDay == 'morning'}
     - Good morning
     - Morning! 
@@ -29,7 +29,7 @@
 
 > Conditional response template
 > Outer list is condition expression; L2 list is one-of collection
-# time-of-day-readout-without-default
+# time_of_day_readout_without_default
 - IF: ${timeOfDay == 'morning'}
     - Good morning
     - Morning! 
@@ -39,7 +39,7 @@
 
 > Conditional response template
 > Outer list is condition expression; L2 list is one-of collection
-# time-of-day-readout-without-default2
+# time_of_day_readout_without_default2
 - IF: ${timeOfDay == 'morning'}
     - Good morning
     - Morning! 

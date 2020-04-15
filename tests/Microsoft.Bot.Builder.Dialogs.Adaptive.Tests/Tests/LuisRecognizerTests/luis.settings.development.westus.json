@@ -1,6 +1,6 @@
 {
     "luis": {
-        "DynamicLists_test_en-us_lu": "e9768105-e984-4144-af3c-25ff3a0ffcea",
-        "ExternalEntities_test_en-us_lu": "f09e1e47-2f29-44bf-b4e4-7af2890cd88a"
+        "DynamicLists_test_en_us_lu": "e9768105-e984-4144-af3c-25ff3a0ffcea",
+        "ExternalEntities_test_en_us_lu": "f09e1e47-2f29-44bf-b4e4-7af2890cd88a"
     }
 }

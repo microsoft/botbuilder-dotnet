@@ -36,6 +36,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private readonly ClientCredential clientCredential;
         private readonly ClientAssertionCertificate clientCertificate;
+        private readonly bool clientCertSendX5c;
         private readonly OAuthConfiguration authConfig;
         private readonly ILogger logger;
 
@@ -54,10 +55,16 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         public AdalAuthenticator(ClientAssertionCertificate clientCertificate, OAuthConfiguration configurationOAuth, HttpClient customHttpClient = null, ILogger logger = null)
+            : this(clientCertificate, false, configurationOAuth, customHttpClient, logger)
+        {
+        }
+
+        public AdalAuthenticator(ClientAssertionCertificate clientCertificate, bool sendX5c, OAuthConfiguration configurationOAuth, HttpClient customHttpClient = null, ILogger logger = null)
         {
             this.authConfig = configurationOAuth ?? throw new ArgumentNullException(nameof(configurationOAuth));
             this.clientCertificate = clientCertificate ?? throw new ArgumentNullException(nameof(clientCertificate));
             this.logger = logger;
+            this.clientCertSendX5c = sendX5c;
 
             Initialize(configurationOAuth, customHttpClient);
         }
@@ -123,7 +130,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     // Certificate based auth
                     else if (clientCertificate != null)
                     {
-                        authResult = await authContext.AcquireTokenAsync(authConfig.Scope, clientCertificate).ConfigureAwait(false);
+                        authResult = await authContext.AcquireTokenAsync(authConfig.Scope, clientCertificate, sendX5c: this.clientCertSendX5c).ConfigureAwait(false);
                     }
 
                     // This means we acquired a valid token successfully. We can make our retry policy null.

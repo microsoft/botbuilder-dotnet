@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("3.lg"));
 
-            var evaled = templates.Evaluate("welcome-user", null);
+            var evaled = templates.Evaluate("welcome_user", null);
             var options = new List<string> { "Hi", "Hello", "Hiya", "Hi :)", "Hello :)", "Hiya :)" };
 
             Assert.IsTrue(options.Contains(evaled), $"The result {evaled} is not in those options [{string.Join(",", options)}]");
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var templates = Templates.ParseFile(GetExampleFilePath("4.lg"));
 
             var userName = "DL";
-            var evaled = templates.Evaluate("welcome-user", new { userName = userName }).ToString();
+            var evaled = templates.Evaluate("welcome_user", new { userName = userName }).ToString();
             var options = new List<string> { "Hi", "Hello", "Hiya ", "Hi :)", "Hello :)", "Hiya  :)" };
 
             Assert.IsTrue(evaled.Contains(userName), $"The result {evaled} does not contiain `{userName}`");
@@ -58,10 +58,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("5.lg"));
 
-            string evaled = templates.Evaluate("time-of-day-readout", new { timeOfDay = "morning" }).ToString();
+            string evaled = templates.Evaluate("time_of_day_readout", new { timeOfDay = "morning" }).ToString();
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
 
-            evaled = templates.Evaluate("time-of-day-readout", new { timeOfDay = "evening" }).ToString();
+            evaled = templates.Evaluate("time_of_day_readout", new { timeOfDay = "evening" }).ToString();
             Assert.IsTrue(evaled == "Good evening" || evaled == "Evening! ", $"Evaled is {evaled}");
         }
 
@@ -70,13 +70,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("5.lg"));
 
-            string evaled = templates.Evaluate("time-of-day-readout-without-default", new { timeOfDay = "morning" }).ToString();
+            string evaled = templates.Evaluate("time_of_day_readout_without_default", new { timeOfDay = "morning" }).ToString();
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
 
-            evaled = templates.Evaluate("time-of-day-readout-without-default2", new { timeOfDay = "morning" }).ToString();
+            evaled = templates.Evaluate("time_of_day_readout_without_default2", new { timeOfDay = "morning" }).ToString();
             Assert.IsTrue(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
 
-            object evaledNull = templates.Evaluate("time-of-day-readout-without-default2", new { timeOfDay = "evening" });
+            object evaledNull = templates.Evaluate("time_of_day_readout_without_default2", new { timeOfDay = "evening" });
             Assert.IsNull(evaledNull, "Evaled is not null");
         }
 
@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 },
                 new
                 {
-                    name = "coffee-to-go-order",
+                    name = "coffee_to_go_order",
                     variableOptions = new string[] { "coffee", "userName", "size", "price" },
                     templateRefOptions = new string[] { "wPhrase", "LatteOrderConfirmation", "MochaOrderConfirmation", "CuppuccinoOrderConfirmation" }
                 },
@@ -562,15 +562,109 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.ExpandTemplate("T2");
             Assert.AreEqual(1, evaled.Count);
-            Assert.AreEqual(true, evaled[0] == "3" || evaled[0] == "5");
+            Assert.AreEqual(true, evaled[0].ToString() == "3" || evaled[0].ToString() == "5");
 
             evaled = templates.ExpandTemplate("T3");
             Assert.AreEqual(1, evaled.Count);
-            Assert.AreEqual(true, evaled[0] == "3" || evaled[0] == "5");
+            Assert.AreEqual(true, evaled[0].ToString() == "3" || evaled[0].ToString() == "5");
 
             evaled = templates.ExpandTemplate("T4");
             Assert.AreEqual(1, evaled.Count);
-            Assert.AreEqual(true, evaled[0] == "ey" || evaled[0] == "el");
+            Assert.AreEqual(true, evaled[0].ToString() == "ey" || evaled[0].ToString() == "el");
+        }
+
+        [TestMethod]
+        public void TestExpandTemplateWithIsTemplateFunction()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Expand.lg"));
+
+            var evaled = templates.ExpandTemplate("template2", new { templateName = "Greeting" });
+            Assert.AreEqual(2, evaled.Count);
+            Assert.AreEqual("Hi", evaled[0]);
+            Assert.AreEqual("Hello", evaled[1]);
+
+            evaled = templates.ExpandTemplate("template2", new { templateName = "xxx" });
+            Assert.AreEqual(2, evaled.Count);
+            Assert.AreEqual("Morning", evaled[0]);
+            Assert.AreEqual("Evening", evaled[1]);
+        }
+
+        [TestMethod]
+        public void TestExpandTemplateWithTemplateFunction()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Expand.lg"));
+
+            var evaled = templates.ExpandTemplate("template3", new { templateName = "Greeting" });
+            Assert.AreEqual(2, evaled.Count);
+            Assert.AreEqual("Hi", evaled[0]);
+            Assert.AreEqual("Hello", evaled[1]);
+        }
+
+        [TestMethod]
+        public void TestExpandTemplateWithDoubleQuotation()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Expand.lg"));
+
+            var evaled = templates.ExpandTemplate("ExpanderT1");
+            Assert.AreEqual(2, evaled.Count);
+            var expectedResults = new List<string>()
+            {
+                "{\"lgType\":\"MyStruct\",\"text\":\"Hi \\\"quotes\\\" allowed\",\"speak\":\"how old are you?\"}",
+                "{\"lgType\":\"MyStruct\",\"text\":\"Hi \\\"quotes\\\" allowed\",\"speak\":\"what's your age?\"}"
+            };
+
+            for (var i = 0; i < expectedResults.Count; i++)
+            {
+                Assert.IsTrue(JToken.DeepEquals(JObject.Parse(expectedResults[i]), JObject.Parse(evaled[i].ToString())));
+            }
+        }
+
+        [TestMethod]
+        public void TestExpandTemplateWithEscapeCharacter()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("EscapeCharacter.lg"));
+            var evaled = templates.ExpandTemplate("wPhrase", null);
+            Assert.AreEqual(evaled[0], "Hi \r\n\t\\");
+
+            evaled = templates.ExpandTemplate("AtEscapeChar", null);
+            Assert.AreEqual(evaled[0], "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1}");
+
+            evaled = templates.ExpandTemplate("otherEscape", null);
+            Assert.AreEqual(evaled[0], @"Hi \y \");
+
+            evaled = templates.ExpandTemplate("escapeInExpression", null);
+            Assert.AreEqual(evaled[0], "Hi hello\\\\");
+
+            evaled = templates.ExpandTemplate("escapeInExpression2", null);
+            Assert.AreEqual(evaled[0], "Hi hello'");
+
+            evaled = templates.ExpandTemplate("escapeInExpression3", null);
+            Assert.AreEqual(evaled[0], "Hi hello\"");
+
+            evaled = templates.ExpandTemplate("escapeInExpression4", null);
+            Assert.AreEqual(evaled[0], "Hi hello\"");
+
+            evaled = templates.ExpandTemplate("escapeInExpression5", null);
+            Assert.AreEqual(evaled[0], "Hi hello\n");
+
+            evaled = templates.ExpandTemplate("escapeInExpression6", null);
+            Assert.AreEqual(evaled[0], "Hi hello\n");
+
+            var todos = new[] { "A", "B", "C" };
+            evaled = templates.ExpandTemplate("showTodo", new { todos });
+            Assert.AreEqual(evaled[0].ToString().Replace("\r\n", "\n"), "\n    Your most recent 3 tasks are\n    * A\n* B\n* C\n    ");
+
+            evaled = templates.ExpandTemplate("showTodo", null);
+            Assert.AreEqual(evaled[0].ToString().Replace("\r\n", "\n"), "\n    You don't have any \"t\\\\odo'\".\n    ");
+
+            evaled = templates.ExpandTemplate("getUserName", null);
+            Assert.AreEqual(evaled[0], "super \"x man\"");
+
+            evaled = templates.ExpandTemplate("structure1", null);
+            Assert.AreEqual(evaled[0].ToString().Replace("\r\n", "\n").Replace("\n", string.Empty), "{  \"lgType\": \"struct\",  \"list\": [    \"a\",    \"b|c\"  ]}");
+
+            evaled = templates.ExpandTemplate("dollarsymbol");
+            Assert.AreEqual(evaled[0], "$ $ ${'hi'} hi");
         }
 
         [TestMethod]
@@ -598,6 +692,22 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("template6", new { userName });
             Assert.AreEqual(evaled, "goodmorning");
+
+            evaled = templates.Evaluate("template7");
+            Assert.AreEqual(evaled, "{\"a\":\"hello\"}");
+
+            evaled = templates.Evaluate("template8");
+            Assert.AreEqual(evaled, "{\"user\":{\"name\":\"Allen\"}}");
+
+            var value = JToken.FromObject(new { count = 13 });
+            evaled = templates.Evaluate("template9", new { value });
+            Assert.AreEqual(evaled, "{\"ctx\":{\"count\":13}}");
+
+            evaled = templates.Evaluate("template10");
+            Assert.AreEqual(evaled, 13);
+
+            evaled = templates.Evaluate("template11");
+            Assert.AreEqual(evaled, 18);
         }
 
         [TestMethod]
@@ -824,19 +934,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 "{\"lgType\":\"Activity\",\"text\":\"what's your age?\",\"speak\":\"what's your age?\"}"
             };
 
-            expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
+            for (var i = 0; i < expectedResults.Count; i++)
+            {
+                Assert.IsTrue(JToken.DeepEquals(JObject.Parse(expectedResults[i]), JObject.Parse(evaled[i].ToString())));
+            }
 
             evaled = templates.ExpandTemplate("ExpanderT1");
             Assert.AreEqual(4, evaled.Count);
             expectedResults = new List<string>()
             {
                 "{\"lgType\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"how old are you?\"}",
-                "{\"lgType\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"what's your age?\"}",
                 "{\"lgType\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"how old are you?\"}",
+                "{\"lgType\":\"MyStruct\",\"text\":\"Hi\",\"speak\":\"what's your age?\"}",
                 "{\"lgType\":\"MyStruct\",\"text\":\"Hello\",\"speak\":\"what's your age?\"}"
             };
 
-            expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
+            for (var i = 0; i < expectedResults.Count; i++)
+            {
+                Assert.IsTrue(JToken.DeepEquals(JObject.Parse(expectedResults[i]), JObject.Parse(evaled[i].ToString())));
+            }
         }
 
         [TestMethod]

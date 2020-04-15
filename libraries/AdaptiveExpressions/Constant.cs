@@ -45,6 +45,7 @@ namespace AdaptiveExpressions
                       value is string ? ReturnType.String
                       : value.IsNumber() ? ReturnType.Number
                       : value is bool ? ReturnType.Boolean
+                      : ExpressionFunctions.TryParseList(value, out _) ? ReturnType.Array
                       : ReturnType.Object;
                 _value = value;
             }

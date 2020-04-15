@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Skills
 
         private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
         {
-            SkillConversationReference skillConversationReference = null;
+            SkillConversationReference skillConversationReference;
             try
             {
                 skillConversationReference = await _conversationIdFactory.GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
@@ -175,11 +175,9 @@ namespace Microsoft.Bot.Builder.Skills
                 throw new KeyNotFoundException();
             }
 
-            var activityConversationReference = activity.GetConversationReference();
-
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
-                turnContext.TurnState.Add(SkillConversationReferenceKey, activityConversationReference);
+                turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
 
                 activity.ApplyConversationReference(skillConversationReference.ConversationReference);
 
