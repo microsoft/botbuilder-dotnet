@@ -320,13 +320,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(4, diagnostics.Count);
 
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.InvalidStrucName));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.SyntaxError));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.MissingStrucEnd));
+            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.InvalidStrucName));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
-            Assert.IsTrue(diagnostics[2].Message.Contains(TemplateErrors.InvalidStrucBody));
+            Assert.IsTrue(diagnostics[2].Message.Contains(TemplateErrors.MissingStrucEnd));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[3].Severity);
-            Assert.IsTrue(diagnostics[3].Message.Contains(TemplateErrors.SyntaxError));
+            Assert.IsTrue(diagnostics[3].Message.Contains(TemplateErrors.InvalidStrucBody));
         }
 
         [TestMethod]
