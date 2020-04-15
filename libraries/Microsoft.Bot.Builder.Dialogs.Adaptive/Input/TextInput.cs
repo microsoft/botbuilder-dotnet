@@ -22,6 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        /// <summary>
+        /// Gets or sets the expression to use to format the result.
+        /// </summary>
+        /// <remarks>The default output is a string, if this property is set then the output of the expression is the string returned by the dialog.</remarks>
+        /// <value>an expression which resolves to a string.</value>
         [JsonProperty("outputFormat")]
         public StringExpression OutputFormat { get; set; } 
 

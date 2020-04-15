@@ -10,21 +10,35 @@
         },
         {
             "properties": {
+                "defaultValue": {
+                    "$role": "expression",
+                    "type": "string",
+                    "foramt": "date",
+                    "title": "Default Date",
+                    "description": "'Property' will be set to the value or the result of the expression when max turn count is exceeded.",
+                    "examples": [
+                        "=user.birthday"
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "type": "string",
+                    "foramt": "date",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value or the result of the expression unless it evaluates to null.",
+                    "examples": [
+                        "=user.birthday"
+                    ]
+                },
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",
+                    "format": "date",
                     "title": "Output format",
-                    "description": "Expression to format the datetime output.",
+                    "description": "Expression to use format the datetime output.",
                     "examples": [
                         "this.value[0].Value"
                     ]
-                },
-                "defaultLocale": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Default locale",
-                    "description": "Default locale.",
-                    "default": "en-us"
                 }
             }
         }

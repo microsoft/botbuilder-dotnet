@@ -13,17 +13,28 @@
                 "expectedProperties": {
                     "$role": "expression",
                     "title": "Expected Properties",
-                    "description": "Properties expected to be filled by entities from the user",
+                    "description": "Properties expected from the user.",
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    }
+                        "type": "string",
+                        "title": "Name",
+                        "description": "Name of the property"
+                    },
+                    "examples": [
+                        [
+                            "age",
+                            "name"
+                        ]
+                    ]
                 },
-                "expectedOperation": {
+                "defaultOperation": {
                     "$role": "expression",
                     "type": "string",
-                    "title": "Expected operation to assign entity to property",
-                    "description": "Operation to apply to entities by default."
+                    "title": "Default Operation",
+                    "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
+                    "examples":[
+                        "add"
+                    ]
                 }
             }
         }

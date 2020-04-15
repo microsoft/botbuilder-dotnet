@@ -10,6 +10,28 @@
         },
         {
             "properties": {
+                "defaultValue": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+                    "examples": [
+                        "hello world",
+                        "Hello ${user.name}",
+                        "=concat(user.firstname, user.lastName)"
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+                    "examples": [
+                        "hello world",
+                        "Hello ${user.name}",
+                        "=concat(user.firstname, user.lastName)"
+                    ]
+                },
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",

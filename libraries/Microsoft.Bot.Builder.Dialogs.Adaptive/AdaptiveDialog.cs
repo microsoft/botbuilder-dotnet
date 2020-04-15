@@ -1178,8 +1178,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 expected = new string[0];
             }
 
-            var expectedOp = actionContext.State.GetValue<string>(DialogPath.ExpectedOperation);
+            // default op from the last Ask action.
+            var askDefaultOp = actionContext.State.GetValue<string>(DialogPath.DefaultOperation);
+
+            // default operation from the current adaptive dialog.
             var defaultOp = dialogSchema.Schema["$defaultOperation"]?.ToObject<string>();
+
             var nextAssignment = existing.NextAssignment();
             var candidates = (from candidate in RemoveOverlappingPerProperty(Candidates(entities, expected))
                               orderby candidate.IsExpected descending
@@ -1227,7 +1231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     if (alternative.Operation == null)
                     {
-                        alternative.Operation = alternative.IsExpected ? (expectedOp ?? defaultOp) : defaultOp;
+                        alternative.Operation = alternative.IsExpected ? (askDefaultOp ?? defaultOp) : defaultOp;
                     }
 
                     usedEntities.Add(alternative.Entity);

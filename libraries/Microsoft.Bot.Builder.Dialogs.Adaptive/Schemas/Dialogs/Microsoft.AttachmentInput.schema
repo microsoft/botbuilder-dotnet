@@ -9,6 +9,18 @@
         },
         {
             "properties": {
+                "defaultValue": {
+                    "$ref": "#/definitions/attachment",
+                    "$role": "expression",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded."
+                },
+                "value": {
+                    "$ref": "#/definitions/attachment",
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null."
+                },
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",
@@ -22,5 +34,37 @@
                 }
             }
         }
-    ]
+    ],
+    "definitions": {
+        "attachment": {
+            "type": "object",
+            "properties": {
+                "contentType": {
+                    "type": "string",
+                    "title": "Content Type",
+                    "description": "mimetype/contenttype for the attachment"
+                },
+                "contentUrl": {
+                    "type": "string",
+                    "title": "Content Url",
+                    "description": "the url for the content"
+                },
+                "content": {
+                    "type": "object",
+                    "title": "Content",
+                    "description": "object content"
+                },
+                "name": {
+                    "type": "string",
+                    "title": "name",
+                    "description": "optional name for the attachment"
+                },
+                "thumbnailUrl": {
+                    "type": "string",
+                    "title": "Thumenail Url",
+                    "description": "The optional thumbnail url for the content"
+                }
+            }
+        }
+    }
 }
