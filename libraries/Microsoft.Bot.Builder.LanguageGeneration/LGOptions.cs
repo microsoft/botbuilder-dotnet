@@ -35,5 +35,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         public LGLineBreakStyle LineBreakStyle { get; set; } = LGLineBreakStyle.DEFAULT;
+
+        public bool StrictMode { get; set; } = false;
     }
 }

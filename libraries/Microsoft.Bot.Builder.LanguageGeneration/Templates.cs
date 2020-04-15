@@ -134,14 +134,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public IList<string> Options { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether lG parser/checker/evaluate strict mode.
-        /// If strict mode is on, expression would throw exception instead of return
-        /// null or make the condition failed.
+        /// Gets a value LG parser/checker/evaluate options.
         /// </summary>
         /// <value>
-        /// A value indicating whether lG parser/checker/evaluate strict mode.
         /// If strict mode is on, expression would throw exception instead of return
         /// null or make the condition failed.
+        /// replaceNull works all the time. 
+        /// If strict=true then we throw on all conditions except for null value and we use replace text in case of null value.
+        /// lineBreakStyle = markdown means one line break will be translated to two line breaks, 
+        /// any other value will keep the same.
         /// </value>
         public LGOptions LgOptions => GetLGOptions(Options);
 
