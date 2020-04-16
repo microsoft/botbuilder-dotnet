@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class MultiLanguageLG
     {
-        private readonly LanguagePolicy languageFallbackPolicy;
+        private readonly LanguagePolicy languagePolicy;
 
         private readonly Dictionary<string, Templates> lgPerLocale;
 
@@ -21,11 +21,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="MultiLanguageLG"/> class.
         /// </summary>
         /// <param name="localeLGFiles">A dictionary of locale and LG file.</param>
-        /// <param name="defaultLanguage">Default language.</param>
-        public MultiLanguageLG(Dictionary<string, string> localeLGFiles, string defaultLanguage = "")
+        /// <param name="defaultLanguages">Default language.</param>
+        public MultiLanguageLG(Dictionary<string, string> localeLGFiles, params string[] defaultLanguages)
         {
             lgPerLocale = new Dictionary<string, Templates>(StringComparer.OrdinalIgnoreCase);
-            languageFallbackPolicy = new LanguagePolicy(defaultLanguage ?? string.Empty);
+            languagePolicy = new LanguagePolicy(defaultLanguages);
 
             if (localeLGFiles == null)
             {
@@ -38,7 +38,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        public MultiLanguageLG(Dictionary<string, Templates> templatesDict, string defaultLanguage = "")
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MultiLanguageLG"/> class.
+        /// </summary>
+        /// <param name="templatesDict">A dictionary of LG file templates.</param>
+        /// <param name="defaultLanguages">Default language.</param>
+        public MultiLanguageLG(Dictionary<string, Templates> templatesDict, params string[] defaultLanguages)
         {
             lgPerLocale = new Dictionary<string, Templates>(StringComparer.OrdinalIgnoreCase);
             foreach (var templatesPair in templatesDict)
@@ -46,7 +51,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 lgPerLocale.Add(templatesPair.Key, templatesPair.Value);
             }
 
-            languageFallbackPolicy = new LanguagePolicy(defaultLanguage ?? string.Empty);
+            languagePolicy = new LanguagePolicy(defaultLanguages);
         }
 
         public object Generate(string template, object data, string locale)
@@ -60,25 +65,31 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (lgPerLocale.ContainsKey(locale))
             {
-                return lgPerLocale[locale].EvaluateText(template, data);
+                return lgPerLocale[locale].Evaluate(template, data);
             }
-            else
-            {
-                var locales = new string[] { string.Empty };
-                if (!languageFallbackPolicy.TryGetValue(locale, out locales))
-                {
-                    if (!languageFallbackPolicy.TryGetValue(string.Empty, out locales))
-                    {
-                        throw new Exception($"No supported language found for {locale}");
-                    }
-                }
 
-                foreach (var fallBackLocale in locales)
+            var fallbackLocales = new List<string>();
+            if (languagePolicy.ContainsKey(locale))
+            {
+                fallbackLocales.AddRange(languagePolicy[locale]);
+            }
+
+            // append empty as fallback to end
+            if (locale != string.Empty && languagePolicy.ContainsKey(string.Empty))
+            {
+                fallbackLocales.AddRange(languagePolicy[string.Empty]);
+            }
+
+            if (fallbackLocales.Count == 0)
+            {
+                throw new Exception($"No supported language found for {locale}");
+            }
+
+            foreach (var fallbackLocale in fallbackLocales)
+            {
+                if (lgPerLocale.ContainsKey(fallbackLocale))
                 {
-                    if (lgPerLocale.ContainsKey(fallBackLocale))
-                    {
-                        return lgPerLocale[fallBackLocale].Evaluate(template, data);
-                    }
+                    return lgPerLocale[fallbackLocale].Evaluate(template, data);
                 }
             }
 
