@@ -100,10 +100,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 ex.Diagnostics.ToList().ForEach(u => newLG.Diagnostics.Add(u));
             }
-            catch (Exception err)
-            {
-                newLG.Diagnostics.Add(ConvertToDiagnostic(err.Message, source: id));
-            }
 
             return newLG;
         }
@@ -143,10 +139,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 ex.Diagnostics.ToList().ForEach(u => lg.Diagnostics.Add(u));
             }
-            catch (Exception err)
-            {
-                lg.Diagnostics.Add(ConvertToDiagnostic(err.Message, source: id));
-            }
 
             return lg;
         }
@@ -170,12 +162,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return (File.ReadAllText(importPath), importPath);
-        }
-
-        private static Diagnostic ConvertToDiagnostic(string errorMessage, string source = null)
-        {
-            errorMessage = TemplateErrors.StaticFailure + "- " + errorMessage;
-            return new Diagnostic(Range.DefaultRange, errorMessage, source: source);
         }
 
         /// <summary>
@@ -216,12 +202,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, Dictionary<string, Templates> cachedTemplates)
         {
-            var resourceIds = start.Imports.Select(lg => lg.Id);
             resourcesFound.Add(start);
 
-            foreach (var id in resourceIds)
+            foreach (var import in start.Imports)
             {
-                var (content, path) = start.ImportResolver(start.Id, id);
+                string content;
+                string path;
+                try
+                {
+                    (content, path) = start.ImportResolver(start.Id, import.Id);
+                }
+                catch (Exception e)
+                {
+                    var diagnostic = new Diagnostic(import.SourceRange.ParseTree.ConvertToRange(), e.Message, DiagnosticSeverity.Error, start.Id);
+                    throw new TemplateException(e.Message, new List<Diagnostic>() { diagnostic });
+                }
+
                 if (resourcesFound.All(u => u.Id != path))
                 {
                     Templates childResource;
@@ -277,7 +273,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var description = matchResult.Groups[1].Value?.Trim();
                     var id = matchResult.Groups[2].Value?.Trim();
 
-                    var sourceRange = new SourceRange(context.ConvertToRange(), this.templates.Id);
+                    var sourceRange = new SourceRange(context, this.templates.Id);
                     var import = new TemplateImport(description, id, sourceRange);
                     this.templates.Imports.Add(import);
                 }
@@ -329,7 +325,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         templateBody = RemoveTailingNewline(templateBody);
                     }
 
-                    var sourceRange = new SourceRange(context.ConvertToRange(), this.templates.Id);
+                    var sourceRange = new SourceRange(context, this.templates.Id);
                     var template = new Template(templateName, parameters, templateBody, sourceRange);
 
                     CheckTemplateName(templateName, context.templateNameLine());

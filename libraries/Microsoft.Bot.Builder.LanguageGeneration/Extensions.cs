@@ -170,6 +170,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Range object.</returns>
         public static Range ConvertToRange(this ParserRuleContext context, int lineOffset = 0)
         {
+            if (context == null)
+            {
+                return Range.DefaultRange;
+            }
+
             var startPosition = new Position(lineOffset + context.Start.Line, context.Start.Column);
             var stopPosition = new Position(lineOffset + context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             return new Range(startPosition, stopPosition);
