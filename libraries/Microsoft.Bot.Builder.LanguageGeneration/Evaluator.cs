@@ -243,19 +243,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override object VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
-
+            var regex = new Regex("(\r?\n)");
             var result = new List<object>();
-            var ifMarmdownRendering = lgOptions.LineBreakStyle == LGLineBreakStyle.MARKDOWN;
-            var inMultiLineMode = false;
+            var ifMarmdownRendering = lgOptions.LineBreakStyle == LGLineBreakStyle.Markdown;
             foreach (ITerminalNode node in context.children)
             {
                 switch (node.Symbol.Type)
                 {
                     case LGFileParser.DASH:
-                        break;
                     case LGFileParser.MULTILINE_PREFIX:
                     case LGFileParser.MULTILINE_SUFFIX:
-                        inMultiLineMode = true;
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
                         result.Add(node.GetText().Escape());
@@ -264,16 +261,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         result.Add(EvalExpression(node.GetText(), context, prefixErrorMsg));
                         break;
                     default:
-                        var currentChar = node.GetText();
-                        if (ifMarmdownRendering && inMultiLineMode && (currentChar == "\n" || currentChar == "\r\n"))
-                        {
-                            result.Add(currentChar + currentChar);
-                        }
-                        else
-                        {
-                            result.Add(currentChar);
-                        }
-                        
+                        result.Add(node.GetText());
                         break;
                 }
             }
@@ -283,7 +271,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return result[0];
             }
 
-            return string.Join(string.Empty, result);
+            var resultStr = string.Join(string.Empty, result);
+            if (ifMarmdownRendering)
+            {
+                return regex.Replace(resultStr, "$1$1");
+            }
+
+            return resultStr;
         }
 
         public object ConstructScope(string inputTemplateName, List<object> args)
@@ -413,7 +407,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (lgOptions.StrictMode && (error != null || result == null))
+            if (lgOptions.StrictMode == true && (error != null || result == null))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -439,7 +433,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (error != null || (result == null && lgOptions.StrictMode))
+            if (error != null || (result == null && lgOptions.StrictMode == true))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -449,7 +443,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
             }
-            else if (result == null && !lgOptions.StrictMode)
+            else if (result == null && lgOptions.StrictMode == false)
             {
                 result = "null";
             }

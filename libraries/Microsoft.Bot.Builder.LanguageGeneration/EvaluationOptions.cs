@@ -7,24 +7,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Default mode
         /// </summary>
-        DEFAULT,
+        Default,
 
         /// <summary>
         /// Markdown mode
         /// </summary>
-        MARKDOWN,
+        Markdown,
     }
 
     /// <summary>
-    /// Options for evaluation of LG template <see cref="LGOptions"/> class.
+    /// Options for evaluation of LG template <see cref="EvaluationOptions"/> class.
     /// </summary>
     public class EvaluationOptions
     {
         public EvaluationOptions()
         {
-            this.StrictMode = false;
+            this.StrictMode = null;
             this.NullSubstitution = null;
-            this.LineBreakStyle = LGLineBreakStyle.DEFAULT;
+            this.LineBreakStyle = null;
         }
 
         public EvaluationOptions(EvaluationOptions opt)
@@ -34,9 +34,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.LineBreakStyle = opt.LineBreakStyle;
         }
 
-        public LGLineBreakStyle LineBreakStyle { get; set; } = LGLineBreakStyle.DEFAULT;
+        public LGLineBreakStyle? LineBreakStyle { get; set; } = null;
 
-        public bool StrictMode { get; set; } = false;
+        public bool? StrictMode { get; set; } = null;
 
         public Func<string, object> NullSubstitution { get; set; } = null;
     }

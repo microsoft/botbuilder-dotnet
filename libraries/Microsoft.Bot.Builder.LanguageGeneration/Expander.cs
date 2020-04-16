@@ -33,11 +33,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templates">template list.</param>
         /// <param name="expressionParser">Given expression parser.</param>
         /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
-        public Expander(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
+        public Expander(List<Template> templates, ExpressionParser expressionParser, bool? strictMode = false)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
-            this.strictMode = strictMode;
+            this.strictMode = strictMode ?? false;
 
             // generate a new customized expression parser by injecting the template as functions
             ExpanderExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, true));

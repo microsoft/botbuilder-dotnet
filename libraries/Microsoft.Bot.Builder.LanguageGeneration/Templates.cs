@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// lineBreakStyle = markdown means one line break will be translated to two line breaks, 
         /// any other value will keep the same.
         /// </value>
-        public EvaluationOptions LgOptions => GetEvaluationOptions(Options);
+        public EvaluationOptions LgOptions => GetCurrentEvalOptions();
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser expressionParser = null) => TemplatesParser.ParseFile(filePath, importResolver, expressionParser);
 
         /// <summary>
-        /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
+        /// Parser to turn lg content into a <see cref`="LanguageGeneration.Templates"/>.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
         /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
@@ -182,8 +182,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public object Evaluate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
-
-            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
+            var evalOpt = opt != null ? opt : LgOptions;
+            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
@@ -394,6 +394,42 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
+        private EvaluationOptions GetCurrentEvalOptions()
+        {
+            var opt = GetEvaluationOptions(Options);
+            foreach (var templates in References) 
+            {
+                var childOpt = GetEvaluationOptions(templates.Options);
+                if (childOpt.StrictMode != null)
+                {
+                    opt.StrictMode = childOpt.StrictMode;
+                }
+
+                if (childOpt.NullSubstitution != null)
+                {
+                    opt.NullSubstitution = childOpt.NullSubstitution;
+                }
+
+                if (childOpt.LineBreakStyle != null)
+                {
+                    opt.LineBreakStyle = childOpt.LineBreakStyle;
+                }
+            }
+
+            //normalize option to non-null value for evaluation
+            if (opt.StrictMode == null)
+            {
+                opt.StrictMode = false;
+            }
+
+            if (opt.LineBreakStyle == null)
+            {
+                opt.LineBreakStyle = LGLineBreakStyle.Default;
+            }
+
+            return opt;
+        }
+
         private EvaluationOptions GetEvaluationOptions(IList<string> options)
         {
             var opt = new EvaluationOptions();
@@ -430,7 +466,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else if (key == lineBreakKey)
                     {
-                        opt.LineBreakStyle = value == markdownMode ? LGLineBreakStyle.MARKDOWN : LGLineBreakStyle.DEFAULT;
+                        opt.LineBreakStyle = value == markdownMode ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
                     }
                 }
             }
