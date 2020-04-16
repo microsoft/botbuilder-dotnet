@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -20,19 +18,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiLanguageLG"/> class.
         /// </summary>
-        /// <param name="localeLGFiles">A dictionary of locale and LG file.</param>
-        /// <param name="defaultLanguages">Default language.</param>
-        public MultiLanguageLG(Dictionary<string, string> localeLGFiles, params string[] defaultLanguages)
+        /// <param name="filePerLocale">A dictionary of locale and LG file.</param>
+        /// <param name="defaultLanguage">Default language.</param>
+        public MultiLanguageLG(Dictionary<string, string> filePerLocale, string defaultLanguage = "")
         {
             lgPerLocale = new Dictionary<string, Templates>(StringComparer.OrdinalIgnoreCase);
-            languageFallbackPolicy = new LanguagePolicy(defaultLanguages);
+            languageFallbackPolicy = new LanguagePolicy(defaultLanguage);
 
-            if (localeLGFiles == null)
+            if (filePerLocale == null)
             {
-                throw new ArgumentNullException(nameof(localeLGFiles));
+                throw new ArgumentNullException(nameof(filePerLocale));
             }
 
-            foreach (var filesPerLocale in localeLGFiles)
+            foreach (var filesPerLocale in filePerLocale)
             {
                 lgPerLocale[filesPerLocale.Key] = Templates.ParseFile(filesPerLocale.Value);
             }
@@ -41,17 +39,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiLanguageLG"/> class.
         /// </summary>
-        /// <param name="templatesDict">A dictionary of LG file templates.</param>
-        /// <param name="defaultLanguages">Default language.</param>
-        public MultiLanguageLG(Dictionary<string, Templates> templatesDict, params string[] defaultLanguages)
+        /// <param name="templatesPerLocale">A dictionary of LG file templates.</param>
+        /// <param name="defaultLanguage">Default language.</param>
+        public MultiLanguageLG(Dictionary<string, Templates> templatesPerLocale, string defaultLanguage = "")
         {
             lgPerLocale = new Dictionary<string, Templates>(StringComparer.OrdinalIgnoreCase);
-            foreach (var templatesPair in templatesDict)
+            foreach (var templatesPair in templatesPerLocale)
             {
                 lgPerLocale.Add(templatesPair.Key, templatesPair.Value);
             }
 
-            languageFallbackPolicy = new LanguagePolicy(defaultLanguages);
+            languageFallbackPolicy = new LanguagePolicy(defaultLanguage);
         }
 
         public object Generate(string template, object data, string locale)
@@ -120,7 +118,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // See commented section for full sample of output of this function
             private static IDictionary<string, string[]> DefaultPolicy(string[] defaultLanguages = null)
             {
-                if (defaultLanguages == null || defaultLanguages.Length == 0)
+                if (defaultLanguages == null)
                 {
                     defaultLanguages = new string[] { string.Empty };
                 }
