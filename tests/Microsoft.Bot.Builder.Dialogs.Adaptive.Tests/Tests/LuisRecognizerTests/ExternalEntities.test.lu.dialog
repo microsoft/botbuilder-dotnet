@@ -1,7 +1,7 @@
 {
     "$kind": "Microsoft.MultiLanguageRecognizer",
     "recognizers": {
-        "en-us": "ExternalEntities.test.en-us.lu",
-        "": "ExternalEntities.test.en-us.lu"
+        "en-us": "ExternalEntities.test.en_us.lu",
+        "": "ExternalEntities.test.en_us.lu"
     }
 }

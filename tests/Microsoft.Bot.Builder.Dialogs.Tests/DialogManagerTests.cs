@@ -4,15 +4,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -20,6 +20,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class DialogManagerTests
     {
+        // An App ID for a parent bot.
+        private readonly string _parentBotId = Guid.NewGuid().ToString();
+
+        // An App ID for a skill bot.
+        private readonly string _skillBotId = Guid.NewGuid().ToString();
+
+        // Property to capture the DialogManager turn results and do assertions.
+        private DialogManagerResult _dmTurnResult;
+
         public TestContext TestContext { get; set; }
 
         [TestMethod]
@@ -46,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var firstConversationId = Guid.NewGuid().ToString();
             var storage = new MemoryStorage();
 
-            var adaptiveDialog = CreateTestDialog(property: "conversation.name");
+            var adaptiveDialog = CreateTestDialog("conversation.name");
 
             await CreateFlow(adaptiveDialog, storage, firstConversationId, dialogStateProperty: "dialogState")
             .Send("hi")
@@ -65,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var secondConversationId = Guid.NewGuid().ToString();
             var storage = new MemoryStorage();
 
-            var adaptiveDialog = CreateTestDialog(property: "conversation.name");
+            var adaptiveDialog = CreateTestDialog("conversation.name");
 
             await CreateFlow(adaptiveDialog, storage, firstConversationId)
             .Send("hi")
@@ -89,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var secondConversationId = Guid.NewGuid().ToString();
             var storage = new MemoryStorage();
 
-            var adaptiveDialog = CreateTestDialog(property: "user.name");
+            var adaptiveDialog = CreateTestDialog("user.name");
 
             await CreateFlow(adaptiveDialog, storage, firstConversationId)
             .Send("hi")
@@ -111,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var secondConversationId = Guid.NewGuid().ToString();
             var storage = new MemoryStorage();
 
-            var outerAdaptiveDialog = CreateTestDialog(property: "user.name");
+            var outerAdaptiveDialog = CreateTestDialog("user.name");
 
             var componentDialog = new ComponentDialog();
             componentDialog.AddDialog(outerAdaptiveDialog);
@@ -186,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             };
 
-            DialogManager dm = new DialogManager(rootDialog);
+            var dm = new DialogManager(rootDialog);
             dm.Dialogs.Add(new SimpleDialog() { Id = "test" });
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -199,12 +208,90 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .StartTestAsync();
         }
 
-        private Dialog CreateTestDialog(string property = "user.name")
+        [TestMethod]
+        public async Task SkillSendsEoCAndValuesAtDialogEnd()
+        {
+            var firstConversationId = Guid.NewGuid().ToString();
+            var storage = new MemoryStorage();
+
+            var adaptiveDialog = CreateTestDialog(property: "conversation.name");
+
+            await CreateFlow(adaptiveDialog, storage, firstConversationId, isSkillFlow: true)
+                .Send("hi")
+                .AssertReply("Hello, what is your name?")
+                .Send("Carlos")
+                .AssertReply("Hello Carlos, nice to meet you!")
+                .AssertReply(activity =>
+                {
+                    Assert.AreEqual(activity.Type, ActivityTypes.EndOfConversation);
+                    Assert.AreEqual(((Activity)activity).Value, "Carlos");
+                })
+                .StartTestAsync();
+            Assert.AreEqual(DialogTurnStatus.Complete, _dmTurnResult.TurnResult.Status);
+        }
+
+        [TestMethod]
+        public async Task SkillHandlesEoCFromParent()
+        {
+            var firstConversationId = Guid.NewGuid().ToString();
+            var storage = new MemoryStorage();
+
+            var adaptiveDialog = CreateTestDialog(property: "conversation.name");
+
+            var eocActivity = new Activity(ActivityTypes.EndOfConversation) { CallerId = _parentBotId };
+
+            await CreateFlow(adaptiveDialog, storage, firstConversationId, isSkillFlow: true)
+                .Send("hi")
+                .AssertReply("Hello, what is your name?")
+                .Send(eocActivity)
+                .StartTestAsync();
+
+            Assert.AreEqual(DialogTurnStatus.Cancelled, _dmTurnResult.TurnResult.Status);
+        }
+
+        [TestMethod]
+        public async Task SkillHandlesRepromptFromParent()
+        {
+            var firstConversationId = Guid.NewGuid().ToString();
+            var storage = new MemoryStorage();
+
+            var adaptiveDialog = CreateTestDialog(property: "conversation.name");
+
+            var repromptEvent = new Activity(ActivityTypes.Event) { Name = DialogEvents.RepromptDialog };
+
+            await CreateFlow(adaptiveDialog, storage, firstConversationId, isSkillFlow: true)
+                .Send("hi")
+                .AssertReply("Hello, what is your name?")
+                .Send(repromptEvent)
+                .AssertReply("Hello, what is your name?")
+                .StartTestAsync();
+
+            Assert.AreEqual(DialogTurnStatus.Waiting, _dmTurnResult.TurnResult.Status);
+        }
+
+        [TestMethod]
+        public async Task SkillShouldReturnEmptyOnRepromptWithNoDialog()
+        {
+            var firstConversationId = Guid.NewGuid().ToString();
+            var storage = new MemoryStorage();
+
+            var adaptiveDialog = CreateTestDialog(property: "conversation.name");
+
+            var repromptEvent = new Activity(ActivityTypes.Event) { Name = DialogEvents.RepromptDialog };
+
+            await CreateFlow(adaptiveDialog, storage, firstConversationId, isSkillFlow: true)
+                .Send(repromptEvent)
+                .StartTestAsync();
+
+            Assert.AreEqual(DialogTurnStatus.Empty, _dmTurnResult.TurnResult.Status);
+        }
+
+        private Dialog CreateTestDialog(string property)
         {
             return new AskForNameDialog(property.Replace(".", string.Empty), property);
         }
 
-        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId, string dialogStateProperty = null)
+        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId, string dialogStateProperty = null, bool isSkillFlow = false)
         {
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -215,62 +302,81 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .UseState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            DialogManager dm = new DialogManager(dialog, dialogStateProperty: dialogStateProperty);
+            var dm = new DialogManager(dialog, dialogStateProperty: dialogStateProperty);
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (isSkillFlow)
+                {
+                    // Create a skill ClaimsIdentity and put it in TurnState so SkillValidation.IsSkillClaim() returns true.
+                    var claimsIdentity = new ClaimsIdentity();
+                    claimsIdentity.AddClaim(new Claim(AuthenticationConstants.VersionClaim, "2.0"));
+                    claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, _skillBotId));
+                    claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AuthorizedParty, _parentBotId));
+                    turnContext.TurnState.Add(BotAdapter.BotIdentityKey, claimsIdentity);
+                }
+
+                // Capture the last DialogManager turn result for assertions.
+                _dmTurnResult = await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
-        public class AskForNameDialog : ComponentDialog, IDialogDependencies
+        private class AskForNameDialog : ComponentDialog, IDialogDependencies
         {
+            private readonly string _property;
+
             public AskForNameDialog(string id, string property)
                 : base(id)
             {
                 AddDialog(new TextPrompt("prompt"));
-                this.Property = property;
+                _property = property;
             }
-
-            public string Property { get; set; }
 
             public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
             {
-                if (outerDc.State.TryGetValue<string>(this.Property, out string result))
+                if (outerDc.State.TryGetValue<string>(_property, out var result))
                 {
-                    await outerDc.Context.SendActivityAsync($"Hello {result.ToString()}, nice to meet you!");
-                    return await outerDc.EndDialogAsync(result);
+                    await outerDc.Context.SendActivityAsync($"Hello {result}, nice to meet you!", cancellationToken: cancellationToken);
+                    return await outerDc.EndDialogAsync(result, cancellationToken);
                 }
 
                 return await outerDc.BeginDialogAsync(
-                    "prompt",
-                    new PromptOptions
-                    {
-                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Hello, what is your name?" },
-                        RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "Hello, what is your name?" },
-                    },
-                    cancellationToken: cancellationToken)
+                        "prompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity
+                            {
+                                Type = ActivityTypes.Message,
+                                Text = "Hello, what is your name?"
+                            },
+                            RetryPrompt = new Activity
+                            {
+                                Type = ActivityTypes.Message,
+                                Text = "Hello, what is your name?"
+                            }
+                        },
+                        cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
             }
 
             public IEnumerable<Dialog> GetDependencies()
             {
-                return this.Dialogs.GetDialogs();
+                return Dialogs.GetDialogs();
             }
 
             public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
             {
-                outerDc.State.SetValue(this.Property, result);
-                await outerDc.Context.SendActivityAsync($"Hello {result.ToString()}, nice to meet you!");
-                return await outerDc.EndDialogAsync(result);
+                outerDc.State.SetValue(_property, result);
+                await outerDc.Context.SendActivityAsync($"Hello {result}, nice to meet you!", cancellationToken: cancellationToken);
+                return await outerDc.EndDialogAsync(result, cancellationToken);
             }
         }
 
-        public class SimpleDialog : Dialog
+        private class SimpleDialog : Dialog
         {
-            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
-                await dc.Context.SendActivityAsync("simple");
-                return await dc.EndDialogAsync();
+                await dc.Context.SendActivityAsync("simple", cancellationToken: cancellationToken);
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken);
             }
         }
     }

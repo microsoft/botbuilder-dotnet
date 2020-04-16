@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <returns>App credentials.</returns>
         private async Task<AppCredentials> GetAppCredentialsAsync(string appId, string oAuthScope = null)
         {
-            if (appId == null)
+            if (string.IsNullOrWhiteSpace(appId))
             {
                 return MicrosoftAppCredentials.Empty;
             }

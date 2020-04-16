@@ -15,12 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         where T : class
     {
         private readonly ResourceExplorer resourceExplorer;
-        private readonly Stack<SourceRange> context;
+        private readonly SourceContext sourceContext;
 
-        public InterfaceConverter(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
+        public InterfaceConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(InterfaceConverter<T>.resourceExplorer));
-            this.context = context ?? throw new ArgumentNullException(nameof(context));
+            this.sourceContext = sourceContext ?? throw new ArgumentNullException(nameof(sourceContext));
         }
 
         public override bool CanRead => true;
@@ -32,13 +32,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var (jsonObject, range) = SourceContext.ReadTokenRange(reader, context);
-            using (new SourceContext(context, range))
+            var (jsonObject, range) = SourceScope.ReadTokenRange(reader, sourceContext);
+            using (new SourceScope(sourceContext, range))
             {
                 if (this.resourceExplorer.IsRef(jsonObject))
                 {
                     // We can't do this asynchronously as the Json.NET interface is synchronous
-                    jsonObject = this.resourceExplorer.ResolveRefAsync(jsonObject, context).GetAwaiter().GetResult();
+                    jsonObject = this.resourceExplorer.ResolveRefAsync(jsonObject, sourceContext).GetAwaiter().GetResult();
                 }
 
                 var kind = (string)jsonObject["$kind"];
@@ -49,14 +49,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
                 // if IdRefResolver made a source context available for the JToken, then add it to the context stack
                 var found = DebugSupport.SourceMap.TryGetValue(jsonObject, out var rangeResolved);
-                using (found ? new SourceContext(context, rangeResolved) : null)
+                using (found ? new SourceScope(sourceContext, rangeResolved) : null)
                 {
                     T result = this.resourceExplorer.BuildType<T>(kind, jsonObject, serializer);
 
                     // associate the most specific source context information with this item
-                    if (context.Count > 0)
+                    if (sourceContext.CallStack.Count > 0)
                     {
-                        range = context.Peek().DeepClone();
+                        range = sourceContext.CallStack.Peek().DeepClone();
                         DebugSupport.SourceMap.Add(result, range);
                     }
 

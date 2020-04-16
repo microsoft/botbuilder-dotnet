@@ -2,9 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -15,23 +19,23 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogManager
     {
-        private const string LASTACCESS = "_lastAccess";
-        private string rootDialogId;
-        private string dialogStateProperty;
+        private const string LastAccess = "_lastAccess";
+        private string _rootDialogId;
+        private readonly string _dialogStateProperty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogManager"/> class.
         /// </summary>
-        /// <param name="rootDialog">rootdialog to use.</param>
+        /// <param name="rootDialog">Root dialog to use.</param>
         /// <param name="dialogStateProperty">alternate name for the dialogState property. (Default is "DialogState").</param>
         public DialogManager(Dialog rootDialog = null, string dialogStateProperty = null)
         {
             if (rootDialog != null)
             {
-                this.RootDialog = rootDialog;
+                RootDialog = rootDialog;
             }
 
-            this.dialogStateProperty = dialogStateProperty ?? "DialogState";
+            _dialogStateProperty = dialogStateProperty ?? "DialogState";
         }
 
         /// <summary>
@@ -56,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// TurnState.
         /// </value>
-        public TurnContextStateCollection TurnState { get; private set; } = new TurnContextStateCollection();
+        public TurnContextStateCollection TurnState { get; } = new TurnContextStateCollection();
 
         /// <summary>
         /// Gets or sets root dialog to use to start conversation.
@@ -68,9 +72,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             get
             {
-                if (this.rootDialogId != null)
+                if (_rootDialogId != null)
                 {
-                    return this.Dialogs.Find(this.rootDialogId);
+                    return Dialogs.Find(_rootDialogId);
                 }
 
                 return null;
@@ -78,16 +82,16 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             set
             {
-                this.Dialogs = new DialogSet();
+                Dialogs = new DialogSet();
                 if (value != null)
                 {
-                    this.rootDialogId = value.Id;
-                    this.Dialogs.TelemetryClient = value.TelemetryClient;
-                    this.Dialogs.Add(value);
+                    _rootDialogId = value.Id;
+                    Dialogs.TelemetryClient = value.TelemetryClient;
+                    Dialogs.Add(value);
                 }
                 else
                 {
-                    this.rootDialogId = null;
+                    _rootDialogId = null;
                 }
             }
         }
@@ -119,63 +123,62 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Runs dialog system in the context of an ITurnContext.
         /// </summary>
         /// <param name="context">turn context.</param>
-        /// <param name="cancellationToken">cancelation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>result of the running the logic against the activity.</returns>
-        public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, CancellationToken cancellationToken = default)
         {
             var botStateSet = new BotStateSet();
 
-            // preload turnstate with DM turnstate
-            foreach (var pair in this.TurnState)
+            // Preload TurnState with DM TurnState.
+            foreach (var pair in TurnState)
             {
                 context.TurnState.Set(pair.Key, pair.Value);
             }
 
-            if (this.ConversationState == null)
+            if (ConversationState == null)
             {
-                this.ConversationState = context.TurnState.Get<ConversationState>() ?? throw new ArgumentNullException(nameof(this.ConversationState));
+                ConversationState = context.TurnState.Get<ConversationState>() ?? throw new ArgumentNullException(nameof(ConversationState));
             }
             else
             {
-                context.TurnState.Set(this.ConversationState);
+                context.TurnState.Set(ConversationState);
             }
 
-            botStateSet.Add(this.ConversationState);
+            botStateSet.Add(ConversationState);
 
-            if (this.UserState == null)
+            if (UserState == null)
             {
-                this.UserState = context.TurnState.Get<UserState>();
+                UserState = context.TurnState.Get<UserState>();
             }
 
-            if (this.UserState != null)
+            if (UserState != null)
             {
-                botStateSet.Add(this.UserState);
+                botStateSet.Add(UserState);
             }
 
             // create property accessors
-            var lastAccessProperty = ConversationState.CreateProperty<DateTime>(LASTACCESS);
-            var lastAccess = await lastAccessProperty.GetAsync(context, () => DateTime.UtcNow, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var lastAccessProperty = ConversationState.CreateProperty<DateTime>(LastAccess);
+            var lastAccess = await lastAccessProperty.GetAsync(context, () => DateTime.UtcNow, cancellationToken).ConfigureAwait(false);
 
             // Check for expired conversation
-            var now = DateTime.UtcNow;
-            if (this.ExpireAfter.HasValue && (DateTime.UtcNow - lastAccess) >= TimeSpan.FromMilliseconds((double)this.ExpireAfter))
+            if (ExpireAfter.HasValue && (DateTime.UtcNow - lastAccess) >= TimeSpan.FromMilliseconds((double)ExpireAfter))
             {
                 // Clear conversation state
-                await ConversationState.ClearStateAsync(context, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await ConversationState.ClearStateAsync(context, cancellationToken).ConfigureAwait(false);
             }
 
             lastAccess = DateTime.UtcNow;
-            await lastAccessProperty.SetAsync(context, lastAccess, cancellationToken: cancellationToken).ConfigureAwait(false);
+            await lastAccessProperty.SetAsync(context, lastAccess, cancellationToken).ConfigureAwait(false);
 
             // get dialog stack 
-            var dialogsProperty = ConversationState.CreateProperty<DialogState>(this.dialogStateProperty);
-            DialogState dialogState = await dialogsProperty.GetAsync(context, () => new DialogState(), cancellationToken: cancellationToken).ConfigureAwait(false);
+            var dialogsProperty = ConversationState.CreateProperty<DialogState>(_dialogStateProperty);
+            var dialogState = await dialogsProperty.GetAsync(context, () => new DialogState(), cancellationToken).ConfigureAwait(false);
 
             // Create DialogContext
-            var dc = new DialogContext(this.Dialogs, context, dialogState);
+            var dc = new DialogContext(Dialogs, context, dialogState);
 
-            // get the dialogstatemanager configuration
-            var dialogStateManager = new DialogStateManager(dc, this.StateConfiguration);
+            // get the DialogStateManager configuration
+            var dialogStateManager = new DialogStateManager(dc, StateConfiguration);
             await dialogStateManager.LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
             dc.Context.TurnState.Add(dialogStateManager);
 
@@ -185,31 +188,25 @@ namespace Microsoft.Bot.Builder.Dialogs
             //
             // NOTE: We loop around this block because each pass through we either complete the turn and break out of the loop
             // or we have had an exception AND there was an OnError action which captured the error.  We need to continue the 
-            // turn based on the actions the OnError handler introduced.  
-            while (true)
+            // turn based on the actions the OnError handler introduced.
+            var endOfTurn = false;
+            while (!endOfTurn)
             {
                 try
                 {
-                    if (dc.ActiveDialog == null)
+                    if (context.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims))
                     {
-                        // start root dialog
-                        turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        // The bot is running as a skill.
+                        turnResult = await HandleSkillOnTurnAsync(dc, cancellationToken).ConfigureAwait(false);
                     }
                     else
                     {
-                        // Continue execution
-                        // - This will apply any queued up interruptions and execute the current/next step(s).
-                        turnResult = await dc.ContinueDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-
-                        if (turnResult.Status == DialogTurnStatus.Empty)
-                        {
-                            // restart root dialog
-                            turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
-                        }
+                        // The bot is running as root bot.
+                        turnResult = await HandleBotOnTurnAsync(dc, cancellationToken).ConfigureAwait(false);
                     }
 
                     // turn successfully completed, break the loop
-                    break;
+                    endOfTurn = true;
                 }
                 catch (Exception err)
                 {
@@ -227,21 +224,129 @@ namespace Microsoft.Bot.Builder.Dialogs
             // save all state scopes to their respective botState locations.
             await dialogStateManager.SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
 
-            // save botstate changes
+            // save BotState changes
             await botStateSet.SaveAllChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);
 
+            return new DialogManagerResult { TurnResult = turnResult };
+        }
+
+        /// <summary>
+        /// Helper to send a trace activity with a memory snapshot of the active dialog DC. 
+        /// </summary>
+        private static async Task SendStateSnapshotTraceAsync(DialogContext dc, string traceLabel, CancellationToken cancellationToken)
+        {
             // send trace of memory
-            var snapshotDc = dc;
-            while (snapshotDc.Child != null)
+            var snapshot = GetActiveDialogContext(dc).State.GetMemorySnapshot();
+            var traceActivity = (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", snapshot, traceLabel);
+            await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
+        }
+
+        // We should only cancel the current dialog stack if the EoC activity is coming from a parent (a root bot or another skill).
+        // When the EoC is coming back from a child, we should just process that EoC normally through the 
+        // dialog stack and let the child dialogs handle that.
+        private static bool IsEocComingFromParent(ITurnContext turnContext)
+        {
+            // To determine the direction we check callerId property which is set to the parent bot
+            // by the BotFrameworkHttpClient on outgoing requests.
+            return !string.IsNullOrWhiteSpace(turnContext.Activity.CallerId);
+        }
+
+        // Recursively walk up the DC stack to find the active DC.
+        private static DialogContext GetActiveDialogContext(DialogContext dialogContext)
+        {
+            var child = dialogContext.Child;
+            if (child == null)
             {
-                snapshotDc = snapshotDc.Child;
+                return dialogContext;
             }
 
-            var snapshot = snapshotDc.State.GetMemorySnapshot();
-            var traceActivity = (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", snapshot, "Bot State");
-            await dc.Context.SendActivityAsync(traceActivity).ConfigureAwait(false);
+            return GetActiveDialogContext(child);
+        }
 
-            return new DialogManagerResult() { TurnResult = turnResult };
+        private async Task<DialogTurnResult> HandleSkillOnTurnAsync(DialogContext dc, CancellationToken cancellationToken)
+        {
+            // the bot is running as a skill. 
+            var turnContext = dc.Context;
+
+            // Process remote cancellation
+            if (turnContext.Activity.Type == ActivityTypes.EndOfConversation && dc.ActiveDialog != null && IsEocComingFromParent(turnContext))
+            {
+                // Handle remote cancellation request from parent.
+                var activeDialogContext = GetActiveDialogContext(dc);
+
+                var remoteCancelText = "Skill was canceled through an EndOfConversation activity from the parent.";
+                await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{remoteCancelText}", cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                // Send cancellation message to the top dialog in the stack to ensure all the parents are canceled in the right order. 
+                return await activeDialogContext.CancelAllDialogsAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
+            // Handle reprompt
+            // Process a reprompt event sent from the parent.
+            if (turnContext.Activity.Type == ActivityTypes.Event && turnContext.Activity.Name == DialogEvents.RepromptDialog)
+            {
+                if (dc.ActiveDialog == null)
+                {
+                    return new DialogTurnResult(DialogTurnStatus.Empty);
+                }
+
+                await dc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
+                return new DialogTurnResult(DialogTurnStatus.Waiting);
+            }
+
+            // Continue execution
+            // - This will apply any queued up interruptions and execute the current/next step(s).
+            var turnResult = await dc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+            if (turnResult.Status == DialogTurnStatus.Empty)
+            {
+                // restart root dialog
+                var startMessageText = $"Starting {_rootDialogId}.";
+                await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{startMessageText}", cancellationToken: cancellationToken).ConfigureAwait(false);
+                turnResult = await dc.BeginDialogAsync(_rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
+            await SendStateSnapshotTraceAsync(dc, "Skill State", cancellationToken).ConfigureAwait(false);
+
+            // Send end of conversation if it is completed or cancelled.
+            if (turnResult.Status == DialogTurnStatus.Complete || turnResult.Status == DialogTurnStatus.Cancelled)
+            {
+                var endMessageText = $"Dialog {_rootDialogId} has **completed**. Sending EndOfConversation.";
+                await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{endMessageText}", value: turnResult.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                // Send End of conversation at the end.
+                var activity = new Activity(ActivityTypes.EndOfConversation) { Value = turnResult.Result };
+                await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            }
+
+            return turnResult;
+        }
+
+        private async Task<DialogTurnResult> HandleBotOnTurnAsync(DialogContext dc, CancellationToken cancellationToken)
+        {
+            DialogTurnResult turnResult;
+
+            // the bot is running as a root bot. 
+            if (dc.ActiveDialog == null)
+            {
+                // start root dialog
+                turnResult = await dc.BeginDialogAsync(_rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                // Continue execution
+                // - This will apply any queued up interruptions and execute the current/next step(s).
+                turnResult = await dc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+
+                if (turnResult.Status == DialogTurnStatus.Empty)
+                {
+                    // restart root dialog
+                    turnResult = await dc.BeginDialogAsync(_rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+            }
+
+            await SendStateSnapshotTraceAsync(dc, "Bot State", cancellationToken).ConfigureAwait(false);
+
+            return turnResult;
         }
     }
 }
