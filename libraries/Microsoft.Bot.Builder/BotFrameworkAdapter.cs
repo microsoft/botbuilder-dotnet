@@ -437,18 +437,21 @@ namespace Microsoft.Bot.Builder
                 context.TurnState.Add<BotCallbackHandler>(callback);
 
                 // To create the correct cache key, provide the OAuthScope when calling CreateConnectorClientAsync.
-                // The OAuthScope is also stored on the TurnState to get the correct AppCredentials if fetching a token is required.
                 string scope;
-                if (!SkillValidation.IsSkillClaim(claimsIdentity.Claims))
-                {
-                    scope = GetBotFrameworkOAuthScope();
-                }
-                else
+                if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
                 {
                     // For activities received from another bot, the appropriate audience is obtained from the claims.
                     scope = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+
+                    // For skill calls we set the caller ID property in the activity based on the appId in the claims.
+                    activity.CallerId = $"urn:botframework:aadappid:{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
+                }
+                else
+                {
+                    scope = GetBotFrameworkOAuthScope();
                 }
 
+                // The OAuthScope is also stored on the TurnState to get the correct AppCredentials if fetching a token is required.
                 context.TurnState.Add(OAuthScopeKey, scope);
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, scope, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);

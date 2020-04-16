@@ -178,9 +178,8 @@ namespace Microsoft.Bot.Builder.Skills
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
                 turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
-
                 activity.ApplyConversationReference(skillConversationReference.ConversationReference);
-
+                activity.CallerId = $"urn:botframework:aadappid:{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
                 turnContext.Activity.Id = replyToActivityId;
                 switch (activity.Type)
                 {

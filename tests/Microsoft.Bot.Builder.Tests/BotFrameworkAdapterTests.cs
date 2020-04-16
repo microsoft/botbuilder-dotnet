@@ -9,14 +9,11 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
@@ -71,7 +68,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Func<Task<HttpResponseMessage>> createResponseMessage = () =>
             {
-                var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+                var response = new HttpResponseMessage(HttpStatusCode.OK);
                 response.Content = new StringContent(new JObject { { activityIdName, activityIdValue }, { conversationIdName, conversationIdValue } }.ToString());
                 return Task.FromResult(response);
             };
@@ -192,6 +189,7 @@ namespace Microsoft.Bot.Builder.Tests
 
                 var scope = context.TurnState.Get<string>(BotAdapter.OAuthScopeKey);
                 Assert.AreEqual(AuthenticationConstants.ToChannelFromBotOAuthScope, scope);
+                Assert.IsNull(context.Activity.CallerId);
             });
 
             var sut = new BotFrameworkAdapter(credentialProvider);
@@ -233,6 +231,7 @@ namespace Microsoft.Bot.Builder.Tests
 
                 var scope = context.TurnState.Get<string>(BotAdapter.OAuthScopeKey);
                 Assert.AreEqual(botAppId, scope);
+                Assert.AreEqual($"urn:botframework:aadappid:{botAppId}", context.Activity.CallerId);
             });
 
             var sut = new BotFrameworkAdapter(credentialProvider);
