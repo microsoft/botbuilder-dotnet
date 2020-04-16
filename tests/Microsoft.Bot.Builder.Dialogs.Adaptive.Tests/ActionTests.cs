@@ -138,6 +138,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_Foreach_Empty()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task Action_ForeachPage()
         {
             await TestUtils.RunTestScript(ResourceExplorer);

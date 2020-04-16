@@ -31,11 +31,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Return JsonConverters for LanguageGeneration resources.
         /// </summary>
         /// <param name="resourceExplorer">resource explorer to use for resolving references.</param>
-        /// <param name="context">source range context stack to build debugger source map.</param>
+        /// <param name="sourceContext">SourceContext to build debugger source map.</param>
         /// <returns>enumeration of jsonconverters.</returns>
-        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
+        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
-            yield return new LanguageGeneratorConverter(resourceExplorer, context);
+            yield return new LanguageGeneratorConverter(resourceExplorer, sourceContext);
             yield return new ActivityTemplateConverter();
         }
     }

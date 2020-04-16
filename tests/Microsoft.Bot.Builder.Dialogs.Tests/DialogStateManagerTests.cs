@@ -7,12 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -80,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public void TestPathResolverNullChecks()
         {
-            var ac = new AdaptiveComponentRegistration();
+            var ac = new DialogsComponentRegistration();
 
             foreach (var resolver in ac.GetPathResolvers())
             {
@@ -121,27 +118,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public void TestPathResolverTransform()
         {
             // dollar tests
-            Assert.AreEqual("dialog", new DollarPathResolver().TransformPath("$"));
+            Assert.AreEqual("$", new DollarPathResolver().TransformPath("$"));
+            Assert.AreEqual("$23", new DollarPathResolver().TransformPath("$23"));
+            Assert.AreEqual("$$", new DollarPathResolver().TransformPath("$$"));
             Assert.AreEqual("dialog.foo", new DollarPathResolver().TransformPath("$foo"));
             Assert.AreEqual("dialog.foo.bar", new DollarPathResolver().TransformPath("$foo.bar"));
             Assert.AreEqual("dialog.foo.bar[0]", new DollarPathResolver().TransformPath("$foo.bar[0]"));
 
             // hash tests
-            Assert.AreEqual("turn.recognized.intents", new HashPathResolver().TransformPath("#"));
+            Assert.AreEqual("#", new HashPathResolver().TransformPath("#"));
+            Assert.AreEqual("#23", new HashPathResolver().TransformPath("#23"));
+            Assert.AreEqual("##", new HashPathResolver().TransformPath("##"));
             Assert.AreEqual("turn.recognized.intents.foo", new HashPathResolver().TransformPath("#foo"));
             Assert.AreEqual("turn.recognized.intents.foo.bar", new HashPathResolver().TransformPath("#foo.bar"));
             Assert.AreEqual("turn.recognized.intents.foo.bar[0]", new HashPathResolver().TransformPath("#foo.bar[0]"));
 
             // @ test
+            Assert.AreEqual("@", new AtPathResolver().TransformPath("@"));
+            Assert.AreEqual("@23", new AtPathResolver().TransformPath("@23"));
+            Assert.AreEqual("@@foo", new AtPathResolver().TransformPath("@@foo"));
             Assert.AreEqual("turn.recognized.entities.foo.first()", new AtPathResolver().TransformPath("@foo"));
             Assert.AreEqual("turn.recognized.entities.foo.first().bar", new AtPathResolver().TransformPath("@foo.bar"));
 
             // @@ teest
+            Assert.AreEqual("@@", new AtAtPathResolver().TransformPath("@@"));
+            Assert.AreEqual("@@23", new AtAtPathResolver().TransformPath("@@23"));
+            Assert.AreEqual("@@@@", new AtAtPathResolver().TransformPath("@@@@"));
             Assert.AreEqual("turn.recognized.entities.foo", new AtAtPathResolver().TransformPath("@@foo"));
-            Assert.AreEqual("turn.recognized.entities", new AtAtPathResolver().TransformPath("@@"));
 
             // % config tests
-            Assert.AreEqual("class", new PercentPathResolver().TransformPath("%"));
+            Assert.AreEqual("%", new PercentPathResolver().TransformPath("%"));
+            Assert.AreEqual("%23", new PercentPathResolver().TransformPath("%23"));
+            Assert.AreEqual("%%", new PercentPathResolver().TransformPath("%%"));
             Assert.AreEqual("class.foo", new PercentPathResolver().TransformPath("%foo"));
             Assert.AreEqual("class.foo.bar", new PercentPathResolver().TransformPath("%foo.bar"));
             Assert.AreEqual("class.foo.bar[0]", new PercentPathResolver().TransformPath("%foo.bar[0]"));

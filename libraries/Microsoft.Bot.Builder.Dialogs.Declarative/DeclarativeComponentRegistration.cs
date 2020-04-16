@@ -13,12 +13,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             yield break;
         }
 
-        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
+        public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
-            yield return new InterfaceConverter<IStorage>(resourceExplorer, context);
-            yield return new InterfaceConverter<IRecognizer>(resourceExplorer, context);
-            yield return new InterfaceConverter<Dialog>(resourceExplorer, context);
-            yield return new InterfaceConverter<Recognizer>(resourceExplorer, context);
+            yield return new InterfaceConverter<IStorage>(resourceExplorer, sourceContext);
+            yield return new InterfaceConverter<IRecognizer>(resourceExplorer, sourceContext);
+            yield return new InterfaceConverter<Dialog>(resourceExplorer, sourceContext);
+            yield return new InterfaceConverter<Recognizer>(resourceExplorer, sourceContext);
             yield return new ActivityConverter();
         }
     }
