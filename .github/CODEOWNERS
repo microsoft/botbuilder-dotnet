@@ -22,7 +22,7 @@
 /libraries/Adapters/**              @garypretty
 
 # Adaptive Expressions
-/libraries/AdaptiveExpressions/**   @tomlm @carlosscastro
+/libraries/AdaptiveExpressions/**   @tomlm @carlosscastro @boydc2014 @chrimc62
 
 # Platform Integration Libaries
 /libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core/**           @garypretty
@@ -41,10 +41,14 @@
 /libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                       @mrivera-ms @tomlm
 /libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                              @mrivera-ms @tomlm @gabog
 /libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                            @mrivera-ms @tomlm
-/libraries/Microsoft.Bot.Builder.LanguageGeneration/**                             @mrivera-ms @tomlm 
-/libraries/Microsoft.Bot.Builder.TemplateManager/**                                @mrivera-ms @tomlm
+/libraries/Microsoft.Bot.Builder.LanguageGeneration/**                             @mrivera-ms @tomlm @boydc2014 @chrimc62
+/libraries/Microsoft.Bot.Builder.TemplateManager/**                                @mrivera-ms @tomlm 
 /libraries/Microsoft.Bot.Builder.Testing/**                                        @gabog
 /libraries/Microsoft.Bot.Configuration/**                                          @tomlm
 /libraries/Microsoft.Bot.Connector/**                                              @mrivera-ms @carlosscastro @johnataylor
 /libraries/Microsoft.Bot.Schema/**                                                 @mrivera-ms @johnataylor
 /libraries/Microsoft.Bot.Streaming/**                                              @mrivera-ms @carlosscastro
+
+# Tests
+/tests/AdaptiveExpressions.Tests/**                                                @tomlm @boydc2014 @chrimc62 
+/tests/Microsoft.Bot.BotBuilder.LanguageGeneration.Tests/**                        @tomlm @boydc2014 @chrimc62
