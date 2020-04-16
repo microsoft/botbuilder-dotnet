@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Configuration
         public string Region { get; set; }
 
         /// <summary>
-        /// Gets or sets the custom endpoint. This should only be used when the LUIS deployed via a container.
+        /// Gets or sets the URL for a custom endpoint. This should only be used when the LUIS deployed via a container.
         /// If a value is set, then the GetEndpoint() method will return the value for Custom Endpoint.
         /// </summary>
         /// <value>The Region.</value>
