@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
     public class MultilanguageLGTest
     {
         [TestMethod]
-        public void TestMultiLanguageLGWithEmptyDefaultLocale()
+        public void EmptyFallbackLocale()
         {
             var localPerFile = new Dictionary<string, string>
             {
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestMultiLanguageLGWithEmptySpecificLocale()
+        public void SpecificFallbackLocale()
         {
             var localPerFile = new Dictionary<string, string>
             {
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestMultiLanguageLGWithTemplates()
+        public void TemplatesInputs()
         {
             var enTemplates = Templates.ParseText("[import](1.lg)\r\n # template\r\n - hi", "abc", ConstantResolver);
             var templatesDict = new Dictionary<string, Templates>
