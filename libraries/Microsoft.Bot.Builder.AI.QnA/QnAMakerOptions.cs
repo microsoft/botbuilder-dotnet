@@ -88,7 +88,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
 
-        [JsonProperty("metadataBoost")]
-        public Metadata[] MetadataBoost { get; set; }
     }
 }
