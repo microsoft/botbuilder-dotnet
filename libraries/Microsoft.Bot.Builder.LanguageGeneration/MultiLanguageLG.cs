@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class MultiLanguageLG
     {
-        private readonly LanguagePolicy languagePolicy;
+        private readonly LanguagePolicy languageFallbackPolicy;
 
         private readonly Dictionary<string, Templates> lgPerLocale;
 
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public MultiLanguageLG(Dictionary<string, string> localeLGFiles, params string[] defaultLanguages)
         {
             lgPerLocale = new Dictionary<string, Templates>(StringComparer.OrdinalIgnoreCase);
-            languagePolicy = new LanguagePolicy(defaultLanguages);
+            languageFallbackPolicy = new LanguagePolicy(defaultLanguages);
 
             if (localeLGFiles == null)
             {
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 lgPerLocale.Add(templatesPair.Key, templatesPair.Value);
             }
 
-            languagePolicy = new LanguagePolicy(defaultLanguages);
+            languageFallbackPolicy = new LanguagePolicy(defaultLanguages);
         }
 
         public object Generate(string template, object data, string locale)
@@ -69,15 +69,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var fallbackLocales = new List<string>();
-            if (languagePolicy.ContainsKey(locale))
+            if (languageFallbackPolicy.ContainsKey(locale))
             {
-                fallbackLocales.AddRange(languagePolicy[locale]);
+                fallbackLocales.AddRange(languageFallbackPolicy[locale]);
             }
 
             // append empty as fallback to end
-            if (locale != string.Empty && languagePolicy.ContainsKey(string.Empty))
+            if (locale != string.Empty && languageFallbackPolicy.ContainsKey(string.Empty))
             {
-                fallbackLocales.AddRange(languagePolicy[string.Empty]);
+                fallbackLocales.AddRange(languageFallbackPolicy[string.Empty]);
             }
 
             if (fallbackLocales.Count == 0)
