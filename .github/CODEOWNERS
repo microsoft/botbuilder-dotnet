@@ -42,7 +42,7 @@
 /libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                              @mrivera-ms @tomlm @gabog
 /libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                            @mrivera-ms @tomlm
 /libraries/Microsoft.Bot.Builder.LanguageGeneration/**                             @mrivera-ms @tomlm @boydc2014 @chrimc62
-/libraries/Microsoft.Bot.Builder.TemplateManager/**                                @mrivera-ms @tomlm 
+/libraries/Microsoft.Bot.Builder.TemplateManager/**                                @mrivera-ms @tomlm
 /libraries/Microsoft.Bot.Builder.Testing/**                                        @gabog
 /libraries/Microsoft.Bot.Configuration/**                                          @tomlm
 /libraries/Microsoft.Bot.Connector/**                                              @mrivera-ms @carlosscastro @johnataylor
