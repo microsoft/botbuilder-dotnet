@@ -138,12 +138,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 options.StrictFilters = new Metadata[] { };
             }
-
-            if (options.MetadataBoost == null)
-            {
-                options.MetadataBoost = new Metadata[] { };
-            }
-
+           
             if (options.RankerType == null)
             {
                 options.RankerType = RankerTypes.DefaultRankerType;
