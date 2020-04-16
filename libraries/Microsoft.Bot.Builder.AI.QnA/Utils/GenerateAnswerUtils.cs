@@ -169,13 +169,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 if (queryOptions.StrictFilters?.Length > 0)
                 {
                     hydratedOptions.StrictFilters = queryOptions.StrictFilters;
-                }
-            
+                }         
 
                 hydratedOptions.Context = queryOptions.Context;
                 hydratedOptions.QnAId = queryOptions.QnAId;
                 hydratedOptions.IsTest = queryOptions.IsTest;
-
                 hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
             }
 
