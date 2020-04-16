@@ -114,13 +114,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // walk through all of the cultures and create a dictionary map with most specific to least specific
             // Example output "en-us" will generate fallback rule like this:
-            //   "en-us" -> "en" -> "" 
-            //   "en" -> ""
-            // So that when we get a locale such as en-gb, we can try to resolve to "en-gb" then "en" then ""
+            //   "en-us" -> "en"
+            //   "" -> defaultLanguages
+            // So that when we get a locale such as en-gb, we can try to resolve to "en-gb" then "en"
             // See commented section for full sample of output of this function
             private static IDictionary<string, string[]> DefaultPolicy(string[] defaultLanguages = null)
             {
-                if (defaultLanguages == null)
+                if (defaultLanguages == null || defaultLanguages.Length == 0)
                 {
                     defaultLanguages = new string[] { string.Empty };
                 }
