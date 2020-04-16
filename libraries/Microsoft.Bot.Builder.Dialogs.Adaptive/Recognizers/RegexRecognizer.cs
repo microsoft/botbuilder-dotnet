@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // Identify matched intents
             var text = activity.Text ?? string.Empty;
             var locale = activity.Locale ?? "en-us";
-            
+
             var recognizerResult = new RecognizerResult()
             {
                 Text = text,
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             await dialogContext.Context.TraceActivityAsync(nameof(RegexRecognizer), JObject.FromObject(recognizerResult), "RecognizerResult", "Regex RecognizerResult", cancellationToken).ConfigureAwait(false);
 
-            this.TelemetryClient.TrackEvent("RegexRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "RegexRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
 
             return recognizerResult;
         }

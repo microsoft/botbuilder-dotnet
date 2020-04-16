@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // merge intents
             var result = MergeResults(results);
 
-            this.TelemetryClient.TrackEvent("RecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "RecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
 
             return result;
         }
