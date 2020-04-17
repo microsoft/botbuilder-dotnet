@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "OAuthInput Dialog",
     "description": "Collect login information.",
@@ -94,7 +94,7 @@
         },
         "allowInterruptions": {
             "$role": "expression",
-            "type": [ "boolean", "string" ],
+            "type": "boolean",
             "title": "Allow Interruptions",
             "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
             "default": "true",
@@ -104,7 +104,7 @@
         },
         "alwaysPrompt": {
             "$role": "expression",
-            "type": [ "boolean", "string" ],
+            "type": "boolean",
             "title": "Always prompt",
             "description": "Collect information even if the specified 'property' is not empty.",
             "default": false,

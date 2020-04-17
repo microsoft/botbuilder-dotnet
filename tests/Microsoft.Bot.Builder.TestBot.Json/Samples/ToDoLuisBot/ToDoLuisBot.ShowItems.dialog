@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "generator": "ToDoLuisBot.lg",
     "triggers": [
@@ -60,7 +60,7 @@
                                 }
                             ],
                             "prompt": "Which list do you want to show?",
-                            "style": "SuggestedAction",
+                            "style": "suggestedAction",
                             "alwaysPrompt": true
                         }
                     ]

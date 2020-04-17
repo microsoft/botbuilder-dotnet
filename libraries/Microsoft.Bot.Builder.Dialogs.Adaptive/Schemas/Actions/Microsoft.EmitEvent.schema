@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Emit a custom event",
     "description": "Emit an event. Capture this event with a trigger.",
@@ -27,19 +27,26 @@
             "type": "string",
             "title": "Event name",
             "description": "Name of the event to emit.",
-            "enum": [
-                "beginDialog",
-                "resumeDialog",
-                "repromptDialog",
-                "cancelDialog",
-                "endDialog",
-                "activityReceived",
-                "recognizedIntent",
-                "unknownIntent",
-                "actionsStarted",
-                "actionsSaved",
-                "actionsEnded",
-                "actionsResumed"
+            "oneOf": [
+                {
+                    "enum": [
+                        "beginDialog",
+                        "resumeDialog",
+                        "repromptDialog",
+                        "cancelDialog",
+                        "endDialog",
+                        "activityReceived",
+                        "recognizedIntent",
+                        "unknownIntent",
+                        "actionsStarted",
+                        "actionsSaved",
+                        "actionsEnded",
+                        "actionsResumed"
+                    ]
+                },
+                {
+                    "pattern": "^(?!(beginDialog$|resumeDialog$|repromptDialog$|cancelDialog$|endDialog$|activityReceived$|recognizedIntent$|unknownIntent$|actionsStarted$|actionsSaved$|actionsEnded$|actionsResumed)).*"
+                }
             ]
         },
         "eventValue": {

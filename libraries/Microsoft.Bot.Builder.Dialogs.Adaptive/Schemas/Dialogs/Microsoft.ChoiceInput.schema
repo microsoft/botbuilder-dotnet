@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Choice input dialog",
     "description": "Collect information - Pick from a list of choices",
@@ -80,12 +80,12 @@
                     "$role": "expression",
                     "type": "string",
                     "enum": [
-                        "None",
-                        "Auto",
-                        "Inline",
-                        "List",
-                        "SuggestedAction",
-                        "HeroCard"
+                        "none",
+                        "auto",
+                        "inline",
+                        "list",
+                        "suggestedAction",
+                        "heroCard"
                     ],
                     "title": "List style",
                     "description": "Sets the ListStyle to control how choices are rendered.",

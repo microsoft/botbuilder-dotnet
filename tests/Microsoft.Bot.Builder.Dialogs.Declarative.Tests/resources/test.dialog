@@ -1,1 +1,4 @@
-{}
+{
+    "$kind": "Microsoft.SendActivity",
+    "activity": "hello"
+}
