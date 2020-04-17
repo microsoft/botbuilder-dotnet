@@ -34,14 +34,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Import regex.
         /// </summary>
-        public static readonly Regex ImportRegex = new Regex(@"\[(.*)\]\((.*)\)");
+        public static readonly Regex ImportRegex = new Regex(@"\[([^]]*)\]\(([^)]*)\)");
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
         /// </summary>
-        /// <param name="filePath"> absolut path of a LG file.</param>
-        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <param name="expressionParser">expressionEngine Expression engine for evaluating expressions.</param>
+        /// <param name="filePath">Absolut path of a LG file.</param>
+        /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">Expression parser for parsing expressions.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
         public static Templates ParseFile(
             string filePath,
@@ -58,10 +58,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Parser to turn lg content into a <see cref="Templates"/>.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
-        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <param name="expressionParser">expressionEngine parser engine for parsing expressions.</param>
-        /// <returns>new <see cref="Templates"/> entity.</returns>
+        /// <param name="id">Id is the identifier of content. If importResolver is null, id must be a full path string. </param>
+        /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">Expression parser for parsing expressions.</param>
+        /// <returns>New <see cref="Templates"/> entity.</returns>
         public static Templates ParseText(
             string content,
             string id = "",
@@ -75,8 +75,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Parser to turn lg content into a <see cref="Templates"/> based on the original LGFile.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="lg">original LGFile.</param>
-        /// <returns>new <see cref="Templates"/> entity.</returns>
+        /// <param name="lg">Original LGFile.</param>
+        /// <returns>New <see cref="Templates"/> entity.</returns>
         public static Templates ParseTextWithRef(string content, Templates lg)
         {
             if (lg == null)
@@ -108,10 +108,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Parser to turn lg content into a <see cref="Templates"/>.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
-        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <param name="expressionParser">expressionEngine parser engine for parsing expressions.</param>
-        /// <param name="cachedTemplates">give the file path and templates to avoid parsing and to improve performance.</param>
+        /// <param name="id">Id is the identifier of content. If importResolver is null, id must be a full path string. </param>
+        /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">Expression parser for parsing expressions.</param>
+        /// <param name="cachedTemplates">Give the file path and templates to avoid parsing and to improve performance.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
         private static Templates InnerParseText(
             string content,
@@ -146,9 +146,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Default import resolver, using relative/absolute file path to access the file content.
         /// </summary>
-        /// <param name="sourceId">default is file path.</param>
-        /// <param name="resourceId">import path.</param>
-        /// <returns>target content id.</returns>
+        /// <param name="sourceId">Default is file path.</param>
+        /// <param name="resourceId">Import path.</param>
+        /// <returns>Target content id.</returns>
         private static (string content, string id) DefaultFileResolver(string sourceId, string resourceId)
         {
             // import paths are in resource files which can be executed on multiple OS environments
@@ -164,11 +164,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return (File.ReadAllText(importPath), importPath);
         }
 
-        /// <summary>
-        /// Get parsed tree nodes from text by antlr4 engine.
-        /// </summary>
-        /// <param name="text">Original text which will be parsed.</param>
-        /// <returns>Parsed tree nodes.</returns>
         private static IParseTree AntlrParseTemplates(string text, string id)
         {
             if (string.IsNullOrEmpty(text))
@@ -322,7 +317,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var isLastTemplate = file.paragraph().Select(u => u.templateDefinition()).Where(u => u != null).Last() == context;
                     if (!isLastTemplate)
                     {
-                        templateBody = RemoveTailingNewline(templateBody);
+                        templateBody = RemoveTrailingNewline(templateBody);
                     }
 
                     var sourceRange = new SourceRange(context, this.templates.Id);
@@ -407,7 +402,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return (templateName, parameters);
             }
 
-            private string RemoveTailingNewline(string line)
+            private string RemoveTrailingNewline(string line)
             {
                 // remove the end newline of middle template.
                 var result = line;

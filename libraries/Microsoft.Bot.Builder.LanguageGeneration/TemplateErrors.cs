@@ -62,15 +62,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public const string LoopDetected = "Loop detected:";
 
-        public const string SyntaxError = "Unexpected content. Expecting either a comment or a template definition or an import statement or an option definition.";
+        public const string SyntaxError = "Unexpected content. Expecting a comment, template definition, import statement or option definition.";
 
         public const string InvalidMemory = "Scope is not a LG customized memory.";
 
         public const string StaticFailure = "Static failure with the following error.";
-
-        public const string ImportFail = "Import should be placed at the beginning of the file.";
-
-        public const string OptionFail = "Option should be placed at the beginning of the file.";
 
         public static string DuplicatedTemplateInSameTemplate(string templateName) => $"Duplicated definitions found for template: '{templateName}'.";
 

@@ -24,11 +24,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="StaticChecker"/> class.
         /// </summary>
-        /// <param name="lg">the lg wihch would be checked.</param>
-        public StaticChecker(Templates lg)
+        /// <param name="templates">The templates wihch would be checked.</param>
+        public StaticChecker(Templates templates)
         {
-            this.templates = lg;
-            baseExpressionParser = lg.ExpressionParser;
+            this.templates = templates;
+            baseExpressionParser = templates.ExpressionParser;
         }
 
         // Create a property because we want this to be lazy loaded
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Return error messages list.
         /// </summary>
-        /// <returns>report result.</returns>
+        /// <returns>Report result.</returns>
         public List<Diagnostic> Check()
         {
             var result = new List<Diagnostic>();
@@ -380,13 +380,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        /// <summary>
-        /// Build LG diagnostic with ANTLR tree node context.
-        /// </summary>
-        /// <param name="message">error/warning message. <see cref="Diagnostic.Message"/>.</param>
-        /// <param name="severity">diagnostic Severity <see cref="DiagnosticSeverity"/> to get more info.</param>
-        /// <param name="context">the parsed tree node context of the diagnostic.</param>
-        /// <returns>new Diagnostic object.</returns>
         private Diagnostic BuildLGDiagnostic(
             string message,
             DiagnosticSeverity severity = DiagnosticSeverity.Error,

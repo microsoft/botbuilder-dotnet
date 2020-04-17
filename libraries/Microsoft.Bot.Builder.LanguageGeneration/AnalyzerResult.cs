@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Gets or sets template references that this template contains.
         /// </summary>
         /// <value>
-        /// template references that this template contains.
+        /// Template references that this template contains.
         /// </value>
         public List<string> TemplateReferences { get; set; }
 

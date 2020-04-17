@@ -23,8 +23,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="Analyzer"/> class.
         /// </summary>
-        /// <param name="templates">template list.</param>
-        /// <param name="expressionParser">expression parser.</param>
+        /// <param name="templates">Template list.</param>
+        /// <param name="expressionParser">Expression parser.</param>
         public Analyzer(List<Template> templates, ExpressionParser expressionParser)
         {
             Templates = templates;
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Analyzer a template to get the static analyzer results.
         /// </summary>
         /// <param name="templateName">Template name.</param>
-        /// <returns>analyze result including variables and template references.</returns>
+        /// <returns>Analyze result including variables and template references.</returns>
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             if (!templateMap.ContainsKey(templateName))
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// return only those without parameters.
         /// </summary>
         /// <param name="exp">Expression.</param>
-        /// <returns>template refs.</returns>
+        /// <returns>Template refs.</returns>
         private AnalyzerResult AnalyzeExpressionDirectly(Expression exp)
         {
             var result = new AnalyzerResult();

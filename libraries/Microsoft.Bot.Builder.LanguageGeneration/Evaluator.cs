@@ -34,8 +34,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="Evaluator"/> class.
         /// </summary>
         /// <param name="templates">Template list.</param>
-        /// <param name="expressionParser">expression parser.</param>
-        /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
+        /// <param name="expressionParser">Expression parser.</param>
+        /// <param name="strictMode">Strict mode. If strictMode == true, exception in expression would throw outside.</param>
         public Evaluator(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
         {
             Templates = templates;
@@ -73,8 +73,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Evaluate a template with given name and scope.
         /// </summary>
-        /// <param name="inputTemplateName">template name.</param>
-        /// <param name="scope">scope.</param>
+        /// <param name="inputTemplateName">Template name.</param>
+        /// <param name="scope">Scope.</param>
         /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string inputTemplateName, object scope)
         {

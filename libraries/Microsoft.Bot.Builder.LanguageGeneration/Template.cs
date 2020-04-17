@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">Template name without parameters.</param>
         /// <param name="parameters">Parameter list.</param>
         /// <param name="templateBody">Template content.</param>
-        /// <param name="sourceRange">souerce range of template.</param>
+        /// <param name="sourceRange">Source range of template.</param>
         internal Template(
             string templateName,
             List<string> parameters,
@@ -37,15 +37,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Gets or sets source range.
         /// </summary>
         /// <value>
-        /// start line of the tempalte in LG file.
+        /// Start line of the template in LG file.
         /// </value>
         public SourceRange SourceRange { get; set; }
 
         /// <summary>
-        /// Gets or sets name of the template, what's followed by '#' in a LG file.
+        /// Gets or sets name of the template, which follows by '#' in a LG file.
         /// </summary>
         /// <value>
-        /// Name of the template, what's followed by '#' in a LG file.
+        /// Name of the template, which follows by '#' in a LG file.
         /// </value>
         public string Name { get; set; }
 

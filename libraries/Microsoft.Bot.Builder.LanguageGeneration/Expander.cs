@@ -30,9 +30,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="Expander"/> class.
         /// </summary>
-        /// <param name="templates">template list.</param>
+        /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">Given expression parser.</param>
-        /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
+        /// <param name="strictMode">Strict mode. If strictMode == true, exception in expression would throw outside.</param>
         public Expander(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
         {
             Templates = templates;

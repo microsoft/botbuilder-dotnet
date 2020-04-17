@@ -5,6 +5,9 @@ using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// Source range of the context. Including parse tree, source id and the context range.
+    /// </summary>
     public class SourceRange
     {
         public SourceRange(ParserRuleContext parseTree, string source = "", int offset = 0)

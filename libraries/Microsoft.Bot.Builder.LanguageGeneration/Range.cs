@@ -43,8 +43,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = Start.ToString();
             if (Start.Line <= End.Line && Start.Character < End.Character)
             {
-                result += " - ";
-                result += End.ToString();
+                result += $" - {End}";
             }
 
             return result;
