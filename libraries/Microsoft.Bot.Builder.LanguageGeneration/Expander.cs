@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     result.Add(u);
                 }
             });
-            return expanderResult;
+            return result;
         }
 
         public override List<object> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
