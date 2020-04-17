@@ -13,6 +13,7 @@
                 "defaultValue": {
                     "$role": "expression",
                     "type": "string",
+                    "pattern": "(\\S.*?){1}",
                     "title": "Default value",
                     "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
                     "examples": [
@@ -24,6 +25,7 @@
                 "value": {
                     "$role": "expression",
                     "type": "string",
+                    "pattern": "(\\S.*?){1}",
                     "title": "Value",
                     "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
@@ -35,6 +37,7 @@
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",
+                    "pattern": "(\\S.*?){1}",
                     "title": "Output format",
                     "description": "Expression to format the output.",
                     "examples": [

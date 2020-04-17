@@ -16,6 +16,7 @@
         "activityId": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "ActivityId",
             "description": "expression to an activityId to delete",
             "examples": [
@@ -24,7 +25,8 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [

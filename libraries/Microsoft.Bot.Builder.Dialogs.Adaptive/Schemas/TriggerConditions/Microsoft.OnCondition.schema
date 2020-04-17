@@ -7,7 +7,8 @@
     "properties": {
         "condition": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^(\\S){1}",
             "title": "Condition",
             "description": "Condition (expression).",
             "examples": [
@@ -28,9 +29,14 @@
             "$role": "expression"
         },
         "runOnce": {
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Run Once",
-            "description": "True if rule should run once per unique conditions"
+            "description": "True if rule should run once per unique conditions",
+            "examples": [
+                true,
+                "=f(x)"
+            ]
         }
     },
     "required": [

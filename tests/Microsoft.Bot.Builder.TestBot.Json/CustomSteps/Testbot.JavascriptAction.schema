@@ -13,11 +13,13 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
-                "user.age > 3"
+                true,
+                "=f(x)"
             ]
         },
         "script": {
@@ -27,7 +29,8 @@
         },
         "options": {
             "$role": "expression",
-            "type": "object",
+            "type": [ "object", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Options",
             "description": "One or more options that are passed to the function as args.",
             "additionalProperties": {
@@ -38,6 +41,7 @@
         "resultProperty": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Property",
             "description": "Property to store any value returned by the javascript function.",
             "examples": [

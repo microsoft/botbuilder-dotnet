@@ -13,9 +13,16 @@
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",
-                    "enum": [
-                        "value",
-                        "index"
+                    "oneOf": [
+                        {
+                            "enum": [
+                                "value",
+                                "index"
+                            ]
+                        },
+                        {
+                            "pattern": "^=(\\S){1}"
+                        }
                     ],
                     "title": "Output format",
                     "description": "Sets the desired choice output format (either value or index into choices).",
@@ -27,6 +34,7 @@
                         {
                             "title": "Array of choices",
                             "type": "array",
+                            "minItems": 1,
                             "items": [
                                 {
                                     "type": "string"
@@ -36,6 +44,7 @@
                         {
                             "title": "Array of choice objects",
                             "type": "array",
+                            "minItems": 1,
                             "items": [
                                 {
                                     "title": "Choice",
@@ -79,13 +88,20 @@
                 "style": {
                     "$role": "expression",
                     "type": "string",
-                    "enum": [
-                        "none",
-                        "auto",
-                        "inline",
-                        "list",
-                        "suggestedAction",
-                        "heroCard"
+                    "oneOf": [
+                        {
+                            "enum": [
+                                "none",
+                                "auto",
+                                "inline",
+                                "list",
+                                "suggestedAction",
+                                "heroCard"
+                            ]
+                        },
+                        {
+                            "pattern": "^=(\\S){1}"
+                        }
                     ],
                     "title": "List style",
                     "description": "Sets the ListStyle to control how choices are rendered.",

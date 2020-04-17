@@ -34,7 +34,8 @@
             "description": "Sequence of expressions which must evaluate to true.",
             "items": {
                 "$role": "expression",
-                "type": "boolean",
+                "type": [ "boolean", "string" ],
+                "pattern": "^(\\S){1}",
                 "title": "Assertion",
                 "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
                 "examples": [

@@ -9,7 +9,8 @@
     },
     "disabled": {
       "$role": "expression",
-      "type": "boolean",
+      "type": [ "boolean", "string" ],
+      "pattern": "^=(\\S){1}",
       "title": "Disabled",
       "description": "Optional condition which if true will disable this action.",
       "default": false,
@@ -53,11 +54,13 @@
     "maxTurnCount": {
       "$role": "expression",
       "type": "integer",
+      "pattern": "^=(\\S){1}",
       "title": "Max turn count",
       "description": "Maximum number of re-prompt attempts to collect information.",
       "default": 3,
       "examples": [
-        3
+        3,
+        "=settings.xyz"
       ]
     },
     "validations": {
@@ -67,6 +70,7 @@
       "items": {
         "$role": "expression",
         "type": "string",
+        "pattern": "^(\\S){1}",
         "title": "Condition",
         "description": "Expression which needs to met for the input to be considered valid",
         "examples": [
@@ -78,6 +82,7 @@
     "property": {
       "$role": "expression",
       "type": "string",
+      "pattern": "^(\\S){1}",
       "title": "Property",
       "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
       "examples": [
@@ -90,21 +95,25 @@
     "alwaysPrompt": {
       "$role": "expression",
       "type": "boolean",
+      "pattern": "^=(\\S){1}",
       "title": "Always prompt",
       "description": "Collect information even if the specified 'property' is not empty.",
       "default": false,
       "examples": [
-        false
+        false,
+        "=$val"
       ]
     },
     "allowInterruptions": {
       "$role": "expression",
       "type": "boolean",
+      "pattern": "^=(\\S){1}",
       "title": "Allow Interruptions",
       "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
       "default": true,
       "examples": [
-        true
+        true,
+        "=user.xyz"
       ]
     }
   }

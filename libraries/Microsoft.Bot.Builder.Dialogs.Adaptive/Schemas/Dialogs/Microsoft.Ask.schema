@@ -12,9 +12,10 @@
             "properties": {
                 "expectedProperties": {
                     "$role": "expression",
+                    "type": [ "array", "string" ],
+                    "pattern": "^=(\\S){1}",
                     "title": "Expected Properties",
                     "description": "Properties expected from the user.",
-                    "type": "array",
                     "items": {
                         "type": "string",
                         "title": "Name",
@@ -30,6 +31,7 @@
                 "defaultOperation": {
                     "$role": "expression",
                     "type": "string",
+                    "pattern": "^(\\S){1}",
                     "title": "Default Operation",
                     "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
                     "examples": [

@@ -15,28 +15,33 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
-                "user.age > 3"
+                true,
+                "=user.age > 3"
             ]
         },
         "text": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Text",
             "description": "Information to log."
         },
         "label": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Label",
             "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
         },
         "traceActivity": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Send Trace Activity",
             "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator).",
             "default": false
