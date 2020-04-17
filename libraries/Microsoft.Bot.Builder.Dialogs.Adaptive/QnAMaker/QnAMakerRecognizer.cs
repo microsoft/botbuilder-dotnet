@@ -131,6 +131,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
+        /// <summary>
+        /// Gets or sets the flag to determine if personal information should be logged in telemetry.
+        /// </summary>
+        /// <value>
+        /// The flag to indicate in personal information should be logged in telemetry.
+        /// </value>
+        [JsonProperty("logPersonalInformation")]
+        public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
+
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             // Identify matched intents
@@ -210,7 +219,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 recognizerResult.Intents.Add("None", new IntentScore() { Score = 1.0f });
             }
 
-            this.TelemetryClient.TrackEvent("QnAMakerRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "QnAMakerRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
 
             return recognizerResult;
         }
@@ -227,6 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
             var (epKey, error) = this.EndpointKey.TryGetValue(dc.State);
             var (hn, error2) = this.HostName.TryGetValue(dc.State);
             var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dc.State);
+            var (logPersonalInfo, error4) = this.LogPersonalInformation.TryGetValue(dc.State);
 
             var endpoint = new QnAMakerEndpoint
             {
@@ -235,7 +245,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
                 KnowledgeBaseId = (string)kbId ?? throw new ArgumentNullException(nameof(KnowledgeBaseId), error3)
             };
 
-            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, httpClient: this.HttpClient));
+            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), this.HttpClient, this.TelemetryClient, (bool)logPersonalInfo));
         }
     }
 }

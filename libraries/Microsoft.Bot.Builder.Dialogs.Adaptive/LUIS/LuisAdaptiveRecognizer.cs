@@ -81,10 +81,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public HttpClientHandler HttpClient { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
+        /// Gets or sets the flag to determine if personal information should be logged in telemetry.
         /// </summary>
-        /// <value>If true, personal information is logged to Telemetry; otherwise the properties will be filtered.</value>
-        public bool LogPersonalInformation { get; set; } = false;
+        /// <value>
+        /// The flag to indicate in personal information should be logged in telemetry.
+        /// </value>
+        [JsonProperty("logPersonalInformation")]
+        public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
 
         /// <inheritdoc/>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
@@ -100,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             var result = await wrapper.RecognizeAsync(tempContext, cancellationToken).ConfigureAwait(false);
 
-            this.TelemetryClient.TrackEvent("LuisResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext.Context), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "LuisResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
         }
@@ -134,19 +137,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             };
         }
 
-        protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, ITurnContext turnContext)
+        protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dc)
         {
+            var (logPersonalInfo, error) = this.LogPersonalInformation.TryGetValue(dc.State);
+            var (applicationId, error2) = this.ApplicationId.TryGetValue(dc.State);
+
             var topTwoIntents = (recognizerResult.Intents.Count > 0) ? recognizerResult.Intents.OrderByDescending(x => x.Value.Score).Take(2).ToArray() : null;
 
             // Add the intent score and conversation id properties
             var properties = new Dictionary<string, string>()
             {
-                { LuisTelemetryConstants.ApplicationIdProperty, ApplicationId.ExpressionText },
+                { LuisTelemetryConstants.ApplicationIdProperty, applicationId },
                 { LuisTelemetryConstants.IntentProperty, topTwoIntents?[0].Key ?? string.Empty },
                 { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2") ?? "0.00" },
                 { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
                 { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2") ?? "0.00" : "0.00" },
-                { LuisTelemetryConstants.FromIdProperty, turnContext.Activity.From.Id },
+                { LuisTelemetryConstants.FromIdProperty, dc.Context.Activity.From.Id },
             };
 
             if (recognizerResult.Properties.TryGetValue("sentiment", out var sentiment) && sentiment is JObject)
@@ -166,9 +172,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             properties.Add(LuisTelemetryConstants.EntitiesProperty, entities);
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text is a common example
-            if (LogPersonalInformation && !string.IsNullOrEmpty(turnContext.Activity.Text))
+            if (logPersonalInfo && !string.IsNullOrEmpty(dc.Context.Activity.Text))
             {
-                properties.Add(LuisTelemetryConstants.QuestionProperty, turnContext.Activity.Text);
+                properties.Add(LuisTelemetryConstants.QuestionProperty, dc.Context.Activity.Text);
             }
 
             // Additional Properties can override "stock" properties.

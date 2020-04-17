@@ -1,0 +1,54 @@
+# Lines starting with '#' are comments.
+# Each line is a file pattern followed by one or more owners.
+
+# More details are here: https://help.github.com/articles/about-codeowners/
+
+# The '*' pattern is global owners.
+
+# Order is important. The last matching pattern has the most precedence.
+# The folders are ordered as follows:
+
+# In each subsection folders are ordered first by depth, then alphabetically.
+# This should make it easy to add new rules without breaking existing ones.
+
+# Global rule:
+* @tomlm @cleemullins @mrivera-ms
+
+# Various C# Libraries
+/FunctionalTests/**                 @gabog @mrivera-ms
+/build/**                           @mrivera-ms
+
+# Adapters
+/libraries/Adapters/**              @garypretty
+
+# Adaptive Expressions
+/libraries/AdaptiveExpressions/**   @tomlm @carlosscastro @boydc2014 @chrimc62
+
+# Platform Integration Libaries
+/libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core/**           @garypretty
+/libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi/**         @garypretty
+/libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.Core/**                        @johnataylor
+/libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.WebApi/**                      @johnataylor
+
+# BotBuilder Libaries
+/libraries/Microsoft.Bot.Builder/**                                                @mrivera-ms @gabog @johnataylor
+/libraries/Microsoft.Bot.Builder.AI.LUIS/**                                        @munozemilio
+/libraries/Microsoft.Bot.Builder.AI.QnA/**                                         @mrivera-ms @johnataylor
+/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                            @garypretty
+/libraries/Microsoft.Bot.Builder.Azure/**                                          @mrivera-ms
+/libraries/Microsoft.Bot.Builder.Dialogs/**                                        @mrivera-ms @gabog @johnataylor
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                               @mrivera-ms @tomlm
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                       @mrivera-ms @tomlm
+/libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                              @mrivera-ms @tomlm @gabog
+/libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                            @mrivera-ms @tomlm
+/libraries/Microsoft.Bot.Builder.LanguageGeneration/**                             @mrivera-ms @tomlm @boydc2014 @chrimc62
+/libraries/Microsoft.Bot.Builder.TemplateManager/**                                @mrivera-ms @tomlm
+/libraries/Microsoft.Bot.Builder.Testing/**                                        @gabog
+/libraries/Microsoft.Bot.Configuration/**                                          @tomlm
+/libraries/Microsoft.Bot.Connector/**                                              @mrivera-ms @carlosscastro @johnataylor
+/libraries/Microsoft.Bot.Schema/**                                                 @mrivera-ms @johnataylor
+/libraries/Microsoft.Bot.Streaming/**                                              @mrivera-ms @carlosscastro
+
+# Tests
+/tests/AdaptiveExpressions.Tests/**                                                @tomlm @boydc2014 @chrimc62 
+/tests/Microsoft.Bot.BotBuilder.LanguageGeneration.Tests/**                        @tomlm @boydc2014 @chrimc62
