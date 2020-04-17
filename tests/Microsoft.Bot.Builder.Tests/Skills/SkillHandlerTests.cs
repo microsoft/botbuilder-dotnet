@@ -102,7 +102,6 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
                 {
                     botCallback = callback;
-                    Console.WriteLine("blah");
                 });
 
             var sut = CreateSkillHandlerForTesting();
@@ -113,8 +112,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             Assert.IsNull(activity.CallerId);
             await sut.TestOnSendToConversationAsync(_claimsIdentity, _conversationId, activity, CancellationToken.None);
             Assert.IsNotNull(botCallback);
-            await botCallback.Invoke(new TurnContext(_mockAdapter.Object, activity), CancellationToken.None);
-            Assert.AreEqual($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
+            await botCallback.Invoke(new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity()), CancellationToken.None);
+            Assert.IsNull(activity.CallerId);
         }
 
         [TestMethod]
@@ -125,7 +124,6 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
                 {
                     botCallback = callback;
-                    Console.WriteLine("blah");
                 });
 
             var sut = CreateSkillHandlerForTesting();
@@ -136,8 +134,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             await sut.TestOnReplyToActivityAsync(_claimsIdentity, _conversationId, activityId, activity, CancellationToken.None);
             Assert.IsNotNull(botCallback);
-            await botCallback.Invoke(new TurnContext(_mockAdapter.Object, activity), CancellationToken.None);
-            Assert.AreEqual($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
+            await botCallback.Invoke(new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity()), CancellationToken.None);
+            Assert.IsNull(activity.CallerId);
         }
 
         [TestMethod]

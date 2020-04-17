@@ -179,8 +179,8 @@ namespace Microsoft.Bot.Builder.Skills
             {
                 turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
                 activity.ApplyConversationReference(skillConversationReference.ConversationReference);
-                activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
                 turnContext.Activity.Id = replyToActivityId;
+                turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
                 switch (activity.Type)
                 {
                     case ActivityTypes.EndOfConversation:
