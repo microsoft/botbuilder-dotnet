@@ -29,6 +29,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class EvaluationOptions
     {
         private static readonly Regex NullKeyReplaceStrRegex = new Regex(@"\${\s*path\s*}");
+        private readonly string strictModeKey = "@strict";
+        private readonly string replaceNullKey = "@replaceNull";
+        private readonly string lineBreakKey = "@lineBreakStyle";
 
         public EvaluationOptions()
         {
@@ -42,6 +45,37 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.StrictMode = opt.StrictMode;
             this.NullSubstitution = opt.NullSubstitution;
             this.LineBreakStyle = opt.LineBreakStyle;
+        }
+
+        public EvaluationOptions(IList<string> optionStrList)
+        {
+            if (optionStrList != null)
+            {
+                foreach (var optionStr in optionStrList)
+                {
+                    if (!string.IsNullOrWhiteSpace(optionStr) && optionStr.Contains("="))
+                    {
+                        var index = optionStr.IndexOf('=');
+                        var key = optionStr.Substring(0, index).Trim();
+                        var value = optionStr.Substring(index + 1).Trim().ToLower();
+                        if (key == strictModeKey)
+                        {
+                            if (value == "true")
+                            {
+                                StrictMode = true;
+                            }
+                        }
+                        else if (key == replaceNullKey)
+                        {
+                            NullSubstitution = (path) => NullKeyReplaceStrRegex.Replace(value, $"{path}");
+                        }
+                        else if (key == lineBreakKey)
+                        {
+                            LineBreakStyle = value.ToLower() == LGLineBreakStyle.Markdown.ToString().ToLower() ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -68,45 +102,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// A function.
         /// </value>
         public Func<string, object> NullSubstitution { get; set; } = null;
-
-        public static EvaluationOptions ExtractOptionsFromStringArray(IList<string> options)
-        {
-            var opt = new EvaluationOptions();
-            if (options == null)
-            {
-                return opt;
-            }
-
-            var strictModeKey = "@strict";
-            var replaceNullKey = "@replaceNull";
-            var lineBreakKey = "@lineBreakStyle";
-            foreach (var option in options)
-            {
-                if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
-                {
-                    var index = option.IndexOf('=');
-                    var key = option.Substring(0, index).Trim();
-                    var value = option.Substring(index + 1).Trim().ToLower();
-                    if (key == strictModeKey)
-                    {
-                        if (value == "true")
-                        {
-                            opt.StrictMode = true;
-                        }
-                    }
-                    else if (key == replaceNullKey)
-                    {
-                        opt.NullSubstitution = (path) => NullKeyReplaceStrRegex.Replace(value, $"{path}");
-                    }
-                    else if (key == lineBreakKey)
-                    {
-                        opt.LineBreakStyle = value.ToLower() == LGLineBreakStyle.Markdown.ToString().ToLower() ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
-                    }
-                }
-            }
-
-            return opt;
-        }
 
         /// <summary>
         /// Merge a incoming option to current option. If a property in incoming option is not null while it is null in current

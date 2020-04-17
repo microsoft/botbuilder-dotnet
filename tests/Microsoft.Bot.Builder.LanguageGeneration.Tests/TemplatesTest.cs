@@ -1145,7 +1145,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             //Test use an option in Evaluate method, which has the highest priority.
             var optionStrList = new string[] { "@strictMode = false", "@replaceNull = ${ path } is undefined", "@lineBreakStyle = defalut" };
-            var newOpt = EvaluationOptions.ExtractOptionsFromStringArray(optionStrList);
+            var newOpt = new EvaluationOptions(optionStrList);
             evaled4 = templates4.Evaluate("SayHello", null, newOpt);
 
             Assert.AreEqual("hi user.name is undefined", evaled4);

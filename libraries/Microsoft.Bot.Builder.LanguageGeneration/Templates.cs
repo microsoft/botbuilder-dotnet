@@ -177,19 +177,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public object Evaluate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
-            var evalOpt = opt != null ? opt : LgOptions;
+            var evalOpt = opt ?? LgOptions;
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt);
-            var result = evaluator.EvaluateTemplate(templateName, scope);
-            if (evalOpt.LineBreakStyle == LGLineBreakStyle.Markdown)
-            {
-                if (result is string str)
-                {
-                    var regex = new Regex("(\r?\n)");
-                    result = regex.Replace(str, "$1$1");
-                }
-            }
-
-            return result;
+            return evaluator.EvaluateTemplate(templateName, scope);
         }
 
         /// <summary>
@@ -232,7 +222,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public IList<object> ExpandTemplate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
-            var evalOpt = opt != null ? opt : LgOptions;
+            var evalOpt = opt ?? LgOptions;
             var expander = new Expander(AllTemplates.ToList(), ExpressionParser, evalOpt);
             return expander.ExpandTemplate(templateName, scope);
         }
@@ -403,11 +393,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private EvaluationOptions ComputeEvaluationOptions()
         {
-            var opt = EvaluationOptions.ExtractOptionsFromStringArray(Options);
+            var opt = new EvaluationOptions(Options);
             foreach (var templates in References) 
             {
-                var childOpt = EvaluationOptions.ExtractOptionsFromStringArray(templates.Options);
-                opt.MergeOptions(childOpt);
+                opt.MergeOptions(new EvaluationOptions(templates.Options));
             }
 
             //normalize option to non-null value for evaluation

@@ -101,10 +101,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
-            var result = Visit(TemplateMap[templateName].ParseTree);
+            var expanderResult = Visit(TemplateMap[templateName].ParseTree);
             evaluationTargetStack.Pop();
 
-            return result;
+            var result = new List<object>();
+            expanderResult.ForEach(u =>
+            {
+                if (lgOptions.LineBreakStyle == LGLineBreakStyle.Markdown && u is string str)
+                {
+                    result.Add(Evaluator.NewLineRegex.Replace(str, "$1$1"));
+                }
+                else
+                {
+                    result.Add(u);
+                }
+            });
+            return expanderResult;
         }
 
         public override List<object> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
