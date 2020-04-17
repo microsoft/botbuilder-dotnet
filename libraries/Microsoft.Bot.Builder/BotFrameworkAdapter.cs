@@ -13,7 +13,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -433,25 +432,17 @@ namespace Microsoft.Bot.Builder
 
             using (var context = new TurnContext(this, activity))
             {
+                activity.CallerId = await GenerateCallerIdAsync(claimsIdentity).ConfigureAwait(false);
+
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
-                context.TurnState.Add<BotCallbackHandler>(callback);
 
-                // To create the correct cache key, provide the OAuthScope when calling CreateConnectorClientAsync.
                 // The OAuthScope is also stored on the TurnState to get the correct AppCredentials if fetching a token is required.
-                string scope;
-                if (!SkillValidation.IsSkillClaim(claimsIdentity.Claims))
-                {
-                    scope = GetBotFrameworkOAuthScope();
-                }
-                else
-                {
-                    // For activities received from another bot, the appropriate audience is obtained from the claims.
-                    scope = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
-                }
-
+                var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : GetBotFrameworkOAuthScope();
                 context.TurnState.Add(OAuthScopeKey, scope);
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, scope, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
+
+                context.TurnState.Add(callback);
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
 
@@ -1412,6 +1403,42 @@ namespace Microsoft.Bot.Builder
 
             // Construct an AppCredentials using the app + password combination. If government, we create a government specific credential.
             return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+        }
+
+        /// <summary>
+        /// Generates the CallerId property for the activity based on
+        /// https://github.com/microsoft/botframework-obi/blob/master/protocols/botframework-activity/botframework-activity.md#appendix-v---caller-id-values.
+        /// </summary>
+        private async Task<string> GenerateCallerIdAsync(ClaimsIdentity claimsIdentity)
+        {
+            // Is the bot accepting all incoming messages?
+            var isAuthDisabled = await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false);
+            if (isAuthDisabled) 
+            {
+                // Return null so that the callerId is cleared.
+                return null;
+            }
+        
+            // Is the activity from another bot?
+            if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
+            {
+                return $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
+            }
+
+            // Is the activity from Public Azure?
+            if (ChannelProvider == null || ChannelProvider.IsPublicAzure()) 
+            {
+                return CallerIdConstants.PublicAzureChannel;
+            }
+
+            // Is the activity from Azure Gov?
+            if (ChannelProvider != null && ChannelProvider.IsGovernment()) 
+            {
+                return CallerIdConstants.USGovChannel;
+            }
+
+            // Return null so that the callerId is cleared.
+            return null;
         }
 
         /// <summary>
