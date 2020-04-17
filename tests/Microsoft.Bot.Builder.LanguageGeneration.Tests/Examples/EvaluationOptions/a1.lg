@@ -1,0 +1,11 @@
+﻿#SayHello
+- hi ${user.name}
+
+#testInlineString
+-```m
+s
+f
+t
+```
+
+[import](b1.lg)

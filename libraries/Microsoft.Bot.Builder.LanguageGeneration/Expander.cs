@@ -25,19 +25,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
         public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
-        private readonly bool strictMode;
+        private readonly EvaluationOptions lgOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Expander"/> class.
         /// </summary>
         /// <param name="templates">template list.</param>
         /// <param name="expressionParser">Given expression parser.</param>
-        /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
-        public Expander(List<Template> templates, ExpressionParser expressionParser, bool? strictMode = false)
+        /// <param name="opt">Options for LG. including strictMode, replaceNull and lineBreakStyle.</param>
+        public Expander(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
-            this.strictMode = strictMode ?? false;
+            this.lgOptions = opt;
 
             // generate a new customized expression parser by injecting the template as functions
             ExpanderExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, true));
@@ -375,7 +375,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (strictMode && (error != null || result == null))
+            if (lgOptions.StrictMode == true && (error != null || result == null))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -401,7 +401,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (error != null || (result == null && strictMode))
+            if (error != null || (result == null && lgOptions.StrictMode == true))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -411,7 +411,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 Evaluator.CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
             }
-            else if (result == null && !strictMode)
+            else if (result == null && lgOptions.StrictMode == false)
             {
                 result = "null";
             }

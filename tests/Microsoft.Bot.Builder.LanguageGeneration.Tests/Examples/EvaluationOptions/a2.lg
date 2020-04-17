@@ -1,0 +1,7 @@
+﻿> !# @replaceNull = The ${path} is undefined  
+
+#SayHello
+- hi ${user.name}
+
+[import](b2.lg)
+[import](c2.lg)

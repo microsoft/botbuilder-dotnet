@@ -1096,8 +1096,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestLGOptions()
         {
-            var eof = Environment.NewLine;
-            var templates = Templates.ParseFile(GetExampleFilePath("LGOptionTest.lg"));
+            //LGOptionTest has no import files.
+            var templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/LGOptionTest.lg"));
 
             var evaled = templates.Evaluate("SayHello");
 
@@ -1105,7 +1105,54 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("testInlineString");
 
-            Assert.AreEqual($"m{eof}{eof}s{eof}{eof}f{eof}{eof}t{eof}{eof}", evaled);
+            Assert.AreEqual($"m\n\ns\n\nf\n\nt\n\n", evaled.ToString().Replace("\r\n", "\n"));
+
+            //a1.lg imports b1.lg. a1 has no option defined. 
+            //b1's option is strictMode is true, replaceNull = The ${path} is undefined, and markdown lineBreakStyle
+            var templates2 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a1.lg"));
+
+            var evaled2 = templates2.Evaluate("SayHello");
+
+            Assert.AreEqual("hi the user.name is undefined", evaled2);
+
+            Assert.AreEqual(templates2.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
+
+            //a2.lg imports b2.lg and c2.lg. 
+            //a2.lg: replaceNull = The ${path} is undefined  
+            //b2.lg: strict = true, replaceNull = ${path} is evaluated to null, please check!
+            //c2: lineBreakStyle = markdown
+            var templates3 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a2.lg"));
+
+            var evaled3 = templates3.Evaluate("SayHello");
+
+            Assert.AreEqual("hi the user.name is undefined", evaled3);
+
+            Assert.AreEqual(templates3.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
+
+            //a3.lg imports b3.lg and c3.lg in sequence. 
+            //b3.lg imports d3.lg 
+            //a3.lg: lineBreakStyle = markdown
+            //b3.lg: lineBreakStyle = default
+            //d3: replaceNull = ${path} is evaluated to null in d3!
+            //c3: replaceNull = ${path} is evaluated to null in c3!
+            var templates4 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a3.lg"));
+
+            var evaled4 = templates4.Evaluate("SayHello");
+
+            Assert.AreEqual("hi user.name is evaluated to null in d3!", evaled4);
+
+            Assert.AreEqual(templates4.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
+
+            //Test use an option in Evaluate method, which has the highest priority.
+            var optionStrList = new string[] { "@strictMode = false", "@replaceNull = ${ path } is undefined", "@lineBreakStyle = defalut" };
+            var newOpt = EvaluationOptions.ExtractOptionsFromStringArray(optionStrList);
+            evaled4 = templates4.Evaluate("SayHello", null, newOpt);
+
+            Assert.AreEqual("hi user.name is undefined", evaled4);
+
+            evaled4 = templates4.Evaluate("testInlineString", null, newOpt);
+
+            Assert.AreEqual($"m\ns\nf\nt\n", evaled4.ToString().Replace("\r\n", "\n"));
         }
 
         [TestMethod]

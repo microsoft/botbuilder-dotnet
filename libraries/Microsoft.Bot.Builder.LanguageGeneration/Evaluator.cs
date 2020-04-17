@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">expression parser.</param>
-        /// <param name="opt">Options for LG. including strictMode, replaceNull and lineBreakStyle. </param>
+        /// <param name="opt">Options for LG. </param>
         public Evaluator(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null)
         {
             Templates = templates;
@@ -243,9 +243,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override object VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
-            var regex = new Regex("(\r?\n)");
             var result = new List<object>();
-            var ifMarmdownRendering = lgOptions.LineBreakStyle == LGLineBreakStyle.Markdown;
             foreach (ITerminalNode node in context.children)
             {
                 switch (node.Symbol.Type)
@@ -271,13 +269,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return result[0];
             }
 
-            var resultStr = string.Join(string.Empty, result);
-            if (ifMarmdownRendering)
-            {
-                return regex.Replace(resultStr, "$1$1");
-            }
-
-            return resultStr;
+            return string.Join(string.Empty, result);
         }
 
         public object ConstructScope(string inputTemplateName, List<object> args)

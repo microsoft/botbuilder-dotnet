@@ -1,0 +1,7 @@
+﻿> !# @lineBreakStyle = markdown
+
+#SayHello
+- hi ${user.name}
+
+[import](b3.lg)
+[import](c3.lg)

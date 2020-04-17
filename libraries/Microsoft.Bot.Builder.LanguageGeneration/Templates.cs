@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Memory;
 
@@ -21,8 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </remarks>
     public class Templates : List<Template>
     {
-        private readonly string newLine = "\r\n";
-        private readonly string markdownMode = "markdown";
+        private readonly string newLine = Environment.NewLine;
 
         public Templates(
             IList<Template> templates = null,
@@ -134,17 +134,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public IList<string> Options { get; set; }
 
         /// <summary>
-        /// Gets a value LG parser/checker/evaluate options.
+        /// Gets the evluation options for current LG file.
         /// </summary>
         /// <value>
-        /// If strict mode is on, expression would throw exception instead of return
-        /// null or make the condition failed.
-        /// replaceNull works all the time. 
-        /// If strict=true then we throw on all conditions except for null value and we use replace text in case of null value.
-        /// lineBreakStyle = markdown means one line break will be translated to two line breaks, 
-        /// any other value will keep the same.
+        /// An EvaluationOption.
         /// </value>
-        public EvaluationOptions LgOptions => GetCurrentEvalOptions();
+        public EvaluationOptions LgOptions => ComputeEvaluationOptions();
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -184,7 +179,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             CheckErrors();
             var evalOpt = opt != null ? opt : LgOptions;
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt);
-            return evaluator.EvaluateTemplate(templateName, scope);
+            var result = evaluator.EvaluateTemplate(templateName, scope);
+            if (evalOpt.LineBreakStyle == LGLineBreakStyle.Markdown)
+            {
+                if (result is string str)
+                {
+                    var regex = new Regex("(\r?\n)");
+                    result = regex.Replace(str, "$1$1");
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -222,11 +227,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
+        /// <param name="opt">The evaluation option for current expander.</param>
         /// <returns>Expand result.</returns>
-        public IList<object> ExpandTemplate(string templateName, object scope = null)
+        public IList<object> ExpandTemplate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
-            var expander = new Expander(AllTemplates.ToList(), ExpressionParser, LgOptions.StrictMode);
+            var evalOpt = opt != null ? opt : LgOptions;
+            var expander = new Expander(AllTemplates.ToList(), ExpressionParser, evalOpt);
             return expander.ExpandTemplate(templateName, scope);
         }
 
@@ -394,26 +401,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private EvaluationOptions GetCurrentEvalOptions()
+        private EvaluationOptions ComputeEvaluationOptions()
         {
-            var opt = GetEvaluationOptions(Options);
+            var opt = EvaluationOptions.ExtractOptionsFromStringArray(Options);
             foreach (var templates in References) 
             {
-                var childOpt = GetEvaluationOptions(templates.Options);
-                if (childOpt.StrictMode != null)
-                {
-                    opt.StrictMode = childOpt.StrictMode;
-                }
-
-                if (childOpt.NullSubstitution != null)
-                {
-                    opt.NullSubstitution = childOpt.NullSubstitution;
-                }
-
-                if (childOpt.LineBreakStyle != null)
-                {
-                    opt.LineBreakStyle = childOpt.LineBreakStyle;
-                }
+                var childOpt = EvaluationOptions.ExtractOptionsFromStringArray(templates.Options);
+                opt.MergeOptions(childOpt);
             }
 
             //normalize option to non-null value for evaluation
@@ -425,50 +419,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (opt.LineBreakStyle == null)
             {
                 opt.LineBreakStyle = LGLineBreakStyle.Default;
-            }
-
-            return opt;
-        }
-
-        private EvaluationOptions GetEvaluationOptions(IList<string> options)
-        {
-            var opt = new EvaluationOptions();
-            if (options == null)
-            {
-                return opt;
-            }
-
-            var strictModeKey = "@strict";
-            var replaceNullKey = "@replaceNull";
-            var lineBreakKey = "@lineBreakStyle";
-            foreach (var option in options)
-            {
-                if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
-                {
-                    var index = option.IndexOf('=');
-                    var key = option.Substring(0, index).Trim();
-                    var value = option.Substring(index + 1).Trim().ToLower();
-                    if (key == strictModeKey)
-                    {
-                        if (value == "true")
-                        {
-                            opt.StrictMode = true;
-                        }
-                    }
-                    else if (key == replaceNullKey)
-                    {
-                        var pathStr = "${path}";
-                        if (value.Contains(pathStr))
-                        {
-                            var startIndex = value.IndexOf(pathStr);
-                            opt.NullSubstitution = (path) => value.Substring(0, startIndex) + $"{path}" + value.Substring(startIndex + pathStr.Length);
-                        }
-                    }
-                    else if (key == lineBreakKey)
-                    {
-                        opt.LineBreakStyle = value == markdownMode ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
-                    }
-                }
             }
 
             return opt;
