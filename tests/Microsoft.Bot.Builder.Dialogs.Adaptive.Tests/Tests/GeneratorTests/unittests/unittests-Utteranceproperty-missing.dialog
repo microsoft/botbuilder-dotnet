@@ -1,6 +1,6 @@
 
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnEndOfActions",
     "condition":"!$Utteranceproperty",
     "priority": "indexOf(dialog.requiredProperties, 'Utteranceproperty')",

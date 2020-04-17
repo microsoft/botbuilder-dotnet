@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../../schemas/sdk.schema",
+  "$schema": "../../../tests.schema",
   "$kind": "Microsoft.Test.Script",
   "dialog": {
     "$kind": "Microsoft.AdaptiveDialog",
@@ -49,7 +49,7 @@
           },
           {
             "$kind": "Microsoft.EditArray",
-            "changeType": "Push",
+            "changeType": "push",
             "itemsProperty": "user[$list2]",
             "value": "milk"
           },

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.DateTime;
 using Newtonsoft.Json;
@@ -39,10 +40,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets the expression to use to format the result.
         /// </summary>
-        /// <remarks>The default output is an array of DateTimeResolutions, if this property is set then the output of the expression is the value returned by the dialog.</remarks>
+        /// <remarks>The default output is an array of DateTimeResolutions, this property is an expression which is evaluated to determine the output of the dialog.</remarks>
         /// <value>an expression.</value>
         [JsonProperty("outputFormat")]
-        public ValueExpression OutputFormat { get; set; }
+        public Expression OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
@@ -64,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 if (OutputFormat != null)
                 {
-                    var (outputValue, error) = this.OutputFormat.TryGetValue(dc.State);
+                    var (outputValue, error) = this.OutputFormat.TryEvaluate(dc.State);
                     if (error == null)
                     {
                         dc.State.SetValue(VALUE_PROPERTY, outputValue);

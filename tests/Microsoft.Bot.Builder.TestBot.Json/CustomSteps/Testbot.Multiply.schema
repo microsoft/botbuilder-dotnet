@@ -1,5 +1,5 @@
 ﻿{
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Multiply",
     "description": "This will return the result of arg1*arg2",
@@ -7,16 +7,19 @@
     "additionalProperties": false,
     "properties": {
         "arg1": {
+            "$role":"expression",
             "type": "number",
             "title": "Arg1",
             "description": "Value from callers memory to use as arg 1"
         },
         "arg2": {
+            "$role":"expression",
             "type": "number",
             "title": "Arg2",
             "description": "Value from callers memory to use as arg 2"
         },
         "result": {
+            "$role":"expression",
             "type": "number",
             "title": "Result",
             "description": "Value from callers memory to store the result"

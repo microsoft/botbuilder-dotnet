@@ -1,0 +1,25 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$role": "implements(Microsoft.ILanguageGenerator)",
+    "title": "Resource Multi-Language Generator",
+    "description": "MultiLanguage Generator which is bound to resource by resource Id.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional generator ID."
+        },
+        "resourceId": {
+            "type": "string",
+            "title": "Resource Id",
+            "description": "Resource which is the root language generator.  Other generaters with the same name and language suffix will be loaded into this generator and used based on the Language Policy.",
+            "default": "dialog.result"
+        },
+        "languagePolicy": {
+            "type": "object",
+            "title": "Language Policy",
+            "description": "Set alternate language policy for this generator.  If not set, the global language policy will be used."
+        }
+    }
+}

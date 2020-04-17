@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -51,7 +51,7 @@
                     },
                     {
                         "$kind": "Microsoft.EditArray",
-                        "changeType": "Remove",
+                        "changeType": "remove",
                         "itemsProperty": "user.todos",
                         "value": "=dialog.todo"
                     },
@@ -87,7 +87,7 @@
                     },
                     {
                         "$kind": "Microsoft.EditArray",
-                        "changeType": "Pop",
+                        "changeType": "pop",
                         "itemsProperty": "user.todos"
                     },
                     {
@@ -96,7 +96,7 @@
                     },
                     {
                         "$kind": "Microsoft.EditArray",
-                        "changeType": "Take",
+                        "changeType": "take",
                         "itemsProperty": "user.todos"
                     },
                     {
@@ -105,7 +105,7 @@
                     },
                     {
                         "$kind": "Microsoft.EditArray",
-                        "changeType": "Clear",
+                        "changeType": "clear",
                         "itemsProperty": "user.todos"
                     },
                     {

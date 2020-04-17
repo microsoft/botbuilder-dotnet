@@ -1,6 +1,6 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$id": "app.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$id": "testbot.schema",
     "type": "object",
     "title": "Component kinds",
     "description": "These are all of the kinds that can be created by the loader.",
@@ -291,11 +291,6 @@
             "$ref": "#/definitions/Microsoft.OnChooseProperty"
         },
         {
-            "title": "Microsoft.OnClearProperty",
-            "description": "Actions to take when a property needs to be cleared.",
-            "$ref": "#/definitions/Microsoft.OnClearProperty"
-        },
-        {
             "title": "Microsoft.OnCondition",
             "description": "Actions to perform when specified condition is true.",
             "$ref": "#/definitions/Microsoft.OnCondition"
@@ -426,9 +421,9 @@
             "$ref": "#/definitions/Microsoft.RecognizerSet"
         },
         {
-            "title": "Microsoft.RegExEntityRecognizer",
+            "title": "Microsoft.RegexEntityRecognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
-            "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
+            "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
         },
         {
             "title": "Microsoft.RegexRecognizer",
@@ -444,6 +439,11 @@
             "title": "Microsoft.ReplaceDialog",
             "description": "Replace current dialog with another dialog.",
             "$ref": "#/definitions/Microsoft.ReplaceDialog"
+        },
+        {
+            "title": "Microsoft.ResourceMultiLanguageGenerator",
+            "description": "MultiLanguage Generator which is bound to resource by resource Id.",
+            "$ref": "#/definitions/Microsoft.ResourceMultiLanguageGenerator"
         },
         {
             "title": "Microsoft.SendActivity",
@@ -484,6 +484,11 @@
             "title": "Microsoft.TemperatureEntityRecognizer",
             "description": "Recognizer which recognizes temperatures.",
             "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.TemplateEngineLanguageGenerator",
+            "description": "Template Generator which allows only inline evaluation of templates.",
+            "$ref": "#/definitions/Microsoft.TemplateEngineLanguageGenerator"
         },
         {
             "title": "Microsoft.Test.AssertCondition",
@@ -541,6 +546,11 @@
             "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
+            "title": "Microsoft.TextTemplate",
+            "description": "Use LG Templates to create text",
+            "$ref": "#/definitions/Microsoft.TextTemplate"
+        },
+        {
             "title": "Microsoft.TraceActivity",
             "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
             "$ref": "#/definitions/Microsoft.TraceActivity"
@@ -559,6 +569,11 @@
             "title": "Microsoft.UrlEntityRecognizer",
             "description": "Recognizer which recognizes urls.",
             "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.ValueRecognizer",
+            "description": "Recogne activity.Value as intent and entities.",
+            "$ref": "#/definitions/Microsoft.ValueRecognizer"
         },
         {
             "title": "Testbot.JavascriptAction",
@@ -911,13 +926,20 @@
                 "expectedProperties": {
                     "$role": "expression",
                     "title": "Expected Properties",
-                    "description": "Properties expected to be filled by entities from the user",
+                    "description": "Properties expected from the user.",
+                    "examples": [
+                        [
+                            "age",
+                            "name"
+                        ]
+                    ],
                     "oneOf": [
                         {
                             "type": "array",
                             "items": {
                                 "type": "string",
-                                "title": "string"
+                                "title": "Name",
+                                "description": "Name of the property"
                             },
                             "title": "array"
                         },
@@ -926,6 +948,15 @@
                             "title": "Expression",
                             "description": "Expression evaluating to array."
                         }
+                    ]
+                },
+                "defaultOperation": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Default Operation",
+                    "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
+                    "examples": [
+                        "add"
                     ]
                 }
             },
@@ -987,14 +1018,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -1009,9 +1049,9 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send when the recognizer does not understand the user input.",
+                    "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
-                        "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
+                        "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -1035,28 +1075,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -1071,63 +1120,134 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "defaultValue": {
+                    "$role": "expression",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded.",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "required": [
+                                "contentType"
+                            ],
+                            "properties": {
+                                "contentType": {
+                                    "description": "mimetype/Contenttype for the file",
+                                    "type": "string",
+                                    "title": "contentType"
+                                },
+                                "contentUrl": {
+                                    "description": "Content Url",
+                                    "type": "string",
+                                    "title": "contentUrl"
+                                },
+                                "content": {
+                                    "description": "Embedded content",
+                                    "title": "content"
+                                },
+                                "name": {
+                                    "description": "(OPTIONAL) The name of the attachment",
+                                    "type": "string",
+                                    "title": "name"
+                                },
+                                "thumbnailUrl": {
+                                    "description": "(OPTIONAL) Thumbnail associated with attachment",
+                                    "type": "string",
+                                    "title": "thumbnailUrl"
+                                }
+                            },
+                            "title": "object"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
+                        }
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null.",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "required": [
+                                "contentType"
+                            ],
+                            "properties": {
+                                "contentType": {
+                                    "description": "mimetype/Contenttype for the file",
+                                    "type": "string",
+                                    "title": "contentType"
+                                },
+                                "contentUrl": {
+                                    "description": "Content Url",
+                                    "type": "string",
+                                    "title": "contentUrl"
+                                },
+                                "content": {
+                                    "description": "Embedded content",
+                                    "title": "content"
+                                },
+                                "name": {
+                                    "description": "(OPTIONAL) The name of the attachment",
+                                    "type": "string",
+                                    "title": "name"
+                                },
+                                "thumbnailUrl": {
+                                    "description": "(OPTIONAL) Thumbnail associated with attachment",
+                                    "type": "string",
+                                    "title": "thumbnailUrl"
+                                }
+                            },
+                            "title": "object"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
+                        }
                     ]
                 },
                 "outputFormat": {
@@ -1218,25 +1338,14 @@
                     ]
                 },
                 "dialog": {
+                    "$kind": "Microsoft.IDialog",
                     "$role": "expression",
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
                         "AddToDoDialog"
                     ],
-                    "oneOf": [
-                        {
-                            "$kind": "Microsoft.IDialog",
-                            "type": "object",
-                            "title": "object",
-                            "$ref": "#/definitions/Microsoft.IDialog"
-                        },
-                        {
-                            "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to object."
-                        }
-                    ]
+                    "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
                     "$role": "expression",
@@ -1515,14 +1624,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -1537,9 +1655,9 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send when the recognizer does not understand the user input.",
+                    "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
-                        "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
+                        "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -1563,28 +1681,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -1599,63 +1726,44 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "outputFormat": {
@@ -1666,23 +1774,24 @@
                         "index"
                     ],
                     "title": "Output format",
-                    "description": "Choice output format.",
+                    "description": "Sets the desired choice output format (either value or index into choices).",
                     "default": "value"
                 },
                 "choices": {
                     "$role": "expression",
                     "oneOf": [
                         {
+                            "title": "Array of choices",
                             "type": "array",
                             "items": [
                                 {
                                     "type": "string",
                                     "title": "string"
                                 }
-                            ],
-                            "title": "array"
+                            ]
                         },
                         {
+                            "title": "Array of choice objects",
                             "type": "array",
                             "items": [
                                 {
@@ -1705,13 +1814,12 @@
                                             "description": "List of synonyms to recognize in addition to the value (optional).",
                                             "items": {
                                                 "type": "string",
-                                                "title": "string"
+                                                "title": "Synonym"
                                             }
                                         }
                                     }
                                 }
-                            ],
-                            "title": "array"
+                            ]
                         },
                         {
                             "type": "string",
@@ -1719,77 +1827,114 @@
                         }
                     ]
                 },
-                "appendChoices": {
-                    "type": "boolean",
-                    "title": "Append choices",
-                    "description": "Compose an output activity containing a set of choices",
-                    "default": "true"
-                },
                 "defaultLocale": {
+                    "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
-                    "description": "Default locale.",
-                    "default": "en-us"
+                    "description": "The default locale to use to parse confirmation choices if there is not one passed by the caller.",
+                    "default": "en-us",
+                    "examples": [
+                        "en-us"
+                    ]
                 },
                 "style": {
+                    "$role": "expression",
                     "type": "string",
                     "enum": [
-                        "None",
-                        "Auto",
-                        "Inline",
-                        "List",
-                        "SuggestedAction",
-                        "HeroCard"
+                        "none",
+                        "auto",
+                        "inline",
+                        "list",
+                        "suggestedAction",
+                        "heroCard"
                     ],
                     "title": "List style",
-                    "description": "Style to render choices.",
+                    "description": "Sets the ListStyle to control how choices are rendered.",
                     "default": "Auto"
                 },
                 "choiceOptions": {
-                    "type": "object",
-                    "properties": {
-                        "inlineSeparator": {
-                            "type": "string",
-                            "title": "Inline separator",
-                            "description": "Character used to separate individual choices when there are more than 2 choices",
-                            "default": ", "
+                    "$role": "expression",
+                    "title": "Choice options",
+                    "description": "Sets the choice options used for controlling how choices are combined.",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "inlineSeparator": {
+                                    "type": "string",
+                                    "title": "Inline separator",
+                                    "description": "Character used to separate individual choices when there are more than 2 choices",
+                                    "default": ", "
+                                },
+                                "inlineOr": {
+                                    "type": "string",
+                                    "title": "Inline or",
+                                    "description": "Separator inserted between the choices when there are only 2 choices",
+                                    "default": " or "
+                                },
+                                "inlineOrMore": {
+                                    "type": "string",
+                                    "title": "Inline or more",
+                                    "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
+                                    "default": ", or "
+                                },
+                                "includeNumbers": {
+                                    "type": "boolean",
+                                    "title": "Include numbers",
+                                    "description": "If true, 'inline' and 'list' list style will be prefixed with the index of the choice.",
+                                    "default": true
+                                }
+                            },
+                            "title": "object"
                         },
-                        "inlineOr": {
+                        {
                             "type": "string",
-                            "title": "Inline or",
-                            "description": "Separator inserted between the choices when there are only 2 choices",
-                            "default": " or "
-                        },
-                        "inlineOrMore": {
-                            "type": "string",
-                            "title": "Inline or more",
-                            "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
-                            "default": ", or "
-                        },
-                        "includeNumbers": {
-                            "type": "boolean",
-                            "title": "Include numbers",
-                            "description": "If true, 'inline' and 'list' list style will be prefixed with the index of the choice.",
-                            "default": true
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
                         }
-                    }
+                    ]
                 },
                 "recognizerOptions": {
-                    "type": "object",
-                    "properties": {
-                        "noValue": {
-                            "type": "boolean",
-                            "title": "No value",
-                            "description": "If true, the choices value field will NOT be search over",
-                            "default": false
+                    "$role": "expression",
+                    "title": "Recognizer options",
+                    "description": "Sets how to recognize choices in the response",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "noValue": {
+                                    "type": "boolean",
+                                    "title": "No value",
+                                    "description": "If true, the choices value field will NOT be search over",
+                                    "default": false
+                                },
+                                "noAction": {
+                                    "type": "boolean",
+                                    "title": "No action",
+                                    "description": "If true, the choices action.title field will NOT be searched over",
+                                    "default": false
+                                },
+                                "recognizeNumbers": {
+                                    "type": "boolean",
+                                    "title": "Recognize numbers",
+                                    "description": "If true, the number recognizer will be used to recognize an index response (1,2,3...) to the prompt.",
+                                    "default": true
+                                },
+                                "recognizeOrdinals": {
+                                    "type": "boolean",
+                                    "title": "Recognize ordinals",
+                                    "description": "If true, the ordinal recognizer will be used to recognize ordinal response (first/second/...) to the prompt.",
+                                    "default": true
+                                }
+                            },
+                            "title": "object"
                         },
-                        "noAction": {
-                            "type": "boolean",
-                            "title": "No action",
-                            "description": "If true, the the choices action.title field will NOT be searched over",
-                            "default": false
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to object."
                         }
-                    }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -1927,14 +2072,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -1949,9 +2103,9 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send when the recognizer does not understand the user input.",
+                    "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
-                        "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
+                        "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -1975,28 +2129,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -2011,70 +2174,51 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",
                     "title": "Output format",
-                    "description": "Expression to format the confirm output.",
+                    "description": "Optional expression to use to format the output.",
                     "examples": [
                         "=concat('confirmation:', this.value)"
                     ]
@@ -2083,26 +2227,28 @@
                     "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
-                    "description": "Default locale.",
+                    "description": "The Default locale or an expression which provides the default locale to use as default if not found in the activity.",
                     "default": "en-us"
                 },
                 "style": {
                     "$role": "expression",
                     "type": "string",
-                    "enum": [
-                        "None",
-                        "Auto",
-                        "Inline",
-                        "List",
-                        "SuggestedAction",
-                        "HeroCard"
-                    ],
                     "title": "List style",
-                    "description": "Style to render choices.",
+                    "description": "The style or an expression to the style to use to render choices.",
+                    "enum": [
+                        "none",
+                        "auto",
+                        "inline",
+                        "list",
+                        "suggestedAction",
+                        "heroCard"
+                    ],
                     "default": "Auto"
                 },
                 "choiceOptions": {
                     "$role": "expression",
+                    "title": "Choice Options",
+                    "description": "Choice Options or expression which provides Choice Options to control display choices to the user.",
                     "oneOf": [
                         {
                             "type": "object",
@@ -2110,19 +2256,19 @@
                                 "inlineSeparator": {
                                     "type": "string",
                                     "title": "Inline separator",
-                                    "description": "Character used to separate individual choices when there are more than 2 choices",
+                                    "description": "Text to separate individual choices when there are more than 2 choices",
                                     "default": ", "
                                 },
                                 "inlineOr": {
                                     "type": "string",
                                     "title": "Inline or",
-                                    "description": "Separator inserted between the choices when their are only 2 choices",
+                                    "description": "Text to be inserted between the choices when their are only 2 choices",
                                     "default": " or "
                                 },
                                 "inlineOrMore": {
                                     "type": "string",
                                     "title": "Inline or more",
-                                    "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
+                                    "description": "Text to be inserted between the last 2 choices when their are more than 2 choices.",
                                     "default": ", or "
                                 },
                                 "includeNumbers": {
@@ -2141,14 +2287,57 @@
                         }
                     ]
                 },
+                "defaultValue": {
+                    "$role": "expression",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+                    "examples": [
+                        "true",
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+                    "examples": [
+                        "true",
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
                 "confirmChoices": {
                     "$role": "expression",
+                    "title": "Array of or expression which binds to choice definitions to present to the user.",
                     "oneOf": [
                         {
                             "type": "array",
                             "items": [
                                 {
                                     "type": "object",
+                                    "title": "Choice",
+                                    "description": "Choice definition to present to the user.",
                                     "properties": {
                                         "value": {
                                             "type": "string",
@@ -2169,8 +2358,7 @@
                                                 "title": "string"
                                             }
                                         }
-                                    },
-                                    "title": "object"
+                                    }
                                 }
                             ],
                             "title": "array"
@@ -2258,7 +2446,7 @@
         },
         "Microsoft.ContinueLoop": {
             "$role": "implements(Microsoft.IDialog)",
-            "title": "Continune Loop",
+            "title": "Continue Loop",
             "description": "Stop executing this template and continue with the next iteration of the loop.",
             "type": "object",
             "properties": {
@@ -2540,14 +2728,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -2562,9 +2759,9 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send when the recognizer does not understand the user input.",
+                    "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
-                        "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
+                        "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -2588,28 +2785,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -2624,80 +2830,74 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "defaultValue": {
+                    "$role": "expression",
+                    "type": "string",
+                    "foramt": "date",
+                    "title": "Default Date",
+                    "description": "'Property' will be set to the value or the result of the expression when max turn count is exceeded.",
+                    "examples": [
+                        "=user.birthday"
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "type": "string",
+                    "foramt": "date",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value or the result of the expression unless it evaluates to null.",
+                    "examples": [
+                        "=user.birthday"
                     ]
                 },
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",
                     "title": "Output format",
-                    "description": "Expression to format the datetime output.",
+                    "description": "Expression to use format the output.",
                     "examples": [
-                        "this.value[0].Value"
+                        "=this.value[0].Value"
                     ]
-                },
-                "defaultLocale": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Default locale",
-                    "description": "Default locale.",
-                    "default": "en-us"
                 }
             },
             "additionalProperties": false,
@@ -2877,8 +3077,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "property",
-                        "value",
+                        "activityId",
                         "$kind"
                     ]
                 }
@@ -3253,7 +3452,8 @@
                         "take",
                         "remove",
                         "clear"
-                    ]
+                    ],
+                    "default": "push"
                 },
                 "disabled": {
                     "$role": "expression",
@@ -3299,9 +3499,9 @@
                     "title": "Value",
                     "description": "New value or expression.",
                     "examples": [
-                        "'milk'",
-                        "dialog.favColor",
-                        "dialog.favColor == 'red'"
+                        "milk",
+                        "=dialog.favColor",
+                        "=dialog.favColor == 'red'"
                     ]
                 }
             },
@@ -3321,7 +3521,6 @@
                 {
                     "title": "Type",
                     "required": [
-                        "changeType",
                         "itemsProperty",
                         "$kind"
                     ]
@@ -3439,19 +3638,26 @@
                     "type": "string",
                     "title": "Event name",
                     "description": "Name of the event to emit.",
-                    "enum": [
-                        "beginDialog",
-                        "resumeDialog",
-                        "repromptDialog",
-                        "cancelDialog",
-                        "endDialog",
-                        "activityReceived",
-                        "recognizedIntent",
-                        "unknownIntent",
-                        "actionsStarted",
-                        "actionsSaved",
-                        "actionsEnded",
-                        "actionsResumed"
+                    "oneOf": [
+                        {
+                            "enum": [
+                                "beginDialog",
+                                "resumeDialog",
+                                "repromptDialog",
+                                "cancelDialog",
+                                "endDialog",
+                                "activityReceived",
+                                "recognizedIntent",
+                                "unknownIntent",
+                                "actionsStarted",
+                                "actionsSaved",
+                                "actionsEnded",
+                                "actionsResumed"
+                            ]
+                        },
+                        {
+                            "pattern": "^(?!(beginDialog$|resumeDialog$|repromptDialog$|cancelDialog$|endDialog$|activityReceived$|recognizedIntent$|unknownIntent$|actionsStarted$|actionsSaved$|actionsEnded$|actionsResumed)).*"
+                        }
                     ]
                 },
                 "eventValue": {
@@ -3791,6 +3997,20 @@
                         "user.todoList"
                     ]
                 },
+                "index": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Index property",
+                    "description": "Property that holds the index of the item.",
+                    "default": "dialog.foreach.index"
+                },
+                "value": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Value property",
+                    "description": "Property that holds the value of the item.",
+                    "default": "dialog.foreach.value"
+                },
                 "actions": {
                     "type": "array",
                     "title": "Actions",
@@ -3896,6 +4116,20 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
+                "pageIndex": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Index property",
+                    "description": "Property that holds the index of the page.",
+                    "default": "dialog.foreach.pageindex"
+                },
+                "page": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Page property",
+                    "description": "Property that holds the value of the page.",
+                    "default": "dialog.foreach.page"
+                },
                 "pageSize": {
                     "$role": "expression",
                     "title": "Page size",
@@ -3972,11 +4206,20 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "property": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property (named location to store information).",
+                    "examples": [
+                        "user.age"
+                    ]
+                },
                 "activityId": {
                     "$role": "expression",
                     "type": "string",
                     "title": "ActivityId",
-                    "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
+                    "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
                     "examples": [
                         "$lastActivity"
                     ]
@@ -4056,6 +4299,15 @@
                     "type": "string",
                     "title": "Id",
                     "description": "Optional id for the dialog"
+                },
+                "property": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Property",
+                    "description": "Property (named location to store information).",
+                    "examples": [
+                        "user.age"
+                    ]
                 },
                 "disabled": {
                     "$role": "expression",
@@ -4412,10 +4664,10 @@
                     "title": "Response type",
                     "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",
                     "enum": [
-                        "None",
-                        "Json",
-                        "Activity",
-                        "Activities"
+                        "none",
+                        "json",
+                        "activity",
+                        "activities"
                     ],
                     "default": "Json"
                 }
@@ -4777,9 +5029,9 @@
                     "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
                 },
                 {
-                    "title": "Microsoft.RegExEntityRecognizer",
+                    "title": "Microsoft.RegexEntityRecognizer",
                     "description": "Recognizer which recognizes patterns of input based on regex.",
-                    "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
+                    "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
                 },
                 {
                     "title": "Microsoft.TemperatureEntityRecognizer",
@@ -4803,6 +5055,16 @@
             "description": "Components which dervie from the LanguageGenerator class",
             "$role": "interface",
             "oneOf": [
+                {
+                    "title": "Microsoft.ResourceMultiLanguageGenerator",
+                    "description": "MultiLanguage Generator which is bound to resource by resource Id.",
+                    "$ref": "#/definitions/Microsoft.ResourceMultiLanguageGenerator"
+                },
+                {
+                    "title": "Microsoft.TemplateEngineLanguageGenerator",
+                    "description": "Template Generator which allows only inline evaluation of templates.",
+                    "$ref": "#/definitions/Microsoft.TemplateEngineLanguageGenerator"
+                },
                 {
                     "type": "string",
                     "title": "string"
@@ -4850,6 +5112,11 @@
                     "$ref": "#/definitions/Microsoft.RegexRecognizer"
                 },
                 {
+                    "title": "Microsoft.ValueRecognizer",
+                    "description": "Recogne activity.Value as intent and entities.",
+                    "$ref": "#/definitions/Microsoft.ValueRecognizer"
+                },
+                {
                     "type": "string",
                     "title": "string"
                 }
@@ -4860,6 +5127,11 @@
             "description": "Components which derive from TextTemplate class",
             "$role": "interface",
             "oneOf": [
+                {
+                    "title": "Microsoft.TextTemplate",
+                    "description": "Use LG Templates to create text",
+                    "$ref": "#/definitions/Microsoft.TextTemplate"
+                },
                 {
                     "type": "string",
                     "title": "string"
@@ -4905,11 +5177,6 @@
                     "title": "Microsoft.OnChooseProperty",
                     "description": "Actions to take when there are multiple possible mappings of entities to properties.",
                     "$ref": "#/definitions/Microsoft.OnChooseProperty"
-                },
-                {
-                    "title": "Microsoft.OnClearProperty",
-                    "description": "Actions to take when a property needs to be cleared.",
-                    "$ref": "#/definitions/Microsoft.OnClearProperty"
                 },
                 {
                     "title": "Microsoft.OnCondition",
@@ -5817,14 +6084,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -5839,9 +6115,9 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send when the recognizer does not understand the user input.",
+                    "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
-                        "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
+                        "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -5865,28 +6141,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -5901,63 +6186,84 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "defaultValue": {
+                    "$role": "expression",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+                    "examples": [
+                        13,
+                        "=user.age"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "title": "number"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to number."
+                        }
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+                    "examples": [
+                        13,
+                        "=user.age"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "title": "number"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to number."
+                        }
                     ]
                 },
                 "outputFormat": {
@@ -5974,7 +6280,7 @@
                     "$role": "expression",
                     "type": "string",
                     "title": "Default locale",
-                    "description": "Default locale.",
+                    "description": "Default locale to use if there is no locale available..",
                     "default": "en-us"
                 }
             },
@@ -6193,14 +6499,7 @@
                 },
                 "defaultValue": {
                     "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
+                    "type": "string",
                     "title": "Default value",
                     "description": "Expression to examine on each turn of the conversation as possible value to the property.",
                     "examples": [
@@ -6218,6 +6517,26 @@
                         {
                             "type": "boolean",
                             "default": "true",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "alwaysPrompt": {
+                    "$role": "expression",
+                    "title": "Always prompt",
+                    "description": "Collect information even if the specified 'property' is not empty.",
+                    "examples": [
+                        false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
                             "title": "boolean"
                         },
                         {
@@ -6994,112 +7313,6 @@
                         "type": "string",
                         "title": "Entity name"
                     }
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "$kind"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.OnClearProperty": {
-            "$role": "implements(Microsoft.ITrigger)",
-            "title": "On clear property",
-            "description": "Actions to take when a property needs to be cleared.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnClearProperty"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "condition": {
-                    "$role": "expression",
-                    "title": "Condition",
-                    "description": "Condition (expression).",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "oneOf": [
-                        {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
-                            "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to boolean."
-                        }
-                    ]
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions to execute.",
-                    "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                },
-                "priority": {
-                    "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
-                    "$role": "expression",
-                    "oneOf": [
-                        {
-                            "type": "integer",
-                            "title": "integer"
-                        },
-                        {
-                            "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
-                        }
-                    ]
-                },
-                "runOnce": {
-                    "type": "boolean",
-                    "title": "Run Once",
-                    "description": "True if rule should run once per unique conditions"
-                },
-                "property": {
-                    "type": "string",
-                    "title": "Property",
-                    "description": "Property that will be cleared"
                 }
             },
             "additionalProperties": false,
@@ -8160,6 +8373,7 @@
             ]
         },
         "Microsoft.OnInvokeActivity": {
+            "l    \"$schema\"": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
             "$role": "implements(Microsoft.ITrigger)",
             "title": "On Invoke activity",
             "description": "Actions to perform on receipt of an activity with type 'Invoke'.",
@@ -9317,7 +9531,7 @@
                     "description": "Text for no match option.",
                     "default": "None of the above."
                 },
-                "cardNoMatchResponse ": {
+                "cardNoMatchResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Card no match response",
                     "description": "Custom response when no match option was selected.",
@@ -9384,9 +9598,9 @@
                     "title": "RankerType",
                     "description": "Type of Ranker.",
                     "enum": [
-                        "Default",
-                        "QuestionOnly",
-                        "AutoSuggestQuestion"
+                        "default",
+                        "questionOnly",
+                        "autoSuggestQuestion"
                     ],
                     "default": "Default"
                 }
@@ -9788,7 +10002,7 @@
                 }
             ]
         },
-        "Microsoft.RegExEntityRecognizer": {
+        "Microsoft.RegexEntityRecognizer": {
             "$role": "implements(Microsoft.IEntityRecognizer)",
             "title": "Regex Entity Recognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
@@ -9799,7 +10013,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegExEntityRecognizer"
+                    "const": "Microsoft.RegexEntityRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -9933,7 +10147,6 @@
                 {
                     "title": "Type",
                     "required": [
-                        "intents",
                         "$kind"
                     ]
                 }
@@ -10153,6 +10366,74 @@
                             "description": "Expression evaluating to boolean."
                         }
                     ]
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.ResourceMultiLanguageGenerator": {
+            "$role": "implements(Microsoft.ILanguageGenerator)",
+            "title": "Resource Multi-Language Generator",
+            "description": "MultiLanguage Generator which is bound to resource by resource Id.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ResourceMultiLanguageGenerator"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional generator ID."
+                },
+                "resourceId": {
+                    "type": "string",
+                    "title": "Resource Id",
+                    "description": "Resource which is the root language generator.  Other generaters with the same name and language suffix will be loaded into this generator and used based on the Language Policy.",
+                    "default": "dialog.result"
+                },
+                "languagePolicy": {
+                    "type": "object",
+                    "title": "Language Policy",
+                    "description": "Set alternate language policy for this generator.  If not set, the global language policy will be used."
                 }
             },
             "additionalProperties": false,
@@ -10680,7 +10961,7 @@
                         "https://myskill.contoso.com/api/messages/"
                     ]
                 },
-                "activity ": {
+                "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Activity",
                     "description": "The activity to send to the skill.",
@@ -10739,9 +11020,707 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "activity": {
-                    "type": "object",
                     "title": "Activity",
-                    "Description": "A static Activity to used"
+                    "Description": "A static Activity to used",
+                    "required": [
+                        "type"
+                    ],
+                    "description": "An Activity is the basic communication type for the Bot Framework 3.0 protocol.",
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "description": "Contains the activity type. Possible values include: 'message', 'contactRelationUpdate',\n'conversationUpdate', 'typing', 'endOfConversation', 'event', 'invoke', 'deleteUserData',\n'messageUpdate', 'messageDelete', 'installationUpdate', 'messageReaction', 'suggestion',\n'trace', 'handoff'",
+                            "type": "string",
+                            "title": "type"
+                        },
+                        "id": {
+                            "description": "Contains an ID that uniquely identifies the activity on the channel.",
+                            "type": "string",
+                            "title": "id"
+                        },
+                        "timestamp": {
+                            "description": "Contains the date and time that the message was sent, in UTC, expressed in ISO-8601 format.",
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "timestamp"
+                        },
+                        "localTimestamp": {
+                            "description": "Contains the date and time that the message was sent, in local time, expressed in ISO-8601\nformat.\nFor example, 2016-09-23T13:07:49.4714686-07:00.",
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "localTimestamp"
+                        },
+                        "localTimezone": {
+                            "description": "Contains the name of the timezone in which the message, in local time, expressed in IANA Time\nZone database format.\nFor example, America/Los_Angeles.",
+                            "type": "string",
+                            "title": "localTimezone"
+                        },
+                        "serviceUrl": {
+                            "description": "Contains the URL that specifies the channel's service endpoint. Set by the channel.",
+                            "type": "string",
+                            "title": "serviceUrl"
+                        },
+                        "channelId": {
+                            "description": "Contains an ID that uniquely identifies the channel. Set by the channel.",
+                            "type": "string",
+                            "title": "channelId"
+                        },
+                        "from": {
+                            "description": "Identifies the sender of the message.",
+                            "title": "from",
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "name"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                    "type": "string",
+                                    "title": "id"
+                                },
+                                "name": {
+                                    "description": "Display friendly name",
+                                    "type": "string",
+                                    "title": "name"
+                                },
+                                "aadObjectId": {
+                                    "description": "This account's object ID within Azure Active Directory (AAD)",
+                                    "type": "string",
+                                    "title": "aadObjectId"
+                                },
+                                "role": {
+                                    "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                    "type": "string",
+                                    "title": "role"
+                                }
+                            }
+                        },
+                        "conversation": {
+                            "description": "Identifies the conversation to which the activity belongs.",
+                            "title": "conversation",
+                            "type": "object",
+                            "required": [
+                                "conversationType",
+                                "id",
+                                "isGroup",
+                                "name"
+                            ],
+                            "properties": {
+                                "isGroup": {
+                                    "description": "Indicates whether the conversation contains more than two participants at the time the\nactivity was generated",
+                                    "type": "boolean",
+                                    "title": "isGroup"
+                                },
+                                "conversationType": {
+                                    "description": "Indicates the type of the conversation in channels that distinguish between conversation types",
+                                    "type": "string",
+                                    "title": "conversationType"
+                                },
+                                "id": {
+                                    "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                    "type": "string",
+                                    "title": "id"
+                                },
+                                "name": {
+                                    "description": "Display friendly name",
+                                    "type": "string",
+                                    "title": "name"
+                                },
+                                "aadObjectId": {
+                                    "description": "This account's object ID within Azure Active Directory (AAD)",
+                                    "type": "string",
+                                    "title": "aadObjectId"
+                                },
+                                "role": {
+                                    "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                    "enum": [
+                                        "bot",
+                                        "user"
+                                    ],
+                                    "type": "string",
+                                    "title": "role"
+                                }
+                            }
+                        },
+                        "recipient": {
+                            "description": "Identifies the recipient of the message.",
+                            "title": "recipient",
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "name"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                    "type": "string",
+                                    "title": "id"
+                                },
+                                "name": {
+                                    "description": "Display friendly name",
+                                    "type": "string",
+                                    "title": "name"
+                                },
+                                "aadObjectId": {
+                                    "description": "This account's object ID within Azure Active Directory (AAD)",
+                                    "type": "string",
+                                    "title": "aadObjectId"
+                                },
+                                "role": {
+                                    "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                    "type": "string",
+                                    "title": "role"
+                                }
+                            }
+                        },
+                        "textFormat": {
+                            "description": "Format of text fields Default:markdown. Possible values include: 'markdown', 'plain', 'xml'",
+                            "type": "string",
+                            "title": "textFormat"
+                        },
+                        "attachmentLayout": {
+                            "description": "The layout hint for multiple attachments. Default: list. Possible values include: 'list',\n'carousel'",
+                            "type": "string",
+                            "title": "attachmentLayout"
+                        },
+                        "membersAdded": {
+                            "description": "The collection of members added to the conversation.",
+                            "type": "array",
+                            "title": "membersAdded",
+                            "items": {
+                                "description": "Channel account information needed to route a message",
+                                "title": "ChannelAccount",
+                                "type": "object",
+                                "required": [
+                                    "id",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                        "type": "string",
+                                        "title": "id"
+                                    },
+                                    "name": {
+                                        "description": "Display friendly name",
+                                        "type": "string",
+                                        "title": "name"
+                                    },
+                                    "aadObjectId": {
+                                        "description": "This account's object ID within Azure Active Directory (AAD)",
+                                        "type": "string",
+                                        "title": "aadObjectId"
+                                    },
+                                    "role": {
+                                        "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                        "type": "string",
+                                        "title": "role"
+                                    }
+                                }
+                            }
+                        },
+                        "membersRemoved": {
+                            "description": "The collection of members removed from the conversation.",
+                            "type": "array",
+                            "title": "membersRemoved",
+                            "items": {
+                                "description": "Channel account information needed to route a message",
+                                "title": "ChannelAccount",
+                                "type": "object",
+                                "required": [
+                                    "id",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                        "type": "string",
+                                        "title": "id"
+                                    },
+                                    "name": {
+                                        "description": "Display friendly name",
+                                        "type": "string",
+                                        "title": "name"
+                                    },
+                                    "aadObjectId": {
+                                        "description": "This account's object ID within Azure Active Directory (AAD)",
+                                        "type": "string",
+                                        "title": "aadObjectId"
+                                    },
+                                    "role": {
+                                        "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                        "type": "string",
+                                        "title": "role"
+                                    }
+                                }
+                            }
+                        },
+                        "reactionsAdded": {
+                            "description": "The collection of reactions added to the conversation.",
+                            "type": "array",
+                            "title": "reactionsAdded",
+                            "items": {
+                                "description": "Message reaction object",
+                                "title": "MessageReaction",
+                                "type": "object",
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "description": "Message reaction type. Possible values include: 'like', 'plusOne'",
+                                        "type": "string",
+                                        "title": "type"
+                                    }
+                                }
+                            }
+                        },
+                        "reactionsRemoved": {
+                            "description": "The collection of reactions removed from the conversation.",
+                            "type": "array",
+                            "title": "reactionsRemoved",
+                            "items": {
+                                "description": "Message reaction object",
+                                "title": "MessageReaction",
+                                "type": "object",
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "description": "Message reaction type. Possible values include: 'like', 'plusOne'",
+                                        "type": "string",
+                                        "title": "type"
+                                    }
+                                }
+                            }
+                        },
+                        "topicName": {
+                            "description": "The updated topic name of the conversation.",
+                            "type": "string",
+                            "title": "topicName"
+                        },
+                        "historyDisclosed": {
+                            "description": "Indicates whether the prior history of the channel is disclosed.",
+                            "type": "boolean",
+                            "title": "historyDisclosed"
+                        },
+                        "locale": {
+                            "description": "A locale name for the contents of the text field.\nThe locale name is a combination of an ISO 639 two- or three-letter culture code associated\nwith a language\nand an ISO 3166 two-letter subculture code associated with a country or region.\nThe locale name can also correspond to a valid BCP-47 language tag.",
+                            "type": "string",
+                            "title": "locale"
+                        },
+                        "text": {
+                            "description": "The text content of the message.",
+                            "type": "string",
+                            "title": "text"
+                        },
+                        "speak": {
+                            "description": "The text to speak.",
+                            "type": "string",
+                            "title": "speak"
+                        },
+                        "inputHint": {
+                            "description": "Indicates whether your bot is accepting,\nexpecting, or ignoring user input after the message is delivered to the client. Possible\nvalues include: 'acceptingInput', 'ignoringInput', 'expectingInput'",
+                            "type": "string",
+                            "title": "inputHint"
+                        },
+                        "summary": {
+                            "description": "The text to display if the channel cannot render cards.",
+                            "type": "string",
+                            "title": "summary"
+                        },
+                        "suggestedActions": {
+                            "description": "The suggested actions for the activity.",
+                            "title": "suggestedActions",
+                            "type": "object",
+                            "required": [
+                                "actions",
+                                "to"
+                            ],
+                            "properties": {
+                                "to": {
+                                    "description": "Ids of the recipients that the actions should be shown to.  These Ids are relative to the\nchannelId and a subset of all recipients of the activity",
+                                    "type": "array",
+                                    "title": "to",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "actions": {
+                                    "description": "Actions that can be shown to the user",
+                                    "type": "array",
+                                    "title": "actions",
+                                    "items": {
+                                        "description": "A clickable action",
+                                        "title": "CardAction",
+                                        "type": "object",
+                                        "required": [
+                                            "title",
+                                            "type",
+                                            "value"
+                                        ],
+                                        "properties": {
+                                            "type": {
+                                                "description": "The type of action implemented by this button. Possible values include: 'openUrl', 'imBack',\n'postBack', 'playAudio', 'playVideo', 'showImage', 'downloadFile', 'signin', 'call',\n'payment', 'messageBack'",
+                                                "type": "string",
+                                                "title": "type"
+                                            },
+                                            "title": {
+                                                "description": "Text description which appears on the button",
+                                                "type": "string",
+                                                "title": "title"
+                                            },
+                                            "image": {
+                                                "description": "Image URL which will appear on the button, next to text label",
+                                                "type": "string",
+                                                "title": "image"
+                                            },
+                                            "text": {
+                                                "description": "Text for this action",
+                                                "type": "string",
+                                                "title": "text"
+                                            },
+                                            "displayText": {
+                                                "description": "(Optional) text to display in the chat feed if the button is clicked",
+                                                "type": "string",
+                                                "title": "displayText"
+                                            },
+                                            "value": {
+                                                "description": "Supplementary parameter for action. Content of this property depends on the ActionType",
+                                                "title": "value"
+                                            },
+                                            "channelData": {
+                                                "description": "Channel-specific data associated with this action",
+                                                "title": "channelData"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "attachments": {
+                            "description": "Attachments",
+                            "type": "array",
+                            "title": "attachments",
+                            "items": {
+                                "description": "An attachment within an activity",
+                                "title": "Attachment",
+                                "type": "object",
+                                "required": [
+                                    "contentType"
+                                ],
+                                "properties": {
+                                    "contentType": {
+                                        "description": "mimetype/Contenttype for the file",
+                                        "type": "string",
+                                        "title": "contentType"
+                                    },
+                                    "contentUrl": {
+                                        "description": "Content Url",
+                                        "type": "string",
+                                        "title": "contentUrl"
+                                    },
+                                    "content": {
+                                        "description": "Embedded content",
+                                        "title": "content"
+                                    },
+                                    "name": {
+                                        "description": "(OPTIONAL) The name of the attachment",
+                                        "type": "string",
+                                        "title": "name"
+                                    },
+                                    "thumbnailUrl": {
+                                        "description": "(OPTIONAL) Thumbnail associated with attachment",
+                                        "type": "string",
+                                        "title": "thumbnailUrl"
+                                    }
+                                }
+                            }
+                        },
+                        "entities": {
+                            "description": "Represents the entities that were mentioned in the message.",
+                            "type": "array",
+                            "title": "entities",
+                            "items": {
+                                "description": "Metadata object pertaining to an activity",
+                                "title": "Entity",
+                                "type": "object",
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "description": "Type of this entity (RFC 3987 IRI)",
+                                        "type": "string",
+                                        "title": "type"
+                                    }
+                                }
+                            }
+                        },
+                        "channelData": {
+                            "description": "Contains channel-specific content.",
+                            "title": "channelData"
+                        },
+                        "action": {
+                            "description": "Indicates whether the recipient of a contactRelationUpdate was added or removed from the\nsender's contact list.",
+                            "type": "string",
+                            "title": "action"
+                        },
+                        "replyToId": {
+                            "description": "Contains the ID of the message to which this message is a reply.",
+                            "type": "string",
+                            "title": "replyToId"
+                        },
+                        "label": {
+                            "description": "A descriptive label for the activity.",
+                            "type": "string",
+                            "title": "label"
+                        },
+                        "valueType": {
+                            "description": "The type of the activity's value object.",
+                            "type": "string",
+                            "title": "valueType"
+                        },
+                        "value": {
+                            "description": "A value that is associated with the activity.",
+                            "title": "value"
+                        },
+                        "name": {
+                            "description": "The name of the operation associated with an invoke or event activity.",
+                            "type": "string",
+                            "title": "name"
+                        },
+                        "relatesTo": {
+                            "description": "A reference to another conversation or activity.",
+                            "title": "relatesTo",
+                            "type": "object",
+                            "required": [
+                                "bot",
+                                "channelId",
+                                "conversation",
+                                "serviceUrl"
+                            ],
+                            "properties": {
+                                "activityId": {
+                                    "description": "(Optional) ID of the activity to refer to",
+                                    "type": "string",
+                                    "title": "activityId"
+                                },
+                                "user": {
+                                    "description": "(Optional) User participating in this conversation",
+                                    "title": "user",
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "name"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                            "type": "string",
+                                            "title": "id"
+                                        },
+                                        "name": {
+                                            "description": "Display friendly name",
+                                            "type": "string",
+                                            "title": "name"
+                                        },
+                                        "aadObjectId": {
+                                            "description": "This account's object ID within Azure Active Directory (AAD)",
+                                            "type": "string",
+                                            "title": "aadObjectId"
+                                        },
+                                        "role": {
+                                            "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                            "type": "string",
+                                            "title": "role"
+                                        }
+                                    }
+                                },
+                                "bot": {
+                                    "description": "Bot participating in this conversation",
+                                    "title": "bot",
+                                    "type": "object",
+                                    "required": [
+                                        "id",
+                                        "name"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                            "type": "string",
+                                            "title": "id"
+                                        },
+                                        "name": {
+                                            "description": "Display friendly name",
+                                            "type": "string",
+                                            "title": "name"
+                                        },
+                                        "aadObjectId": {
+                                            "description": "This account's object ID within Azure Active Directory (AAD)",
+                                            "type": "string",
+                                            "title": "aadObjectId"
+                                        },
+                                        "role": {
+                                            "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                            "type": "string",
+                                            "title": "role"
+                                        }
+                                    }
+                                },
+                                "conversation": {
+                                    "description": "Conversation reference",
+                                    "title": "conversation",
+                                    "type": "object",
+                                    "required": [
+                                        "conversationType",
+                                        "id",
+                                        "isGroup",
+                                        "name"
+                                    ],
+                                    "properties": {
+                                        "isGroup": {
+                                            "description": "Indicates whether the conversation contains more than two participants at the time the\nactivity was generated",
+                                            "type": "boolean",
+                                            "title": "isGroup"
+                                        },
+                                        "conversationType": {
+                                            "description": "Indicates the type of the conversation in channels that distinguish between conversation types",
+                                            "type": "string",
+                                            "title": "conversationType"
+                                        },
+                                        "id": {
+                                            "description": "Channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or\n123456)",
+                                            "type": "string",
+                                            "title": "id"
+                                        },
+                                        "name": {
+                                            "description": "Display friendly name",
+                                            "type": "string",
+                                            "title": "name"
+                                        },
+                                        "aadObjectId": {
+                                            "description": "This account's object ID within Azure Active Directory (AAD)",
+                                            "type": "string",
+                                            "title": "aadObjectId"
+                                        },
+                                        "role": {
+                                            "description": "Role of the entity behind the account (Example: User, Bot, etc.). Possible values include:\n'user', 'bot'",
+                                            "enum": [
+                                                "bot",
+                                                "user"
+                                            ],
+                                            "type": "string",
+                                            "title": "role"
+                                        }
+                                    }
+                                },
+                                "channelId": {
+                                    "description": "Channel ID",
+                                    "type": "string",
+                                    "title": "channelId"
+                                },
+                                "serviceUrl": {
+                                    "description": "Service endpoint where operations concerning the referenced conversation may be performed",
+                                    "type": "string",
+                                    "title": "serviceUrl"
+                                }
+                            }
+                        },
+                        "code": {
+                            "description": "The a code for endOfConversation activities that indicates why the conversation ended.\nPossible values include: 'unknown', 'completedSuccessfully', 'userCancelled', 'botTimedOut',\n'botIssuedInvalidMessage', 'channelFailed'",
+                            "type": "string",
+                            "title": "code"
+                        },
+                        "expiration": {
+                            "description": "The time at which the activity should be considered to be \"expired\" and should not be\npresented to the recipient.",
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "expiration"
+                        },
+                        "importance": {
+                            "description": "The importance of the activity. Possible values include: 'low', 'normal', 'high'",
+                            "type": "string",
+                            "title": "importance"
+                        },
+                        "deliveryMode": {
+                            "description": "A delivery hint to signal to the recipient alternate delivery paths for the activity.\nThe default delivery mode is \"default\". Possible values include: 'normal', 'notification'",
+                            "type": "string",
+                            "title": "deliveryMode"
+                        },
+                        "listenFor": {
+                            "description": "List of phrases and references that speech and language priming systems should listen for",
+                            "type": "array",
+                            "title": "listenFor",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "textHighlights": {
+                            "description": "The collection of text fragments to highlight when the activity contains a ReplyToId value.",
+                            "type": "array",
+                            "title": "textHighlights",
+                            "items": {
+                                "description": "Refers to a substring of content within another field",
+                                "title": "TextHighlight",
+                                "type": "object",
+                                "required": [
+                                    "occurrence",
+                                    "text"
+                                ],
+                                "properties": {
+                                    "text": {
+                                        "description": "Defines the snippet of text to highlight",
+                                        "type": "string",
+                                        "title": "text"
+                                    },
+                                    "occurrence": {
+                                        "description": "Occurrence of the text field within the referenced text, if multiple exist.",
+                                        "type": "number",
+                                        "title": "occurrence"
+                                    }
+                                }
+                            }
+                        },
+                        "semanticAction": {
+                            "description": "An optional programmatic action accompanying this request",
+                            "title": "semanticAction",
+                            "type": "object",
+                            "required": [
+                                "entities",
+                                "id"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "description": "ID of this action",
+                                    "type": "string",
+                                    "title": "id"
+                                },
+                                "entities": {
+                                    "description": "Entities associated with this action",
+                                    "type": "object",
+                                    "title": "entities",
+                                    "additionalProperties": {
+                                        "description": "Metadata object pertaining to an activity",
+                                        "title": "Entity",
+                                        "type": "object",
+                                        "required": [
+                                            "type"
+                                        ],
+                                        "properties": {
+                                            "type": {
+                                                "description": "Type of this entity (RFC 3987 IRI)",
+                                                "type": "string",
+                                                "title": "type"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             },
             "additionalProperties": false,
@@ -10837,7 +11816,7 @@
                         "type": "object",
                         "required": [
                             "value",
-                            "case"
+                            "actions"
                         ],
                         "properties": {
                             "value": {
@@ -10928,6 +11907,63 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.TemplateEngineLanguageGenerator": {
+            "$role": "implements(Microsoft.ILanguageGenerator)",
+            "title": "Template Multi-Language Generator",
+            "description": "Template Generator which allows only inline evaluation of templates.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.TemplateEngineLanguageGenerator"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional generator ID."
                 }
             },
             "additionalProperties": false,
@@ -11118,7 +12154,6 @@
                 {
                     "title": "Type",
                     "required": [
-                        "text",
                         "$kind"
                     ]
                 }
@@ -11305,7 +12340,6 @@
                 {
                     "title": "Type",
                     "required": [
-                        "replies",
                         "$kind"
                     ]
                 }
@@ -11441,7 +12475,7 @@
                     "title": "Type",
                     "required": [
                         "dialog",
-                        "testActions",
+                        "script",
                         "$kind"
                     ]
                 }
@@ -11792,14 +12826,23 @@
                 },
                 "disabled": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
                     "examples": [
-                        "user.age > 3"
+                        false,
+                        "=user.isVip"
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "prompt": {
@@ -11814,9 +12857,9 @@
                 "unrecognizedPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Unrecognized prompt",
-                    "description": "Message to send when the recognizer does not understand the user input.",
+                    "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
                     "examples": [
-                        "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
+                        "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -11840,28 +12883,37 @@
                 },
                 "maxTurnCount": {
                     "$role": "expression",
-                    "type": [
-                        "integer",
-                        "string"
-                    ],
                     "title": "Max turn count",
                     "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
                     "examples": [
                         3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "default": 3,
+                            "title": "integer"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to integer."
+                        }
                     ]
                 },
                 "validations": {
                     "type": "array",
                     "title": "Validation expressions",
                     "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
                     "items": {
                         "$role": "expression",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Condition",
+                        "description": "Expression which needs to met for the input to be considered valid",
+                        "examples": [
+                            "int(this.value) > 1 && int(this.value) <= 150",
+                            "count(this.value) < 300"
+                        ]
                     }
                 },
                 "property": {
@@ -11876,63 +12928,66 @@
                         "dialog.favColor"
                     ]
                 },
-                "defaultValue": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ]
-                },
-                "value": {
-                    "$role": "expression",
-                    "type": [
-                        "object",
-                        "array",
-                        "number",
-                        "integer",
-                        "boolean",
-                        "string"
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "@userName"
-                    ]
-                },
                 "alwaysPrompt": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         false
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
                     ]
                 },
                 "allowInterruptions": {
                     "$role": "expression",
-                    "type": [
-                        "boolean",
-                        "string"
-                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
                     "examples": [
-                        "true"
+                        true
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to boolean."
+                        }
+                    ]
+                },
+                "defaultValue": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+                    "examples": [
+                        "hello world",
+                        "Hello ${user.name}",
+                        "=concat(user.firstname, user.lastName)"
+                    ]
+                },
+                "value": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+                    "examples": [
+                        "hello world",
+                        "Hello ${user.name}",
+                        "=concat(user.firstname, user.lastName)"
                     ]
                 },
                 "outputFormat": {
@@ -11968,19 +13023,61 @@
             ]
         },
         "Microsoft.TextTemplate": {
-            "$role": "interface",
+            "$role": "implements(Microsoft.ITextTemplate)",
             "title": "Microsoft TextTemplate",
-            "description": "Lg tempalte to evaluate to create text",
+            "description": "Use LG Templates to create text",
             "type": "object",
             "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.TextTemplate"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
                 "template": {
                     "title": "Template",
                     "Description": "Language Generator template to evaluate to create the text",
                     "type": "string"
                 }
             },
-            "required": [
-                "template"
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "template",
+                        "$kind"
+                    ]
+                }
             ]
         },
         "Microsoft.TraceActivity": {
@@ -12285,6 +13382,63 @@
                 }
             ]
         },
+        "Microsoft.ValueRecognizer": {
+            "$role": "implements(Microsoft.IRecognizer)",
+            "title": "Value recognizer",
+            "description": "Recogne activity.Value as intent and entities.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ValueRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
         "Testbot.JavascriptAction": {
             "$role": "implements(Microsoft.IDialog)",
             "title": "Javascript Action",
@@ -12427,19 +13581,52 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "arg1": {
-                    "type": "number",
+                    "$role": "expression",
                     "title": "Arg1",
-                    "description": "Value from callers memory to use as arg 1"
+                    "description": "Value from callers memory to use as arg 1",
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "title": "number"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to number."
+                        }
+                    ]
                 },
                 "arg2": {
-                    "type": "number",
+                    "$role": "expression",
                     "title": "Arg2",
-                    "description": "Value from callers memory to use as arg 2"
+                    "description": "Value from callers memory to use as arg 2",
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "title": "number"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to number."
+                        }
+                    ]
                 },
                 "result": {
-                    "type": "number",
+                    "$role": "expression",
                     "title": "Result",
-                    "description": "Value from callers memory to store the result"
+                    "description": "Value from callers memory to store the result",
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "title": "number"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "description": "Expression evaluating to number."
+                        }
+                    ]
                 }
             },
             "patternProperties": {
