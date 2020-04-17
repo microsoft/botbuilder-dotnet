@@ -126,7 +126,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 throw new ArgumentNullException(nameof(encoding)); 
             }
 
-            response.ContentType = "text/plain";
+            response.ContentType = string.IsNullOrEmpty(response.ContentType) ? "text/plain" : response.ContentType;
+
             response.StatusCode = (int)code;
 
             var data = encoding.GetBytes(text);
@@ -152,7 +153,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 ChannelId = "slack",
                 Conversation = new ConversationAccount()
                 {
-                    Id = slackPayload.Channel.id,
+                    Id = slackPayload.Channel?.id,
                 },
                 From = new ChannelAccount()
                 {

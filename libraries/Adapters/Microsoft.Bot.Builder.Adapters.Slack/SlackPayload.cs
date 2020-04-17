@@ -52,5 +52,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
         [JsonProperty(PropertyName = "response_url")]
         public Uri ResponseUrl { get; set; }
+
+        [JsonProperty(PropertyName = "view")]
+        public ModalView View { get; set; }
+
+        [JsonProperty(PropertyName = "action_id")]
+        public string ActionId { get; set; }
     }
 }

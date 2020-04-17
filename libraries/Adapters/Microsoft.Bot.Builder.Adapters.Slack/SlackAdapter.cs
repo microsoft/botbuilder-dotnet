@@ -329,6 +329,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 var code = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
                 var statusCode = (HttpStatusCode)code;
                 var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
+                var contentType = context.TurnState.Get<object>("httpContentType") != null ? context.TurnState.Get<object>("httpContentType").ToString() : string.Empty;
+
+                response.ContentType = string.IsNullOrEmpty(contentType) ? string.Empty : contentType;
 
                 await SlackHelper.WriteAsync(response, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             }
