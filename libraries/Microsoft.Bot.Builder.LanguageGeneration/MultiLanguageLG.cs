@@ -30,16 +30,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new ArgumentNullException(nameof(filePerLocale));
             }
 
-            foreach (var filesPerLocale in filePerLocale)
+            foreach (var item in filePerLocale)
             {
-                lgPerLocale[filesPerLocale.Key] = Templates.ParseFile(filesPerLocale.Value);
+                lgPerLocale[item.Key] = Templates.ParseFile(item.Value);
             }
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiLanguageLG"/> class.
         /// </summary>
-        /// <param name="templatesPerLocale">A dictionary of LG file templates.</param>
+        /// <param name="templatesPerLocale">A dictionary of LG file templates per locale.</param>
         /// <param name="defaultLanguage">Default language.</param>
         public MultiLanguageLG(Dictionary<string, Templates> templatesPerLocale, string defaultLanguage = "")
         {
