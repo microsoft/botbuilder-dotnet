@@ -20,19 +20,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
 
             var generator = new MultiLanguageLG(localPerFile);
 
-            // fallback to "c.en.lg"
+            // fallback to "a.en.lg"
             var result = generator.Generate("templatec", null, "en-us");
             Assert.AreEqual("from a.en.lg", result);
 
-            // "c.en.lg" is used
+            // "a.en.lg" is used
             result = generator.Generate("templatec", null, "en");
             Assert.AreEqual("from a.en.lg", result);
 
-            // locale "fr" has no entry file, default file "c.lg" is used
+            // locale "fr" has no entry file, default file "a.lg" is used
             result = generator.Generate("templatec", null, "fr");
             Assert.AreEqual("from a.lg", result);
 
-            // "c.lg" is used
+            // "a.lg" is used
             result = generator.Generate("templatec", null, null);
             Assert.AreEqual("from a.lg", result);
         }
@@ -47,19 +47,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
 
             var generator = new MultiLanguageLG(localPerFile, "en");
 
-            // fallback to "c.en.lg"
+            // fallback to "a.en.lg"
             var result = generator.Generate("templatec", null, "en-us");
             Assert.AreEqual("from a.en.lg", result);
 
-            // "c.en.lg" is used
+            // "a.en.lg" is used
             result = generator.Generate("templatec", null, "en");
             Assert.AreEqual("from a.en.lg", result);
 
-            // locale "fr" has no entry file, default file "c.en.lg" is used
+            // locale "fr" has no entry file, default file "a.en.lg" is used
             result = generator.Generate("templatec", null, "fr");
             Assert.AreEqual("from a.en.lg", result);
 
-            // "c.en.lg" is used
+            // "a.en.lg" is used
             result = generator.Generate("templatec", null, null);
             Assert.AreEqual("from a.en.lg", result);
         }
@@ -75,19 +75,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
 
             var generator = new MultiLanguageLG(templatesDict, "en");
 
-            // fallback to "c.en.lg"
+            // fallback to "a.en.lg"
             var result = generator.Generate("myTemplate", null, "en-us");
             Assert.AreEqual("content with id: 1.lg from source: abc", result);
 
-            // "c.en.lg" is used
+            // "a.en.lg" is used
             result = generator.Generate("myTemplate", null, "en");
             Assert.AreEqual("content with id: 1.lg from source: abc", result);
 
-            // locale "fr" has no entry file, default file "c.en.lg" is used
+            // locale "fr" has no entry file, default file "a.en.lg" is used
             result = generator.Generate("myTemplate", null, "fr");
             Assert.AreEqual("content with id: 1.lg from source: abc", result);
 
-            // "c.en.lg" is used
+            // "a.en.lg" is used
             result = generator.Generate("myTemplate", null, null);
             Assert.AreEqual("content with id: 1.lg from source: abc", result);
         }
