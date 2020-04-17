@@ -13,12 +13,17 @@
     <None Remove="Examples\EvaluationOptions\a1.lg" />
     <None Remove="Examples\EvaluationOptions\a2.lg" />
     <None Remove="Examples\EvaluationOptions\a3.lg" />
+    <None Remove="Examples\EvaluationOptions\a4.lg" />
     <None Remove="Examples\EvaluationOptions\b1.lg" />
     <None Remove="Examples\EvaluationOptions\b2.lg" />
     <None Remove="Examples\EvaluationOptions\b3.lg" />
+    <None Remove="Examples\EvaluationOptions\b4.lg" />
     <None Remove="Examples\EvaluationOptions\c2.lg" />
     <None Remove="Examples\EvaluationOptions\c3.lg" />
+    <None Remove="Examples\EvaluationOptions\c4.lg" />
     <None Remove="Examples\EvaluationOptions\d3.lg" />
+    <None Remove="Examples\EvaluationOptions\d4.lg" />
+    <None Remove="Examples\EvaluationOptions\f4.lg" />
     <None Remove="Examples\import\import3.lg" />
     <None Remove="Examples\1.lg" />
     <None Remove="Examples\2.lg" />
@@ -120,10 +125,16 @@
     <Content Include="Examples\EvaluationOptions\a3.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Examples\EvaluationOptions\a4.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Examples\EvaluationOptions\b2.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\EvaluationOptions\b3.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EvaluationOptions\b4.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\EvaluationOptions\c2.lg">
@@ -132,7 +143,16 @@
     <Content Include="Examples\EvaluationOptions\c3.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Examples\EvaluationOptions\c4.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Examples\EvaluationOptions\d3.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EvaluationOptions\d4.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EvaluationOptions\f4.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\ExpressionExtract.lg">

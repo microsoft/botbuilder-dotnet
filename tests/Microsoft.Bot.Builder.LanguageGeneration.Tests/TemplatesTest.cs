@@ -1143,7 +1143,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(templates4.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
 
-            //Test use an option in Evaluate method, which has the highest priority.
+            //Test use an defined option in Evaluate method, which will override all options in LG files.
             var optionStrList = new string[] { "@strictMode = false", "@replaceNull = ${ path } is undefined", "@lineBreakStyle = defalut" };
             var newOpt = new EvaluationOptions(optionStrList);
             evaled4 = templates4.Evaluate("SayHello", null, newOpt);
@@ -1153,6 +1153,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled4 = templates4.Evaluate("testInlineString", null, newOpt);
 
             Assert.AreEqual($"m\ns\nf\nt\n", evaled4.ToString().Replace("\r\n", "\n"));
+
+            //a4.lg imports b4.lg and c4.lg in sequence. 
+            //b4.lg imports d3.lg, c4.lg imports f4.lg,
+            //a4.lg, b4.lg, c4.lg: nothing but import statement
+            //d4: only have template definition
+            //f4: only options, strictMode = true, replaceNull = The ${path} is undefined, lineBreaStyle = markdown
+            var templates5 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a4.lg"));
+
+            var evaled5 = templates5.Evaluate("SayHello");
+
+            Assert.AreEqual("hi the user.name is undefined", evaled5);
+
+            Assert.AreEqual(templates5.LgOptions.StrictMode, true);
+
+            Assert.AreEqual(templates5.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
         }
 
         [TestMethod]
