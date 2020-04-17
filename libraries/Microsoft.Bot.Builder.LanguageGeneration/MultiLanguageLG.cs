@@ -52,6 +52,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             languageFallbackPolicy = new LanguagePolicy(defaultLanguage);
         }
 
+        /// <summary>
+        /// Generate template evaluate result.
+        /// </summary>
+        /// <param name="template">Template name.</param>
+        /// <param name="data">Scope data.</param>
+        /// <param name="locale">Locale info.</param>
+        /// <returns>Evaluate result.</returns>
         public object Generate(string template, object data, string locale)
         {
             if (template == null)
