@@ -16,7 +16,8 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -26,14 +27,22 @@
         "changeType": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Type of change",
             "description": "Type of change to apply to the current actions.",
-            "enum": [
-                "insertActions",
-                "insertActionsBeforeTags",
-                "appendActions",
-                "endSequence",
-                "replaceSequence"
+            "oneOf": [
+                {
+                    "enum": [
+                        "insertActions",
+                        "insertActionsBeforeTags",
+                        "appendActions",
+                        "endSequence",
+                        "replaceSequence"
+                    ]
+                },
+                {
+                    "pattern": "^=(\\S){1}"
+                }
             ]
         },
         "actions": {

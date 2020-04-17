@@ -16,7 +16,8 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -42,6 +43,7 @@
         "url": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Url",
             "description": "URL to call (supports data binding).",
             "examples": [
@@ -58,6 +60,7 @@
                 "boolean",
                 "string"
             ],
+            "pattern": "^(\\S){1}",
             "title": "Body",
             "description": "Body to include in the HTTP call (supports data binding).",
             "additionalProperties": true
@@ -65,6 +68,7 @@
         "resultProperty": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Result property",
             "description": "Property to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
             "examples": [
@@ -74,6 +78,7 @@
         "contentType": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Content type",
             "description": "Content media type for the body.",
             "examples": [
@@ -93,13 +98,21 @@
         "responseType": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Response type",
             "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",
-            "enum": [
-                "none",
-                "json",
-                "activity",
-                "activities"
+            "oneOf": [
+                {
+                    "enum": [
+                        "none",
+                        "json",
+                        "activity",
+                        "activities"
+                    ]
+                },
+                {
+                    "pattern": "^=(\\S){1}"
+                }
             ],
             "default": "Json"
         }

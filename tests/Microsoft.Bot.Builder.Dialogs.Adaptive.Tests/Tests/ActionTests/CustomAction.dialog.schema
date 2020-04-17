@@ -7,23 +7,30 @@
     "properties": {
         "age": {
             "$role": "expression",
-            "type": "number",
+            "type": [ "number", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Age",
-            "description": "The age."
+            "description": "The age.",
+            "examples": [
+                20,
+                "=$foo"
+            ]
         },
         "name": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Name",
             "description": "The name."
         },
         "resultProperty": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Property",
             "description": "Property to store any value returned by the dialog that is called.",
             "examples": [
-                "dialog.userName"
+                "$name"
             ]
         }
     }

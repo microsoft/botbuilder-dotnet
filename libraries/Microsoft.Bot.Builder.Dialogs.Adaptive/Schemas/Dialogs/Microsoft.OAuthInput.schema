@@ -16,20 +16,24 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
-                "user.age > 3"
+                true,
+                "=user.age > 3"
             ]
         },
         "text": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Text",
             "description": "Text shown in the OAuth signin card.",
             "examples": [
-                "Please sign in. "
+                "Please sign in. ",
+                "=concat(x,y,z)"
             ]
         },
         "title": {
@@ -93,23 +97,26 @@
             ]
         },
         "allowInterruptions": {
-            "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Allow Interruptions",
             "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-            "default": "true",
+            "default": true,
             "examples": [
-                "true"
+                true,
+                "=f(x)"
             ]
         },
         "alwaysPrompt": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Always prompt",
             "description": "Collect information even if the specified 'property' is not empty.",
             "default": false,
             "examples": [
-                false
+                true,
+                "=f(x)"
             ]
         }
     },

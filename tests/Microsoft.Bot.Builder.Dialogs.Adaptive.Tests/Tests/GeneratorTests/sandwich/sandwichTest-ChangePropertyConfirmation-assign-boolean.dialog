@@ -1,4 +1,3 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
@@ -12,14 +11,12 @@
         },
         {
             "$kind": "Microsoft.IfCondition",
-            "condition":"$ChangePropertyConfirmation == 'true'",
+            "condition": "$ChangePropertyConfirmation == 'true'",
             "actions": [
                 {
                     "$kind": "Microsoft.Ask",
                     "activity": "${template(concat('Ask',$PropertyToRemember))}",
-                    "expectedProperties": 
-                        "createArray($PropertyToRemember)"
-                    
+                    "expectedProperties": "=createArray($PropertyToRemember)"
                 }
             ]
         }

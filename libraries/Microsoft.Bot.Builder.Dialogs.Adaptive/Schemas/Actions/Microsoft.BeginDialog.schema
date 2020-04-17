@@ -12,7 +12,8 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -22,6 +23,7 @@
         "dialog": {
             "$kind": "Microsoft.IDialog",
             "$role": "expression",
+            "pattern": "^(\\S){1}",
             "title": "Dialog name",
             "description": "Name of the dialog to call.",
             "examples": [
@@ -30,17 +32,24 @@
         },
         "options": {
             "$role": "expression",
-            "type": "object",
+            "type": [ "object", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Options",
             "description": "One or more options that are passed to the dialog that is called.",
             "additionalProperties": {
                 "type": "string",
                 "title": "Options"
-            }
+            },
+            "examples": [
+                {
+                    "arg1": "=expression"
+                }
+            ]
         },
         "activityProcessed": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Activity Processed",
             "description": "When set to false, the dialog that is called can process the current activity.",
             "default": true
@@ -48,6 +57,7 @@
         "resultProperty": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Property",
             "description": "Property to store any value returned by the dialog that is called.",
             "examples": [

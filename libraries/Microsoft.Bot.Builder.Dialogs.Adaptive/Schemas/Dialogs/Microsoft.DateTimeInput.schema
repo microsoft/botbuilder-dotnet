@@ -18,7 +18,9 @@
                     "description": "'Property' will be set to the value or the result of the expression when max turn count is exceeded.",
                     "examples": [
                         "=user.birthday"
-                    ]
+                    ],
+                    "minLength": 1,
+                    "pattern": "(\\S.*?){1}"
                 },
                 "value": {
                     "$role": "expression",
@@ -28,7 +30,9 @@
                     "description": "'Property' will be set to the value or the result of the expression unless it evaluates to null.",
                     "examples": [
                         "=user.birthday"
-                    ]
+                    ],
+                    "minLength": 1,
+                    "pattern": "(\\S.*?){1}"
                 },
                 "outputFormat": {
                     "$role": "expression",
@@ -37,7 +41,9 @@
                     "description": "Expression to use format the output.",
                     "examples": [
                         "=this.value[0].Value"
-                    ]
+                    ],
+                    "minLength": 1,
+                    "pattern": "(\\S.*?){1}"
                 }
             }
         }

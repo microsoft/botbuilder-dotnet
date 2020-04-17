@@ -12,7 +12,8 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -22,6 +23,7 @@
         "itemsProperty": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Items property",
             "description": "Property that holds the array.",
             "examples": [
@@ -31,6 +33,7 @@
         "index": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Index property",
             "description": "Property that holds the index of the item.",
             "default": "dialog.foreach.index"
@@ -38,6 +41,7 @@
         "value": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Value property",
             "description": "Property that holds the value of the item.",
             "default": "dialog.foreach.value"

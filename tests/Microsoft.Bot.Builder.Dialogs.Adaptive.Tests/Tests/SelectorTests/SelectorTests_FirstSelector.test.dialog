@@ -104,7 +104,6 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "trigger",
-                "condition": "",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",

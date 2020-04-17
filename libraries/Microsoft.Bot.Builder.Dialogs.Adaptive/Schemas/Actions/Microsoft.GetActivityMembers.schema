@@ -13,6 +13,7 @@
         "property": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "Property",
             "description": "Property (named location to store information).",
             "examples": [
@@ -22,6 +23,7 @@
         "activityId": {
             "$role": "expression",
             "type": "string",
+            "pattern": "^(\\S){1}",
             "title": "ActivityId",
             "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
             "examples": [
@@ -30,7 +32,8 @@
         },
         "disabled": {
             "$role": "expression",
-            "type": "boolean",
+            "type": [ "boolean", "string" ],
+            "pattern": "^=(\\S){1}",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
