@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             await sut.TestOnSendToConversationAsync(_claimsIdentity, _conversationId, activity, CancellationToken.None);
             Assert.IsNotNull(botCallback);
             await botCallback.Invoke(new TurnContext(_mockAdapter.Object, activity), CancellationToken.None);
-            Assert.AreEqual($"urn:botframework:aadappid:{_skillId}", activity.CallerId);
+            Assert.AreEqual($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
         }
 
         [TestMethod]
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             await sut.TestOnReplyToActivityAsync(_claimsIdentity, _conversationId, activityId, activity, CancellationToken.None);
             Assert.IsNotNull(botCallback);
             await botCallback.Invoke(new TurnContext(_mockAdapter.Object, activity), CancellationToken.None);
-            Assert.AreEqual($"urn:botframework:aadappid:{_skillId}", activity.CallerId);
+            Assert.AreEqual($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
         }
 
         [TestMethod]
@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         {
             var activity = (Activity)Activity.CreateEventActivity();
             await TestActivityCallback(activity);
-            Assert.AreEqual($"urn:botframework:aadappid:{_skillId}", activity.CallerId);
+            Assert.AreEqual($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
         }
 
         [TestMethod]
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         {
             var activity = (Activity)Activity.CreateEndOfConversationActivity();
             await TestActivityCallback(activity);
-            Assert.AreEqual($"urn:botframework:aadappid:{_skillId}", activity.CallerId);
+            Assert.AreEqual($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
         }
 
         [TestMethod]
