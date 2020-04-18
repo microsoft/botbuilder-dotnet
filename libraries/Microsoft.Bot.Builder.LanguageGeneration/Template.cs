@@ -42,10 +42,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public SourceRange SourceRange { get; set; }
 
         /// <summary>
-        /// Gets or sets name of the template, which follows by '#' in a LG file.
+        /// Gets or sets name of the template, which follows '#' in a LG file.
         /// </summary>
         /// <value>
-        /// Name of the template, which follows by '#' in a LG file.
+        /// Name of the template, which follows '#' in a LG file.
         /// </value>
         public string Name { get; set; }
 
