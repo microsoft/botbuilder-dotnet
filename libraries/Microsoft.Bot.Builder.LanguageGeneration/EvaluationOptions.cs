@@ -107,8 +107,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Merge a incoming option to current option. If a property in incoming option is not null while it is null in current
         /// option, then the value of this property will be overwritten.
         /// </summary>
-        /// <param name="opt">the incoming option for merging.</param>
-        public void MergeOptions(EvaluationOptions opt)
+        /// <param name="opt">The incoming option for merging.</param>
+        /// <returns>The result after merging.</returns>
+        public EvaluationOptions Merge(EvaluationOptions opt)
         {
             var properties = typeof(EvaluationOptions).GetProperties();
             foreach (var property in properties)
@@ -118,6 +119,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     property.SetValue(this, property.GetValue(opt));
                 }
             }
+
+            return this;
         }
     }
 }

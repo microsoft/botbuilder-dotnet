@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// An EvaluationOption.
         /// </value>
-        public EvaluationOptions LgOptions => ComputeEvaluationOptions();
+        public EvaluationOptions LgOptions => new EvaluationOptions(Options);
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public object Evaluate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
-            var evalOpt = opt ?? LgOptions;
+            var evalOpt = opt == null ? opt.Merge(LgOptions) : LgOptions;
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
@@ -185,11 +185,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Use to evaluate an inline template str.
         /// </summary>
-        /// <param name="text">inline string which will be evaluated.</param>
-        /// <param name="scope">scope object or JToken.</param>
+        /// <param name="text">Inline string which will be evaluated.</param>
+        /// <param name="scope">Scope object or JToken.</param>
+        /// <param name="opt">The EvaluationOptions in evaluating a template.</param>
         /// <returns>Evaluate result.</returns>
-        public object EvaluateText(string text, object scope = null)
+        public object EvaluateText(string text, object scope = null, EvaluationOptions opt = null)
         {
+            var evalOpt = opt == null ? opt.Merge(LgOptions) : LgOptions;
+
             if (text == null)
             {
                 throw new ArgumentException("inline string is null.");
@@ -208,7 +211,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var newLG = TemplatesParser.ParseTextWithRef(newContent, this);
 
-            return newLG.Evaluate(fakeTemplateId, scope);
+            return newLG.Evaluate(fakeTemplateId, scope, evalOpt);
         }
 
         /// <summary>
@@ -389,28 +392,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     throw new Exception(string.Join(newLine, errors));
                 }
             }
-        }
-
-        private EvaluationOptions ComputeEvaluationOptions()
-        {
-            var opt = new EvaluationOptions(Options);
-            foreach (var templates in References) 
-            {
-                opt.MergeOptions(new EvaluationOptions(templates.Options));
-            }
-
-            //normalize option to non-null value for evaluation
-            if (opt.StrictMode == null)
-            {
-                opt.StrictMode = false;
-            }
-
-            if (opt.LineBreakStyle == null)
-            {
-                opt.LineBreakStyle = LGLineBreakStyle.Default;
-            }
-
-            return opt;
         }
     }
 }
