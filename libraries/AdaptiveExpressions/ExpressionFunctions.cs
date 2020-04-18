@@ -2562,9 +2562,10 @@ namespace AdaptiveExpressions
 
         private static bool IsEqual(IReadOnlyList<object> args)
         {
-            if (args[0] == null)
+            if (args[0] == null || args[1] == null)
             {
-                return args[1] == null;
+                // null will only equals to null
+                return args[0] == null && args[1] == null;
             }
 
             if (TryParseList(args[0], out IList l0) && l0.Count == 0 && (TryParseList(args[1], out IList l1) && l1.Count == 0))
