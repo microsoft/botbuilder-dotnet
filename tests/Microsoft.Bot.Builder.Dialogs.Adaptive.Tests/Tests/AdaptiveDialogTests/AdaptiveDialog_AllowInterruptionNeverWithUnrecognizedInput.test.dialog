@@ -24,7 +24,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.NumberInput",
-                        "allowInterruptions": "False",
+                        "allowInterruptions": false,
                         "property": "user.age",
                         "prompt": "What is your age?",
                         "unrecognizedPrompt": "Sorry. I did not recognize a number. What is your age?"

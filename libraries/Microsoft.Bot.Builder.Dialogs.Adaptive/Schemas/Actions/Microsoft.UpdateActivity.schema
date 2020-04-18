@@ -11,9 +11,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
-            "pattern": "^=(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -22,8 +20,7 @@
             ]
         },
         "activityId": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Activity Id",
             "dDescription": "An string expression with the activity id to update.",
             "examples": [

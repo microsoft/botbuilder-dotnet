@@ -29,7 +29,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.TextInput",
-                        "allowInterruptions": "True",
+                        "allowInterruptions": true,
                         "property": "user.name",
                         "prompt": "What is your name?"
                     },

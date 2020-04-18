@@ -14,9 +14,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
-            "pattern": "^=(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -25,23 +23,17 @@
             ]
         },
         "text": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Text",
             "description": "Information to log."
         },
         "label": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Label",
             "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
         },
         "traceActivity": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
-            "pattern": "^=(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Send Trace Activity",
             "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator).",
             "default": false

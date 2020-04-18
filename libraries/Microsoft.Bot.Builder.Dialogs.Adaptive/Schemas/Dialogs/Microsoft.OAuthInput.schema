@@ -6,8 +6,7 @@
     "type": "object",
     "properties": {
         "connectionName": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Connection name",
             "description": "The connection name configured in Azure Web App Bot OAuth settings.",
             "examples": [
@@ -15,9 +14,7 @@
             ]
         },
         "disabled": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
-            "pattern": "^=(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -26,9 +23,7 @@
             ]
         },
         "text": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Text",
             "description": "Text shown in the OAuth signin card.",
             "examples": [
@@ -37,8 +32,7 @@
             ]
         },
         "title": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Title",
             "description": "Title shown in the OAuth signin card.",
             "examples": [
@@ -46,15 +40,13 @@
             ]
         },
         "timeout": {
-            "$role": "expression",
-            "type": "integer",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
             "title": "Timeout",
             "description": "Time out setting for the OAuth signin card.",
             "default": "900000"
         },
         "property": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Token property",
             "description": "Property to store the OAuth token result.",
             "examples": [
@@ -78,8 +70,7 @@
             ]
         },
         "maxTurnCount": {
-            "$role": "expression",
-            "type": "integer",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
             "title": "Max turn count",
             "description": "Maximum number of re-prompt attempts to collect information.",
             "default": 3,
@@ -88,8 +79,7 @@
             ]
         },
         "defaultValue": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/expression",
             "title": "Default value",
             "description": "Expression to examine on each turn of the conversation as possible value to the property.",
             "examples": [
@@ -97,8 +87,7 @@
             ]
         },
         "allowInterruptions": {
-            "type": [ "boolean", "string" ],
-            "pattern": "^=(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Allow Interruptions",
             "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
             "default": true,
@@ -108,9 +97,7 @@
             ]
         },
         "alwaysPrompt": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
-            "pattern": "^=(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Always prompt",
             "description": "Collect information even if the specified 'property' is not empty.",
             "default": false,

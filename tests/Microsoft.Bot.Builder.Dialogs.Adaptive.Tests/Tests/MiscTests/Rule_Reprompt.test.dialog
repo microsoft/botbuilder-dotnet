@@ -20,7 +20,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.TextInput",
-                        "allowInterruptions": "True",
+                        "allowInterruptions": true,
                         "property": "user.name",
                         "prompt": "Hello, what is your name?"
                     },

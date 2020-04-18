@@ -76,8 +76,7 @@
                     ]
                 },
                 "defaultLocale": {
-                    "$role": "expression",
-                    "type": "string",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Default locale",
                     "description": "The default locale to use to parse confirmation choices if there is not one passed by the caller.",
                     "default": "en-us",
@@ -108,8 +107,7 @@
                     "default": "Auto"
                 },
                 "choiceOptions": {
-                    "$role": "expression",
-                    "type": "object",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
                     "title": "Choice options",
                     "description": "Sets the choice options used for controlling how choices are combined.",
                     "properties": {
@@ -140,8 +138,7 @@
                     }
                 },
                 "recognizerOptions": {
-                    "$role": "expression",
-                    "type": "object",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
                     "title": "Recognizer options",
                     "description": "Sets how to recognize choices in the response",
                     "properties": {
