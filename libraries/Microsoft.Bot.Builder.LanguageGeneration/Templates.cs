@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public object Evaluate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
-            var evalOpt = opt == null ? opt.Merge(LgOptions) : LgOptions;
+            var evalOpt = opt != null ? opt.Merge(LgOptions) : LgOptions;
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object EvaluateText(string text, object scope = null, EvaluationOptions opt = null)
         {
-            var evalOpt = opt == null ? opt.Merge(LgOptions) : LgOptions;
+            var evalOpt = opt != null ? opt.Merge(LgOptions) : LgOptions;
 
             if (text == null)
             {
