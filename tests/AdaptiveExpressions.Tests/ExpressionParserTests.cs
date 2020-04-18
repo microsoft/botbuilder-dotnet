@@ -570,6 +570,14 @@ namespace AdaptiveExpressions.Tests
             Test("emptyList == {  }", false),
             Test("emptyObject == {  }", true),
             Test("emptyObject == [  ]", false),
+            Test("{} == null", false),
+            Test("{} != null", true),
+            Test("[] == null", false),
+            Test("{} != null", true),
+            Test("{} == {}", true),
+            Test("[] == []", true),
+            Test("{} != []", true),
+            Test("[] == {}", false),
             #endregion
 
             #region  Conversion functions test
