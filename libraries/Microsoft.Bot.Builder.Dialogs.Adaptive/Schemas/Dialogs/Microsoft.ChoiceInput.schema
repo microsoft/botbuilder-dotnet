@@ -30,11 +30,10 @@
                 },
                 "choices": {
                     "$role": "expression",
+                    "title": "Array of choices",
+                    "type": "array",
                     "oneOf": [
                         {
-                            "title": "Array of choices",
-                            "type": "array",
-                            "minItems": 1,
                             "items": [
                                 {
                                     "type": "string"
@@ -42,13 +41,10 @@
                             ]
                         },
                         {
-                            "title": "Array of choice objects",
-                            "type": "array",
-                            "minItems": 1,
                             "items": [
                                 {
-                                    "title": "Choice",
                                     "type": "object",
+                                    "title": "Choice",
                                     "properties": {
                                         "value": {
                                             "type": "string",
@@ -56,7 +52,7 @@
                                             "description": "Value to return when this choice is selected."
                                         },
                                         "action": {
-                                            "type": "object",
+                                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/CardAction",
                                             "title": "Action",
                                             "description": "Card action for the choice."
                                         },

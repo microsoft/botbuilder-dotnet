@@ -1876,53 +1876,95 @@
                 },
                 "choices": {
                     "$role": "expression",
+                    "title": "Array of choices",
                     "oneOf": [
                         {
-                            "title": "Array of choices",
                             "type": "array",
-                            "minItems": 1,
-                            "items": [
+                            "oneOf": [
                                 {
-                                    "type": "string",
-                                    "title": "string"
-                                }
-                            ]
-                        },
-                        {
-                            "title": "Array of choice objects",
-                            "type": "array",
-                            "minItems": 1,
-                            "items": [
-                                {
-                                    "title": "Choice",
-                                    "type": "object",
-                                    "properties": {
-                                        "value": {
+                                    "items": [
+                                        {
                                             "type": "string",
-                                            "title": "Value",
-                                            "description": "Value to return when this choice is selected."
-                                        },
-                                        "action": {
+                                            "title": "string"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "items": [
+                                        {
                                             "type": "object",
-                                            "title": "Action",
-                                            "description": "Card action for the choice."
-                                        },
-                                        "synonyms": {
-                                            "type": "array",
-                                            "title": "Synonyms",
-                                            "description": "List of synonyms to recognize in addition to the value (optional).",
-                                            "items": {
-                                                "type": "string",
-                                                "title": "Synonym"
+                                            "title": "Choice",
+                                            "properties": {
+                                                "value": {
+                                                    "type": "string",
+                                                    "title": "Value",
+                                                    "description": "Value to return when this choice is selected."
+                                                },
+                                                "action": {
+                                                    "title": "Action",
+                                                    "description": "Card action for the choice.",
+                                                    "type": "object",
+                                                    "required": [
+                                                        "title",
+                                                        "type",
+                                                        "value"
+                                                    ],
+                                                    "properties": {
+                                                        "type": {
+                                                            "description": "The type of action implemented by this button. Possible values include: 'openUrl', 'imBack',\n'postBack', 'playAudio', 'playVideo', 'showImage', 'downloadFile', 'signin', 'call',\n'payment', 'messageBack'",
+                                                            "type": "string",
+                                                            "title": "type"
+                                                        },
+                                                        "title": {
+                                                            "description": "Text description which appears on the button",
+                                                            "type": "string",
+                                                            "title": "title"
+                                                        },
+                                                        "image": {
+                                                            "description": "Image URL which will appear on the button, next to text label",
+                                                            "type": "string",
+                                                            "title": "image"
+                                                        },
+                                                        "text": {
+                                                            "description": "Text for this action",
+                                                            "type": "string",
+                                                            "title": "text"
+                                                        },
+                                                        "displayText": {
+                                                            "description": "(Optional) text to display in the chat feed if the button is clicked",
+                                                            "type": "string",
+                                                            "title": "displayText"
+                                                        },
+                                                        "value": {
+                                                            "description": "Supplementary parameter for action. Content of this property depends on the ActionType",
+                                                            "title": "value"
+                                                        },
+                                                        "channelData": {
+                                                            "description": "Channel-specific data associated with this action",
+                                                            "title": "channelData"
+                                                        }
+                                                    }
+                                                },
+                                                "synonyms": {
+                                                    "type": "array",
+                                                    "title": "Synonyms",
+                                                    "description": "List of synonyms to recognize in addition to the value (optional).",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "title": "Synonym"
+                                                    }
+                                                }
                                             }
                                         }
-                                    }
+                                    ]
                                 }
-                            ]
+                            ],
+                            "title": "array"
                         },
                         {
                             "type": "string",
-                            "title": "Expression"
+                            "title": "Expression",
+                            "description": "Expression evaluating to array."
                         }
                     ]
                 },
@@ -2342,19 +2384,43 @@
                     "examples": [
                         "=concat('confirmation:', this.value)"
                     ],
-                    "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "title": "object"
+                        },
+                        {
+                            "type": "array",
+                            "title": "array"
+                        },
+                        {
+                            "type": "string",
+                            "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "number",
+                            "title": "number"
+                        }
+                    ]
                 },
                 "defaultLocale": {
                     "title": "Default locale",
                     "description": "The Default locale or an expression which provides the default locale to use as default if not found in the activity.",
                     "default": "en-us",
+                    "examples": [
+                        "en-us"
+                    ],
                     "type": "string",
                     "pattern": "^(\\S){1}"
                 },
                 "style": {
-                    "title": "List style",
-                    "description": "The style or an expression to the style to use to render choices.",
+                    "$role": "expression",
+                    "type": "string",
                     "oneOf": [
                         {
                             "enum": [
@@ -2370,9 +2436,9 @@
                             "pattern": "^=(\\S){1}"
                         }
                     ],
-                    "default": "auto",
-                    "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "title": "List style",
+                    "description": "Sets the ListStyle to control how choices are rendered.",
+                    "default": "auto"
                 },
                 "choiceOptions": {
                     "title": "Choice Options",
@@ -2459,45 +2525,96 @@
                     "default": false
                 },
                 "confirmChoices": {
-                    "title": "Array of or expression which binds to choice definitions to present to the user.",
-                    "minItems": 1,
                     "$role": "expression",
+                    "title": "Array of choice objects",
                     "oneOf": [
                         {
                             "type": "array",
+                            "oneOf": [
+                                {
+                                    "items": [
+                                        {
+                                            "type": "string",
+                                            "title": "string"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "items": [
+                                        {
+                                            "type": "object",
+                                            "title": "Choice",
+                                            "properties": {
+                                                "value": {
+                                                    "type": "string",
+                                                    "title": "Value",
+                                                    "description": "Value to return when this choice is selected."
+                                                },
+                                                "action": {
+                                                    "title": "Action",
+                                                    "description": "Card action for the choice.",
+                                                    "type": "object",
+                                                    "required": [
+                                                        "title",
+                                                        "type",
+                                                        "value"
+                                                    ],
+                                                    "properties": {
+                                                        "type": {
+                                                            "description": "The type of action implemented by this button. Possible values include: 'openUrl', 'imBack',\n'postBack', 'playAudio', 'playVideo', 'showImage', 'downloadFile', 'signin', 'call',\n'payment', 'messageBack'",
+                                                            "type": "string",
+                                                            "title": "type"
+                                                        },
+                                                        "title": {
+                                                            "description": "Text description which appears on the button",
+                                                            "type": "string",
+                                                            "title": "title"
+                                                        },
+                                                        "image": {
+                                                            "description": "Image URL which will appear on the button, next to text label",
+                                                            "type": "string",
+                                                            "title": "image"
+                                                        },
+                                                        "text": {
+                                                            "description": "Text for this action",
+                                                            "type": "string",
+                                                            "title": "text"
+                                                        },
+                                                        "displayText": {
+                                                            "description": "(Optional) text to display in the chat feed if the button is clicked",
+                                                            "type": "string",
+                                                            "title": "displayText"
+                                                        },
+                                                        "value": {
+                                                            "description": "Supplementary parameter for action. Content of this property depends on the ActionType",
+                                                            "title": "value"
+                                                        },
+                                                        "channelData": {
+                                                            "description": "Channel-specific data associated with this action",
+                                                            "title": "channelData"
+                                                        }
+                                                    }
+                                                },
+                                                "synonyms": {
+                                                    "type": "array",
+                                                    "title": "Synonyms",
+                                                    "description": "List of synonyms to recognize in addition to the value (optional).",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "title": "Synonym"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
                             "title": "array"
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
-                            "title": "string"
-                        }
-                    ],
-                    "items": [
-                        {
-                            "type": "object",
-                            "title": "Choice",
-                            "description": "Choice definition to present to the user.",
-                            "properties": {
-                                "value": {
-                                    "type": "string",
-                                    "title": "Value",
-                                    "description": "Value to return when this choice is selected."
-                                },
-                                "action": {
-                                    "type": "object",
-                                    "title": "Action",
-                                    "description": "Card action for the choice"
-                                },
-                                "synonyms": {
-                                    "type": "array",
-                                    "title": "Synonyms",
-                                    "description": "List of synonyms to recognize in addition to the value (optional)",
-                                    "items": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
+                            "title": "Expression",
+                            "description": "Expression evaluating to array."
                         }
                     ]
                 }

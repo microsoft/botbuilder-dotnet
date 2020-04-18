@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </summary>
         /// <value>The choices or an expression which evaluates to the choices.</value>
         [JsonProperty("confirmChoices")]
-        public ArrayExpression<Choice> ConfirmChoices { get; set; }
+        public ObjectExpression<ChoiceSet> ConfirmChoices { get; set; }
 
         /// <summary>
         /// Gets or sets the expression to use to format the result.
