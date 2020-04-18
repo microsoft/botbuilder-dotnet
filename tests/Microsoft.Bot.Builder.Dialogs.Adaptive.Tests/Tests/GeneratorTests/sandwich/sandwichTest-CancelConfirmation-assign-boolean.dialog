@@ -1,4 +1,3 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
@@ -12,7 +11,7 @@
         },
         {
             "$kind": "Microsoft.IfCondition",
-            "condition":"$CancelConfirmation == 'true'",
+            "condition": "$CancelConfirmation == 'true'",
             "actions": [
                 {
                     "$kind": "Microsoft.EndDialog"

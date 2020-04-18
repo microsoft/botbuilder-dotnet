@@ -1,10 +1,9 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Meat",
-    "priority": "indexOf(dialog.requiredProperties, 'Meat')",
-    "actions": [       
+    "condition": "!$Meat",
+    "priority": "=indexOf(dialog.requiredProperties, 'Meat')",
+    "actions": [
         {
             "$kind": "Microsoft.Ask",
             "activity": "${AskMeat()}",

@@ -1,4 +1,4 @@
-﻿{
+{
     "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "generator": "ExternalLanguage.main.lg",

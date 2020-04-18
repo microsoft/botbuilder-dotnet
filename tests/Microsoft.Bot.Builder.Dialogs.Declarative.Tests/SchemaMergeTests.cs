@@ -91,14 +91,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             // and use it to validate all .dialog files are valid to this schema
             var json = await resource.ReadTextAsync();
             var jtoken = (JToken)JsonConvert.DeserializeObject(json);
-
+            var jobj = jtoken as JObject;
+            var schema = jobj["$schema"]?.ToString();
+ 
             try
             {
+                // everything should have $schema
+                Assert.IsNotNull(schema, "Missing $schema");
+
+                var folder = Path.GetDirectoryName(fileResource.FullName);
+                Assert.IsTrue(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
+
                 jtoken.Validate(Schema);
             }
             catch (JSchemaValidationException err)
             {
-                Assert.Fail($"{fileResource.FullName}\n{err.Message}");
+                Assert.Fail($"{fileResource.FullName}\n{err.Message}", $"Dialog is not valid for the $schema {schema}");
             }
         }
     }

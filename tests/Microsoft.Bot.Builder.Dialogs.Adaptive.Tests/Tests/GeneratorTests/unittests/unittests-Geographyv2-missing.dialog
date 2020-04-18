@@ -1,9 +1,8 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Geographyv2",
-    "priority": "indexOf(dialog.requiredProperties, 'Geographyv2')",
+    "condition": "!$Geographyv2",
+    "priority": "=indexOf(dialog.requiredProperties, 'Geographyv2')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",

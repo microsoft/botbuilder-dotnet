@@ -1,4 +1,3 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
@@ -7,7 +6,7 @@
     "actions": [
         {
             "$kind": "Microsoft.DeleteProperty",
-            "property": "dialog[@PROPERTYName]"                        
+            "property": "dialog[@PROPERTYName]"
         }
     ]
 }

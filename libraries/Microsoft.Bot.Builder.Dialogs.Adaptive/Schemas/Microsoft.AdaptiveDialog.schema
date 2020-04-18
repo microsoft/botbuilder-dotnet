@@ -14,7 +14,7 @@
             "type": "boolean",
             "title": "Auto end dialog",
             "description": "If set to true the dialog will automatically end when there are no further actions.  If set to false, remember to manually end the dialog using EndDialog action.",
-            "default": "true"
+            "default": true
         },
         "defaultResultProperty": {
             "type": "string",

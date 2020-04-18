@@ -116,7 +116,6 @@
                     }
                 ]
             }
-
         ],
         "autoEndDialog": false,
         "selector": {
@@ -138,12 +137,10 @@
             "text": "default",
             "description": "Default empty"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "a"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"
@@ -153,7 +150,6 @@
             "text": "ruleAOnce",
             "description": "Initial a runonce"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"
@@ -163,12 +159,10 @@
             "text": "default",
             "description": "Initial a default"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "c"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"
@@ -178,7 +172,6 @@
             "text": "ruleAorCOnce",
             "description": "Or on c"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"
@@ -188,12 +181,10 @@
             "text": "default",
             "description": "Default on c"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "c"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"
@@ -203,7 +194,6 @@
             "text": "ruleAorCOnce",
             "description": "Or on changed c"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"
@@ -213,12 +203,10 @@
             "text": "default",
             "description": "Default on changed c"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "a"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"
@@ -228,7 +216,6 @@
             "text": "ruleAOnce",
             "description": "Changed a runonce"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"
@@ -239,7 +226,6 @@
             "text": "ruleAorCOnce",
             "description": "Or on changed a"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"
@@ -249,12 +235,10 @@
             "text": "default",
             "description": "Changed a default"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "b"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"
@@ -264,7 +248,6 @@
             "text": "ruleAandBOnce",
             "description": "Both a & b runonce"
         },
-
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "trigger"

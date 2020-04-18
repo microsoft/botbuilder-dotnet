@@ -1,6 +1,5 @@
-
 {
-    "$schema": "../../../../tests.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.OnIntent",
     "intent": "Cancel",
     "condition": "turn.recognized.score > 0.5",
@@ -9,8 +8,8 @@
             "$kind": "Microsoft.Ask",
             "activity": "${cancel()}",
             "expectedProperties": [
-                "CancelConfirmation"                    
-            ]           
+                "CancelConfirmation"
+            ]
         }
     ]
 }

@@ -48,7 +48,8 @@
                     {
                         "$kind": "Microsoft.DeleteProperties",
                         "properties": [
-                            "$p3", "$p4"
+                            "$p3",
+                            "$p4"
                         ]
                     },
                     {

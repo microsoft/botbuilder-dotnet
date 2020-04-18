@@ -35,8 +35,7 @@
         "traceActivity": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Send Trace Activity",
-            "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator).",
-            "default": false
+            "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator)."
         }
     }
 }

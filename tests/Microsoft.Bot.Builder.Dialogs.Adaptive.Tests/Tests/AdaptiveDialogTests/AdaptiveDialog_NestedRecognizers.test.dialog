@@ -8,12 +8,10 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    
                     "intent": "StartOuterIntent",
                     "pattern": "start"
                 },
                 {
-                    
                     "intent": "RootIntent",
                     "pattern": "root"
                 }

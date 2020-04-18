@@ -1,9 +1,8 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Email",
-    "priority": "indexOf(dialog.requiredProperties, 'Email')",
+    "condition": "!$Email",
+    "priority": "=indexOf(dialog.requiredProperties, 'Email')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",

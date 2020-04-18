@@ -11,7 +11,7 @@
                 },
                 {
                     "$kind": "Microsoft.EndDialog",
-                    "value" : 13
+                    "value": 13
                 }
             ]
         }

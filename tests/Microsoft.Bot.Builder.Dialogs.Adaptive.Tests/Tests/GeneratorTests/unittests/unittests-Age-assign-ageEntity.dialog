@@ -1,4 +1,3 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
@@ -8,16 +7,16 @@
         {
             "$kind": "Microsoft.SendActivity",
             "activity": "${setObjectPropertyMessage('Age', concat(string(@age.number), ' ', @age.units))}"
-        }, 
+        },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Age.number",
-            "value": "=@age.number"          
+            "value": "=@age.number"
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Age.units",
-            "value": "=@age.units"          
+            "value": "=@age.units"
         }
-    ]               
+    ]
 }

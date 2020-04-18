@@ -1,9 +1,8 @@
-
 {
-    "$schema": "../../../../tests.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Price",
-    "priority": "indexOf(dialog.requiredProperties, 'Price')",
+    "condition": "!$Price",
+    "priority": "=indexOf(dialog.requiredProperties, 'Price')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",

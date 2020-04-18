@@ -9,19 +9,21 @@
                 {
                     "$kind": "Microsoft.RegexRecognizer",
                     "id": "x",
-                    "intents": [
-                    ],
+                    "intents": [],
                     "entities": [
-                        { "$kind": "Microsoft.AgeEntityRecognizer" }
+                        {
+                            "$kind": "Microsoft.AgeEntityRecognizer"
+                        }
                     ]
                 },
                 {
                     "$kind": "Microsoft.RegexRecognizer",
                     "id": "y",
-                    "intents": [
-                    ],
+                    "intents": [],
                     "entities": [
-                        { "$kind": "Microsoft.NumberEntityRecognizer" }
+                        {
+                            "$kind": "Microsoft.NumberEntityRecognizer"
+                        }
                     ]
                 }
             ]
