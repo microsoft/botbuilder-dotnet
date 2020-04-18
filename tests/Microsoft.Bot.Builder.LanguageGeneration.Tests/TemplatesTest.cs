@@ -1107,15 +1107,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual($"m\n\ns\n\nf\n\nt\n\n", evaled.ToString().Replace("\r\n", "\n"));
 
-            //a1.lg imports b1.lg. a1 has no option defined. 
-            //b1's option is strictMode is true, replaceNull = The ${path} is undefined, and markdown lineBreakStyle
+            //a1.lg imports b1.lg. 
+            //a1's option is strictMode is false, replaceNull = ${path} is undefined, and defalut lineBreakStyle.
+            //b1's option is strictMode is true, replaceNull = The ${path} is undefined, and markdown lineBreakStyle.
             var templates2 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a1.lg"));
 
             var evaled2 = templates2.Evaluate("SayHello");
 
-            Assert.AreEqual("hi the user.name is undefined", evaled2);
+            Assert.AreEqual("hi user.name is undefined", evaled2);
 
-            Assert.AreEqual(templates2.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
+            Assert.AreEqual(templates2.LgOptions.LineBreakStyle, LGLineBreakStyle.Default);
 
             //a2.lg imports b2.lg and c2.lg. 
             //a2.lg: replaceNull = The ${path} is undefined  
@@ -1127,11 +1128,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual("hi the user.name is undefined", evaled3);
 
-            Assert.AreEqual(templates3.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
+            Assert.AreEqual(templates3.LgOptions.LineBreakStyle, null);
 
             //a3.lg imports b3.lg and c3.lg in sequence. 
             //b3.lg imports d3.lg 
-            //a3.lg: lineBreakStyle = markdown
+            //a3.lg: lineBreakStyle = markdown, replaceNull = the ${path} is undefined a3!
             //b3.lg: lineBreakStyle = default
             //d3: replaceNull = ${path} is evaluated to null in d3!
             //c3: replaceNull = ${path} is evaluated to null in c3!
@@ -1139,7 +1140,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaled4 = templates4.Evaluate("SayHello");
 
-            Assert.AreEqual("hi user.name is evaluated to null in d3!", evaled4);
+            Assert.AreEqual("hi the user.name is undefined a3!", evaled4);
 
             Assert.AreEqual(templates4.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
 
@@ -1155,19 +1156,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual($"m\ns\nf\nt\n", evaled4.ToString().Replace("\r\n", "\n"));
 
             //a4.lg imports b4.lg and c4.lg in sequence. 
-            //b4.lg imports d3.lg, c4.lg imports f4.lg,
-            //a4.lg, b4.lg, c4.lg: nothing but import statement
-            //d4: only have template definition
-            //f4: only options, strictMode = true, replaceNull = The ${path} is undefined, lineBreaStyle = markdown
+            //b4.lg imports d3.lg, c4.lg imports f4.lg.
+            //a4.lg: replaceNull = the ${path} is undefined a4!.
+            //b4.lg, c4.lg: nothing but import statement.
+            //d4: only have template definition.
+            //f4: only options, strictMode = true, replaceNull = The ${path} is undefined, lineBreaStyle = markdown.
             var templates5 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a4.lg"));
 
             var evaled5 = templates5.Evaluate("SayHello");
 
-            Assert.AreEqual("hi the user.name is undefined", evaled5);
+            Assert.AreEqual("hi the user.name is undefined a4!", evaled5);
 
-            Assert.AreEqual(templates5.LgOptions.StrictMode, true);
+            Assert.AreEqual(templates5.LgOptions.StrictMode, null);
 
-            Assert.AreEqual(templates5.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
+            Assert.AreEqual(templates5.LgOptions.LineBreakStyle, null);
         }
 
         [TestMethod]

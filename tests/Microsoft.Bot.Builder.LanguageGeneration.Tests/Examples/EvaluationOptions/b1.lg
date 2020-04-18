@@ -1,5 +1,5 @@
 ﻿> !# @strict = true
-> !# @replaceNull = The ${path} is undefined  
+> !# @replaceNull = the ${path} is undefined  
 > !# @lineBreakStyle = markdown
 
 #echo

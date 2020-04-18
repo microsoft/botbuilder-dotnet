@@ -1,4 +1,8 @@
-﻿#SayHello
+﻿> !# @strict = false
+> !# @replaceNull = ${path} is undefined  
+> !# @lineBreakStyle = default
+
+#SayHello
 - hi ${user.name}
 
 #testInlineString

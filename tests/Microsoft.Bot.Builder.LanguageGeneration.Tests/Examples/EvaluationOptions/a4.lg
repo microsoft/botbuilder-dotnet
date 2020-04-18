@@ -1,4 +1,5 @@
-﻿> nothing here
+﻿> !# @replaceNull = the ${path} is undefined a4!
+> nothing here
 
 [import](b4.lg)
 [import](c4.lg)
