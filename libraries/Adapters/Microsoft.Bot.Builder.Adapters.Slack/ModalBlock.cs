@@ -15,6 +15,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public StaticSelectedOption SelectedOption { get; set; }
 
         [JsonProperty(PropertyName = "selected_options")]
-        public List<StaticSelectedOption> SelectedOptions { get; set; }
+        public List<StaticSelectedOption> SelectedOptions { get; } = new List<StaticSelectedOption>();
     }
 }
