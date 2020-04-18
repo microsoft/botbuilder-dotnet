@@ -26,15 +26,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         [JsonProperty(PropertyName = "action_ts")]
         public string ActionTs { get; set; }
 
-        /// <summary>
-        /// Used with multi select menu.
-        /// </summary>
         [JsonProperty(PropertyName = "selected_options")]
         public List<SlackMenuOption> SelectedOptions { get; } = new List<SlackMenuOption>();
 
-        /// <summary>
-        /// Used with select menu.
-        /// </summary>
         [JsonProperty(PropertyName = "selected_option")]
         public SlackMenuOption SelectedOption { get; set; }
     }
