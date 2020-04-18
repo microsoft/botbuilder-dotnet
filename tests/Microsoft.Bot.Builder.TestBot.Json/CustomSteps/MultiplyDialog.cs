@@ -51,8 +51,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var arg1  = Arg1.GetValue(dc.State);
-            var arg2  = Arg2.GetValue(dc.State);
+            var arg1 = Arg1.GetValue(dc.State);
+            var arg2 = Arg2.GetValue(dc.State);
 
             var result = Convert.ToInt32(arg1) * Convert.ToInt32(arg2);
             if (this.ResultProperty != null)
