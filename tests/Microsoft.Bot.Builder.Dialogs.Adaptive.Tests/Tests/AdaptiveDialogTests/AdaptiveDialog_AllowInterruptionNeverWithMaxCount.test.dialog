@@ -23,11 +23,11 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.NumberInput",
-                        "allowInterruptions": "False",
+                        "allowInterruptions": false,
                         "property": "user.age",
                         "prompt": "What is your age?",
                         "maxTurnCount": 2,
-                        "defaultValue": "30"
+                        "defaultValue": 30
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

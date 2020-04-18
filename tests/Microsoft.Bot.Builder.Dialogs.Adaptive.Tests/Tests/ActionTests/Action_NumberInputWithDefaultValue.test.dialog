@@ -13,7 +13,7 @@
                         "property": "turn.age",
                         "prompt": "What is your age?",
                         "maxTurnCount": 1,
-                        "defaultValue": "10"
+                        "defaultValue": 10
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

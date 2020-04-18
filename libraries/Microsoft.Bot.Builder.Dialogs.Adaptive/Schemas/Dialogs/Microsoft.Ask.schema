@@ -11,9 +11,7 @@
         {
             "properties": {
                 "expectedProperties": {
-                    "$role": "expression",
-                    "type": [ "array", "string" ],
-                    "pattern": "^=(\\S){1}",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
                     "title": "Expected Properties",
                     "description": "Properties expected from the user.",
                     "items": {
@@ -29,9 +27,7 @@
                     ]
                 },
                 "defaultOperation": {
-                    "$role": "expression",
-                    "type": "string",
-                    "pattern": "^(\\S){1}",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Default Operation",
                     "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
                     "examples": [

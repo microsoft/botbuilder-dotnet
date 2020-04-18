@@ -11,9 +11,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
-            "pattern": "^=(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -21,9 +19,7 @@
             ]
         },
         "itemsProperty": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Items property",
             "description": "Property that holds the array.",
             "examples": [
@@ -39,25 +35,19 @@
             "description": "Actions to execute for each page. Use '$foreach.page' to access each page."
         },
         "pageIndex": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Index property",
             "description": "Property that holds the index of the page.",
             "default": "dialog.foreach.pageindex"
         },
         "page": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Page property",
             "description": "Property that holds the value of the page.",
             "default": "dialog.foreach.page"
         },
         "pageSize": {
-            "$role": "expression",
-            "type": "integer",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
             "title": "Page size",
             "description": "Number of items in each page.",
             "default": 10

@@ -11,9 +11,7 @@
         {
             "properties": {
                 "defaultValue": {
-                    "$role": "expression",
-                    "type": "string",
-                    "pattern": "(\\S.*?){1}",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Default value",
                     "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
                     "examples": [
@@ -23,9 +21,7 @@
                     ]
                 },
                 "value": {
-                    "$role": "expression",
-                    "type": "string",
-                    "pattern": "(\\S.*?){1}",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Value",
                     "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
@@ -35,9 +31,7 @@
                     ]
                 },
                 "outputFormat": {
-                    "$role": "expression",
-                    "type": "string",
-                    "pattern": "(\\S.*?){1}",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Output format",
                     "description": "Expression to format the output.",
                     "examples": [

@@ -23,7 +23,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.NumberInput",
-                        "allowInterruptions": "False",
+                        "allowInterruptions": false,
                         "property": "user.age",
                         "prompt": "What is your age?",
                         "invalidPrompt": "Sorry. ${this.value} does not work. I'm looking for a value between 1-150. What is your age?",

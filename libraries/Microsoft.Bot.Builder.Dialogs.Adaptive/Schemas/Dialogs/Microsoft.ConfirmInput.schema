@@ -11,19 +11,15 @@
         {
             "properties": {
                 "outputFormat": {
-                    "$role": "expression",
-                    "type": "string",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Output format",
                     "description": "Optional expression to use to format the output.",
                     "examples": [
                         "=concat('confirmation:', this.value)"
-                    ],
-                    "minLength": 1,
-                    "pattern": "(\\S.*?){1}"
+                    ]
                 },
                 "defaultLocale": {
-                    "$role": "expression",
-                    "type": "string",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Default locale",
                     "description": "The Default locale or an expression which provides the default locale to use as default if not found in the activity.",
                     "default": "en-us",
@@ -31,8 +27,7 @@
                     "pattern": "(\\S.*?){1}"
                 },
                 "style": {
-                    "$role": "expression",
-                    "type": "string",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "List style",
                     "description": "The style or an expression to the style to use to render choices.",
                     "oneOf": [
@@ -50,13 +45,11 @@
                             "pattern": "^=(\\S){1}"
                         }
                     ],
-                    "default": "Auto",
-                    "minLength": 1,
+                    "default": "auto",
                     "pattern": "(\\S.*?){1}"
                 },
                 "choiceOptions": {
-                    "$role": "expression",
-                    "type": "object",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
                     "title": "Choice Options",
                     "description": "Choice Options or expression which provides Choice Options to control display choices to the user.",
                     "properties": {
@@ -84,14 +77,10 @@
                             "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
                             "default": true
                         }
-                    },
-                    "minLength": 1,
-                    "pattern": "(\\S.*?){1}"
+                    }
                 },
                 "defaultValue": {
-                    "$role": "expression",
-                    "type": [ "boolean", "string" ],
-                    "pattern": "^=(\\S){1}",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
                     "title": "Default value",
                     "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
                     "examples": [
@@ -100,9 +89,7 @@
                     ]
                 },
                 "value": {
-                    "$role": "expression",
-                    "type": [ "boolean", "string" ],
-                    "pattern": "^=(\\S){1}",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
                     "title": "Value",
                     "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
@@ -111,8 +98,7 @@
                     ]
                 },
                 "confirmChoices": {
-                    "$role": "expression",
-                    "type": "array",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
                     "title": "Array of or expression which binds to choice definitions to present to the user.",
                     "minItems": 1,
                     "items": [

@@ -14,9 +14,7 @@
             "description": "Optional id for the dialog"
         },
         "changeType": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Type of change",
             "description": "Type of change to the array in memory.",
             "oneOf": [
@@ -36,9 +34,7 @@
             "default": "push"
         },
         "disabled": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
-            "pattern": "^=(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -46,30 +42,17 @@
             ]
         },
         "itemsProperty": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Items property",
             "description": "Property that holds the array to update."
         },
         "resultProperty": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Result Property",
             "description": "Property to store the result of this action."
         },
         "value": {
-            "$role": "expression",
-            "type": [
-                "object",
-                "array",
-                "number",
-                "integer",
-                "boolean",
-                "string"
-            ],
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/valueExpression",
             "title": "Value",
             "description": "New value or expression.",
             "examples": [

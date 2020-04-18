@@ -6,8 +6,7 @@
     "type": "object",
     "properties": {
         "age": {
-            "$role": "expression",
-            "type": [ "number", "string" ],
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
             "pattern": "^=(\\S){1}",
             "title": "Age",
             "description": "The age.",
@@ -17,16 +16,12 @@
             ]
         },
         "name": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Name",
             "description": "The name."
         },
         "resultProperty": {
-            "$role": "expression",
-            "type": "string",
-            "pattern": "^(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Property",
             "description": "Property to store any value returned by the dialog that is called.",
             "examples": [

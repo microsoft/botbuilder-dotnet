@@ -15,9 +15,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
-            "pattern": "^=(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -26,24 +24,14 @@
             ]
         },
         "property": {
-            "$role": "expression",
-            "type": "string",
-            "title": "Property",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "description": "Property (named location to store information).",
             "examples": [
                 "user.age"
             ]
         },
         "value": {
-            "$role": "expression",
-            "type": [
-                "object",
-                "array",
-                "number",
-                "integer",
-                "boolean",
-                "string"
-            ],
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/valueExpression",
             "title": "Value",
             "description": "New value or expression.",
             "examples": [

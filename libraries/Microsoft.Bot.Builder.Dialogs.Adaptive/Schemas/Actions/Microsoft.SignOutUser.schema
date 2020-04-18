@@ -11,8 +11,7 @@
             "description": "Optional id for the dialog"
         },
         "userId": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "ActivityId",
             "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
             "examples": [
@@ -20,15 +19,12 @@
             ]
         },
         "connectionName": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Connection Name",
             "description": "Connection name that was used with OAuthInput to log a user in."
         },
         "disabled": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
-            "pattern": "^=(\\S){1}",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
