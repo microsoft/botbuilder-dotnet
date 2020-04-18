@@ -11,7 +11,7 @@
         {
             "properties": {
                 "outputFormat": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/valueExpression",
                     "title": "Output format",
                     "description": "Optional expression to use to format the output.",
                     "examples": [
@@ -22,12 +22,14 @@
                     "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Default locale",
                     "description": "The Default locale or an expression which provides the default locale to use as default if not found in the activity.",
-                    "default": "en-us"
+                    "default": "en-us",
+                    "examples": [
+                        "en-us"
+                    ]
                 },
                 "style": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
-                    "title": "List style",
-                    "description": "The style or an expression to the style to use to render choices.",
+                    "$role": "expression",
+                    "type": "string",
                     "oneOf": [
                         {
                             "enum": [
@@ -43,6 +45,8 @@
                             "pattern": "^=(\\S){1}"
                         }
                     ],
+                    "title": "List style",
+                    "description": "Sets the ListStyle to control how choices are rendered.",
                     "default": "auto"
                 },
                 "choiceOptions": {
@@ -95,34 +99,45 @@
                     ]
                 },
                 "confirmChoices": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
-                    "title": "Array of or expression which binds to choice definitions to present to the user.",
-                    "minItems": 1,
-                    "items": [
+                    "$role": "expression",
+                    "title": "Array of choice objects",
+                    "type": "array",
+                    "oneOf": [
                         {
-                            "type": "object",
-                            "title": "Choice",
-                            "description": "Choice definition to present to the user.",
-                            "properties": {
-                                "value": {
-                                    "type": "string",
-                                    "title": "Value",
-                                    "description": "Value to return when this choice is selected."
-                                },
-                                "action": {
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        {
+                            "items": [
+                                {
                                     "type": "object",
-                                    "title": "Action",
-                                    "description": "Card action for the choice"
-                                },
-                                "synonyms": {
-                                    "type": "array",
-                                    "title": "Synonyms",
-                                    "description": "List of synonyms to recognize in addition to the value (optional)",
-                                    "items": {
-                                        "type": "string"
+                                    "title": "Choice",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "description": "Value to return when this choice is selected."
+                                        },
+                                        "action": {
+                                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/CardAction",
+                                            "title": "Action",
+                                            "description": "Card action for the choice."
+                                        },
+                                        "synonyms": {
+                                            "type": "array",
+                                            "title": "Synonyms",
+                                            "description": "List of synonyms to recognize in addition to the value (optional).",
+                                            "items": {
+                                                "type": "string",
+                                                "title": "Synonym"
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            ]
                         }
                     ]
                 }
