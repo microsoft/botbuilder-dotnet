@@ -7,6 +7,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -241,14 +242,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
         }
 
-        // We should only cancel the current dialog stack if the EoC activity is coming from a parent (a root bot or another skill).
-        // When the EoC is coming back from a child, we should just process that EoC normally through the 
-        // dialog stack and let the child dialogs handle that.
-        private static bool IsEocComingFromParent(ITurnContext turnContext)
+        private static bool IsFromParentToSkill(ITurnContext turnContext)
         {
-            // To determine the direction we check callerId property which is set to the parent bot
-            // by the BotFrameworkHttpClient on outgoing requests.
-            return !string.IsNullOrWhiteSpace(turnContext.Activity.CallerId);
+            if (turnContext.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey) != null)
+            {
+                return false;
+            }
+
+            return turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims);
         }
 
         // Recursively walk up the DC stack to find the active DC.
@@ -269,7 +270,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var turnContext = dc.Context;
 
             // Process remote cancellation
-            if (turnContext.Activity.Type == ActivityTypes.EndOfConversation && dc.ActiveDialog != null && IsEocComingFromParent(turnContext))
+            if (turnContext.Activity.Type == ActivityTypes.EndOfConversation && dc.ActiveDialog != null && IsFromParentToSkill(turnContext))
             {
                 // Handle remote cancellation request from parent.
                 var activeDialogContext = GetActiveDialogContext(dc);
