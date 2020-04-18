@@ -11,17 +11,20 @@
             "description": "Optional unique id using with RecognizerSet."
         },
         "knowledgeBaseId": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression","title": "KnowledgeBase Id",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "title": "KnowledgeBase Id",
             "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
             "default": "settings.qna.knowledgebaseid"
         },
         "endpointKey": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression","title": "Endpoint Key",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "title": "Endpoint Key",
             "description": "Endpoint key for the QnA Maker KB.",
             "default": "settings.qna.endpointkey"
         },
         "hostname": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression","title": "Hostname",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "title": "Hostname",
             "description": "Hostname for your QnA Maker service.",
             "default": "settings.qna.hostname",
             "examples": [
@@ -66,16 +69,21 @@
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "IsTest",
             "description": "True, if pointing to Test environment, else false.",
-            "default": false,
             "examples": [
                 true,
                 "=f(x)"
             ]
         },
         "rankerType": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression","title": "RankerType",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "title": "Ranker Type",
+            "enum": [
+                "default",
+                "questionOnly",
+                "autoSuggestQuestion"
+            ],
             "description": "Type of Ranker.",
-            "default": "Default"
+            "default": "default"
         },
         "includeDialogNameInMetadata": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",

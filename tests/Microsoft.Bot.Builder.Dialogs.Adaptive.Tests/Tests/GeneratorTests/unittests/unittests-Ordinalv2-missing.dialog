@@ -1,9 +1,8 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Ordinalv2",
-    "priority": "indexOf(dialog.requiredProperties, 'Ordinalv2')",
+    "condition": "!$Ordinalv2",
+    "priority": "=indexOf(dialog.requiredProperties, 'Ordinalv2')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",

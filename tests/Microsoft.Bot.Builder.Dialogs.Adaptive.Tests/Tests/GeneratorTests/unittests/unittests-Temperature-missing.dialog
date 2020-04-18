@@ -1,9 +1,8 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Temperature",
-    "priority": "indexOf(dialog.requiredProperties, 'Temperature')",
+    "condition": "!$Temperature",
+    "priority": "=indexOf(dialog.requiredProperties, 'Temperature')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",

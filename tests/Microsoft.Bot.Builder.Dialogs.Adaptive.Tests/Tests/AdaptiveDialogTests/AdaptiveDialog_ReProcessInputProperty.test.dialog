@@ -8,12 +8,10 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    
                     "intent": "Interruption",
                     "pattern": "(?i)interrupt"
                 },
                 {
-                    
                     "intent": "Start",
                     "pattern": "(?i)start"
                 }

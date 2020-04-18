@@ -43,7 +43,7 @@
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
             "title": "Timeout",
             "description": "Time out setting for the OAuth signin card.",
-            "default": "900000"
+            "default": 900000
         },
         "property": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
@@ -100,7 +100,6 @@
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Always prompt",
             "description": "Collect information even if the specified 'property' is not empty.",
-            "default": false,
             "examples": [
                 true,
                 "=f(x)"

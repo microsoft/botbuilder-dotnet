@@ -1,6 +1,5 @@
-
 {
-    "$schema": "../../../../tests.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Name",
     "entity": "utterance",
@@ -12,7 +11,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Name",
-            "value": "=@utterance"          
+            "value": "=@utterance"
         }
-    ]               
+    ]
 }

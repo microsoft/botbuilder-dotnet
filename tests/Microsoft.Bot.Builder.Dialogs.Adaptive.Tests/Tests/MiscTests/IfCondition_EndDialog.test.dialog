@@ -8,12 +8,10 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    
                     "intent": "HelpIntent",
                     "pattern": "(?i)help"
                 },
                 {
-                    
                     "intent": "CancelIntent",
                     "pattern": "(?i)cancel"
                 }

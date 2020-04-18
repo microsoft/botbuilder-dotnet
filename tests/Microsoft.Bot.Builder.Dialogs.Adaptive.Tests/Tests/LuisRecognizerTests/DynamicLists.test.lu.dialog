@@ -3,5 +3,6 @@
     "recognizers": {
         "en-us": "DynamicLists.test.en_us.lu",
         "": "DynamicLists.test.en_us.lu"
-    }
+    },
+    "$schema": "../../../tests.schema"
 }

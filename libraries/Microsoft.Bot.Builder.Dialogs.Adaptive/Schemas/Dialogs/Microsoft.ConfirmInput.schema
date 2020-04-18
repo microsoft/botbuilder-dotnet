@@ -22,9 +22,7 @@
                     "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Default locale",
                     "description": "The Default locale or an expression which provides the default locale to use as default if not found in the activity.",
-                    "default": "en-us",
-                    "minLength": 1,
-                    "pattern": "(\\S.*?){1}"
+                    "default": "en-us"
                 },
                 "style": {
                     "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
@@ -45,8 +43,7 @@
                             "pattern": "^=(\\S){1}"
                         }
                     ],
-                    "default": "auto",
-                    "pattern": "(\\S.*?){1}"
+                    "default": "auto"
                 },
                 "choiceOptions": {
                     "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",

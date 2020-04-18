@@ -1,12 +1,13 @@
-
 {
-    "$schema": "../../../../tests.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.OnChooseProperty",
     "actions": [
         {
             "$kind": "Microsoft.Ask",
             "activity": "${chooseProperties()}",
-            "expectedProperties": ["PropertyToChange"]
+            "expectedProperties": [
+                "PropertyToChange"
+            ]
         }
     ]
 }

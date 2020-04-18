@@ -94,7 +94,7 @@
                     "pattern": "^=(\\S){1}"
                 }
             ],
-            "default": "Json"
+            "default": "json"
         }
     }
 }

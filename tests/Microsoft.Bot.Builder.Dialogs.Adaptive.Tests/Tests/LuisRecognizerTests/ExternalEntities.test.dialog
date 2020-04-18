@@ -1,4 +1,4 @@
-﻿{
+{
     "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {

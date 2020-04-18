@@ -646,7 +646,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "name": {
                     "title": "Name",
@@ -781,7 +782,7 @@
                     "type": "boolean",
                     "title": "Auto end dialog",
                     "description": "If set to true the dialog will automatically end when there are no further actions.  If set to false, remember to manually end the dialog using EndDialog action.",
-                    "default": "true"
+                    "default": true
                 },
                 "defaultResultProperty": {
                     "type": "string",
@@ -1139,15 +1140,16 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type": "boolean",
-                                "title": "boolean"
-                            },
-                            {
                                 "type": "string",
                                 "pattern": "^(\\S){1}",
                                 "title": "string"
+                            },
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
                             }
-                        ]
+                        ],
+                        "default": "true"
                     }
                 },
                 "property": {
@@ -1387,7 +1389,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
@@ -1525,7 +1528,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -1601,7 +1605,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "eventName": {
                     "title": "Event name",
@@ -1786,15 +1791,16 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type": "boolean",
-                                "title": "boolean"
-                            },
-                            {
                                 "type": "string",
                                 "pattern": "^(\\S){1}",
                                 "title": "string"
+                            },
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
                             }
-                        ]
+                        ],
+                        "default": "true"
                     }
                 },
                 "property": {
@@ -1950,7 +1956,7 @@
                     ],
                     "title": "List style",
                     "description": "Sets the ListStyle to control how choices are rendered.",
-                    "default": "Auto"
+                    "default": "auto"
                 },
                 "choiceOptions": {
                     "title": "Choice options",
@@ -2094,15 +2100,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "ifTrue": {
                     "$kind": "Microsoft.ITriggerSelector",
@@ -2264,15 +2271,16 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type": "boolean",
-                                "title": "boolean"
-                            },
-                            {
                                 "type": "string",
                                 "pattern": "^(\\S){1}",
                                 "title": "string"
+                            },
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
                             }
-                        ]
+                        ],
+                        "default": "true"
                     }
                 },
                 "property": {
@@ -2341,9 +2349,8 @@
                     "title": "Default locale",
                     "description": "The Default locale or an expression which provides the default locale to use as default if not found in the activity.",
                     "default": "en-us",
-                    "minLength": 1,
-                    "pattern": "(\\S.*?){1}",
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "^(\\S){1}"
                 },
                 "style": {
                     "title": "List style",
@@ -2364,8 +2371,8 @@
                         }
                     ],
                     "default": "auto",
-                    "pattern": "(\\S.*?){1}",
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "^(\\S){1}"
                 },
                 "choiceOptions": {
                     "title": "Choice Options",
@@ -2427,7 +2434,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "value": {
                     "title": "Value",
@@ -2447,7 +2455,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "confirmChoices": {
                     "title": "Array of or expression which binds to choice definitions to present to the user.",
@@ -2618,7 +2627,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -2940,15 +2950,16 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type": "boolean",
-                                "title": "boolean"
-                            },
-                            {
                                 "type": "string",
                                 "pattern": "^(\\S){1}",
                                 "title": "string"
+                            },
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
                             }
-                        ]
+                        ],
+                        "default": "true"
                     }
                 },
                 "property": {
@@ -3107,7 +3118,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -3192,7 +3204,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -3269,7 +3282,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "properties": {
                     "type": "array",
@@ -3357,7 +3371,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "property": {
                     "title": "Property",
@@ -3492,7 +3507,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "changeType": {
                     "title": "Type of change",
@@ -3620,7 +3636,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "itemsProperty": {
                     "title": "Items property",
@@ -3793,7 +3810,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "eventName": {
                     "title": "Event name",
@@ -3852,7 +3870,6 @@
                 "bubbleEvent": {
                     "title": "Bubble event",
                     "description": "If true this event is passed on to parent dialogs.",
-                    "default": false,
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -3864,7 +3881,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -3941,7 +3959,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "value": {
                     "title": "Value",
@@ -4048,7 +4067,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -4176,7 +4196,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "itemsProperty": {
                     "title": "Items property",
@@ -4286,7 +4307,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "itemsProperty": {
                     "title": "Items property",
@@ -4431,7 +4453,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -4516,7 +4539,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -4592,7 +4616,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "actionId": {
                     "title": "Action Id",
@@ -4779,7 +4804,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "method": {
                     "type": "string",
@@ -4878,7 +4904,7 @@
                             "pattern": "^=(\\S){1}"
                         }
                     ],
-                    "default": "Json",
+                    "default": "json",
                     "type": "string",
                     "pattern": "^(\\S){1}"
                 }
@@ -5572,15 +5598,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "disabled": {
                     "title": "Disabled",
@@ -5600,7 +5627,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "actions": {
                     "type": "array",
@@ -5800,7 +5828,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "text": {
                     "title": "Text",
@@ -5817,7 +5846,6 @@
                 "traceActivity": {
                     "title": "Send Trace Activity",
                     "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator).",
-                    "default": false,
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -5829,7 +5857,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -6385,15 +6414,16 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type": "boolean",
-                                "title": "boolean"
-                            },
-                            {
                                 "type": "string",
                                 "pattern": "^(\\S){1}",
                                 "title": "string"
+                            },
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
                             }
-                        ]
+                        ],
+                        "default": "true"
                     }
                 },
                 "property": {
@@ -6467,7 +6497,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "value": {
                     "title": "Value",
@@ -6487,7 +6518,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "outputFormat": {
                     "title": "Output format",
@@ -6637,7 +6669,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "text": {
                     "title": "Text",
@@ -6661,7 +6694,7 @@
                 "timeout": {
                     "title": "Timeout",
                     "description": "Time out setting for the OAuth signin card.",
-                    "default": "900000",
+                    "default": 900000,
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -6755,7 +6788,6 @@
                 "alwaysPrompt": {
                     "title": "Always prompt",
                     "description": "Collect information even if the specified 'property' is not empty.",
-                    "default": false,
                     "examples": [
                         true,
                         "=f(x)"
@@ -6771,7 +6803,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -6835,15 +6868,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -6864,10 +6898,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -6887,7 +6922,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "type": {
                     "type": "string",
@@ -6957,15 +6993,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -6986,10 +7023,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -7009,7 +7047,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "property": {
                     "type": "string",
@@ -7087,15 +7126,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -7116,10 +7156,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -7139,7 +7180,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -7203,15 +7245,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -7232,10 +7275,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -7255,7 +7299,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -7319,15 +7364,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -7348,10 +7394,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -7371,7 +7418,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "property": {
                     "type": "string",
@@ -7445,15 +7493,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -7474,10 +7523,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -7497,7 +7547,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "intents": {
                     "type": "array",
@@ -7569,15 +7620,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -7598,10 +7650,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -7621,7 +7674,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "entity": {
                     "type": "string",
@@ -7708,15 +7762,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -7737,10 +7792,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -7760,7 +7816,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -7824,15 +7881,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -7853,10 +7911,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -7876,7 +7935,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -7940,15 +8000,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -7969,10 +8030,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -7992,7 +8054,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "event": {
                     "type": "string",
@@ -8062,15 +8125,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -8091,10 +8155,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -8114,7 +8179,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "event": {
                     "type": "string",
@@ -8184,15 +8250,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -8213,10 +8280,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -8236,7 +8304,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -8300,15 +8369,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -8329,10 +8399,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -8352,7 +8423,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -8416,15 +8488,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -8445,10 +8518,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -8468,7 +8542,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -8532,15 +8607,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -8561,10 +8637,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -8584,7 +8661,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -8648,15 +8726,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -8677,10 +8756,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -8700,7 +8780,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -8764,15 +8845,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -8793,10 +8875,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -8816,7 +8899,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "intent": {
                     "type": "string",
@@ -8894,15 +8978,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -8923,10 +9008,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -8946,7 +9032,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -9010,15 +9097,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -9039,10 +9127,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -9062,7 +9151,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -9126,15 +9216,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -9155,10 +9246,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -9178,7 +9270,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -9242,15 +9335,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -9271,10 +9365,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -9294,7 +9389,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -9358,15 +9454,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -9387,10 +9484,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -9410,7 +9508,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -9474,15 +9573,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -9503,10 +9603,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -9526,7 +9627,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -9590,15 +9692,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -9619,10 +9722,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -9642,7 +9746,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -9706,15 +9811,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -9735,10 +9841,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -9758,7 +9865,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -9822,15 +9930,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "actions": {
                     "type": "array",
@@ -9851,10 +9960,11 @@
                         },
                         {
                             "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to integer."
+                            "pattern": "^=(\\S){1}",
+                            "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "runOnce": {
                     "title": "Run Once",
@@ -9874,7 +9984,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -10210,15 +10321,23 @@
                     "default": false
                 },
                 "rankerType": {
-                    "type": "string",
-                    "title": "RankerType",
+                    "title": "Ranker Type",
                     "description": "Type of Ranker.",
-                    "enum": [
-                        "default",
-                        "questionOnly",
-                        "autoSuggestQuestion"
+                    "oneOf": [
+                        {
+                            "enum": [
+                                "default",
+                                "questionOnly",
+                                "autoSuggestQuestion"
+                            ]
+                        },
+                        {
+                            "pattern": "^=(\\S){1}"
+                        }
                     ],
-                    "default": "Default"
+                    "default": "default",
+                    "type": "string",
+                    "pattern": "^(\\S){1}"
                 }
             },
             "patternProperties": {
@@ -10373,7 +10492,6 @@
                 "isTest": {
                     "title": "IsTest",
                     "description": "True, if pointing to Test environment, else false.",
-                    "default": false,
                     "examples": [
                         true,
                         "=f(x)"
@@ -10389,12 +10507,18 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "rankerType": {
-                    "title": "RankerType",
+                    "title": "Ranker Type",
+                    "enum": [
+                        "default",
+                        "questionOnly",
+                        "autoSuggestQuestion"
+                    ],
                     "description": "Type of Ranker.",
-                    "default": "Default",
+                    "default": "default",
                     "type": "string",
                     "pattern": "^(\\S){1}"
                 },
@@ -10477,7 +10601,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 }
             },
             "additionalProperties": false,
@@ -10828,7 +10953,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "options": {
                     "title": "Options",
@@ -10941,7 +11067,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
@@ -11206,7 +11333,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "assignments": {
                     "type": "array",
@@ -11335,7 +11463,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "property": {
                     "description": "Property (named location to store information).",
@@ -11469,7 +11598,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 }
             },
             "additionalProperties": false,
@@ -11546,7 +11676,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "activityProcessed": {
                     "title": "Activity Processed",
@@ -12456,7 +12587,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "cases": {
                     "type": "array",
@@ -12676,15 +12808,16 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
                             "type": "string",
                             "pattern": "^(\\S){1}",
                             "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
                         }
-                    ]
+                    ],
+                    "default": "true"
                 },
                 "description": {
                     "type": "string",
@@ -12777,15 +12910,16 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type": "boolean",
-                                "title": "boolean"
-                            },
-                            {
                                 "type": "string",
                                 "pattern": "^(\\S){1}",
                                 "title": "string"
+                            },
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
                             }
-                        ]
+                        ],
+                        "default": "true"
                     }
                 }
             },
@@ -12863,15 +12997,16 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type": "boolean",
-                                "title": "boolean"
-                            },
-                            {
                                 "type": "string",
                                 "pattern": "^(\\S){1}",
                                 "title": "string"
+                            },
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
                             }
-                        ]
+                        ],
+                        "default": "true"
                     }
                 }
             },
@@ -12963,15 +13098,16 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type": "boolean",
-                                "title": "boolean"
-                            },
-                            {
                                 "type": "string",
                                 "pattern": "^(\\S){1}",
                                 "title": "string"
+                            },
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
                             }
-                        ]
+                        ],
+                        "default": "true"
                     }
                 }
             },
@@ -13567,15 +13703,16 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type": "boolean",
-                                "title": "boolean"
-                            },
-                            {
                                 "type": "string",
                                 "pattern": "^(\\S){1}",
                                 "title": "string"
+                            },
+                            {
+                                "type": "boolean",
+                                "title": "boolean"
                             }
-                        ]
+                        ],
+                        "default": "true"
                     }
                 },
                 "property": {
@@ -13796,7 +13933,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "name": {
                     "title": "Name",
@@ -13970,7 +14108,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "activityId": {
                     "title": "Activity Id",
@@ -14172,7 +14311,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": false
                 },
                 "script": {
                     "type": "string",
@@ -14274,7 +14414,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "arg2": {
                     "title": "Arg2",
@@ -14290,7 +14431,8 @@
                             "pattern": "^=(\\S){1}",
                             "title": "string"
                         }
-                    ]
+                    ],
+                    "default": 0
                 },
                 "result": {
                     "title": "Result",

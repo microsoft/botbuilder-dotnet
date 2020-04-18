@@ -4,12 +4,12 @@
     "intents": [],
     "entities": [
         {
-            "$kind":"Microsoft.RegexEntityRecognizer",
+            "$kind": "Microsoft.RegexEntityRecognizer",
             "name": "alphaEntity",
             "pattern": "a"
         },
         {
-            "$kind":"Microsoft.RegexEntityRecognizer",
+            "$kind": "Microsoft.RegexEntityRecognizer",
             "name": "numberEntity",
             "pattern": "one"
         }

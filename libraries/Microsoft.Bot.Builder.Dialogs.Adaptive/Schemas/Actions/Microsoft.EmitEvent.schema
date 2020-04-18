@@ -55,8 +55,7 @@
         "bubbleEvent": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Bubble event",
-            "description": "If true this event is passed on to parent dialogs.",
-            "default": false
+            "description": "If true this event is passed on to parent dialogs."
         }
     }
 }

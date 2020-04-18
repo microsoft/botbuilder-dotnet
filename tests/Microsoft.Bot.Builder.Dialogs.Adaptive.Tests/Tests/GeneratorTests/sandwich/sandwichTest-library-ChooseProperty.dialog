@@ -1,4 +1,3 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnChooseProperty",
@@ -6,7 +5,9 @@
         {
             "$kind": "Microsoft.Ask",
             "activity": "${chooseProperties()}",
-            "expectedProperties": ["PropertyToChange"]
+            "expectedProperties": [
+                "PropertyToChange"
+            ]
         }
     ]
 }

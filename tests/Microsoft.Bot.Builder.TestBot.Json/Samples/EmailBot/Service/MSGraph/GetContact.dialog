@@ -1,5 +1,5 @@
 {
-    "$schema": "../../testbot.schema",
+    "$schema": "../../../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "actions": [
         {

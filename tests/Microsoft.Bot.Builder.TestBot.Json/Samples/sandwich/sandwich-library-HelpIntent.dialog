@@ -1,12 +1,11 @@
-
 {
-    "$schema": "../../../../tests.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.OnIntent",
     "intent": "Help",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${help(@PropertyName)}"           
+            "activity": "${help(@PropertyName)}"
         }
     ]
 }

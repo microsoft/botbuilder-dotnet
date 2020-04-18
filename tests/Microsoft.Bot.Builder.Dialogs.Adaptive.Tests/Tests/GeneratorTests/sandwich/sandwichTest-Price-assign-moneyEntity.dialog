@@ -1,4 +1,3 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
@@ -8,16 +7,16 @@
         {
             "$kind": "Microsoft.SendActivity",
             "activity": "${setObjectPropertyMessage('Price', concat(string(@money.number), ' ', @money.units))}"
-        }, 
+        },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Price.number",
-            "value": "=@money.number"          
+            "value": "=@money.number"
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Price.units",
-            "value": "=@money.units"          
+            "value": "=@money.units"
         }
-    ]               
+    ]
 }

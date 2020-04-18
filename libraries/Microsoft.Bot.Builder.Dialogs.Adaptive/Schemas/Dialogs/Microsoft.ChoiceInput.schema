@@ -104,7 +104,7 @@
                     ],
                     "title": "List style",
                     "description": "Sets the ListStyle to control how choices are rendered.",
-                    "default": "Auto"
+                    "default": "auto"
                 },
                 "choiceOptions": {
                     "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",

@@ -6,19 +6,14 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                
                 "intent": "JokeIntent",
                 "pattern": "(?i)joke"
-
             },
             {
-                
                 "intent": "FortuneTellerIntent",
                 "pattern": "(?i)fortune|future"
-
             },
             {
-                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel"
             }

@@ -1,4 +1,3 @@
-
 {
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
@@ -12,7 +11,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Email",
-            "value": "=@email"          
+            "value": "=@email"
         }
-    ]               
+    ]
 }

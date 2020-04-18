@@ -7,17 +7,14 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    
                     "intent": "a",
                     "pattern": "a"
                 },
                 {
-                    
                     "intent": "b",
                     "pattern": "b"
                 },
                 {
-                    
                     "intent": "trigger",
                     "pattern": "trigger"
                 }

@@ -90,15 +90,22 @@
             "default": false
         },
         "rankerType": {
-            "type": "string",
-            "title": "RankerType",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "title": "Ranker Type",
             "description": "Type of Ranker.",
-            "enum": [
-                "default",
-                "questionOnly",
-                "autoSuggestQuestion"
+            "oneOf": [
+                {
+                    "enum": [
+                        "default",
+                        "questionOnly",
+                        "autoSuggestQuestion"
+                    ]
+                },
+                {
+                    "pattern": "^=(\\S){1}"
+                }
             ],
-            "default": "Default"
+            "default": "default"
         }
     },
     "required": [

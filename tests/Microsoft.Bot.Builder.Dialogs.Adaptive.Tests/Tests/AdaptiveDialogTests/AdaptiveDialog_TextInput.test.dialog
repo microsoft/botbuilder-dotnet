@@ -45,7 +45,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Hello Carlos, nice to meet you!",
+            "text": "Hello Carlos, nice to meet you!"
         }
     ]
 }
