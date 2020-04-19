@@ -20,11 +20,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     /// <summary>
     /// NOTE: This requires BF CLI to be installed.
     /// </summary>
-    /// <remmarks>
+    /// <remarks>
     /// npm config set registry https://botbuilder.myget.org/F/botframework-cli/npm/
     /// npm i -g @microsoft/botframework-cli
     /// bf plugins:install @microsoft/bf-dialog
-    /// </remmarks
+    /// </remarks>
     [TestClass]
     public class SchemaMergeTests
     {
