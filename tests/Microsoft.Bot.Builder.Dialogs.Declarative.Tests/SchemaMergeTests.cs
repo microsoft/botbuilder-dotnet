@@ -1,5 +1,6 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
+#pragma warning disable SA1629 // Documentation text should end with a period
 
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     /// <summary>
     /// NOTE: This requires BF CLI to be installed.
     /// </summary>
+    /// <remmarks>
+    /// npm config set registry https://botbuilder.myget.org/F/botframework-cli/npm/
+    /// npm i -g @microsoft/botframework-cli
+    /// bf plugins:install @microsoft/bf-dialog
+    /// </remmarks
     [TestClass]
     public class SchemaMergeTests
     {
@@ -36,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             // static field initialization
             var projectPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             var testsPath = Path.GetFullPath(Path.Combine(projectPath, ".."));
-            var solutionPath = Path.GetFullPath(Path.Combine(projectPath, @"..\.."));
+            var solutionPath = Path.GetFullPath(Path.Combine(projectPath, PathUtils.NormalizePath(@"..\..")));
             var schemaPath = Path.Combine(testsPath, "tests.schema");
 
             var ignoreFolders = new string[]
@@ -52,44 +58,59 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
             Dialogs = ResourceExplorer.GetResources(".dialog")
                 .Cast<FileResource>()
-                .Where(r => !r.Id.EndsWith(".schema.dialog") && !ignoreFolders.Any(f => r.FullName.Contains(f))) 
+                .Where(r => !r.Id.EndsWith(".schema.dialog") && !ignoreFolders.Any(f => r.FullName.Contains(f)))
                 .Select(resource => new object[] { resource });
 
-            ProcessStartInfo startInfo;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            try
             {
-                startInfo = new ProcessStartInfo("cmd.exe", $"/C bf.cmd dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath} -b \"\"");
+                ProcessStartInfo startInfo;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bfd.cmd dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath} -b \"\"");
+                }
+                else
+                {
+                    startInfo = new ProcessStartInfo("bf", $"dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath} -b \"\"");
+                }
+
+                startInfo.UseShellExecute = false;
+                startInfo.WorkingDirectory = projectPath;
+                startInfo.CreateNoWindow = false;
+                startInfo.RedirectStandardError = true;
+
+                // startInfo.RedirectStandardOutput = true;
+                // string output = process.StandardOutput.ReadToEnd();
+
+                var process = Process.Start(startInfo);
+                string error = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Trace.TraceError(error);
+                }
             }
-            else
+            catch (Exception err)
             {
-                startInfo = new ProcessStartInfo("bf", $"dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath} -b \"\"");
+                Trace.TraceError(err.Message);
             }
 
-            startInfo.UseShellExecute = false;
-            startInfo.WorkingDirectory = projectPath;
-            startInfo.CreateNoWindow = false;
-            startInfo.RedirectStandardError = true;
-
-            // startInfo.RedirectStandardOutput = true;
-            // string output = process.StandardOutput.ReadToEnd();
-
-            var process = Process.Start(startInfo);
-            string error = process.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            if (error.Contains("is not recognized as an internal or external command") || (error.Contains("command not found") && error.Contains("bf: node: not found")))
+            if (File.Exists(schemaPath))
             {
-                Assert.Inconclusive(error);
+                var json = File.ReadAllText(schemaPath);
+                Schema = JSchema.Parse(json);
             }
-
-            var json = File.ReadAllText(schemaPath);
-            Schema = JSchema.Parse(json);
         }
 
         [DataTestMethod]
         [DynamicData(nameof(Dialogs))]
         public async Task TestDialogResourcesAreValidForSchema(IResource resource)
         {
+            if (Schema == null)
+            {
+                Assert.Fail("missing schema file");
+            }
+
             FileResource fileResource = resource as FileResource;
 
             // load the merged app schema file (validating it's truly a jsonschema doc
@@ -98,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var jtoken = (JToken)JsonConvert.DeserializeObject(json);
             var jobj = jtoken as JObject;
             var schema = jobj["$schema"]?.ToString();
- 
+
             try
             {
                 // everything should have $schema
