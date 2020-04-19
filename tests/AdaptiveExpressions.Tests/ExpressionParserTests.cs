@@ -18,10 +18,18 @@ namespace AdaptiveExpressions.Tests
     [TestClass]
     public class ExpressionParserTests
     {
+        private static readonly string LongJson = "{\"CreatedDate\":\"/Date(634250351766060665)/\"}";
+
+        //private static readonly string LongJson = "{\"d\":{\"results\":[{\"__metadata\":{},\"EntityID\":\"-11849\",\"Latitude\":47.608022,\"Longitude\":-122.191012,\"AddressLine\":\"300 112th Ave SE\",\"PrimaryCity\":\"Bellevue\",\"SecondaryCity\":\"\",\"Subdivision\":\"WA\",\"CountryRegion\":\"United States\",\"PostalCode\":\"98004\",\"Phone\":\"1-800-XXX-XXXX\",\"Manager\":\"Jolie Lenehan\",\"StoreOpen\":\"Y\",\"StoreType\":\"Drive-Thru\",\"Name\":\"Fourth Coffee Store #11849\",\"DisplayName\":\"Fourth Coffee Store #11849, Bellevue, WA, United States\",\"IsWiFiHotSpot\":false,\"SeatingCapacity\":\"\",\"IsWheelchairAccessible\":false,\"AcceptsOnlineOrders\":false,\"AcceptsCoffeeCards\":true,\"Open\":700,\"Close\":1800,\"CreatedDate\":\"/Date(634250351766060665)/\",\"LastUpdatedDate\":\"/Date(634254671766060665)/\",\"__Distance\":0.321865488068692}]}}";
+
+        //private static readonly string LongJson = "{\"d\":{\"__copyright\":\"\u00a9 2020 Microsoft and its suppliers. This API and any results cannot be used or accessed without Microsoft's express written permission.\",\"results\":[{\"__metadata\":{\"uri\":\"http://spatial.virtualearth.net/REST/v1/data/20181f26d9e94c81acdf9496133d4f23/FourthCoffeeSample/FourthCoffeeShops('-11849')\"},\"EntityID\":\"-11849\",\"Latitude\":47.608022,\"Longitude\":-122.191012,\"AddressLine\":\"300 112th Ave SE\",\"PrimaryCity\":\"Bellevue\",\"SecondaryCity\":\"\",\"Subdivision\":\"WA\",\"CountryRegion\":\"United States\",\"PostalCode\":\"98004\",\"Phone\":\"1-800-XXX-XXXX\",\"Manager\":\"Jolie Lenehan\",\"StoreOpen\":\"Y\",\"StoreType\":\"Drive-Thru\",\"Name\":\"Fourth Coffee Store #11849\",\"DisplayName\":\"Fourth Coffee Store #11849, Bellevue, WA, United States\",\"IsWiFiHotSpot\":false,\"SeatingCapacity\":\"\",\"IsWheelchairAccessible\":false,\"AcceptsOnlineOrders\":false,\"AcceptsCoffeeCards\":true,\"Open\":700,\"Close\":1800,\"CreatedDate\":\"/Date(634250351766060665)/\",\"LastUpdatedDate\":\"/Date(634254671766060665)/\",\"__Distance\":0.321865488068692},{\"__metadata\":{\"uri\":\"http://spatial.virtualearth.net/REST/v1/data/20181f26d9e94c81acdf9496133d4f23/FourthCoffeeSample/FourthCoffeeShops('-11885')\"},\"EntityID\":\"-11885\",\"Latitude\":47.617235,\"Longitude\":-122.193123,\"AddressLine\":\"11025 NE 8th St\",\"PrimaryCity\":\"Bellevue\",\"SecondaryCity\":\"\",\"Subdivision\":\"WA\",\"CountryRegion\":\"United States\",\"PostalCode\":\"98004\",\"Phone\":\"1-800-XXX-XXXX\",\"Manager\":\"Tad Orman\",\"StoreOpen\":\"N\",\"StoreType\":\"Drive-Thru\",\"Name\":\"Fourth Coffee Store #11885\",\"DisplayName\":\"Fourth Coffee Store #11885, Bellevue, WA, United States\",\"IsWiFiHotSpot\":false,\"SeatingCapacity\":\"\",\"IsWheelchairAccessible\":false,\"AcceptsOnlineOrders\":false,\"AcceptsCoffeeCards\":true,\"Open\":600,\"Close\":2300,\"CreatedDate\":\"/Date(634250351766060665)/\",\"LastUpdatedDate\":\"/Date(634254671766060665)/\",\"__Distance\":0.893310102166956},{\"__metadata\":{\"uri\":\"http://spatial.virtualearth.net/REST/v1/data/20181f26d9e94c81acdf9496133d4f23/FourthCoffeeSample/FourthCoffeeShops('-11856')\"},\"EntityID\":\"-11856\",\"Latitude\":47.609561,\"Longitude\":-122.200289,\"AddressLine\":\"144 105th Ave SE\",\"PrimaryCity\":\"Bellevue\",\"SecondaryCity\":\"\",\"Subdivision\":\"WA\",\"CountryRegion\":\"United States\",\"PostalCode\":\"98004\",\"Phone\":\"1-800-XXX-XXXX\",\"Manager\":\"Jenny Lysaker\",\"StoreOpen\":\"Y\",\"StoreType\":\"Kiosk\",\"Name\":\"Fourth Coffee Store #11856\",\"DisplayName\":\"Fourth Coffee Store #11856, Bellevue, WA, United States\",\"IsWiFiHotSpot\":false,\"SeatingCapacity\":\"\",\"IsWheelchairAccessible\":true,\"AcceptsOnlineOrders\":false,\"AcceptsCoffeeCards\":true,\"Open\":800,\"Close\":2200,\"CreatedDate\":\"/Date(634250351766060665)/\",\"LastUpdatedDate\":\"/Date(634254671766060665)/\",\"__Distance\":0.9302848346961}]}}";
         private static readonly string NullStr = null;
 
         private readonly object scope = new Dictionary<string, object>
         {
+            { 
+                "jsonContainsDatetime", "{\"date\": \"/Date(634250351766060665)/\", \"invalidDate\": \"/Date(whatever)/\"}"
+            },
             { "$index", "index" },
             {
                 "alist", new List<A>() { new A("item1"), new A("item2") }
@@ -620,6 +628,9 @@ namespace AdaptiveExpressions.Tests
             Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
             Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
+            Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
+            Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
+
             #endregion
 
             #region  Math functions test
@@ -916,7 +927,7 @@ namespace AdaptiveExpressions.Tests
         [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
-        {
+        { 
             var parsed = Expression.Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);

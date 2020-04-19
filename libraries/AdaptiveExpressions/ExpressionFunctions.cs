@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -3855,9 +3856,9 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(
-                    ExpressionType.Base64, 
+                    ExpressionType.Base64,
                     Apply(
-                        (args) => 
+                        (args) =>
                         {
                             byte[] byteArray;
                             if (args[0] is byte[] byteArr)
@@ -3870,8 +3871,8 @@ namespace AdaptiveExpressions
                             }
 
                             return Convert.ToBase64String(byteArray);
-                        }), 
-                    ReturnType.String, 
+                        }),
+                    ReturnType.String,
                     ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => Convert.FromBase64String(args[0].ToString()), VerifyString), ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
@@ -3957,7 +3958,21 @@ namespace AdaptiveExpressions
                     ValidateUnary),
 
                 // Object manipulation and construction functions
-                new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0].ToString())), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.Json,
+                    Apply(
+                        args =>
+                        {
+                            using (var textReader = new StringReader(args[0].ToString()))
+                            {
+                                using (var jsonReader = new JsonTextReader(textReader) { DateParseHandling = DateParseHandling.None })
+                                {
+                                    return JToken.ReadFrom(jsonReader);
+                                }
+                            }
+                        }), 
+                    ReturnType.Object,
+                    (expr) => ValidateOrder(expr, null, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.AddProperty,
                     ApplyWithError(args =>
