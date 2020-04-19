@@ -77,6 +77,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             string error = process.StandardError.ReadToEnd();
             process.WaitForExit();
 
+            if (!string.IsNullOrEmpty(error))
+            {
+                Assert.Inconclusive(error);
+            }
+
             var json = File.ReadAllText(schemaPath);
             Schema = JSchema.Parse(json);
         }
