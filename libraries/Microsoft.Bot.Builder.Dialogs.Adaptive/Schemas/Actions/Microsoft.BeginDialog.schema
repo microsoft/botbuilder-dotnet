@@ -21,7 +21,7 @@
         "dialog": {
             "$kind": "Microsoft.IDialog",
             "$role": "expression",
-            "pattern": "^(\\S){1}",
+            "pattern": "^.*\\S.*",
             "title": "Dialog name",
             "description": "Name of the dialog to call.",
             "examples": [

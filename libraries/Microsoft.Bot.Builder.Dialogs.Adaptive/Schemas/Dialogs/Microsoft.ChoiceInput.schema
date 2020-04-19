@@ -21,7 +21,7 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "title": "Output format",
@@ -95,7 +95,7 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "title": "List style",
