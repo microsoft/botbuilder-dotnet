@@ -7,7 +7,6 @@
     "properties": {
         "age": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
-            "pattern": "^=(\\S){1}",
             "title": "Age",
             "description": "The age.",
             "examples": [

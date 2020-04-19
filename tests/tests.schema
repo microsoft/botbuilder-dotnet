@@ -628,7 +628,6 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "age": {
-                    "pattern": "^=(\\S){1}",
                     "title": "Age",
                     "description": "The age.",
                     "examples": [
@@ -643,7 +642,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -653,7 +652,7 @@
                     "title": "Name",
                     "description": "The name.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "resultProperty": {
                     "title": "Property",
@@ -662,7 +661,7 @@
                         "$name"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "additionalProperties": false,
@@ -947,7 +946,7 @@
                         "user.age > 3"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -972,7 +971,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -989,7 +988,7 @@
                         "add"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "additionalProperties": false,
@@ -1064,7 +1063,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -1121,7 +1120,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -1141,7 +1140,7 @@
                         "oneOf": [
                             {
                                 "type": "string",
-                                "pattern": "^(\\S){1}",
+                                "pattern": "^.*\\S.*",
                                 "title": "string"
                             },
                             {
@@ -1161,7 +1160,7 @@
                         "=f(x)"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "alwaysPrompt": {
                     "title": "Always prompt",
@@ -1179,7 +1178,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -1200,7 +1199,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -1244,7 +1243,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -1290,7 +1289,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -1308,7 +1307,7 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "title": "Output format",
@@ -1386,7 +1385,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -1395,7 +1394,7 @@
                 "dialog": {
                     "$kind": "Microsoft.IDialog",
                     "$role": "expression",
-                    "pattern": "^(\\S){1}",
+                    "pattern": "^.*\\S.*",
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -1419,7 +1418,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -1440,7 +1439,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -1452,7 +1451,7 @@
                         "dialog.userName"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "additionalProperties": false,
@@ -1525,7 +1524,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -1602,7 +1601,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -1612,7 +1611,7 @@
                     "title": "Event name",
                     "description": "Name of the event to emit.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "eventValue": {
                     "title": "Event value",
@@ -1715,7 +1714,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -1772,7 +1771,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -1792,7 +1791,7 @@
                         "oneOf": [
                             {
                                 "type": "string",
-                                "pattern": "^(\\S){1}",
+                                "pattern": "^.*\\S.*",
                                 "title": "string"
                             },
                             {
@@ -1812,7 +1811,7 @@
                         "=f(x)"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "alwaysPrompt": {
                     "title": "Always prompt",
@@ -1830,7 +1829,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -1851,7 +1850,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -1867,7 +1866,7 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "title": "Output format",
@@ -1976,7 +1975,7 @@
                         "en-us"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "style": {
                     "$role": "expression",
@@ -1993,7 +1992,7 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "title": "List style",
@@ -2011,7 +2010,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -2053,7 +2052,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -2143,7 +2142,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -2237,7 +2236,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -2294,7 +2293,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -2314,7 +2313,7 @@
                         "oneOf": [
                             {
                                 "type": "string",
-                                "pattern": "^(\\S){1}",
+                                "pattern": "^.*\\S.*",
                                 "title": "string"
                             },
                             {
@@ -2334,7 +2333,7 @@
                         "=f(x)"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "alwaysPrompt": {
                     "title": "Always prompt",
@@ -2352,7 +2351,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -2373,7 +2372,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -2416,7 +2415,7 @@
                         "en-us"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "style": {
                     "$role": "expression",
@@ -2433,7 +2432,7 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "title": "List style",
@@ -2451,7 +2450,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -2497,7 +2496,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -2518,7 +2517,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -2741,7 +2740,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -2945,6 +2944,13 @@
             "title": "Date/time input dialog",
             "description": "Collect information - Ask for date and/ or time",
             "type": "object",
+            "defaultLocale": {
+                "title": "Default locale",
+                "description": "Default locale.",
+                "default": "en-us",
+                "type": "string",
+                "pattern": "^.*\\S.*"
+            },
             "properties": {
                 "$kind": {
                     "title": "$kind",
@@ -2991,7 +2997,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -3048,7 +3054,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -3068,7 +3074,7 @@
                         "oneOf": [
                             {
                                 "type": "string",
-                                "pattern": "^(\\S){1}",
+                                "pattern": "^.*\\S.*",
                                 "title": "string"
                             },
                             {
@@ -3088,7 +3094,7 @@
                         "=f(x)"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "alwaysPrompt": {
                     "title": "Always prompt",
@@ -3106,7 +3112,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -3127,7 +3133,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -3140,7 +3146,7 @@
                         "=user.birthday"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "value": {
                     "format": "date-time",
@@ -3150,16 +3156,16 @@
                         "=user.birthday"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "outputFormat": {
                     "title": "Output format",
-                    "description": "Expression to use format the output.",
+                    "description": "Expression to use for formatting the output.",
                     "examples": [
                         "=this.value[0].Value"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "additionalProperties": false,
@@ -3232,7 +3238,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -3302,7 +3308,7 @@
                         "=$lastActivity"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "disabled": {
                     "title": "Disabled",
@@ -3318,7 +3324,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -3396,7 +3402,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -3410,7 +3416,7 @@
                         "title": "Property",
                         "description": "Property to delete.",
                         "type": "string",
-                        "pattern": "^(\\S){1}"
+                        "pattern": "^.*\\S.*"
                     }
                 }
             },
@@ -3485,7 +3491,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -3495,7 +3501,7 @@
                     "title": "Property",
                     "description": "Property to delete.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "additionalProperties": false,
@@ -3621,7 +3627,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -3641,11 +3647,11 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "actions": {
                     "type": "array",
@@ -3729,12 +3735,12 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "default": "push",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "disabled": {
                     "title": "Disabled",
@@ -3750,7 +3756,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -3760,13 +3766,13 @@
                     "title": "Items property",
                     "description": "Property that holds the array to update.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "resultProperty": {
                     "title": "Result Property",
                     "description": "Property to store the result of this action.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "value": {
                     "title": "Value",
@@ -3924,7 +3930,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -3955,7 +3961,7 @@
                         }
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "eventValue": {
                     "title": "Event value",
@@ -3995,7 +4001,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -4073,7 +4079,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -4181,7 +4187,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -4310,7 +4316,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -4323,21 +4329,21 @@
                         "user.todoList"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "index": {
                     "title": "Index property",
                     "description": "Property that holds the index of the item.",
                     "default": "dialog.foreach.index",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "value": {
                     "title": "Value property",
                     "description": "Property that holds the value of the item.",
                     "default": "dialog.foreach.value",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "actions": {
                     "type": "array",
@@ -4421,7 +4427,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -4434,7 +4440,7 @@
                         "user.todoList"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "actions": {
                     "type": "array",
@@ -4450,14 +4456,14 @@
                     "description": "Property that holds the index of the page.",
                     "default": "dialog.foreach.pageindex",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "page": {
                     "title": "Page property",
                     "description": "Property that holds the value of the page.",
                     "default": "dialog.foreach.page",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "pageSize": {
                     "title": "Page size",
@@ -4471,7 +4477,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -4542,7 +4548,7 @@
                         "user.age"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "activityId": {
                     "title": "ActivityId",
@@ -4551,7 +4557,7 @@
                         "$lastActivity"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "disabled": {
                     "title": "Disabled",
@@ -4567,7 +4573,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -4637,7 +4643,7 @@
                         "user.age"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "disabled": {
                     "title": "Disabled",
@@ -4653,7 +4659,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -4730,7 +4736,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -4740,7 +4746,7 @@
                     "title": "Action Id",
                     "description": "Action Id to execute next",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "additionalProperties": false,
@@ -4918,7 +4924,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -4947,7 +4953,7 @@
                         "https://contoso.com"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "body": {
                     "title": "Body",
@@ -4984,7 +4990,7 @@
                         "dialog.contosodata"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "contentType": {
                     "title": "Content type",
@@ -4994,7 +5000,7 @@
                         "text/plain"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "headers": {
                     "type": "object",
@@ -5002,7 +5008,7 @@
                     "description": "One or more headers to include in the request (supports data binding).",
                     "additionalProperties": {
                         "type": "string",
-                        "pattern": "^(\\S){1}"
+                        "pattern": "^.*\\S.*"
                     }
                 },
                 "responseType": {
@@ -5018,12 +5024,12 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "default": "json",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "additionalProperties": false,
@@ -5716,7 +5722,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -5741,7 +5747,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -5942,7 +5948,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -5952,13 +5958,13 @@
                     "title": "Text",
                     "description": "Information to log.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "label": {
                     "title": "Label",
                     "description": "Label for the trace activity (used to identify it in a list of trace activities.)",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "traceActivity": {
                     "title": "Send Trace Activity",
@@ -5971,7 +5977,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -6040,19 +6046,19 @@
                     "title": "LUIS Application ID",
                     "description": "Application ID for your model from the LUIS service.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "endpoint": {
                     "title": "LUIS Endpoint",
                     "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "endpointKey": {
                     "title": "LUIS prediction key",
                     "description": "LUIS prediction key used to call endpoint.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "externalEntityRecognizer": {
                     "$kind": "Microsoft.IRecognizer",
@@ -6071,7 +6077,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -6455,7 +6461,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -6512,7 +6518,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -6532,7 +6538,7 @@
                         "oneOf": [
                             {
                                 "type": "string",
-                                "pattern": "^(\\S){1}",
+                                "pattern": "^.*\\S.*",
                                 "title": "string"
                             },
                             {
@@ -6552,7 +6558,7 @@
                         "=f(x)"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "alwaysPrompt": {
                     "title": "Always prompt",
@@ -6570,7 +6576,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -6591,7 +6597,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -6611,7 +6617,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -6632,7 +6638,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -6646,14 +6652,14 @@
                         "=int(this.text)"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "defaultLocale": {
                     "title": "Default locale",
                     "description": "Default locale to use if there is no locale available..",
                     "default": "en-us",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "additionalProperties": false,
@@ -6766,7 +6772,7 @@
                         "msgraphOAuthConnection"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "disabled": {
                     "title": "Disabled",
@@ -6783,7 +6789,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -6797,7 +6803,7 @@
                         "=concat(x,y,z)"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "title": {
                     "title": "Title",
@@ -6806,7 +6812,7 @@
                         "Login"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "timeout": {
                     "title": "Timeout",
@@ -6820,7 +6826,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -6832,7 +6838,7 @@
                         "dialog.token"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "invalidPrompt": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -6867,7 +6873,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -6879,7 +6885,7 @@
                         "@token"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "allowInterruptions": {
                     "title": "Allow Interruptions",
@@ -6897,7 +6903,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -6917,7 +6923,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -6986,7 +6992,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -7006,7 +7012,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -7015,7 +7020,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7036,7 +7041,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7111,7 +7116,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -7131,7 +7136,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -7140,7 +7144,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7161,7 +7165,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7244,7 +7248,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -7264,7 +7268,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -7273,7 +7276,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7294,7 +7297,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7363,7 +7366,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -7383,7 +7386,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -7392,7 +7394,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7413,7 +7415,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7482,7 +7484,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -7502,7 +7504,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -7511,7 +7512,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7532,7 +7533,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7611,7 +7612,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -7631,7 +7632,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -7640,7 +7640,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7661,7 +7661,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7738,7 +7738,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -7758,7 +7758,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -7767,7 +7766,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7788,7 +7787,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7880,7 +7879,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -7900,7 +7899,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -7909,7 +7907,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7930,7 +7928,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -7999,7 +7997,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -8019,7 +8017,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -8028,7 +8025,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8049,7 +8046,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8118,7 +8115,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -8138,7 +8135,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -8147,7 +8143,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8168,7 +8164,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8243,7 +8239,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -8263,7 +8259,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -8272,7 +8267,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8293,7 +8288,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8368,7 +8363,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -8388,7 +8383,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -8397,7 +8391,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8418,7 +8412,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8487,7 +8481,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -8507,7 +8501,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -8516,7 +8509,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8537,7 +8530,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8606,7 +8599,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -8626,7 +8619,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -8635,7 +8627,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8656,7 +8648,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8725,7 +8717,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -8745,7 +8737,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -8754,7 +8745,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8775,7 +8766,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8844,7 +8835,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -8864,7 +8855,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -8873,7 +8863,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8894,7 +8884,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -8963,7 +8953,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -8983,7 +8973,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -8992,7 +8981,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9013,7 +9002,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9096,7 +9085,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -9116,7 +9105,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -9125,7 +9113,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9146,7 +9134,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9215,7 +9203,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -9235,7 +9223,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -9244,7 +9231,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9265,7 +9252,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9334,7 +9321,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -9354,7 +9341,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -9363,7 +9349,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9384,7 +9370,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9453,7 +9439,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -9473,7 +9459,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -9482,7 +9467,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9503,7 +9488,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9572,7 +9557,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -9592,7 +9577,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -9601,7 +9585,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9622,7 +9606,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9691,7 +9675,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -9711,7 +9695,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -9720,7 +9703,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9741,7 +9724,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9810,7 +9793,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -9830,7 +9813,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -9839,7 +9821,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9860,7 +9842,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9929,7 +9911,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -9949,7 +9931,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -9958,7 +9939,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -9979,7 +9960,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -10048,7 +10029,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -10068,7 +10049,6 @@
                 },
                 "priority": {
                     "title": "priority",
-                    "description": "Priority expression of rule with 0 being the most important",
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -10077,7 +10057,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -10098,7 +10078,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -10319,14 +10299,14 @@
                     "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
                     "default": "=settings.qna.knowledgebaseid",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "endpointKey": {
                     "title": "Endpoint Key",
                     "description": "Endpoint key for the QnA Maker KB.",
                     "default": "=settings.qna.endpointkey",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "hostname": {
                     "title": "Hostname",
@@ -10336,7 +10316,7 @@
                         "https://yourserver.azurewebsites.net/qnamaker"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "noAnswer": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -10357,7 +10337,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -10367,14 +10347,14 @@
                     "description": "Title for active learning suggestions card.",
                     "default": "Did you mean:",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "cardNoMatchText": {
                     "title": "Card no match text",
                     "description": "Text for no match option.",
                     "default": "None of the above.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "cardNoMatchResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -10394,7 +10374,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -10426,7 +10406,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -10449,12 +10429,12 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "default": "default",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "patternProperties": {
@@ -10520,14 +10500,14 @@
                     "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
                     "default": "settings.qna.knowledgebaseid",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "endpointKey": {
                     "title": "Endpoint Key",
                     "description": "Endpoint key for the QnA Maker KB.",
                     "default": "settings.qna.endpointkey",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "hostname": {
                     "title": "Hostname",
@@ -10537,10 +10517,9 @@
                         "https://yourserver.azurewebsites.net/qnamaker"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "threshold": {
-                    "pattern": "^=(\\S){1}",
                     "title": "Threshold",
                     "description": "Threshold score to filter results.",
                     "default": 0.3,
@@ -10552,13 +10531,12 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
                 },
                 "strictFilters": {
-                    "pattern": "^=(\\S){1}",
                     "title": "Strict Filters",
                     "description": "Metadata filters to use when calling the QnA Maker KB.",
                     "$role": "expression",
@@ -10569,7 +10547,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -10601,7 +10579,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -10621,7 +10599,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -10637,7 +10615,7 @@
                     "description": "Type of Ranker.",
                     "default": "default",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "includeDialogNameInMetadata": {
                     "title": "Include Dialog Name",
@@ -10655,7 +10633,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -10671,7 +10649,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -10699,7 +10677,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -10715,7 +10693,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -11067,7 +11045,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -11084,7 +11062,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -11105,7 +11083,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -11181,7 +11159,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -11209,7 +11187,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -11230,7 +11208,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -11367,7 +11345,7 @@
                         "user.age > 3"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -11447,7 +11425,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -11467,7 +11445,7 @@
                                     "user.age"
                                 ],
                                 "type": "string",
-                                "pattern": "^(\\S){1}"
+                                "pattern": "^.*\\S.*"
                             },
                             "value": {
                                 "title": "Value",
@@ -11577,7 +11555,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -11589,7 +11567,7 @@
                         "user.age"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "value": {
                     "title": "Value",
@@ -11689,13 +11667,13 @@
                         "=$lastActivity"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "connectionName": {
                     "title": "Connection Name",
                     "description": "Connection name that was used with OAuthInput to log a user in.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "disabled": {
                     "title": "Disabled",
@@ -11712,7 +11690,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -11790,7 +11768,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -11812,7 +11790,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -11824,14 +11802,14 @@
                         "dialog.userName"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "botId": {
                     "title": "Skill host bot ID",
                     "description": "The Microsoft App ID that will be calling the skill.",
                     "default": "=settings.MicrosoftAppId",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "skillHostEndpoint": {
                     "title": "Skill host",
@@ -11841,13 +11819,13 @@
                         "https://mybot.contoso.com/api/skills/"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "skillAppId": {
                     "title": "Skill App ID",
                     "description": "The Microsoft App ID for the skill.",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "skillEndpoint": {
                     "title": "Skill endpoint ",
@@ -11856,7 +11834,7 @@
                         "https://myskill.contoso.com/api/messages/"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -12684,7 +12662,7 @@
                         "user.favColor"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "disabled": {
                     "title": "Disabled",
@@ -12701,7 +12679,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -12926,7 +12904,7 @@
                     "oneOf": [
                         {
                             "type": "string",
-                            "pattern": "^(\\S){1}",
+                            "pattern": "^.*\\S.*",
                             "title": "string"
                         },
                         {
@@ -13028,7 +13006,7 @@
                         "oneOf": [
                             {
                                 "type": "string",
-                                "pattern": "^(\\S){1}",
+                                "pattern": "^.*\\S.*",
                                 "title": "string"
                             },
                             {
@@ -13115,7 +13093,7 @@
                         "oneOf": [
                             {
                                 "type": "string",
-                                "pattern": "^(\\S){1}",
+                                "pattern": "^.*\\S.*",
                                 "title": "string"
                             },
                             {
@@ -13216,7 +13194,7 @@
                         "oneOf": [
                             {
                                 "type": "string",
-                                "pattern": "^(\\S){1}",
+                                "pattern": "^.*\\S.*",
                                 "title": "string"
                             },
                             {
@@ -13744,7 +13722,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -13801,7 +13779,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -13821,7 +13799,7 @@
                         "oneOf": [
                             {
                                 "type": "string",
-                                "pattern": "^(\\S){1}",
+                                "pattern": "^.*\\S.*",
                                 "title": "string"
                             },
                             {
@@ -13841,7 +13819,7 @@
                         "=f(x)"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "alwaysPrompt": {
                     "title": "Always prompt",
@@ -13859,7 +13837,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -13880,7 +13858,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ]
@@ -13894,7 +13872,7 @@
                         "=concat(user.firstname, user.lastName)"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "value": {
                     "title": "Value",
@@ -13905,7 +13883,7 @@
                         "=concat(user.firstname, user.lastName)"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "outputFormat": {
                     "title": "Output format",
@@ -13915,7 +13893,7 @@
                         "${toUpper(this.value)}"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "additionalProperties": false,
@@ -14047,7 +14025,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -14057,19 +14035,19 @@
                     "title": "Name",
                     "description": "Name of the trace activity",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "label": {
                     "title": "Label",
                     "description": "Label for the trace activity (used to identify it in a list of trace activities.)",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "valueType": {
                     "title": "Value type",
                     "description": "Type of value",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "value": {
                     "title": "Value",
@@ -14222,7 +14200,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -14235,7 +14213,7 @@
                         "=dialog.lastActivityId"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 },
                 "activity": {
                     "$kind": "Microsoft.IActivityTemplate",
@@ -14425,7 +14403,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -14447,7 +14425,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -14463,7 +14441,7 @@
                         "dialog.userName"
                     ],
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "patternProperties": {
@@ -14528,7 +14506,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -14545,7 +14523,7 @@
                         },
                         {
                             "type": "string",
-                            "pattern": "^=(\\S){1}",
+                            "pattern": "^=.*\\S.*",
                             "title": "string"
                         }
                     ],
@@ -14555,7 +14533,7 @@
                     "title": "Result",
                     "description": "Property to store the result in",
                     "type": "string",
-                    "pattern": "^(\\S){1}"
+                    "pattern": "^.*\\S.*"
                 }
             },
             "patternProperties": {

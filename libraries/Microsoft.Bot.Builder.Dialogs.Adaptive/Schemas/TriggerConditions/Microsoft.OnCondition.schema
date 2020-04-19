@@ -23,7 +23,6 @@
         "priority": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
             "title": "priority",
-            "description": "Priority expression of rule with 0 being the most important"
         },
         "runOnce": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",

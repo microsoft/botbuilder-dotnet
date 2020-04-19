@@ -42,7 +42,7 @@
                             ]
                         },
                         {
-                            "pattern": "^=(\\S){1}"
+                            "pattern": "^=.*\\S.*"
                         }
                     ],
                     "title": "List style",

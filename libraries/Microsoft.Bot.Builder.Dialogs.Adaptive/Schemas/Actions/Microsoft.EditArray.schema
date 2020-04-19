@@ -28,7 +28,7 @@
                     ]
                 },
                 {
-                    "pattern": "^=(\\S){1}"
+                    "pattern": "^=.*\\S.*"
                 }
             ],
             "default": "push"

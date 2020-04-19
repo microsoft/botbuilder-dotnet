@@ -33,14 +33,12 @@
         },
         "threshold": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
-            "pattern": "^=(\\S){1}",
             "title": "Threshold",
             "description": "Threshold score to filter results.",
             "default": 0.3
         },
         "strictFilters": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
-            "pattern": "^=(\\S){1}",
             "title": "Strict Filters",
             "description": "Metadata filters to use when calling the QnA Maker KB.",
             "items": {

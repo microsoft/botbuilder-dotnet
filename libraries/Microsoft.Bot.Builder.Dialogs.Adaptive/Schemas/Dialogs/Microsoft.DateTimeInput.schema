@@ -31,11 +31,17 @@
                 "outputFormat": {
                     "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Output format",
-                    "description": "Expression to use format the output.",
+                    "description": "Expression to use for formatting the output.",
                     "examples": [
                         "=this.value[0].Value"
                     ]
                 }
+            },
+            "defaultLocale": {
+                "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                "title": "Default locale",
+                "description": "Default locale.",
+                "default": "en-us"
             }
         }
     ]
