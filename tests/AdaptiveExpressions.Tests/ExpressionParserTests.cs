@@ -22,6 +22,9 @@ namespace AdaptiveExpressions.Tests
 
         private readonly object scope = new Dictionary<string, object>
         {
+            { 
+                "jsonContainsDatetime", "{\"date\": \"/Date(634250351766060665)/\", \"invalidDate\": \"/Date(whatever)/\"}"
+            },
             { "$index", "index" },
             {
                 "alist", new List<A>() { new A("item1"), new A("item2") }
@@ -620,6 +623,9 @@ namespace AdaptiveExpressions.Tests
             Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
             Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
+            Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
+            Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
+
             #endregion
 
             #region  Math functions test
@@ -916,7 +922,7 @@ namespace AdaptiveExpressions.Tests
         [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
-        {
+        { 
             var parsed = Expression.Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
