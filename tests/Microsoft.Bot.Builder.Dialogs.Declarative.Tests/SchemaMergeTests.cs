@@ -67,14 +67,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     startInfo = new ProcessStartInfo("cmd.exe", $"/C bfd.cmd dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath} -b \"\"");
+                    startInfo.WorkingDirectory = projectPath;
                 }
                 else
                 {
-                    startInfo = new ProcessStartInfo("bf", $"dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath} -b \"\"");
+                    startInfo = new ProcessStartInfo("bf", $"dialog:merge **/*.schema -o {schemaPath} -b \"\"");
+                    startInfo.WorkingDirectory = solutionPath;
                 }
 
                 startInfo.UseShellExecute = false;
-                startInfo.WorkingDirectory = projectPath;
                 startInfo.CreateNoWindow = false;
                 startInfo.RedirectStandardError = true;
 
