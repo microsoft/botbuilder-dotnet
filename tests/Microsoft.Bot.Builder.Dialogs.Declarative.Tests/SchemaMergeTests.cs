@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             string error = process.StandardError.ReadToEnd();
             process.WaitForExit();
 
-            if (!string.IsNullOrEmpty(error))
+            if (error.Contains("is not recognized as an internal or external command") || (error.Contains("command not found") && error.Contains("bf: node: not found")))
             {
                 Assert.Inconclusive(error);
             }
