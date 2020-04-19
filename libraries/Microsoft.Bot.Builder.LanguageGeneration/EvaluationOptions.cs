@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Gets or sets the option of rendering new line characters.
         /// </summary>
         /// <value>
-        /// if lineBreakStyle is 'markdown', a new line character will be replaced by two new line characters. Otherwise, it will be the same.
+        /// A string value represents the line break style in LG
         /// </value>
         public LGLineBreakStyle? LineBreakStyle { get; set; } = null;
 

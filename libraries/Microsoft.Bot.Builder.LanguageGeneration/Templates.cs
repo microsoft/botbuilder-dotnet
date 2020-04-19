@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser expressionParser = null) => TemplatesParser.ParseFile(filePath, importResolver, expressionParser);
 
         /// <summary>
-        /// Parser to turn lg content into a <see cref`="LanguageGeneration.Templates"/>.
+        /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
         /// <param name="id">id is the identifier of content. If importResolver is null, id must be a full path string. </param>
