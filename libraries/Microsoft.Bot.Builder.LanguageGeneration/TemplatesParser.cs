@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// option regex.
         /// </summary>
-        public static readonly Regex OptionRegex = new Regex(@"> *!#(.*)");
+        public static readonly Regex OptionRegex = new Regex(@">\s*!#(.*)");
 
         /// <summary>
         /// Import regex.
