@@ -841,6 +841,7 @@ namespace Microsoft.Bot.Builder
                     Bot = activity.Recipient,       // Activity is from the user to the bot
                     ChannelId = activity.ChannelId,
                     Conversation = activity.Conversation,
+                    Locale = activity.Locale,
                     ServiceUrl = activity.ServiceUrl,
                     User = activity.From,
                 },
@@ -908,6 +909,7 @@ namespace Microsoft.Bot.Builder
                     Bot = activity.Recipient,       // Activity is from the user to the bot
                     ChannelId = activity.ChannelId,
                     Conversation = activity.Conversation,
+                    Locale = activity.Locale,
                     ServiceUrl = activity.ServiceUrl,
                     User = activity.From,
                 },
@@ -1113,6 +1115,7 @@ namespace Microsoft.Bot.Builder
                     Bot = activity.Recipient,       // Activity is from the user to the bot
                     ChannelId = activity.ChannelId,
                     Conversation = activity.Conversation,
+                    Locale = activity.Locale,
                     ServiceUrl = activity.ServiceUrl,
                     User = activity.From,
                 },
