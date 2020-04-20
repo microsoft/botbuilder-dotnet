@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -37,7 +37,7 @@
                         "alwaysPrompt": true,
                         "property": "user.confirmed",
                         "prompt": "yes or no",
-                        "unrecognizedPrompt": "I need a yes or no.",
+                        "unrecognizedPrompt": "I need a yes or no."
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

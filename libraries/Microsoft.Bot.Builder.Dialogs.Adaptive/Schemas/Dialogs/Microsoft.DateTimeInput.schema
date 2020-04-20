@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Date/time input dialog",
     "description": "Collect information - Ask for date and/ or time",
@@ -10,22 +10,38 @@
         },
         {
             "properties": {
+                "defaultValue": {
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                    "format": "date-time",
+                    "title": "Default Date",
+                    "description": "'Property' will be set to the value or the result of the expression when max turn count is exceeded.",
+                    "examples": [
+                        "=user.birthday"
+                    ]
+                },
+                "value": {
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                    "format": "date-time",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value or the result of the expression unless it evaluates to null.",
+                    "examples": [
+                        "=user.birthday"
+                    ]
+                },
                 "outputFormat": {
-                    "$role": "expression",
-                    "type": "string",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Output format",
-                    "description": "Expression to format the datetime output.",
+                    "description": "Expression to use for formatting the output.",
                     "examples": [
                         "=this.value[0].Value"
                     ]
-                },
-                "defaultLocale": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Default locale",
-                    "description": "Default locale.",
-                    "default": "en-us"
                 }
+            },
+            "defaultLocale": {
+                "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                "title": "Default locale",
+                "description": "Default locale.",
+                "default": "en-us"
             }
         }
     ]

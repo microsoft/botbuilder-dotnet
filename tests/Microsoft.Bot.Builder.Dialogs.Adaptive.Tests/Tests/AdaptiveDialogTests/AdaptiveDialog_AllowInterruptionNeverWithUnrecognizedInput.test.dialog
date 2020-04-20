@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -8,16 +8,13 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    
                     "intent": "Start",
                     "pattern": "(?i)start"
                 }
             ]
         },
         "generator": {
-            "$kind": "Microsoft.TemplateEngineLanguageGenerator",
-            "id": "",
-            "lgText": ""
+            "$kind": "Microsoft.TemplateEngineLanguageGenerator"
         },
         "triggers": [
             {
@@ -26,7 +23,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.NumberInput",
-                        "allowInterruptions": "False",
+                        "allowInterruptions": false,
                         "property": "user.age",
                         "prompt": "What is your age?",
                         "unrecognizedPrompt": "Sorry. I did not recognize a number. What is your age?"

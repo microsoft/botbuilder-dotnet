@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnMessageDeleteActivity : OnActivity
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.OnMessageDeleteActivity";
+        public new const string Kind = "Microsoft.OnMessageDeleteActivity";
 
         [JsonConstructor]
         public OnMessageDeleteActivity(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

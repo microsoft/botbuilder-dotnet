@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -32,7 +32,7 @@
         },
         {
             "$kind": "Microsoft.Test.UserDelay",
-            "timespan": "500"
+            "timespan": 500
         },
         {
             "$kind": "Microsoft.Test.AssertReply",

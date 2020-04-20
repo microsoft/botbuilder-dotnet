@@ -1,9 +1,8 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Age",
-    "priority": "indexOf(dialog.requiredProperties, 'Age')",
+    "condition": "!$Age",
+    "priority": "=indexOf(dialog.requiredProperties, 'Age')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",

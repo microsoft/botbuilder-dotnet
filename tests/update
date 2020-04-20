@@ -1,0 +1,5 @@
+#!/bin/bash
+cd ..
+bf dialog:merge **/*.schema -b "" -o tests/tests.schema
+cd tests
+

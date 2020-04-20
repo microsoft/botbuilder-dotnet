@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Send Activity to Ask a question",
     "description": "This is an action which sends an activity to the user when a response is expected",
@@ -11,19 +11,28 @@
         {
             "properties": {
                 "expectedProperties": {
-                    "$role": "expression",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
                     "title": "Expected Properties",
-                    "description": "Properties expected to be filled by entities from the user",
-                    "type": "array",
+                    "description": "Properties expected from the user.",
                     "items": {
-                        "type": "string"
-                    }
+                        "type": "string",
+                        "title": "Name",
+                        "description": "Name of the property"
+                    },
+                    "examples": [
+                        [
+                            "age",
+                            "name"
+                        ]
+                    ]
                 },
-                "expectedOperation": {
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Expected operation to assign entity to property",
-                    "description": "Operation to apply to entities by default."
+                "defaultOperation": {
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                    "title": "Default Operation",
+                    "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
+                    "examples": [
+                        "add"
+                    ]
                 }
             }
         }

@@ -1,350 +1,351 @@
 {
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": "unittests.main",
-  "script": [
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "hi!"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Welcome!"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for personname"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "Harry Potter"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for age"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "value of personname"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "The value of personname is Harry Potter."
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Do you want to change the value of personname? (yes or no)"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "yes"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for personname"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "John Smith"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for age"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "value of geographyv2"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "The value of geographyv2 is empty."
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Do you want to add a value for geographyv2? (yes or no)"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "yes"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for geographyv2"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "Seattle"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for age"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "value of geographyV2"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "The value of geographyv2 is city Seattle."
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Do you want to change the value of geographyv2? (yes or no)"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "yes"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for geographyv2"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "Bellevue"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for age"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "21 years old and third"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "ordinalv2 is set as 3 start."
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for keyphraseproperty"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "Bot Framework"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for money"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "$4"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for percentage"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "10%"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for temperature"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "21c"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for url"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "abc.com"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a number for quantity between 1 and 10"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "2"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for utteranceproperty"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "no ice"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for dimension"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "6 inches"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Which value do you want for enum1?"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "help"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Possible values for enum1 include: [multi grain wheat, rye, white, whole wheat]"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Which value do you want for enum1?"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "wheat"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Please choose a value for enum1 from [multi grain wheat, whole wheat]"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "whole wheat with swiss"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "enum2 is set as swiss."
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for zipcodepattern"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "98004"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Did you mean \"98004\" as zipcodepattern or \"98004\" as quantity"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "zipcodepattern"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for email"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "abc@def.com"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for phonenumber"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "123-456-7890"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for datetimev2"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "Jan 22nd, 2020"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReplyActivity",
-      "assertions": [
-        "type == 'message'",
-        "count(attachments) == 1",
-        "attachments[0].content.type == 'AdaptiveCard'",
-        "count(attachments[0].content.body) == 2",
-        "count(attachments[0].content.body[1].facts) == 18",
-        "attachments[0].content.body[1].facts[0].value == 'John Smith'",
-        "attachments[0].content.body[1].facts[1].value == '21 Year'",
-        "attachments[0].content.body[1].facts[2].value == '3 start'",
-        "attachments[0].content.body[1].facts[3].value == 'city Bellevue'",
-        "attachments[0].content.body[1].facts[4].value == 'Bot Framework'",
-        "attachments[0].content.body[1].facts[5].value == '4 Dollar'",
-        "attachments[0].content.body[1].facts[6].value == '10'",
-        "attachments[0].content.body[1].facts[7].value == '21 C'",
-        "attachments[0].content.body[1].facts[8].value == 'abc.com'",
-        "attachments[0].content.body[1].facts[9].value == '2'",
-        "attachments[0].content.body[1].facts[10].value == 'no ice'",
-        "attachments[0].content.body[1].facts[11].value == '6 Inch'",
-        "attachments[0].content.body[1].facts[12].value == 'whole wheat'",
-        "attachments[0].content.body[1].facts[13].value == 'swiss'",
-        "attachments[0].content.body[1].facts[14].value == '98004'",
-        "attachments[0].content.body[1].facts[15].value == 'abc@def.com'",
-        "attachments[0].content.body[1].facts[16].value == '123-456-7890'",
-        "attachments[0].content.body[1].facts[17].value == 'date 2020-01-22'"
-      ]
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Is there any property you want to change? (no or the property name)"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "personname"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for personname"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "Johnannes Smith"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReplyActivity",
-      "assertions": [
-        "type == 'message'",
-        "count(attachments) == 1",
-        "attachments[0].content.type == 'AdaptiveCard'",
-        "count(attachments[0].content.body) == 2",
-        "count(attachments[0].content.body[1].facts) == 18",
-        "attachments[0].content.body[1].facts[0].value == 'Johnannes Smith'",
-        "attachments[0].content.body[1].facts[1].value == '21 Year'",
-        "attachments[0].content.body[1].facts[2].value == '3 start'",
-        "attachments[0].content.body[1].facts[3].value == 'city Bellevue'",
-        "attachments[0].content.body[1].facts[4].value == 'Bot Framework'",
-        "attachments[0].content.body[1].facts[5].value == '4 Dollar'",
-        "attachments[0].content.body[1].facts[6].value == '10'",
-        "attachments[0].content.body[1].facts[7].value == '21 C'",
-        "attachments[0].content.body[1].facts[8].value == 'abc.com'",
-        "attachments[0].content.body[1].facts[9].value == '2'",
-        "attachments[0].content.body[1].facts[10].value == 'no ice'",
-        "attachments[0].content.body[1].facts[11].value == '6 Inch'",
-        "attachments[0].content.body[1].facts[12].value == 'whole wheat'",
-        "attachments[0].content.body[1].facts[13].value == 'swiss'",
-        "attachments[0].content.body[1].facts[14].value == '98004'",
-        "attachments[0].content.body[1].facts[15].value == 'abc@def.com'",
-        "attachments[0].content.body[1].facts[16].value == '123-456-7890'",
-        "attachments[0].content.body[1].facts[17].value == 'date 2020-01-22'"
-      ]
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Is there any property you want to change? (no or the property name)"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "keyphraseproperty"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Enter a value for keyphraseproperty"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "Cancel"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Do you want to end the conversation? (yes/no)"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "yes"
-    }
-  ]
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi!"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Welcome!"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for personname"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Harry Potter"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for age"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "value of personname"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "The value of personname is Harry Potter."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Do you want to change the value of personname? (yes or no)"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "yes"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for personname"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "John Smith"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for age"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "value of geographyv2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "The value of geographyv2 is empty."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Do you want to add a value for geographyv2? (yes or no)"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "yes"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for geographyv2"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Seattle"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for age"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "value of geographyV2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "The value of geographyv2 is city Seattle."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Do you want to change the value of geographyv2? (yes or no)"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "yes"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for geographyv2"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Bellevue"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for age"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "21 years old and third"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ordinalv2 is set as 3 start."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for keyphraseproperty"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Bot Framework"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for money"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "$4"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for percentage"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "10%"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for temperature"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "21c"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for url"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "abc.com"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a number for quantity between 1 and 10"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for utteranceproperty"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "no ice"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for dimension"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "6 inches"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Which value do you want for enum1?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "help"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Possible values for enum1 include: [multi grain wheat, rye, white, whole wheat]"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Which value do you want for enum1?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "wheat"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please choose a value for enum1 from [multi grain wheat, whole wheat]"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "whole wheat with swiss"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "enum2 is set as swiss."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for zipcodepattern"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "98004"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Did you mean \"98004\" as zipcodepattern or \"98004\" as quantity"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "zipcodepattern"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for email"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "abc@def.com"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for phonenumber"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "123-456-7890"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for datetimev2"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Jan 22nd, 2020"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "type == 'message'",
+                "count(attachments) == 1",
+                "attachments[0].content.type == 'AdaptiveCard'",
+                "count(attachments[0].content.body) == 2",
+                "count(attachments[0].content.body[1].facts) == 18",
+                "attachments[0].content.body[1].facts[0].value == 'John Smith'",
+                "attachments[0].content.body[1].facts[1].value == '21 Year'",
+                "attachments[0].content.body[1].facts[2].value == '3 start'",
+                "attachments[0].content.body[1].facts[3].value == 'city Bellevue'",
+                "attachments[0].content.body[1].facts[4].value == 'Bot Framework'",
+                "attachments[0].content.body[1].facts[5].value == '4 Dollar'",
+                "attachments[0].content.body[1].facts[6].value == '10'",
+                "attachments[0].content.body[1].facts[7].value == '21 C'",
+                "attachments[0].content.body[1].facts[8].value == 'abc.com'",
+                "attachments[0].content.body[1].facts[9].value == '2'",
+                "attachments[0].content.body[1].facts[10].value == 'no ice'",
+                "attachments[0].content.body[1].facts[11].value == '6 Inch'",
+                "attachments[0].content.body[1].facts[12].value == 'whole wheat'",
+                "attachments[0].content.body[1].facts[13].value == 'swiss'",
+                "attachments[0].content.body[1].facts[14].value == '98004'",
+                "attachments[0].content.body[1].facts[15].value == 'abc@def.com'",
+                "attachments[0].content.body[1].facts[16].value == '123-456-7890'",
+                "attachments[0].content.body[1].facts[17].value == 'date 2020-01-22'"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Is there any property you want to change? (no or the property name)"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "personname"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for personname"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Johnannes Smith"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "type == 'message'",
+                "count(attachments) == 1",
+                "attachments[0].content.type == 'AdaptiveCard'",
+                "count(attachments[0].content.body) == 2",
+                "count(attachments[0].content.body[1].facts) == 18",
+                "attachments[0].content.body[1].facts[0].value == 'Johnannes Smith'",
+                "attachments[0].content.body[1].facts[1].value == '21 Year'",
+                "attachments[0].content.body[1].facts[2].value == '3 start'",
+                "attachments[0].content.body[1].facts[3].value == 'city Bellevue'",
+                "attachments[0].content.body[1].facts[4].value == 'Bot Framework'",
+                "attachments[0].content.body[1].facts[5].value == '4 Dollar'",
+                "attachments[0].content.body[1].facts[6].value == '10'",
+                "attachments[0].content.body[1].facts[7].value == '21 C'",
+                "attachments[0].content.body[1].facts[8].value == 'abc.com'",
+                "attachments[0].content.body[1].facts[9].value == '2'",
+                "attachments[0].content.body[1].facts[10].value == 'no ice'",
+                "attachments[0].content.body[1].facts[11].value == '6 Inch'",
+                "attachments[0].content.body[1].facts[12].value == 'whole wheat'",
+                "attachments[0].content.body[1].facts[13].value == 'swiss'",
+                "attachments[0].content.body[1].facts[14].value == '98004'",
+                "attachments[0].content.body[1].facts[15].value == 'abc@def.com'",
+                "attachments[0].content.body[1].facts[16].value == '123-456-7890'",
+                "attachments[0].content.body[1].facts[17].value == 'date 2020-01-22'"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Is there any property you want to change? (no or the property name)"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "keyphraseproperty"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Enter a value for keyphraseproperty"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Cancel"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Do you want to end the conversation? (yes/no)"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "yes"
+        }
+    ]
 }

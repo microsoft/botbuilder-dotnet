@@ -27,13 +27,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Dialogs
-            yield return new DeclarativeType<QnAMakerDialog2>(QnAMakerDialog2.DeclarativeType);
+            yield return new DeclarativeType<QnAMakerDialog2>(QnAMakerDialog2.Kind);
 
             // Recognizers
-            yield return new DeclarativeType<QnAMakerRecognizer>(QnAMakerRecognizer.DeclarativeType);
+            yield return new DeclarativeType<QnAMakerRecognizer>(QnAMakerRecognizer.Kind);
 
             // Triggers
-            yield return new DeclarativeType<OnQnAMatch>(OnQnAMatch.DeclarativeType);
+            yield return new DeclarativeType<OnQnAMatch>(OnQnAMatch.Kind);
         }
 
         /// <summary>

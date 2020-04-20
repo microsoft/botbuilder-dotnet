@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -13,7 +13,7 @@
                         "value": "Tom"
                     },
                     {
-                        "$kind": "CustomAction",
+                        "$kind": "CustomAction.dialog",
                         "name": "=user.name",
                         "age": 52,
                         "resultProperty": "dialog.foo"

@@ -1,11 +1,10 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Edit array",
     "description": "Modify an array in memory",
     "type": "object",
     "required": [
-        "changeType",
         "itemsProperty"
     ],
     "properties": {
@@ -15,21 +14,27 @@
             "description": "Optional id for the dialog"
         },
         "changeType": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Type of change",
             "description": "Type of change to the array in memory.",
-            "enum": [
-                "push",
-                "pop",
-                "take",
-                "remove",
-                "clear"
-            ]
+            "oneOf": [
+                {
+                    "enum": [
+                        "push",
+                        "pop",
+                        "take",
+                        "remove",
+                        "clear"
+                    ]
+                },
+                {
+                    "pattern": "^=.*\\S.*"
+                }
+            ],
+            "default": "push"
         },
         "disabled": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -37,27 +42,17 @@
             ]
         },
         "itemsProperty": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Items property",
             "description": "Property that holds the array to update."
         },
         "resultProperty": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Result Property",
             "description": "Property to store the result of this action."
         },
         "value": {
-            "$role": "expression",
-            "type": [
-                "object",
-                "array",
-                "number",
-                "integer",
-                "boolean",
-                "string"
-            ],
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/valueExpression",
             "title": "Value",
             "description": "New value or expression.",
             "examples": [

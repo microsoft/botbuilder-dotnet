@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -18,9 +18,7 @@
             ]
         },
         "generator": {
-            "$kind": "Microsoft.TemplateEngineLanguageGenerator",
-            "id": "",
-            "lgText": ""
+            "$kind": "Microsoft.TemplateEngineLanguageGenerator"
         },
         "triggers": [
             {
@@ -29,7 +27,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.NumberInput",
-                        "allowInterruptions": "True",
+                        "allowInterruptions": true,
                         "property": "user.age",
                         "prompt": "What is your age?",
                         "invalidPrompt": "Sorry. ${this.value} does not work. I'm looking for a value between 1-150. What is your age?",

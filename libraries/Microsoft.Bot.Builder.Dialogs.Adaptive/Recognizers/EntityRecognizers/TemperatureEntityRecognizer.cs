@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class TemperatureEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.TemperatureEntityRecognizer";
+        public const string Kind = "Microsoft.TemperatureEntityRecognizer";
 
         public TemperatureEntityRecognizer()
         {

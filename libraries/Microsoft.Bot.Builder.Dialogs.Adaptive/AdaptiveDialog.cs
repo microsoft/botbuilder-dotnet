@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     public class AdaptiveDialog : DialogContainer, IDialogDependencies
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.AdaptiveDialog";
+        public const string Kind = "Microsoft.AdaptiveDialog";
 
         internal const string ConditionTracker = "dialog._tracker.conditions";
 
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
-                    { "Kind", DeclarativeType }
+                    { "Kind", Kind }
                 };
             TelemetryClient.TrackEvent("AdaptiveDialogStart", properties);
             TelemetryClient.TrackDialogView(Id);
@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
-                    { "Kind", DeclarativeType }
+                    { "Kind", Kind }
                 };
 
             if (reason == DialogReason.CancelCalled)
@@ -1178,8 +1178,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 expected = new string[0];
             }
 
-            var expectedOp = actionContext.State.GetValue<string>(DialogPath.ExpectedOperation);
+            // default op from the last Ask action.
+            var askDefaultOp = actionContext.State.GetValue<string>(DialogPath.DefaultOperation);
+
+            // default operation from the current adaptive dialog.
             var defaultOp = dialogSchema.Schema["$defaultOperation"]?.ToObject<string>();
+
             var nextAssignment = existing.NextAssignment();
             var candidates = (from candidate in RemoveOverlappingPerProperty(Candidates(entities, expected))
                               orderby candidate.IsExpected descending
@@ -1227,7 +1231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     if (alternative.Operation == null)
                     {
-                        alternative.Operation = alternative.IsExpected ? (expectedOp ?? defaultOp) : defaultOp;
+                        alternative.Operation = alternative.IsExpected ? (askDefaultOp ?? defaultOp) : defaultOp;
                     }
 
                     usedEntities.Add(alternative.Entity);

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class ReplaceDialog : BaseInvokeDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.ReplaceDialog";
+        public const string Kind = "Microsoft.ReplaceDialog";
 
         [JsonConstructor]
         public ReplaceDialog(string dialogIdToCall = null, object options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

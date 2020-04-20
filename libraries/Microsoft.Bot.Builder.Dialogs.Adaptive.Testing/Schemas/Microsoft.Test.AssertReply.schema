@@ -1,12 +1,9 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.Test.ITestAction)",
     "title": "Assert Reply",
     "description": "Asserts that a reply text is valid.",
     "type": "object",
-    "required": [
-        "text"
-    ],
     "properties": {
         "text": {
             "type": "string",
@@ -33,8 +30,7 @@
             "title": "Assertions to perform to validate Activity that is sent by the dialog",
             "description": "Sequence of expressions which must evaluate to true.",
             "items": {
-                "$role": "expression",
-                "type": "boolean",
+                "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/condition",
                 "title": "Assertion",
                 "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
                 "examples": [

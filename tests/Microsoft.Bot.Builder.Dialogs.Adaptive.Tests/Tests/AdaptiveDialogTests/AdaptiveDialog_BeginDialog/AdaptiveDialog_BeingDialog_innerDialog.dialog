@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../../schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "id": "innerDialog",
     "autoEndDialog": false,
@@ -7,17 +7,14 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                
                 "intent": "JokeIntent",
                 "pattern": "(?i)joke"
             },
             {
-                
                 "intent": "GreetingIntent",
                 "pattern": "(?i)hi|hello"
             },
             {
-                
                 "intent": "GoodbyeIntent",
                 "pattern": "(?i)bye|goodbye|seeya|see ya"
             }

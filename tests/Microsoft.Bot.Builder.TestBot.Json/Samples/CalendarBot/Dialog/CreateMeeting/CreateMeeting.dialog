@@ -1,123 +1,123 @@
 {
-  "$schema": "../../../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "triggers": [
-    {
-      "$kind": "Microsoft.OnBeginDialog",
-      "actions": [
-        "CalendarFindContact",
+    "$schema": "../../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
         {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "user.subject == null",
-          "actions": [
-            {
-              "$kind": "Microsoft.TextInput",
-              "prompt": "OK, please enter the subject of your meeting.",
-              "property": "user.subject"
-            }
-          ]
-        },
-        {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "user.body == null",
-          "actions": [
-            {
-              "$kind": "Microsoft.TextInput",
-              "prompt": "OK, please enter the body of your meeting.",
-              "property": "user.body"
-            }
-          ]
-        },
-        {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "user.startDate == null",
-          "actions": [
-            {
-              "$kind": "Microsoft.DateTimeInput",
-              "prompt": "OK, please enter the start date of meeting.",
-              "property": "user.startDate"
-            }
-          ]
-        },
-        {
-          "$kind": "Microsoft.SetProperty",
-          "property": "user.startDate",
-          "value": "=formatDateTime(user.startDate[0].Value, 'yyyy-MM-dd')"
-        },
-        {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "user.startTime == null",
-          "actions": [
-            {
-              "$kind": "Microsoft.DateTimeInput",
-              "prompt": "OK, please enter the start time of meeting.",
-              "property": "user.startTime"
-            }
-          ]
-        },
-        {
-          "$kind": "Microsoft.SetProperty",
-          "property": "user.startTime",
-          "value": "=formatDateTime(user.startTime[0].Value, 'THH:mm:ssZ')"
-        },
-        {
-          "$kind": "Microsoft.SetProperty",
-          "property": "user.startDateTime",
-          "value": "=formatDateTime(concat(user.startDate, user.startTime))"
-        },
-        {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "user.duration == null",
-          "actions": [
-            {
-              "$kind": "Microsoft.DateTimeInput",
-              "prompt": "OK, please enter the duration of meeting",
-              "property": "user.duration"
-            }
-          ]
-        },
-        {
-          "$kind": "Microsoft.SetProperty",
-          "property": "user.endDateTime",
-          "value": "=addSeconds(user.startDateTime, int(user.duration[0].Value))"
-        },
-        {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "user.location == null",
-          "actions": [
-            {
-              "$kind": "Microsoft.TextInput",
-              "prompt": "OK, please enter the location of your meeting.",
-              "property": "user.location"
-            }
-          ]
-        },
-        {
-          "$kind": "Microsoft.ConfirmInput",
-          "property": "dialog.confirmed",
-          "prompt": "Are you sure to create this meeting?",
-          "retryPrompt": "Please try again.",
-          "invalidPrompt": "Please input yes/no.",
-          "alwaysPrompt": true
-        },
-        {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "dialog.confirmed",
-          "actions": [
-            "CreateMeetingService",
-            {
-              "$kind": "Microsoft.SendActivity",
-              "activity": "Your meeting has been created."
-            }
-          ],
-          "elseActions": [
-            {
-              "$kind": "Microsoft.SendActivity",
-              "activity": "OK, let's do it next time."
-            }
-          ]
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                "CalendarFindContact",
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.subject == null",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.TextInput",
+                            "prompt": "OK, please enter the subject of your meeting.",
+                            "property": "user.subject"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.body == null",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.TextInput",
+                            "prompt": "OK, please enter the body of your meeting.",
+                            "property": "user.body"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.startDate == null",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.DateTimeInput",
+                            "prompt": "OK, please enter the start date of meeting.",
+                            "property": "user.startDate"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.startDate",
+                    "value": "=formatDateTime(user.startDate[0].Value, 'yyyy-MM-dd')"
+                },
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.startTime == null",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.DateTimeInput",
+                            "prompt": "OK, please enter the start time of meeting.",
+                            "property": "user.startTime"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.startTime",
+                    "value": "=formatDateTime(user.startTime[0].Value, 'THH:mm:ssZ')"
+                },
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.startDateTime",
+                    "value": "=formatDateTime(concat(user.startDate, user.startTime))"
+                },
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.duration == null",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.DateTimeInput",
+                            "prompt": "OK, please enter the duration of meeting",
+                            "property": "user.duration"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.endDateTime",
+                    "value": "=addSeconds(user.startDateTime, int(user.duration[0].Value))"
+                },
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.location == null",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.TextInput",
+                            "prompt": "OK, please enter the location of your meeting.",
+                            "property": "user.location"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.ConfirmInput",
+                    "property": "dialog.confirmed",
+                    "prompt": "Are you sure to create this meeting?",
+                    "retryPrompt": "Please try again.",
+                    "invalidPrompt": "Please input yes/no.",
+                    "alwaysPrompt": true
+                },
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "dialog.confirmed",
+                    "actions": [
+                        "CreateMeetingService",
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "Your meeting has been created."
+                        }
+                    ],
+                    "elseActions": [
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "OK, let's do it next time."
+                        }
+                    ]
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

@@ -1,24 +1,22 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Geographyv2",
     "entity": "geographyV2",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${setObjectPropertyMessage('Geographyv2', concat(@geographyV2.type, ' ', @geographyV2.location))}
-"
-        }, 
+            "activity": "${setObjectPropertyMessage('Geographyv2', concat(@geographyV2.type, ' ', @geographyV2.location))}\r\n"
+        },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Geographyv2.type",
-            "value": "=@geographyV2.type"          
+            "value": "=@geographyV2.type"
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Geographyv2.location",
-            "value": "=@geographyV2.location"          
+            "value": "=@geographyV2.location"
         }
-    ]               
+    ]
 }

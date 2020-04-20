@@ -1,21 +1,21 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "triggers": [
-    {
-      "$kind": "Microsoft.OnBeginDialog",
-      "actions": [
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
         {
-          "$kind": "Microsoft.QnAMakerDialog",
-          "knowledgeBaseId": "'dummy-id'",
-          "endpointKey": "'dummy-key'",
-          "hostname": "'https://dummy-hostname.azurewebsites.net/qnamaker'",
-          "noAnswer": "Answers not found in kb.",
-          "top": 3,
-          "activeLearningCardTitle": "Did you mean:",
-          "cardNoMatchText": "None of the above."
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.QnAMakerDialog",
+                    "knowledgeBaseId": "'dummy-id'",
+                    "endpointKey": "'dummy-key'",
+                    "hostname": "'https://dummy-hostname.azurewebsites.net/qnamaker'",
+                    "noAnswer": "Answers not found in kb.",
+                    "top": 3,
+                    "activeLearningCardTitle": "Did you mean:",
+                    "cardNoMatchText": "None of the above."
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

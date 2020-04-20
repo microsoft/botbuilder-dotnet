@@ -1,11 +1,10 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "generator": "todo.lg",
     "triggers": [
         {
             "$kind": "Microsoft.OnBeginDialog",
-
             "actions": [
                 {
                     "$kind": "Microsoft.SetProperty",
@@ -41,7 +40,6 @@
                         }
                     ]
                 }
-
             ]
         }
     ]

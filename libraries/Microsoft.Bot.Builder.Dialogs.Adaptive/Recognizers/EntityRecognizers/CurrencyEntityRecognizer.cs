@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class CurrencyEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.CurrencyEntityRecognizer";
+        public const string Kind = "Microsoft.CurrencyEntityRecognizer";
 
         public CurrencyEntityRecognizer()
         {
