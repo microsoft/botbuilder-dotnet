@@ -1,8 +1,7 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
+    "$schema": "../../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
     "actions": [
-
         {
             "$kind": "Microsoft.IfCondition",
             "condition": "dialog.token == null",
@@ -16,7 +15,6 @@
                 }
             ]
         },
-
         {
             "$kind": "Microsoft.HttpRequest",
             "url": "https://graph.microsoft.com/v1.0/me/events/{user.focusedMeeting.id}",
@@ -36,9 +34,5 @@
             },
             "Property": "user.updateResponse"
         }
-        //{
-        //  "$kind": "Microsoft.SendActivity",
-        //  "activity": "response: {user.updateResponse.content}"
-        //}
     ]
 }

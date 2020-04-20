@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class EndTurn : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.EndTurn";
+        public const string Kind = "Microsoft.EndTurn";
 
         [JsonConstructor]
         public EndTurn([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

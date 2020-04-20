@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         /// </summary>
         /// <remarks>Used by the framework to serialize and deserialize an instance of this type to JSON.</remarks>
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.QnAMakerDialog";
+        public const string Kind = "Microsoft.QnAMakerDialog";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMakerDialog2"/> class.

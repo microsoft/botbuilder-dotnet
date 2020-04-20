@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -36,13 +36,15 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${$p2}"
-                    },                    {
+                    },
+                    {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${$p3}"
-                    },                    {
+                    },
+                    {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${$p4}"
-                    },
+                    }
                 ]
             }
         ]

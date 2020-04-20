@@ -28,12 +28,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     }
 
     /// <summary>
-    /// Declarative text input to gather choices from users.
+    /// ChoiceInput - Declarative input to gather choices from user.
     /// </summary>
     public class ChoiceInput : InputDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.ChoiceInput";
+        public const string Kind = "Microsoft.ChoiceInput";
 
         private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>(StringComparer.OrdinalIgnoreCase)
         {
@@ -56,34 +56,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets list of choices to present to user.
         /// </summary>
         /// <value>
-        /// Value Expression or List of choices (string or Choice objects) to present to user.
+        /// ChoiceSet or expression which evalutes to a ChoiceSet.
         /// </value>
         [JsonProperty("choices")]
         public ObjectExpression<ChoiceSet> Choices { get; set; }
 
         /// <summary>
-        /// Gets or sets listStyle to use to render the choices.
+        /// Gets or sets ListStyle to use to render the choices.
         /// </summary>
         /// <value>
-        /// ListStyle to use to render the choices.
+        /// ListStyle or expression which evaluates to ListStyle.
         /// </value>
         [JsonProperty("style")]
         public EnumExpression<ListStyle> Style { get; set; } = ListStyle.Auto;
 
         /// <summary>
-        /// Gets or sets defaultLocale.
+        /// Gets or sets the DefaultLocale to use to parse confirmation choices if there is not one passed by the caller.
         /// </summary>
         /// <value>
-        /// DefaultLocale.
+        /// string or expression which evaluates to a string with locale.
         /// </value>
         [JsonProperty("defaultLocale")]
         public StringExpression DefaultLocale { get; set; }
 
         /// <summary>
-        /// Gets or sets control the format of the response (value or the index of the choice).
+        /// Gets or sets the format of the response (value or the index of the choice).
         /// </summary>
         /// <value>
-        /// Control the format of the response (value or the index of the choice).
+        /// ChoiceOutputFormat or Expression which evaluates to ChoiceOutputFormat enumerated value.
         /// </value>
         [JsonProperty("outputFormat")]
         public EnumExpression<ChoiceOutputFormat> OutputFormat { get; set; } = ChoiceOutputFormat.Value;
@@ -92,16 +92,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets choiceOptions controls display options for customizing language.
         /// </summary>
         /// <value>
-        /// ChoiceOptions controls display options for customizing language.
+        /// ChoiceOptions or expression which evluates to ChoiceOptions.
         /// </value>
         [JsonProperty("choiceOptions")]
         public ObjectExpression<ChoiceFactoryOptions> ChoiceOptions { get; set; }
 
         /// <summary>
-        /// Gets or sets customize how to use the choices to recognize the response from the user.
+        /// Gets or sets how to recognize choices in the response.
         /// </summary>
         /// <value>
-        /// Customize how to use the choices to recognize the response from the user.
+        /// FindChoicesOptions or expression which evaluates to FindChoicesOptions.
         /// </value>
         [JsonProperty("recognizerOptions")]
         public ObjectExpression<FindChoicesOptions> RecognizerOptions { get; set; } = null;

@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="explorer">The <see cref="ResourceExplorer"/> for this extension method.</param>
         /// <param name="folder">Collection of folders to include as resources.</param>
-        /// <param name="ignoreFolders">Folders to ignore.</param>
+        /// <param name="ignoreFolders">Immediate sub-folders to ignore.</param>
         /// <param name="monitorChanges">Whether to track changes.</param>
         /// <returns>The resource explorer.</returns>
         public static ResourceExplorer AddFolders(this ResourceExplorer explorer, string folder, string[] ignoreFolders = null, bool monitorChanges = true)
@@ -47,8 +47,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
                 explorer.AddFolder(folder, includeSubFolders: false, monitorChanges: monitorChanges);
 
-                var hashIgnore = new HashSet<string>(ignoreFolders.Select(p => Path.Combine(folder, p)), StringComparer.CurrentCultureIgnoreCase);
-                foreach (var subFolder in Directory.GetDirectories(folder).Where(f => !hashIgnore.Contains(f)))
+                var hashIgnore = new HashSet<string>(ignoreFolders, StringComparer.CurrentCultureIgnoreCase);
+                foreach (var subFolder in Directory.GetDirectories(folder).Where(f => !hashIgnore.Contains(Path.GetDirectoryName(f))))
                 {
                     // add subfolders not in ignore list
                     explorer.AddFolder(subFolder, includeSubFolders: true, monitorChanges: monitorChanges);

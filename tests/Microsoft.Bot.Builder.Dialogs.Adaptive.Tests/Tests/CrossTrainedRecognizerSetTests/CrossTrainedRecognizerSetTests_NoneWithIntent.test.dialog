@@ -1,10 +1,10 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "recognizer": {
-            "$schema": "../../../../schemas/sdk.schema",
+            "$schema": "../../../tests.schema",
             "$kind": "Microsoft.CrossTrainedRecognizerSet",
             "recognizers": [
                 {

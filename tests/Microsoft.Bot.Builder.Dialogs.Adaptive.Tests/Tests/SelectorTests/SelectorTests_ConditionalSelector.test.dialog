@@ -1,115 +1,116 @@
-﻿{
-  "$kind": "Microsoft.Test.Script",
-  "dialog": {
-    "$kind": "Microsoft.AdaptiveDialog",
-    "triggers": [
-      {
-        "$kind": "Microsoft.OnMessageActivity",
-        "condition": "turn.activity.text == 'true'",
-        "actions": [
-          {
-            "$kind": "Microsoft.SetProperty",
-            "property": "user.conditionalSelector",
-            "value": "=true"
-          }
-        ]
-      },
-      {
-        "$kind": "Microsoft.OnMessageActivity",
-        "condition": "turn.activity.text == 'false'",
-        "actions": [
-          {
-            "$kind": "Microsoft.SetProperty",
-            "property": "user.conditionalSelector",
-            "value": "=false"
-          }
-        ]
-      },
-      {
-        "$kind": "Microsoft.OnMessageActivity",
-        "condition": "turn.activity.text == 'default'",
-        "actions": [
-          {
-            "$kind": "Microsoft.BeginDialog",
-            "dialog": {
-              "$kind": "Microsoft.AdaptiveDialog",
-              "triggers": [
-                {
-                  "$kind": "Microsoft.OnBeginDialog",
-                  "actions": [
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnMessageActivity",
+                "condition": "turn.activity.text == 'true'",
+                "actions": [
                     {
-                      "$kind": "Microsoft.SendActivity",
-                      "activity": "default1"
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.conditionalSelector",
+                        "value": "=true"
                     }
-                  ]
-                },
-                {
-                  "$kind": "Microsoft.OnBeginDialog",
-                  "actions": [
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnMessageActivity",
+                "condition": "turn.activity.text == 'false'",
+                "actions": [
                     {
-                      "$kind": "Microsoft.SendActivity",
-                      "activity": "default2"
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.conditionalSelector",
+                        "value": "=false"
                     }
-                  ]
-                },
-                {
-                  "$kind": "Microsoft.OnBeginDialog",
-                  "actions": [
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnMessageActivity",
+                "condition": "turn.activity.text == 'default'",
+                "actions": [
                     {
-                      "$kind": "Microsoft.SendActivity",
-                      "activity": "default3"
+                        "$kind": "Microsoft.BeginDialog",
+                        "dialog": {
+                            "$kind": "Microsoft.AdaptiveDialog",
+                            "triggers": [
+                                {
+                                    "$kind": "Microsoft.OnBeginDialog",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "default1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$kind": "Microsoft.OnBeginDialog",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "default2"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$kind": "Microsoft.OnBeginDialog",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "default3"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "selector": {
+                                "$kind": "Microsoft.ConditionalSelector",
+                                "condition": "user.conditionalSelector",
+                                "ifTrue": {
+                                    "$kind": "Microsoft.RandomSelector",
+                                    "seed": -1
+                                },
+                                "ifFalse": {
+                                    "$kind": "Microsoft.FirstSelector"
+                                }
+                            }
+                        }
                     }
-                  ]
-                }
-              ],
-              "selector": {
-                "$kind": "Microsoft.ConditionalSelector",
-                "condition": "user.conditionalSelector",
-                "ifTrue": {
-                  "$kind": "Microsoft.RandomSelector",
-                  "seed": -1
-                },
-                "ifFalse": {
-                  "$kind": "Microsoft.FirstSelector"
-                }
-              }
+                ]
             }
-          }
-        ]
-      }
-    ],
-    "autoEndDialog": false,
-    "defaultResultProperty": "dialog.result"
-  },
-  "locale": "en-us",
-  "script": [
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "true"
+        ],
+        "autoEndDialog": false,
+        "defaultResultProperty": "dialog.result"
     },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "default"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReplyOneOf",
-      "text": [
-        "default1",
-        "default2",
-        "default3"
-      ]
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "false"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "default"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "default1"
-    }
-  ]
+    "locale": "en-us",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "true"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "default"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyOneOf",
+            "text": [
+                "default1",
+                "default2",
+                "default3"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "false"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "default"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "default1"
+        }
+    ]
 }

@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -17,7 +17,7 @@
                     ]
                 },
                 {
-                    "$kind": "Microsoft.ValueRecognizer",
+                    "$kind": "Microsoft.ValueRecognizer"
                 }
             ]
         },

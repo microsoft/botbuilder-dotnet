@@ -1,57 +1,56 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
-  "$kind": "Microsoft.Test.Script",
-  "dialog": {
-    "$kind": "Microsoft.AdaptiveDialog",
-    "id": "root",
-    "triggers": [
-      {
-        "$kind": "Microsoft.OnBeginDialog",
-        "actions": [
-          {
-            "$kind": "Microsoft.SetProperty",
-            "property": "dialog.todo",
-            "value": "=[]"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.todo",
-            "value": "=1"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.todo",
-            "value": "=2"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.todo",
-            "value": "=3"
-          },
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
             {
-                "$kind": "Microsoft.Foreach",
-                "itemsProperty": "dialog.todo",
+                "$kind": "Microsoft.OnBeginDialog",
                 "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "dialog.todo",
+                        "value": "=[]"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "value": "=1"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "value": "=2"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "value": "=3"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "dialog.todo",
+                        "actions": []
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "done"
+                    }
                 ]
-            },
-            {
-                "$kind": "Microsoft.SendActivity",
-                "activity": "done"
             }
-        ]
-      }
-    ],
-    "autoEndDialog": true,
-    "defaultResultProperty": "dialog.result"
-  },
-  "script": [
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "hi"
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
     },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "done"
-    }
-  ]
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "done"
+        }
+    ]
 }

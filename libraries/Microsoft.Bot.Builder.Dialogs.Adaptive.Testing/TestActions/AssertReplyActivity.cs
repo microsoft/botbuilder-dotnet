@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     public class AssertReplyActivity : TestAction
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.Test.AssertReplyActivity";
+        public const string Kind = "Microsoft.Test.AssertReplyActivity";
 
         [JsonConstructor]
         public AssertReplyActivity([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)

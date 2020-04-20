@@ -1,5 +1,5 @@
-﻿{
-    "$schema": "../../app.schema",
+{
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "generator": "ExternalLanguage.main.lg",
     "triggers": [
@@ -12,10 +12,8 @@
                     "actions": [
                         {
                             "$kind": "Microsoft.TextInput",
-                            "pattern": "\\w{3,50}",
                             "property": "user.name",
                             "prompt": "${Greeting.Name.initialPrompt()}",
-                            "retryPrompt": "${Greeting.Name.retryPrompt()}",
                             "invalidPrompt": "${Greeting.Name.notMatched()}"
                         }
                     ]

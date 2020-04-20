@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -17,37 +17,68 @@
                 }
             ],
             "entities": [
-                { "$kind": "Microsoft.AgeEntityRecognizer" },
-                { "$kind": "Microsoft.ConfirmationEntityRecognizer" },
-                { "$kind": "Microsoft.CurrencyEntityRecognizer" },
-                { "$kind": "Microsoft.DateTimeEntityRecognizer" },
-                { "$kind": "Microsoft.DimensionEntityRecognizer" },
-                { "$kind": "Microsoft.EmailEntityRecognizer" },
-                { "$kind": "Microsoft.GuidEntityRecognizer" },
-                { "$kind": "Microsoft.HashtagEntityRecognizer" },
-                { "$kind": "Microsoft.IpEntityRecognizer" },
-                { "$kind": "Microsoft.MentionEntityRecognizer" },
-                { "$kind": "Microsoft.NumberEntityRecognizer" },
-                { "$kind": "Microsoft.NumberRangeEntityRecognizer" },
-                { "$kind": "Microsoft.OrdinalEntityRecognizer" },
-                { "$kind": "Microsoft.PercentageEntityRecognizer" },
-                { "$kind": "Microsoft.PhoneNumberEntityRecognizer" },
-                { "$kind": "Microsoft.TemperatureEntityRecognizer" },
-                { "$kind": "Microsoft.UrlEntityRecognizer" },
                 {
-
+                    "$kind": "Microsoft.AgeEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.ConfirmationEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.CurrencyEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.DateTimeEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.DimensionEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.EmailEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.GuidEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.HashtagEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.IpEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.MentionEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.NumberEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.NumberRangeEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.OrdinalEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.PercentageEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.PhoneNumberEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.TemperatureEntityRecognizer"
+                },
+                {
+                    "$kind": "Microsoft.UrlEntityRecognizer"
+                },
+                {
                     "$kind": "Microsoft.RegexEntityRecognizer",
                     "name": "color",
                     "pattern": "(?i)(red|green|blue|purple|orange|violet|white|black)"
                 },
                 {
-
                     "$kind": "Microsoft.RegexEntityRecognizer",
                     "name": "backgroundColor",
                     "pattern": "(?i)(back|background)"
                 },
                 {
-
                     "$kind": "Microsoft.RegexEntityRecognizer",
                     "name": "foregroundColor",
                     "pattern": "(?i)(foreground|front) {color}"

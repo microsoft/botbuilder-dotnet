@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class HttpRequest : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.HttpRequest";
+        public const string Kind = "Microsoft.HttpRequest";
 
         public HttpRequest(HttpMethod method, string url, Dictionary<string, StringExpression> headers = null, object body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {

@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class CrossTrainedRecognizerSet : Recognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.CrossTrainedRecognizerSet";
+        public const string Kind = "Microsoft.CrossTrainedRecognizerSet";
 
         /// <summary>
         /// Standard cross trained intent name prefix.

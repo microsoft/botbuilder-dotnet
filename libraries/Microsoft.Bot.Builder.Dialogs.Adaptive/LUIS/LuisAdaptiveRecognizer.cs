@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class LuisAdaptiveRecognizer : Recognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.LuisRecognizer";
+        public const string Kind = "Microsoft.LuisRecognizer";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisAdaptiveRecognizer"/> class.

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class SignOutUser : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.SignOutUser";
+        public const string Kind = "Microsoft.SignOutUser";
 
         [JsonConstructor]
         public SignOutUser([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

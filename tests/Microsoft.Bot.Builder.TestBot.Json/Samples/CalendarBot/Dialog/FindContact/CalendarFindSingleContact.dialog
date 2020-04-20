@@ -1,25 +1,19 @@
 {
-  "$schema": "../../../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "triggers": [
-    {
-      "$kind": "Microsoft.OnBeginDialog",
-      "actions": [
+    "$schema": "../../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
         {
-          "$kind": "Microsoft.OAuthInput",
-          "ConnectionName": "msgraph",
-          "Title": "Log in",
-          "Text": "Please log in to your calendar account",
-          "Property": "dialog.token"
-        },
-        "GetContactService"
-        //{
-        //  "$kind": "Microsoft.EditArray",
-        //  "changeType": "push",
-        //  "itemsProperty": "user.recipients",
-        //  "itemProperty": "dialog.getResponse.value[0].emailAddresses[0].address"
-        //}
-      ]
-    }
-  ]
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.OAuthInput",
+                    "ConnectionName": "msgraph",
+                    "Title": "Log in",
+                    "Text": "Please log in to your calendar account",
+                    "Property": "dialog.token"
+                },
+                "GetContactService"
+            ]
+        }
+    ]
 }

@@ -17,18 +17,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Action
-            yield return new DeclarativeType<AssertCondition>(AssertCondition.DeclarativeType);
+            yield return new DeclarativeType<AssertCondition>(AssertCondition.Kind);
 
             // test actions
-            yield return new DeclarativeType<TestScript>(TestScript.DeclarativeType);
-            yield return new DeclarativeType<UserSays>(UserSays.DeclarativeType);
-            yield return new DeclarativeType<UserTyping>(UserTyping.DeclarativeType);
-            yield return new DeclarativeType<UserConversationUpdate>(UserConversationUpdate.DeclarativeType);
-            yield return new DeclarativeType<UserActivity>(UserActivity.DeclarativeType);
-            yield return new DeclarativeType<UserDelay>(UserDelay.DeclarativeType);
-            yield return new DeclarativeType<AssertReply>(AssertReply.DeclarativeType);
-            yield return new DeclarativeType<AssertReplyOneOf>(AssertReplyOneOf.DeclarativeType);
-            yield return new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.DeclarativeType);
+            yield return new DeclarativeType<TestScript>(TestScript.Kind);
+            yield return new DeclarativeType<UserSays>(UserSays.Kind);
+            yield return new DeclarativeType<UserTyping>(UserTyping.Kind);
+            yield return new DeclarativeType<UserConversationUpdate>(UserConversationUpdate.Kind);
+            yield return new DeclarativeType<UserActivity>(UserActivity.Kind);
+            yield return new DeclarativeType<UserDelay>(UserDelay.Kind);
+            yield return new DeclarativeType<AssertReply>(AssertReply.Kind);
+            yield return new DeclarativeType<AssertReplyOneOf>(AssertReplyOneOf.Kind);
+            yield return new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.Kind);
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)

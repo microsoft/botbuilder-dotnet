@@ -1,12 +1,11 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnIntent",
     "intent": "Help",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${help(@PropertyName)}"           
+            "activity": "${help(@PropertyName)}"
         }
     ]
 }

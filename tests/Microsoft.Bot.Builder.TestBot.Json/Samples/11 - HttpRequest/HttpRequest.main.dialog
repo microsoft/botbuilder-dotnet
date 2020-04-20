@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "$id": "root",
     "triggers": [
@@ -57,12 +57,12 @@
                     "prompt": "Now try to specify the id of your pet, and I will help your find it out from the store.",
                     "property": "$id2"
                 },
-              {
-                "$kind": "Microsoft.HttpRequest",
-                "url": "http://petstore.swagger.io/v2/pet/${$id2}",
-                "method": "GET",
-                "resultProperty": "dialog.getResponse"
-              },
+                {
+                    "$kind": "Microsoft.HttpRequest",
+                    "url": "http://petstore.swagger.io/v2/pet/${$id2}",
+                    "method": "GET",
+                    "resultProperty": "dialog.getResponse"
+                },
                 {
                     "$kind": "Microsoft.SendActivity",
                     "activity": "Great! I found your pet named \"${dialog.getResponse.content.name}\""

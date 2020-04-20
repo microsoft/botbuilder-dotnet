@@ -1,13 +1,12 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.ITrigger)",
     "title": "On condition",
     "description": "Actions to perform when specified condition is true.",
     "type": "object",
     "properties": {
         "condition": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/condition",
             "title": "Condition",
             "description": "Condition (expression).",
             "examples": [
@@ -22,15 +21,17 @@
             }
         },
         "priority": {
-            "type": "integer",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
             "title": "priority",
-            "description": "Priority expression of rule with 0 being the most important",
-            "$role": "expression"
         },
         "runOnce": {
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Run Once",
-            "description": "True if rule should run once per unique conditions"
+            "description": "True if rule should run once per unique conditions",
+            "examples": [
+                true,
+                "=f(x)"
+            ]
         }
     },
     "required": [

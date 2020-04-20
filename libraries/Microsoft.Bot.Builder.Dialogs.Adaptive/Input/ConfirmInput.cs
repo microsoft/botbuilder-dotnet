@@ -15,12 +15,12 @@ using static Microsoft.Recognizers.Text.Culture;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     /// <summary>
-    /// Declarative input control that will gather yes/no confirmation input.
+    /// Declarative input control that will gather yes/no confirmation input from a set of choices.
     /// </summary>
     public class ConfirmInput : InputDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.ConfirmInput";
+        public const string Kind = "Microsoft.ConfirmInput";
 
         private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>(StringComparer.OrdinalIgnoreCase)
         {
@@ -39,20 +39,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        /// <summary>
+        /// Gets or sets the DefaultLocale to use to parse confirmation choices if there is not one passed by the caller.
+        /// </summary>
+        /// <value>
+        /// The locale (en-us, nl-nl, etc) or expression which evluates to locale.
+        /// </value>
         [JsonProperty("defaultLocale")]
         public StringExpression DefaultLocale { get; set; }
 
+        /// <summary>
+        /// Gets or sets the ListType to use to prompt the user.
+        /// </summary>
+        /// <value>The listStyle or expression which evaluates to ListStyle.</value>
         [JsonProperty("style")]
         public EnumExpression<ListStyle> Style { get; set; } = ListStyle.Auto;
 
+        /// <summary>
+        /// Gets or sets the ChoiceOptions to use to format presenting confirmation choices to the user.
+        /// </summary>
+        /// <value>The listStyle or expression which evaluates to the ListStyle.</value>
         [JsonProperty("choiceOptions")]
         public ObjectExpression<ChoiceFactoryOptions> ChoiceOptions { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Choices to present.
+        /// </summary>
+        /// <value>The choices or an expression which evaluates to the choices.</value>
         [JsonProperty("confirmChoices")]
-        public ArrayExpression<Choice> ConfirmChoices { get; set; }
+        public ObjectExpression<ChoiceSet> ConfirmChoices { get; set; }
 
+        /// <summary>
+        /// Gets or sets the expression to use to format the result.
+        /// </summary>
+        /// <remarks>The default output is a bool, if this property is set then the output of the expression is the value returned by the dialog.</remarks>
+        /// <value>an expression.</value>
         [JsonProperty("outputFormat")]
-        public StringExpression OutputFormat { get; set; }
+        public ValueExpression OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {

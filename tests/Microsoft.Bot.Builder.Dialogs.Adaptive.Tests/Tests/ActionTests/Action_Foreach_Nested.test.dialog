@@ -1,110 +1,110 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
-  "$kind": "Microsoft.Test.Script",
-  "dialog": {
-    "$kind": "Microsoft.AdaptiveDialog",
-    "id": "root",
-    "triggers": [
-      {
-        "$kind": "Microsoft.OnBeginDialog",
-        "actions": [
-          {
-            "$kind": "Microsoft.SetProperty",
-            "property": "dialog.todo",
-            "value": "=[]"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.a",
-            "value": "a1"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.a",
-            "value": "a2"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.a",
-            "value": "a3"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.b",
-            "value": "b1"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.b",
-            "value": "b2"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.b",
-            "value": "b3"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.todo",
-            "value": "=dialog.a"
-          },
-          {
-            "$kind": "Microsoft.EditArray",
-            "itemsProperty": "dialog.todo",
-            "value": "=dialog.b"
-          },
-          {
-            "$kind": "Microsoft.Foreach",
-            "itemsProperty": "dialog.todo",
-            "actions": [
-              {
-                "$kind": "Microsoft.Foreach",
-                "itemsProperty": "dialog.foreach.value",
-                "index": "dialog.foreach.inner.index",
-                "value": "dialog.foreach.inner.value",
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
                 "actions": [
-                  {
-                    "$kind": "Microsoft.SendActivity",
-                    "activity": "index is: ${dialog.foreach.inner.index} and value is: ${dialog.foreach.inner.value}"
-                  }
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "dialog.todo",
+                        "value": "=[]"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.a",
+                        "value": "a1"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.a",
+                        "value": "a2"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.a",
+                        "value": "a3"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.b",
+                        "value": "b1"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.b",
+                        "value": "b2"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.b",
+                        "value": "b3"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "value": "=dialog.a"
+                    },
+                    {
+                        "$kind": "Microsoft.EditArray",
+                        "itemsProperty": "dialog.todo",
+                        "value": "=dialog.b"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "dialog.todo",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.Foreach",
+                                "itemsProperty": "dialog.foreach.value",
+                                "index": "dialog.foreach.inner.index",
+                                "value": "dialog.foreach.inner.value",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "index is: ${dialog.foreach.inner.index} and value is: ${dialog.foreach.inner.value}"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ]
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "autoEndDialog": true,
-    "defaultResultProperty": "dialog.result"
-  },
-  "script": [
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "hi"
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
     },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "index is: 0 and value is: a1"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "index is: 1 and value is: a2"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "index is: 2 and value is: a3"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "index is: 0 and value is: b1"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "index is: 1 and value is: b2"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "index is: 2 and value is: b3"
-    }
-  ]
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 0 and value is: a1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 1 and value is: a2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 2 and value is: a3"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 0 and value is: b1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 1 and value is: b2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 2 and value is: b3"
+        }
+    ]
 }

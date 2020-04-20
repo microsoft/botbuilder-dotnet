@@ -1,9 +1,8 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Price",
-    "priority": "indexOf(dialog.requiredProperties, 'Price')",
+    "condition": "!$Price",
+    "priority": "=indexOf(dialog.requiredProperties, 'Price')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",

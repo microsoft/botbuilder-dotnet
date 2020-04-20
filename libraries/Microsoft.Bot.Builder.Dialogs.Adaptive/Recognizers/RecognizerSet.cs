@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class RecognizerSet : Recognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.RecognizerSet";
+        public const string Kind = "Microsoft.RecognizerSet";
 
         [JsonConstructor]
         public RecognizerSet()

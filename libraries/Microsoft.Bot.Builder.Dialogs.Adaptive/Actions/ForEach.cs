@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class Foreach : ActionScope
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.Foreach";
+        public const string Kind = "Microsoft.Foreach";
 
         [JsonConstructor]
         public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
