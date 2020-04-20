@@ -97,6 +97,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         Role = activity.Conversation.Role,
                         TenantId = activity.Conversation.TenantId,
                     },
+                    Locale = activity.Locale
                 };
                 activity.Conversation.Id = conversationId;
                 activity.ServiceUrl = serviceUrl.ToString();
