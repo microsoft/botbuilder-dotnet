@@ -833,6 +833,11 @@ namespace AdaptiveExpressions.Tests
             Test("string({obj: {'name': 'adams'}})", "{\"obj\":{\"name\":\"adams\"}}"),
             Test("string({obj: {'name': 'adams'}, txt: {utter: 'hello'}})", "{\"obj\":{\"name\":\"adams\"},\"txt\":{\"utter\":\"hello\"}}"),
             Test("{a: 1, b: newExpr}.b", "new land"),
+            Test("{name: user.name}.name", null),
+            Test("{name: user.nickname}.name", "John"),
+            Test("setProperty({}, 'name', user.name).name", null),
+            Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
+            Test("setProperty({}, 'name', user.nickname).name", "John"),
             #endregion
 
             #region  Memory access
