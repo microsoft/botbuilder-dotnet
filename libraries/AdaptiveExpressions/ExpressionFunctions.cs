@@ -901,15 +901,7 @@ namespace AdaptiveExpressions
             }
             else if (instance is JObject jobj)
             {
-                if (value != null)
-                {
-                    result = JToken.FromObject(value);
-                    jobj[property] = (JToken)result;
-                }
-                else
-                {
-                    jobj[property] = null;
-                }
+                jobj[property] = ConvertToJToken(value);
             }
             else
             {
@@ -1550,7 +1542,7 @@ namespace AdaptiveExpressions
                 {
                     list = Object2KVPairList(jobj);
                 }
-                else if (JToken.FromObject(instance) is JObject jobject)
+                else if (ConvertToJToken(instance) is JObject jobject)
                 {
                     list = Object2KVPairList(jobject);
                 }
@@ -1609,7 +1601,7 @@ namespace AdaptiveExpressions
                 {
                     list = Object2KVPairList(jobj);
                 }
-                else if (JToken.FromObject(instance) is JObject jobject)
+                else if (ConvertToJToken(instance) is JObject jobject)
                 {
                     list = Object2KVPairList(jobject);
                 }
@@ -1650,7 +1642,7 @@ namespace AdaptiveExpressions
                         {
                             TryAccessProperty(item, "key", out var keyVal);
                             TryAccessProperty(item, "value", out var val);
-                            jobjResult.Add(keyVal as string, JToken.FromObject(val));
+                            jobjResult.Add(keyVal as string, ConvertToJToken(val));
                         }
 
                         result = jobjResult;
@@ -2324,6 +2316,11 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
+        private static JToken ConvertToJToken(object value)
+        {
+            return value == null ? JValue.CreateNull() : JToken.FromObject(value);
+        }
+
         // collection functions
         private static (object value, string error) Skip(Expression expression, object state, Options options)
         {
@@ -2548,7 +2545,7 @@ namespace AdaptiveExpressions
                 {
                     result = Object2List(jobj);
                 }
-                else if (JToken.FromObject(instance) is JObject jobject)
+                else if (ConvertToJToken(instance) is JObject jobject)
                 {
                     result = Object2List(jobject);
                 }
@@ -3986,7 +3983,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                newJobj[prop] = JToken.FromObject(args[2]);
+                                newJobj[prop] = ConvertToJToken(args[2]);
                             }
 
                             return (newJobj, error);
@@ -3998,8 +3995,7 @@ namespace AdaptiveExpressions
                     Apply(args =>
                         {
                             var newJobj = (IDictionary<string, JToken>)args[0];
-                            newJobj[args[1].ToString()] = JToken.FromObject(args[2]);
-
+                            newJobj[args[1].ToString()] = ConvertToJToken(args[2]);
                             return newJobj;
                         }),
                     ReturnType.Object,
