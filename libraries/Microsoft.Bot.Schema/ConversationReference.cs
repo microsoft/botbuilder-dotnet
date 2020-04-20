@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="channelId">Channel ID</param>
         /// <param name="serviceUrl">Service endpoint where operations
         /// concerning the referenced conversation may be performed</param>
-        public ConversationReference(string locale = default(string), string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string))
+        public ConversationReference(string locale, string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string))
         {
             ActivityId = activityId;
             User = user;
