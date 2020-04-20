@@ -37,6 +37,14 @@ namespace Microsoft.Bot.Schema
         /// <param name="bot">Bot participating in this conversation</param>
         /// <param name="conversation">Conversation reference</param>
         /// <param name="channelId">Channel ID</param>
+        /// <param name="serviceUrl">Service endpoint where operations
+        /// concerning the referenced conversation may be performed</param>
+        public ConversationReference(string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string))
+                : this(null, activityId, user, bot, conversation, channelId, serviceUrl)
+        { }
+        /// <summary>
+        /// Initializes a new instance of the ConversationReference class.
+        /// </summary>
         /// <param name="locale">A locale name for the contents of the text
         /// field.
         /// The locale name is a combination of an ISO 639 two- or three-letter
@@ -45,9 +53,16 @@ namespace Microsoft.Bot.Schema
         /// country or region.
         /// The locale name can also correspond to a valid BCP-47 language
         /// tag.</param>
+        /// <param name="activityId">(Optional) ID of the activity to refer
+        /// to</param>
+        /// <param name="user">(Optional) User participating in this
+        /// conversation</param>
+        /// <param name="bot">Bot participating in this conversation</param>
+        /// <param name="conversation">Conversation reference</param>
+        /// <param name="channelId">Channel ID</param>
         /// <param name="serviceUrl">Service endpoint where operations
         /// concerning the referenced conversation may be performed</param>
-        public ConversationReference(string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string), string locale = default(string))
+        public ConversationReference(string locale = default(string), string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string))
         {
             ActivityId = activityId;
             User = user;
