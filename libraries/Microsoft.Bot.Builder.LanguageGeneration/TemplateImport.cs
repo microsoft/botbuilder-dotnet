@@ -13,63 +13,43 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateImport"/> class.
         /// </summary>
-        /// <param name="parseTree">The parse tree of this template.</param>
-        /// <param name="source">Source of this import.</param>
-        internal TemplateImport(LGFileParser.ImportDefinitionContext parseTree, string source = "")
+        /// <param name="description">Import description, which is in [].</param>
+        /// <param name="id">Import id, which is a path, in ().</param>
+        /// <param name="sourceRange">Source range of template.</param>
+        internal TemplateImport(string description, string id, SourceRange sourceRange)
         {
-            ParseTree = parseTree;
-            Source = source;
-
-            Description = ExtractDescription(parseTree);
-            Id = ExtractId(parseTree);
+            this.SourceRange = sourceRange;
+            this.Description = description;
+            this.Id = id;
         }
 
         /// <summary>
-        /// Gets description of the import, what's included by '[]' in a lg file.
+        /// Gets or sets description of the import, included by '[]' in a lg file.
         /// </summary>
         /// <value>
-        /// Description of the import, what's included by '[]' in a lg file.
+        /// Description of the import, included by '[]' in a lg file.
         /// </value>
-        public string Description { get; }
+        public string Description { get; set; }
 
         /// <summary>
-        /// Gets id of this import, what's included by '()' in a lg file.
+        /// Gets or sets id of this import, included by '()' in a lg file.
         /// </summary>
         /// <value>
         /// Id of this import.
         /// </value>
-        public string Id { get; }
+        public string Id { get; set; }
 
         /// <summary>
-        /// Gets origin root source of the import.
+        /// Gets or sets original root source of the import.
         /// </summary>
         /// <value>
-        /// origin root source of the import.
+        /// Original root source of the import.
         /// </value>
-        public string Source { get; }
+        public SourceRange SourceRange { get; set; }
 
-        /// <summary>
-        /// Gets the parse tree of this lg file.
-        /// </summary>
-        /// <value>
-        /// The parse tree of this lg file.
-        /// </value>
-        public LGFileParser.ImportDefinitionContext ParseTree { get; }
-
-        private string ExtractDescription(LGFileParser.ImportDefinitionContext parseTree)
+        public override string ToString()
         {
-            // content: [xxx](yyy)
-            var content = parseTree.GetText();
-            var closeSquareBracketIndex = content.IndexOf(']');
-            return content.Substring(1, closeSquareBracketIndex - 1);
-        }
-
-        private string ExtractId(LGFileParser.ImportDefinitionContext parseTree)
-        {
-            // content: [xxx](yyy)
-            var content = parseTree.GetText();
-            var lastOpenBracketIndex = content.LastIndexOf('(');
-            return content.Substring(lastOpenBracketIndex + 1, content.Length - lastOpenBracketIndex - 2);
+            return $"[{Description}]({Id})";
         }
     }
 }

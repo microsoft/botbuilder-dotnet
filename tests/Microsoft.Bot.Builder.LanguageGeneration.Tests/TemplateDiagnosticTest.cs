@@ -137,11 +137,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(1, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
-
-            diagnostics = Templates.ParseText("#Demo4\r\n- ${createArray(1,\r\n2,3)\r\n#AnotherTemplate").Diagnostics;
-            Assert.AreEqual(1, diagnostics.Count);
-            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains("Close } is missing in Expression"));
         }
 
         [TestMethod]
@@ -315,6 +310,23 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.Evaluate("switchcase2", new { turn = new { testValue = 0 } }));
             Assert.AreEqual("'dialog.abc' evaluated to null. [switchcase2] Case 'Default': Error occurred when evaluating '-I want ${dialog.abc}'.", exception.Message);
+        }
+
+        [TestMethod]
+        public void TestErrorLine()
+        {
+            var diagnostics = GetDiagnostics("ErrorLine.lg");
+
+            Assert.AreEqual(4, diagnostics.Count);
+
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.SyntaxError));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
+            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.InvalidStrucName));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
+            Assert.IsTrue(diagnostics[2].Message.Contains(TemplateErrors.MissingStrucEnd));
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[3].Severity);
+            Assert.IsTrue(diagnostics[3].Message.Contains(TemplateErrors.InvalidStrucBody));
         }
 
         [TestMethod]

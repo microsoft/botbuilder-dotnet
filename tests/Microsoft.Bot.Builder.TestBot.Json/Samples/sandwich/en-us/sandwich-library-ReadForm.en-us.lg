@@ -1,3 +1,5 @@
+[sandwich-library.lg](sandwich-library.lg)
+
 # readForm(name)
 [Activity
     Attachments=${json(formCard(name))}
@@ -49,4 +51,3 @@
 
 # subFact(property, subproperty)
 - ${dialog[property][subproperty]}
-[sandwich-library.lg](sandwich-library.lg)

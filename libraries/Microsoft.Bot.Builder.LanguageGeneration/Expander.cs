@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG template expander.
     /// </summary>
-    public class Expander : LGFileParserBaseVisitor<List<object>>
+    public class Expander : LGTemplateParserBaseVisitor<List<object>>
     {
         public const string LGType = "lgType";
         public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
@@ -30,9 +30,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="Expander"/> class.
         /// </summary>
-        /// <param name="templates">template list.</param>
+        /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">Given expression parser.</param>
-        /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
+        /// <param name="strictMode">Strict mode. If strictMode == true, exception in expression would throw outside.</param>
         public Expander(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
         {
             Templates = templates;
@@ -101,26 +101,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
-            var result = Visit(TemplateMap[templateName].ParseTree);
+            var result = Visit(TemplateMap[templateName].TemplateBodyParseTree);
             evaluationTargetStack.Pop();
 
             return result;
         }
 
-        public override List<object> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
-        {
-            var templateNameContext = context.templateNameLine();
-            if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
-            {
-                return Visit(context.templateBody());
-            }
+        public override List<object> VisitNormalBody([NotNull] LGTemplateParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
-            return null;
-        }
-
-        public override List<object> VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
-
-        public override List<object> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        public override List<object> VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var normalTemplateStrs = context.templateString();
             var result = new List<object>();
@@ -133,7 +122,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<object> VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
+        public override List<object> VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
         {
             var ifRules = context.ifElseTemplateBody().ifConditionRule();
             foreach (var ifRule in ifRules)
@@ -147,7 +136,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override List<object> VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        public override List<object> VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
         {
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             var length = switchCaseNodes.Length;
@@ -190,7 +179,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override List<object> VisitStructuredBody([NotNull] LGFileParser.StructuredBodyContext context)
+        public override List<object> VisitStructuredBody([NotNull] LGTemplateParser.StructuredBodyContext context)
         {
             var templateRefValues = new Dictionary<string, List<object>>();
             var stb = context.structuredTemplateBody();
@@ -278,7 +267,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return finalResult;
         }
 
-        public override List<object> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        public override List<object> VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
             var result = new List<string>() { string.Empty };
@@ -286,14 +275,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 switch (node.Symbol.Type)
                 {
-                    case LGFileParser.DASH:
-                    case LGFileParser.MULTILINE_PREFIX:
-                    case LGFileParser.MULTILINE_SUFFIX:
+                    case LGTemplateParser.DASH:
+                    case LGTemplateParser.MULTILINE_PREFIX:
+                    case LGTemplateParser.MULTILINE_SUFFIX:
                         break;
-                    case LGFileParser.ESCAPE_CHARACTER:
+                    case LGTemplateParser.ESCAPE_CHARACTER:
                         result = StringListConcat(result, new List<string>() { node.GetText().Escape() });
                         break;
-                    case LGFileParser.EXPRESSION:
+                    case LGTemplateParser.EXPRESSION:
                         result = StringListConcat(result, EvalExpression(node.GetText(), context, prefixErrorMsg));
                         break;
                     default:
@@ -320,7 +309,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return newScope;
         }
 
-        private bool EvalCondition(LGFileParser.IfConditionContext condition)
+        private bool EvalCondition(LGTemplateParser.IfConditionContext condition)
         {
             var expression = condition.EXPRESSION(0);
             if (expression == null || // no expression means it's else
@@ -332,7 +321,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return false;
         }
 
-        private List<List<object>> VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
+        private List<List<object>> VisitStructureValue(LGTemplateParser.KeyValueStructureLineContext context)
         {
             var values = context.keyValueStructureValue();
 
@@ -350,10 +339,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         switch (node.Symbol.Type)
                         {
-                            case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                            case LGTemplateParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
                                 itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Replace(@"\|", "|").Escape() });
                                 break;
-                            case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                            case LGTemplateParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
                                 itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText(), item, errorPrefix));
                                 break;
@@ -556,7 +545,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
             {
-                throw new Exception(TemplateErrors.ErrorTemplateNameformat(children0.ToString()));
+                throw new Exception(TemplateErrors.InvalidTemplateName);
             }
 
             // Validate more if the name is string constant
@@ -658,7 +647,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             else
             {
                 var template = TemplateMap[CurrentTarget().TemplateName];
-                var sourcePath = template.Source.NormalizePath();
+                var sourcePath = template.SourceRange.Source.NormalizePath();
                 var baseFolder = Environment.CurrentDirectory;
                 if (Path.IsPathRooted(sourcePath))
                 {

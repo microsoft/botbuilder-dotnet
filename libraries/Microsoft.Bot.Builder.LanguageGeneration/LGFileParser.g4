@@ -6,130 +6,47 @@ parser grammar LGFileParser;
 options { tokenVocab=LGFileLexer; }
 
 file
-	: paragraph+? EOF
-	;
+    : paragraph+? EOF
+    ;
 
 paragraph
     : templateDefinition
     | importDefinition
-    | optionsDefinition
+    | optionDefinition
+    | errorDefinition
+    | commentDefinition
+    | NEWLINE
     | EOF
-    | errorTemplate
     ;
 
-errorTemplate
-    : INVALID_TOKEN+
-    ;
-
-templateDefinition
-	: templateNameLine templateBody?
-	;
-
-templateNameLine
-	: HASH ((templateName parameters?) | errorTemplateName)
-	;
-
-errorTemplateName
-    : (IDENTIFIER|TEXT_IN_NAME|OPEN_PARENTHESIS|COMMA|CLOSE_PARENTHESIS|DOT)*
-    ;
-
-templateName
-    : IDENTIFIER (DOT IDENTIFIER)*
-    ;
-
-parameters
-    : OPEN_PARENTHESIS (IDENTIFIER (COMMA IDENTIFIER)*)? CLOSE_PARENTHESIS
-    ;
-
-templateBody
-    : normalTemplateBody                        #normalBody
-    | ifElseTemplateBody                        #ifElseBody
-    | switchCaseTemplateBody                    #switchCaseBody
-    | structuredTemplateBody                    #structuredBody
-    ;
-
-structuredTemplateBody
-    : structuredBodyNameLine (((structuredBodyContentLine? STRUCTURED_NEWLINE) | errorStructureLine)+)? structuredBodyEndLine?
-    ;
-
-structuredBodyNameLine
-    : LEFT_SQUARE_BRACKET (STRUCTURE_NAME | errorStructuredName)
-    ;
-
-errorStructuredName
-    : (STRUCTURE_NAME|TEXT_IN_STRUCTURE_NAME)*
-    ;
-
-structuredBodyContentLine
-    : keyValueStructureLine
-    | objectStructureLine
-    ;
-
-errorStructureLine
-    : (STRUCTURE_IDENTIFIER|STRUCTURE_EQUALS|STRUCTURE_OR_MARK|TEXT_IN_STRUCTURE_BODY|EXPRESSION_IN_STRUCTURE_BODY|ESCAPE_CHARACTER_IN_STRUCTURE_BODY)+
-    ;
-
-keyValueStructureLine
-    : STRUCTURE_IDENTIFIER STRUCTURE_EQUALS keyValueStructureValue (STRUCTURE_OR_MARK keyValueStructureValue)*
-    ;
-
-keyValueStructureValue
-    : (TEXT_IN_STRUCTURE_BODY|EXPRESSION_IN_STRUCTURE_BODY|ESCAPE_CHARACTER_IN_STRUCTURE_BODY)+
-    ;
-
-objectStructureLine
-    : EXPRESSION_IN_STRUCTURE_BODY
-    ;
-
-structuredBodyEndLine
-    : STRUCTURED_BODY_END
-    ;
-
-normalTemplateBody
-    : templateString+
-    ;
-
-templateString
-    : normalTemplateString
-    | errorTemplateString
-    ;
-
-normalTemplateString
-    : DASH MULTILINE_PREFIX? (TEXT|EXPRESSION|ESCAPE_CHARACTER)* MULTILINE_SUFFIX?
-    ;
-
-errorTemplateString
-	: INVALID_TOKEN+
-	;
-
-ifElseTemplateBody
-    : ifConditionRule+
-    ;
-
-ifConditionRule
-    : ifCondition normalTemplateBody?
-    ;
-
-ifCondition
-    : DASH (IF|ELSE|ELSEIF) (WS|TEXT|EXPRESSION)*
-    ;
-
-switchCaseTemplateBody
-    : switchCaseRule+
-    ;
-
-switchCaseRule
-    : switchCaseStat normalTemplateBody?
-    ;
-
-switchCaseStat
-    : DASH (SWITCH|CASE|DEFAULT) (WS|TEXT|EXPRESSION)*
+commentDefinition
+    : COMMENT NEWLINE?
     ;
 
 importDefinition
-    : IMPORT
+    : IMPORT NEWLINE?
     ;
 
-optionsDefinition
-    : OPTIONS
+optionDefinition
+    : OPTION NEWLINE?
+    ;
+
+errorDefinition
+    : INVALID_LINE NEWLINE?
+    ;
+
+templateDefinition
+    : templateNameLine templateBody
+    ;
+
+templateNameLine
+    : TEMPLATE_NAME_LINE NEWLINE?
+    ;
+
+templateBody
+    : templateBodyLine*
+    ;
+
+templateBodyLine
+    : (TEMPLATE_BODY_LINE NEWLINE?) | NEWLINE
     ;
