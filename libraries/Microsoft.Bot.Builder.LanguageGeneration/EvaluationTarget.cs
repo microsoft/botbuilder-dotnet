@@ -13,8 +13,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="EvaluationTarget"/> class.
         /// </summary>
-        /// <param name="templateName">template name.</param>
-        /// <param name="scope">template scope.</param>
+        /// <param name="templateName">Template name.</param>
+        /// <param name="scope">Template scope.</param>
         public EvaluationTarget(string templateName, object scope)
         {
             TemplateName = templateName;
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Gets or sets template name.
         /// </summary>
         /// <value>
-        /// template name.
+        /// Template name.
         /// </value>
         public string TemplateName { get; set; }
 
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Get current instance id. If two target has the same Id,
         /// we can say they have the same template evaluation.
         /// </summary>
-        /// <returns>id.</returns>
+        /// <returns>Id.</returns>
         public string GetId()
         {
             var memory = (CustomizedMemory)Scope;

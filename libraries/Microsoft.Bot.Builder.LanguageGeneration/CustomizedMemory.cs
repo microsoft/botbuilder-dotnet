@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomizedMemory"/> class.
         /// </summary>
-        /// <param name="scope">scope.</param>
+        /// <param name="scope">Scope.</param>
         public CustomizedMemory(object scope)
         {
             this.GlobalMemory = scope == null ? null : MemoryFactory.Create(scope);
@@ -27,8 +27,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomizedMemory"/> class.
         /// </summary>
-        /// <param name="globalMemory">global memory.</param>
-        /// <param name="localMemory">local memory.</param>
+        /// <param name="globalMemory">Global memory.</param>
+        /// <param name="localMemory">Local memory.</param>
         public CustomizedMemory(IMemory globalMemory, IMemory localMemory = null)
         {
             this.GlobalMemory = globalMemory;
@@ -60,9 +60,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Try to get the value from a given path. Firstly, get result from global memory,
         /// if global memory does not contain, get from local memory.
         /// </summary>
-        /// <param name="path">memory path.</param>
-        /// <param name="value">resolved value.</param>
-        /// <returns> true if the memory contains an element with the specified key; otherwise, false.</returns>
+        /// <param name="path">Memory path.</param>
+        /// <param name="value">Resolved value.</param>
+        /// <returns>True if the memory contains an element with the specified key; otherwise, false.</returns>
         public bool TryGetValue(string path, out object value)
         {
             value = null;

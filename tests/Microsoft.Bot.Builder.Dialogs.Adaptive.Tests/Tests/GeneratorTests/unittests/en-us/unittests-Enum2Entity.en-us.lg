@@ -1,4 +1,5 @@
-
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Choose.lg](unittests-library-Choose.lg)
  
  # Enum2Entity(value) 
  - SWITCH: ${value}
@@ -24,5 +25,3 @@
  
  # chooseEnum2Entity
  - ${chooseEnumEntity('Enum2')}
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Choose.lg](unittests-library-Choose.lg)

@@ -1,3 +1,6 @@
+[sandwichTest-library.lg](sandwichTest-library.lg)
+[sandwichTest-library-ReadForm.lg](sandwichTest-library-ReadForm.lg)
+
 # numberValidation(property, number)
 - IF: ${less(number, dialogClass.schema.properties[property].minimum)}
 - ${number} is less than the minimum value ${dialogClass.schema.properties[property].minimum}.
@@ -35,5 +38,3 @@
 
 # unexpectedPropertyChange(property, val, oldVal)
 - ${name(property)} is changed from ${value(property, oldVal)} to ${value(property, val)}.
-[sandwichTest-library.lg](sandwichTest-library.lg)
-[sandwichTest-library-ReadForm.lg](sandwichTest-library-ReadForm.lg)
