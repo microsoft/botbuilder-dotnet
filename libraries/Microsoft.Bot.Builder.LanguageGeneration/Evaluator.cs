@@ -585,7 +585,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var children0 = expression.Children[0];
 
-            if (children0.ReturnType != ReturnType.Object && children0.ReturnType != ReturnType.String)
+            if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
             {
                 throw new Exception(TemplateErrors.ErrorTemplateNameformat(children0.ToString()));
             }

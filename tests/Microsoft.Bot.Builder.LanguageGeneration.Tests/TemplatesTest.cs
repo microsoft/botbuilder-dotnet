@@ -380,6 +380,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("dupNameWithTemplate").ToString();
             Assert.AreEqual(evaled, "2");
+
+            evaled = templates.Evaluate("foo", new { property = "Show" }).ToString();
+            Assert.AreEqual(evaled, "you made it!");
         }
 
         [TestMethod]
