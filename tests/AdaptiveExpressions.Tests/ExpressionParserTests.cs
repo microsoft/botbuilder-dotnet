@@ -838,6 +838,7 @@ namespace AdaptiveExpressions.Tests
             Test("setProperty({}, 'name', user.name).name", null),
             Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
             Test("setProperty({}, 'name', user.nickname).name", "John"),
+            Test("addProperty({}, 'name', user.name).name", null),
             #endregion
 
             #region  Memory access
