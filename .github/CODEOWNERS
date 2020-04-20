@@ -51,4 +51,4 @@
 
 # Tests
 /tests/AdaptiveExpressions.Tests/**                                                @tomlm @boydc2014 @chrimc62 
-/tests/Microsoft.Bot.BotBuilder.LanguageGeneration.Tests/**                        @tomlm @boydc2014 @chrimc62
+/tests/Microsoft.Bot.Builder.LanguageGeneration.Tests/**                           @tomlm @boydc2014 @chrimc62
