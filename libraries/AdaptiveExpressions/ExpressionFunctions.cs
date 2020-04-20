@@ -901,15 +901,7 @@ namespace AdaptiveExpressions
             }
             else if (instance is JObject jobj)
             {
-                if (value != null)
-                {
-                    result = ConvertToJToken(value);
-                    jobj[property] = (JToken)result;
-                }
-                else
-                {
-                    jobj[property] = null;
-                }
+                jobj[property] = ConvertToJToken(value);
             }
             else
             {
