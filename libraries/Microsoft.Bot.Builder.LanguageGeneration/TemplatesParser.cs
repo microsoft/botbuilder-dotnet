@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return null;
             }
 
-            private LGTemplateParser.TemplateBodyContext CheckTemplateBody(string templateName, string templateBody, LGFileParser.TemplateBodyContext context, int startLine)
+            private LGTemplateParser.BodyContext CheckTemplateBody(string templateName, string templateBody, LGFileParser.TemplateBodyContext context, int startLine)
             {
                 if (string.IsNullOrWhiteSpace(templateBody))
                 {
@@ -419,7 +419,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return result;
             }
 
-            private LGTemplateParser.TemplateBodyContext AntlrParseTemplate(string templateBody, int lineOffset)
+            private LGTemplateParser.BodyContext AntlrParseTemplate(string templateBody, int lineOffset)
             {
                 var input = new AntlrInputStream(templateBody);
                 var lexer = new LGTemplateLexer(input);
@@ -433,7 +433,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 parser.AddErrorListener(listener);
                 parser.BuildParseTree = true;
 
-                return parser.context().templateBody();
+                return parser.context().body();
             }
 
             private Diagnostic BuildTemplatesDiagnostic(string errorMessage, ParserRuleContext context, DiagnosticSeverity severity = DiagnosticSeverity.Error)

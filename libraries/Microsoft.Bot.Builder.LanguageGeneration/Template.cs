@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// The parse tree of this template.
         /// </value>
-        public LGTemplateParser.TemplateBodyContext TemplateBodyParseTree { get; set; }
+        public LGTemplateParser.BodyContext TemplateBodyParseTree { get; set; }
 
         public override string ToString() => $"[{Name}({string.Join(", ", Parameters)})]\"{Body}\"";
     }
