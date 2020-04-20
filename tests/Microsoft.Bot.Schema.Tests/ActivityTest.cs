@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Schema.Tests
                     Id = "cr_def",
                 },
                 ActivityId = "cr_12345",
-                Locale = "en-uS" // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stays in English
+                Locale = "en-uS" // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
             };
 
             activity.ApplyConversationReference(conversationReference, true);
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Schema.Tests
                     Id = "def",
                 },
                 ActivityId = "12345",
-                Locale = "en-uS" // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stays in English
+                Locale = "en-uS" // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
             };
 
             activity.ApplyConversationReference(conversationReference, false);
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Schema.Tests
                 Recipient = account2,
                 Conversation = conversationAccount,
                 ChannelId = "ChannelId123",
-                Locale = "en-uS", // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stays in English
+                Locale = "en-uS", // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
                 ServiceUrl = "ServiceUrl123",
             };
 
