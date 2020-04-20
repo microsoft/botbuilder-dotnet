@@ -136,7 +136,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
         public ArrayExpression<Metadata> StrictFilters { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to call test or prod environment of knowledge base to be called. 
+        /// Gets or sets the flag to determine if personal information should be logged in telemetry.
+        /// </summary>
+        /// <value>
+        /// The flag to indicate in personal information should be logged in telemetry.
+        /// </value>
+        [JsonProperty("logPersonalInformation")]
+        public new BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
         /// </summary>
         /// <value>
         /// A value indicating whether to call test or prod environment of knowledge base. 
@@ -172,6 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
             var (epKey, _) = this.EndpointKey.TryGetValue(dc.State);
             var (hn, _) = this.HostName.TryGetValue(dc.State);
             var (kbId, _) = this.KnowledgeBaseId.TryGetValue(dc.State);
+            var (logPersonalInformation, _) = this.LogPersonalInformation.TryGetValue(dc.State);
 
             var endpoint = new QnAMakerEndpoint
             {
@@ -180,7 +190,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA
                 KnowledgeBaseId = kbId
             };
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
-            return new QnAMaker(endpoint, options, this.HttpClient);
+
+            return new QnAMaker(endpoint, options, this.HttpClient, this.TelemetryClient, (bool)logPersonalInformation);
         }
 
         /// <summary>
