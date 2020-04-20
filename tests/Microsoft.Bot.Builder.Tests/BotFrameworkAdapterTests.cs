@@ -303,14 +303,13 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task ContinueConversationAsyncWithAudienceAndLocale()
+        public async Task ContinueConversationAsyncWithAudience()
         {
             // Arrange
             var mockCredentialProvider = new Mock<ICredentialProvider>();
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
             var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
-            var locale = "fr-FR";
 
             // Create ClaimsIdentity that represents Skill2-to-Skill1 communication
             var skill2AppId = "00000000-0000-0000-0000-000000skill2";
@@ -350,13 +349,12 @@ namespace Microsoft.Bot.Builder.Tests
 
                 var scope = turnContext.TurnState.Get<string>(BotAdapter.OAuthScopeKey);
                 Assert.AreEqual(skill2AppId, scope);
-                Assert.AreEqual(locale, turnContext.Activity.Locale);
             });
 
             // Create ConversationReference to send a proactive message from Skill1 to Skill2
             var refs = new ConversationReference(serviceUrl: skill2ServiceUrl);
 
-            await adapter.ContinueConversationAsync(skillsIdentity, refs, skill2AppId, locale, callback, default);
+            await adapter.ContinueConversationAsync(skillsIdentity, refs, skill2AppId, callback, default);
         }
 
         [TestMethod]
