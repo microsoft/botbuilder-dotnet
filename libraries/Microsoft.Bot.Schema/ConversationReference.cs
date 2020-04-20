@@ -11,8 +11,7 @@
 namespace Microsoft.Bot.Schema
 {
     using Newtonsoft.Json;
-    using System.Linq;
-    using System.Linq.Expressions;
+    using System.Globalization;
 
     /// <summary>
     /// An object relating to a particular point in a conversation
@@ -40,7 +39,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="serviceUrl">Service endpoint where operations
         /// concerning the referenced conversation may be performed</param>
         public ConversationReference(string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string))
-                : this(locale: null, activityId: activityId, user: user, bot: bot, conversation: conversation, channelId: channelId, serviceUrl: serviceUrl)
+                : this(default(CultureInfo), activityId, user, bot, conversation, channelId, serviceUrl)
         { }
         /// <summary>
         /// Initializes a new instance of the ConversationReference class.
@@ -62,14 +61,14 @@ namespace Microsoft.Bot.Schema
         /// <param name="channelId">Channel ID</param>
         /// <param name="serviceUrl">Service endpoint where operations
         /// concerning the referenced conversation may be performed</param>
-        public ConversationReference(string locale, string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string))
+        public ConversationReference(CultureInfo locale, string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string))
         {
             ActivityId = activityId;
             User = user;
             Bot = bot;
             Conversation = conversation;
             ChannelId = channelId;
-            Locale = locale;
+            Locale = locale?.ToString();
             ServiceUrl = serviceUrl;
             CustomInit();
         }
