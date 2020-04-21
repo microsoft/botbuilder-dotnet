@@ -141,6 +141,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public EvaluationOptions LgOptions => new EvaluationOptions(Options);
 
+        public string NameSpace { get; set; }
+
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
         /// </summary>

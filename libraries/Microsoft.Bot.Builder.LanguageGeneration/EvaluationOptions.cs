@@ -32,6 +32,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private readonly string strictModeKey = "@strict";
         private readonly string replaceNullKey = "@replaceNull";
         private readonly string lineBreakKey = "@lineBreakStyle";
+        private readonly string namespceKey = "@namespace";
+        private readonly string globalTableKey = "@addToGlobalFunctionTable";
 
         public EvaluationOptions()
         {
@@ -45,6 +47,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.StrictMode = opt.StrictMode;
             this.NullSubstitution = opt.NullSubstitution;
             this.LineBreakStyle = opt.LineBreakStyle;
+            this.na
         }
 
         public EvaluationOptions(IList<string> optionStrList)
@@ -102,6 +105,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// A function.
         /// </value>
         public Func<string, object> NullSubstitution { get; set; } = null;
+
+        ///// <summary>
+        ///// Gets or sets the option for the namespace of the LG file.
+        ///// </summary>
+        ///// <value>
+        ///// A string or null value.
+        ///// </value>
+        //public string LGNamespace { get; set; } = null;
+
+        ///// <summary>
+        ///// Gets or sets the option for the global funtion table.
+        ///// </summary>
+        ///// <value>
+        ///// A string or null value.
+        ///// </value>
+        //public List<string> GlobalFunctions { get; set; } = null;
 
         /// <summary>
         /// Merge a incoming option to current option. If a property in incoming option is not null while it is null in current
