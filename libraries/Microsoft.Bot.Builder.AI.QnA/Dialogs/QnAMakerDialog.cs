@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.AI.QnA.Utils;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -21,6 +23,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
     /// It supports knowledge bases that include follow-up prompt and active learning features.</remarks>
     public class QnAMakerDialog : WaterfallDialog
     {
+        /// <summary>
+        /// The declarative name for this type.
+        /// </summary>
+        /// <remarks>Used by the framework to serialize and deserialize an instance of this type to JSON.</remarks>
+        [JsonProperty("$kind")]
+        public const string Kind = "Microsoft.QnAMakerDialog";
+
         /// <summary>
         /// The path for storing and retrieving QnA Maker context data.
         /// </summary>
@@ -64,17 +73,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private const string DefaultCardTitle = "Did you mean:";
         private const string DefaultCardNoMatchText = "None of the above.";
         private const string DefaultCardNoMatchResponse = "Thanks for the feedback.";
+
         private float maximumScoreForLowScoreVariation = 0.95F;
-        private string knowledgeBaseId;
-        private string hostName;
-        private string endpointKey;
-        private float threshold;
-        private int top;
-        private Activity noAnswer;
-        private string activeLearningCardTitle;
-        private string cardNoMatchText;
-        private Activity cardNoMatchResponse;
-        private Metadata[] strictFilters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
@@ -117,16 +117,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             : base(nameof(QnAMakerDialog))
         {
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
-            this.knowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
-            this.hostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
-            this.endpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
-            this.threshold = threshold;
-            this.top = top;
-            this.activeLearningCardTitle = activeLearningCardTitle;
-            this.cardNoMatchText = cardNoMatchText;
-            this.strictFilters = strictFilters;
-            this.noAnswer = noAnswer;
-            this.cardNoMatchResponse = cardNoMatchResponse;
+            this.KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
+            this.HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
+            this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
+            this.Threshold = threshold;
+            this.Top = top;
+            this.ActiveLearningCardTitle = activeLearningCardTitle;
+            this.CardNoMatchText = cardNoMatchText;
+            this.StrictFilters = strictFilters;
+            this.NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
+            this.CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
             this.HttpClient = httpClient;
 
             // add waterfall steps
@@ -165,10 +165,130 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public HttpClient HttpClient { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to log personal information that came from the user to telemetry.
+        /// Gets or sets the QnA Maker knowledge base ID to query.
         /// </summary>
-        /// <value>If true, personal information is logged to Telemetry; otherwise the properties will be filtered.</value>
-        public bool LogPersonalInformation { get; set; } = false;
+        /// <value>
+        /// The knowledge base ID or an expression which evaluates to the knowledge base ID.
+        /// </value>
+        [JsonProperty("knowledgeBaseId")]
+        public StringExpression KnowledgeBaseId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the QnA Maker host URL for the knowledge base.
+        /// </summary>
+        /// <value>
+        /// The QnA Maker host URL or an expression which evaluates to the host URL.
+        /// </value>
+        [JsonProperty("hostname")]
+        public StringExpression HostName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the QnA Maker endpoint key to use to query the knowledge base.
+        /// </summary>
+        /// <value>
+        /// The QnA Maker endpoint key to use or an expression which evaluates to the endpoint key.
+        /// </value>
+        [JsonProperty("endpointKey")]
+        public StringExpression EndpointKey { get; set; }
+
+        /// <summary>
+        /// Gets or sets the threshold for answers returned, based on score.
+        /// </summary>
+        /// <value>
+        /// The threshold for answers returned or an expression which evaluates to the threshold.
+        /// </value>
+        [JsonProperty("threshold")]
+        public NumberExpression Threshold { get; set; } = DefaultThreshold;
+
+        /// <summary>
+        /// Gets or sets the maximum number of answers to return from the knowledge base.
+        /// </summary>
+        /// <value>
+        /// The maximum number of answers to return from the knowledge base or an expression which
+        /// evaluates to the maximum number to return.
+        /// </value>
+        [JsonProperty("top")]
+        public IntExpression Top { get; set; } = DefaultTopN;
+
+        /// <summary>
+        /// Gets or sets the template to send the user when QnA Maker does not find an answer.
+        /// </summary>
+        /// <value>
+        /// The template to send the user when QnA Maker does not find an answer.
+        /// </value>
+        [JsonProperty("noAnswer")]
+        public ITemplate<Activity> NoAnswer { get; set; } = new BindToActivity(MessageFactory.Text(DefaultNoAnswer));
+
+        /// <summary>
+        /// Gets or sets the card title to use when showing active learning options to the user,
+        /// if active learning is enabled.
+        /// </summary>
+        /// <value>
+        /// The path card title to use when showing active learning options to the user or an
+        /// expression which evaluates to the card title.
+        /// </value>
+        [JsonProperty("activeLearningCardTitle")]
+        public StringExpression ActiveLearningCardTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the button text to use with active learning options, allowing a user to
+        /// indicate none of the options are applicable.
+        /// </summary>
+        /// <value>
+        /// The button text to use with active learning options or an expression which evaluates to
+        /// the button text.
+        /// </value>
+        [JsonProperty("cardNoMatchText")]
+        public StringExpression CardNoMatchText { get; set; }
+
+        /// <summary>
+        /// Gets or sets the template to send the user if they select the no match option on an
+        /// active learning card.
+        /// </summary>
+        /// <value>
+        /// The template to send the user if they select the no match option on an active learning card.
+        /// </value>
+        [JsonProperty("cardNoMatchResponse")]
+        public ITemplate<Activity> CardNoMatchResponse { get; set; } = new BindToActivity(MessageFactory.Text(DefaultCardNoMatchResponse));
+
+        /// <summary>
+        /// Gets or sets the QnA Maker metadata with which to filter or boost queries to the knowledge base;
+        /// or null to apply none.
+        /// </summary>
+        /// <value>
+        /// The QnA Maker metadata with which to filter or boost queries to the knowledge base
+        /// or an expression which evaluates to the QnA Maker metadata.
+        /// </value>
+        [JsonProperty("strictFilters")]
+        public ArrayExpression<Metadata> StrictFilters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the flag to determine if personal information should be logged in telemetry.
+        /// </summary>
+        /// <value>
+        /// The flag to indicate in personal information should be logged in telemetry.
+        /// </value>
+        [JsonProperty("logPersonalInformation")]
+        public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to call test or prod environment of knowledge base. 
+        /// </value>
+        [JsonProperty("isTest")]
+        public bool IsTest { get; set; }
+
+        /// <summary>
+        /// Gets or sets the QnA Maker ranker type to use.
+        /// </summary>
+        /// <value>
+        /// The QnA Maker ranker type to use or an expression which evaluates to the ranker type.
+        /// </value>
+        /// <seealso cref="RankerTypes"/>
+        [JsonProperty("rankerType")]
+        public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -230,12 +350,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = this.endpointKey,
-                Host = this.hostName,
-                KnowledgeBaseId = this.knowledgeBaseId
+                EndpointKey = this.EndpointKey.GetValue(dc.State),
+                Host = this.HostName.GetValue(dc.State),
+                KnowledgeBaseId = this.KnowledgeBaseId.GetValue(dc.State)
             };
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
-            return new QnAMaker(endpoint, options, HttpClient, this.TelemetryClient, this.LogPersonalInformation);
+            return new QnAMaker(endpoint, options, HttpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
         }
 
         /// <summary>
@@ -248,13 +368,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         {
             return Task.FromResult(new QnAMakerOptions
             {
-                ScoreThreshold = this.threshold,
-                StrictFilters = this.strictFilters,
-                Top = this.top, 
+                ScoreThreshold = this.Threshold.GetValue(dc.State),
+                StrictFilters = this.StrictFilters?.GetValue(dc.State)?.ToArray(),
+                Top = this.Top.GetValue(dc.State),
                 Context = new QnARequestContext(),
                 QnAId = 0,
-                RankerType = RankerTypes.DefaultRankerType,
-                IsTest = false
+                RankerType = this.RankerType?.GetValue(dc.State),
+                IsTest = this.IsTest
             });
         }
 
@@ -264,21 +384,21 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the response options to use.</remarks>
-        protected virtual Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
+        protected async virtual Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
-            return Task.FromResult(new QnADialogResponseOptions
+            return new QnADialogResponseOptions
             {
-                NoAnswer = noAnswer,
-                ActiveLearningCardTitle = activeLearningCardTitle ?? DefaultCardTitle,
-                CardNoMatchText = cardNoMatchText ?? DefaultCardNoMatchText,
-                CardNoMatchResponse = cardNoMatchResponse
-            });
+                NoAnswer = await this.NoAnswer.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false),
+                ActiveLearningCardTitle = this.ActiveLearningCardTitle?.GetValue(dc.State) ?? DefaultCardTitle,
+                CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
+                CardNoMatchResponse = await this.CardNoMatchResponse.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false)
+            };
         }
 
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
-            
+
             // Resetting context and QnAId
             dialogOptions.QnAMakerOptions.QnAId = 0;
             dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
