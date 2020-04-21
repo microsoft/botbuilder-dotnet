@@ -29,9 +29,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             // Recognizers
             yield return new DeclarativeType<QnAMakerRecognizer>(QnAMakerRecognizer.Kind);
-
-            // Triggers
-        //    yield return new DeclarativeType<OnQnAMatch>(OnQnAMatch.Kind);
         }
 
         /// <summary>
