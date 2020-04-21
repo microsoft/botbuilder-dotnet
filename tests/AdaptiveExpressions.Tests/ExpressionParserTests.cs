@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using AdaptiveExpressions.Memory;
+using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -100,6 +101,10 @@ namespace AdaptiveExpressions.Tests
             { "byteArr", new byte[] { 3, 5, 1, 12 } },
             { "timestamp", "2018-03-15T13:00:00.000Z" },
             { "notISOTimestamp", "2018/03/15 13:00:00" },
+            { "validFullDateTimex", new TimexProperty("2020-02-20") },
+            { "invalidFullDateTimex", new TimexProperty("xxxx-02-20") },
+            { "validHourTimex", new TimexProperty("2020-02-20T07:30") },
+            { "invalidHourTimex", new TimexProperty("2001-02-20") },
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
             { "unixTimestamp", 1521118800 },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
@@ -273,6 +278,14 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            Test("hasFullDate('2012-12-21')", true),
+            Test("hasFullDate('xxxx-12-21')", false),
+            Test("hasFullDate(validFullDateTimex)", true),
+            Test("hasFullDate(invalidFullDateTimex)", false),
+            Test("hasValidHour('2012-12-21T20:30')", true),
+            Test("hasValidHour('PT30M')", false),
+            Test("hasValidHour(validHourTimex)", true),
+            Test("hasValidHour(invalidHourTimex)", false),
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y

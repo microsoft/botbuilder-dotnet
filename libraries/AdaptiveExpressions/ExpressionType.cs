@@ -99,6 +99,8 @@ namespace AdaptiveExpressions
         public const string StartOfHour = "startOfHour";
         public const string StartOfMonth = "startOfMonth";
         public const string Ticks = "ticks";
+        public const string HasFullDate = "hasFullDate";
+        public const string HasValidHour = "hasValidHour";
 
         // Conversions
         public const string Float = "float";

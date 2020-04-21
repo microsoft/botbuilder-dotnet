@@ -3701,6 +3701,68 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.Number,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasFullDate,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (args[0] is TimexProperty timex)
+                            {
+                                parsed = timex;
+                            }
+                            else if (args[0] is string ts)
+                            {
+                                parsed = new TimexProperty(ts);
+                            } 
+                            else
+                            {
+                                return (false, error);
+                            }
+                        }
+
+                        value = parsed.Year != null && parsed.Month != null && parsed.DayOfMonth != null;
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasValidHour,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (args[0] is TimexProperty timex)
+                            {
+                                parsed = timex;
+                            }
+                            else if (args[0] is string ts)
+                            {
+                                parsed = new TimexProperty(ts);
+                            }
+                            else
+                            {
+                                return (false, error);
+                            }
+                        }
+
+                        value = parsed.Hour != null;
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
 
                 // URI Parsing
                 new ExpressionEvaluator(
