@@ -566,11 +566,6 @@
             "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
         },
         {
-            "title": "Microsoft.ValueRecognizer",
-            "description": "Recogne activity.Value as intent and entities.",
-            "$ref": "#/definitions/Microsoft.ValueRecognizer"
-        },
-        {
             "title": "Testbot.JavascriptAction",
             "description": "This gives you the ability to execute javascript to manipulate memory",
             "$ref": "#/definitions/Testbot.JavascriptAction"
@@ -5362,11 +5357,6 @@
                     "title": "Microsoft.RegexRecognizer",
                     "description": "Use regular expressions to recognize intents and entities from user input.",
                     "$ref": "#/definitions/Microsoft.RegexRecognizer"
-                },
-                {
-                    "title": "Microsoft.ValueRecognizer",
-                    "description": "Recogne activity.Value as intent and entities.",
-                    "$ref": "#/definitions/Microsoft.ValueRecognizer"
                 },
                 {
                     "type": "string",
@@ -14164,63 +14154,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "$kind"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.ValueRecognizer": {
-            "$role": "implements(Microsoft.IRecognizer)",
-            "title": "Value recognizer",
-            "description": "Recogne activity.Value as intent and entities.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.ValueRecognizer"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
                 }
             },
             "additionalProperties": false,
