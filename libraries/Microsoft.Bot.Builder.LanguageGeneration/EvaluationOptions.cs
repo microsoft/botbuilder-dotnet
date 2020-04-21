@@ -57,10 +57,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         var index = optionStr.IndexOf('=');
                         var key = optionStr.Substring(0, index).Trim();
-                        var value = optionStr.Substring(index + 1).Trim().ToLower();
+                        var value = optionStr.Substring(index + 1).Trim();
                         if (key == strictModeKey)
                         {
-                            if (value == "true")
+                            if (value.ToLower() == "true")
                             {
                                 StrictMode = true;
                             }

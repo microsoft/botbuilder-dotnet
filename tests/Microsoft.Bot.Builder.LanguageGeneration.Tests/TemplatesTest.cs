@@ -1120,7 +1120,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaled = templates.Evaluate("SayHello");
 
-            Assert.AreEqual("hi the user.name is undefined", evaled);
+            Assert.AreEqual("hi The user.name is undefined", evaled);
 
             evaled = templates.Evaluate("testInlineString");
 
@@ -1145,7 +1145,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaled3 = templates3.Evaluate("SayHello");
 
-            Assert.AreEqual("hi the user.name is undefined", evaled3);
+            Assert.AreEqual("hi The user.name is undefined", evaled3);
 
             Assert.AreEqual(templates3.LgOptions.LineBreakStyle, null);
 
