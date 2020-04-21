@@ -64,8 +64,18 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// The filters used to return answers that have the specified metadata.
         /// </value>
+        [Obsolete("This field is no longer used")]
         [JsonProperty("strictFilters")]
-        public Metadata[] StrictFilters { get; set; }
+        public Metadata[] StrictFilters { get; set; }        
+        
+        /// <summary>
+        /// Gets or sets miscellaneous data to boost answers.
+        /// </summary>
+        /// <value>
+        /// Miscellaneous data to boost answers.
+        /// </value>
+        [JsonProperty("metadataBoost")]
+        public Metadata[] MetadataBoost { get; set; }
         
         /// <summary>
         /// Gets or sets context for multi-turn responses.
