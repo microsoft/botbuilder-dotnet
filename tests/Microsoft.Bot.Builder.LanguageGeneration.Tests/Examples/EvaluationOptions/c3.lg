@@ -1,0 +1,12 @@
+﻿> !# @replaceNull = ${path} is evaluated to null in c3!
+> !# @strictMode = True
+
+#c3T
+- echo hello c3
+
+#testInlineString
+-```m
+s
+f
+t
+```
