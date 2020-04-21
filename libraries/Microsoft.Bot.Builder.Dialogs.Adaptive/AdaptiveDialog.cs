@@ -430,13 +430,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             if (activity.Type == ActivityTypes.Message)
                             {
                                 // Recognize utterance
-                                var recognizedREsult = await OnRecognize(actionContext, activity, cancellationToken).ConfigureAwait(false);
+                                var recognizedResult = await OnRecognize(actionContext, activity, cancellationToken).ConfigureAwait(false);
 
                                 // TODO figure out way to not use turn state to pass this value back to caller.
-                                actionContext.State.SetValue(TurnPath.Recognized, recognizedREsult);
+                                actionContext.State.SetValue(TurnPath.Recognized, recognizedResult);
                                 
                                 // Bug #3572 set these here, because if allowedInterruption is true then event is not emitted, but folks still want the value.
-                                var (name, score) = recognizedREsult.GetTopScoringIntent();
+                                var (name, score) = recognizedResult.GetTopScoringIntent();
                                 actionContext.State.SetValue(TurnPath.TopIntent, name);
                                 actionContext.State.SetValue(TurnPath.TopScore, score);
                                 actionContext.State.SetValue(DialogPath.LastIntent, name);
