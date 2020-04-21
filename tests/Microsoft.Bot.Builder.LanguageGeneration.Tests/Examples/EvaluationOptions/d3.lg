@@ -1,0 +1,4 @@
+﻿> !# @replaceNull = ${path} is evaluated to null in d3!
+
+#d3T
+- echo hello d3!
