@@ -1,8 +1,7 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
-        "$schema": "../../app.schema",
         "$kind": "Microsoft.AdaptiveDialog",
         "recognizer": {
             "$kind": "Microsoft.RegexRecognizer",
@@ -18,7 +17,6 @@
                 "$kind": "Microsoft.OnBeginDialog",
                 "actions": [
                     {
-                        "$schema": "../../app.schema",
                         "$kind": "Microsoft.AdaptiveDialog",
                         "recognizer": {
                             "$kind": "Microsoft.RegexRecognizer",

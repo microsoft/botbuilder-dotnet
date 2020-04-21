@@ -172,6 +172,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             // get the action for the offset
             dc.State.SetValue(OFFSETKEY, offset);
+
+            if (this.Actions == null || this.Actions.Count() <= offset)
+            {
+                return await dc.EndDialogAsync(null, cancellationToken).ConfigureAwait(false);
+            }
+
             var action = this.Actions[offset];
             var actionName = action.GetType().Name.ToString();
 

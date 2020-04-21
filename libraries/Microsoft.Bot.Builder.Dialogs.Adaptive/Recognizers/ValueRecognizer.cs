@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class ValueRecognizer : Recognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.ValueRecognizer";
+        public const string Kind = "Microsoft.ValueRecognizer";
 
         [JsonConstructor]
         public ValueRecognizer()
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 }
             }
 
-            this.TelemetryClient.TrackEvent("ValueRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognized, telemetryProperties), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "ValueRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognized, telemetryProperties), telemetryMetrics);
 
             return Task.FromResult(recognized);
         }

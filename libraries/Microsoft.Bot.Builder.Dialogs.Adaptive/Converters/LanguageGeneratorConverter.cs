@@ -20,9 +20,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Initializes a new instance of the <see cref="LanguageGeneratorConverter"/> class.
         /// </summary>
         /// <param name="resourceExplorer">resourcexplorer to use to resolve references.</param>
-        /// <param name="context">source range context stack to build debugger source map.</param>
-        public LanguageGeneratorConverter(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
-            : base(resourceExplorer, context)
+        /// <param name="sourceContext">sourcecontext to build debugger source map.</param>
+        public LanguageGeneratorConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
+            : base(resourceExplorer, sourceContext)
         {
         }
 

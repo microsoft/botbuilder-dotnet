@@ -1,11 +1,10 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "triggers": [
         {
             "$kind": "Microsoft.OnBeginDialog",
             "actions": [
-                // Reset data
                 {
                     "$kind": "Microsoft.SetProperty",
                     "value": "='msgraph'",

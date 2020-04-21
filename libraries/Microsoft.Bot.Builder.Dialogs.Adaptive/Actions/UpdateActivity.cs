@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class UpdateActivity : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.UpdateActivity";
+        public const string Kind = "Microsoft.UpdateActivity";
 
         public UpdateActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {

@@ -71,6 +71,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }).StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task MissingBotStateScopeTest()
+        {
+            // test that missing MemoryScope (UserState) behaves like NULL value, aka read ops return null, write ops throw 
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var conversationState = new ConversationState(new MemoryStorage());
+            adapter
+                .UseStorage(new MemoryStorage())
+                .Use(new RegisterClassMiddleware<ConversationState>(conversationState))
+                .Use(new AutoSaveStateMiddleware(conversationState));
+
+            DialogManager dm = new DialogManager(new LamdaDialog(async (dc, ct) =>
+            {
+                Assert.IsNull(dc.State.GetValue<string>("user"));
+                Assert.IsNull(dc.State.GetValue<string>("user.x"));
+                try
+                {
+                    dc.State.SetValue("user.x", "foo");
+                    Assert.Fail("Should have throw exception");
+                }
+                catch (ArgumentException)
+                {
+                }
+
+                Assert.IsNull(dc.State.GetValue<string>("user"));
+                Assert.IsNull(dc.State.GetValue<string>("user.x"));
+            }));
+
+            await new TestFlow(adapter, (context, ct) =>
+            {
+                return dm.OnTurnAsync(context, ct);
+            })
+                .SendConversationUpdate()
+            .StartTestAsync();
+        }
+
         public class Foo
         {
             public Foo()

@@ -1,6 +1,7 @@
 ﻿> !# @strict = false
 > !# @replaceNull = ${path} is undefined  
 > !# @lineBreakStyle = default
+[import](b1.lg)
 
 #SayHello
 - hi ${user.name}
@@ -11,5 +12,3 @@ s
 f
 t
 ```
-
-[import](b1.lg)

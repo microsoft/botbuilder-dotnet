@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.DateTime;
 using Newtonsoft.Json;
@@ -12,21 +13,37 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// Input dialog to collect a datetime from the user.
+    /// </summary>
+    /// <remarks>
+    /// The value that is output from a DateTimeInput is an array of DateTimeResolutions, or the output of OutputFormat.</remarks>
     public class DateTimeInput : InputDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.DateTimeInput";
+        public const string Kind = "Microsoft.DateTimeInput";
 
         public DateTimeInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        /// <summary>
+        /// Gets or sets the DefaultLocale to use to parse confirmation choices if there is not one passed by the caller.
+        /// </summary>
+        /// <value>
+        /// string or expression which evaluates to a string with locale.
+        /// </value>
         [JsonProperty("defaultLocale")]
         public StringExpression DefaultLocale { get; set; } = null;
 
+        /// <summary>
+        /// Gets or sets the expression to use to format the result.
+        /// </summary>
+        /// <remarks>The default output is an array of DateTimeResolutions, this property is an expression which is evaluated to determine the output of the dialog.</remarks>
+        /// <value>an expression.</value>
         [JsonProperty("outputFormat")]
-        public StringExpression OutputFormat { get; set; }
+        public Expression OutputFormat { get; set; }
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
@@ -48,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 if (OutputFormat != null)
                 {
-                    var (outputValue, error) = this.OutputFormat.TryGetValue(dc.State);
+                    var (outputValue, error) = this.OutputFormat.TryEvaluate(dc.State);
                     if (error == null)
                     {
                         dc.State.SetValue(VALUE_PROPERTY, outputValue);

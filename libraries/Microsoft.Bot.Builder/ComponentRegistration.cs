@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// A list of ComponentRegistration objects.
         /// </value>
-        public static Lazy<List<ComponentRegistration>> Registrations { get; private set; } = new Lazy<List<ComponentRegistration>>(() =>
+        public static Lazy<List<ComponentRegistration>> Components { get; private set; } = new Lazy<List<ComponentRegistration>>(() =>
         {
             void LoadReferencedAssembly(Assembly assembly)
             {

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class EmitEvent : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.EmitEvent";
+        public const string Kind = "Microsoft.EmitEvent";
 
         [JsonConstructor]
         public EmitEvent(string eventName = null, object eventValue = null, bool bubble = false, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

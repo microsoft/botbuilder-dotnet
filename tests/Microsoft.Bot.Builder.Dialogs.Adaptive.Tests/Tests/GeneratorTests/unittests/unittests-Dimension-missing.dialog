@@ -1,9 +1,8 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Dimension",
-    "priority": "indexOf(dialog.requiredProperties, 'Dimension')",
+    "condition": "!$Dimension",
+    "priority": "=indexOf(dialog.requiredProperties, 'Dimension')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",

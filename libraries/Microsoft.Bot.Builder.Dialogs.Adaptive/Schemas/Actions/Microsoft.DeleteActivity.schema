@@ -1,12 +1,11 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Delete Activity",
     "description": "Delete an activity that was previously sent.",
     "type": "object",
     "required": [
-        "property",
-        "value"
+        "activityId"
     ],
     "properties": {
         "id": {
@@ -15,8 +14,7 @@
             "description": "Optional id for the dialog"
         },
         "activityId": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "ActivityId",
             "description": "expression to an activityId to delete",
             "examples": [
@@ -24,8 +22,7 @@
             ]
         },
         "disabled": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [

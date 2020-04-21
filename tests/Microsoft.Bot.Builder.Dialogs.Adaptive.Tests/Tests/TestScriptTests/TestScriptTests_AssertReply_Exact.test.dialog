@@ -1,5 +1,5 @@
-﻿{
-    "$schema": "../../../schemas/sdk.schema",
+{
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "description": "Test AssertReply",
     "dialog": "simpleHello",

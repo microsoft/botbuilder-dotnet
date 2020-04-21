@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "QnAMaker Dialog",
     "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
@@ -7,22 +7,19 @@
     "additionalProperties": false,
     "properties": {
         "knowledgeBaseId": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "KnowledgeBase Id",
             "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
             "default": "=settings.qna.knowledgebaseid"
         },
         "endpointKey": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Endpoint Key",
             "description": "Endpoint key for the QnA Maker KB.",
             "default": "=settings.qna.endpointkey"
         },
         "hostname": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Hostname",
             "description": "Hostname for your QnA Maker service.",
             "default": "=settings.qna.hostname",
@@ -37,22 +34,19 @@
             "default": "Sorry, I did not find an answer."
         },
         "threshold": {
-            "$role": "expression",
-            "type": "number",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
             "title": "Threshold",
             "description": "Threshold score to filter results.",
             "default": 0.3
         },
         "activeLearningCardTitle": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Active learning card title",
             "description": "Title for active learning suggestions card.",
             "default": "Did you mean:"
         },
         "cardNoMatchText": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Card no match text",
             "description": "Text for no match option.",
             "default": "None of the above."
@@ -64,8 +58,7 @@
             "default": "Thanks for the feedback."
         },
         "strictFilters": {
-            "$role": "expression",
-            "type": "array",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
             "title": "Strict Filters",
             "description": "Metadata filters to use when calling the QnA Maker KB.",
             "items": {
@@ -85,8 +78,7 @@
             }
         },
         "top": {
-            "$role": "expression",
-            "type": "number",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
             "title": "Top",
             "description": "The number of answers you want to retrieve.",
             "default": 3
@@ -98,15 +90,22 @@
             "default": false
         },
         "rankerType": {
-            "type": "string",
-            "title": "RankerType",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "title": "Ranker Type",
             "description": "Type of Ranker.",
-            "enum": [
-                "Default",
-                "QuestionOnly",
-                "AutoSuggestQuestion"
+            "oneOf": [
+                {
+                    "enum": [
+                        "default",
+                        "questionOnly",
+                        "autoSuggestQuestion"
+                    ]
+                },
+                {
+                    "pattern": "^=.*\\S.*"
+                }
             ],
-            "default": "Default"
+            "default": "default"
         }
     },
     "required": [

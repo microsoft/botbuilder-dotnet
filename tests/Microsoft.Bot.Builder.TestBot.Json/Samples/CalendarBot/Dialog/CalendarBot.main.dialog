@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../app.schema",
+    "$schema": "../../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "generator": "calendarBot.lg",
@@ -7,50 +7,34 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-
-                
                 "intent": "ShowMeetingIntent",
                 "pattern": "(?i)show meeting"
             },
             {
-
-                
                 "intent": "CreateMeetingIntent",
                 "pattern": "(?i)create meeting"
             },
             {
-
-                
                 "intent": "HelpIntent",
                 "pattern": "(?i)help"
             },
             {
-
-                
                 "intent": "ShowNextPageIntent",
                 "pattern": "(?i)next page meeting"
             },
             {
-
-                
                 "intent": "UpdateMeetingIntent",
                 "pattern": "(?i)update meeting"
             },
             {
-
-                
                 "intent": "AcceptMeetingIntent",
                 "pattern": "(?i)accept meeting"
             },
             {
-
-                
                 "intent": "DeclineMeetingIntent",
                 "pattern": "(?i)decline meeting"
             },
             {
-
-                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel"
             }
@@ -70,7 +54,6 @@
             "$kind": "Microsoft.OnIntent",
             "intent": "ShowMeetingIntent",
             "actions": [
-                // should be initialize
                 "CalendarClearUserData",
                 "ShowMeeting",
                 "CalendarClearUserData"
@@ -80,7 +63,6 @@
             "$kind": "Microsoft.OnIntent",
             "intent": "CreateMeetingIntent",
             "actions": [
-                // should be initialize
                 "CalendarClearUserData",
                 "CreateMeeting",
                 "CalendarClearUserData"
@@ -90,7 +72,6 @@
             "$kind": "Microsoft.OnIntent",
             "intent": "UpdateMeetingIntent",
             "actions": [
-                // should be initialize
                 "CalendarClearUserData",
                 "UpdateMeeting",
                 "CalendarClearUserData"
@@ -100,7 +81,6 @@
             "$kind": "Microsoft.OnIntent",
             "intent": "AcceptMeetingIntent",
             "actions": [
-                // should be initialize
                 "CalendarClearUserData",
                 "AcceptMeeting",
                 "CalendarClearUserData"
@@ -110,7 +90,6 @@
             "$kind": "Microsoft.OnIntent",
             "intent": "DeclineMeetingIntent",
             "actions": [
-                // should be initialize
                 "CalendarClearUserData",
                 "DeclineMeeting",
                 "CalendarClearUserData"

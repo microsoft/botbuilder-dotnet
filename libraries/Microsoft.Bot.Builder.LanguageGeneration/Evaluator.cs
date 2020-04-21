@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG template Evaluator.
     /// </summary>
-    public class Evaluator : LGFileParserBaseVisitor<object>
+    public class Evaluator : LGTemplateParserBaseVisitor<object>
     {
         public const string LGType = "lgType";
 
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="Evaluator"/> class.
         /// </summary>
         /// <param name="templates">Template list.</param>
-        /// <param name="expressionParser">expression parser.</param>
+        /// <param name="expressionParser">Expression parser.</param>
         /// <param name="opt">Options for LG. </param>
         public Evaluator(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null)
         {
@@ -74,8 +74,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Evaluate a template with given name and scope.
         /// </summary>
-        /// <param name="inputTemplateName">template name.</param>
-        /// <param name="scope">scope.</param>
+        /// <param name="inputTemplateName">Template name.</param>
+        /// <param name="scope">Scope.</param>
         /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string inputTemplateName, object scope)
         {
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(templateTarget);
-            var result = Visit(TemplateMap[templateName].ParseTree);
+            var result = Visit(TemplateMap[templateName].TemplateBodyParseTree);
             if (previousEvaluateTarget != null)
             {
                 previousEvaluateTarget.EvaluatedChildren[currentEvaluateId] = result;
@@ -129,18 +129,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override object VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
-        {
-            var templateNameContext = context.templateNameLine();
-            if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
-            {
-                return Visit(context.templateBody());
-            }
-
-            return null;
-        }
-
-        public override object VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
+        public override object VisitStructuredTemplateBody([NotNull] LGTemplateParser.StructuredTemplateBodyContext context)
         {
             var result = new JObject();
             var typeName = context.structuredBodyNameLine().STRUCTURE_NAME().GetText();
@@ -179,16 +168,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override object VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
+        public override object VisitNormalBody([NotNull] LGTemplateParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
-        public override object VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        public override object VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var normalTemplateStrs = context.templateString();
             var rd = new Random();
             return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)].normalTemplateString());
         }
 
-        public override object VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
+        public override object VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
         {
             var ifRules = context.ifElseTemplateBody().ifConditionRule();
             foreach (var ifRule in ifRules)
@@ -202,7 +191,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override object VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        public override object VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
         {
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             var length = switchCaseNodes.Length;
@@ -246,7 +235,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override object VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        public override object VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
             var result = new List<object>();
@@ -254,14 +243,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 switch (node.Symbol.Type)
                 {
-                    case LGFileParser.DASH:
-                    case LGFileParser.MULTILINE_PREFIX:
-                    case LGFileParser.MULTILINE_SUFFIX:
+                    case LGTemplateParser.DASH:
+                    case LGTemplateParser.MULTILINE_PREFIX:
+                    case LGTemplateParser.MULTILINE_SUFFIX:
                         break;
-                    case LGFileParser.ESCAPE_CHARACTER:
+                    case LGTemplateParser.ESCAPE_CHARACTER:
                         result.Add(node.GetText().Escape());
                         break;
-                    case LGFileParser.EXPRESSION:
+                    case LGTemplateParser.EXPRESSION:
                         result.Add(EvalExpression(node.GetText(), context, prefixErrorMsg));
                         break;
                     default:
@@ -350,7 +339,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             throw new Exception(ConcatErrorMsg(childErrorMsg, errorMsg));
         }
 
-        private object VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
+        private object VisitStructureValue(LGTemplateParser.KeyValueStructureLineContext context)
         {
             var values = context.keyValueStructureValue();
 
@@ -368,10 +357,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         switch (node.Symbol.Type)
                         {
-                            case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                            case LGTemplateParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
                                 itemStringResult.Append(node.GetText().Replace(@"\|", "|").Escape());
                                 break;
-                            case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                            case LGTemplateParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
                                 itemStringResult.Append(EvalExpression(node.GetText(), context, errorPrefix));
                                 break;
@@ -388,7 +377,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result.Count == 1 ? result[0] : result;
         }
 
-        private bool EvalCondition(LGFileParser.IfConditionContext condition)
+        private bool EvalCondition(LGTemplateParser.IfConditionContext condition)
         {
             var expression = condition.EXPRESSION(0);
             if (expression == null || // no expression means it's else
@@ -562,7 +551,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             else
             {
                 var template = TemplateMap[CurrentTarget().TemplateName];
-                var sourcePath = template.Source.NormalizePath();
+                var sourcePath = template.SourceRange.Source.NormalizePath();
                 var baseFolder = Environment.CurrentDirectory;
                 if (Path.IsPathRooted(sourcePath))
                 {
@@ -592,9 +581,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var children0 = expression.Children[0];
 
-            if (children0.ReturnType != ReturnType.Object && children0.ReturnType != ReturnType.String)
+            if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
             {
-                throw new Exception(TemplateErrors.ErrorTemplateNameformat(children0.ToString()));
+                throw new Exception(TemplateErrors.InvalidTemplateName);
             }
 
             // Validate more if the name is string constant

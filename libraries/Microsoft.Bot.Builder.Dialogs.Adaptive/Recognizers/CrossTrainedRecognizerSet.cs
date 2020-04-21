@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class CrossTrainedRecognizerSet : Recognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.CrossTrainedRecognizerSet";
+        public const string Kind = "Microsoft.CrossTrainedRecognizerSet";
 
         /// <summary>
         /// Standard cross trained intent name prefix.
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             var result = ProcessResults(results);
 
-            this.TelemetryClient.TrackEvent("CrossTrainedRecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "CrossTrainedRecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
 
             return result;
         }

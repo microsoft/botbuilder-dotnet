@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -8,21 +8,17 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    
                     "intent": "Interruption",
                     "pattern": "(?i)interrupt"
                 },
                 {
-                    
                     "intent": "Start",
                     "pattern": "(?i)start"
                 }
             ]
         },
         "generator": {
-            "$kind": "Microsoft.TemplateEngineLanguageGenerator",
-            "id": "",
-            "lgText": ""
+            "$kind": "Microsoft.TemplateEngineLanguageGenerator"
         },
         "triggers": [
             {
@@ -31,7 +27,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.TextInput",
-                        "allowInterruptions": "True",
+                        "allowInterruptions": true,
                         "property": "user.name",
                         "prompt": "What is your name?"
                     },

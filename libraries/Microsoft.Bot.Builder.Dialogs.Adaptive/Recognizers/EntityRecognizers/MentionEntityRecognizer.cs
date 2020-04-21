@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class MentionEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.MentionEntityRecognizer";
+        public const string Kind = "Microsoft.MentionEntityRecognizer";
 
         public MentionEntityRecognizer()
         {

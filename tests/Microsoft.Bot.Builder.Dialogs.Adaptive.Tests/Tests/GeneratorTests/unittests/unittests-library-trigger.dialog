@@ -1,13 +1,12 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnIntent",
     "intent": "unittests",
     "condition": "count(turn.recognizedentities) == 0",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${notUnderstood()}"           
+            "activity": "${notUnderstood()}"
         }
     ]
 }

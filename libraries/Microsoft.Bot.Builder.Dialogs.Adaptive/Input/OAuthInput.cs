@@ -15,10 +15,13 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// OAuthInput prompts user to login.
+    /// </summary>
     public class OAuthInput : InputDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.OAuthInput";
+        public const string Kind = "Microsoft.OAuthInput";
 
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
@@ -31,21 +34,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets the name of the OAuth connection.
         /// </summary>
-        /// <value>The name of the OAuth connection.</value>
+        /// <value>String or expression which evaluates to a string.</value>
         [JsonProperty("connectionName")]
         public StringExpression ConnectionName { get; set; }
 
         /// <summary>
         /// Gets or sets the title of the sign-in card.
         /// </summary>
-        /// <value>The title of the sign-in card.</value>
+        /// <value>String or expression which evaluates to string.</value>
         [JsonProperty("title")]
         public StringExpression Title { get; set; }
 
         /// <summary>
         /// Gets or sets any additional text to include in the sign-in card.
         /// </summary>
-        /// <value>Any additional text to include in the sign-in card.</value>
+        /// <value>String or expression which evaluates to a string.</value>
         [JsonProperty("text")]
         public StringExpression Text { get; set; }
 
@@ -53,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets the number of milliseconds the prompt waits for the user to authenticate.
         /// Default is 900,000 (15 minutes).
         /// </summary>
-        /// <value>The number of milliseconds the prompt waits for the user to authenticate.</value>
+        /// <value>Int or expression which evaluates to int.</value>
         [JsonProperty("timeout")]
         public IntExpression Timeout { get; set; } = 900000;
 
@@ -108,9 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
 
             // If AlwaysPrompt is set to true, then clear Property value for turn 0.
-            var (alwaysPrompt, _) = this.AlwaysPrompt.TryGetValue(dc.State);
-
-            if (this.Property != null && alwaysPrompt)
+            if (this.Property != null && this.AlwaysPrompt != null && this.AlwaysPrompt.GetValue(dc.State))
             {
                 dc.State.SetValue(this.Property.GetValue(dc.State), null);
             }

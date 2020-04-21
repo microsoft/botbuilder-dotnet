@@ -17,11 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class RepeatDialog : BaseInvokeDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.RepeatDialog";
+        public const string Kind = "Microsoft.RepeatDialog";
 
         [JsonConstructor]
-        public RepeatDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
+        public RepeatDialog(object options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(null, options)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }

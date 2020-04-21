@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -19,9 +20,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// If a value is pure Expression.
         /// </summary>
         /// <param name="context">Key value structure value context.</param>
-        /// <param name="expression">string expression.</param>
-        /// <returns>is pure expression or not.</returns>
-        public static bool IsPureExpression(this LGFileParser.KeyValueStructureValueContext context, out string expression)
+        /// <param name="expression">String expression.</param>
+        /// <returns>Is pure expression or not.</returns>
+        public static bool IsPureExpression(this LGTemplateParser.KeyValueStructureValueContext context, out string expression)
         {
             expression = context.GetText();
 
@@ -30,9 +31,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 switch (node.Symbol.Type)
                 {
-                    case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                    case LGTemplateParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
                         return false;
-                    case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                    case LGTemplateParser.EXPRESSION_IN_STRUCTURE_BODY:
                         if (hasExpression)
                         {
                             return false;
@@ -57,8 +58,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Escape \ from text.
         /// </summary>
-        /// <param name="text">input text.</param>
-        /// <returns>escaped text.</returns>
+        /// <param name="text">Input text.</param>
+        /// <returns>Escaped text.</returns>
         public static string Escape(this string text)
         {
             if (text == null)
@@ -88,8 +89,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// trim expression. ${abc} => abc,  ${a == {}} => a == {}.
         /// </summary>
-        /// <param name="expression">input expression string.</param>
-        /// <returns>pure expression string.</returns>
+        /// <param name="expression">Input expression string.</param>
+        /// <returns>Pure expression string.</returns>
         public static string TrimExpression(this string expression)
         {
             var result = expression.Trim().TrimStart('$').Trim();
@@ -110,8 +111,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// This method treats / and \ both as separators regardless of OS, for Windows that means / -> \ and for Linux/Mac \ -> /.
         /// This allows author to use ../foo.lg or ..\foo.lg as equivalents for importing.
         /// </remarks>
-        /// <param name="ambigiousPath">authoredPath.</param>
-        /// <returns>path expressed as OS path.</returns>
+        /// <param name="ambigiousPath">Authored path.</param>
+        /// <returns>Path expressed as OS path.</returns>
         public static string NormalizePath(this string ambigiousPath)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -129,18 +130,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Get prefix error message from normal template sting context.
         /// </summary>
-        /// <param name="context">normal template sting context.</param>
-        /// <returns>prefix error message.</returns>
-        public static string GetPrefixErrorMessage(this LGFileParser.NormalTemplateStringContext context)
+        /// <param name="context">Normal template sting context.</param>
+        /// <returns>Prefix error message.</returns>
+        public static string GetPrefixErrorMessage(this LGTemplateParser.NormalTemplateStringContext context)
         {
             var errorPrefix = string.Empty;
-            if (context.Parent?.Parent?.Parent is LGFileParser.IfConditionRuleContext conditionContext)
+            if (context.Parent?.Parent?.Parent is LGTemplateParser.IfConditionRuleContext conditionContext)
             {
                 errorPrefix = "Condition '" + conditionContext.ifCondition()?.EXPRESSION(0)?.GetText() + "': ";
             }
             else
             {
-                if (context.Parent?.Parent?.Parent is LGFileParser.SwitchCaseRuleContext switchCaseContext)
+                if (context.Parent?.Parent?.Parent is LGTemplateParser.SwitchCaseRuleContext switchCaseContext)
                 {
                     var state = switchCaseContext.switchCaseStat();
                     if (state?.DEFAULT() != null)
@@ -159,6 +160,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return errorPrefix;
+        }
+
+        /// <summary>
+        /// Convert antlr parser into Range.
+        /// </summary>
+        /// <param name="context">Antlr parse context.</param>
+        /// <param name="lineOffset">Line offset.</param>
+        /// <returns>Range object.</returns>
+        public static Range ConvertToRange(this ParserRuleContext context, int lineOffset = 0)
+        {
+            if (context == null)
+            {
+                return Range.DefaultRange;
+            }
+
+            var startPosition = new Position(lineOffset + context.Start.Line, context.Start.Column);
+            var stopPosition = new Position(lineOffset + context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
+            return new Range(startPosition, stopPosition);
         }
     }
 }

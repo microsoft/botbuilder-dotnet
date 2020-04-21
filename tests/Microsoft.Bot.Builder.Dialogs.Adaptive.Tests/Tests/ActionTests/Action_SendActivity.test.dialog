@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -10,7 +10,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "disabled": "$disabled",
+                        "disabled": "=$disabled",
                         "activity": "success"
                     },
                     {
@@ -20,7 +20,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "disabled": "$disabled",
+                        "disabled": "=$disabled",
                         "activity": "fail"
                     },
                     {

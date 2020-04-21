@@ -380,6 +380,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("dupNameWithTemplate").ToString();
             Assert.AreEqual(evaled, "2");
+
+            evaled = templates.Evaluate("foo", new { property = "Show" }).ToString();
+            Assert.AreEqual(evaled, "you made it!");
         }
 
         [TestMethod]
@@ -422,7 +425,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(evaled == "Hi 2" || evaled == "Hello 2");
 
             // Assert 6.lg of relative path is imported from text.
-            templates = Templates.ParseText("# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", GetExampleFilePath("xx.lg"));
+            templates = Templates.ParseText("[import](./6.lg)\r\n# basicTemplate\r\n- Hi\r\n- Hello\r\n", GetExampleFilePath("xx.lg"));
 
             Assert.AreEqual(8, templates.AllTemplates.Count());
             evaled = templates.Evaluate("basicTemplate", null).ToString();
@@ -692,6 +695,22 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("template6", new { userName });
             Assert.AreEqual(evaled, "goodmorning");
+
+            evaled = templates.Evaluate("template7");
+            Assert.AreEqual(evaled, "{\"a\":\"hello\"}");
+
+            evaled = templates.Evaluate("template8");
+            Assert.AreEqual(evaled, "{\"user\":{\"name\":\"Allen\"}}");
+
+            var value = JToken.FromObject(new { count = 13 });
+            evaled = templates.Evaluate("template9", new { value });
+            Assert.AreEqual(evaled, "{\"ctx\":{\"count\":13}}");
+
+            evaled = templates.Evaluate("template10");
+            Assert.AreEqual(evaled, 13);
+
+            evaled = templates.Evaluate("template11");
+            Assert.AreEqual(evaled, 18);
         }
 
         [TestMethod]
