@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Schema;
@@ -35,6 +36,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         // unique key for change tracking of the turn state (TURN STATE ONLY)
         private readonly string changeTurnKey = Guid.NewGuid().ToString();
+
+        private RecognizerSet recognizerSet = new RecognizerSet();
 
         private bool installedDependencies;
 
@@ -654,7 +657,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             if (Recognizer != null)
             {
-                var result = await Recognizer.RecognizeAsync(actionContext, activity, cancellationToken).ConfigureAwait(false);
+                lock (this.recognizerSet)
+                {
+                    if (!this.recognizerSet.Recognizers.Any())
+                    {
+                        this.recognizerSet.Recognizers.Add(this.Recognizer);
+                        this.recognizerSet.Recognizers.Add(new ValueRecognizer());
+                    }
+                }
+
+                var result = await recognizerSet.RecognizeAsync(actionContext, activity, cancellationToken).ConfigureAwait(false);
 
                 if (result.Intents.Any())
                 {
