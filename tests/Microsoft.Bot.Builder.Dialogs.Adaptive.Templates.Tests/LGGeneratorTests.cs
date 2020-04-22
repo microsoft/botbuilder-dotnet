@@ -309,11 +309,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             DialogManager dm = new DialogManager(dialog)
                 .UseResourceExplorer(resourceExplorer)
                 .UseLanguageGeneration("test.lg");
-            await CreateFlow(async (dialogContext, cancellationToken) =>
+            await CreateFlow(async (turnContext, cancellationToken) =>
             {
-                System.Diagnostics.Trace.TraceInformation($"BEGIN TURN {dialogContext.Activity.Text}");
-                await dm.OnTurnAsync(dialogContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-                System.Diagnostics.Trace.TraceInformation($"END TURN {dialogContext.Activity.Text}");
+                System.Diagnostics.Trace.TraceInformation($"BEGIN TURN {turnContext.Activity.Text}");
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                System.Diagnostics.Trace.TraceInformation($"END TURN {turnContext.Activity.Text}");
             })
             // inside AdaptiveDialog1
             .Send("turn1")
