@@ -10,6 +10,7 @@ using AdaptiveExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Microsoft.Bot.Builder.LanguageGeneration.Events;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -42,16 +43,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="filePath">Absolut path of a LG file.</param>
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">Expression parser for parsing expressions.</param>
+        /// <param name="registeSourceMap">Event handler.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
         public static Templates ParseFile(
             string filePath,
             ImportResolverDelegate importResolver = null,
-            ExpressionParser expressionParser = null)
+            ExpressionParser expressionParser = null,
+            EventHandler registeSourceMap = null)
         {
             var fullPath = Path.GetFullPath(filePath.NormalizePath());
             var content = File.ReadAllText(fullPath);
 
-            return InnerParseText(content, fullPath, importResolver, expressionParser);
+            return InnerParseText(content, fullPath, importResolver, expressionParser, registeSourceMap);
         }
 
         /// <summary>
@@ -61,14 +64,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="id">Id is the identifier of content. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">Expression parser for parsing expressions.</param>
+        /// <param name="registeSourceMap">Event handler.</param>
         /// <returns>New <see cref="Templates"/> entity.</returns>
         public static Templates ParseText(
             string content,
             string id = "",
             ImportResolverDelegate importResolver = null,
-            ExpressionParser expressionParser = null)
+            ExpressionParser expressionParser = null,
+            EventHandler registeSourceMap = null)
         {
-            return InnerParseText(content, id, importResolver, expressionParser);
+            return InnerParseText(content, id, importResolver, expressionParser, registeSourceMap);
         }
 
         /// <summary>
@@ -111,6 +116,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="id">Id is the identifier of content. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">Expression parser for parsing expressions.</param>
+        /// <param name="registeSourceMap">Event handler.</param>
         /// <param name="cachedTemplates">Give the file path and templates to avoid parsing and to improve performance.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
         private static Templates InnerParseText(
@@ -118,6 +124,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             string id = "",
             ImportResolverDelegate importResolver = null,
             ExpressionParser expressionParser = null,
+            EventHandler registeSourceMap = null,
             Dictionary<string, Templates> cachedTemplates = null)
         {
             cachedTemplates = cachedTemplates ?? new Dictionary<string, Templates>();
@@ -131,9 +138,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             try
             {
-                lg = new TemplatesTransformer(lg).Transform(AntlrParseTemplates(content, id));
-                lg.References = GetReferences(lg, cachedTemplates);
-                new StaticChecker(lg).Check().ForEach(u => lg.Diagnostics.Add(u));
+                lg = new TemplatesTransformer(lg, registeSourceMap).Transform(AntlrParseTemplates(content, id));
+                lg.References = GetReferences(lg, cachedTemplates, registeSourceMap);
+                new StaticChecker(lg, registeSourceMap).Check().ForEach(u => lg.Diagnostics.Add(u));
             }
             catch (TemplateException ex)
             {
@@ -186,16 +193,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return parser.file();
         }
 
-        private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null)
+        private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null, EventHandler registeSourceMap = null)
         {
             var resourcesFound = new HashSet<Templates>();
-            ResolveImportResources(file, resourcesFound, cachedTemplates ?? new Dictionary<string, Templates>());
+            ResolveImportResources(file, resourcesFound, cachedTemplates ?? new Dictionary<string, Templates>(), registeSourceMap);
 
             resourcesFound.Remove(file);
             return resourcesFound.ToList();
         }
 
-        private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, Dictionary<string, Templates> cachedTemplates)
+        private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, Dictionary<string, Templates> cachedTemplates, EventHandler registeSourceMap = null)
         {
             resourcesFound.Add(start);
 
@@ -222,7 +229,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else
                     {
-                        childResource = InnerParseText(content, path, start.ImportResolver, start.ExpressionParser, cachedTemplates);
+                        childResource = InnerParseText(content, path, start.ImportResolver, start.ExpressionParser, registeSourceMap, cachedTemplates);
                         cachedTemplates.Add(path, childResource);
                     }
 
@@ -235,10 +242,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             private static readonly Regex IdentifierRegex = new Regex(@"^[0-9a-zA-Z_]+$");
             private readonly Templates templates;
+            private readonly EventHandler registeSourceMap;
 
-            public TemplatesTransformer(Templates templates)
+            public TemplatesTransformer(Templates templates, EventHandler registeSourceMap = null)
             {
                 this.templates = templates;
+                this.registeSourceMap = registeSourceMap;
             }
 
             public Templates Transform(IParseTree parseTree)
@@ -326,6 +335,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     CheckTemplateName(templateName, context.templateNameLine());
                     CheckTemplateParameters(parameters, context.templateNameLine());
                     template.TemplateBodyParseTree = CheckTemplateBody(templateName, templateBody, context.templateBody(), startLine);
+
+                    registeSourceMap?.Invoke(template, new RegisteSourceMapArgs { SourceRange = sourceRange });
 
                     this.templates.Add(template);
                 }

@@ -38,6 +38,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.StrictMode = null;
             this.NullSubstitution = null;
             this.LineBreakStyle = null;
+            this.OnEvent = null;
         }
 
         public EvaluationOptions(EvaluationOptions opt)
@@ -45,6 +46,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.StrictMode = opt.StrictMode;
             this.NullSubstitution = opt.NullSubstitution;
             this.LineBreakStyle = opt.LineBreakStyle;
+            this.OnEvent = opt.OnEvent;
         }
 
         public EvaluationOptions(IList<string> optionStrList)
@@ -102,6 +104,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// A function.
         /// </value>
         public Func<string, object> NullSubstitution { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets an event handler that handles the emited events in the evaluation processs.
+        /// </summary>
+        /// <value>
+        /// An event handler that handles the emited events in the evaluation processs.
+        /// </value>
+        public EventHandler OnEvent { get; set; } = null;
 
         /// <summary>
         /// Merge a incoming option to current option. If a property in incoming option is not null while it is null in current

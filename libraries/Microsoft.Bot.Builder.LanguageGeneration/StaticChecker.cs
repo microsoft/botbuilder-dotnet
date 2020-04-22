@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AdaptiveExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Microsoft.Bot.Builder.LanguageGeneration.Events;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -15,9 +17,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     internal class StaticChecker : LGTemplateParserBaseVisitor<List<Diagnostic>>
     {
+#pragma warning disable SA1401 // Fields should be private
+        public static Dictionary<string, ExpressionRef> Expressions = new Dictionary<string, ExpressionRef>();
+#pragma warning restore SA1401 // Fields should be private
         private readonly ExpressionParser baseExpressionParser;
         private readonly Templates templates;
         private Template currentTemplate;
+        private readonly EventHandler registeSourceMap;
 
         private IExpressionParser _expressionParser;
 
@@ -25,10 +31,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="StaticChecker"/> class.
         /// </summary>
         /// <param name="templates">The templates wihch would be checked.</param>
-        public StaticChecker(Templates templates)
+        /// <param name="registeSourceMap">registeSourceMap handler.</param>
+        public StaticChecker(Templates templates, EventHandler registeSourceMap = null)
         {
             this.templates = templates;
             baseExpressionParser = templates.ExpressionParser;
+            this.registeSourceMap = registeSourceMap;
         }
 
         // Create a property because we want this to be lazy loaded
@@ -366,6 +374,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 try
                 {
                     ExpressionParser.Parse(exp);
+                    if (Path.IsPathRooted(templates.Id) && context != null && this.registeSourceMap != null)
+                    {
+                        var expressionRef = new ExpressionRef(exp, context.Start.Line, templates.Id);
+                        var lineOffset = this.currentTemplate != null ? this.currentTemplate.SourceRange.Range.Start.Line : 0;
+                        var sourceRange = new SourceRange(context, this.templates.Id, lineOffset);
+                        this.registeSourceMap(expressionRef, new RegisteSourceMapArgs { SourceRange = sourceRange });
+
+                        var id = exp + context.Start.Line + templates.Id;
+                        if (!Expressions.ContainsKey(id))
+                        {
+                            Expressions.Add(id, expressionRef);
+                        }
+                    }
                 }
                 catch (Exception e)
                 {

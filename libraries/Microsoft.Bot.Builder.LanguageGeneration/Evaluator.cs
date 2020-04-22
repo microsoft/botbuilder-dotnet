@@ -96,6 +96,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
+            if (Path.IsPathRooted(TemplateMap[templateName].SourceRange.Source) && lgOptions.OnEvent != null)
+            {
+                lgOptions.OnEvent(TemplateMap[templateName], new BeginTemplateEvaluationArgs { Source = TemplateMap[templateName].SourceRange.Source, TemplateName = templateName });
+            }
+
             var templateTarget = new EvaluationTarget(templateName, scope);
 
             var currentEvaluateId = templateTarget.GetId();
@@ -392,7 +397,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private bool EvalExpressionInCondition(string exp, ParserRuleContext context = null, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
-            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
+            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope, context);
 
             if (lgOptions.StrictMode == true && (error != null || result == null))
             {
@@ -418,7 +423,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private object EvalExpression(string exp, ParserRuleContext context = null, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
-            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
+            var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope, context);
 
             if (error != null || (result == null && lgOptions.StrictMode == true))
             {
@@ -443,8 +448,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // just don't want to write evaluationTargetStack.Peek() everywhere
             evaluationTargetStack.Peek();
 
-        private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
+        private (object value, string error) EvalByAdaptiveExpression(string exp, object scope, ParserRuleContext context)
         {
+            if (evaluationTargetStack.Count > 0)
+            {
+                var source = TemplateMap[CurrentTarget().TemplateName].SourceRange.Source;
+
+                if (Path.IsPathRooted(source) && context != null && lgOptions.OnEvent != null)
+                {
+                    var id = exp + context.Start.Line + source;
+                    if (StaticChecker.Expressions.ContainsKey(id))
+                    {
+                        lgOptions.OnEvent(StaticChecker.Expressions[id], new BeginExpressionEvaluationArgs { Source = source, Expression = exp });
+                    }
+                }
+            }
+
             var parse = this.ExpressionParser.Parse(exp);
             var opt = new Options();
             opt.NullSubstitution = lgOptions.NullSubstitution;
