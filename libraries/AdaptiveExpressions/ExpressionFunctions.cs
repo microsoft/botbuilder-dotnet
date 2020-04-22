@@ -3716,6 +3716,10 @@ namespace AdaptiveExpressions
                             {
                                 parsed = timex;
                             }
+                            else if (args[0] is JObject jTimex)
+                            {
+                                parsed = jTimex.ToObject<TimexProperty>();
+                            }
                             else if (args[0] is string ts)
                             {
                                 parsed = new TimexProperty(ts);
@@ -3726,7 +3730,7 @@ namespace AdaptiveExpressions
                             }
                         }
 
-                        value = parsed.Year != null && parsed.Month != null && parsed.DayOfMonth != null;
+                        value = parsed != null && parsed.Year != null && parsed.Month != null && parsed.DayOfMonth != null;
 
                         return (value, error);
                     },
@@ -3747,6 +3751,10 @@ namespace AdaptiveExpressions
                             {
                                 parsed = timex;
                             }
+                            else if (args[0] is JObject jTimex)
+                            {
+                                parsed = jTimex.ToObject<TimexProperty>();
+                            }
                             else if (args[0] is string ts)
                             {
                                 parsed = new TimexProperty(ts);
@@ -3757,7 +3765,7 @@ namespace AdaptiveExpressions
                             }
                         }
 
-                        value = parsed.Hour != null;
+                        value = parsed != null && parsed.Hour != null;
 
                         return (value, error);
                     },
