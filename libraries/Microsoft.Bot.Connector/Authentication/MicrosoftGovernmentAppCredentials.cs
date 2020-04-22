@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Net.Http;
-using System.Threading;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -64,33 +61,6 @@ namespace Microsoft.Bot.Connector.Authentication
         public override string OAuthEndpoint
         {
             get { return GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl; }
-        }
-
-        protected override Lazy<IAuthenticator> BuildIAuthenticator()
-        {
-            return new Lazy<IAuthenticator>(
-                () =>
-                {
-                    if (OAuthScope == GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope)
-                    {
-                        var optionV1 = AuthenticatorFor(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope);
-                        var optionV2 = AuthenticatorFor(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlV2, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScopeV2);
-
-                        return new Authenticators(optionV2, optionV1);
-                    }
-                    else
-                    {
-                        return AuthenticatorFor(OAuthEndpoint, OAuthScope);
-                    }
-                },
-                LazyThreadSafetyMode.ExecutionAndPublication);
-        }
-
-        private IAuthenticator AuthenticatorFor(string authority, string scope)
-        {
-            var credential = new ClientCredential(MicrosoftAppId, MicrosoftAppPassword);
-            var configuration = new OAuthConfiguration() { Authority = authority, Scope = scope };
-            return new AdalAuthenticator(credential, configuration, this.CustomHttpClient, this.Logger);
         }
     }
 }
