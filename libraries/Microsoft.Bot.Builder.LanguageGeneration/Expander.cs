@@ -25,19 +25,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
         public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
-        private readonly bool strictMode;
+        private readonly EvaluationOptions lgOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Expander"/> class.
         /// </summary>
         /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">Given expression parser.</param>
-        /// <param name="strictMode">Strict mode. If strictMode == true, exception in expression would throw outside.</param>
-        public Expander(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
+        /// <param name="opt">Options for LG. including strictMode, replaceNull and lineBreakStyle.</param>
+        public Expander(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
-            this.strictMode = strictMode;
+            this.lgOptions = opt;
 
             // generate a new customized expression parser by injecting the template as functions
             ExpanderExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, true));
@@ -101,9 +101,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
-            var result = Visit(TemplateMap[templateName].TemplateBodyParseTree);
+            var expanderResult = Visit(TemplateMap[templateName].TemplateBodyParseTree);
             evaluationTargetStack.Pop();
 
+            var result = new List<object>();
+            expanderResult.ForEach(u =>
+            {
+                if (lgOptions.LineBreakStyle == LGLineBreakStyle.Markdown && u is string str)
+                {
+                    result.Add(Evaluator.NewLineRegex.Replace(str, "$1$1"));
+                }
+                else
+                {
+                    result.Add(u);
+                }
+            });
             return result;
         }
 
@@ -364,7 +376,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (strictMode && (error != null || result == null))
+            if (lgOptions.StrictMode == true && (error != null || result == null))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -390,7 +402,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (error != null || (result == null && strictMode))
+            if (error != null || (result == null && lgOptions.StrictMode == true))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -400,7 +412,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 Evaluator.CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
             }
-            else if (result == null && !strictMode)
+            else if (result == null && lgOptions.StrictMode == false)
             {
                 result = "null";
             }
