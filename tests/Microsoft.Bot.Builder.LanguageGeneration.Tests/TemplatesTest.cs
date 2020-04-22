@@ -1250,6 +1250,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(6.0, evaled);
         }
 
+        [TestMethod]
+        public void TestInjectLG()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("./InjectionTest/inject.lg"));
+            templates.InjectToExprssionFunction();
+            var evaled = templates.EvaluateText("${foo.bar(1)}");
+            Assert.AreEqual("3", evaled.ToString());
+        }
+
         public class LoopClass
         {
             public string Name { get; set; }

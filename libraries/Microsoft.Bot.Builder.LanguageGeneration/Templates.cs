@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public EvaluationOptions LgOptions => new EvaluationOptions(Options);
 
-        public string NameSpace { get; set; }
+        public string NameSpace => ExtractNameSpace(Options);
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -328,6 +328,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override int GetHashCode() => (Id, Content).GetHashCode();
 
+        public void InjectToExprssionFunction()
+        {
+            var globalFuncs = this.GetGlobalFunctionTable(Options);
+            foreach (var templateName in globalFuncs)
+            {
+                if (this.Any(u => u.Name == templateName))
+                {
+                    var newGlobalName = $"{NameSpace}.{templateName}";
+                    Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, ExpressionFunctions.Apply(this.GlobalTemplateFunction(templateName)), ReturnType.Object));
+                }
+            }
+        }
+
         private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
         {
             var originList = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
@@ -397,5 +410,67 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
         }
+
+        private string ExtractNameSpace(IList<string> optionStrList)
+        {
+            string result = null;
+            foreach (var optionStr in optionStrList)
+            {
+                if (!string.IsNullOrWhiteSpace(optionStr) && optionStr.Contains("="))
+                {
+                    var index = optionStr.IndexOf('=');
+                    var key = optionStr.Substring(0, index).Trim();
+                    var value = optionStr.Substring(index + 1).Trim();
+                    if (key == "@namespace")
+                    {
+                        result = value;
+                    }
+                }
+            }
+
+            if (result == null)
+            {
+                if (Path.IsPathRooted(this.Id))
+                {
+                    result = Path.GetFileName(this.Id);
+                }
+                else
+                {
+                    throw new Exception("namespace is required!");
+                }
+            }
+
+            return result;
+        }
+
+        private IList<string> GetGlobalFunctionTable(IList<string> optionStrList)
+        {
+            var result = new List<string>();
+            foreach (var optionStr in optionStrList)
+            {
+                if (!string.IsNullOrWhiteSpace(optionStr) && optionStr.Contains("="))
+                {
+                    var index = optionStr.IndexOf('=');
+                    var key = optionStr.Substring(0, index).Trim();
+                    var value = optionStr.Substring(index + 1).Trim();
+                    if (key == "@addToGlobalFunctionTable")
+                    {
+                        var templateList = value.Split(',').ToList();
+                        templateList.ForEach(u => result.Add(u.Trim()));
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private Func<IReadOnlyList<object>, object> GlobalTemplateFunction(string templateName)
+        => (IReadOnlyList<object> args) =>
+        {
+            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
+            
+            var newScope = evaluator.ConstructScope(templateName, args.ToList());
+            return evaluator.EvaluateTemplate(templateName, null);
+        };
     }
 }

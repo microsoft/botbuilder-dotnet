@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var parameters = TemplateMap[templateName].Parameters;
-            var currentScope = CurrentTarget().Scope;
+            var currentScope = evaluationTargetStack.Count > 0 ? CurrentTarget().Scope : new CustomizedMemory(null);
 
             if (args.Count == 0)
             {
@@ -295,7 +295,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             // inherit current memory's global scope
-            return new CustomizedMemory(memory.GlobalMemory, new SimpleObjectMemory(newScope));
+            return new CustomizedMemory(new SimpleObjectMemory(newScope));
+        }
+
+        // Validator for template(...)
+        public void ValidateTemplateFunction(Expression expression)
+        {
+            ExpressionFunctions.ValidateAtLeastOne(expression);
+
+            var children0 = expression.Children[0];
+
+            if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
+            {
+                throw new Exception(TemplateErrors.InvalidTemplateName);
+            }
+
+            // Validate more if the name is string constant
+            if (children0.Type == ExpressionType.Constant)
+            {
+                var templateName = (children0 as Constant).Value.ToString();
+                CheckTemplateReference(templateName, expression.Children.Skip(1));
+            }
         }
 
         internal static string ConcatErrorMsg(string firstError, string secondError)
@@ -573,26 +593,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newScope = this.ConstructScope(templateName, args.Skip(1).ToList());
             return this.EvaluateTemplate(templateName, newScope);
         };
-
-        // Validator for template(...)
-        private void ValidateTemplateFunction(Expression expression)
-        {
-            ExpressionFunctions.ValidateAtLeastOne(expression);
-
-            var children0 = expression.Children[0];
-
-            if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
-            {
-                throw new Exception(TemplateErrors.InvalidTemplateName);
-            }
-
-            // Validate more if the name is string constant
-            if (children0.Type == ExpressionType.Constant)
-            {
-                var templateName = (children0 as Constant).Value.ToString();
-                CheckTemplateReference(templateName, expression.Children.Skip(1));
-            }
-        }
 
         private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName)
         => (IReadOnlyList<object> args) =>
