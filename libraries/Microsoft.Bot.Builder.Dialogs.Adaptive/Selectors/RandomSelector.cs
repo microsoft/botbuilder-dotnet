@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     public class RandomSelector : TriggerSelector
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.RandomSelector";
+        public const string Kind = "Microsoft.RandomSelector";
 
         private List<OnCondition> _conditionals;
         private bool _evaluate;

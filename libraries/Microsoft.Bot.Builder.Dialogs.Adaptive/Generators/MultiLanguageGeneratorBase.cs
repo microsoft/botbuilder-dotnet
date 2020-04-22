@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -20,7 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
         }
 
-        public LanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
+        [JsonProperty("languagePolicy")]
+        public LanguagePolicy LanguagePolicy { get; set; }
 
         /// <summary>
         /// Abstract method to get an ILanguageGenerator by locale.
@@ -40,20 +42,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>The generator.</returns>
         public override async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            // see if we have any locales that match
             var targetLocale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
 
-            var locales = new string[] { string.Empty };
-            if (!this.LanguagePolicy.TryGetValue(targetLocale, out locales))
+            // priority 
+            // 1. local policy
+            // 2. shared policy in turnContext
+            // 3. default policy
+            var languagePolicy = this.LanguagePolicy ?? 
+                                turnContext.TurnState.Get<LanguagePolicy>() ?? 
+                                new LanguagePolicy();
+
+            // see if we have any locales that match
+            var fallbackLocales = new List<string>();
+            if (languagePolicy.ContainsKey(targetLocale))
             {
-                if (!this.LanguagePolicy.TryGetValue(string.Empty, out locales))
-                {
-                    throw new Exception($"No supported language found for {targetLocale}");
-                }
+                fallbackLocales.AddRange(languagePolicy[targetLocale]);
+            }
+            
+            // append empty as fallback to end
+            if (targetLocale != string.Empty && languagePolicy.ContainsKey(string.Empty))
+            {
+                fallbackLocales.AddRange(languagePolicy[string.Empty]);
+            }
+
+            if (fallbackLocales.Count == 0)
+            {
+                throw new Exception($"No supported language found for {targetLocale}");
             }
 
             var generators = new List<LanguageGenerator>();
-            foreach (var locale in locales)
+            foreach (var locale in fallbackLocales)
             {
                 if (this.TryGetGenerator(turnContext, locale, out LanguageGenerator generator))
                 {

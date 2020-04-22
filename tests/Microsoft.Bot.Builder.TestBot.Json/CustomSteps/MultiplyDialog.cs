@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 
@@ -28,7 +29,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// Memory path to bind to arg1 (ex: conversation.width).
         /// </value>
         [JsonProperty("arg1")]
-        public string Arg1 { get; set; }
+        public NumberExpression Arg1 { get; set; }
 
         /// <summary>
         /// Gets or sets memory path to bind to arg2 (ex: conversation.height).
@@ -37,7 +38,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// Memory path to bind to arg2 (ex: conversation.height).
         /// </value>
         [JsonProperty("arg2")]
-        public string Arg2 { get; set; }
+        public NumberExpression Arg2 { get; set; }
 
         /// <summary>
         /// Gets or sets caller's memory path to store the result of this step in (ex: conversation.area).
@@ -46,17 +47,17 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// Caller's memory path to store the result of this step in (ex: conversation.area).
         /// </value>
         [JsonProperty("resultProperty")]
-        public string ResultProperty { get; set; }
+        public StringExpression ResultProperty { get; set; }
 
         public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var (arg1, err1) = Expression.Parse(Arg1).TryEvaluate(dc.State);
-            var (arg2, err2) = Expression.Parse(Arg2).TryEvaluate(dc.State);
+            var arg1 = Arg1.GetValue(dc.State);
+            var arg2 = Arg2.GetValue(dc.State);
 
             var result = Convert.ToInt32(arg1) * Convert.ToInt32(arg2);
             if (this.ResultProperty != null)
             {
-                dc.State.SetValue(this.ResultProperty, result);
+                dc.State.SetValue(this.ResultProperty.GetValue(dc.State), result);
             }
 
             return dc.EndDialogAsync(result: result, cancellationToken: cancellationToken);

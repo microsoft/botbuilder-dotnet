@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     public class TemplateEngineLanguageGenerator : LanguageGenerator
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.TemplateEngineLanguageGenerator";
+        public const string Kind = "Microsoft.TemplateEngineLanguageGenerator";
 
         private const string DEFAULTLABEL = "Unknown";
 

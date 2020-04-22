@@ -1,22 +1,16 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "triggers": [
-    {
-      "$kind": "Microsoft.OnBeginDialog",
-      "actions": [
-        // todo: need a subtract expression of two timestamp
-        //{
-        //  "$kind": "Microsoft.SetProperty",
-        //  "property": "user.duration",
-        //  "value": ""
-        //},
+    "$schema": "../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
         {
-          "$kind": "Microsoft.SetProperty",
-          "property": "user.endDateTime",
-          "value": "=addSeconds(user.startDateTime[0].Value, user.duration)"
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.endDateTime",
+                    "value": "=addSeconds(user.startDateTime[0].Value, user.duration)"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

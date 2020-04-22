@@ -4,9 +4,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using AdaptiveExpressions;
-using AdaptiveExpressions.Memory;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -18,28 +19,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG template expander.
     /// </summary>
-    public class Expander : LGFileParserBaseVisitor<List<string>>
+    public class Expander : LGTemplateParserBaseVisitor<List<object>>
     {
-        private readonly ExpressionParser expanderExpressionParser;
-        private readonly ExpressionParser evaluatorExpressionParser;
+        public const string LGType = "lgType";
+        public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
+        public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
-        private readonly bool strictMode;
+        private readonly EvaluationOptions lgOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Expander"/> class.
         /// </summary>
-        /// <param name="templates">template list.</param>
+        /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">Given expression parser.</param>
-        /// <param name="strictMode">strict mode. If strictMode == true, exception in expression would throw outside.</param>
-        public Expander(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
+        /// <param name="opt">Options for LG. including strictMode, replaceNull and lineBreakStyle.</param>
+        public Expander(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
-            this.strictMode = strictMode;
+            this.lgOptions = opt;
 
             // generate a new customized expression parser by injecting the template as functions
-            this.expanderExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, true));
-            this.evaluatorExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, false));
+            ExpanderExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, true));
+            EvaluatorExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, false));
         }
 
         /// <summary>
@@ -49,6 +51,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Templates.
         /// </value>
         public List<Template> Templates { get; }
+
+        /// <summary>
+        /// Gets expander expression parser.
+        /// </summary>
+        /// <value>
+        /// Expression parser.
+        /// </value>
+        public ExpressionParser ExpanderExpressionParser { get; }
+
+        /// <summary>
+        /// Gets evaluator expression parser.
+        /// </summary>
+        /// <value>
+        /// Expression parser.
+        /// </value>
+        public ExpressionParser EvaluatorExpressionParser { get; }
 
         /// <summary>
         /// Gets templateMap.
@@ -64,7 +82,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">Given template name.</param>
         /// <param name="scope">Given scope.</param>
         /// <returns>All possiable results.</returns>
-        public List<string> ExpandTemplate(string templateName, object scope)
+        public List<object> ExpandTemplate(string templateName, object scope)
         {
             if (!(scope is CustomizedMemory))
             {
@@ -83,29 +101,30 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // Using a stack to track the evaluation trace
             evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
-            var result = Visit(TemplateMap[templateName].ParseTree);
+            var expanderResult = Visit(TemplateMap[templateName].TemplateBodyParseTree);
             evaluationTargetStack.Pop();
 
+            var result = new List<object>();
+            expanderResult.ForEach(u =>
+            {
+                if (lgOptions.LineBreakStyle == LGLineBreakStyle.Markdown && u is string str)
+                {
+                    result.Add(Evaluator.NewLineRegex.Replace(str, "$1$1"));
+                }
+                else
+                {
+                    result.Add(u);
+                }
+            });
             return result;
         }
 
-        public override List<string> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
-        {
-            var templateNameContext = context.templateNameLine();
-            if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
-            {
-                return Visit(context.templateBody());
-            }
+        public override List<object> VisitNormalBody([NotNull] LGTemplateParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
-            return null;
-        }
-
-        public override List<string> VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
-
-        public override List<string> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+        public override List<object> VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var normalTemplateStrs = context.templateString();
-            var result = new List<string>();
+            var result = new List<object>();
 
             foreach (var normalTemplateStr in normalTemplateStrs)
             {
@@ -115,7 +134,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override List<string> VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
+        public override List<object> VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
         {
             var ifRules = context.ifElseTemplateBody().ifConditionRule();
             foreach (var ifRule in ifRules)
@@ -129,7 +148,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override List<string> VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        public override List<object> VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
         {
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             var length = switchCaseNodes.Length;
@@ -172,9 +191,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override List<string> VisitStructuredBody([NotNull] LGFileParser.StructuredBodyContext context)
+        public override List<object> VisitStructuredBody([NotNull] LGTemplateParser.StructuredBodyContext context)
         {
-            var templateRefValues = new Dictionary<string, List<string>>();
+            var templateRefValues = new Dictionary<string, List<object>>();
             var stb = context.structuredTemplateBody();
             var result = new JObject();
             var typeName = stb.structuredBodyNameLine().STRUCTURE_NAME().GetText();
@@ -240,17 +259,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            var exps = expandedResult.Select(x => JsonConvert.SerializeObject(x)).ToList();
+            var exps = expandedResult;
 
-            var finalResult = new List<string>(exps);
+            var finalResult = new List<object>(exps);
             foreach (var templateRefValue in templateRefValues)
             {
-                var tempRes = new List<string>();
+                var tempRes = new List<object>();
                 foreach (var res in finalResult)
                 {
                     foreach (var refValue in templateRefValue.Value)
                     {
-                        tempRes.Add(res.Replace(templateRefValue.Key, refValue));
+                        tempRes.Add(res.ToString().Replace(templateRefValue.Key, refValue.ToString().Replace("\"", "\\\"")));
                     }
                 }
 
@@ -260,7 +279,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return finalResult;
         }
 
-        public override List<string> VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        public override List<object> VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
             var result = new List<string>() { string.Empty };
@@ -268,14 +287,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 switch (node.Symbol.Type)
                 {
-                    case LGFileParser.DASH:
-                    case LGFileParser.MULTILINE_PREFIX:
-                    case LGFileParser.MULTILINE_SUFFIX:
+                    case LGTemplateParser.DASH:
+                    case LGTemplateParser.MULTILINE_PREFIX:
+                    case LGTemplateParser.MULTILINE_SUFFIX:
                         break;
-                    case LGFileParser.ESCAPE_CHARACTER:
+                    case LGTemplateParser.ESCAPE_CHARACTER:
                         result = StringListConcat(result, new List<string>() { node.GetText().Escape() });
                         break;
-                    case LGFileParser.EXPRESSION:
+                    case LGTemplateParser.EXPRESSION:
                         result = StringListConcat(result, EvalExpression(node.GetText(), context, prefixErrorMsg));
                         break;
                     default:
@@ -284,7 +303,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            return result;
+            return result.Select(x => x as object).ToList();
         }
 
         public object ConstructScope(string templateName, List<object> args)
@@ -302,7 +321,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return newScope;
         }
 
-        private bool EvalCondition(LGFileParser.IfConditionContext condition)
+        private bool EvalCondition(LGTemplateParser.IfConditionContext condition)
         {
             var expression = condition.EXPRESSION(0);
             if (expression == null || // no expression means it's else
@@ -314,7 +333,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return false;
         }
 
-        private List<List<string>> VisitStructureValue(LGFileParser.KeyValueStructureLineContext context)
+        private List<List<object>> VisitStructureValue(LGTemplateParser.KeyValueStructureLineContext context)
         {
             var values = context.keyValueStructureValue();
 
@@ -332,10 +351,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         switch (node.Symbol.Type)
                         {
-                            case LGFileParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                            case LGTemplateParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
                                 itemStringResult = StringListConcat(itemStringResult, new List<string>() { node.GetText().Replace(@"\|", "|").Escape() });
                                 break;
-                            case LGFileParser.EXPRESSION_IN_STRUCTURE_BODY:
+                            case LGTemplateParser.EXPRESSION_IN_STRUCTURE_BODY:
                                 var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
                                 itemStringResult = StringListConcat(itemStringResult, EvalExpression(node.GetText(), item, errorPrefix));
                                 break;
@@ -349,7 +368,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            return result;
+            return result.Select(x => x.Select(y => y as object).ToList()).ToList();
         }
 
         private bool EvalExpressionInCondition(string exp, ParserRuleContext context = null, string errorPrefix = "")
@@ -357,7 +376,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (strictMode && (error != null || result == null))
+            if (lgOptions.StrictMode == true && (error != null || result == null))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -378,12 +397,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return true;
         }
 
-        private List<string> EvalExpression(string exp, ParserRuleContext context, string errorPrefix = "")
+        private List<string> EvalExpression(string exp, ParserRuleContext context = null, string errorPrefix = "")
         {
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (error != null || (result == null && strictMode))
+            if (error != null || (result == null && lgOptions.StrictMode == true))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -393,7 +412,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 Evaluator.CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
             }
-            else if (result == null && !strictMode)
+            else if (result == null && lgOptions.StrictMode == false)
             {
                 result = "null";
             }
@@ -402,7 +421,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 result.GetType().IsGenericType &&
                 result.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>)))
             {
-                return (List<string>)result;
+                var listRes = result as List<object>;
+
+                return listRes.Select(x => x.ToString()).ToList();
             }
 
             return new List<string>() { result.ToString() };
@@ -413,8 +434,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
-            var expanderExpression = this.expanderExpressionParser.Parse(exp);
-            var evaluatorExpression = this.evaluatorExpressionParser.Parse(exp);
+            var expanderExpression = this.ExpanderExpressionParser.Parse(exp);
+            var evaluatorExpression = this.EvaluatorExpressionParser.Parse(exp);
             var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
             string error;
             object value;
@@ -441,26 +462,63 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup, bool isExpander)
         => (string name) =>
         {
-            var prebuiltPrefix = "prebuilt.";
+            var standardFunction = baseLookup(name);
 
-            if (name.StartsWith(prebuiltPrefix))
+            if (standardFunction != null)
             {
-                return baseLookup(name.Substring(prebuiltPrefix.Length));
+                return standardFunction;
+            }
+
+            if (name.StartsWith("lg."))
+            {
+                name = name.Substring(3);
             }
 
             if (this.TemplateMap.ContainsKey(name))
             {
                 if (isExpander)
                 {
-                    return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateExpander(name)), ReturnType.String, this.ValidTemplateReference);
+                    return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateExpander(name)), ReturnType.Object, this.ValidTemplateReference);
                 }
                 else
                 {
-                    return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+                    return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
                 }
             }
 
-            return baseLookup(name);
+            const string template = "template";
+
+            if (name.Equals(template))
+            {
+                return new ExpressionEvaluator(template, ExpressionFunctions.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
+            }
+
+            const string fromFile = "fromFile";
+
+            if (name.Equals(fromFile))
+            {
+                return new ExpressionEvaluator(fromFile, ExpressionFunctions.Apply(this.FromFile()), ReturnType.String, ExpressionFunctions.ValidateUnaryString);
+            }
+
+            const string activityAttachment = "ActivityAttachment";
+
+            if (name.Equals(activityAttachment))
+            {
+                return new ExpressionEvaluator(
+                    activityAttachment,
+                    ExpressionFunctions.Apply(this.ActivityAttachment()),
+                    ReturnType.Object,
+                    (expr) => ExpressionFunctions.ValidateOrder(expr, null, ReturnType.Object, ReturnType.String));
+            }
+
+            const string isTemplate = "isTemplate";
+
+            if (name.Equals(isTemplate))
+            {
+                return new ExpressionEvaluator(isTemplate, ExpressionFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
+            }
+
+            return null;
         };
 
         private Func<IReadOnlyList<object>, object> TemplateExpander(string templateName) =>
@@ -479,6 +537,36 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var rd = new Random();
                 return value[rd.Next(value.Count)];
             };
+
+        // Evaluator for template(templateName, ...args) 
+        // normal case we can just use templateName(...args), but template function is particularly useful when the template name is not pre-known
+        private Func<IReadOnlyList<object>, object> TemplateFunction()
+        => (IReadOnlyList<object> args) =>
+        {
+            var templateName = args[0].ToString();
+            var newScope = this.ConstructScope(templateName, args.Skip(1).ToList());
+            return this.ExpandTemplate(templateName, newScope);
+        };
+
+        // Validator for template(...)
+        private void ValidateTemplateFunction(Expression expression)
+        {
+            ExpressionFunctions.ValidateAtLeastOne(expression);
+
+            var children0 = expression.Children[0];
+
+            if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
+            {
+                throw new Exception(TemplateErrors.InvalidTemplateName);
+            }
+
+            // Validate more if the name is string constant
+            if (children0.Type == ExpressionType.Constant)
+            {
+                var templateName = (children0 as Constant).Value.ToString();
+                CheckTemplateReference(templateName, expression.Children.Skip(1));
+            }
+        }
 
         private void ValidTemplateReference(Expression expression)
         {
@@ -519,5 +607,76 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             return expanderExpression;
         }
+
+        private void CheckTemplateReference(string templateName, IEnumerable<Expression> children)
+        {
+            if (!this.TemplateMap.ContainsKey(templateName))
+            {
+                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
+            }
+
+            var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
+            var actualArgsCount = children.Count();
+
+            if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)
+            {
+                throw new Exception(TemplateErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
+            }
+        }
+
+        private Func<IReadOnlyList<object>, object> ActivityAttachment()
+        => (IReadOnlyList<object> args) =>
+        {
+            return new JObject
+            {
+                [LGType] = "attachment",
+                ["contenttype"] = args[1].ToString(),
+                ["content"] = args[0] as JObject
+            };
+        };
+
+        private Func<IReadOnlyList<object>, object> FromFile()
+       => (IReadOnlyList<object> args) =>
+       {
+           var filePath = args[0].ToString().NormalizePath();
+
+           var resourcePath = GetResourcePath(filePath);
+           var stringContent = File.ReadAllText(resourcePath);
+
+           var evaluator = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
+           var result = ExpressionRecognizeRegex.Replace(stringContent, evaluator);
+           return result.Escape();
+       };
+
+        private string GetResourcePath(string filePath)
+        {
+            string resourcePath;
+
+            if (Path.IsPathRooted(filePath))
+            {
+                resourcePath = filePath;
+            }
+            else
+            {
+                var template = TemplateMap[CurrentTarget().TemplateName];
+                var sourcePath = template.SourceRange.Source.NormalizePath();
+                var baseFolder = Environment.CurrentDirectory;
+                if (Path.IsPathRooted(sourcePath))
+                {
+                    baseFolder = Path.GetDirectoryName(sourcePath);
+                }
+
+                resourcePath = Path.GetFullPath(Path.Combine(baseFolder, filePath));
+            }
+
+            return resourcePath;
+        }
+
+        private Func<IReadOnlyList<object>, object> IsTemplate()
+      => (IReadOnlyList<object> args) =>
+      {
+          var templateName = args[0].ToString();
+          return TemplateMap.ContainsKey(templateName);
+      };
     }
 }

@@ -1,4 +1,6 @@
-
+[sandwichTest-MeatEntity.lg](sandwichTest-MeatEntity.lg)
+[sandwichTest-library.lg](sandwichTest-library.lg)
+[sandwichTest-library-Missing.lg](sandwichTest-library-Missing.lg)
 
 # AskMeat
 - ${askEnum('Meat')}
@@ -10,6 +12,3 @@
 
 # Meat(val)
 - ${MeatEntity(val)}
-[sandwichTest-MeatEntity.lg](sandwichTest-MeatEntity.lg)
-[sandwichTest-library.lg](sandwichTest-library.lg)
-[sandwichTest-library-Missing.lg](sandwichTest-library-Missing.lg)

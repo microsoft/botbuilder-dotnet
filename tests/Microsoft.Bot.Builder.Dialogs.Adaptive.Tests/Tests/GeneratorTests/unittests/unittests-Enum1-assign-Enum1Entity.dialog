@@ -1,6 +1,5 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Enum1",
     "entity": "Enum1Entity",
@@ -8,7 +7,7 @@
         {
             "$kind": "Microsoft.SendActivity",
             "activity": "${setPropertyMessage('Enum1', @Enum1Entity)}"
-        },    
+        },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Enum1",

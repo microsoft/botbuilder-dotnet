@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     public class FirstSelector : TriggerSelector
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.FirstSelector";
+        public const string Kind = "Microsoft.FirstSelector";
 
         private List<OnCondition> _conditionals;
         private bool _evaluate;

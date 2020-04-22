@@ -1,20 +1,19 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Quantity",
     "entity": "number",
     "actions": [
         {
             "$kind": "Microsoft.IfCondition",
-            "condition":"or(less(@number, dialogClass.schema.properties['Quantity'].minimum), greater(@number, dialogClass.schema.properties['Quantity'].maximum))",
-            "actions":[
+            "condition": "or(less(@number, dialogClass.schema.properties['Quantity'].minimum), greater(@number, dialogClass.schema.properties['Quantity'].maximum))",
+            "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
                     "activity": "${numberValidation('Quantity', @number)}"
-                }                    
+                }
             ],
-            "elseActions":[
+            "elseActions": [
                 {
                     "$kind": "Microsoft.SendActivity",
                     "activity": "${setPropertyMessage('Quantity', @number)}"
@@ -22,10 +21,9 @@
                 {
                     "$kind": "Microsoft.SetProperty",
                     "property": "$Quantity",
-                    "value": "=@number"          
+                    "value": "=@number"
                 }
             ]
         }
-        
-    ]               
+    ]
 }

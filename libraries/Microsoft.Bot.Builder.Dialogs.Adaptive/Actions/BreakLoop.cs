@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class BreakLoop : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.BreakLoop";
+        public const string Kind = "Microsoft.BreakLoop";
 
         public BreakLoop([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {

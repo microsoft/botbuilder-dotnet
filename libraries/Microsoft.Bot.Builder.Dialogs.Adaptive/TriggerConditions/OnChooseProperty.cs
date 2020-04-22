@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnChooseProperty : OnDialogEvent
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.OnChooseProperty";
+        public new const string Kind = "Microsoft.OnChooseProperty";
         
         [JsonConstructor]
         public OnChooseProperty(List<string> properties = null, List<string> entities = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

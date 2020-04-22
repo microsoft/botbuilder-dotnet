@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<IResource> changedResources = new ConcurrentBag<IResource>();
-        private bool loaded = false;
+        private bool typesLoaded = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
@@ -138,11 +138,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             try
             {
-                var context = new Stack<SourceRange>();
-                var (json, range) = await resource.ReadTokenRangeAsync(context);
-                using (new SourceContext(context, range))
+                var sourceContext = new SourceContext();
+                var (json, range) = await resource.ReadTokenRangeAsync(sourceContext);
+                using (new SourceScope(sourceContext, range))
                 {
-                    var result = Load<T>(json, context);
+                    var result = Load<T>(json, sourceContext);
                     if (result is Dialog dlg)
                     {
                         // dialog id's are resource ids
@@ -341,9 +341,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// Resolves a ref to the actual object.
         /// </summary>
         /// <param name="refToken">reference.</param>
-        /// <param name="context">source range context stack to build debugger source map.</param>
+        /// <param name="sourceContext">source context to build debugger source map.</param>
         /// <returns>resolved object the reference refers to.</returns>
-        public async Task<JToken> ResolveRefAsync(JToken refToken, Stack<SourceRange> context)
+        public async Task<JToken> ResolveRefAsync(JToken refToken, SourceContext sourceContext)
         {
             var refTarget = GetRefTarget(refToken);
 
@@ -362,7 +362,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
-            var (json, range) = await resource.ReadTokenRangeAsync(context);
+            var (json, range) = await resource.ReadTokenRangeAsync(sourceContext);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
             {
@@ -439,12 +439,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             lock (this.kindToType)
             {
-                if (!this.loaded)
+                if (!this.typesLoaded)
                 {
                     // this can be reentrant, and we only want to do once.
-                    this.loaded = true;
+                    this.typesLoaded = true;
 
-                    foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentDeclarativeTypes>())
+                    foreach (var component in ComponentRegistration.Components.Value.OfType<IComponentDeclarativeTypes>())
                     {
                         if (component != null)
                         {
@@ -459,12 +459,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
-        private T Load<T>(JToken token, Stack<SourceRange> context)
+        private T Load<T>(JToken token, SourceContext sourceContext)
         {
             var converters = new List<JsonConverter>();
-            foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentDeclarativeTypes>())
+
+            // get converters
+            foreach (var component in ComponentRegistration.Components.Value.OfType<IComponentDeclarativeTypes>())
             {
-                var result = component.GetConverters(this, context);
+                var result = component.GetConverters(this, sourceContext);
                 if (result.Any())
                 {
                     converters.AddRange(result);

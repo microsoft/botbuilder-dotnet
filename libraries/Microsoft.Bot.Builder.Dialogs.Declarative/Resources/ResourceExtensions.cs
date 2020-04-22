@@ -15,13 +15,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     public static class ResourceExtensions
     {
-        public static async Task<(JToken, SourceRange)> ReadTokenRangeAsync(this IResource resource, Stack<SourceRange> context)
+        public static async Task<(JToken, SourceRange)> ReadTokenRangeAsync(this IResource resource, SourceContext sourceContext)
         {
             var text = await resource.ReadTextAsync();
             using (var readerText = new StringReader(text))
             using (var readerJson = new JsonTextReader(readerText))
             {
-                var (token, range) = SourceContext.ReadTokenRange(readerJson, context);
+                var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
 
                 if (resource is FileResource fileResource)
                 {

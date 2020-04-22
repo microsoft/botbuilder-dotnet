@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class LogAction : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.LogAction";
+        public const string Kind = "Microsoft.LogAction";
 
         [JsonConstructor]
         public LogAction(string text = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var text = await Text.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+            var text = await Text.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
 
             var properties = new Dictionary<string, string>()
             {

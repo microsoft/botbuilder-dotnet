@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class BeginDialog : BaseInvokeDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.BeginDialog";
+        public const string Kind = "Microsoft.BeginDialog";
 
         [JsonConstructor]
         public BeginDialog(string dialogIdToCall = null, object options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

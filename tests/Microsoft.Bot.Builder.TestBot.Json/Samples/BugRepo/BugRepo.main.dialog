@@ -1,25 +1,19 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "recognizer": {
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-
-                
                 "intent": "Test",
-                "pattern": "test" 
+                "pattern": "test"
             },
             {
-
-                
                 "intent": "TextInput",
-                "pattern": "textinput" 
+                "pattern": "textinput"
             },
             {
-
-                
                 "intent": "End",
                 "pattern": "end"
             }

@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.TextInput",
     "prompt": "Hello, I'm Zoidberg. What is your name?"
 }

@@ -1,85 +1,85 @@
 {
-  "$schema": "../../../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "triggers": [
-    {
-      "$kind": "Microsoft.OnBeginDialog",
-      "actions": [
+    "$schema": "../../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
         {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "user.focusedMeeting == null",
-          "actions": [
-            "GetDisplayMeetings",
-            {
-              "$kind": "Microsoft.SendActivity",
-              "activity": "${ShowMeetingList(user)}"
-            },
-            {
-              "$kind": "Microsoft.TextInput",
-              "prompt": "OK, please choose a meeting to accept, you can choose meeting by 1, 2, 3...",
-              "property": "dialog.choice"
-            },
-            {
-              "$kind": "Microsoft.IfCondition",
-              "condition": "dialog.choice == '1'",
-              "actions": [
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
                 {
-                  "$kind": "Microsoft.SetProperty",
-                  "property": "user.focusedMeeting",
-                  "value": "=user.meetings[0]"
-                }
-              ]
-            },
-            {
-              "$kind": "Microsoft.IfCondition",
-              "condition": "dialog.choice == '2'",
-              "actions": [
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.focusedMeeting == null",
+                    "actions": [
+                        "GetDisplayMeetings",
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "${ShowMeetingList(user)}"
+                        },
+                        {
+                            "$kind": "Microsoft.TextInput",
+                            "prompt": "OK, please choose a meeting to accept, you can choose meeting by 1, 2, 3...",
+                            "property": "dialog.choice"
+                        },
+                        {
+                            "$kind": "Microsoft.IfCondition",
+                            "condition": "dialog.choice == '1'",
+                            "actions": [
+                                {
+                                    "$kind": "Microsoft.SetProperty",
+                                    "property": "user.focusedMeeting",
+                                    "value": "=user.meetings[0]"
+                                }
+                            ]
+                        },
+                        {
+                            "$kind": "Microsoft.IfCondition",
+                            "condition": "dialog.choice == '2'",
+                            "actions": [
+                                {
+                                    "$kind": "Microsoft.SetProperty",
+                                    "property": "user.focusedMeeting",
+                                    "value": "=user.meetings[1]"
+                                }
+                            ]
+                        },
+                        {
+                            "$kind": "Microsoft.IfCondition",
+                            "condition": "dialog.choice == '3'",
+                            "actions": [
+                                {
+                                    "$kind": "Microsoft.SetProperty",
+                                    "property": "user.focusedMeeting",
+                                    "value": "=user.meetings[2]"
+                                }
+                            ]
+                        }
+                    ]
+                },
                 {
-                  "$kind": "Microsoft.SetProperty",
-                  "property": "user.focusedMeeting",
-                  "value": "=user.meetings[1]"
-                }
-              ]
-            },
-            {
-              "$kind": "Microsoft.IfCondition",
-              "condition": "dialog.choice == '3'",
-              "actions": [
+                    "$kind": "Microsoft.ConfirmInput",
+                    "property": "dialog.confirmed",
+                    "prompt": "Are you sure to accept this meeting?",
+                    "retryPrompt": "Please try again.",
+                    "invalidPrompt": "Please input yes/no.",
+                    "alwaysPrompt": true
+                },
                 {
-                  "$kind": "Microsoft.SetProperty",
-                  "property": "user.focusedMeeting",
-                  "value": "=user.meetings[2]"
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "dialog.confirmed",
+                    "actions": [
+                        "AcceptMeetingService",
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "The meeting has been accepted."
+                        }
+                    ],
+                    "elseActions": [
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "OK, let's do it next time."
+                        }
+                    ]
                 }
-              ]
-            }
-          ]
-        },
-        {
-          "$kind": "Microsoft.ConfirmInput",
-          "property": "dialog.confirmed",
-          "prompt": "Are you sure to accept this meeting?",
-          "retryPrompt": "Please try again.",
-          "invalidPrompt": "Please input yes/no.",
-          "alwaysPrompt": true
-        },
-        {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "dialog.confirmed",
-          "actions": [
-            "AcceptMeetingService",
-            {
-              "$kind": "Microsoft.SendActivity",
-              "activity": "The meeting has been accepted."
-            }
-          ],
-          "elseActions": [
-            {
-              "$kind": "Microsoft.SendActivity",
-              "activity": "OK, let's do it next time."
-            }
-          ]
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

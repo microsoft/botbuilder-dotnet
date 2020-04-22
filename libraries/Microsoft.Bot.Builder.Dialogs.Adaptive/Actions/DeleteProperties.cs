@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class DeleteProperties : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.DeleteProperties";
+        public const string Kind = "Microsoft.DeleteProperties";
         
         [JsonConstructor]
         public DeleteProperties([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

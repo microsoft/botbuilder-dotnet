@@ -1,9 +1,8 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnEndOfActions",
-    "condition":"!$Phonenumber",
-    "priority": "indexOf(dialog.requiredProperties, 'Phonenumber')",
+    "condition": "!$Phonenumber",
+    "priority": "=indexOf(dialog.requiredProperties, 'Phonenumber')",
     "actions": [
         {
             "$kind": "Microsoft.Ask",
