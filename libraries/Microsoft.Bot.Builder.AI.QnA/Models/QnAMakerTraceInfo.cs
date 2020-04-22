@@ -59,12 +59,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int Top { get; set; }
 
         /// <summary>
+        /// [Obsolete("This field is no longer used")]
         /// Gets or sets the filters used to return answers that have the specified metadata.
         /// </summary>
         /// <value>
         /// The filters used to return answers that have the specified metadata.
         /// </value>
-        [Obsolete("This field is no longer used")]
+        
         [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }        
         
