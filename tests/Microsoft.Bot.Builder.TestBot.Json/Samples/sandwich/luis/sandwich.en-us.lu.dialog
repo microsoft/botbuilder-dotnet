@@ -1,6 +1,5 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../testbot.schema",
     "$kind": "Microsoft.LuisRecognizer",
     "applicationId": "=settings.luis.sandwich_en-us_lu",
     "endpoint": "=settings.luis.endpoint",

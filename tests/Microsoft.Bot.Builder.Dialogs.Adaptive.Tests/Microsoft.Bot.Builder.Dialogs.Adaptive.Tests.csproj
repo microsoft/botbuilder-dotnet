@@ -142,7 +142,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Tests\LuisRecognizerTests\cachedResponses\ExternalEntities_test_en-us_lu\" />
+    <Folder Include="Tests\LuisRecognizerTests\cachedResponses\ExternalEntities_test_en_us_lu\" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties tests_4valuerecognizertests_4valuerecognizertests_3withintent_1test_1dialog__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

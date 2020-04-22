@@ -1,22 +1,19 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "recognizer": {
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                
                 "intent": "JokeIntent",
                 "pattern": "(?i)joke"
             },
             {
-                
                 "intent": "FortuneTellerIntent",
                 "pattern": "(?i)fortune|future"
             },
             {
-                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel"
             }

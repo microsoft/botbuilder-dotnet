@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class UrlEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.UrlEntityRecognizer";
+        public const string Kind = "Microsoft.UrlEntityRecognizer";
 
         public UrlEntityRecognizer()
         {

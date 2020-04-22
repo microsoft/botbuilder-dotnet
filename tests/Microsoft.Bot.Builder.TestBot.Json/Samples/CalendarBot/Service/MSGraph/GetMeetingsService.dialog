@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "actions": [
         {
@@ -24,9 +24,5 @@
             },
             "Property": "user.getGraphMeetings"
         }
-        //,{
-        //  "$kind": "Microsoft.SendActivity",
-        //  "activity": "{user.getGraphMeetings.content}"
-        //}
     ]
 }

@@ -15,13 +15,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     public class TextInput : InputDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.TextInput";
+        public const string Kind = "Microsoft.TextInput";
 
         public TextInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        /// <summary>
+        /// Gets or sets the expression to use to format the result.
+        /// </summary>
+        /// <remarks>The default output is a string, if this property is set then the output of the expression is the string returned by the dialog.</remarks>
+        /// <value>an expression which resolves to a string.</value>
         [JsonProperty("outputFormat")]
         public StringExpression OutputFormat { get; set; } 
 

@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     public class UserDelay : TestAction
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.Test.UserDelay";
+        public const string Kind = "Microsoft.Test.UserDelay";
 
         [JsonConstructor]
         public UserDelay([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)

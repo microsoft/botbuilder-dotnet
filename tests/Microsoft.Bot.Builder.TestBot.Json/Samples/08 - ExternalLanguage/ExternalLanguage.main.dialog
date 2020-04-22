@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "generator": "ExternalLanguage.main.lg",
@@ -7,31 +7,22 @@
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-                
                 "intent": "HelpIntent",
-                "pattern": "(?i)help" 
+                "pattern": "(?i)help"
             },
             {
-
-                
                 "intent": "GreetingIntent",
-                "pattern": "(?i)hi|hello|hiya|greetings" 
+                "pattern": "(?i)hi|hello|hiya|greetings"
             },
             {
-
-                
                 "intent": "JokeIntent",
-                "pattern": "(?i)joke" 
+                "pattern": "(?i)joke"
             },
             {
-
-                
                 "intent": "FortuneTellerIntent",
-                "pattern": "(?i)fortune|future" 
+                "pattern": "(?i)fortune|future"
             },
             {
-
-                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel"
             }

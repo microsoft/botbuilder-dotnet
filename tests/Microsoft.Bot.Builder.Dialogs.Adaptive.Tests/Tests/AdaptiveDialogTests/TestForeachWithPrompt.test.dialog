@@ -1,103 +1,100 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
-  "$kind": "Microsoft.Test.Script",
-  "dialog": {
-    "$kind": "Microsoft.AdaptiveDialog",
-    "id": "AdaptiveDialog",
-    "generator": {
-      "$kind": "Microsoft.TemplateEngineLanguageGenerator",
-      "id": "",
-      "lgText": ""
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "generator": {
+            "$kind": "Microsoft.TemplateEngineLanguageGenerator"
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "$colorChoices",
+                        "value": "=createArray('red', 'blue', 'green')"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "$userAnswers",
+                        "value": "=[]"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "$colorChoices",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.TextInput",
+                                "alwaysPrompt": true,
+                                "property": "$answer",
+                                "prompt": "Give me something that is '${$foreach.value}' in color"
+                            },
+                            {
+                                "$kind": "Microsoft.EditArray",
+                                "itemsProperty": "$userAnswers",
+                                "value": "=$answer"
+                            },
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "You said '${$answer}' is '${$foreach.value}'."
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Here is all I have: ${join($userAnswers, ', ')}."
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
     },
-    "triggers": [
-      {
-        "$kind": "Microsoft.OnBeginDialog",
-        
-        "actions": [
-          {
-            "$kind": "Microsoft.SetProperty",
-            "property": "$colorChoices",
-            "value": "=createArray('red', 'blue', 'green')"
-          },
-          {
-            "$kind": "Microsoft.SetProperty",
-            "property": "$userAnswers",
-            "value": "=[]"
-          },
-          {
-            "$kind": "Microsoft.Foreach",
-            "itemsProperty": "$colorChoices",
-            "actions": [
-              {
-                "$kind": "Microsoft.TextInput",
-                "alwaysPrompt": true,
-                "property": "$answer",
-                "prompt": "Give me something that is '${$foreach.value}' in color"
-              },
-              {
-                "$kind": "Microsoft.EditArray",
-                "itemsProperty": "$userAnswers",
-                "value": "=$answer"
-              },
-              {
-                "$kind": "Microsoft.SendActivity",
-                "activity": "You said '${$answer}' is '${$foreach.value}'."
-              }
-            ]
-          },
-          {
-            "$kind": "Microsoft.SendActivity",
-            "activity": "Here is all I have: ${join($userAnswers, ', ')}."
-          }
-        ]
-      }
-    ],
-    "autoEndDialog": true,
-    "defaultResultProperty": "dialog.result"
-  },
-  "script": [
-    {
-      "$kind": "Microsoft.Test.UserConversationUpdate"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Give me something that is 'red' in color"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "fire"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "You said 'fire' is 'red'."
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Give me something that is 'blue' in color"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "sky"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "You said 'sky' is 'blue'."
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Give me something that is 'green' in color"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "grass"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "You said 'grass' is 'green'."
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Here is all I have: fire, sky, grass."
-    }
-  ]
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Give me something that is 'red' in color"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "fire"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You said 'fire' is 'red'."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Give me something that is 'blue' in color"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "sky"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You said 'sky' is 'blue'."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Give me something that is 'green' in color"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "grass"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You said 'grass' is 'green'."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Here is all I have: fire, sky, grass."
+        }
+    ]
 }

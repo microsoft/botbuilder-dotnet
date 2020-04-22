@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class IfCondition : Dialog, IDialogDependencies
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.IfCondition";
+        public const string Kind = "Microsoft.IfCondition";
 
         private ActionScope trueScope;
         private ActionScope falseScope;

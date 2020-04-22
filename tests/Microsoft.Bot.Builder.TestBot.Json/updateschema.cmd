@@ -1,4 +1,4 @@
 @echo off
 
-erase app.schema
-bf dialog:merge ../../libraries/**/*.schema ./**/*.schema -o app.schema 
+erase testbot.schema
+bf dialog:merge ../../libraries/**/*.schema ./**/*.schema -o testbot.schema -b ""

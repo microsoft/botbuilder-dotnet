@@ -1,6 +1,5 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Email",
     "entity": "email",
@@ -12,7 +11,7 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Email",
-            "value": "=@email"          
+            "value": "=@email"
         }
-    ]               
+    ]
 }

@@ -58,6 +58,60 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
 
+        public static async Task EnsureToLogActivitiesWithIdsTest(ITranscriptStore transcriptStore)
+        {
+            var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
+            var adapter = new AllowNullIdTestAdapter(conversation)
+                .Use(new TranscriptLoggerMiddleware(transcriptStore));
+
+            await new TestFlow(adapter, async (context, cancellationToken) =>
+            {
+                var activityWithId = new Activity
+                {
+                    Id = "TestActivityWithId",
+                    Text = "I am an activity with an Id.",
+                    Type = ActivityTypes.Message,
+                    RelatesTo = context.Activity.RelatesTo
+                };
+                var activityWithNullId = new Activity
+                {
+                    Id = null,
+                    Text = "My Id is null.",
+                    Type = ActivityTypes.Message,
+                    RelatesTo = context.Activity.RelatesTo
+                };
+                
+                await context.SendActivityAsync(activityWithId);
+                await context.SendActivityAsync(activityWithId);
+
+                await context.SendActivityAsync(activityWithNullId);
+            })
+                 .Send("inbound message to TestFlow")
+                    .AssertReply("I am an activity with an Id.")
+                 .Send("2nd inbound message to TestFlow")
+                   .AssertReply((activity) => Assert.AreEqual(activity.Id, "TestActivityWithId"))
+                 .Send("3rd inbound message to TestFlow")
+                   .AssertReply("My Id is null.")
+                 .StartTestAsync();
+
+            await Task.Delay(100);
+
+            var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
+            Assert.AreEqual(12, pagedResult.Items.Length);
+            Assert.AreEqual("inbound message to TestFlow", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.IsNotNull(pagedResult.Items[1].AsMessageActivity());
+            Assert.AreEqual("I am an activity with an Id.", pagedResult.Items[1].AsMessageActivity().Text);
+            Assert.AreEqual("2nd inbound message to TestFlow", pagedResult.Items[4].AsMessageActivity().Text);
+            Assert.AreEqual("TestActivityWithId", pagedResult.Items[5].Id);
+            Assert.AreEqual("3rd inbound message to TestFlow", pagedResult.Items[8].AsMessageActivity().Text);
+            Assert.AreEqual("My Id is null.", pagedResult.Items[11].AsMessageActivity().Text);
+            Assert.IsTrue(pagedResult.Items[11].AsMessageActivity().Id.Contains("g_"));
+            foreach (var activity in pagedResult.Items)
+            {
+                Assert.IsTrue(activity.Timestamp > default(DateTimeOffset));
+            }
+        }
+
         public static async Task LogUpdateActivitiesTest(ITranscriptStore transcriptStore)
         {
             var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
@@ -146,6 +200,14 @@ namespace Microsoft.Bot.Builder.Tests
             // Perform some queries
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, DateTimeOffset.MaxValue);
             Assert.AreEqual(0, pagedResult.Items.Length);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task MemoryTranscript_EnsureToLogActivitiesWithIdsTest()
+        {
+            var transcriptStore = new MemoryTranscriptStore();
+            await EnsureToLogActivitiesWithIdsTest(transcriptStore);
         }
 
         [TestMethod]

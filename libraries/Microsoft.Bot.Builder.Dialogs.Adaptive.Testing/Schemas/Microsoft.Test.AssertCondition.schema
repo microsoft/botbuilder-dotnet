@@ -1,13 +1,15 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Assert Condition",
     "description": "Assert condition is true.",
     "type": "object",
+    "required": [
+        "condition"
+    ],
     "properties": {
         "condition": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/condition",
             "title": "Condition",
             "description": "Expression to evalute",
             "examples": [

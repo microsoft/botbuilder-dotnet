@@ -3,5 +3,6 @@
     "recognizers": {
         "en-us": "unittests.en-us.lu",
         "": "unittests.en-us.lu"
-    }
+    },
+    "$schema": "../../../../../tests.schema"
 }

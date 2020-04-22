@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Begin a skill dialog",
     "description": "Begin a remote skill dialog.",
@@ -11,24 +11,26 @@
             "description": "Optional id for the skill dialog"
         },
         "disabled": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
-                "user.age > 3"
+                true,
+                "=f(x)"
             ]
         },
         "activityProcessed": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Activity Processed",
             "description": "When set to false, the dialog that is called can process the current activity.",
-            "default": true
+            "default": true,
+            "examples": [
+                true,
+                "=f(x)"
+            ]
         },
         "resultProperty": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Property",
             "description": "Property to store any value returned by the dialog that is called.",
             "examples": [
@@ -36,15 +38,13 @@
             ]
         },
         "botId": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Skill host bot ID",
             "description": "The Microsoft App ID that will be calling the skill.",
             "default": "=settings.MicrosoftAppId"
         },
         "skillHostEndpoint": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Skill host",
             "description": "The callback Url for the skill host.",
             "default": "=settings.skillHostEndpoint",
@@ -53,21 +53,19 @@
             ]
         },
         "skillAppId": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Skill App ID",
-            "description": "The Microsoft App ID for the skill.",
+            "description": "The Microsoft App ID for the skill."
         },
         "skillEndpoint": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Skill endpoint ",
             "description": "The /api/messages endpoint for the skill.",
             "examples": [
                 "https://myskill.contoso.com/api/messages/"
             ]
         },
-        "activity ": {
+        "activity": {
             "$kind": "Microsoft.IActivityTemplate",
             "title": "Activity",
             "description": "The activity to send to the skill."

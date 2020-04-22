@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -44,7 +44,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.TextInput",
-                        "allowInterruptions": "False",
+                        "allowInterruptions": false,
                         "property": "$userName",
                         "prompt": "[start]::What is your name?"
                     },
@@ -54,7 +54,7 @@
                     },
                     {
                         "$kind": "Microsoft.DateTimeInput",
-                        "allowInterruptions": "True",
+                        "allowInterruptions": true,
                         "property": "$fromDate",
                         "prompt": "Give me date 1",
                         "unrecognizedPrompt": "Unrecognized, give me date 1"
@@ -65,7 +65,7 @@
                     },
                     {
                         "$kind": "Microsoft.DateTimeInput",
-                        "allowInterruptions": "True",
+                        "allowInterruptions": true,
                         "property": "$toDate",
                         "prompt": "Give me date 2"
                     },

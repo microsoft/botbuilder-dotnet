@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "type": "object",
     "title": "HTTP request",
@@ -15,8 +15,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -40,8 +39,7 @@
             ]
         },
         "url": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Url",
             "description": "URL to call (supports data binding).",
             "examples": [
@@ -49,22 +47,13 @@
             ]
         },
         "body": {
-            "$role": "expression",
-            "type": [
-                "object",
-                "array",
-                "number",
-                "integer",
-                "boolean",
-                "string"
-            ],
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/valueExpression",
             "title": "Body",
             "description": "Body to include in the HTTP call (supports data binding).",
             "additionalProperties": true
         },
         "resultProperty": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Result property",
             "description": "Property to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
             "examples": [
@@ -72,8 +61,7 @@
             ]
         },
         "contentType": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Content type",
             "description": "Content media type for the body.",
             "examples": [
@@ -84,24 +72,29 @@
         "headers": {
             "type": "object",
             "additionalProperties": {
-                "$role": "expression",
-                "type": "string"
+                "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression"
             },
             "title": "Headers",
             "description": "One or more headers to include in the request (supports data binding)."
         },
         "responseType": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Response type",
             "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",
-            "enum": [
-                "None",
-                "Json",
-                "Activity",
-                "Activities"
+            "oneOf": [
+                {
+                    "enum": [
+                        "none",
+                        "json",
+                        "activity",
+                        "activities"
+                    ]
+                },
+                {
+                    "pattern": "^=.*\\S.*"
+                }
             ],
-            "default": "Json"
+            "default": "json"
         }
     }
 }

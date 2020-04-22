@@ -1,5 +1,8 @@
 parser grammar ExpressionAntlrParser;
 
+@parser::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
+@lexer::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
+
 options { tokenVocab=ExpressionAntlrLexer; }
 
 file: expression EOF;
@@ -18,16 +21,16 @@ expression
     ;
  
 primaryExpression 
-    : OPEN_BRACKET expression CLOSE_BRACKET                                  #parenthesisExp
-    | OPEN_SQUARE_BRACKET argsList? CLOSE_SQUARE_BRACKET                     #arrayCreationExp
-    | CONSTANT                                                               #constantAtom
-    | NUMBER                                                                 #numericAtom
-    | STRING                                                                 #stringAtom
-    | IDENTIFIER                                                             #idAtom
-    | stringInterpolation                                                    #stringInterpolationAtom
-    | primaryExpression DOT IDENTIFIER                                       #memberAccessExp
-    | primaryExpression NON? OPEN_BRACKET argsList? CLOSE_BRACKET            #funcInvokeExp
-    | primaryExpression OPEN_SQUARE_BRACKET expression CLOSE_SQUARE_BRACKET  #indexAccessExp
+    : OPEN_BRACKET expression CLOSE_BRACKET                                   #parenthesisExp
+    | OPEN_SQUARE_BRACKET argsList? CLOSE_SQUARE_BRACKET                      #arrayCreationExp
+    | OPEN_CURLY_BRACKET keyValuePairList? CLOSE_CURLY_BRACKET                #jsonCreationExp
+    | NUMBER                                                                  #numericAtom
+    | STRING                                                                  #stringAtom
+    | IDENTIFIER                                                              #idAtom
+    | stringInterpolation                                                     #stringInterpolationAtom
+    | primaryExpression DOT IDENTIFIER                                        #memberAccessExp
+    | primaryExpression NON? OPEN_BRACKET argsList? CLOSE_BRACKET             #funcInvokeExp
+    | primaryExpression OPEN_SQUARE_BRACKET expression CLOSE_SQUARE_BRACKET   #indexAccessExp
     ;
 
 stringInterpolation
@@ -40,4 +43,16 @@ textContent
 
 argsList
     : expression (COMMA expression)*
+    ;
+
+keyValuePairList
+    : keyValuePair (COMMA keyValuePair)*
+    ;
+
+keyValuePair
+    : key COLON expression
+    ;
+
+key
+    : (IDENTIFIER | STRING)
     ;

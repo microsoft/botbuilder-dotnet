@@ -1,5 +1,5 @@
 ﻿{
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Javascript Action",
     "description": "This gives you the ability to execute javascript to manipulate memory",
@@ -12,12 +12,12 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
-                "user.age > 3"
+                true,
+                "=f(x)"
             ]
         },
         "script": {
@@ -26,8 +26,7 @@
             "description": "name of the script file, or javascript function with function: doAction(memory, args) => result"
         },
         "options": {
-            "$role": "expression",
-            "type": "object",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
             "title": "Options",
             "description": "One or more options that are passed to the function as args.",
             "additionalProperties": {
@@ -36,8 +35,7 @@
             }
         },
         "resultProperty": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Property",
             "description": "Property to store any value returned by the javascript function.",
             "examples": [

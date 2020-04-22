@@ -1,6 +1,5 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Datetimev2",
     "entity": "datetime",
@@ -8,16 +7,16 @@
         {
             "$kind": "Microsoft.SendActivity",
             "activity": "${setObjectPropertyMessage('Datetimev2', concat(@datetime.type, ' ', string(@datetime.timex)))}"
-        }, 
+        },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Datetimev2.type",
-            "value": "=@datetime.type"          
+            "value": "=@datetime.type"
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Datetimev2.timex",
-            "value": "=join(@datetime.timex, ' ')"          
+            "value": "=join(@datetime.timex, ' ')"
         }
-    ]               
+    ]
 }

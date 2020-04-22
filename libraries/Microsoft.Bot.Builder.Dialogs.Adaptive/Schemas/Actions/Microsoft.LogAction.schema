@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Log to console",
     "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
@@ -14,32 +14,28 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
-                "user.age > 3"
+                true,
+                "=user.age > 3"
             ]
         },
         "text": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Text",
             "description": "Information to log."
         },
         "label": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Label",
             "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
         },
         "traceActivity": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Send Trace Activity",
-            "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator).",
-            "default": false
+            "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator)."
         }
     }
 }

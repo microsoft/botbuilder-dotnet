@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -8,12 +8,10 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    
                     "intent": "StartOuterIntent",
                     "pattern": "start"
                 },
                 {
-                    
                     "intent": "RootIntent",
                     "pattern": "root"
                 }
@@ -55,14 +53,14 @@
                                     },
                                     {
                                         "$kind": "Microsoft.NumberInput",
-                                        "allowInterruptions": "False",
+                                        "allowInterruptions": false,
                                         "property": "user.age",
                                         "prompt": "age?",
                                         "maxTurnCount": 2
                                     },
                                     {
                                         "$kind": "Microsoft.NumberInput",
-                                        "allowInterruptions": "True",
+                                        "allowInterruptions": true,
                                         "property": "user.age",
                                         "prompt": "age?"
                                     },

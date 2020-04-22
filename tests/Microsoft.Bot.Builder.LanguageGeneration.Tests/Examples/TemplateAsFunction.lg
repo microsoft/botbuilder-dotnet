@@ -17,3 +17,9 @@
 
 # dupNameWithTemplate
 - ${length('ms')}
+
+# foo(property)
+- ${template(property +'Entity')}
+
+# ShowEntity
+- you made it!

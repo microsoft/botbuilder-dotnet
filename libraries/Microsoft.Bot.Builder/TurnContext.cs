@@ -444,19 +444,19 @@ namespace Microsoft.Bot.Builder
 
         private async Task DeleteActivityInternalAsync(
             ConversationReference cr,
-            IEnumerable<DeleteActivityHandler> updateHandlers,
+            IEnumerable<DeleteActivityHandler> deleteHandlers,
             Func<Task> callAtBottom,
             CancellationToken cancellationToken)
         {
             BotAssert.ConversationReferenceNotNull(cr);
 
-            if (updateHandlers == null)
+            if (deleteHandlers == null)
             {
-                throw new ArgumentException(nameof(updateHandlers));
+                throw new ArgumentException(nameof(deleteHandlers));
             }
 
             // No middleware to run.
-            if (updateHandlers.Count() == 0)
+            if (deleteHandlers.Count() == 0)
             {
                 if (callAtBottom != null)
                 {
@@ -471,12 +471,12 @@ namespace Microsoft.Bot.Builder
             {
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about.
-                IEnumerable<DeleteActivityHandler> remaining = updateHandlers.Skip(1);
+                IEnumerable<DeleteActivityHandler> remaining = deleteHandlers.Skip(1);
                 await DeleteActivityInternalAsync(cr, remaining, callAtBottom, cancellationToken).ConfigureAwait(false);
             }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it.
-            DeleteActivityHandler toCall = updateHandlers.First();
+            DeleteActivityHandler toCall = deleteHandlers.First();
             await toCall(this, cr, Next).ConfigureAwait(false);
         }
     }
