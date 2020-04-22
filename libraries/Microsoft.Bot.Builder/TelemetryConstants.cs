@@ -21,5 +21,6 @@ namespace Microsoft.Bot.Builder
         public static readonly string TextProperty = "text";
         public static readonly string SpeakProperty = "speak";
         public static readonly string UserIdProperty = "userId";
+        public static readonly string AttachmentsProperty = "attachments";
     }
 }

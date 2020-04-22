@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                     using (var memoryStream = new MemoryStream())
                     {
-                        using (var writer = new StreamWriter(memoryStream, Encoding.UTF8, 1024, true))
+                        using (var writer = new StreamWriter(memoryStream, new UTF8Encoding(false, false), 1024, true))
                         {
                             using (var jsonWriter = new JsonTextWriter(writer))
                             {

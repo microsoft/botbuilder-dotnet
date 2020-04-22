@@ -19,9 +19,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.Foreach";
 
-        private const string INDEX = "dialog.foreach.index";
-        private const string VALUE = "dialog.foreach.value";
-
         [JsonConstructor]
         public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
@@ -50,6 +47,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("itemsProperty")]
         public StringExpression ItemsProperty { get; set; }
 
+        /// <summary>
+        /// Gets or sets property path expression to item index.
+        /// </summary>
+        /// <value>
+        /// Property path expression to the item index.
+        /// </value>
+        [JsonProperty("index")]
+        public StringExpression Index { get; set; } = "dialog.foreach.index";
+
+        /// <summary>
+        /// Gets or sets property path expression to item value.
+        /// </summary>
+        /// <value>
+        /// Property path expression to the item value.
+        /// </value>
+        [JsonProperty("value")]
+        public StringExpression Value { get; set; } = "dialog.foreach.value";
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
@@ -62,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            dc.State.SetValue(INDEX, -1);
+            dc.State.SetValue(Index.GetValue(dc.State), -1);
             return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
         }
 
@@ -85,14 +100,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             // Get list information
             var list = dc.State.GetValue<JArray>(this.ItemsProperty.GetValue(dc.State));
-            var index = dc.State.GetIntValue(INDEX);
+            var index = dc.State.GetIntValue(Index.GetValue(dc.State));
 
             // Next item
             if (++index < list.Count)
             {
                 // Persist index and value
-                dc.State.SetValue(VALUE, list[index]);
-                dc.State.SetValue(INDEX, index);
+                dc.State.SetValue(Value.GetValue(dc.State), list[index]);
+                dc.State.SetValue(Index.GetValue(dc.State), index);
 
                 // Start loop
                 return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);

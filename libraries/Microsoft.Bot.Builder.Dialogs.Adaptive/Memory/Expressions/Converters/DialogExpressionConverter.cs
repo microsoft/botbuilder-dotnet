@@ -22,10 +22,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
         /// Initializes a new instance of the <see cref="DialogExpressionConverter"/> class.
         /// </summary>
         /// <param name="resourceExplorer">resource explorer to use for resolving references.</param>
-        /// <param name="context">source range context stack to build debugger source map.</param>
-        public DialogExpressionConverter(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
+        /// <param name="sourceContext">SourceContext to build debugger source map.</param>
+        public DialogExpressionConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
-            this.converter = new InterfaceConverter<Dialog>(resourceExplorer, context);
+            this.converter = new InterfaceConverter<Dialog>(resourceExplorer, sourceContext);
         }
 
         public override bool CanRead => true;

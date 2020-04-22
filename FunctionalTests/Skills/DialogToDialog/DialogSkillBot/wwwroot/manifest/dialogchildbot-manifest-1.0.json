@@ -3,7 +3,7 @@
   "$id": "DialogSkillBot",
   "name": "Skill bot with dialogs",
   "version": "1.0",
-  "description": "This is a sample skill definition for multiple activity types",
+  "description": "This is a sample skill definition for multiple activity types.",
   "publisherName": "Microsoft",
   "privacyUrl": "https://dialogskillbot.contoso.com/privacy.html",
   "copyright": "Copyright (c) Microsoft Corporation. All rights reserved.",
@@ -19,14 +19,14 @@
     {
       "name": "default",
       "protocol": "BotFrameworkV3",
-      "description": "Default endpoint for the skill",
-      "endpointUrl": "https://ggdialogskillbot.azurewebsites.net/api/messages",
-      "msAppId": "f3fe8762-e50c-4688-b202-a040f522d916"
+      "description": "Default endpoint for the skill.",
+      "endpointUrl": "https://dialogskillbot.contoso.com/api/messages",
+      "msAppId": "00000000-0000-0000-0000-000000000000"
     }
   ],
   "activities": {
     "bookFlight": {
-      "description": "Books a flight (multi turn)",
+      "description": "Books a flight (multi turn).",
       "type": "event",
       "name": "BookFlight",
       "value": {
@@ -36,9 +36,19 @@
         "$ref": "#/definitions/bookingInfo"
       }
     },
+    "oauthTest": {
+      "description": "Tests the OAuth prompt in a skill",
+      "type": "event",
+      "name": "OAuthTest"
+    },
+    "dialogEchoSkillBot": {
+      "description": "Calls the Echo Skill Bot from a skill",
+      "type": "event",
+      "name": "EchoSkillBot"
+    },
     "getWeather": {
-      "description": "Retrieves and returns the weather for the user's location (single turn, invoke)",
-      "type": "invoke",
+      "description": "Retrieves and returns the weather for the user's location.",
+      "type": "event",
       "name": "GetWeather",
       "value": {
         "$ref": "#/definitions/location"
@@ -49,22 +59,13 @@
     },
     "passthroughMessage": {
       "type": "message",
-      "description": "Receives the user's utterance and attempts to resolve it using the skill's LUIS models",
+      "description": "Receives the user's utterance and attempts to resolve it using the skill's LUIS models.",
       "value": {
         "type": "object"
       }
     }
   },
   "definitions": {
-    "localeValue": {
-      "type": "object",
-      "properties": {
-        "locale": {
-          "type": "string",
-          "description": "The current user's locale ISO code"
-        }
-      }
-    },
     "bookingInfo": {
       "type": "object",
       "required": [
@@ -73,15 +74,15 @@
       "properties": {
         "origin": {
           "type": "string",
-          "description": "this is the origin city for the flight"
+          "description": "This is the origin city for the flight."
         },
         "destination": {
           "type": "string",
-          "description": "this is the destination city for the flight"
+          "description": "This is the destination city for the flight."
         },
         "travelDate": {
           "type": "string",
-          "description": "The date for the flight in YYYY-MM-DD format"
+          "description": "The date for the flight in YYYY-MM-DD format."
         }
       }
     },
@@ -96,7 +97,7 @@
     },
     "location": {
       "type": "object",
-      "description": "Location metadata",
+      "description": "Location metadata.",
       "properties": {
         "latitude": {
           "type": "number",

@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             yield return new DeclarativeType<LuisAdaptiveRecognizer>(LuisAdaptiveRecognizer.DeclarativeType);
         }
 
-        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
+        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield return new ArrayExpressionConverter<DynamicList>();
         }
