@@ -470,7 +470,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
             
             var newScope = evaluator.ConstructScope(templateName, args.ToList());
-            return evaluator.EvaluateTemplate(templateName, null);
+            return evaluator.EvaluateTemplate(templateName, newScope);
         };
     }
 }

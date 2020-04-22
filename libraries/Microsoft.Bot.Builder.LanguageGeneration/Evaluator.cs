@@ -295,7 +295,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             // inherit current memory's global scope
-            return new CustomizedMemory(new SimpleObjectMemory(newScope));
+            return new CustomizedMemory(memory.GlobalMemory, new SimpleObjectMemory(newScope));
         }
 
         // Validator for template(...)

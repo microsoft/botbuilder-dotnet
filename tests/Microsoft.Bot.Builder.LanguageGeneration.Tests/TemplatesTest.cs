@@ -1255,7 +1255,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("./InjectionTest/inject.lg"));
             templates.InjectToExprssionFunction();
-            var evaled = templates.EvaluateText("${foo.bar(1)}");
+            
+            var evaled = templates.EvaluateText("${foo.bar()}");
+            
+            Assert.AreEqual("3", evaled.ToString());
+
+            evaled = templates.EvaluateText("${foo.cool(2)}");
             Assert.AreEqual("3", evaled.ToString());
         }
 

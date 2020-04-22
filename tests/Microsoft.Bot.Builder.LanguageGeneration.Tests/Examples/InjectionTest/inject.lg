@@ -1,6 +1,12 @@
 ﻿> !# @strict = false
 > !# @namespace = foo
-> !# @addToGlobalFunctionTable = bar
+> !# @addToGlobalFunctionTable = bar, cool
 
-#bar(a)
+#bar()
+- ${add(1,2)}
+
+#foo
+- ${bar()}
+
+#cool(a)
 - ${add(1,a)}
