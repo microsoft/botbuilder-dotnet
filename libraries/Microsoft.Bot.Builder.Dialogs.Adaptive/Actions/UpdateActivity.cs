@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var activity = await Activity.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+            var activity = await Activity.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
 
             var properties = new Dictionary<string, string>()
             {

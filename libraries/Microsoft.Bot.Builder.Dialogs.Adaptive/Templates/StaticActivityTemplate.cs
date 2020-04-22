@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         [JsonProperty("activity")]
         public Activity Activity { get; set; }
 
-        public Task<Activity> BindToData(ITurnContext context, object data)
+        public Task<Activity> BindToDataAsync(ITurnContext context, object data)
         {
             return Task.FromResult(Activity);
         }

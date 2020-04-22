@@ -17,7 +17,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
@@ -1653,7 +1652,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerDialog2()
+                            new QnAMakerDialog()
                             {
                                 KnowledgeBaseId = knowlegeBaseId,
                                 HostName = host,
