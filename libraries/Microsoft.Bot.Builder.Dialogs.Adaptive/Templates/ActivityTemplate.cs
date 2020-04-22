@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         [JsonProperty("template")]
         public string Template { get; set; }
 
-        public virtual async Task<Activity> BindToData(ITurnContext context, object data)
+        public virtual async Task<Activity> BindToDataAsync(ITurnContext context, object data)
         {
             if (!string.IsNullOrEmpty(this.Template))
             {

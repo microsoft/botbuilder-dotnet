@@ -36,8 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
@@ -58,7 +56,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder.AI.LUIS\Microsoft.Bot.Builder.AI.Luis.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.AI.QnA\Microsoft.Bot.Builder.AI.QnA.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.LanguageGeneration\Microsoft.Bot.Builder.LanguageGeneration.csproj" />
