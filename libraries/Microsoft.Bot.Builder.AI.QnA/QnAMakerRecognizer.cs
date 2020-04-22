@@ -9,12 +9,12 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers
+namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
 {
     /// <summary>
     /// IRecognizer implementation which uses QnAMaker KB to identify intents.

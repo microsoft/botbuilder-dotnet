@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Memory;
 
@@ -21,7 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </remarks>
     public class Templates : List<Template>
     {
-        private readonly string newLine = "\r\n";
+        private readonly string newLine = Environment.NewLine;
 
         public Templates(
             IList<Template> templates = null,
@@ -133,16 +134,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public IList<string> Options { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether lG parser/checker/evaluate strict mode.
-        /// If strict mode is on, expression would throw exception instead of return
-        /// null or make the condition failed.
+        /// Gets the evluation options for current LG file.
         /// </summary>
         /// <value>
-        /// A value indicating whether lG parser/checker/evaluate strict mode.
-        /// If strict mode is on, expression would throw exception instead of return
-        /// null or make the condition failed.
+        /// An EvaluationOption.
         /// </value>
-        public bool StrictMode => GetStrictModeFromOptions(Options);
+        public EvaluationOptions LgOptions => new EvaluationOptions(Options);
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -175,12 +172,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
+        /// <param name="opt">The EvaluationOptions in evaluating a template.</param>
         /// <returns>Evaluate result.</returns>
-        public object Evaluate(string templateName, object scope = null)
+        public object Evaluate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
-
-            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, StrictMode);
+            var evalOpt = opt != null ? opt.Merge(LgOptions) : LgOptions;
+            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
@@ -189,9 +187,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="text">Inline string which will be evaluated.</param>
         /// <param name="scope">Scope object or JToken.</param>
+        /// <param name="opt">The EvaluationOptions in evaluating a template.</param>
         /// <returns>Evaluate result.</returns>
-        public object EvaluateText(string text, object scope = null)
+        public object EvaluateText(string text, object scope = null, EvaluationOptions opt = null)
         {
+            var evalOpt = opt != null ? opt.Merge(LgOptions) : LgOptions;
+
             if (text == null)
             {
                 throw new ArgumentException("inline string is null.");
@@ -210,7 +211,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var newLG = TemplatesParser.ParseTextWithRef(newContent, this);
 
-            return newLG.Evaluate(fakeTemplateId, scope);
+            return newLG.Evaluate(fakeTemplateId, scope, evalOpt);
         }
 
         /// <summary>
@@ -219,11 +220,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
+        /// <param name="opt">The evaluation option for current expander.</param>
         /// <returns>Expand result.</returns>
-        public IList<object> ExpandTemplate(string templateName, object scope = null)
+        public IList<object> ExpandTemplate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
-            var expander = new Expander(AllTemplates.ToList(), ExpressionParser, StrictMode);
+            var evalOpt = opt ?? LgOptions;
+            var expander = new Expander(AllTemplates.ToList(), ExpressionParser, evalOpt);
             return expander.ExpandTemplate(templateName, scope);
         }
 
@@ -391,39 +394,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     throw new Exception(string.Join(newLine, errors));
                 }
             }
-        }
-
-        private bool GetStrictModeFromOptions(IList<string> options)
-        {
-            var result = false;
-            if (options == null)
-            {
-                return result;
-            }
-
-            var strictModeKey = "@strict";
-            foreach (var option in options)
-            {
-                if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
-                {
-                    var index = option.IndexOf('=');
-                    var key = option.Substring(0, index).Trim();
-                    var value = option.Substring(index + 1).Trim().ToLower();
-                    if (key == strictModeKey)
-                    {
-                        if (value == "true")
-                        {
-                            result = true;
-                        }
-                        else if (value == "false")
-                        {
-                            result = false;
-                        }
-                    }
-                }
-            }
-
-            return result;
         }
     }
 }

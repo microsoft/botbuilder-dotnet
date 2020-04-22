@@ -23,13 +23,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     ///     activity.Value.intent => RecognizerResult.Intents.
     ///     activity.Value.properties => RecognizerResult.Entities.
     /// </remarks>
-    public class ValueRecognizer : Recognizer
+    internal class ValueRecognizer : Recognizer
     {
-        [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.ValueRecognizer";
-
         [JsonConstructor]
-        public ValueRecognizer()
+        internal ValueRecognizer()
         {
         }
 
