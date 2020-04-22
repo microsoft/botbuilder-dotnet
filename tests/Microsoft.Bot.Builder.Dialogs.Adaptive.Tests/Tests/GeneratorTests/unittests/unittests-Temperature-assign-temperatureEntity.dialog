@@ -1,6 +1,5 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Temperature",
     "entity": "temperature",
@@ -12,12 +11,12 @@
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Temperature.number",
-            "value": "=@temperature.number"          
+            "value": "=@temperature.number"
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Temperature.units",
-            "value": "=@temperature.units"          
+            "value": "=@temperature.units"
         }
-    ]               
+    ]
 }

@@ -1,13 +1,12 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "OAuthInput Dialog",
     "description": "Collect login information.",
     "type": "object",
     "properties": {
         "connectionName": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Connection name",
             "description": "The connection name configured in Azure Web App Bot OAuth settings.",
             "examples": [
@@ -15,26 +14,25 @@
             ]
         },
         "disabled": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
-                "user.age > 3"
+                true,
+                "=user.age > 3"
             ]
         },
         "text": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Text",
             "description": "Text shown in the OAuth signin card.",
             "examples": [
-                "Please sign in. "
+                "Please sign in. ",
+                "=concat(x,y,z)"
             ]
         },
         "title": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Title",
             "description": "Title shown in the OAuth signin card.",
             "examples": [
@@ -42,15 +40,13 @@
             ]
         },
         "timeout": {
-            "$role": "expression",
-            "type": "integer",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
             "title": "Timeout",
             "description": "Time out setting for the OAuth signin card.",
-            "default": "900000"
+            "default": 900000
         },
         "property": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Token property",
             "description": "Property to store the OAuth token result.",
             "examples": [
@@ -74,8 +70,7 @@
             ]
         },
         "maxTurnCount": {
-            "$role": "expression",
-            "type": "integer",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
             "title": "Max turn count",
             "description": "Maximum number of re-prompt attempts to collect information.",
             "default": 3,
@@ -84,15 +79,7 @@
             ]
         },
         "defaultValue": {
-            "$role": "expression",
-            "type": [
-                "object",
-                "array",
-                "number",
-                "integer",
-                "boolean",
-                "string"
-            ],
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/expression",
             "title": "Default value",
             "description": "Expression to examine on each turn of the conversation as possible value to the property.",
             "examples": [
@@ -100,23 +87,22 @@
             ]
         },
         "allowInterruptions": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Allow Interruptions",
             "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-            "default": "true",
+            "default": true,
             "examples": [
-                "true"
+                true,
+                "=f(x)"
             ]
         },
         "alwaysPrompt": {
-            "$role": "expression",
-            "type": [ "boolean", "string" ],
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Always prompt",
             "description": "Collect information even if the specified 'property' is not empty.",
-            "default": false,
             "examples": [
-                false
+                true,
+                "=f(x)"
             ]
         }
     },

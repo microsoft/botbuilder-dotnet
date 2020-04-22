@@ -8,10 +8,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class Range
     {
+        public static readonly Range DefaultRange = new Range(1, 0, 1, 0);
+
         public Range(Position start, Position end)
         {
             Start = start;
             End = end;
+        }
+
+        public Range(int startLine, int startChar, int endLine, int endChar)
+        {
+            Start = new Position(startLine, startChar);
+            End = new Position(endLine, endChar);
         }
 
         /// <summary>
@@ -35,8 +43,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = Start.ToString();
             if (Start.Line <= End.Line && Start.Character < End.Character)
             {
-                result += " - ";
-                result += End.ToString();
+                result += $" - {End}";
             }
 
             return result;

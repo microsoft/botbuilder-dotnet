@@ -1,49 +1,49 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "actions": [
-    "GetDisplayEmails",
-    {
-      "$kind": "Microsoft.SendActivity",
-      "activity": "${ShowEmailList(user)}"
-    },
-    {
-      "$kind": "Microsoft.TextInput",
-      "prompt": "${SelectEmail()}",
-      "property": "dialog.choice"
-    },
-    {
-      "$kind": "Microsoft.IfCondition",
-      "condition": "dialog.choice == '1'",
-      "actions": [
+    "$schema": "../../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "actions": [
+        "GetDisplayEmails",
         {
-          "$kind": "Microsoft.SetProperty",
-          "property": "user.focusedEmail",
-          "value": "=user.emails[0]"
-        }
-      ]
-    },
-    {
-      "$kind": "Microsoft.IfCondition",
-      "condition": "dialog.choice == '2'",
-      "actions": [
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${ShowEmailList(user)}"
+        },
         {
-          "$kind": "Microsoft.SetProperty",
-          "property": "user.focusedEmail",
-          "value": "=user.emails[1]"
-        }
-      ]
-    },
-    {
-      "$kind": "Microsoft.IfCondition",
-      "condition": "dialog.choice == '3'",
-      "actions": [
+            "$kind": "Microsoft.TextInput",
+            "prompt": "${SelectEmail()}",
+            "property": "dialog.choice"
+        },
         {
-          "$kind": "Microsoft.SetProperty",
-          "property": "user.focusedEmail",
-          "value": "=user.emails[2]"
+            "$kind": "Microsoft.IfCondition",
+            "condition": "dialog.choice == '1'",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.focusedEmail",
+                    "value": "=user.emails[0]"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "dialog.choice == '2'",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.focusedEmail",
+                    "value": "=user.emails[1]"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "dialog.choice == '3'",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.focusedEmail",
+                    "value": "=user.emails[2]"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

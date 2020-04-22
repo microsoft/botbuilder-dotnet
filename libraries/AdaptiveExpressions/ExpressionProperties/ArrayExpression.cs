@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.Properties
@@ -65,6 +66,8 @@ namespace AdaptiveExpressions.Properties
             : base(expressionOrValue)
         {
         }
+
+        public static implicit operator ArrayExpression<T>(T[] value) => new ArrayExpression<T>(value.ToList());
 
         public static implicit operator ArrayExpression<T>(List<T> value) => new ArrayExpression<T>(value);
 

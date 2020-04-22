@@ -7,6 +7,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    [Obsolete("This class is not used anymore", error: true)]
     public class DialogManagerAdapter : BotAdapter
     {
         public DialogManagerAdapter()

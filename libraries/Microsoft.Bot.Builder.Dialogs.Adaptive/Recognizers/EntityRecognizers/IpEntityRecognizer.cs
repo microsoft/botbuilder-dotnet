@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class IpEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.IpEntityRecognizer";
+        public const string Kind = "Microsoft.IpEntityRecognizer";
 
         public IpEntityRecognizer()
         {

@@ -1,4 +1,5 @@
-
+[sandwichTest-library.lg](sandwichTest-library.lg)
+[sandwichTest-library-Choose.lg](sandwichTest-library-Choose.lg)
  
  # CheeseEntity(value) 
  - SWITCH: ${value}
@@ -24,5 +25,3 @@
  
  # chooseCheeseEntity
  - ${chooseEnumEntity('Cheese')}
-[sandwichTest-library.lg](sandwichTest-library.lg)
-[sandwichTest-library-Choose.lg](sandwichTest-library-Choose.lg)

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class ContinueLoop : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.ContinueLoop";
+        public const string Kind = "Microsoft.ContinueLoop";
 
         public ContinueLoop([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {

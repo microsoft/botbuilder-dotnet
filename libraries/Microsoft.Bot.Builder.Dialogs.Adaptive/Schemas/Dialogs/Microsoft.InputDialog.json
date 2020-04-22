@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+  "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
   "type": "object",
   "properties": {
     "id": {
@@ -8,12 +8,13 @@
       "description": "Optional id for the dialog"
     },
     "disabled": {
-      "$role": "expression",
-      "type": [ "boolean", "string" ],
+      "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
       "title": "Disabled",
       "description": "Optional condition which if true will disable this action.",
+      "default": false,
       "examples": [
-        "user.age > 3"
+        false,
+        "=user.isVip"
       ]
     },
     "prompt": {
@@ -27,9 +28,9 @@
     "unrecognizedPrompt": {
       "$kind": "Microsoft.IActivityTemplate",
       "title": "Unrecognized prompt",
-      "description": "Message to send when the recognizer does not understand the user input.",
+      "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
       "examples": [
-        "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
+        "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
       ]
     },
     "invalidPrompt": {
@@ -49,77 +50,57 @@
       ]
     },
     "maxTurnCount": {
-      "$role": "expression",
-      "type": [ "integer", "string" ],
+      "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
       "title": "Max turn count",
       "description": "Maximum number of re-prompt attempts to collect information.",
       "default": 3,
       "examples": [
-        3
+        3,
+        "=settings.xyz"
       ]
     },
     "validations": {
       "type": "array",
-      "items": {
-        "$role": "expression",
-        "type": "string"
-      },
       "title": "Validation expressions",
       "description": "Expression to validate user input.",
-      "examples": [
-        "int(this.value) > 1 && int(this.value) <= 150",
-        "count(this.value) < 300"
-      ]
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/condition",
+        "title": "Condition",
+        "description": "Expression which needs to met for the input to be considered valid",
+        "examples": [
+          "int(this.value) > 1 && int(this.value) <= 150",
+          "count(this.value) < 300"
+        ]
+      }
     },
     "property": {
-      "$role": "expression",
-      "type": "string",
+      "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
       "title": "Property",
       "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
       "examples": [
         "$birthday",
-        "user.name",
-        "conversation.issueTitle",
-        "dialog.favColor"
-      ]
-    },
-    "defaultValue": {
-      "$role": "expression",
-      "type": [ "object", "array", "number", "integer", "boolean", "string" ],
-      "title": "Default value",
-      "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-      "examples": [
-        "@userName",
-        "coalesce(@number, @partySize)"
-      ]
-    },
-    "value": {
-      "$role": "expression",
-      "type": [ "object", "array", "number", "integer", "boolean", "string" ],
-      "title": "Value",
-      "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-      "examples": [
-        "=@userName"
+        "dialog.${user.name}",
+        "=f(x)"
       ]
     },
     "alwaysPrompt": {
-      "$role": "expression",
-      "type": [ "boolean", "string" ],
+      "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
       "title": "Always prompt",
       "description": "Collect information even if the specified 'property' is not empty.",
       "default": false,
       "examples": [
-        false
+        false,
+        "=$val"
       ]
     },
     "allowInterruptions": {
-      "$role": "expression",
-      "type": [ "boolean", "string" ],
+      "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
       "title": "Allow Interruptions",
       "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-      "default": "true",
+      "default": true,
       "examples": [
-        "true"
+        true,
+        "=user.xyz"
       ]
     }
   }

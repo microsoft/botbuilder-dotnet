@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnCustomEvent : OnCondition
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.OnCustomEvent";
+        public new const string Kind = "Microsoft.OnCustomEvent";
 
         [JsonConstructor]
         public OnCustomEvent(string @event = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

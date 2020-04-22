@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     public class AssertReplyOneOf : AssertReplyActivity
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.Test.AssertReplyOneOf";
+        public new const string Kind = "Microsoft.Test.AssertReplyOneOf";
 
         [JsonConstructor]
         public AssertReplyOneOf([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)

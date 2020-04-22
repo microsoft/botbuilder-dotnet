@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Choice input dialog",
     "description": "Collect information - Pick from a list of choices",
@@ -13,20 +13,27 @@
                 "outputFormat": {
                     "$role": "expression",
                     "type": "string",
-                    "enum": [
-                        "value",
-                        "index"
+                    "oneOf": [
+                        {
+                            "enum": [
+                                "value",
+                                "index"
+                            ]
+                        },
+                        {
+                            "pattern": "^=.*\\S.*"
+                        }
                     ],
                     "title": "Output format",
-                    "description": "Choice output format.",
+                    "description": "Sets the desired choice output format (either value or index into choices).",
                     "default": "value"
                 },
                 "choices": {
                     "$role": "expression",
+                    "title": "Array of choices",
+                    "type": "array",
                     "oneOf": [
                         {
-                            "title": "Array of strings",
-                            "type": "array",
                             "items": [
                                 {
                                     "type": "string"
@@ -34,12 +41,10 @@
                             ]
                         },
                         {
-                            "title": "Array of choice objects",
-                            "type": "array",
                             "items": [
                                 {
-                                    "title": "Choice",
                                     "type": "object",
+                                    "title": "Choice",
                                     "properties": {
                                         "value": {
                                             "type": "string",
@@ -47,7 +52,7 @@
                                             "description": "Value to return when this choice is selected."
                                         },
                                         "action": {
-                                            "type": "object",
+                                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/CardAction",
                                             "title": "Action",
                                             "description": "Card action for the choice."
                                         },
@@ -56,7 +61,8 @@
                                             "title": "Synonyms",
                                             "description": "List of synonyms to recognize in addition to the value (optional).",
                                             "items": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "title": "Synonym"
                                             }
                                         }
                                     }
@@ -65,34 +71,41 @@
                         }
                     ]
                 },
-                "appendChoices": {
-                    "type": "boolean",
-                    "title": "Append choices",
-                    "description": "Compose an output activity containing a set of choices",
-                    "default": "true"
-                },
                 "defaultLocale": {
-                    "type": "string",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Default locale",
-                    "description": "Default locale.",
-                    "default": "en-us"
+                    "description": "The default locale to use to parse confirmation choices if there is not one passed by the caller.",
+                    "default": "en-us",
+                    "examples": [
+                        "en-us"
+                    ]
                 },
                 "style": {
+                    "$role": "expression",
                     "type": "string",
-                    "enum": [
-                        "None",
-                        "Auto",
-                        "Inline",
-                        "List",
-                        "SuggestedAction",
-                        "HeroCard"
+                    "oneOf": [
+                        {
+                            "enum": [
+                                "none",
+                                "auto",
+                                "inline",
+                                "list",
+                                "suggestedAction",
+                                "heroCard"
+                            ]
+                        },
+                        {
+                            "pattern": "^=.*\\S.*"
+                        }
                     ],
                     "title": "List style",
-                    "description": "Style to render choices.",
-                    "default": "Auto"
+                    "description": "Sets the ListStyle to control how choices are rendered.",
+                    "default": "auto"
                 },
                 "choiceOptions": {
-                    "type": "object",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
+                    "title": "Choice options",
+                    "description": "Sets the choice options used for controlling how choices are combined.",
                     "properties": {
                         "inlineSeparator": {
                             "type": "string",
@@ -121,7 +134,9 @@
                     }
                 },
                 "recognizerOptions": {
-                    "type": "object",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
+                    "title": "Recognizer options",
+                    "description": "Sets how to recognize choices in the response",
                     "properties": {
                         "noValue": {
                             "type": "boolean",
@@ -132,8 +147,20 @@
                         "noAction": {
                             "type": "boolean",
                             "title": "No action",
-                            "description": "If true, the the choices action.title field will NOT be searched over",
+                            "description": "If true, the choices action.title field will NOT be searched over",
                             "default": false
+                        },
+                        "recognizeNumbers": {
+                            "type": "boolean",
+                            "title": "Recognize numbers",
+                            "description": "If true, the number recognizer will be used to recognize an index response (1,2,3...) to the prompt.",
+                            "default": true
+                        },
+                        "recognizeOrdinals": {
+                            "type": "boolean",
+                            "title": "Recognize ordinals",
+                            "description": "If true, the ordinal recognizer will be used to recognize ordinal response (first/second/...) to the prompt.",
+                            "default": true
                         }
                     }
                 }

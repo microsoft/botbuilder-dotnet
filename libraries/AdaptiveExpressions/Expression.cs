@@ -126,7 +126,7 @@ namespace AdaptiveExpressions
         /// allow a string to be implicitly assigned to an expression property.
         /// </summary>
         /// <param name="expression">string expression.</param>
-        public static implicit operator Expression(string expression) => Expression.Parse(expression);
+        public static implicit operator Expression(string expression) => Expression.Parse(expression?.TrimStart('='));
 
         /// <summary>
         /// Parse an expression string into an expression object.
@@ -134,7 +134,7 @@ namespace AdaptiveExpressions
         /// <param name="expression">expression string.</param>
         /// <param name="lookup">Optional function lookup when parsing the expression. Default is Expression.Lookup which uses Expression.Functions table.</param>
         /// <returns>expression object.</returns>
-        public static Expression Parse(string expression, EvaluatorLookup lookup = null) => new ExpressionParser(lookup ?? Expression.Lookup).Parse(expression);
+        public static Expression Parse(string expression, EvaluatorLookup lookup = null) => new ExpressionParser(lookup ?? Expression.Lookup).Parse(expression?.TrimStart('='));
 
         /// <summary>
         /// Lookup a ExpressionEvaluator (function) by name.

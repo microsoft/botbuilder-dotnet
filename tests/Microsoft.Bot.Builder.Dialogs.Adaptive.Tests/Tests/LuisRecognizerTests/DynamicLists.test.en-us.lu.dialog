@@ -2,5 +2,6 @@
     "$kind": "Microsoft.LuisRecognizer",
     "applicationId": "=settings.luis.DynamicLists_test_en_us_lu",
     "endpoint": "=settings.luis.endpoint",
-    "endpointKey": "=settings.luis.endpointKey"
+    "endpointKey": "=settings.luis.endpointKey",
+    "$schema": "../../../tests.schema"
 }

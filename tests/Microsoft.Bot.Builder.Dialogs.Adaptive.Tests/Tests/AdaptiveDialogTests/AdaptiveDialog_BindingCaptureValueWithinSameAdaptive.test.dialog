@@ -1,13 +1,11 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "id": "AdaptiveDialog",
         "generator": {
-            "$kind": "Microsoft.TemplateEngineLanguageGenerator",
-            "id": "",
-            "lgText": ""
+            "$kind": "Microsoft.TemplateEngineLanguageGenerator"
         },
         "triggers": [
             {

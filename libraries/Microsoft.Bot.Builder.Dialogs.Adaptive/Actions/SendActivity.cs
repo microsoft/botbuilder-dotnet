@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class SendActivity : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.SendActivity";
+        public const string Kind = "Microsoft.SendActivity";
 
         public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var activity = await Activity.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+            var activity = await Activity.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
             var properties = new Dictionary<string, string>()
             {
                 { "template", JsonConvert.SerializeObject(Activity) },

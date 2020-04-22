@@ -22,9 +22,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>DeclarativeTypes enumeration.</returns>
         public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
-            yield return new DeclarativeType<TextTemplate>(TextTemplate.DeclarativeType);
-            yield return new DeclarativeType<ActivityTemplate>(ActivityTemplate.DeclarativeType);
-            yield return new DeclarativeType<StaticActivityTemplate>(StaticActivityTemplate.DeclarativeType);
+            yield return new DeclarativeType<TextTemplate>(TextTemplate.Kind);
+            yield return new DeclarativeType<ActivityTemplate>(ActivityTemplate.Kind);
+            yield return new DeclarativeType<StaticActivityTemplate>(StaticActivityTemplate.Kind);
         }
 
         /// <summary>

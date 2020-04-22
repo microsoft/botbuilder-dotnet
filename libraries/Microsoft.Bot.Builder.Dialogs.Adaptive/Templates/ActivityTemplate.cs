@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     public class ActivityTemplate : ITemplate<Activity>
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.ActivityTemplate";
+        public const string Kind = "Microsoft.ActivityTemplate";
 
         // Fixed text constructor for inline template
         public ActivityTemplate(string template)
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         [JsonProperty("template")]
         public string Template { get; set; }
 
-        public virtual async Task<Activity> BindToData(ITurnContext context, object data)
+        public virtual async Task<Activity> BindToDataAsync(ITurnContext context, object data)
         {
             if (!string.IsNullOrEmpty(this.Template))
             {

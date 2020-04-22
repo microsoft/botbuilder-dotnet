@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -70,22 +68,53 @@ namespace Microsoft.Bot.Builder.Dialogs
             return result;
         }
 
-        protected virtual Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, ITurnContext turnContext = null)
+        /// <summary>
+        /// Uses the RecognizerResult to create a list of propeties to be included when tracking the result in telemetry.
+        /// </summary>
+        /// <param name="recognizerResult">Recognizer Result.</param>
+        /// <param name="telemetryProperties">A list of properties to append or override the properties created using the RecognizerResult.</param>
+        /// <param name="dialogContext">Dialog Context.</param>
+        /// <returns>A dictionary that can be included when calling the TrackEvent method on the TelemetryClient.</returns>
+        protected virtual Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dialogContext = null)
         {
-            if (telemetryProperties == null)
+            var properties = new Dictionary<string, string>()
             {
-                telemetryProperties = new Dictionary<string, string>();
+                { "Text", recognizerResult.Text },
+                { "AlteredText", recognizerResult.AlteredText },
+                { "TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null },
+                { "TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.ToString() : null },
+                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
+                { "Entities", recognizerResult.Entities != null ? recognizerResult.Entities.ToString() : null },
+                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
+            };
+
+            // Additional Properties can override "stock" properties.
+            if (telemetryProperties != null)
+            {
+                return telemetryProperties.Concat(properties)
+                           .GroupBy(kv => kv.Key)
+                           .ToDictionary(g => g.Key, g => g.First().Value);
             }
 
-            telemetryProperties.Add("Text", recognizerResult.Text);
-            telemetryProperties.Add("AlteredText", recognizerResult.AlteredText);
-            telemetryProperties.Add("TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null);
-            telemetryProperties.Add("TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.ToString() : null);
-            telemetryProperties.Add("Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null);
-            telemetryProperties.Add("Entities", recognizerResult.Entities != null ? recognizerResult.Entities.ToString() : null);
-            telemetryProperties.Add("AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null);
+            return properties;
+        }
 
-            return telemetryProperties;
+        /// <summary>
+        /// Tracks an event with the event name provided using the TelemetryClient attaching the properties / metrics.
+        /// </summary>
+        /// <param name="dialogContext">Dialog Context.</param>
+        /// <param name="eventName">The name of the event to track.</param>
+        /// <param name="telemetryProperties">The properties to be included as part of the event tracking.</param>
+        /// <param name="telemetryMetrics">The metrics to be included as part of the event tracking.</param>
+        protected void TrackRecognizerResult(DialogContext dialogContext, string eventName, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics)
+        {
+            if (this.TelemetryClient is NullBotTelemetryClient)
+            {
+                var turnStateTelemetryClient = dialogContext.Context.TurnState.Get<IBotTelemetryClient>();
+                this.TelemetryClient = turnStateTelemetryClient ?? this.TelemetryClient;
+            }
+
+            this.TelemetryClient.TrackEvent(eventName, telemetryProperties, telemetryMetrics);
         }
     }
 }

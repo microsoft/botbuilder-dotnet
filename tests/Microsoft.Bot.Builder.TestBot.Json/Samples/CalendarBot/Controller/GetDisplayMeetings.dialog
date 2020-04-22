@@ -1,66 +1,41 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "triggers": [
-    {
-      "$kind": "Microsoft.OnBeginDialog",
-      "actions": [
-        "GetMeetingsService",
+    "$schema": "../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
         {
-          "$kind": "Microsoft.EditArray",
-          "changeType": "clear",
-          "itemsProperty": "user.meetings"
-        },
-        // *** Translate from graph model to view model. Map the same entity from graph/google to the same attribute. ***
-        {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "user.provider=='msgraph'",
-          "actions": [
-            // Need subarray. Hack for now.
-            //{
-            //  "$kind": "Microsoft.EditArray",
-            //  "changeType": "push",
-            //  "itemsProperty": "user.meetings",
-            //  "itemProperty": "user.getGraphMeetings.value[user.showIndex * user.pageSize + 0]"
-            //},
-            //{
-            //  "$kind": "Microsoft.EditArray",
-            //  "changeType": "push",
-            //  "itemsProperty": "user.meetings",
-            //  "itemProperty": "user.getGraphMeetings.value[user.showIndex * user.pageSize + 1]"
-            //},
-            //{
-            //  "$kind": "Microsoft.EditArray",
-            //  "changeType": "push",
-            //  "itemsProperty": "user.meetings",
-            //  "itemProperty": "user.getGraphMeetings.value[user.showIndex * user.pageSize + 2]"
-            //},
-            {
-              "$kind": "Microsoft.EditArray",
-              "changeType": "push",
-              "itemsProperty": "user.meetings",
-              "itemProperty": "user.getGraphMeetings.value[0]"
-            },
-            {
-              "$kind": "Microsoft.EditArray",
-              "changeType": "push",
-              "itemsProperty": "user.meetings",
-              "itemProperty": "user.getGraphMeetings.value[1]"
-            },
-            {
-              "$kind": "Microsoft.EditArray",
-              "changeType": "push",
-              "itemsProperty": "user.meetings",
-              "itemProperty": "user.getGraphMeetings.value[2]"
-            }
-            // bug: the user.meetings should be a list object but not a Json array object
-          ]
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                "GetMeetingsService",
+                {
+                    "$kind": "Microsoft.EditArray",
+                    "changeType": "clear",
+                    "itemsProperty": "user.meetings"
+                },
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.provider=='msgraph'",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.EditArray",
+                            "changeType": "push",
+                            "itemsProperty": "user.meetings",
+                            "itemProperty": "user.getGraphMeetings.value[0]"
+                        },
+                        {
+                            "$kind": "Microsoft.EditArray",
+                            "changeType": "push",
+                            "itemsProperty": "user.meetings",
+                            "itemProperty": "user.getGraphMeetings.value[1]"
+                        },
+                        {
+                            "$kind": "Microsoft.EditArray",
+                            "changeType": "push",
+                            "itemsProperty": "user.meetings",
+                            "itemProperty": "user.getGraphMeetings.value[2]"
+                        }
+                    ]
+                }
+            ]
         }
-        //,{
-        //  "$kind": "Microsoft.SendActivity",
-        //  "activity": "Get meetings model done"
-        //}
-      ]
-    }
-  ]
+    ]
 }

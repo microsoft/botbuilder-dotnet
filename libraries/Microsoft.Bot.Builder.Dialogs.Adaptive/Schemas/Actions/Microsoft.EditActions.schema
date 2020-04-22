@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Edit actions.",
     "description": "Edit the current list of actions.",
@@ -15,8 +15,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -24,16 +23,22 @@
             ]
         },
         "changeType": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Type of change",
             "description": "Type of change to apply to the current actions.",
-            "enum": [
-                "insertActions",
-                "insertActionsBeforeTags",
-                "appendActions",
-                "endSequence",
-                "replaceSequence"
+            "oneOf": [
+                {
+                    "enum": [
+                        "insertActions",
+                        "insertActionsBeforeTags",
+                        "appendActions",
+                        "endSequence",
+                        "replaceSequence"
+                    ]
+                },
+                {
+                    "pattern": "^=.*\\S.*"
+                }
             ]
         },
         "actions": {

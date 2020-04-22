@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -8,12 +8,10 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    
                     "intent": "HelpIntent",
                     "pattern": "(?i)help"
                 },
                 {
-                    
                     "intent": "CancelIntent",
                     "pattern": "(?i)cancel"
                 }
@@ -40,7 +38,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.ConfirmInput",
-                        "style": 1,
+                        "style": "auto",
                         "property": "conversation.addTodo.cancelConfirmation",
                         "prompt": "cancel?"
                     },

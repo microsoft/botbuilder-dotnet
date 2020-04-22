@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     public class UserActivity : TestAction
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.Test.UserActivity";
+        public const string Kind = "Microsoft.Test.UserActivity";
 
         [JsonConstructor]
         public UserActivity([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)

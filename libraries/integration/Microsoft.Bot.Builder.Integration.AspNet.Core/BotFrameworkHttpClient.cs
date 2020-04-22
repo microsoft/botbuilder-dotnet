@@ -77,8 +77,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             // Capture current activity settings before changing them.
             var originalConversationId = activity.Conversation.Id;
             var originalServiceUrl = activity.ServiceUrl;
-            var originalCallerId = activity.CallerId;
             var originalRelatesTo = activity.RelatesTo;
+            var originalRecipient = activity.Recipient;
             try
             {
                 activity.RelatesTo = new ConversationReference()
@@ -100,7 +100,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 };
                 activity.Conversation.Id = conversationId;
                 activity.ServiceUrl = serviceUrl.ToString();
-                activity.CallerId = $"urn:botframework:aadappid:{fromBotId}";
+                if (activity.Recipient == null)
+                {
+                    activity.Recipient = new ChannelAccount();
+                }
 
                 using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
@@ -131,8 +134,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 // Restore activity properties.
                 activity.Conversation.Id = originalConversationId;
                 activity.ServiceUrl = originalServiceUrl;
-                activity.CallerId = originalCallerId;
                 activity.RelatesTo = originalRelatesTo;
+                activity.Recipient = originalRecipient;
             }
         }
 

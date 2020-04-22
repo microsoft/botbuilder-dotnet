@@ -1,0 +1,14 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$role": "implements(Microsoft.ILanguageGenerator)",
+    "title": "Template Multi-Language Generator",
+    "description": "Template Generator which allows only inline evaluation of templates.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional generator ID."
+        }
+    }
+}

@@ -1,6 +1,5 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Price",
     "entity": "money",
@@ -8,16 +7,16 @@
         {
             "$kind": "Microsoft.SendActivity",
             "activity": "${setObjectPropertyMessage('Price', concat(string(@money.number), ' ', @money.units))}"
-        }, 
+        },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Price.number",
-            "value": "=@money.number"          
+            "value": "=@money.number"
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Price.units",
-            "value": "=@money.units"          
+            "value": "=@money.units"
         }
-    ]               
+    ]
 }

@@ -1,19 +1,15 @@
-﻿{
-    "$schema": "../../app.schema",
+{
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "recognizer": {
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-
-                
                 "intent": "JokeIntent",
-                "pattern": "(?i)joke" 
+                "pattern": "(?i)joke"
             },
             {
-
-                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel|never mind"
             }
@@ -46,9 +42,7 @@
         },
         {
             "$kind": "Microsoft.OnDialogEvent",
-            "triggers": [
-                "cancelDialog"
-            ],
+            "event": "cancelDialog",
             "actions": [
                 {
                     "$kind": "Microsoft.SendActivity",
