@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         /// <summary>
         /// Gets or sets the filters used to return answers that have the specified metadata.
-        /// [Obsolete("This field is no longer used")]
+        /// [Obsolete("This field is no longer used")].
         /// </summary>
         /// <value>
         /// The filters used to return answers that have the specified metadata.
