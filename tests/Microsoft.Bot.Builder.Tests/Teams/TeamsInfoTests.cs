@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity
             {
                 Type = "message",
-                Text = "Test-GetTeamDetailsAsync",
+                Text = "Test-GetChannelsAsync",
                 ChannelId = Channels.Msteams,
                 ChannelData = new TeamsChannelData
                 {
@@ -302,11 +302,17 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 // GetChannels
                 else if (request.RequestUri.PathAndQuery.EndsWith("team-id/conversations"))
                 {
-                    var content = new JArray
+                    // Returns ConversationList 
+                    var content = new JObject
                     {
-                        new JObject { new JProperty("id", "channel-id-1") },
-                        new JObject { new JProperty("id", "channel-id-2"), new JProperty("name", "channel-name-2") },
-                        new JObject { new JProperty("id", "channel-id-3"), new JProperty("name", "channel-name-3") },
+                        new JProperty(
+                            "conversations",
+                            new JArray
+                            {
+                                new JObject { new JProperty("id", "channel-id-1") },
+                                new JObject { new JProperty("id", "channel-id-2"), new JProperty("name", "channel-name-2") },
+                                new JObject { new JProperty("id", "channel-id-3"), new JProperty("name", "channel-name-3") },
+                            })
                     };
                     response.Content = new StringContent(content.ToString());
                 }

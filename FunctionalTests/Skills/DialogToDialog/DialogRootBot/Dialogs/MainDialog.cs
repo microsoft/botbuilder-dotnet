@@ -15,6 +15,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
 {
@@ -24,11 +25,20 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
     public class MainDialog : ComponentDialog
     {
         public static readonly string ActiveSkillPropertyName = $"{typeof(MainDialog).FullName}.ActiveSkillProperty";
+
+        // Constants used for selecting actions on the skill.
+        private const string SkillActionBookFlight = "BookFlight";
+        private const string SkillActionBookFlightWithInputParameters = "BookFlight with input parameters";
+        private const string SkillActionGetWeather = "GetWeather";
+        private const string SkillActionOAuthTest = "OAuthTest";
+        private const string SkillActionEchoSkillBot = "EchoSkill";
+        private const string SkillActionMessage = "Message";
+
         private readonly IStatePropertyAccessor<BotFrameworkSkill> _activeSkillProperty;
         private readonly string _selectedSkillKey = $"{typeof(MainDialog).FullName}.SelectedSkillKey";
         private readonly SkillsConfiguration _skillsConfig;
 
-        // Dependency injection uses this constructor to instantiate MainDialog
+        // Dependency injection uses this constructor to instantiate MainDialog.
         public MainDialog(ConversationState conversationState, SkillConversationIdFactoryBase conversationIdFactory, SkillHttpClient skillClient, SkillsConfiguration skillsConfig, IConfiguration configuration)
             : base(nameof(MainDialog))
         {
@@ -50,29 +60,19 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
                 throw new ArgumentNullException(nameof(conversationState));
             }
 
-            // ChoicePrompt to render available skills and skill actions
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-
             // Register the tangent
             AddDialog(new TangentDialog());
 
-            // Create SkillDialog instances for the configured skills
-            foreach (var skillInfo in _skillsConfig.Skills.Values)
-            {
-                // SkillDialog used to wrap interaction with the selected skill
-                var skillDialogOptions = new SkillDialogOptions
-                {
-                    BotId = botId,
-                    ConversationIdFactory = conversationIdFactory,
-                    SkillClient = skillClient,
-                    SkillHostEndpoint = skillsConfig.SkillHostEndpoint,
-                    ConversationState = conversationState,
-                    Skill = skillInfo
-                };
-                AddDialog(new SkillDialog(skillDialogOptions, skillInfo.Id));
-            }
+            // Use helper method to add SkillDialog instances for the configured skills.
+            AddSkillDialogs(conversationState, conversationIdFactory, skillClient, skillsConfig, botId);
 
-            // Main waterfall dialog for this bot
+            // Add ChoicePrompt to render available skills.
+            AddDialog(new ChoicePrompt("SkillPrompt"));
+
+            // Add ChoicePrompt to render skill actions.
+            AddDialog(new ChoicePrompt("SkillActionPrompt", SkillActionPromptValidator));
+
+            // Add main waterfall dialog for this bot.
             var waterfallSteps = new WaterfallStep[]
             {
                 SelectSkillStepAsync,
@@ -82,7 +82,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             };
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), waterfallSteps));
 
-            // Create state property to track the active skill
+            // Create state property to track the active skill.
             _activeSkillProperty = conversationState.CreateProperty<BotFrameworkSkill>(ActiveSkillPropertyName);
 
             // The initial child Dialog to run.
@@ -91,16 +91,19 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
 
         protected override async Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default)
         {
-            // This is an example on how to cancel a SkillDialog that is currently in progress from the parent bot
+            // This is an example on how to cancel a SkillDialog that is currently in progress from the parent bot.
             var activeSkill = await _activeSkillProperty.GetAsync(innerDc.Context, () => null, cancellationToken);
             var activity = innerDc.Context.Activity;
             if (activeSkill != null && activity.Type == ActivityTypes.Message && activity.Text.Equals("abort", StringComparison.CurrentCultureIgnoreCase))
             {
-                // Cancel all dialog when the user says abort.
+                // Cancel all dialogs when the user says abort.
+                // The SkillDialog automatically sends an EndOfConversation message to the skill to let the
+                // skill know that it needs to end its current dialogs, too.
                 await innerDc.CancelAllDialogsAsync(cancellationToken);
                 return await innerDc.ReplaceDialogAsync(InitialDialogId, "Canceled! \n\n What skill would you like to call?", cancellationToken);
             }
 
+            // Sample to test a tangent when in the middle of a skill conversation.
             if (activeSkill != null && activity.Type == ActivityTypes.Message && activity.Text.Equals("tangent", StringComparison.CurrentCultureIgnoreCase))
             {
                 // Start tangent.
@@ -114,15 +117,17 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
         private async Task<DialogTurnResult> SelectSkillStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // Create the PromptOptions from the skill configuration which contain the list of configured skills.
+            var messageText = stepContext.Options?.ToString() ?? "What skill would you like to call?";
+            var repromptMessageText = "That was not a valid choice, please select a valid skill.";
             var options = new PromptOptions
             {
-                Prompt = MessageFactory.Text(stepContext.Options?.ToString() ?? "What skill would you like to call?"),
-                RetryPrompt = MessageFactory.Text("That was not a valid choice, please select a valid skill."),
+                Prompt = MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput),
+                RetryPrompt = MessageFactory.Text(repromptMessageText, repromptMessageText, InputHints.ExpectingInput),
                 Choices = _skillsConfig.Skills.Select(skill => new Choice(skill.Value.Id)).ToList()
             };
 
             // Prompt the user to select a skill.
-            return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
+            return await stepContext.PromptAsync("SkillPrompt", options, cancellationToken);
         }
 
         // Render a prompt to select the action for the skill.
@@ -136,19 +141,30 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             stepContext.Values[_selectedSkillKey] = selectedSkill;
 
             // Create the PromptOptions with the actions supported by the selected skill.
+            var messageText = $"Select an action # to send to **{selectedSkill.Id}** or just type in a message and it will be forwarded to the skill";
             var options = new PromptOptions
             {
-                Prompt = MessageFactory.Text($"What action would you like to call in **{selectedSkill.Id}**?"),
-                RetryPrompt = MessageFactory.Text("That was not a valid choice, please select a valid action."),
-                Choices = GetSkillActions(selectedSkill),
-                Style = ListStyle.SuggestedAction
+                Prompt = MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput),
+                Choices = GetSkillActions(selectedSkill)
             };
 
             // Prompt the user to select a skill action.
-            return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
+            return await stepContext.PromptAsync("SkillActionPrompt", options, cancellationToken);
         }
 
-        // Starts SkillDialog based on the user's selections
+        // This validator defaults to Message if the user doesn't select an existing option.
+        private Task<bool> SkillActionPromptValidator(PromptValidatorContext<FoundChoice> promptContext, CancellationToken cancellationToken)
+        {
+            if (!promptContext.Recognized.Succeeded)
+            {
+                // Assume the user wants to send a message if an item in the list is not selected.
+                promptContext.Recognized.Value = new FoundChoice { Value = SkillActionMessage };
+            }
+
+            return Task.FromResult(true);
+        }
+
+        // Starts the SkillDialog based on the user's selections.
         private async Task<DialogTurnResult> CallSkillActionStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var selectedSkill = (BotFrameworkSkill)stepContext.Values[_selectedSkillKey];
@@ -157,30 +173,24 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
             switch (selectedSkill.Id)
             {
                 case "EchoSkillBot":
-                    // Echo skill only handles message activities, send a dummy utterance to get it started.
-                    skillActivity = (Activity)Activity.CreateMessageActivity();
-                    skillActivity.Text = "Start echo skill";
+                    // Echo only takes messages
+                    skillActivity = CreateDialogSkillBotActivity(SkillActionMessage, stepContext.Context);
+
                     break;
                 case "DialogSkillBot":
-                    skillActivity = CreateDialogSkillBotActivity(((FoundChoice)stepContext.Result).Value);
+                    skillActivity = CreateDialogSkillBotActivity(((FoundChoice)stepContext.Result).Value, stepContext.Context);
                     break;
                 default:
                     throw new Exception($"Unknown target skill id: {selectedSkill.Id}.");
             }
 
-            // Create the BeginSkillDialogOptions
+            // Create the BeginSkillDialogOptions and assign the activity to send.
             var skillDialogArgs = new BeginSkillDialogOptions { Activity = skillActivity };
 
-            // We are manually creating the activity to send to the skill, ensure we add the ChannelData and Properties 
-            // from the original activity so the skill gets them.
-            // Note: this is not necessary if we are just forwarding the current activity from context. 
-            skillDialogArgs.Activity.ChannelData = stepContext.Context.Activity.ChannelData;
-            skillDialogArgs.Activity.Properties = stepContext.Context.Activity.Properties;
-
             // Comment or uncomment this line if you need to enable or disabled buffered replies.
-            skillDialogArgs.Activity.DeliveryMode = DeliveryModes.ExpectReplies;
+            //skillDialogArgs.Activity.DeliveryMode = DeliveryModes.ExpectReplies;
 
-            // Save active skill in state
+            // Save active skill in state.
             await _activeSkillProperty.SetAsync(stepContext.Context, selectedSkill, cancellationToken);
 
             // Start the skillDialog instance with the arguments. 
@@ -192,101 +202,137 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot.Dialogs
         {
             var activeSkill = await _activeSkillProperty.GetAsync(stepContext.Context, () => null, cancellationToken);
 
+            // Check if the skill returned any results and display them.
             if (stepContext.Result != null)
             {
                 var message = $"Skill \"{activeSkill.Id}\" invocation complete.";
                 message += $" Result: {JsonConvert.SerializeObject(stepContext.Result)}";
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(message, inputHint: InputHints.IgnoringInput), cancellationToken: cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(message, message, inputHint: InputHints.IgnoringInput), cancellationToken: cancellationToken);
             }
 
             // Clear the skill selected by the user.
             stepContext.Values[_selectedSkillKey] = null;
 
-            // Clear active skill in state
+            // Clear active skill in state.
             await _activeSkillProperty.DeleteAsync(stepContext.Context, cancellationToken);
 
-            // Restart the main dialog with a different message the second time around
+            // Restart the main dialog with a different message the second time around.
             return await stepContext.ReplaceDialogAsync(InitialDialogId, $"Done with \"{activeSkill.Id}\". \n\n What skill would you like to call?", cancellationToken);
         }
 
-        // Helper method to create Choice elements for the actions supported by the skill
+        // Helper method that creates and adds SkillDialog instances for the configured skills.
+        private void AddSkillDialogs(ConversationState conversationState, SkillConversationIdFactoryBase conversationIdFactory, SkillHttpClient skillClient, SkillsConfiguration skillsConfig, string botId)
+        {
+            foreach (var skillInfo in _skillsConfig.Skills.Values)
+            {
+                // Create the dialog options.
+                var skillDialogOptions = new SkillDialogOptions
+                {
+                    BotId = botId,
+                    ConversationIdFactory = conversationIdFactory,
+                    SkillClient = skillClient,
+                    SkillHostEndpoint = skillsConfig.SkillHostEndpoint,
+                    ConversationState = conversationState,
+                    Skill = skillInfo
+                };
+
+                // Add a SkillDialog for the selected skill.
+                AddDialog(new SkillDialog(skillDialogOptions, skillInfo.Id));
+            }
+        }
+
+        // Helper method to create Choice elements for the actions supported by the skill.
         private IList<Choice> GetSkillActions(BotFrameworkSkill skill)
         {
-            // Note: the bot would probably render this by reading the skill manifest
-            // we are just using hardcoded skill actions here for simplicity.
+            // Note: the bot would probably render this by reading the skill manifest.
+            // We are just using hardcoded skill actions here for simplicity.
 
             var choices = new List<Choice>();
             switch (skill.Id)
             {
                 case "EchoSkillBot":
-                    choices.Add(new Choice("Messages"));
+                    choices.Add(new Choice(SkillActionMessage));
                     break;
 
                 case "DialogSkillBot":
-                    choices.Add(new Choice("m:some message for tomorrow"));
-                    choices.Add(new Choice("BookFlight"));
-                    choices.Add(new Choice("OAuthTest"));
-                    choices.Add(new Choice("mv:some message with value"));
-                    choices.Add(new Choice("BookFlightWithValues"));
+                    choices.Add(new Choice(SkillActionBookFlight));
+                    choices.Add(new Choice(SkillActionBookFlightWithInputParameters));
+                    choices.Add(new Choice(SkillActionGetWeather));
+                    choices.Add(new Choice(SkillActionOAuthTest));
+                    choices.Add(new Choice(SkillActionEchoSkillBot));
                     break;
             }
 
             return choices;
         }
 
-        // Helper method to create the activity to be sent to the DialogSkillBot using selected type and values
-        private Activity CreateDialogSkillBotActivity(string selectedOption)
+        // Helper method to create the activity to be sent to the DialogSkillBot using selected type and values.
+        private Activity CreateDialogSkillBotActivity(string selectedOption, ITurnContext turnContext)
         {
             // Note: in a real bot, the dialogArgs will be created dynamically based on the conversation
-            // and what each action requires, here we hardcode the values to make things simpler.
+            // and what each action requires; here we hardcode the values to make things simpler.
 
-            // Send a message activity to the skill.
-            if (selectedOption.StartsWith("m:", StringComparison.CurrentCultureIgnoreCase))
+            // Just forward the message activity to the skill with whatever the user said. 
+            if (selectedOption.Equals(SkillActionMessage, StringComparison.CurrentCultureIgnoreCase))
             {
-                var activity = (Activity)Activity.CreateMessageActivity();
-                activity.Text = selectedOption.Substring(2).Trim();
-                return activity;
+                // Note message activities also support input parameters but we are not using them in this example.
+                return turnContext.Activity;
             }
 
-            // Send a message activity to the skill with some artificial parameters in value
-            if (selectedOption.StartsWith("mv:", StringComparison.CurrentCultureIgnoreCase))
+            Activity activity = null;
+
+            // Send an event activity to the skill with "BookFlight" in the name.
+            if (selectedOption.Equals(SkillActionBookFlight, StringComparison.CurrentCultureIgnoreCase))
             {
-                var activity = (Activity)Activity.CreateMessageActivity();
-                activity.Text = selectedOption.Substring(3).Trim();
-                activity.Value = new BookingDetails { Destination = "New York" };
+                activity = (Activity)Activity.CreateEventActivity();
+                activity.Name = SkillActionBookFlight;
+            }
+
+            // Send an event activity to the skill with "BookFlight" in the name and some testing values.
+            if (selectedOption.Equals(SkillActionBookFlightWithInputParameters, StringComparison.CurrentCultureIgnoreCase))
+            {
+                activity = (Activity)Activity.CreateEventActivity();
+                activity.Name = SkillActionBookFlight;
+                activity.Value = JObject.Parse("{ \"origin\": \"New York\", \"destination\": \"Seattle\"}");
+            }
+
+            // Send an event activity to the skill with "GetWeather" in the name and some testing values.
+            if (selectedOption.Equals(SkillActionGetWeather, StringComparison.CurrentCultureIgnoreCase))
+            {
+                activity = (Activity)Activity.CreateEventActivity();
+                activity.Name = SkillActionGetWeather;
+                activity.Value = JObject.Parse("{ \"latitude\": 47.614891, \"longitude\": -122.195801}");
                 return activity;
             }
 
             // Send an event activity to the skill with "OAuthTest" in the name.
-            if (selectedOption.Equals("OAuthTest", StringComparison.CurrentCultureIgnoreCase))
+            if (selectedOption.Equals(SkillActionOAuthTest, StringComparison.CurrentCultureIgnoreCase))
             {
-                var activity = (Activity)Activity.CreateEventActivity();
-                activity.Name = "OAuthTest";
+                activity = (Activity)Activity.CreateEventActivity();
+                activity.Name = SkillActionOAuthTest;
                 return activity;
             }
 
-            // Send an event activity to the skill with "BookFlight" in the name.
-            if (selectedOption.Equals("BookFlight", StringComparison.CurrentCultureIgnoreCase))
+            // Send an event activity to the skill with "EchoSkillBot" in the name.
+            if (selectedOption.Equals(SkillActionEchoSkillBot, StringComparison.CurrentCultureIgnoreCase))
             {
-                var activity = (Activity)Activity.CreateEventActivity();
-                activity.Name = "BookFlight";
+                activity = (Activity)Activity.CreateEventActivity();
+                activity.Name = SkillActionEchoSkillBot;
                 return activity;
             }
 
-            // Send an event activity to the skill "BookFlight" in the name and some testing values.
-            if (selectedOption.Equals("BookFlightWithValues", StringComparison.CurrentCultureIgnoreCase))
+            if (activity == null)
             {
-                var activity = (Activity)Activity.CreateEventActivity();
-                activity.Name = "BookFlight";
-                activity.Value = new BookingDetails
-                {
-                    Destination = "New York",
-                    Origin = "Seattle"
-                };
-                return activity;
+                throw new Exception($"Unable to create dialogArgs for \"{selectedOption}\".");
             }
 
-            throw new Exception($"Unable to create dialogArgs for \"{selectedOption}\".");
+            // We are manually creating the activity to send to the skill; ensure we add the ChannelData and Properties 
+            // from the original activity so the skill gets them.
+            // Note: this is not necessary if we are just forwarding the current activity from context. 
+            activity.ChannelData = turnContext.Activity.ChannelData;
+            activity.Properties = turnContext.Activity.Properties;
+
+            return activity;
         }
     }
 }

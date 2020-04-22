@@ -9,20 +9,32 @@
                 "$kind": "Microsoft.OnBeginDialog",
                 "actions": [
                     {
+                        "$kind": "Microsoft.SetProperties",
+                        "assignments": [
+                            {
+                                "property": "dialog.greeting",
+                                "value": "=coalesce($greeting, 'Hi')"
+                            }
+                        ]
+                    },
+                    {
                         "$kind": "Microsoft.TextInput",
                         "property": "user.name",
                         "prompt": "Hello, what is your name?"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Hello ${user.name}, nice to meet you!"
+                        "activity": "${$greeting} ${user.name}, nice to meet you!"
                     },
                     {
                         "$kind": "Microsoft.EndTurn",
                         "id": "EndTurn"
                     },
                     {
-                        "$kind": "Microsoft.RepeatDialog"
+                        "$kind": "Microsoft.RepeatDialog",
+                        "options": {
+                            "greeting": "Hello"
+                        }
                     }
                 ]
             }
@@ -45,7 +57,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Hello Carlos, nice to meet you!"
+            "text": "Hi Carlos, nice to meet you!"
         },
         {
             "$kind": "Microsoft.Test.UserSays",

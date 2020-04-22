@@ -40,9 +40,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets JsonConverters for DeclarativeTypes for QnAMaker.
         /// </summary>
         /// <param name="resourceExplorer">resourceExplorer to use for resolving references.</param>
-        /// <param name="context">source range context stack to build debugger source map.</param>
+        /// <param name="sourceContext">SourceContext to build debugger source map.</param>
         /// <returns>enumeration of json converters.</returns>
-        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
+        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield return new ArrayExpressionConverter<Metadata>();
             yield return new ObjectExpressionConverter<QnARequestContext>();

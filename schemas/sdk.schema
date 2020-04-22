@@ -1097,7 +1097,7 @@
                     "title": "Value",
                     "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
-                        "@userName"
+                        "=@userName"
                     ]
                 },
                 "alwaysPrompt": {
@@ -1625,7 +1625,7 @@
                     "title": "Value",
                     "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
-                        "@userName"
+                        "=@userName"
                     ]
                 },
                 "alwaysPrompt": {
@@ -2037,7 +2037,7 @@
                     "title": "Value",
                     "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
-                        "@userName"
+                        "=@userName"
                     ]
                 },
                 "alwaysPrompt": {
@@ -2254,7 +2254,7 @@
         },
         "Microsoft.ContinueLoop": {
             "$role": "implements(Microsoft.IDialog)",
-            "title": "Continune Loop",
+            "title": "Continue Loop",
             "description": "Stop executing this template and continue with the next iteration of the loop.",
             "type": "object",
             "properties": {
@@ -2650,7 +2650,7 @@
                     "title": "Value",
                     "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
-                        "@userName"
+                        "=@userName"
                     ]
                 },
                 "alwaysPrompt": {
@@ -2685,7 +2685,7 @@
                     "title": "Output format",
                     "description": "Expression to format the datetime output.",
                     "examples": [
-                        "this.value[0].Value"
+                        "=this.value[0].Value"
                     ]
                 },
                 "defaultLocale": {
@@ -3295,9 +3295,9 @@
                     "title": "Value",
                     "description": "New value or expression.",
                     "examples": [
-                        "'milk'",
-                        "dialog.favColor",
-                        "dialog.favColor == 'red'"
+                        "milk",
+                        "=dialog.favColor",
+                        "=dialog.favColor == 'red'"
                     ]
                 }
             },
@@ -3787,6 +3787,20 @@
                         "user.todoList"
                     ]
                 },
+                "index": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Index property",
+                    "description": "Property that holds the index of the item.",
+                    "default": "dialog.foreach.index"
+                },
+                "value": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Value property",
+                    "description": "Property that holds the value of the item.",
+                    "default": "dialog.foreach.value"
+                },
                 "actions": {
                     "type": "array",
                     "title": "Actions",
@@ -3891,6 +3905,20 @@
                         "$kind": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "pageIndex": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Index property",
+                    "description": "Property that holds the index of the page.",
+                    "default": "dialog.foreach.pageindex"
+                },
+                "page": {
+                    "$role": "expression",
+                    "type": "string",
+                    "title": "Page property",
+                    "description": "Property that holds the value of the page.",
+                    "default": "dialog.foreach.page"
                 },
                 "pageSize": {
                     "$role": "expression",
@@ -5917,7 +5945,7 @@
                     "title": "Value",
                     "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
-                        "@userName"
+                        "=@userName"
                     ]
                 },
                 "alwaysPrompt": {
@@ -6195,22 +6223,28 @@
                 },
                 "allowInterruptions": {
                     "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "title": "Allow Interruptions",
                     "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
                     "examples": [
                         "true"
+                    ]
+                },
+                "alwaysPrompt": {
+                    "$role": "expression",
+                    "type": [
+                        "boolean",
+                        "string"
                     ],
-                    "oneOf": [
-                        {
-                            "type": "boolean",
-                            "default": "true",
-                            "title": "boolean"
-                        },
-                        {
-                            "type": "string",
-                            "title": "Expression",
-                            "description": "Expression evaluating to boolean."
-                        }
+                    "title": "Always prompt",
+                    "description": "Collect information even if the specified 'property' is not empty.",
+                    "default": false,
+                    "examples": [
+                        false
                     ]
                 }
             },
@@ -9197,7 +9231,7 @@
                     "description": "Text for no match option.",
                     "default": "None of the above."
                 },
-                "cardNoMatchResponse ": {
+                "cardNoMatchResponse": {
                     "$kind": "Microsoft.IActivityTemplate",
                     "title": "Card no match response",
                     "description": "Custom response when no match option was selected.",
@@ -11786,7 +11820,7 @@
                     "title": "Value",
                     "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
-                        "@userName"
+                        "=@userName"
                     ]
                 },
                 "alwaysPrompt": {

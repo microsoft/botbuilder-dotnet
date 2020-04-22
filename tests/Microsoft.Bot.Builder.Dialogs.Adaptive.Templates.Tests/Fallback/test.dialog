@@ -1,6 +1,12 @@
 ﻿{
     "$kind": "Microsoft.AdaptiveDialog",
-    "generator": "root.lg",
+  "generator": {
+    "$kind":  "Microsoft.ResourceMultiLanguageGenerator",
+    "resourceId": "root.lg",
+    "languagePolicy": {
+      "en-us": [ "en-us", "" ]
+    }
+  },
     "triggers": [
         {
             "$kind": "Microsoft.OnBeginDialog",
