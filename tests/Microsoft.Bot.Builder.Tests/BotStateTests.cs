@@ -762,6 +762,29 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task BotStateGetCachedState()
+        {
+            var turnContext = TestUtilities.CreateEmptyContext();
+            turnContext.Activity.Conversation = new ConversationAccount { Id = "1234" };
+
+            var storage = new MemoryStorage(new Dictionary<string, JObject>());
+            var botState = new TestBotState(storage);
+
+            (await botState
+                .CreateProperty<TestPocoState>("test-name")
+                .GetAsync(turnContext, () => new TestPocoState())).Value = "test-value";
+
+            var cache = botState.GetCachedState(turnContext);
+
+            Assert.IsNotNull(cache);
+
+            Assert.AreSame(
+                cache,
+                botState.GetCachedState(turnContext),
+                "Subsequent call to GetCachedState returned a different instance");
+        }
+
+        [TestMethod]
         [Description("Should not throw when forcing without cached state")]
         public async Task State_ForceIsNoOpWithoutCachedBotState()
         {
