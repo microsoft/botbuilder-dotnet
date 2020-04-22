@@ -1,6 +1,5 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "ChangePropertyConfirmation",
     "entity": "boolean",
@@ -12,14 +11,12 @@
         },
         {
             "$kind": "Microsoft.IfCondition",
-            "condition":"$ChangePropertyConfirmation == 'true'",
+            "condition": "$ChangePropertyConfirmation == 'true'",
             "actions": [
                 {
                     "$kind": "Microsoft.Ask",
                     "activity": "${template(concat('Ask',$PropertyToRemember))}",
-                    "expectedProperties": 
-                        "createArray($PropertyToRemember)"
-                    
+                    "expectedProperties": "=createArray($PropertyToRemember)"
                 }
             ]
         }

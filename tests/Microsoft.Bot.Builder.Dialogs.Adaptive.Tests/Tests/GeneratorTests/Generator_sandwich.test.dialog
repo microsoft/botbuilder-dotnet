@@ -1,4 +1,5 @@
 {
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": "sandwichTest.main",
     "script": [
@@ -18,7 +19,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "chris"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for bread?"
@@ -27,7 +27,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "rye"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for cheese?"
@@ -36,7 +35,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "swiss"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for meat?"
@@ -45,7 +43,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "ham"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Enter a value for price"
@@ -54,7 +51,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "$3.25"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
@@ -78,7 +74,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "bread"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for bread?"
@@ -87,7 +82,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "wheat"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Please choose a value for bread from [multi grain wheat, whole wheat]"
@@ -100,7 +94,6 @@
             "$kind": "Microsoft.Test.AssertReply",
             "text": "meat is changed from ham to turkey."
         },
-
         {
             "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
@@ -151,7 +144,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "sure"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which property do you want to change?"
@@ -160,7 +152,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "bread"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for bread?"
@@ -169,7 +160,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "none"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Did you mean \"none\" as meat or \"none\" as cheese"
@@ -182,7 +172,6 @@
             "$kind": "Microsoft.Test.AssertReply",
             "text": "meat is changed from turkey to roast beef."
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Which value do you want for bread?"
@@ -191,7 +180,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "rye"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
@@ -215,7 +203,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "name"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Enter a value for name"
@@ -224,7 +211,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "wheat ham and swiss"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Did you mean \"wheat ham and swiss\" as name or \"wheat\" as bread or \"ham\" as meat or \"swiss\" as cheese"
@@ -233,7 +219,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "meat"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "cheese is changed from none to swiss."
@@ -246,7 +231,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "multi grain"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Enter a value for name"
@@ -255,7 +239,6 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "bob"
         },
-
         {
             "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [

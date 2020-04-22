@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
 
                     var explorer = new ResourceExplorer()
                         .AddFolder(dir, monitorChanges: false)
-                        .RegisterType(LuisAdaptiveRecognizer.DeclarativeType, typeof(MockLuisRecognizer), new MockLuisLoader()); 
+                        .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader()); 
                     HostContext.Current.Set(config);
                     var script = explorer.LoadType<TestScript>(name);
                     var timer = new System.Diagnostics.Stopwatch();

@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class HashtagEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.HashtagEntityRecognizer";
+        public const string Kind = "Microsoft.HashtagEntityRecognizer";
 
         public HashtagEntityRecognizer()
         {

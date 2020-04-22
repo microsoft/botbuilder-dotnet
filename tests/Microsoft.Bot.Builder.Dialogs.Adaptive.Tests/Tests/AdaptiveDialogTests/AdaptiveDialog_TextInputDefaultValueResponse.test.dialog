@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -14,7 +14,7 @@
                         "prompt": "Hello, what is your age?",
                         "defaultValueResponse": "I am going to say you are 10.",
                         "maxTurnCount": 2,
-                        "defaultValue": "10"
+                        "defaultValue": 10
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

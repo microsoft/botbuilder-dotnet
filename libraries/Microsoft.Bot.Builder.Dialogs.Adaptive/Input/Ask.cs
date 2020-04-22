@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class Ask : SendActivity
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.Ask";
+        public new const string Kind = "Microsoft.Ask";
 
         [JsonConstructor]
         public Ask(
@@ -43,17 +43,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Gets or sets properties expected to be filled by response.
         /// </summary>
         /// <value>
-        /// Properties expected to be filled by response.
+        /// String array or expression which evaluates to string array.
         /// </value>
         [JsonProperty("expectedProperties")]
         public ArrayExpression<string> ExpectedProperties { get; set; }
 
         /// <summary>
-        /// Gets or sets the expected operation to assign entity to property.
+        /// Gets or sets the default operation that will be used when no operation is recognized.
         /// </summary>
-        /// <value>Expected operation to assign entity to property.</value>
-        [JsonProperty("expectedOperation")]
-        public StringExpression ExpectedOperation { get; set; }
+        /// <remarks>
+        /// When this Ask is executed, the defaultOperation will define the operation to use to assign an 
+        /// identified entity to a property if there is no operation entity recognized in the input.
+        /// </remarks>
+        /// <value>String or expression evaluates to a string.</value>
+        [JsonProperty("defaultOperation")]
+        public StringExpression DefaultOperation { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {

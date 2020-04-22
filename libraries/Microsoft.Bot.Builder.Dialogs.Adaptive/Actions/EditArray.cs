@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class EditArray : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.EditArray";
+        public const string Kind = "Microsoft.EditArray";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EditArray"/> class.
@@ -157,9 +157,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
+            var changeType = ChangeType.GetValue(dc.State);
+
             if (this.ItemsProperty == null)
             {
-                throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed because the arrayProperty wasn't specified.");
+                throw new Exception($"EditArray: \"{changeType}\" operation couldn't be performed because the {nameof(ItemsProperty)} wasn't specified.");
             }
 
             var property = this.ItemsProperty.GetValue(dc.State);
@@ -168,13 +170,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             object item = null;
             object result = null;
 
-            switch (ChangeType.GetValue(dc.State))
+            switch (changeType)
             {
                 case ArrayChangeType.Pop:
                     item = array[array.Count - 1];
                     array.RemoveAt(array.Count - 1);
                     result = item;
                     break;
+
                 case ArrayChangeType.Push:
                     EnsureValue();
                     var (itemResult, error) = this.Value.TryGetValue(dc.State);
@@ -184,6 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
 
                     break;
+
                 case ArrayChangeType.Take:
                     if (array.Count == 0)
                     {
@@ -194,6 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     array.RemoveAt(0);
                     result = item;
                     break;
+
                 case ArrayChangeType.Remove:
                     EnsureValue();
                     (itemResult, error) = this.Value.TryGetValue(dc.State);
@@ -212,6 +217,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
 
                     break;
+
                 case ArrayChangeType.Clear:
                     result = array.Count > 0;
                     array.Clear();

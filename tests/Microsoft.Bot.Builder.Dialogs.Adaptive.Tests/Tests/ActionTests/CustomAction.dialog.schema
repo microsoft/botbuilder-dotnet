@@ -1,29 +1,30 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Custom Action",
     "description": "My Custom Action.",
     "type": "object",
     "properties": {
         "age": {
-            "$role": "expression",
-            "type": "number",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
             "title": "Age",
-            "description": "The age."
+            "description": "The age.",
+            "examples": [
+                20,
+                "=$foo"
+            ]
         },
         "name": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Name",
             "description": "The name."
         },
         "resultProperty": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Property",
             "description": "Property to store any value returned by the dialog that is called.",
             "examples": [
-                "dialog.userName"
+                "$name"
             ]
         }
     }

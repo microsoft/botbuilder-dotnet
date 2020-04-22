@@ -10,7 +10,7 @@
 - IF: ${false}
     - hi
 
-> else should not follewed by any expressions
+> else should not be followed by any expressions
 # template3
  - IF: ${true}
     - hello

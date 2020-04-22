@@ -1,136 +1,128 @@
 {
-  "$schema": "../../../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "recognizer": {
-    "$kind": "Microsoft.RegexRecognizer",
-    "intents": [
+    "$schema": "../../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+                "intent": "CreateMeetingIntent",
+                "pattern": "(?i)create meeting"
+            },
+            {
+                "intent": "HelpIntent",
+                "pattern": "(?i)help"
+            },
+            {
+                "intent": "ShowNextPageIntent",
+                "pattern": "(?i)next page meeting"
+            },
+            {
+                "intent": "UpdateMeetingIntent",
+                "pattern": "(?i)update meeting"
+            },
+            {
+                "intent": "AcceptMeetingIntent",
+                "pattern": "(?i)accept meeting"
+            },
+            {
+                "intent": "DeclineMeetingIntent",
+                "pattern": "(?i)decline meeting"
+            }
+        ]
+    },
+    "triggers": [
         {
-            "intent": "CreateMeetingIntent",
-            "pattern": "(?i)create meeting" 
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                "GetDisplayMeetings",
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "${ShowMeetingSummaryResponse(user)}"
+                },
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "count(user.meetings) > 0",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "${ShowMeetingList(user)}"
+                        },
+                        {
+                            "$kind": "Microsoft.TextInput",
+                            "prompt": "${ChooseReadMeetingList(user)}",
+                            "property": "dialog.choice"
+                        },
+                        {
+                            "$kind": "Microsoft.IfCondition",
+                            "condition": "dialog.choice == '1'",
+                            "actions": [
+                                {
+                                    "$kind": "Microsoft.SetProperty",
+                                    "property": "user.focusedMeeting",
+                                    "value": "=user.meetings[0]"
+                                }
+                            ]
+                        },
+                        {
+                            "$kind": "Microsoft.IfCondition",
+                            "condition": "dialog.choice == '2'",
+                            "actions": [
+                                {
+                                    "$kind": "Microsoft.SetProperty",
+                                    "property": "user.focusedMeeting",
+                                    "value": "=user.meetings[1]"
+                                }
+                            ]
+                        },
+                        {
+                            "$kind": "Microsoft.IfCondition",
+                            "condition": "dialog.choice == '3'",
+                            "actions": [
+                                {
+                                    "$kind": "Microsoft.SetProperty",
+                                    "property": "user.focusedMeeting",
+                                    "value": "=user.meetings[2]"
+                                }
+                            ]
+                        },
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "${ReadFocusedMeeting(user)}"
+                        },
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "${ShowMeetingCard(user.focusedMeeting)}"
+                        },
+                        {
+                            "$kind": "Microsoft.ConfirmInput",
+                            "property": "dialog.confirmed",
+                            "prompt": "You can say 'update meeting' or 'decline meeting' or 'accept meeting' to do action on this meeting.",
+                            "alwaysPrompt": true
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "intent": "HelpIntent",
-            "pattern": "(?i)help" 
-        },
-        {
-            "intent": "ShowNextPageIntent",
-            "pattern": "(?i)next page meeting" 
-        },
-        {
+            "$kind": "Microsoft.OnIntent",
             "intent": "UpdateMeetingIntent",
-            "pattern": "(?i)update meeting" 
+            "actions": [
+                "UpdateMeeting"
+            ]
         },
         {
+            "$kind": "Microsoft.OnIntent",
             "intent": "AcceptMeetingIntent",
-            "pattern": "(?i)accept meeting" 
+            "actions": [
+                "AcceptMeeting"
+            ]
         },
         {
+            "$kind": "Microsoft.OnIntent",
             "intent": "DeclineMeetingIntent",
-            "pattern": "(?i)decline meeting"
+            "actions": [
+                "DeclineMeeting"
+            ]
         }
     ]
-  },
-  "triggers": [
-    {
-      "$kind": "Microsoft.OnBeginDialog",
-      "actions": [
-        "GetDisplayMeetings",
-        {
-          "$kind": "Microsoft.SendActivity",
-          "activity": "${ShowMeetingSummaryResponse(user)}"
-        },
-        {
-          "$kind": "Microsoft.IfCondition",
-          "condition": "count(user.meetings) > 0",
-          "actions": [
-            // Bug: Choice input cannot accept expression as value
-            {
-              "$kind": "Microsoft.SendActivity",
-              "activity": "${ShowMeetingList(user)}"
-            },
-            {
-              "$kind": "Microsoft.TextInput",
-              "prompt": "${ChooseReadMeetingList(user)}",
-              "property": "dialog.choice"
-            },
-            // Question: how to use SwitchCondition
-            //{
-            //  "$kind": "Microsoft.SwitchCondition",
-            //  "condition": "dialog.choice"
-            //},
-            {
-              "$kind": "Microsoft.IfCondition",
-              "condition": "dialog.choice == '1'",
-              "actions": [
-                {
-                  "$kind": "Microsoft.SetProperty",
-                  "property": "user.focusedMeeting",
-                  "value": "=user.meetings[0]"
-                }
-              ]
-            },
-            {
-              "$kind": "Microsoft.IfCondition",
-              "condition": "dialog.choice == '2'",
-              "actions": [
-                {
-                  "$kind": "Microsoft.SetProperty",
-                  "property": "user.focusedMeeting",
-                  "value": "=user.meetings[1]"
-                }
-              ]
-            },
-            {
-              "$kind": "Microsoft.IfCondition",
-              "condition": "dialog.choice == '3'",
-              "actions": [
-                {
-                  "$kind": "Microsoft.SetProperty",
-                  "property": "user.focusedMeeting",
-                  "value": "=user.meetings[2]"
-                }
-              ]
-            },
-            // Read focused meeting
-            {
-              "$kind": "Microsoft.SendActivity",
-              "activity": "${ReadFocusedMeeting(user)}"
-            },
-            {
-              "$kind": "Microsoft.SendActivity",
-              "activity": "${ShowMeetingCard(user.focusedMeeting)}"
-            },
-            {
-              "$kind": "Microsoft.ConfirmInput",
-              "property": "dialog.confirmed",
-              "prompt": "You can say 'update meeting' or 'decline meeting' or 'accept meeting' to do action on this meeting.",
-              "alwaysPrompt": true
-            }
-            // todo: show overview
-          ]
-        }
-      ]
-    },
-    {
-      "$kind": "Microsoft.OnIntent",
-      "intent": "UpdateMeetingIntent",
-      "actions": [
-        "UpdateMeeting"
-      ]
-    },
-    {
-      "$kind": "Microsoft.OnIntent",
-      "intent": "AcceptMeetingIntent",
-      "actions": [
-        "AcceptMeeting"
-      ]
-    },
-    {
-      "$kind": "Microsoft.OnIntent",
-      "intent": "DeclineMeetingIntent",
-      "actions": [
-        "DeclineMeeting"
-      ]
-    }
-  ]
 }

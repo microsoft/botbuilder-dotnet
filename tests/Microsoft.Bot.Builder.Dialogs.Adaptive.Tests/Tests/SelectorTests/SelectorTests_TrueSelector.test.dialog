@@ -1,70 +1,71 @@
-﻿{
-  "$kind": "Microsoft.Test.Script",
-  "dialog": {
-    "$kind": "Microsoft.AdaptiveDialog",
-    "triggers": [
-      {
-        "$kind": "Microsoft.OnMessageActivity",
-        "condition": "turn.activity.text == 'a' || turn.activity.text == 'b'",
-        "actions": [
-          {
-            "$kind": "Microsoft.SendActivity",
-            "activity": "a or b"
-          }
-        ]
-      },
-      {
-        "$kind": "Microsoft.OnMessageActivity",
-        "condition": "turn.activity.text == 'a' || turn.activity.text == 'c'",
-        "actions": [
-          {
-            "$kind": "Microsoft.SendActivity",
-            "activity": "a or c"
-          }
-        ]
-      },
-      {
-        "$kind": "Microsoft.OnMessageActivity",
-        "condition": "turn.activity.text == 'b' || turn.activity.text == 'c'",
-        "actions": [
-          {
-            "$kind": "Microsoft.SendActivity",
-            "activity": "b or c"
-          }
-        ]
-      }
-    ],
-    "autoEndDialog": false,
-    "selector": {
-      "$kind": "Microsoft.TrueSelector"
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnMessageActivity",
+                "condition": "turn.activity.text == 'a' || turn.activity.text == 'b'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "a or b"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnMessageActivity",
+                "condition": "turn.activity.text == 'a' || turn.activity.text == 'c'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "a or c"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnMessageActivity",
+                "condition": "turn.activity.text == 'b' || turn.activity.text == 'c'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "b or c"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": false,
+        "selector": {
+            "$kind": "Microsoft.TrueSelector"
+        },
+        "defaultResultProperty": "dialog.result"
     },
-    "defaultResultProperty": "dialog.result"
-  },
-  "locale": "en-us",
-  "script": [
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "a"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "a or b"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "b"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "a or b"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "c"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "a or c"
-    }
-  ]
+    "locale": "en-us",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "a"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "a or b"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "b"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "a or b"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "c"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "a or c"
+        }
+    ]
 }

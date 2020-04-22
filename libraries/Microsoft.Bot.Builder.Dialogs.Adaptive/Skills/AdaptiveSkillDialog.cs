@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
     public class AdaptiveSkillDialog : SkillDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.SkillDialog";
+        public const string Kind = "Microsoft.SkillDialog";
 
         [JsonConstructor]
         public AdaptiveSkillDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint.GetValue(dc.State));
 
             // Get the activity to send to the skill.
-            var activity = await Activity.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+            var activity = await Activity.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
 
             // Call the base to invoke the skill
             return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity }, cancellationToken).ConfigureAwait(false);

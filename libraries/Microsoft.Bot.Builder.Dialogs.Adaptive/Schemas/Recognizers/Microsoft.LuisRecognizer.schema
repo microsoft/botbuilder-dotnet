@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IRecognizer)",
     "title": "LUIS Recognizer",
     "description": "LUIS recognizer.",
@@ -12,33 +12,29 @@
             "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
         },
         "applicationId": {
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "LUIS Application ID",
-            "description": "Application ID for your model from the LUIS service.",
-            "$role": "expression"
+            "description": "Application ID for your model from the LUIS service."
         },
         "endpoint": {
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "LUIS Endpoint",
-            "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com.",
-            "$role": "expression"
+            "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com."
         },
         "endpointKey": {
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "LUIS prediction key",
-            "description": "LUIS prediction key used to call endpoint.",
-            "$role": "expression"
+            "description": "LUIS prediction key used to call endpoint."
         },
         "externalEntityRecognizer": {
+            "$kind": "Microsoft.IRecognizer",
             "title": "External Entity Recognizer",
-            "description": "Entities recognized by this recognizer will be passed to LUIS as external entities.",
-            "$kind": "Microsoft.IRecognizer"
+            "description": "Entities recognized by this recognizer will be passed to LUIS as external entities."
         },
         "dynamicLists": {
-            "$role": "expression",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
             "title": "Dynamic lists",
             "description": "Runtime defined entity lists.",
-            "type": "array",
             "items": {
                 "title": "Entity list",
                 "description": "Lists of canonical values and synonyms for an entity.",

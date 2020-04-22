@@ -1,6 +1,5 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Cheese",
     "entity": "CheeseEntity",
@@ -8,7 +7,7 @@
         {
             "$kind": "Microsoft.SendActivity",
             "activity": "${setPropertyMessage('Cheese', @CheeseEntity)}"
-        },    
+        },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Cheese",

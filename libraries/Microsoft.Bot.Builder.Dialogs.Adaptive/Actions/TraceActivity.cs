@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class TraceActivity : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.TraceActivity";
+        public const string Kind = "Microsoft.TraceActivity";
 
         [JsonConstructor]
         public TraceActivity([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

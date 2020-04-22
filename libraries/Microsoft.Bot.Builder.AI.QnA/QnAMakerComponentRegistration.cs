@@ -3,10 +3,8 @@
 
 using System.Collections.Generic;
 using AdaptiveExpressions.Converters;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers;
+using Microsoft.Bot.Builder.AI.QnA.Dialogs;
+using Microsoft.Bot.Builder.AI.QnA.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -27,13 +25,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Dialogs
-            yield return new DeclarativeType<QnAMakerDialog2>(QnAMakerDialog2.DeclarativeType);
+            yield return new DeclarativeType<QnAMakerDialog>(QnAMakerDialog.Kind);
 
             // Recognizers
-            yield return new DeclarativeType<QnAMakerRecognizer>(QnAMakerRecognizer.DeclarativeType);
-
-            // Triggers
-            yield return new DeclarativeType<OnQnAMatch>(OnQnAMatch.DeclarativeType);
+            yield return new DeclarativeType<QnAMakerRecognizer>(QnAMakerRecognizer.Kind);
         }
 
         /// <summary>

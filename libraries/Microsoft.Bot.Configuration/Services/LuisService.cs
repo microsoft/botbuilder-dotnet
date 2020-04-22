@@ -52,11 +52,26 @@ namespace Microsoft.Bot.Configuration
         public string Region { get; set; }
 
         /// <summary>
+        /// Gets or sets the URL for a custom endpoint. This should only be used when the LUIS deployed via a container.
+        /// If a value is set, then the GetEndpoint() method will return the value for Custom Endpoint.
+        /// </summary>
+        /// <value>The Region.</value>
+        [JsonProperty("customEndpoint")]
+        public string CustomEndpoint { get; set; }
+
+        /// <summary>
         /// Gets the endpoint for this LUIS service.
         /// </summary>
         /// <returns>The URL for this service.</returns>
         public string GetEndpoint()
         {
+            // If a custom endpoint has been supplied, then we should return this instead of
+            // generating an endpoint based on the region.
+            if (!string.IsNullOrEmpty(this.CustomEndpoint))
+            {
+                return this.CustomEndpoint;
+            }
+
             if (string.IsNullOrWhiteSpace(this.Region))
             {
                 throw new System.NullReferenceException("LuisService.Region cannot be Null");

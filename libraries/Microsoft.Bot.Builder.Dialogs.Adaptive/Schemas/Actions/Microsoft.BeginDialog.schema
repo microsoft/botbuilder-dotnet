@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Begin a dialog",
     "description": "Begin another dialog.",
@@ -11,8 +11,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -22,7 +21,7 @@
         "dialog": {
             "$kind": "Microsoft.IDialog",
             "$role": "expression",
-            "type": "object",
+            "pattern": "^.*\\S.*",
             "title": "Dialog name",
             "description": "Name of the dialog to call.",
             "examples": [
@@ -30,25 +29,26 @@
             ]
         },
         "options": {
-            "$role": "expression",
-            "type": "object",
-            "title": "Options",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression","title": "Options",
             "description": "One or more options that are passed to the dialog that is called.",
             "additionalProperties": {
                 "type": "string",
                 "title": "Options"
-            }
+            },
+            "examples": [
+                {
+                    "arg1": "=expression"
+                }
+            ]
         },
         "activityProcessed": {
-            "$role": "expression",
-            "type": "boolean",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Activity Processed",
             "description": "When set to false, the dialog that is called can process the current activity.",
             "default": true
         },
         "resultProperty": {
-            "$role": "expression",
-            "type": "string",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Property",
             "description": "Property to store any value returned by the dialog that is called.",
             "examples": [

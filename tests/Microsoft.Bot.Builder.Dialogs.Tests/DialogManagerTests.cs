@@ -11,6 +11,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -238,9 +239,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adaptiveDialog = CreateTestDialog(property: "conversation.name");
 
-            var eocActivity = new Activity(ActivityTypes.EndOfConversation) { CallerId = _parentBotId };
+            var eocActivity = new Activity(ActivityTypes.EndOfConversation);
 
-            await CreateFlow(adaptiveDialog, storage, firstConversationId, isSkillFlow: true)
+            await CreateFlow(adaptiveDialog, storage, firstConversationId, isSkillFlow: true, isSkillResponse: false)
                 .Send("hi")
                 .AssertReply("Hello, what is your name?")
                 .Send(eocActivity)
@@ -291,7 +292,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return new AskForNameDialog(property.Replace(".", string.Empty), property);
         }
 
-        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId, string dialogStateProperty = null, bool isSkillFlow = false)
+        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId, string dialogStateProperty = null, bool isSkillFlow = false, bool isSkillResponse = true)
         {
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -313,6 +314,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, _skillBotId));
                     claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AuthorizedParty, _parentBotId));
                     turnContext.TurnState.Add(BotAdapter.BotIdentityKey, claimsIdentity);
+
+                    if (isSkillResponse)
+                    {
+                        // Simulate the SkillConversationReference with a parent Bot ID stored in TurnState.
+                        // This emulates a response coming to a skill from another skill through SkillHandler. 
+                        turnContext.TurnState.Add(SkillHandler.SkillConversationReferenceKey, new SkillConversationReference { OAuthScope = _parentBotId });
+                    }
                 }
 
                 // Capture the last DialogManager turn result for assertions.

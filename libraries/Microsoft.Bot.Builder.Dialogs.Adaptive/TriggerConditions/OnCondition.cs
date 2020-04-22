@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnCondition : IItemIdentity, IDialogDependencies
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.OnCondition";
+        public const string Kind = "Microsoft.OnCondition";
 
         private ActionScope actionScope;
 

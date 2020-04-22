@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -26,7 +26,6 @@
             },
             {
                 "$kind": "Microsoft.OnMessageActivity",
-                "type": "message",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -36,7 +35,6 @@
             },
             {
                 "$kind": "Microsoft.OnMessageDeleteActivity",
-                "type": "messageDelete",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -46,7 +44,6 @@
             },
             {
                 "$kind": "Microsoft.OnMessageUpdateActivity",
-                "type": "messageUpdate",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -56,7 +53,6 @@
             },
             {
                 "$kind": "Microsoft.OnMessageReactionActivity",
-                "type": "messageReaction",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -66,7 +62,6 @@
             },
             {
                 "$kind": "Microsoft.OnConversationUpdateActivity",
-                "type": "conversationUpdate",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -76,7 +71,6 @@
             },
             {
                 "$kind": "Microsoft.OnEndOfConversationActivity",
-                "type": "endOfConversation",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -86,7 +80,6 @@
             },
             {
                 "$kind": "Microsoft.OnInvokeActivity",
-                "type": "invoke",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -96,7 +89,6 @@
             },
             {
                 "$kind": "Microsoft.OnEventActivity",
-                "type": "event",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -106,7 +98,6 @@
             },
             {
                 "$kind": "Microsoft.OnHandoffActivity",
-                "type": "handoff",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -116,7 +107,6 @@
             },
             {
                 "$kind": "Microsoft.OnTypingActivity",
-                "type": "typing",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -126,7 +116,6 @@
             },
             {
                 "$kind": "Microsoft.OnMessageActivity",
-                "type": "message",
                 "condition": "turn.activity.text == 'constraint'",
                 "actions": [
                     {

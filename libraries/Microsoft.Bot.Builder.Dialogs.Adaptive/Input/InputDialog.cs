@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets a value indicating whether the input should always prompt the user regardless of there being a value or not.
         /// </summary>
         /// <value>
-        /// A value indicating whether the input should always prompt the user regardless of there being a value or not.
+        /// Bool or expression which evaluates to bool.
         /// </value>
         [JsonProperty("alwaysPrompt")]
         public BoolExpression AlwaysPrompt { get; set; }
@@ -33,23 +33,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets intteruption policy. 
         /// </summary>
-        /// <example>
-        /// "true".
-        /// </example>
         /// <value>
-        /// Intteruption policy. Default is True.
+        /// Bool or expression which evalutes to bool.
         /// </value>
         [JsonProperty("allowInterruptions")]
         public BoolExpression AllowInterruptions { get; set; }
 
         /// <summary>
-        /// Gets or sets an optional expression which if is true will disable this action.
+        /// Gets or sets whether this action should be disabled.
         /// </summary>
-        /// <example>
-        /// "user.age > 18".
-        /// </example>
+        /// <remarks>If this is set to true, then this action will be skipped.</remarks>
         /// <value>
-        /// A boolean expression. Default is false.
+        /// Bool or expression which evalutes to bool.
         /// </value>
         [JsonProperty("disabled")]
         public BoolExpression Disabled { get; set; }
@@ -57,21 +52,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets the memory property path which the value will be bound to.
         /// </summary>
+        /// <remarks>
+        /// This property will be used as the initial value for the input dialog.  The result of this
+        /// dialog will be placed into this property path in the callers memory scope.
+        /// </remarks>
         /// <value>
-        /// The property path to the value that the input dialog will be bound to.
+        /// A string or expression which evaluates to string.
         /// </value>
         [JsonProperty("property")]
         public StringExpression Property { get; set; }
 
         /// <summary>
-        /// Gets or sets a value expression which can be used to intialize the input prompt.
+        /// Gets or sets a the expression to use to bind input to the dialog.  
         /// </summary>
         /// <remarks>
-        /// An example of how to use this would be to use an entity expression such as @age to fill the value for this dialog
-        /// that is configured to go into $age dialog property.
+        /// This expression is evaluated on every turn to define mapping user input to the dialog. 
+        /// 
+        /// If the expression returns null, the input dialog may attempt to pull data from the input directly.
+        /// 
+        /// If the expression is a value then it will be used as the input.
+        /// 
+        /// This property allows you to define a how data such as Recognizer results is bound to the input dialog.
+        /// Examples:
+        /// * "=@age" => bind to the input to any age entity recognized in the input. 
+        /// * "=coalesce(@age, @number)" => which means use @age or @number as the input.
         /// </remarks>
         /// <value>
-        /// A value expression which can be used to intialize the input prompt.
+        /// An expression which is evaluated to define the input value.
         /// </value>
         [JsonProperty("value")]
         public ValueExpression Value { get; set; }
@@ -80,16 +87,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets the activity to send to the user.
         /// </summary>
         /// <value>
-        /// The activity to send to the user.
+        /// An activity template.
         /// </value>
         [JsonProperty("prompt")]
         public ITemplate<Activity> Prompt { get; set; }
 
         /// <summary>
-        /// Gets or sets the activity template for retrying prompt.
+        /// Gets or sets the activity template for retrying.
         /// </summary>
         /// <value>
-        /// The activity template for retrying prompt.
+        /// An activity template.
         /// </value>
         [JsonProperty("unrecognizedPrompt")]
         public ITemplate<Activity> UnrecognizedPrompt { get; set; }
@@ -98,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets the activity template to send to the user whenever the value provided is invalid.
         /// </summary>
         /// <value>
-        /// The activity template to send to the user whenever the value provided is invalid.
+        /// An activity template.
         /// </value>
         [JsonProperty("invalidPrompt")]
         public ITemplate<Activity> InvalidPrompt { get; set; }
@@ -107,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets the activity template to send when MaxTurnCount has been reached and the default value is used.
         /// </summary>
         /// <value>
-        /// The activity template to send when MaxTurnCount has been reached and the default value is used.
+        /// An activity template.
         /// </value>
         [JsonProperty("defaultValueResponse")]
         public ITemplate<Activity> DefaultValueResponse { get; set; }
@@ -119,13 +126,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// The expressions to run to validate the input.
         /// </value>
         [JsonProperty("validations")]
-        public List<string> Validations { get; set; } = new List<string>();
+        public List<BoolExpression> Validations { get; set; } = new List<BoolExpression>();
 
         /// <summary>
         /// Gets or sets maximum number of times to ask the user for this value before the dialog gives up.
         /// </summary>
         /// <value>
-        /// Maximum number of times to ask the user for this value before the dilog gives up.
+        /// Integer or expression which evaluates to integer.
         /// </value>
         [JsonProperty("maxTurnCount")]
         public IntExpression MaxTurnCount { get; set; }
@@ -134,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets the default value for the input dialog when MaxTurnCount is exceeded.
         /// </summary>
         /// <value>
-        /// The default value for the input dialog when MaxTurnCount is exceeded.
+        /// Value or expression which evaluates to a value.
         /// </value>
         [JsonProperty("defaultValue")]
         public ValueExpression DefaultValue { get; set; }
@@ -229,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     var (value, error) = this.DefaultValue.TryGetValue(dc.State);
                     if (this.DefaultValueResponse != null)
                     {
-                        var response = await this.DefaultValueResponse.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                        var response = await this.DefaultValueResponse.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
 
                         var properties = new Dictionary<string, string>()
                         {
@@ -256,6 +263,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return await this.PromptUser(dc, InputState.Missing).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when input has been received, override this method to cutomize recognition of the input.
+        /// </summary>
+        /// <param name="dc">dialogContext.</param>
+        /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
         protected abstract Task<InputState> OnRecognizeInput(DialogContext dc);
 
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
@@ -280,7 +292,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return false;
         }
 
-        protected IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>
+        /// AppendChoices is utility method to build up a message activity given all of the options.
+        /// </summary>
+        /// <param name="prompt">prompt.</param>
+        /// <param name="channelId">channelId.</param>
+        /// <param name="choices">choices to present.</param>
+        /// <param name="style">listType.</param>
+        /// <param name="options">options to control the choice rendering.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>bound activity ready to send to the user.</returns>
+        protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get base prompt text (if any)
             var text = prompt != null && !string.IsNullOrEmpty(prompt.Text) ? prompt.Text : string.Empty;
@@ -342,11 +364,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
         }
 
+        /// <summary>
+        /// Method which processes options.
+        /// </summary>
+        /// <remarks>Override this method to inject additional option.</remarks>
+        /// <param name="dc">dialogContext.</param>
+        /// <param name="options">options.</param>
+        /// <returns>modified options.</returns>
         protected virtual object OnInitializeOptions(DialogContext dc, object options)
         {
             return options;
         }
 
+        /// <summary>
+        /// Method which renders the prompt to the user give n the current input state.
+        /// </summary>
+        /// <remarks>Override this to customize the output sent to the user.</remarks>
+        /// <param name="dc">dialogcontext.</param>
+        /// <param name="state">inputState.</param>
+        /// <returns>activity to send to the user.</returns>
         protected virtual async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
         {
             IMessageActivity msg = null;
@@ -357,12 +393,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (this.UnrecognizedPrompt != null)
                     {
                         template = this.UnrecognizedPrompt;
-                        msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                        msg = await this.UnrecognizedPrompt.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
                     }
                     else if (this.InvalidPrompt != null)
                     {
                         template = this.InvalidPrompt;
-                        msg = await this.InvalidPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                        msg = await this.InvalidPrompt.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
                     }
 
                     break;
@@ -371,12 +407,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (this.InvalidPrompt != null)
                     {
                         template = this.InvalidPrompt;
-                        msg = await this.InvalidPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                        msg = await this.InvalidPrompt.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
                     }
                     else if (this.UnrecognizedPrompt != null)
                     {
                         template = this.UnrecognizedPrompt;
-                        msg = await this.UnrecognizedPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                        msg = await this.UnrecognizedPrompt.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
                     }
 
                     break;
@@ -385,7 +421,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (msg == null)
             {
                 template = this.Prompt;
-                msg = await this.Prompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                msg = await this.Prompt.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
             }
 
             msg.InputHint = InputHints.ExpectingInput;
@@ -456,9 +492,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     foreach (var validation in this.Validations)
                     {
-                        var exp = Expression.Parse(validation.TrimStart('='));
-                        var (value, error) = exp.TryEvaluate(dc.State);
-                        if (value == null || (value is bool && (bool)value == false))
+                        var value = validation.GetValue(dc.State);
+                        if (value == false)
                         {
                             return InputState.Invalid;
                         }

@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "recognizer": {
         "$kind": "Microsoft.RegexRecognizer",
@@ -23,7 +23,7 @@
                             "property": "user.name",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
                             "outputFormat": "=trim(this.value)",
-                            "allowInterruptions": "true"
+                            "allowInterruptions": true
                         }
                     ]
                 },
@@ -40,7 +40,7 @@
                             "property": "user.name2",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
                             "outputFormat": "=trim(this.value)",
-                            "allowInterruptions": "!#Cancel"
+                            "allowInterruptions": "=!#Cancel"
                         }
                     ]
                 },
