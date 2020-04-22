@@ -67,7 +67,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int QnAId { get; set; }
 
         [JsonProperty("strictFilters")]
-        public Metadata[] StrictFilters { get; set; }
+        public Metadata[] StrictFilters { get; set; }        
+        
+        [JsonProperty("metadataBoost")]
+        public Metadata[] MetadataBoost { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to call test or prod environment of knowledge base to be called. 
