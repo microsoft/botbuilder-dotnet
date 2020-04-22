@@ -1,0 +1,4 @@
+﻿> !# @addToGlobalFunctionTable = looking
+
+#looking
+-${{user: {name: "John"}}.user.name}

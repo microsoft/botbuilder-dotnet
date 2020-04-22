@@ -2,11 +2,10 @@
 > !# @namespace = foo
 > !# @addToGlobalFunctionTable = bar, cool
 
+[import](common.lg)
+
 #bar()
 - ${add(1,2)}
-
-#foo
-- ${bar()}
 
 #cool(a)
 - ${add(1,a)}

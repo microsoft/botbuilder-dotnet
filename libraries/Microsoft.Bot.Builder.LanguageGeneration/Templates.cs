@@ -153,7 +153,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static Templates ParseFile(
             string filePath,
             ImportResolverDelegate importResolver = null,
-            ExpressionParser expressionParser = null) => TemplatesParser.ParseFile(filePath, importResolver, expressionParser);
+            ExpressionParser expressionParser = null)
+        {
+            var curTemplate = TemplatesParser.ParseFile(filePath, importResolver, expressionParser);
+            curTemplate.InjectToExprssionFunction();
+            foreach (var refer in curTemplate.References) 
+            {
+                refer.InjectToExprssionFunction();
+            }
+
+            return curTemplate;
+        }
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -432,7 +442,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (Path.IsPathRooted(this.Id))
                 {
-                    result = Path.GetFileName(this.Id);
+                    result = Path.GetFileName(this.Id).Split('.')[0];
                 }
                 else
                 {
@@ -468,7 +478,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         => (IReadOnlyList<object> args) =>
         {
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
-            
             var newScope = evaluator.ConstructScope(templateName, args.ToList());
             return evaluator.EvaluateTemplate(templateName, newScope);
         };

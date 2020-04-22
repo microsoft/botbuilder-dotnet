@@ -1254,7 +1254,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestInjectLG()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("./InjectionTest/inject.lg"));
-            templates.InjectToExprssionFunction();
             
             var evaled = templates.EvaluateText("${foo.bar()}");
             
@@ -1262,6 +1261,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.EvaluateText("${foo.cool(2)}");
             Assert.AreEqual("3", evaled.ToString());
+
+            evaled = templates.EvaluateText("${common.looking()}");
+            Assert.AreEqual("John", evaled);
         }
 
         public class LoopClass
