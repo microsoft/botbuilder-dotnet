@@ -6,7 +6,7 @@ using System;
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
     /// <summary>
-    /// DialogMemoryScope maps "class" -> dc.ActiveDialog.Properties.
+    /// DialogMemoryScope maps "class" -> dc.Parent.ActiveDialog Properties.
     /// </summary>
     public class DialogClassMemoryScope : MemoryScope
     {
