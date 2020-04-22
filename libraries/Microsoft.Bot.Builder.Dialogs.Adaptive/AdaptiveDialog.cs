@@ -148,8 +148,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             EnsureDependenciesInstalled();
 
-            OnSetScopedServices(dc);
-
             if (!dc.State.ContainsKey(DialogPath.EventCounter))
             {
                 dc.State.SetValue(DialogPath.EventCounter, 0u);
@@ -214,8 +212,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             EnsureDependenciesInstalled();
 
-            OnSetScopedServices(dc);
-
             // Continue step execution
             return await ContinueActionsAsync(dc, null, cancellationToken).ConfigureAwait(false);
         }
@@ -257,7 +253,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
         }
 
-        public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// RepromptDialog with dialogContext.
+        /// </summary>
+        /// <remarks>AdaptiveDialogs use the DC, which is available because AdaptiveDialogs handle the new AdaptiveEvents.RepromptDialog.</remarks>
+        /// <param name="dc">dc.</param>
+        /// <param name="instance">instance.</param>
+        /// <param name="cancellationToken">ct.</param>
+        /// <returns>task.</returns>
+        public virtual async Task RepromptDialogAsync(DialogContext dc, DialogInstance instance, CancellationToken cancellationToken = default)
         {
             // Forward to current sequence step
             var state = (instance.State as Dictionary<string, object>)[AdaptiveKey] as AdaptiveDialogState;
@@ -266,11 +270,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 // We need to mockup a DialogContext so that we can call RepromptDialog
                 // for the active step
-                var stepDc = new DialogContext(this.Dialogs, turnContext, state.Actions[0]);
-
-                OnSetScopedServices(stepDc);
-
-                await stepDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
+                var childContext = CreateChildContext(dc);
+                await childContext.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -287,7 +288,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (state.Actions != null && state.Actions.Any())
             {
-                return new DialogContext(this.Dialogs, dc, state.Actions.First());
+                var childContext = new DialogContext(this.Dialogs, dc, state.Actions.First());
+                OnSetScopedServices(childContext);
+                return childContext;
             }
 
             return null;
@@ -448,6 +451,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                                 handled = true;
                             }
+                        }
+
+                        break;
+
+                    case AdaptiveEvents.RepromptDialog:
+                        {
+                            // AdaptiveDialogs handle new RepromptDialog as it gives access to the dialogContext.
+                            await this.RepromptDialogAsync(actionContext, actionContext.ActiveDialog, cancellationToken).ConfigureAwait(false);
+                            handled = true;
                         }
 
                         break;
