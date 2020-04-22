@@ -337,6 +337,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         // we have received a RecognizedIntent event
                         // get the value and promote to turn.recognized, topintent,topscore and lastintent
                         var recognizedResult = actionContext.State.GetValue<RecognizerResult>($"{TurnPath.DialogEvent}.value");
+
+                        // #3572 set these here too (Even though the emitter may have set them) because this event can be emitted by declarative code.
                         var (name, score) = recognizedResult.GetTopScoringIntent();
                         actionContext.State.SetValue(TurnPath.Recognized, recognizedResult);
                         actionContext.State.SetValue(TurnPath.TopIntent, name);
@@ -431,10 +433,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             if (activity.Type == ActivityTypes.Message)
                             {
                                 // Recognize utterance
-                                var recognized = await OnRecognize(actionContext, activity, cancellationToken).ConfigureAwait(false);
+                                var recognizedResult = await OnRecognize(actionContext, activity, cancellationToken).ConfigureAwait(false);
 
                                 // TODO figure out way to not use turn state to pass this value back to caller.
-                                actionContext.State.SetValue(TurnPath.Recognized, recognized);
+                                actionContext.State.SetValue(TurnPath.Recognized, recognizedResult);
+                                
+                                // Bug #3572 set these here, because if allowedInterruption is true then event is not emitted, but folks still want the value.
+                                var (name, score) = recognizedResult.GetTopScoringIntent();
+                                actionContext.State.SetValue(TurnPath.TopIntent, name);
+                                actionContext.State.SetValue(TurnPath.TopScore, score);
+                                actionContext.State.SetValue(DialogPath.LastIntent, name);
 
                                 if (Recognizer != null)
                                 {
