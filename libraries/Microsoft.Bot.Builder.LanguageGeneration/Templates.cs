@@ -145,13 +145,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
         /// </summary>
         /// <param name="filePath">Absolute path of a LG file.</param>
-        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
-        /// <param name="expressionParser">expressionEngine Expression engine for evaluating expressions.</param>
+        /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">ExpressionEngine Expression engine for evaluating expressions.</param>
+        /// <param name="registeSourceMap">RegisteSourceMap event handler.</param>
         /// <returns>new <see cref="LanguageGeneration.Templates"/> entity.</returns>
         public static Templates ParseFile(
             string filePath,
             ImportResolverDelegate importResolver = null,
-            ExpressionParser expressionParser = null) => TemplatesParser.ParseFile(filePath, importResolver, expressionParser);
+            ExpressionParser expressionParser = null,
+            EventHandler registeSourceMap = null) => TemplatesParser.ParseFile(filePath, importResolver, expressionParser, registeSourceMap);
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -160,12 +162,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="id">Id is the identifier of content. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">Expression parser engine for parsing expressions.</param>
+        /// <param name="registeSourceMap">RegisteSourceMap event handler.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
         public static Templates ParseText(
             string content,
             string id = "",
             ImportResolverDelegate importResolver = null,
-            ExpressionParser expressionParser = null) => TemplatesParser.ParseText(content, id, importResolver, expressionParser);
+            ExpressionParser expressionParser = null,
+            EventHandler registeSourceMap = null) => TemplatesParser.ParseText(content, id, importResolver, expressionParser, registeSourceMap);
 
         /// <summary>
         /// Evaluate a template with given name and scope.

@@ -9,6 +9,7 @@ using System.Linq;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Events;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -1205,6 +1206,65 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var exception = Assert.ThrowsException<Exception>(() => templates.EvaluateText("${ErrrorTemplate()}"));
             Assert.IsTrue(exception.Message.Contains("it's not a built-in function or a custom function"));
+        }
+
+        [TestMethod]
+        public void TestRegisteSourceMapEvents()
+        {
+            var expressionNumber = 0;
+            var templateNumber = 0;
+
+            EventHandler registeSourceMapEventsHandler = (object sender, EventArgs e) =>
+            {
+                if (e is RegisteSourceMapArgs sm)
+                {
+                    if (sender is ExpressionRef expressionRef)
+                    {
+                        expressionNumber++;
+                        Assert.AreEqual("'jack'", expressionRef.Expression);
+                    }
+                    else if (sender is Template template)
+                    {
+                        templateNumber++;
+                        Assert.AreEqual("template1", template.Name);
+                    }
+                }
+            };
+
+            var templates = Templates.ParseFile(GetExampleFilePath("Event.lg"), registeSourceMap: registeSourceMapEventsHandler);
+            Assert.AreEqual(1, expressionNumber);
+            Assert.AreEqual(1, templateNumber);
+        }
+
+        [TestMethod]
+        public void TestTemplateAndExpressionEvaluationEvents()
+        {
+            var expressionEvalTime = 0;
+            var templateEvalTime = 0;
+
+            EventHandler registeSourceMapEventsHandler = (object sender, EventArgs e) =>
+            {
+                // do nothing
+            };
+
+            EventHandler onEvent = (object sender, EventArgs e) =>
+            {
+                if (e is BeginTemplateEvaluationArgs bt)
+                {
+                    templateEvalTime++;
+                    Assert.AreEqual("template1", bt.TemplateName);
+                }
+                else if (e is BeginExpressionEvaluationArgs be)
+                {
+                    expressionEvalTime++;
+                    Assert.AreEqual("'jack'", be.Expression);
+                }
+            };
+
+            var templates = Templates.ParseFile(GetExampleFilePath("Event.lg"), registeSourceMap: registeSourceMapEventsHandler);
+            var result = templates.Evaluate("template1", null, new EvaluationOptions { OnEvent = onEvent });
+            Assert.AreEqual(1, expressionEvalTime);
+            Assert.AreEqual(1, templateEvalTime);
         }
 
         [TestMethod]
