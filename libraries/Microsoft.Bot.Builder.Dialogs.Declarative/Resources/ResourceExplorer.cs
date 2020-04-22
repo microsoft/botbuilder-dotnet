@@ -30,7 +30,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private readonly ConcurrentDictionary<Type, ICustomDeserializer> kindDeserializers = new ConcurrentDictionary<Type, ICustomDeserializer>();
         private readonly ConcurrentDictionary<string, Type> kindToType = new ConcurrentDictionary<string, Type>();
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
-        private readonly List<JsonConverter> converters = new List<JsonConverter>();
         private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<IResource> changedResources = new ConcurrentBag<IResource>();
@@ -462,19 +461,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         private T Load<T>(JToken token, SourceContext sourceContext)
         {
-            lock (this.converters)
+            var converters = new List<JsonConverter>();
+
+            // get converters
+            foreach (var component in ComponentRegistration.Components.Value.OfType<IComponentDeclarativeTypes>())
             {
-                if (this.converters.Count == 0)
+                var result = component.GetConverters(this, sourceContext);
+                if (result.Any())
                 {
-                    // get converters
-                    foreach (var component in ComponentRegistration.Components.Value.OfType<IComponentDeclarativeTypes>())
-                    {
-                        var result = component.GetConverters(this, sourceContext);
-                        if (result.Any())
-                        {
-                            converters.AddRange(result);
-                        }
-                    }
+                    converters.AddRange(result);
                 }
             }
 
