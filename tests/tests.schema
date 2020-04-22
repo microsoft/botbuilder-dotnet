@@ -51,6 +51,11 @@
             "$ref": "#/definitions/Microsoft.CancelAllDialogs"
         },
         {
+            "title": "Microsoft.CancelDialog",
+            "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
+            "$ref": "#/definitions/Microsoft.CancelDialog"
+        },
+        {
             "title": "Microsoft.ChoiceInput",
             "description": "Collect information - Pick from a list of choices",
             "$ref": "#/definitions/Microsoft.ChoiceInput"
@@ -646,6 +651,7 @@
                 "name": {
                     "title": "Name",
                     "description": "The name.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -655,6 +661,7 @@
                     "examples": [
                         "$name"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -940,6 +947,7 @@
                     "examples": [
                         "user.age > 3"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -982,6 +990,7 @@
                     "examples": [
                         "add"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -1154,6 +1163,7 @@
                         "dialog.${user.name}",
                         "=f(x)"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -1445,6 +1455,7 @@
                     "examples": [
                         "dialog.userName"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -1602,9 +1613,156 @@
                     ],
                     "default": false
                 },
+                "activityProcessed": {
+                    "title": "Activity Processed",
+                    "description": "When set to false, the caller dialog is told it should process the current activity.",
+                    "default": true,
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^=.*\\S.*",
+                            "title": "string"
+                        }
+                    ]
+                },
                 "eventName": {
                     "title": "Event name",
                     "description": "Name of the event to emit.",
+                    "$role": "expression",
+                    "type": "string",
+                    "pattern": "^.*\\S.*"
+                },
+                "eventValue": {
+                    "title": "Event value",
+                    "description": "Value to emit with the event (optional).",
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "title": "object"
+                        },
+                        {
+                            "type": "array",
+                            "title": "array"
+                        },
+                        {
+                            "type": "string",
+                            "title": "string"
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "number",
+                            "title": "number"
+                        }
+                    ],
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.CancelDialog": {
+            "$role": "implements(Microsoft.IDialog)",
+            "title": "Cancel all dialogs",
+            "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.CancelDialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^=.*\\S.*",
+                            "title": "string"
+                        }
+                    ],
+                    "default": false
+                },
+                "activityProcessed": {
+                    "title": "Activity Processed",
+                    "description": "When set to false, the caller dialog is told it should process the current activity.",
+                    "default": true,
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "boolean"
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^=.*\\S.*",
+                            "title": "string"
+                        }
+                    ]
+                },
+                "eventName": {
+                    "title": "Event name",
+                    "description": "Name of the event to emit.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -1805,6 +1963,7 @@
                         "dialog.${user.name}",
                         "=f(x)"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -1969,6 +2128,7 @@
                     "examples": [
                         "en-us"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -2327,6 +2487,7 @@
                         "dialog.${user.name}",
                         "=f(x)"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -2409,6 +2570,7 @@
                     "examples": [
                         "en-us"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -2943,6 +3105,7 @@
                 "title": "Default locale",
                 "description": "Default locale.",
                 "default": "en-us",
+                "$role": "expression",
                 "type": "string",
                 "pattern": "^.*\\S.*"
             },
@@ -3088,6 +3251,7 @@
                         "dialog.${user.name}",
                         "=f(x)"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -3140,6 +3304,7 @@
                     "examples": [
                         "=user.birthday"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -3150,6 +3315,7 @@
                     "examples": [
                         "=user.birthday"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -3159,6 +3325,7 @@
                     "examples": [
                         "=this.value[0].Value"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -3302,6 +3469,7 @@
                     "examples": [
                         "=$lastActivity"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -3410,6 +3578,7 @@
                     "items": {
                         "title": "Property",
                         "description": "Property to delete.",
+                        "$role": "expression",
                         "type": "string",
                         "pattern": "^.*\\S.*"
                     }
@@ -3495,6 +3664,7 @@
                 "property": {
                     "title": "Property",
                     "description": "Property to delete.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -3645,6 +3815,7 @@
                             "pattern": "^=.*\\S.*"
                         }
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -3734,6 +3905,7 @@
                         }
                     ],
                     "default": "push",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -3760,12 +3932,14 @@
                 "itemsProperty": {
                     "title": "Items property",
                     "description": "Property that holds the array to update.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
                 "resultProperty": {
                     "title": "Result Property",
                     "description": "Property to store the result of this action.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -3955,6 +4129,7 @@
                             "pattern": "^(?!(beginDialog$|resumeDialog$|repromptDialog$|cancelDialog$|endDialog$|activityReceived$|recognizedIntent$|unknownIntent$|actionsStarted$|actionsSaved$|actionsEnded$|actionsResumed))(\\S){1}.*"
                         }
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4323,6 +4498,7 @@
                     "examples": [
                         "user.todoList"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4330,6 +4506,7 @@
                     "title": "Index property",
                     "description": "Property that holds the index of the item.",
                     "default": "dialog.foreach.index",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4337,6 +4514,7 @@
                     "title": "Value property",
                     "description": "Property that holds the value of the item.",
                     "default": "dialog.foreach.value",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4434,6 +4612,7 @@
                     "examples": [
                         "user.todoList"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4450,6 +4629,7 @@
                     "title": "Index property",
                     "description": "Property that holds the index of the page.",
                     "default": "dialog.foreach.pageindex",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4457,6 +4637,7 @@
                     "title": "Page property",
                     "description": "Property that holds the value of the page.",
                     "default": "dialog.foreach.page",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4542,6 +4723,7 @@
                     "examples": [
                         "user.age"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4551,6 +4733,7 @@
                     "examples": [
                         "$lastActivity"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4637,6 +4820,7 @@
                     "examples": [
                         "user.age"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4740,6 +4924,7 @@
                 "actionId": {
                     "title": "Action Id",
                     "description": "Action Id to execute next",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -4947,6 +5132,7 @@
                     "examples": [
                         "https://contoso.com"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4984,6 +5170,7 @@
                     "examples": [
                         "dialog.contosodata"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -4994,6 +5181,7 @@
                         "application/json",
                         "text/plain"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -5002,6 +5190,7 @@
                     "title": "Headers",
                     "description": "One or more headers to include in the request (supports data binding).",
                     "additionalProperties": {
+                        "$role": "expression",
                         "type": "string",
                         "pattern": "^.*\\S.*"
                     }
@@ -5023,6 +5212,7 @@
                         }
                     ],
                     "default": "json",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -5110,6 +5300,11 @@
                     "title": "Microsoft.CancelAllDialogs",
                     "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
                     "$ref": "#/definitions/Microsoft.CancelAllDialogs"
+                },
+                {
+                    "title": "Microsoft.CancelDialog",
+                    "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
+                    "$ref": "#/definitions/Microsoft.CancelDialog"
                 },
                 {
                     "title": "Microsoft.ChoiceInput",
@@ -5947,12 +6142,14 @@
                 "text": {
                     "title": "Text",
                     "description": "Information to log.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
                 "label": {
                     "title": "Label",
                     "description": "Label for the trace activity (used to identify it in a list of trace activities.)",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -6035,18 +6232,21 @@
                 "applicationId": {
                     "title": "LUIS Application ID",
                     "description": "Application ID for your model from the LUIS service.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
                 "endpoint": {
                     "title": "LUIS Endpoint",
                     "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
                 "endpointKey": {
                     "title": "LUIS prediction key",
                     "description": "LUIS prediction key used to call endpoint.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -6547,6 +6747,7 @@
                         "dialog.${user.name}",
                         "=f(x)"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -6648,6 +6849,7 @@
                     "title": "Default locale",
                     "description": "Default locale to use if there is no locale available..",
                     "default": "en-us",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -6761,6 +6963,7 @@
                     "examples": [
                         "msgraphOAuthConnection"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -6792,6 +6995,7 @@
                         "Please sign in. ",
                         "=concat(x,y,z)"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -6801,6 +7005,7 @@
                     "examples": [
                         "Login"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -6827,6 +7032,7 @@
                     "examples": [
                         "dialog.token"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -10288,6 +10494,7 @@
                     "title": "KnowledgeBase Id",
                     "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
                     "default": "=settings.qna.knowledgebaseid",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -10295,6 +10502,7 @@
                     "title": "Endpoint Key",
                     "description": "Endpoint key for the QnA Maker KB.",
                     "default": "=settings.qna.endpointkey",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -10305,6 +10513,7 @@
                     "examples": [
                         "https://yourserver.azurewebsites.net/qnamaker"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -10336,6 +10545,7 @@
                     "title": "Active learning card title",
                     "description": "Title for active learning suggestions card.",
                     "default": "Did you mean:",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -10343,6 +10553,7 @@
                     "title": "Card no match text",
                     "description": "Text for no match option.",
                     "default": "None of the above.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -10423,6 +10634,7 @@
                         }
                     ],
                     "default": "default",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -10489,6 +10701,7 @@
                     "title": "KnowledgeBase Id",
                     "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
                     "default": "settings.qna.knowledgebaseid",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -10496,6 +10709,7 @@
                     "title": "Endpoint Key",
                     "description": "Endpoint key for the QnA Maker KB.",
                     "default": "settings.qna.endpointkey",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -10506,6 +10720,7 @@
                     "examples": [
                         "https://yourserver.azurewebsites.net/qnamaker"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -10604,6 +10819,7 @@
                     ],
                     "description": "Type of Ranker.",
                     "default": "default",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -11334,6 +11550,7 @@
                     "examples": [
                         "user.age > 3"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -11434,6 +11651,7 @@
                                 "examples": [
                                     "user.age"
                                 ],
+                                "$role": "expression",
                                 "type": "string",
                                 "pattern": "^.*\\S.*"
                             },
@@ -11556,6 +11774,7 @@
                     "examples": [
                         "user.age"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -11656,12 +11875,14 @@
                     "examples": [
                         "=$lastActivity"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
                 "connectionName": {
                     "title": "Connection Name",
                     "description": "Connection name that was used with OAuthInput to log a user in.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -11791,6 +12012,7 @@
                     "examples": [
                         "dialog.userName"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -11798,6 +12020,7 @@
                     "title": "Skill host bot ID",
                     "description": "The Microsoft App ID that will be calling the skill.",
                     "default": "=settings.MicrosoftAppId",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -11808,12 +12031,14 @@
                     "examples": [
                         "https://mybot.contoso.com/api/skills/"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
                 "skillAppId": {
                     "title": "Skill App ID",
                     "description": "The Microsoft App ID for the skill.",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -11823,6 +12048,7 @@
                     "examples": [
                         "https://myskill.contoso.com/api/messages/"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -12651,6 +12877,7 @@
                     "examples": [
                         "user.favColor"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -13808,6 +14035,7 @@
                         "dialog.${user.name}",
                         "=f(x)"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -13861,6 +14089,7 @@
                         "Hello ${user.name}",
                         "=concat(user.firstname, user.lastName)"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -13872,6 +14101,7 @@
                         "Hello ${user.name}",
                         "=concat(user.firstname, user.lastName)"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -13882,6 +14112,7 @@
                         "=toUpper(this.value)",
                         "${toUpper(this.value)}"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -14024,18 +14255,21 @@
                 "name": {
                     "title": "Name",
                     "description": "Name of the trace activity",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
                 "label": {
                     "title": "Label",
                     "description": "Label for the trace activity (used to identify it in a list of trace activities.)",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
                 "valueType": {
                     "title": "Value type",
                     "description": "Type of value",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -14202,6 +14436,7 @@
                     "examples": [
                         "=dialog.lastActivityId"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 },
@@ -14373,6 +14608,7 @@
                     "examples": [
                         "dialog.userName"
                     ],
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
@@ -14465,6 +14701,7 @@
                 "result": {
                     "title": "Result",
                     "description": "Property to store the result in",
+                    "$role": "expression",
                     "type": "string",
                     "pattern": "^.*\\S.*"
                 }
