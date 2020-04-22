@@ -176,7 +176,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dialogState = await dialogsProperty.GetAsync(context, () => new DialogState(), cancellationToken).ConfigureAwait(false);
 
             // Create DialogContext
-            var dc = new DialogContext(Dialogs, context, dialogState);
+            var dc = new DialogContext(Dialogs, context, dialogState, this.TurnState);
+
+            // map initial turnstate into root dialog context.services
+            foreach (var service in this.TurnState)
+            {
+                dc.Services[service.Key] = service.Value;
+            }
 
             // get the DialogStateManager configuration
             var dialogStateManager = new DialogStateManager(dc, StateConfiguration);

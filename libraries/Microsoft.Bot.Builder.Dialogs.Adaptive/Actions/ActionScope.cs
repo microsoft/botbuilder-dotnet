@@ -52,6 +52,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
+            if (dc.Parent?.Services != null)
+            {
+                // When an action scope is resumed we need to restore the dc.services to the parent container services.  
+                foreach (var service in dc.Parent.Services)
+                {
+                    dc.Services[service.Key] = service.Value;
+                }
+            }
+
             if (result is ActionScopeResult actionScopeResult)
             {
                 return await OnActionScopeResultAsync(dc, actionScopeResult, cancellationToken).ConfigureAwait(false);

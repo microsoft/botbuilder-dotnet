@@ -26,12 +26,22 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">The dialog set to create the dialog context for.</param>
         /// <param name="turnContext">The current turn context.</param>
         /// <param name="state">The state property from which to retrieve the dialog context.</param>
-        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
+        /// <param name="services">services which are contextual to this dialog context.</param>
+        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, TurnContextStateCollection services = null)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
             State = new DialogStateManager(this);
+            Services = new TurnContextStateCollection();
+            if (services != null)
+            {
+                // copy parent services into this dialogcontext.
+                foreach (var service in services)
+                {
+                    Services[service.Key] = service.Value;
+                }
+            }
 
             ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.Activity, Context.Activity);
         }
@@ -46,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             DialogSet dialogs,
             DialogContext parentDialogContext,
             DialogState state)
-            : this(dialogs, parentDialogContext.Context, state)
+            : this(dialogs, parentDialogContext.Context, state, parentDialogContext?.Services)
         {
             Parent = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
         }
@@ -135,6 +145,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// DialogStateManager with unified memory view of all memory scopes.
         /// </value>
         public DialogStateManager State { get; set; }
+
+        /// <summary>
+        /// Gets the services collection which is contextual to this dialog context.
+        /// </summary>
+        /// <value>Services collection.</value>
+        public TurnContextStateCollection Services { get; private set; }
 
         /// <summary>
         /// Starts a new dialog and pushes it onto the dialog stack.

@@ -81,11 +81,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Method to generate text from given template and data.
         /// </summary>
-        /// <param name="turnContext">Context for the current turn of conversation.</param>
+        /// <param name="dialogContext">Context for the current turn of conversation.</param>
         /// <param name="template">template to evaluate.</param>
         /// <param name="data">data to bind to.</param>
         /// <returns>generated text.</returns>
-        public override async Task<string> Generate(ITurnContext turnContext, string template, object data)
+        public override async Task<string> Generate(DialogContext dialogContext, string template, object data)
         {
             try
             {
