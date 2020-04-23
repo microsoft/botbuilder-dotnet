@@ -710,6 +710,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (value is JToken || value is JObject || value is JArray)
                 {
                     val = Clone((JToken)value);
+                    if (val.GetType() == typeof(JValue) && ((JToken)val).Type == JTokenType.Date)
+                    {
+                        val = DateTime.Parse(val.ToString()).ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+                    }
                 }
                 else if (value == null)
                 {
