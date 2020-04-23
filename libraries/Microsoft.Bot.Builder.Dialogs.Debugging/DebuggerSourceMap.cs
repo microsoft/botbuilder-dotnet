@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             if (range.Path != null && !Path.IsPathRooted(range.Path))
             {
-                throw new ArgumentOutOfRangeException(range.Path);
+                //throw new ArgumentOutOfRangeException(range.Path);
             }
 
             lock (gate)

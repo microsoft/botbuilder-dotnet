@@ -10,5 +10,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string CancelDialog = "cancelDialog";
         public const string ActivityReceived = "activityReceived";
         public const string Error = "error";
+        public const string BeginTemplateEvaluation = "beginTemplateEvaluation";
+        public const string BeginExpressionEvaluation = "beginExpressionEvaluation";
+        public const string Message = "message";
     }
 }

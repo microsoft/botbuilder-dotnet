@@ -89,30 +89,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public override async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            EventHandler onEvent = (object sender, EventArgs e) =>
-            {
-                if (e is BeginTemplateEvaluationArgs be && Path.IsPathRooted(be.Source))
-                {
-                    Console.WriteLine($"Running into template {be.TemplateName} in {be.Source}");
-                    var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, be.Type, new System.Threading.CancellationToken());
-                    task.Wait();
-                }
-                else if (e is BeginExpressionEvaluationArgs expr && Path.IsPathRooted(expr.Source))
-                {
-                    Console.WriteLine($"Running expression {expr.Expression} in {expr.Source}");
-                    var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, expr.Type, new System.Threading.CancellationToken());
-                    task.Wait();
-                }
-                else if (e is MessageArgs message && Path.IsPathRooted(message.Source))
-                {
-                    Console.WriteLine($"{message.Text}");
-                    if (turnContext.GetDebugger() is IDebugger dda)
-                    {
-                        var task = dda.OutputAsync(message.Text, "message", message.Text, new System.Threading.CancellationToken());
-                        task.Wait();
-                    }
-                }
-            };
+            EventHandler onEvent = async (s, e) => await HandlerTemplateEvaluationEvent(turnContext, s, e);
+            onEvent += async (s, e) => await HandlerExpressionEvaluationEvent(turnContext, s, e);
+            onEvent += async (s, e) => await HandlerMessageEvent(turnContext, s, e);
 
             try
             {
@@ -126,6 +105,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 }
 
                 throw;
+            }
+        }
+
+        private async Task HandlerTemplateEvaluationEvent(ITurnContext turnContext, object sender, EventArgs e)
+        {
+            if (e is BeginTemplateEvaluationArgs be && Path.IsPathRooted(be.Source))
+            {
+                await turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, be.Type, new System.Threading.CancellationToken());
+            }
+        }
+
+        private async Task HandlerExpressionEvaluationEvent(ITurnContext turnContext, object sender, EventArgs e)
+        {
+            if (e is BeginExpressionEvaluationArgs expr && Path.IsPathRooted(expr.Source))
+            {
+                await turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, expr.Type, new System.Threading.CancellationToken());
+            }
+        }
+
+        private async Task HandlerMessageEvent(ITurnContext turnContext, object sender, EventArgs e)
+        {
+            if (e is MessageArgs message && Path.IsPathRooted(message.Source))
+            {
+                if (turnContext.GetDebugger() is IDebugger dda)
+                {
+                    await dda.OutputAsync(message.Text, sender, message.Text, new System.Threading.CancellationToken());
+                }
             }
         }
 
