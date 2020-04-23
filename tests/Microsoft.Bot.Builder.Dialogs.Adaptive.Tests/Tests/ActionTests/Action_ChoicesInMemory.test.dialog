@@ -10,7 +10,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SetProperty",
-                        "property": "=user.choices",
+                        "property": "user.choices",
                         "value": "=json('[{\"value\": \"red\"}, {\"value\": \"green\"}, {\"value\": \"blue\"}]')"
                     },
                     {
