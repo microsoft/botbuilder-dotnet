@@ -19,16 +19,6 @@
                 "=f(x)"
             ]
         },
-        "activityProcessed": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
-            "title": "Activity Processed",
-            "description": "When set to false, the dialog that is called can process the current activity.",
-            "default": true,
-            "examples": [
-                true,
-                "=f(x)"
-            ]
-        },
         "resultProperty": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Property",

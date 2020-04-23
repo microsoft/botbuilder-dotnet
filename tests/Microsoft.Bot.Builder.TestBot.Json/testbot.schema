@@ -11656,27 +11656,6 @@
                     ],
                     "default": false
                 },
-                "activityProcessed": {
-                    "title": "Activity Processed",
-                    "description": "When set to false, the dialog that is called can process the current activity.",
-                    "default": true,
-                    "examples": [
-                        true,
-                        "=f(x)"
-                    ],
-                    "$role": "expression",
-                    "oneOf": [
-                        {
-                            "type": "boolean",
-                            "title": "boolean"
-                        },
-                        {
-                            "type": "string",
-                            "pattern": "^=.*\\S.*",
-                            "title": "string"
-                        }
-                    ]
-                },
                 "resultProperty": {
                     "title": "Property",
                     "description": "Property to store any value returned by the dialog that is called.",

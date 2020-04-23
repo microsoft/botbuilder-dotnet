@@ -39,16 +39,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
         public BoolExpression Disabled { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to have the new dialog should process the activity.
-        /// </summary>
-        /// <value>
-        /// The default for this will be true, which means the new dialog should not look the activity. You can set this to false to dispatch the activity to the new dialog.
-        /// </value>
-        [DefaultValue(true)]
-        [JsonProperty("activityProcessed")]
-        public BoolExpression ActivityProcessed { get; set; } = true;
-
-        /// <summary>
         /// Gets or sets the property path to store the dialog result in.
         /// </summary>
         /// <value>
