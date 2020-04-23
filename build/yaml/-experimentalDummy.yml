@@ -2,7 +2,6 @@ pool:
   vmImage: 'windows-2019'
 
 variables:
-  system_accesstoken: $(System.AccessToken)
   # NextBuild: define in Azure '[experimental]Dummy-build2'
   # PipelinesPersonalAccessToken: define in Azure
 
@@ -20,9 +19,8 @@ steps:
   displayName: 'Trigger build $(NextBuild)'
   inputs:
     buildDefinition: '$(NextBuild)'
-    queueBuildForUserThatTriggeredBuild: false
-    buildParameters: 'MyBuildParameter: MBPValue'
-    authenticationMethod: 'OAuth Token'
+    queueBuildForUserThatTriggeredBuild: true
+    password: '$(PipelinesPersonalAccessToken)'
     enableBuildInQueueCondition: true
     blockingBuildsList: '$(NextBuild)'
   continueOnError: true
