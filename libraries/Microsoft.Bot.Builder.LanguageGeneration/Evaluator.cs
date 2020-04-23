@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Evaluator : LGTemplateParserBaseVisitor<object>
     {
         public const string LGType = "lgType";
+        public const string MessageKey = "message";
 
         // PCRE: (?<!\\)\${(('(\\('|\\)|[^'])*?')|("(\\("|\\)|[^"])*?")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'"`])|({\s*}))+}?
         public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
@@ -124,13 +125,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 previousEvaluateTarget.EvaluatedChildren[currentEvaluateId] = result;
             }
 
-            evaluationTargetStack.Pop();
-
             if (lgOptions.LineBreakStyle == LGLineBreakStyle.Markdown && result is string str)
             {
                 result = NewLineRegex.Replace(str, "$1$1");
             }
 
+            var source = TemplateMap[CurrentTarget().TemplateName].SourceRange.Source;
+
+            if (Path.IsPathRooted(source) && lgOptions.OnEvent != null)
+            {
+                lgOptions.OnEvent(MessageKey, new MessageArgs { Source = source, Text = $"Evaluate template [{templateName}] get result: {result}" });
+            }
+
+            evaluationTargetStack.Pop();
             return result;
         }
 
@@ -467,7 +474,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var parse = this.ExpressionParser.Parse(exp);
             var opt = new Options();
             opt.NullSubstitution = lgOptions.NullSubstitution;
-            return parse.TryEvaluate(scope, opt);
+            var result = parse.TryEvaluate(scope, opt);
+            if (evaluationTargetStack.Count > 0)
+            {
+                var source = TemplateMap[CurrentTarget().TemplateName].SourceRange.Source;
+
+                if (Path.IsPathRooted(source) && lgOptions.OnEvent != null)
+                {
+                    if (string.IsNullOrEmpty(result.error))
+                    {
+                        lgOptions.OnEvent(MessageKey, new MessageArgs { Source = source, Text = $"Evaluate expression '{exp}' get result: {result.value}" });
+                    }
+                    else
+                    {
+                        lgOptions.OnEvent(MessageKey, new MessageArgs { Source = source, Text = $"Evaluate expression '{exp}' get error: {result.error}" });
+                    }
+                }
+            }
+
+            return result;
         }
 
         // Generate a new lookup function based on one lookup function

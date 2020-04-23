@@ -1,2 +1,2 @@
 ﻿# template1
-- hi ${'jack'}
+- hi ${if(name==null, 'friend', name)}

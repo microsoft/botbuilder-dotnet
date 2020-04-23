@@ -1221,7 +1221,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     if (sender is ExpressionRef expressionRef)
                     {
                         expressionNumber++;
-                        Assert.AreEqual("'jack'", expressionRef.Expression);
+                        Assert.AreEqual("if(name==null, 'friend', name)", expressionRef.Expression);
                     }
                     else if (sender is Template template)
                     {
@@ -1257,7 +1257,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 else if (e is BeginExpressionEvaluationArgs be)
                 {
                     expressionEvalTime++;
-                    Assert.AreEqual("'jack'", be.Expression);
+                    Assert.AreEqual("if(name==null, 'friend', name)", be.Expression);
+                }
+                else if (e is MessageArgs msg)
+                {
+                    var options = new List<string>()
+                    {
+                        "Evaluate template [template1] get result: hi friend",
+                        "Evaluate expression 'if(name==null, 'friend', name)' get result: friend"
+                    };
+                    Assert.IsTrue(options.Contains(msg.Text));
                 }
             };
 
