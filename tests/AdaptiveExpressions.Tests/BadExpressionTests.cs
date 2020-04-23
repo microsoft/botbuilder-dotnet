@@ -172,6 +172,8 @@ namespace AdaptiveExpressions.Tests
             #endregion
             
             #region Date and time function test
+            Test("hasFullDate(12345)"), // should hava string or TimexProperty Parameter
+            Test("hasValidHour(123445)"), // should hava string or TimexProperty Parameter
             Test("addDays('errortime', 1)"), // error datetime format
             Test("addDays(timestamp, 'hi')"), // second param should be integer
             Test("addDays(timestamp)"), // should have 2 or 3 params

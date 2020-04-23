@@ -3706,7 +3706,7 @@ namespace AdaptiveExpressions
                     (expr, state, options) =>
                     {
                         TimexProperty parsed = null;
-                        object value = null;
+                        bool? value = null;
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
@@ -3726,7 +3726,7 @@ namespace AdaptiveExpressions
                             } 
                             else
                             {
-                                return (false, error);
+                                error = $"{expr} should be either a TimexProperty or a string";
                             }
                         }
 
@@ -3741,7 +3741,7 @@ namespace AdaptiveExpressions
                     (expr, state, options) =>
                     {
                         TimexProperty parsed = null;
-                        object value = null;
+                        bool? value = null;
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
@@ -3761,7 +3761,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                return (false, error);
+                                error = $"{expr} should be either a TimexProperty or a string";
                             }
                         }
 

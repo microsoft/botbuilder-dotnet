@@ -278,14 +278,6 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
-            Test("hasFullDate('2012-12-21')", true),
-            Test("hasFullDate('xxxx-12-21')", false),
-            Test("hasFullDate(validFullDateTimex)", true),
-            Test("hasFullDate(invalidFullDateTimex)", false),
-            Test("hasValidHour('2012-12-21T20:30')", true),
-            Test("hasValidHour('PT30M')", false),
-            Test("hasValidHour(validHourTimex)", true),
-            Test("hasValidHour(invalidHourTimex)", false),
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
@@ -677,6 +669,16 @@ namespace AdaptiveExpressions.Tests
             #region  Date and time function test
 
             // init dateTime: 2018-03-15T13:00:00Z
+            Test("hasFullDate('helloworld')", false),
+            Test("hasFullDate('2012-12-21')", true),
+            Test("hasFullDate('xxxx-12-21')", false),
+            Test("hasFullDate(validFullDateTimex)", true),
+            Test("hasFullDate(invalidFullDateTimex)", false),
+            Test("hasValidHour('helloworld')", false),
+            Test("hasValidHour('2012-12-21T20:30')", true),
+            Test("hasValidHour('PT30M')", false),
+            Test("hasValidHour(validHourTimex)", true),
+            Test("hasValidHour(invalidHourTimex)", false),
             Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
             Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.000Z"),
