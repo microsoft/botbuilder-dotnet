@@ -712,7 +712,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                     val = Clone((JToken)value);
                     if (val.GetType() == typeof(JValue) && ((JToken)val).Type == JTokenType.Date)
                     {
-                        val = DateTime.Parse(val.ToString()).ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+                        var temp = val.ToString();
+                        val = DateTime.Parse(temp).ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
                     }
                 }
                 else if (value == null)
