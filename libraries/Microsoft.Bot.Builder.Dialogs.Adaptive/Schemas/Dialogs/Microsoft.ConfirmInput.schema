@@ -29,9 +29,12 @@
                 },
                 "style": {
                     "$role": "expression",
-                    "type": "string",
+                    "title": "List style",
+                    "description": "Sets the ListStyle to control how choices are rendered.",
                     "oneOf": [
                         {
+                            "type": "string",
+                            "title": "Enum",
                             "enum": [
                                 "none",
                                 "auto",
@@ -39,46 +42,52 @@
                                 "list",
                                 "suggestedAction",
                                 "heroCard"
-                            ]
+                            ],
+                            "default": "auto"
                         },
                         {
-                            "pattern": "^=.*\\S.*"
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
-                    ],
-                    "title": "List style",
-                    "description": "Sets the ListStyle to control how choices are rendered.",
-                    "default": "auto"
+                    ]
                 },
                 "choiceOptions": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
                     "title": "Choice Options",
                     "description": "Choice Options or expression which provides Choice Options to control display choices to the user.",
-                    "properties": {
-                        "inlineSeparator": {
-                            "type": "string",
-                            "title": "Inline separator",
-                            "description": "Text to separate individual choices when there are more than 2 choices",
-                            "default": ", "
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "title": "Object",
+                            "properties": {
+                                "inlineSeparator": {
+                                    "type": "string",
+                                    "title": "Inline separator",
+                                    "description": "Text to separate individual choices when there are more than 2 choices",
+                                    "default": ", "
+                                },
+                                "inlineOr": {
+                                    "type": "string",
+                                    "title": "Inline or",
+                                    "description": "Text to be inserted between the choices when their are only 2 choices",
+                                    "default": " or "
+                                },
+                                "inlineOrMore": {
+                                    "type": "string",
+                                    "title": "Inline or more",
+                                    "description": "Text to be inserted between the last 2 choices when their are more than 2 choices.",
+                                    "default": ", or "
+                                },
+                                "includeNumbers": {
+                                    "type": "boolean",
+                                    "title": "Include numbers",
+                                    "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
+                                    "default": true
+                                }
+                            }
                         },
-                        "inlineOr": {
-                            "type": "string",
-                            "title": "Inline or",
-                            "description": "Text to be inserted between the choices when their are only 2 choices",
-                            "default": " or "
-                        },
-                        "inlineOrMore": {
-                            "type": "string",
-                            "title": "Inline or more",
-                            "description": "Text to be inserted between the last 2 choices when their are more than 2 choices.",
-                            "default": ", or "
-                        },
-                        "includeNumbers": {
-                            "type": "boolean",
-                            "title": "Include numbers",
-                            "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
-                            "default": true
+                        {
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
-                    }
+                    ]
                 },
                 "defaultValue": {
                     "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
@@ -101,9 +110,10 @@
                 "confirmChoices": {
                     "$role": "expression",
                     "title": "Array of choice objects",
-                    "type": "array",
                     "oneOf": [
                         {
+                            "type": "array",
+                            "title": "Strings",
                             "items": [
                                 {
                                     "type": "string"
@@ -111,6 +121,8 @@
                             ]
                         },
                         {
+                            "type": "array",
+                            "title": "Objects",
                             "items": [
                                 {
                                     "type": "object",
@@ -138,6 +150,9 @@
                                     }
                                 }
                             ]
+                        },
+                        {
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
                     ]
                 }
