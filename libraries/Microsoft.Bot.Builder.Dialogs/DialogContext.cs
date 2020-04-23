@@ -26,22 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">The dialog set to create the dialog context for.</param>
         /// <param name="turnContext">The current turn context.</param>
         /// <param name="state">The state property from which to retrieve the dialog context.</param>
-        /// <param name="services">services which are contextual to this dialog context.</param>
-        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, TurnContextStateCollection services = null)
+        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
         {
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
             State = new DialogStateManager(this);
             Services = new TurnContextStateCollection();
-            if (services != null)
-            {
-                // copy parent services into this dialogcontext.
-                foreach (var service in services)
-                {
-                    Services[service.Key] = service.Value;
-                }
-            }
 
             ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.Activity, Context.Activity);
         }
@@ -56,9 +47,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             DialogSet dialogs,
             DialogContext parentDialogContext,
             DialogState state)
-            : this(dialogs, parentDialogContext.Context, state, parentDialogContext?.Services)
+            : this(dialogs, parentDialogContext.Context, state)
         {
             Parent = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
+            
+            if (Parent.Services != null)
+            {
+                // copy parent services into this dialogcontext.
+                foreach (var service in Parent.Services)
+                {
+                    Services[service.Key] = service.Value;
+                }
+            }
         }
 
         /// <summary>
