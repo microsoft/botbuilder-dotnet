@@ -40,8 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 return obj.ToObject<ActivityTemplate>();
             }
 
-            var activity = obj.ToObject<StaticActivityTemplate>();
-            return activity;
+            return obj.ToObject<StaticActivityTemplate>();
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
