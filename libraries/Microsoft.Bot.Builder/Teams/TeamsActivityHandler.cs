@@ -260,7 +260,28 @@ namespace Microsoft.Bot.Builder.Teams
                 }
                 else
                 {
-                    var newMemberInfo = await TeamsInfo.GetMemberAsync(turnContext, memberAdded.Id, cancellationToken).ConfigureAwait(false);
+                    TeamsChannelAccount newMemberInfo = null;
+                    try
+                    {
+                        newMemberInfo = await TeamsInfo.GetMemberAsync(turnContext, memberAdded.Id, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (ErrorResponseException ex)
+                    {
+                        if (ex.Body?.Error?.Code != "ConversationNotFound")
+                        {
+                            throw;
+                        }
+
+                        // unable to find the member added in ConversationUpdate Activity in the response from the GetMemberAsync call
+                        newMemberInfo = new TeamsChannelAccount
+                        {
+                            Id = memberAdded.Id,
+                            Name = memberAdded.Name,
+                            AadObjectId = memberAdded.AadObjectId,
+                            Role = memberAdded.Role,
+                        };
+                    }
+
                     teamsMembersAdded.Add(newMemberInfo);
                 }
             }
