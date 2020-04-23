@@ -12,51 +12,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// JsonConverter to load ITemplate&lt;Activity&gt;.
     /// </summary>
-    public class ActivityTemplateConverter : JsonConverter
+    public class ActivityTemplateConverter : JsonConverter<ActivityTemplate>
     {
-        public override bool CanRead => true;
+        public override bool CanRead => false;
 
-        // if this is false, don't custom serialize activitytemplate as a string
-        public override bool CanWrite => false;
+        public override bool CanWrite => true;
 
-        public override bool CanConvert(Type objectType)
+        public override ActivityTemplate ReadJson(JsonReader reader, Type objectType, ActivityTemplate existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            return typeof(ITemplate<Activity>) == objectType;
+            throw new NotImplementedException();
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.ValueType == typeof(string))
-            {
-                // inline template Example: "Hello {name}"
-                string readerValue = reader.Value.ToString();
-                return new ActivityTemplate((string)readerValue);
-            }
-            else
-            {
-                JObject obj = JObject.Load(reader);
-                string kind = (string)obj["$kind"]; 
-                if (kind == "Microsoft.ActivityTemplate")
-                {
-                    return obj.ToObject<ActivityTemplate>();
-                }
-
-                var activity = obj.ToObject<Activity>();
-                return new StaticActivityTemplate((Activity)activity);
-            }
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, ActivityTemplate value, JsonSerializer serializer)
         {
             // save template as string
-            if (value is ActivityTemplate activityTemplate)
-            {
-                serializer.Serialize(writer, activityTemplate.Template);
-            }
-            else
-            {
-                serializer.Serialize(writer, value);
-            }
+            serializer.Serialize(writer, value.Template);
         }
     }
 }
