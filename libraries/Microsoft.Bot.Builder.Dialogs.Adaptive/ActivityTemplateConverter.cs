@@ -32,18 +32,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 string readerValue = reader.Value.ToString();
                 return new ActivityTemplate((string)readerValue);
             }
-            else
-            {
-                JObject obj = JObject.Load(reader);
-                string kind = (string)obj["$kind"]; 
-                if (kind == "Microsoft.ActivityTemplate")
-                {
-                    return obj.ToObject<ActivityTemplate>();
-                }
 
-                var activity = obj.ToObject<Activity>();
-                return new StaticActivityTemplate((Activity)activity);
+            JObject obj = JObject.Load(reader);
+            string kind = (string)obj["$kind"]; 
+            if (kind == "Microsoft.ActivityTemplate")
+            {
+                return obj.ToObject<ActivityTemplate>();
             }
+
+            var activity = obj.ToObject<StaticActivityTemplate>();
+            return activity;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
