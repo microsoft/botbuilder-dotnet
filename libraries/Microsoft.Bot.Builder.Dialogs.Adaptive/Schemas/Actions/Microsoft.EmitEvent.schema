@@ -22,12 +22,13 @@
             ]
         },
         "eventName": {
+            "$role": "expression",
             "title": "Event name",
             "description": "Name of the event to emit.",
             "oneOf": [
                 {
                     "type": "string",
-                    "title": "Enum",
+                    "title": "Built-in event",
                     "enum": [
                         "beginDialog",
                         "resumeDialog",
@@ -44,7 +45,7 @@
                     ]
                 },
                 {
-                    "title": "Custom",
+                    "title": "Custom event",
                     "pattern": "^(?!(beginDialog$|resumeDialog$|repromptDialog$|cancelDialog$|endDialog$|activityReceived$|recognizedIntent$|unknownIntent$|actionsStarted$|actionsSaved$|actionsEnded$|actionsResumed))(\\S){1}.*"
                 },
                 {
