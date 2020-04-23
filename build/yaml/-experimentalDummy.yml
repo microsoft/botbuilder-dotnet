@@ -1,7 +1,8 @@
 pool:
   vmImage: 'windows-2019'
 
-#variables:
+variables:
+  SYSTEM_ACCESSTOKEN: $(System.AccessToken)
   # NextBuild: define in Azure '[experimental]Dummy-build2'
   # PipelinesPersonalAccessToken: define in Azure
 
