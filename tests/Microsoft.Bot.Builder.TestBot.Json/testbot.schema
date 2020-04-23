@@ -840,11 +840,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -902,11 +902,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -1111,11 +1111,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -1461,11 +1461,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -1650,11 +1650,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -1685,7 +1685,7 @@
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -1905,11 +1905,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -2017,6 +2017,7 @@
                             ]
                         },
                         {
+                            "type": "array",
                             "title": "Objects",
                             "items": [
                                 {
@@ -2106,11 +2107,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -2517,11 +2518,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -2611,7 +2612,7 @@
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -2648,11 +2649,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -3226,11 +3227,11 @@
                 "$role": "expression",
                 "oneOf": [
                     {
-                        "type:": "string",
+                        "type": "string",
                         "title": "String",
                         "pattern": "^(?!(=)).*",
                         "examples": [
-                            "Hello {user.name}"
+                            "Hello ${user.name}"
                         ]
                     },
                     {
@@ -3408,11 +3409,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -3491,11 +3492,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -3518,11 +3519,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -3544,11 +3545,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -3710,11 +3711,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -3847,11 +3848,11 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type:": "string",
+                                "type": "string",
                                 "title": "String",
                                 "pattern": "^(?!(=)).*",
                                 "examples": [
-                                    "Hello {user.name}"
+                                    "Hello ${user.name}"
                                 ]
                             },
                             {
@@ -3955,11 +3956,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -4258,11 +4259,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -4281,11 +4282,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -4321,7 +4322,7 @@
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -4538,7 +4539,7 @@
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -4694,7 +4695,7 @@
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -4948,11 +4949,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -4972,11 +4973,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -4996,11 +4997,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5116,11 +5117,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5149,11 +5150,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5173,11 +5174,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5282,11 +5283,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5308,11 +5309,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5417,11 +5418,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5549,11 +5550,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5779,11 +5780,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5814,7 +5815,7 @@
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5851,11 +5852,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5878,11 +5879,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -5903,11 +5904,11 @@
                         "$role": "expression",
                         "oneOf": [
                             {
-                                "type:": "string",
+                                "type": "string",
                                 "title": "String",
                                 "pattern": "^(?!(=)).*",
                                 "examples": [
-                                    "Hello {user.name}"
+                                    "Hello ${user.name}"
                                 ]
                             },
                             {
@@ -6884,11 +6885,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -6907,11 +6908,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -7012,11 +7013,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -7035,11 +7036,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -7058,11 +7059,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -7598,11 +7599,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -7742,11 +7743,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -7872,11 +7873,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -7926,11 +7927,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -7952,11 +7953,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -8002,11 +8003,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -11968,11 +11969,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -11992,11 +11993,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -12019,11 +12020,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -12074,11 +12075,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -12098,11 +12099,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -12277,11 +12278,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -12301,11 +12302,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -12328,11 +12329,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -13259,11 +13260,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -13382,11 +13383,11 @@
                                 "$role": "expression",
                                 "oneOf": [
                                     {
-                                        "type:": "string",
+                                        "type": "string",
                                         "title": "String",
                                         "pattern": "^(?!(=)).*",
                                         "examples": [
-                                            "Hello {user.name}"
+                                            "Hello ${user.name}"
                                         ]
                                     },
                                     {
@@ -13422,7 +13423,7 @@
                                         "title": "String",
                                         "pattern": "^(?!(=)).*",
                                         "examples": [
-                                            "Hello {user.name}"
+                                            "Hello ${user.name}"
                                         ]
                                     },
                                     {
@@ -13545,11 +13546,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -13585,7 +13586,7 @@
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -13680,11 +13681,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -13703,11 +13704,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -13868,11 +13869,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -13892,11 +13893,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -13919,11 +13920,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -13942,11 +13943,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -13968,11 +13969,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -14813,11 +14814,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16037,11 +16038,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16121,11 +16122,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16149,11 +16150,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16176,11 +16177,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16341,11 +16342,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16364,11 +16365,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16387,11 +16388,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16422,7 +16423,7 @@
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16594,11 +16595,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16791,11 +16792,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
@@ -16912,11 +16913,11 @@
                     "$role": "expression",
                     "oneOf": [
                         {
-                            "type:": "string",
+                            "type": "string",
                             "title": "String",
                             "pattern": "^(?!(=)).*",
                             "examples": [
-                                "Hello {user.name}"
+                                "Hello ${user.name}"
                             ]
                         },
                         {
