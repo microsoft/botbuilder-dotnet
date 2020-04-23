@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Events;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
@@ -51,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             this.Id = id ?? DEFAULTLABEL;
             var (_, locale) = LGResourceLoader.ParseLGFileName(id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lg = LanguageGeneration.Templates.ParseText(lgText ?? string.Empty, Id, importResolver);
+            this.lg = LanguageGeneration.Templates.ParseText(lgText ?? string.Empty, Id, importResolver, registeSourceMap: SourceMapRegister);
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lg = LanguageGeneration.Templates.ParseFile(filePath, importResolver);
+            this.lg = LanguageGeneration.Templates.ParseFile(filePath, importResolver, registeSourceMap: SourceMapRegister);
         }
 
         /// <summary>
@@ -87,9 +89,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public override async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
+            EventHandler onEvent = (object sender, EventArgs e) =>
+            {
+                if (e is BeginTemplateEvaluationArgs be && Path.IsPathRooted(be.Source))
+                {
+                    Console.WriteLine($"Running into template {be.TemplateName} in {be.Source}");
+                    var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, be.Type, new System.Threading.CancellationToken());
+                    task.Wait();
+                }
+                else if (e is BeginExpressionEvaluationArgs expr && Path.IsPathRooted(expr.Source))
+                {
+                    Console.WriteLine($"Running expression {expr.Expression} in {expr.Source}");
+                    var task = turnContext.GetDebugger().StepAsync(new DialogContext(new DialogSet(), turnContext, new DialogState()), sender, expr.Type, new System.Threading.CancellationToken());
+                    task.Wait();
+                }
+                else if (e is MessageArgs message && Path.IsPathRooted(message.Source))
+                {
+                    Console.WriteLine($"{message.Text}");
+                    if (turnContext.GetDebugger() is IDebugger dda)
+                    {
+                        var task = dda.OutputAsync(message.Text, "message", message.Text, new System.Threading.CancellationToken());
+                        task.Wait();
+                    }
+                }
+            };
+
             try
             {
-                return await Task.FromResult(lg.EvaluateText(template, data).ToString());
+                return await Task.FromResult(lg.EvaluateText(template, data, new EvaluationOptions { OnEvent = onEvent }).ToString());
             }
             catch (Exception err)
             {
@@ -99,6 +126,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 }
 
                 throw;
+            }
+        }
+
+        private void SourceMapRegister(object sender, EventArgs e)
+        {
+            if (e is RegisteSourceMapArgs rs && sender != null)
+            {
+                var sourceRange = rs.SourceRange;
+                var debugSM = new Debugging.SourceRange(
+                    sourceRange.Source,
+                    sourceRange.Range.Start.Line,
+                    sourceRange.Range.Start.Character,
+                    sourceRange.Range.End.Line,
+                    sourceRange.Range.End.Character);
+                DebugSupport.SourceMap.Add(sender, debugSM);
             }
         }
     }
