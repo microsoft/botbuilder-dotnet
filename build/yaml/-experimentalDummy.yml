@@ -21,7 +21,7 @@ steps:
     buildDefinition: '$(NextBuild)'
     queueBuildForUserThatTriggeredBuild: false
     buildParameters: 'MyBuildParameter: MBPValue'
-    password: '$(PipelinesPersonalAccessToken)'
+    authenticationMethod: 'OAuth Token'
     enableBuildInQueueCondition: true
     blockingBuildsList: '$(NextBuild)'
   continueOnError: true
