@@ -410,7 +410,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 context.TurnState.Add<LanguageGenerator>(generator);
             }
 
-            return new DialogContext(new DialogSet(), context, new DialogState(), context.TurnState);
+            var dc = new DialogContext(new DialogSet(), context, new DialogState());
+
+            foreach (var service in context.TurnState)
+            {
+                dc.Services[service.Key] = service.Value;
+            }
+
+            return dc;
         }
 
         private TestFlow CreateFlow(BotCallbackHandler handler)
