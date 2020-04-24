@@ -78,6 +78,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
 
+            await this.CheckForVersionChangeAsync(outerDc).ConfigureAwait(false);
+
             var innerDc = this.CreateChildContext(outerDc);
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
 
@@ -116,6 +118,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="DialogContext.ContinueDialogAsync(CancellationToken)"/>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext outerDc, CancellationToken cancellationToken = default(CancellationToken))
         {
+            await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
+
+            await this.CheckForVersionChangeAsync(outerDc).ConfigureAwait(false);
+
             // Continue execution of inner dialog
             var innerDc = this.CreateChildContext(outerDc);
             var turnResult = await this.OnContinueDialogAsync(innerDc, cancellationToken).ConfigureAwait(false);
@@ -164,6 +170,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
+
+            await this.CheckForVersionChangeAsync(outerDc).ConfigureAwait(false);
 
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
