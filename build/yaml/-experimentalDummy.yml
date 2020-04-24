@@ -3,7 +3,7 @@ pool:
 
 #variables:
   # NextBuild: define in Azure '[experimental]Dummy-build2'
-  # PipelinesPersonalAccessToken: define in Azure
+  # PipelinesPersonalAccessToken: define in Azure 
   TriggeringBuildReason: $[ coalesce($(TriggeringBuildReason), $(Build.Reason)) ]
 
 steps:
