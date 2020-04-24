@@ -4,7 +4,7 @@ pool:
 variables:
   # NextBuild: define in Azure '[experimental]Dummy-build2'
   # PipelinesPersonalAccessToken: define in Azure
-  TriggeringBuildReason: $[ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'], 'both yielded nothing' ) ]
+  temp: ${{ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'], 'both yielded nothing' ) }}
 
 steps:
 - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
@@ -12,8 +12,9 @@ steps:
   inputs:
     tags: |
      TriggeringBuildReason=$(TriggeringBuildReason)
-     NextBuild=$(NextBuild)
+     temp=$(temp)
      $(TriggeredBy)
+     NextBuild=$(NextBuild)
   continueOnError: true
   condition: always()
 
@@ -26,7 +27,7 @@ steps:
   inputs:
     buildDefinition: '$(NextBuild)'
     queueBuildForUserThatTriggeredBuild: true
-    buildParameters: 'TriggeringBuildReason: $(TriggeringBuildReason), TriggeredBy: Triggered_by_$(Build.DefinitionName)/$(Build.BuildNumber)'
+    buildParameters: 'TriggeringBuildReason: $(TriggeringBuildReason), TriggeredBy: Triggered_by_$(Build.DefinitionName)_$(Build.BuildNumber)'
     password: '$(PipelinesPersonalAccessToken)'
     enableBuildInQueueCondition: true
     blockingBuildsList: '$(NextBuild)'
