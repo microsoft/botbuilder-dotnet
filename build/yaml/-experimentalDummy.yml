@@ -1,8 +1,8 @@
 pool:
   vmImage: 'windows-2019'
 
-stages:
-- stage: Stage1
+jobs:
+- job: Job1
     variables:
       # NextBuild: define in Azure '[experimental]Dummy-build2'
       # PipelinesPersonalAccessToken: define in Azure
