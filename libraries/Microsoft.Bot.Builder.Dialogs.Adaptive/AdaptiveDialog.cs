@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
@@ -148,6 +150,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             EnsureDependenciesInstalled();
 
+            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
+
             if (!dc.State.ContainsKey(DialogPath.EventCounter))
             {
                 dc.State.SetValue(DialogPath.EventCounter, 0u);
@@ -212,6 +216,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             EnsureDependenciesInstalled();
 
+            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
+
             // Continue step execution
             return await ContinueActionsAsync(dc, null, cancellationToken).ConfigureAwait(false);
         }
@@ -222,6 +228,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
             }
+
+            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
 
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
@@ -273,6 +281,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var childContext = CreateChildContext(dc);
                 await childContext.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
             }
+        }
+
+        public override string GetVersion()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(base.GetVersion());
+            sb.Append(this.Id ?? string.Empty);
+            sb.Append(this.AutoEndDialog);
+            sb.Append(this.Recognizer.GetVersion());
+            sb.Append(this.Selector.GetVersion());
+            sb.Append(this.Generator.GetVersion());
+            sb.Append(this.Schema.GetVersion());
+            foreach (var trigger in Triggers)
+            {
+                sb.Append(trigger.GetVersion());
+            }
+
+            return Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
         }
 
         public override DialogContext CreateChildContext(DialogContext dc)
