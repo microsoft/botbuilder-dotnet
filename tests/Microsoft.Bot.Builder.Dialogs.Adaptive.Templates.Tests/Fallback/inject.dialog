@@ -1,0 +1,36 @@
+﻿{
+  "$schema": "../../tests.schema",
+  "$kind": "Microsoft.AdaptiveDialog",
+  "generator": {
+    "$kind": "Microsoft.ResourceMultiLanguageGenerator",
+    "resourceId": "inject.lg"
+  },
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnBeginDialog",
+      "actions": [
+        {
+          "$kind": "Microsoft.SetProperty",
+          "$designer": {
+            "id": "CTL1UI"
+          },
+          "property": "user.age",
+          "value": 22
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "$designer": {
+            "id": "CTL1UI"
+          },
+          "property": "=foo.GetProperty()",
+          "value": [ "car", "washing", "food", "laundry" ]
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${string(select(foo.GetList(user.tasks),iter,foo.Convert(iter.index,iter.value)))}"
+        }
+
+      ]
+    }
+  ]
+}
