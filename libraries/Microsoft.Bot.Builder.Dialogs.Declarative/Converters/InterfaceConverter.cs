@@ -32,26 +32,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var (jsonObject, range) = SourceScope.ReadTokenRange(reader, sourceContext);
+            var (jToken, range) = SourceScope.ReadTokenRange(reader, sourceContext);
             using (new SourceScope(sourceContext, range))
             {
-                if (this.resourceExplorer.IsRef(jsonObject))
+                if (this.resourceExplorer.IsRef(jToken))
                 {
                     // We can't do this asynchronously as the Json.NET interface is synchronous
-                    jsonObject = this.resourceExplorer.ResolveRefAsync(jsonObject, sourceContext).GetAwaiter().GetResult();
+                    jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
                 }
 
-                var kind = (string)jsonObject["$kind"];
+                var kind = (string)jToken["$kind"];
                 if (kind == null)
                 {
-                    throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jsonObject)}");
+                    // see if there is jObject resolver
+                    var result = ResolveUnknownObject(jToken);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+
+                    throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jToken)}");
                 }
 
                 // if IdRefResolver made a source context available for the JToken, then add it to the context stack
-                var found = DebugSupport.SourceMap.TryGetValue(jsonObject, out var rangeResolved);
+                var found = DebugSupport.SourceMap.TryGetValue(jToken, out var rangeResolved);
                 using (found ? new SourceScope(sourceContext, rangeResolved) : null)
                 {
-                    T result = this.resourceExplorer.BuildType<T>(kind, jsonObject, serializer);
+                    T result = this.resourceExplorer.BuildType<T>(kind, jToken, serializer);
 
                     // associate the most specific source context information with this item
                     if (sourceContext.CallStack.Count > 0)
@@ -63,6 +70,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     return result;
                 }
             }
+        }
+
+        public virtual object ResolveUnknownObject(JToken jToken)
+        {
+            return null;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

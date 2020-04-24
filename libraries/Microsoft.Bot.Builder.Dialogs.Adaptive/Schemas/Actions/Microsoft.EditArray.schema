@@ -14,11 +14,12 @@
             "description": "Optional id for the dialog"
         },
         "changeType": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Type of change",
             "description": "Type of change to the array in memory.",
             "oneOf": [
                 {
+                    "type": "string",
+                    "title": "Enum",
                     "enum": [
                         "push",
                         "pop",
@@ -28,10 +29,9 @@
                     ]
                 },
                 {
-                    "pattern": "^=.*\\S.*"
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                 }
-            ],
-            "default": "push"
+            ]
         },
         "disabled": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",

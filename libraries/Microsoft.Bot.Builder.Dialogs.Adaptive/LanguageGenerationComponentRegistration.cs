@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield return new LanguageGeneratorConverter(resourceExplorer, sourceContext);
-            yield return new ActivityTemplateConverter();
+            yield return new ITemplateActivityConverter(resourceExplorer, sourceContext);
         }
     }
 }
