@@ -1,15 +1,15 @@
 pool:
   vmImage: 'windows-2019'
 
+variables:
+  # NextBuild: define in Azure '[experimental]Dummy-build2'
+  # PipelinesPersonalAccessToken: define in Azure 
+  TriggeringBuildReason: $[ coalesce( variables['TriggeredReason'], variables['Build.Reason'] ) ]
+
 stages:
 - stage: Stage
   jobs:
     - job: Job
-      variables:
-        # NextBuild: define in Azure '[experimental]Dummy-build2'
-        # PipelinesPersonalAccessToken: define in Azure 
-        # temp: ${{ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'], 'both yielded nothing' ) }}
-        TriggeringBuildReason: $[ coalesce( variables['TriggeredReason'], variables['Build.Reason'], 'both yielded nothing' ) ]
 
       steps:
       - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
