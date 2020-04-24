@@ -7,7 +7,7 @@ stages:
     - job: Job
       variables:
         # NextBuild: define in Azure '[experimental]Dummy-build2'
-        # PipelinesPersonalAccessToken: define in Azure
+        # PipelinesPersonalAccessToken: define in Azure 
         temp: ${{ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'], 'both yielded nothing' ) }}
         temp2: $[ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'], 'both yielded nothing' ) ]
 
