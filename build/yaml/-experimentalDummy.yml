@@ -5,7 +5,6 @@ variables:
   # NextBuild: define in Azure '[experimental]Dummy-build2'
   # PipelinesPersonalAccessToken: define in Azure
   TriggeringBuildReason: ${{ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'], 'both yielded nothing' ) }}
-  #TriggeringBuildReason: $(temp)
 
 steps:
 - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
@@ -14,6 +13,7 @@ steps:
     tags: |
      TriggeringBuildReason=$(TriggeringBuildReason)
      NextBuild=$(NextBuild)
+     $(TriggeredBy)
   continueOnError: true
   condition: always()
 
