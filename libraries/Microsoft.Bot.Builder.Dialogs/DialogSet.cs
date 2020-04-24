@@ -43,30 +43,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets a unique string which represents the version of this dialogset.  
-        /// </summary>
-        /// <returns>Version will change when any of the child dialogs version changes.</returns>
-        public virtual string GetVersion()
-        {
-            if (this._version == null)
-            {
-                StringBuilder sb = new StringBuilder();
-                foreach (var dialog in this._dialogs)
-                {
-                    var v = this._dialogs[dialog.Key].GetVersion();
-                    if (v != null)
-                    {
-                        sb.Append(v);
-                    }
-                }
-
-                this._version = Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
-            }
-
-            return this._version;
-        }
-
-        /// <summary>
         /// Gets or sets the <see cref="IBotTelemetryClient"/> to use for logging.
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> to use for logging.</value>
@@ -88,6 +64,30 @@ namespace Microsoft.Bot.Builder.Dialogs
                     dialog.TelemetryClient = _telemetryClient;
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets a unique string which represents the combined versions of all dialogs in this this dialogset.  
+        /// </summary>
+        /// <returns>Version will change when any of the child dialogs version changes.</returns>
+        public virtual string GetVersion()
+        {
+            if (this._version == null)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var dialog in this._dialogs)
+                {
+                    var v = this._dialogs[dialog.Key].GetVersion();
+                    if (v != null)
+                    {
+                        sb.Append(v);
+                    }
+                }
+
+                this._version = Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
+            }
+
+            return this._version;
         }
 
         /// <summary>

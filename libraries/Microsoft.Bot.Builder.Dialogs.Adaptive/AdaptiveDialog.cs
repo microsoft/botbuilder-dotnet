@@ -283,24 +283,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        public override string GetVersion()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(base.GetVersion());
-            sb.Append(this.Id ?? string.Empty);
-            sb.Append(this.AutoEndDialog);
-            sb.Append(this.Recognizer.GetVersion());
-            sb.Append(this.Selector.GetVersion());
-            sb.Append(this.Generator.GetVersion());
-            sb.Append(this.Schema.GetVersion());
-            foreach (var trigger in Triggers)
-            {
-                sb.Append(trigger.GetVersion());
-            }
-
-            return Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
-        }
-
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
@@ -327,6 +309,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             EnsureDependenciesInstalled();
 
             yield break;
+        }
+
+        protected override string GetInternalVersion()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            // change the container version if any dialogs are added or removed.
+            sb.Append(this.Dialogs.GetVersion());
+
+            // change version if the schema has changed.
+            if (this.Schema != null)
+            {
+                sb.Append(JsonConvert.SerializeObject(this.Schema));
+            }
+
+            // change if triggers type/constraint change 
+            foreach (var trigger in Triggers)
+            {
+                sb.Append(trigger.GetExpression().ToString());
+            }
+
+            return Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
         }
 
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
@@ -724,6 +728,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             };
         }
 
+        protected virtual void EnsureDependenciesInstalled()
+        {
+            lock (this)
+            {
+                if (!installedDependencies)
+                {
+                    installedDependencies = true;
+
+                    var id = 0;
+                    foreach (var trigger in Triggers)
+                    {
+                        if (trigger is IDialogDependencies depends)
+                        {
+                            foreach (var dlg in depends.GetDependencies())
+                            {
+                                Dialogs.Add(dlg);
+                            }
+                        }
+
+                        if (trigger.RunOnce)
+                        {
+                            needsTracker = true;
+                        }
+
+                        if (trigger.Priority == null)
+                        {
+                            // Constant expression defined from order
+                            trigger.Priority = id;
+                        }
+
+                        if (trigger.Id == null)
+                        {
+                            trigger.Id = id++.ToString();
+                        }
+                    }
+
+                    // Wire up selector
+                    if (Selector == null)
+                    {
+                        // Default to most specific then first
+                        Selector = new MostSpecificSelector { Selector = new FirstSelector() };
+                    }
+
+                    this.Selector.Initialize(Triggers, evaluate: true);
+                }
+            }
+        }
+
         // This function goes through the entity assignments and emits events if present.
         private async Task<bool> ProcessQueuesAsync(ActionContext actionContext, CancellationToken cancellationToken)
         {
@@ -807,54 +859,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return false;
-        }
-
-        private void EnsureDependenciesInstalled()
-        {
-            lock (this)
-            {
-                if (!installedDependencies)
-                {
-                    installedDependencies = true;
-
-                    var id = 0;
-                    foreach (var trigger in Triggers)
-                    {
-                        if (trigger is IDialogDependencies depends)
-                        {
-                            foreach (var dlg in depends.GetDependencies())
-                            {
-                                Dialogs.Add(dlg);
-                            }
-                        }
-
-                        if (trigger.RunOnce)
-                        {
-                            needsTracker = true;
-                        }
-
-                        if (trigger.Priority == null)
-                        {
-                            // Constant expression defined from order
-                            trigger.Priority = id;
-                        }
-
-                        if (trigger.Id == null)
-                        {
-                            trigger.Id = id++.ToString();
-                        }
-                    }
-
-                    // Wire up selector
-                    if (Selector == null)
-                    {
-                        // Default to most specific then first
-                        Selector = new MostSpecificSelector { Selector = new FirstSelector() };
-                    }
-
-                    this.Selector.Initialize(Triggers, evaluate: true);
-                }
-            }
         }
 
         private bool ShouldEnd(DialogContext dc)

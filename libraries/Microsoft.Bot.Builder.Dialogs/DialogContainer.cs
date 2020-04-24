@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -25,9 +26,19 @@ namespace Microsoft.Bot.Builder.Dialogs
             return this.Dialogs.Find(dialogId);
         }
 
-        public override string GetVersion()
+        /// <summary>
+        /// GetInternalVersion - Returns internal version identifier for this container.
+        /// </summary>
+        /// <remarks>
+        /// DialogContainers detect changes of all sub-components in the container and map that to an DialogChanged event.
+        /// Because they do this, DialogContainers "hide" the internal changes and just have the .id. This isolates changes
+        /// to the container level unless a container doesn't handle it.  To support this DialogContainers define a
+        /// protected virtual method GetInternalVersion() which computes if this dialog or child dialogs have changed
+        /// which is then examined via calls to CheckForVersionChangeAsync().
+        /// </remarks>
+        /// <returns>version which represents the change of the internals of this container.</returns>
+        protected virtual string GetInternalVersion()
         {
-            // use dialogset's concept of version.
             return this.Dialogs.GetVersion();
         }
 
@@ -42,13 +53,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// 
         /// This should be called at the start of `beginDialog()`, `continueDialog()`, and `resumeDialog()`.
         /// </remarks>
-        protected async Task CheckForVersionChangeAsync(DialogContext dc)
+        protected virtual async Task CheckForVersionChangeAsync(DialogContext dc)
         {
             var current = dc.ActiveDialog.Version;
-            dc.ActiveDialog.Version = this.GetVersion();
+            dc.ActiveDialog.Version = this.GetInternalVersion();
 
             // Check for change of previously stored hash
-            if (current != dc.ActiveDialog.Version)
+            if (current != null && current != dc.ActiveDialog.Version)
             {
                 // Give bot an opportunity to handle the change.
                 // - If bot handles it the changeHash will have been updated as to avoid triggering the 
