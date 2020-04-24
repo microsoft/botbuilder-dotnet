@@ -15,7 +15,7 @@ stages:
       - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
         displayName: 'Tag Build with Build.Reason=$(Build.Reason) NextBuild=$(NextBuild)'
         inputs:
-        tags: |
+          tags: |
             TriggeringBuildReason=$(TriggeringBuildReason)
             temp=$(temp)
             temp2=$(temp2)
