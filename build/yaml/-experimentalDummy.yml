@@ -1,39 +1,41 @@
 pool:
   vmImage: 'windows-2019'
 
-jobs:
-- job: Job1
-    variables:
-      # NextBuild: define in Azure '[experimental]Dummy-build2'
-      # PipelinesPersonalAccessToken: define in Azure
-      temp: ${{ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'], 'both yielded nothing' ) }}
-      temp2: $[ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'], 'both yielded nothing' ) ]
+stages:
+- stage: Stage1
+  jobs:
+    - job: Job1
+        variables:
+          # NextBuild: define in Azure '[experimental]Dummy-build2'
+          # PipelinesPersonalAccessToken: define in Azure
+          temp: ${{ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'], 'both yielded nothing' ) }}
+          temp2: $[ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'], 'both yielded nothing' ) ]
 
-    steps:
-    - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
-      displayName: 'Tag Build with Build.Reason=$(Build.Reason) NextBuild=$(NextBuild)'
-      inputs:
-        tags: |
-         TriggeringBuildReason=$(TriggeringBuildReason)
-         temp=$(temp)
-         temp2=$(temp2)
-         $(TriggeredBy)
-         NextBuild=$(NextBuild)
-      continueOnError: true
-      condition: always()
+        steps:
+        - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
+          displayName: 'Tag Build with Build.Reason=$(Build.Reason) NextBuild=$(NextBuild)'
+          inputs:
+            tags: |
+             TriggeringBuildReason=$(TriggeringBuildReason)
+             temp=$(temp)
+             temp2=$(temp2)
+             $(TriggeredBy)
+             NextBuild=$(NextBuild)
+          continueOnError: true
+          condition: always()
 
-    - script: 'echo "did this run?"'
-      displayName: 'Pretend Deploy'
-      condition: and(succeeded(), in(variables['TriggeringBuildReason'], 'Schedule', 'Manual'))
+        - script: 'echo "did this run?"'
+          displayName: 'Pretend Deploy'
+          condition: and(succeeded(), in(variables['TriggeringBuildReason'], 'Schedule', 'Manual'))
 
-    - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
-      displayName: 'Trigger build $(NextBuild)'
-      inputs:
-        buildDefinition: '$(NextBuild)'
-        queueBuildForUserThatTriggeredBuild: true
-        buildParameters: 'TriggeringBuildReason: $(TriggeringBuildReason), TriggeredBy: Triggered_by_$(Build.DefinitionName)_$(Build.BuildNumber)'
-        password: '$(PipelinesPersonalAccessToken)'
-        enableBuildInQueueCondition: true
-        blockingBuildsList: '$(NextBuild)'
-      continueOnError: true
-      condition: and(succeededOrFailed(), ne(variables['Build.Reason'], 'xxyxyx'), ne(variables['NextBuild'], ''), ne(variables['PipelinesPersonalAccessToken'], ''))
+        - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
+          displayName: 'Trigger build $(NextBuild)'
+          inputs:
+            buildDefinition: '$(NextBuild)'
+            queueBuildForUserThatTriggeredBuild: true
+            buildParameters: 'TriggeringBuildReason: $(TriggeringBuildReason), TriggeredBy: Triggered_by_$(Build.DefinitionName)_$(Build.BuildNumber)'
+            password: '$(PipelinesPersonalAccessToken)'
+            enableBuildInQueueCondition: true
+            blockingBuildsList: '$(NextBuild)'
+          continueOnError: true
+          condition: and(succeededOrFailed(), ne(variables['Build.Reason'], 'xxyxyx'), ne(variables['NextBuild'], ''), ne(variables['PipelinesPersonalAccessToken'], ''))
