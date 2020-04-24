@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var text = await Text.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
+            var text = await Text.BindAsync(dc, dc.State).ConfigureAwait(false);
 
             var properties = new Dictionary<string, string>()
             {

@@ -178,6 +178,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Create DialogContext
             var dc = new DialogContext(Dialogs, context, dialogState);
 
+            // promote initial turnstate into dc.services for contextual services
+            foreach (var service in dc.Services)
+            {
+                dc.Services[service.Key] = service.Value;
+            }
+
+            // map initial turnstate into root dialog context.services
+            foreach (var service in this.TurnState)
+            {
+                dc.Services[service.Key] = service.Value;
+            }
+
             // get the DialogStateManager configuration
             var dialogStateManager = new DialogStateManager(dc, StateConfiguration);
             await dialogStateManager.LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
