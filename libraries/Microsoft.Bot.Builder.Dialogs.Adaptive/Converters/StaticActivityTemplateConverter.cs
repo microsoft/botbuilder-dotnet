@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// JsonConverter which understands serializes StaticActiviteTemplates as activity object.
     /// </summary>
-    public class StaticActivityTemplateConverter : JsonConverter<StaticActivityTemplate>
+    internal class StaticActivityTemplateConverter : JsonConverter<StaticActivityTemplate>
     {
         public override bool CanRead => false;
 
