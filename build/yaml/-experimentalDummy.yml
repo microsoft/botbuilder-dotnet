@@ -32,7 +32,7 @@ stages:
         inputs:
           buildDefinition: '$(NextBuild)'
           queueBuildForUserThatTriggeredBuild: true
-          buildParameters: 'TriggeringBuildReason: $(TriggeredReason), TriggeredBy: Triggered_by_$(Build.DefinitionName)_$(Build.BuildNumber)'
+          buildParameters: 'TriggeringBuildReason: $(TriggeredReason), TriggeredBy: Triggered_by_$(Build.DefinitionName)/$(Build.BuildNumber)'
           password: '$(PipelinesPersonalAccessToken)'
           enableBuildInQueueCondition: true
           blockingBuildsList: '$(NextBuild)'
