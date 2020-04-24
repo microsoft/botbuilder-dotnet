@@ -60,6 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Actions
             yield return new DeclarativeType<BeginDialog>(BeginDialog.Kind);
+            yield return new DeclarativeType<CancelDialog>(CancelDialog.Kind);
             yield return new DeclarativeType<CancelAllDialogs>(CancelAllDialogs.Kind);
             yield return new DeclarativeType<DebugBreak>(DebugBreak.Kind);
             yield return new DeclarativeType<DeleteProperty>(DeleteProperty.Kind);
@@ -166,6 +167,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new InterfaceConverter<OnCondition>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<TriggerSelector>(resourceExplorer, sourceContext);
+            yield return new ITemplateActivityConverter(resourceExplorer, sourceContext);
+            
+            // yield return new ActivityTemplateConverter(resourceExplorer, sourceContext);
 
             yield return new IntExpressionConverter();
             yield return new NumberExpressionConverter();
@@ -188,8 +192,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new EnumExpressionConverter<ChoiceOutputFormat>();
 
             yield return new ChoiceSetConverter();
-            yield return new ActivityTemplateConverter();
             yield return new JObjectConverter(resourceExplorer, sourceContext);
+            yield return new ActivityTemplateConverter();
+            yield return new StaticActivityTemplateConverter();
         }
     }
 }

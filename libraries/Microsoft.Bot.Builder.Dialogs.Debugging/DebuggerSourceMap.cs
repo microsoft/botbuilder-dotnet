@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         void ISourceMap.Add(object item, SourceRange range)
         {
-            if (!Path.IsPathRooted(range.Path))
+            if (range.Path != null && !Path.IsPathRooted(range.Path))
             {
                 throw new ArgumentOutOfRangeException(range.Path);
             }

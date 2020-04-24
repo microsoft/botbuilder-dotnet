@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     var (value, error) = this.DefaultValue.TryGetValue(dc.State);
                     if (this.DefaultValueResponse != null)
                     {
-                        var response = await this.DefaultValueResponse.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
+                        var response = await this.DefaultValueResponse.BindAsync(dc).ConfigureAwait(false);
 
                         var properties = new Dictionary<string, string>()
                         {
@@ -393,12 +393,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (this.UnrecognizedPrompt != null)
                     {
                         template = this.UnrecognizedPrompt;
-                        msg = await this.UnrecognizedPrompt.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
+                        msg = await this.UnrecognizedPrompt.BindAsync(dc).ConfigureAwait(false);
                     }
                     else if (this.InvalidPrompt != null)
                     {
                         template = this.InvalidPrompt;
-                        msg = await this.InvalidPrompt.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
+                        msg = await this.InvalidPrompt.BindAsync(dc).ConfigureAwait(false);
                     }
 
                     break;
@@ -407,12 +407,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (this.InvalidPrompt != null)
                     {
                         template = this.InvalidPrompt;
-                        msg = await this.InvalidPrompt.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
+                        msg = await this.InvalidPrompt.BindAsync(dc).ConfigureAwait(false);
                     }
                     else if (this.UnrecognizedPrompt != null)
                     {
                         template = this.UnrecognizedPrompt;
-                        msg = await this.UnrecognizedPrompt.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
+                        msg = await this.UnrecognizedPrompt.BindAsync(dc).ConfigureAwait(false);
                     }
 
                     break;
@@ -421,7 +421,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (msg == null)
             {
                 template = this.Prompt;
-                msg = await this.Prompt.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
+                msg = await this.Prompt.BindAsync(dc).ConfigureAwait(false);
             }
 
             msg.InputHint = InputHints.ExpectingInput;

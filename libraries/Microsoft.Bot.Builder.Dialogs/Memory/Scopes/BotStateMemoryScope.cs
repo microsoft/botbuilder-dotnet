@@ -2,12 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
@@ -40,14 +36,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException($"{nameof(dialogContext)} is null");
             }
 
-            var cachedState = dialogContext.Context.TurnState.Get<object>(typeof(T).Name);
-            if (cachedState != null)
-            {
-                return cachedState.GetType().GetProperty("State").GetValue(cachedState);
-            }
+            var botState = GetBotState(dialogContext);
+            var cachedState = botState?.GetCachedState(dialogContext.Context);
 
-            // this memory scope is not available
-            return null;
+            return cachedState?.State;
         }
 
         /// <summary>
@@ -62,7 +54,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException($"{nameof(dialogContext)} is null");
             }
 
-            var botState = dialogContext.Context.TurnState.Get<T>();
+            var botState = GetBotState(dialogContext);
+
             if (botState == null)
             {
                 throw new ArgumentException($"{typeof(T).Name} is not available.");
@@ -73,7 +66,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         public override async Task LoadAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
-            var botState = dialogContext.Context.TurnState.Get<T>();
+            var botState = GetBotState(dialogContext);
+
             if (botState != null)
             {
                 await botState.LoadAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
@@ -82,7 +76,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         public override async Task SaveChangesAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
-            var botState = dialogContext.Context.TurnState.Get<T>();
+            var botState = GetBotState(dialogContext);
+
             if (botState != null)
             {
                 await botState.SaveChangesAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
@@ -93,5 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         {
             return Task.CompletedTask;
         }
+
+        private static T GetBotState(DialogContext dialogContext) => dialogContext.Context.TurnState.Get<T>();
     }
 }
