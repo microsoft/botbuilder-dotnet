@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public void DialogSet_VersionConsistent()
+        public void DialogSet_GetVersion()
         {
             var ds = new DialogSet();
             var version1 = ds.GetVersion();
