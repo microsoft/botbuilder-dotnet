@@ -489,7 +489,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public void SetPathValue()
         {
             Dictionary<string, object> test = new Dictionary<string, object>();
-            ObjectPath.SetPathValue(test, "user.date", new JValue("2008-12-12T23:59:59.000Z"));
             ObjectPath.SetPathValue(test, "x.y.z", 15);
             ObjectPath.SetPathValue(test, "x.p", "hello");
             ObjectPath.SetPathValue(test, "foo", new { Bar = 15, Blat = "yo" });
@@ -508,8 +507,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("yabba", value2);
             Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "x.a[0]", out value2));
             Assert.AreEqual("dabba", value2);
-            Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "user.date", out var value3));
-            Assert.AreEqual("2008-12-12T23:59:59.000Z", value3);
             Assert.IsFalse(ObjectPath.TryGetPathValue<object>(test, "null", out var nullValue));
             Assert.AreEqual(TypeCode.Empty, ObjectPath.GetPathValue<TypeCode>(test, "enum"));
 
