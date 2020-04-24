@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             if (ActivityProcessed.GetValue(dc.State))
             {
                 // The parent consumed the activity in context, use the Activity property to start the skill.
-                activity = await Activity.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false);
+                activity = await Activity.BindAsync(dc).ConfigureAwait(false);
             }
             else
             {
