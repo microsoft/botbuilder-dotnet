@@ -72,6 +72,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task BotStateMemoryScopeTest()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                var dsm = dc.State as DialogStateManager;
+                var storage = dc.Context.TurnState.Get<IStorage>();
+                var userState = dc.Context.TurnState.Get<UserState>();
+                var conversationState = dc.Context.TurnState.Get<ConversationState>();
+                var customState = new CustomState(storage);
+
+                dc.Context.TurnState.Add(customState);
+
+                var stateScopes = new (BotState State, MemoryScope Scope)[]
+                {
+                    (userState, new UserMemoryScope()),
+                    (conversationState, new ConversationMemoryScope()),
+                    (customState, new BotStateMemoryScope<CustomState>("test")),
+                };
+
+                foreach (var stateScope in stateScopes)
+                {
+                    const string Name = "test-name";
+                    const string Value = "test-value";
+
+                    await stateScope.State.CreateProperty<string>(Name).SetAsync(dc.Context, Value, ct);
+
+                    var memory = stateScope.Scope.GetMemory(dc);
+
+                    Assert.AreEqual(Value, ObjectPath.GetPathValue<string>(memory, Name), "Memory scope should have correct value");
+                }
+            }).StartTestAsync();
+        }
+
+        public class CustomState : BotState
+        {
+            public CustomState(IStorage storage)
+                : base(storage, "Not the name of the type")
+            {
+            }
+
+            protected override string GetStorageKey(ITurnContext turnContext) => $"botstate/custom/etc";
+        }
+
         public async Task MissingBotStateScopeTest()
         {
             // test that missing MemoryScope (UserState) behaves like NULL value, aka read ops return null, write ops throw 
