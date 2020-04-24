@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder
                     // If you have no appId and no secret this code will run but not produce an Authorization header.
                     var captureHandler = new CaptureRequestHandler();
                     var client = new ConnectorClient(connector.BaseUri, connector.Credentials, captureHandler);
-                    var activity = new Activity { Type = "message", Conversation = new ConversationAccount { Id = "capture" } };
+                    var activity = new Activity { Type = ActivityTypes.Message, Conversation = new ConversationAccount { Id = "capture" } };
                     client.Conversations.SendToConversation(activity);
                     var headers = captureHandler.Request.Headers;
                     healthResults.Authorization = headers.Authorization?.ToString();
