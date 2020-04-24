@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Give bot an opportunity to handle the change.
                 // - If bot handles it the changeHash will have been updated as to avoid triggering the 
                 //   change again.
-                var handled = await dc.EmitEventAsync(DialogEvents.DialogChanged, this.Id, true, false).ConfigureAwait(false);
+                var handled = await dc.EmitEventAsync(DialogEvents.VersionChanged, this.Id, true, false).ConfigureAwait(false);
                 if (!handled)
                 {
                     // Throw an error for bot to catch

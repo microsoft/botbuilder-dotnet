@@ -437,7 +437,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Triggers = new List<OnCondition>()
                 {
-                    new OnDialogEvent(DialogEvents.DialogChanged)
+                    new OnDialogEvent(DialogEvents.VersionChanged)
                     {
                         Actions = new List<Dialog>()
                         {
