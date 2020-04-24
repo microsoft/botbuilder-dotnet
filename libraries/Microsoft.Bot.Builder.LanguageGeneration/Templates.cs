@@ -431,7 +431,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var index = optionStr.IndexOf('=');
                     var key = optionStr.Substring(0, index).Trim();
                     var value = optionStr.Substring(index + 1).Trim();
-                    if (key == "@namespace")
+                    if (key == "@registerNamespace")
                     {
                         result = value;
                     }
@@ -463,7 +463,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var index = optionStr.IndexOf('=');
                     var key = optionStr.Substring(0, index).Trim();
                     var value = optionStr.Substring(index + 1).Trim();
-                    if (key == "@addToGlobalFunctionTable")
+                    if (key == "@registerAsFunctions")
                     {
                         var templateList = value.Split(',').ToList();
                         templateList.ForEach(u => result.Add(u.Trim()));

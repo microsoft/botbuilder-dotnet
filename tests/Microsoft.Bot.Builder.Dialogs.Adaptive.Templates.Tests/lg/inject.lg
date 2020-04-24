@@ -1,18 +1,7 @@
 ﻿> !# @strict = false
-> !# @namespace = foo
-> !# @addToGlobalFunctionTable = bar, cool, longCondition, GetList, Convert, GetProperty
+> !# @registerNamespace = foo
+> !# @registerAsFunctions = GetList, Convert, GetProperty
 
-#bar()
-- ${add(1,2)}
-
-#cool(a)
-- ${add(1,a)}
-
-#longCondition(age)
-- IF: ${age > 20}
-- You can drive a car!
-- ELSE:
-- You shall not pass!
 
 # Convert(index, value)
 - ${setProperty(setProperty({}, "Id", index),"Topic",value)}

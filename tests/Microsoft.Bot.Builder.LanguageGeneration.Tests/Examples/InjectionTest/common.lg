@@ -1,4 +1,4 @@
-﻿> !# @addToGlobalFunctionTable = looking
+﻿> !# @registerAsFunctions = looking
 
 #looking
 -${{user: {name: "John"}}.user.name}
