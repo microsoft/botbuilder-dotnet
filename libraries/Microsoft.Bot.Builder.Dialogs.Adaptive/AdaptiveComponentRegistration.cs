@@ -60,6 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Actions
             yield return new DeclarativeType<BeginDialog>(BeginDialog.Kind);
+            yield return new DeclarativeType<CancelDialog>(CancelDialog.Kind);
             yield return new DeclarativeType<CancelAllDialogs>(CancelAllDialogs.Kind);
             yield return new DeclarativeType<DebugBreak>(DebugBreak.Kind);
             yield return new DeclarativeType<DeleteProperty>(DeleteProperty.Kind);
