@@ -343,13 +343,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
         private class RosterHttpMessageHandler : HttpMessageHandler
         {
-            public string Querystring { get; set; }
-
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
-                
-                Querystring = request.RequestUri.PathAndQuery;
 
                 // GetTeamDetails
                 if (request.RequestUri.PathAndQuery.EndsWith("team-id"))
