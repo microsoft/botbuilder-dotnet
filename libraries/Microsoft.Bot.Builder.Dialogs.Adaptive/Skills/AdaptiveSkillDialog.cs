@@ -42,7 +42,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
         /// Gets or sets a value indicating whether to have the new dialog should process the activity.
         /// </summary>
         /// <value>
-        /// The default for this will be true, which means the new dialog should not look the activity. You can set this to false to dispatch the activity to the new dialog.
+        /// The default for this will be true, which means the new dialog will use the <see cref="Activity"/> to start the conversation with the skill.
+        /// You can set this to false to dispatch the activity in the current turn context to the skill.
         /// </value>
         [DefaultValue(true)]
         [JsonProperty("activityProcessed")]
@@ -121,7 +122,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint.GetValue(dc.State));
 
             // Get the activity to send to the skill.
-            var activity = await Activity.BindAsync(dc).ConfigureAwait(false);
+            Activity activity;
+            if (ActivityProcessed.GetValue(dc.State))
+            {
+                // The parent consumed the activity in context, use the Activity property to start the skill.
+                activity = await Activity.BindAsync(dc).ConfigureAwait(false);
+            }
+            else
+            {
+                // Send the turn context activity to the skill (pass through). 
+                activity = dc.Context.Activity;
+            }
 
             // Call the base to invoke the skill
             return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity }, cancellationToken).ConfigureAwait(false);
