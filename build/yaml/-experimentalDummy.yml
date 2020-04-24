@@ -4,7 +4,7 @@ pool:
 #variables:
   # NextBuild: define in Azure '[experimental]Dummy-build2'
   # PipelinesPersonalAccessToken: define in Azure
-  TriggeringBuildReason: $[ coalesce( variables.TriggeringBuildReason, $(Build.Reason) ) ]
+  TriggeringBuildReason: $[ coalesce( variables.TriggeringBuildReason, variables.Build.Reason ) ]
 
 steps:
 - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
