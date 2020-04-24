@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Schema
             activity.Name = "ContinueConversation";
             activity.Id = Guid.NewGuid().ToString();
             activity.ChannelId = this.ChannelId;
+            (activity as Activity).Locale = this.Locale;
             activity.ServiceUrl = this.ServiceUrl;
             activity.Conversation = this.Conversation;
             activity.Recipient = this.Bot;
