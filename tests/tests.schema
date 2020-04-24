@@ -1538,15 +1538,26 @@
                     ]
                 },
                 "dialog": {
-                    "$kind": "Microsoft.IDialog",
-                    "$role": "expression",
-                    "pattern": "^.*\\S.*",
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
                         "AddToDoDialog"
                     ],
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "title": "Resource Id"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*",
+                            "examples": [
+                                "=user.name"
+                            ]
+                        }
+                    ]
                 },
                 "options": {
                     "title": "Options",
@@ -14157,15 +14168,26 @@
                     ]
                 },
                 "dialog": {
-                    "$kind": "Microsoft.IDialog",
-                    "$role": "expression",
-                    "type": "string",
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
                         "AddToDoDialog"
                     ],
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "title": "Resource Id"
+                        },
+                        {
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*",
+                            "examples": [
+                                "=user.name"
+                            ]
+                        }
+                    ]
                 },
                 "options": {
                     "title": "Options",
