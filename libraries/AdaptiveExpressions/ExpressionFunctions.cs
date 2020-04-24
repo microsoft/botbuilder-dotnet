@@ -3726,7 +3726,7 @@ namespace AdaptiveExpressions
                             } 
                             else
                             {
-                                error = $"{expr} should be either a TimexProperty or a string";
+                                error = $"{expr} requires a TimexProperty or a string as an argument";
                             }
                         }
 
@@ -3761,7 +3761,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should be either a TimexProperty or a string";
+                                error = $"{expr} requires a TimexProperty or a string as an argument";
                             }
                         }
 
