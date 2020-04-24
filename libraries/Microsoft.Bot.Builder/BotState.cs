@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -80,12 +79,9 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual async Task LoadAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             var storageKey = GetStorageKey(turnContext);
             if (force || cachedState == null || cachedState.State == null)
             {
@@ -127,12 +123,9 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             if (cachedState != null && (force || cachedState.IsChanged()))
             {
                 var key = GetStorageKey(turnContext);
@@ -160,10 +153,7 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
             // Explicitly setting the hash will mean IsChanged is always true. And that will force a Save.
             turnContext.TurnState[_contextServiceKey] = new CachedBotState { Hash = string.Empty };
@@ -181,12 +171,9 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             if (cachedState != null)
             {
                 turnContext.TurnState.Remove(_contextServiceKey);
@@ -204,14 +191,24 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public JToken Get(ITurnContext turnContext)
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
-            var stateKey = this.GetType().Name;
-            var cachedState = turnContext.TurnState.Get<object>(stateKey);
-            return JObject.FromObject(cachedState)["State"];
+            var cachedState = GetCachedState(turnContext);
+            return JObject.FromObject(cachedState.State);
+        }
+
+        /// <summary>
+        /// Gets the cached bot state instance that wraps the raw cached data for this <see cref="BotState"/>
+        /// from the turn context.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <returns>The cached bot state instance.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
+        public CachedBotState GetCachedState(ITurnContext turnContext)
+        {
+            BotAssert.ContextNotNull(turnContext);
+
+            return turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
         }
 
         /// <summary>
@@ -235,17 +232,14 @@ namespace Microsoft.Bot.Builder
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
         protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
             if (propertyName == null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
 
             if (cachedState.State.TryGetValue(propertyName, out object result))
             {
@@ -295,17 +289,14 @@ namespace Microsoft.Bot.Builder
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
         protected Task DeletePropertyValueAsync(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
             if (propertyName == null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             cachedState.State.Remove(propertyName);
             return Task.CompletedTask;
         }
@@ -323,17 +314,14 @@ namespace Microsoft.Bot.Builder
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
         protected Task SetPropertyValueAsync(ITurnContext turnContext, string propertyName, object value, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
             if (propertyName == null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             cachedState.State[propertyName] = value;
             return Task.CompletedTask;
         }
@@ -341,9 +329,9 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Internal cached bot state.
         /// </summary>
-        private class CachedBotState
+        public class CachedBotState
         {
-            public CachedBotState(IDictionary<string, object> state = null)
+            internal CachedBotState(IDictionary<string, object> state = null)
             {
                 State = state ?? new Dictionary<string, object>();
                 Hash = ComputeHash(State);
@@ -351,9 +339,9 @@ namespace Microsoft.Bot.Builder
 
             public IDictionary<string, object> State { get; set; }
 
-            public string Hash { get; set; }
+            internal string Hash { get; set; }
 
-            public bool IsChanged()
+            internal bool IsChanged()
             {
                 return Hash != ComputeHash(State);
             }
