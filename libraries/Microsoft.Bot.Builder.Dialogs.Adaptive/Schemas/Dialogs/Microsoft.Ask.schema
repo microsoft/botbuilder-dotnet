@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Send Activity to Ask a question",
     "description": "This is an action which sends an activity to the user when a response is expected",
@@ -11,7 +11,7 @@
         {
             "properties": {
                 "expectedProperties": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/arrayExpression",
                     "title": "Expected Properties",
                     "description": "Properties expected from the user.",
                     "items": {
@@ -27,7 +27,7 @@
                     ]
                 },
                 "defaultOperation": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
                     "title": "Default Operation",
                     "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
                     "examples": [

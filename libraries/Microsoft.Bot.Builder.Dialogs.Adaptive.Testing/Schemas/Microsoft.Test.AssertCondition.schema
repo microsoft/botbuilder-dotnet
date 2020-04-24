@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Assert Condition",
     "description": "Assert condition is true.",
@@ -9,7 +9,7 @@
     ],
     "properties": {
         "condition": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/condition",
+            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/condition",
             "title": "Condition",
             "description": "Expression to evalute",
             "examples": [

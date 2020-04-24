@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "End dialog",
     "description": "End this dialog.",
@@ -11,7 +11,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -19,7 +19,7 @@
             ]
         },
         "value": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/valueExpression",
+            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/valueExpression",
             "title": "Value",
             "description": "Result value returned to the parent dialog.",
             "examples": [

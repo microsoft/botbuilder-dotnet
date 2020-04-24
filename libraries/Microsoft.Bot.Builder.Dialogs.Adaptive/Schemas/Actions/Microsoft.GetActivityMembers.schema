@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Get Activity Members",
     "description": "Get the members who are participating in an activity. (BotFrameworkAdapter only)",
@@ -11,7 +11,7 @@
             "description": "Optional id for the dialog"
         },
         "property": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
             "title": "Property",
             "description": "Property (named location to store information).",
             "examples": [
@@ -19,7 +19,7 @@
             ]
         },
         "activityId": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
             "title": "ActivityId",
             "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
             "examples": [
@@ -27,7 +27,7 @@
             ]
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [

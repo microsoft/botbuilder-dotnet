@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "type": "object",
     "title": "Text input dialog",
@@ -11,7 +11,7 @@
         {
             "properties": {
                 "defaultValue": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
                     "title": "Default value",
                     "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
                     "examples": [
@@ -21,7 +21,7 @@
                     ]
                 },
                 "value": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
                     "title": "Value",
                     "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
                     "examples": [
@@ -31,7 +31,7 @@
                     ]
                 },
                 "outputFormat": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
                     "title": "Output format",
                     "description": "Expression to format the output.",
                     "examples": [

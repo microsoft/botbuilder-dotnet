@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Choice input dialog",
     "description": "Collect information - Pick from a list of choices",
@@ -72,7 +72,7 @@
                     ]
                 },
                 "defaultLocale": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
                     "title": "Default locale",
                     "description": "The default locale to use to parse confirmation choices if there is not one passed by the caller.",
                     "default": "en-us",
@@ -103,7 +103,7 @@
                     "default": "auto"
                 },
                 "choiceOptions": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/objectExpression",
                     "title": "Choice options",
                     "description": "Sets the choice options used for controlling how choices are combined.",
                     "properties": {
@@ -134,7 +134,7 @@
                     }
                 },
                 "recognizerOptions": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/objectExpression",
                     "title": "Recognizer options",
                     "description": "Sets how to recognize choices in the response",
                     "properties": {

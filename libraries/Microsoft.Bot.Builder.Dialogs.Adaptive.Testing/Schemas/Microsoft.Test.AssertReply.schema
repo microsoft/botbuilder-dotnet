@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
     "$role": "implements(Microsoft.Test.ITestAction)",
     "title": "Assert Reply",
     "description": "Asserts that a reply text is valid.",
@@ -30,7 +30,7 @@
             "title": "Assertions to perform to validate Activity that is sent by the dialog",
             "description": "Sequence of expressions which must evaluate to true.",
             "items": {
-                "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/condition",
+                "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/condition",
                 "title": "Assertion",
                 "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
                 "examples": [
