@@ -22,11 +22,13 @@
             ]
         },
         "eventName": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$role": "expression",
             "title": "Event name",
             "description": "Name of the event to emit.",
             "oneOf": [
                 {
+                    "type": "string",
+                    "title": "Built-in event",
                     "enum": [
                         "beginDialog",
                         "resumeDialog",
@@ -43,7 +45,11 @@
                     ]
                 },
                 {
+                    "title": "Custom event",
                     "pattern": "^(?!(beginDialog$|resumeDialog$|repromptDialog$|cancelDialog$|endDialog$|activityReceived$|recognizedIntent$|unknownIntent$|actionsStarted$|actionsSaved$|actionsEnded$|actionsResumed))(\\S){1}.*"
+                },
+                {
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                 }
             ]
         },
