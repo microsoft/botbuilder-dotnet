@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder
                 try
                 {
                     // This is a mock secure SendToConversation to grab the exact HTTP headers.
-                    // If you have no appId and no secret this code will run but no produce an Authorization header.
+                    // If you have no appId and no secret this code will run but not produce an Authorization header.
                     var captureHandler = new CaptureRequestHandler();
                     var client = new ConnectorClient(connector.BaseUri, connector.Credentials, captureHandler);
                     var activity = new Activity { Type = "message", Conversation = new ConversationAccount { Id = "capture" } };
