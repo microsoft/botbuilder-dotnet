@@ -15,7 +15,7 @@
                     },
                     {
                         "$kind": "Microsoft.ChoiceInput",
-                        "choices": "user.choices",
+                        "choices": "=user.choices",
                         "style": "inline",
                         "property": "user.color",
                         "prompt": "Please select a color:",
@@ -27,7 +27,7 @@
                     },
                     {
                         "$kind": "Microsoft.ChoiceInput",
-                        "choices": "user.choices",
+                        "choices": "=user.choices",
                         "style": "inline",
                         "alwaysPrompt": true,
                         "property": "user.color",
@@ -40,7 +40,7 @@
                     },
                     {
                         "$kind": "Microsoft.ChoiceInput",
-                        "choices": "user.choices",
+                        "choices": "=user.choices",
                         "style": "inline",
                         "alwaysPrompt": true,
                         "property": "user.color",

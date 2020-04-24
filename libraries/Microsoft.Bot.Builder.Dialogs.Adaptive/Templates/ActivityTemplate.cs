@@ -22,9 +22,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         public const string Kind = "Microsoft.ActivityTemplate";
 
         // Fixed text constructor for inline template
+        public ActivityTemplate()
+        {
+        }
+
         public ActivityTemplate(string template)
         {
-            this.Template = template ?? throw new ArgumentNullException(nameof(template));
+            this.Template = template;
         }
 
         /// <summary>
