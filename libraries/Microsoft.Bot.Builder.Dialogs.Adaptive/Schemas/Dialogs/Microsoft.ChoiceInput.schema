@@ -12,28 +12,30 @@
             "properties": {
                 "outputFormat": {
                     "$role": "expression",
-                    "type": "string",
+                    "title": "Output format",
+                    "description": "Sets the desired choice output format (either value or index into choices).",
                     "oneOf": [
                         {
+                            "type": "string",
+                            "title": "Enum",
                             "enum": [
                                 "value",
                                 "index"
-                            ]
+                            ],
+                            "default": "value"
                         },
                         {
-                            "pattern": "^=.*\\S.*"
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
-                    ],
-                    "title": "Output format",
-                    "description": "Sets the desired choice output format (either value or index into choices).",
-                    "default": "value"
+                    ]
                 },
                 "choices": {
                     "$role": "expression",
                     "title": "Array of choices",
-                    "type": "array",
                     "oneOf": [
                         {
+                            "type": "array",
+                            "title": "Strings",
                             "items": [
                                 {
                                     "type": "string"
@@ -41,6 +43,8 @@
                             ]
                         },
                         {
+                            "type": "array",
+                            "title": "Objects",
                             "items": [
                                 {
                                     "type": "object",
@@ -68,6 +72,9 @@
                                     }
                                 }
                             ]
+                        },
+                        {
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
                     ]
                 },
@@ -82,9 +89,12 @@
                 },
                 "style": {
                     "$role": "expression",
-                    "type": "string",
+                    "title": "List style",
+                    "description": "Sets the ListStyle to control how choices are rendered.",
                     "oneOf": [
                         {
+                            "type": "string",
+                            "title": "List style",
                             "enum": [
                                 "none",
                                 "auto",
@@ -92,77 +102,91 @@
                                 "list",
                                 "suggestedAction",
                                 "heroCard"
-                            ]
+                            ],
+                            "default": "auto"
                         },
                         {
-                            "pattern": "^=.*\\S.*"
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
-                    ],
-                    "title": "List style",
-                    "description": "Sets the ListStyle to control how choices are rendered.",
-                    "default": "auto"
+                    ]
                 },
                 "choiceOptions": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
                     "title": "Choice options",
                     "description": "Sets the choice options used for controlling how choices are combined.",
-                    "properties": {
-                        "inlineSeparator": {
-                            "type": "string",
-                            "title": "Inline separator",
-                            "description": "Character used to separate individual choices when there are more than 2 choices",
-                            "default": ", "
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "title": "Object",
+                            "properties": {
+                                "inlineSeparator": {
+                                    "type": "string",
+                                    "title": "Inline separator",
+                                    "description": "Character used to separate individual choices when there are more than 2 choices",
+                                    "default": ", "
+                                },
+                                "inlineOr": {
+                                    "type": "string",
+                                    "title": "Inline or",
+                                    "description": "Separator inserted between the choices when there are only 2 choices",
+                                    "default": " or "
+                                },
+                                "inlineOrMore": {
+                                    "type": "string",
+                                    "title": "Inline or more",
+                                    "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
+                                    "default": ", or "
+                                },
+                                "includeNumbers": {
+                                    "type": "boolean",
+                                    "title": "Include numbers",
+                                    "description": "If true, 'inline' and 'list' list style will be prefixed with the index of the choice.",
+                                    "default": true
+                                }
+                            }
                         },
-                        "inlineOr": {
-                            "type": "string",
-                            "title": "Inline or",
-                            "description": "Separator inserted between the choices when there are only 2 choices",
-                            "default": " or "
-                        },
-                        "inlineOrMore": {
-                            "type": "string",
-                            "title": "Inline or more",
-                            "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
-                            "default": ", or "
-                        },
-                        "includeNumbers": {
-                            "type": "boolean",
-                            "title": "Include numbers",
-                            "description": "If true, 'inline' and 'list' list style will be prefixed with the index of the choice.",
-                            "default": true
+                        {
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
-                    }
+                    ]
                 },
                 "recognizerOptions": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
                     "title": "Recognizer options",
                     "description": "Sets how to recognize choices in the response",
-                    "properties": {
-                        "noValue": {
-                            "type": "boolean",
-                            "title": "No value",
-                            "description": "If true, the choices value field will NOT be search over",
-                            "default": false
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "title": "Recognizer options",
+                            "properties": {
+                                "noValue": {
+                                    "type": "boolean",
+                                    "title": "No value",
+                                    "description": "If true, the choices value field will NOT be search over",
+                                    "default": false
+                                },
+                                "noAction": {
+                                    "type": "boolean",
+                                    "title": "No action",
+                                    "description": "If true, the choices action.title field will NOT be searched over",
+                                    "default": false
+                                },
+                                "recognizeNumbers": {
+                                    "type": "boolean",
+                                    "title": "Recognize numbers",
+                                    "description": "If true, the number recognizer will be used to recognize an index response (1,2,3...) to the prompt.",
+                                    "default": true
+                                },
+                                "recognizeOrdinals": {
+                                    "type": "boolean",
+                                    "title": "Recognize ordinals",
+                                    "description": "If true, the ordinal recognizer will be used to recognize ordinal response (first/second/...) to the prompt.",
+                                    "default": true
+                                }
+                            }
                         },
-                        "noAction": {
-                            "type": "boolean",
-                            "title": "No action",
-                            "description": "If true, the choices action.title field will NOT be searched over",
-                            "default": false
-                        },
-                        "recognizeNumbers": {
-                            "type": "boolean",
-                            "title": "Recognize numbers",
-                            "description": "If true, the number recognizer will be used to recognize an index response (1,2,3...) to the prompt.",
-                            "default": true
-                        },
-                        "recognizeOrdinals": {
-                            "type": "boolean",
-                            "title": "Recognize ordinals",
-                            "description": "If true, the ordinal recognizer will be used to recognize ordinal response (first/second/...) to the prompt.",
-                            "default": true
+                        {
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
-                    }
+                    ]
                 }
             }
         }

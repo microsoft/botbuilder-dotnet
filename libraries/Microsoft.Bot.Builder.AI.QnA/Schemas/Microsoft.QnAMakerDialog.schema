@@ -95,17 +95,19 @@
             "description": "Type of Ranker.",
             "oneOf": [
                 {
+                    "type": "string",
+                    "title": "Enum",
                     "enum": [
                         "default",
                         "questionOnly",
                         "autoSuggestQuestion"
-                    ]
+                    ],
+                    "default": "default"
                 },
                 {
-                    "pattern": "^=.*\\S.*"
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                 }
-            ],
-            "default": "default"
+            ]
         }
     },
     "required": [
