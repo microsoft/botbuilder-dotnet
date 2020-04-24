@@ -10,7 +10,6 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "disabled": "=$disabled",
                         "activity": "success"
                     },
                     {
@@ -25,7 +24,20 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "done"
+                        "activity": {
+                            "type": "message",
+                            "text": "activity works"
+                        }
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": {
+                            "$kind": "Microsoft.StaticActivityTemplate",
+                            "activity": {
+                                "type": "message",
+                                "text": "static activity works"
+                            }
+                        }
                     }
                 ]
             }
@@ -41,7 +53,11 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "done"
+            "text": "activity works"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "static activity works"
         }
     ]
 }
