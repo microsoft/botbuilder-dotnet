@@ -30,11 +30,11 @@ stages:
       - task: benjhuser.tfs-extensions-build-tasks.trigger-build-task.TriggerBuild@3
         displayName: 'Trigger build $(NextBuild)'
         inputs:
-            buildDefinition: '$(NextBuild)'
-            queueBuildForUserThatTriggeredBuild: true
-            buildParameters: 'TriggeringBuildReason: $(TriggeredReason), TriggeredBy: Triggered_by_$(Build.DefinitionName)_$(Build.BuildNumber)'
-            password: '$(PipelinesPersonalAccessToken)'
-            enableBuildInQueueCondition: true
-            blockingBuildsList: '$(NextBuild)'
+          buildDefinition: '$(NextBuild)'
+          queueBuildForUserThatTriggeredBuild: true
+          buildParameters: 'TriggeringBuildReason: $(TriggeredReason), TriggeredBy: Triggered_by_$(Build.DefinitionName)_$(Build.BuildNumber)'
+          password: '$(PipelinesPersonalAccessToken)'
+          enableBuildInQueueCondition: true
+          blockingBuildsList: '$(NextBuild)'
         continueOnError: true
         condition: and(succeededOrFailed(), ne(variables['Build.Reason'], 'xxyxyx'), ne(variables['NextBuild'], ''), ne(variables['PipelinesPersonalAccessToken'], ''))
