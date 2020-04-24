@@ -15,9 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// JsonConverter to load ITemplate&lt;Activity&gt;.
     /// </summary>
-    public class ITemplateActivityConverter : InterfaceConverter<ITemplate<Activity>>
+    internal class ITemplateActivityConverter : InterfaceConverter<ITemplate<Activity>>
     {
-        public ITemplateActivityConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
+        internal ITemplateActivityConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
             : base(resourceExplorer, sourceContext)
         {
         }

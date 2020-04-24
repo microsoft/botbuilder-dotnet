@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// JsonConverter to load ITemplate&lt;Activity&gt;.
     /// </summary>
-    public class ActivityTemplateConverter : JsonConverter<ActivityTemplate>
+    internal class ActivityTemplateConverter : JsonConverter<ActivityTemplate>
     {
         public override bool CanRead => false;
 

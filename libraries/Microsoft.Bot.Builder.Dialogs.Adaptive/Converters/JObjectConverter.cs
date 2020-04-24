@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
     /// <summary>
     /// JsonConverter which handles resolving declarative types in JObjects using the ResourceExplorer.
     /// </summary>
-    public class JObjectConverter : JsonConverter
+    internal class JObjectConverter : JsonConverter
     {
         private readonly ResourceExplorer resourceExplorer;
         private readonly SourceContext sourceContext;
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         /// </summary>
         /// <param name="resourceExplorer">ResourceExplorer to use to resolve references.</param>
         /// <param name="sourceContext">SourceContext to build debugger source map.</param>
-        public JObjectConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
+        internal JObjectConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
             this.sourceContext = sourceContext ?? throw new ArgumentNullException(nameof(sourceContext));
