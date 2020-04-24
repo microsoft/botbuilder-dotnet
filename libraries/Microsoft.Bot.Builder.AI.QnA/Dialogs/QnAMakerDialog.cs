@@ -388,10 +388,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         {
             return new QnADialogResponseOptions
             {
-                NoAnswer = await this.NoAnswer.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false),
+                NoAnswer = await this.NoAnswer.BindAsync(dc, dc.State).ConfigureAwait(false),
                 ActiveLearningCardTitle = this.ActiveLearningCardTitle?.GetValue(dc.State) ?? DefaultCardTitle,
                 CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
-                CardNoMatchResponse = await this.CardNoMatchResponse.BindToDataAsync(dc.Context, dc.State).ConfigureAwait(false)
+                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
             };
         }
 

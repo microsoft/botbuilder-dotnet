@@ -10,6 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     /// <summary>
     /// Defins a static activity as a template.
     /// </summary>
+    [JsonConverter(typeof(StaticActivityTemplateConverter))]
     public class StaticActivityTemplate : ITemplate<Activity>
     {
         [JsonProperty("$kind")]
@@ -23,11 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         {
             this.Activity = activity;
         }
-
+        
         [JsonProperty("activity")]
         public Activity Activity { get; set; }
 
-        public Task<Activity> BindToDataAsync(ITurnContext context, object data)
+        public Task<Activity> BindAsync(DialogContext context, object data = null)
         {
             return Task.FromResult(Activity);
         }

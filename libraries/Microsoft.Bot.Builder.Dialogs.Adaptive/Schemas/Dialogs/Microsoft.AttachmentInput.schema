@@ -11,49 +11,50 @@
             "properties": {
                 "defaultValue": {
                     "$role": "expression",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded.",
                     "oneOf": [
                         {
-                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment"
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment",
+                            "title": "Object"
                         },
                         {
-                            "type": "string",
-                            "pattern": "^.*\\S.*"
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded."
+                    ]
                 },
                 "value": {
                     "$role": "expression",
+                    "title": "Value",
+                    "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null.",
                     "oneOf": [
                         {
-                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment"
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment",
+                            "title": "Object"
                         },
                         {
-                            "type": "string",
-                            "pattern": "^.*\\S.*"
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null."
+                    ]
                 },
                 "outputFormat": {
                     "$role": "expression",
-                    "type": "string",
+                    "title": "Output format",
+                    "description": "Attachment output format.",
                     "oneOf": [
                         {
+                            "type": "string",
+                            "title": "Enum",
                             "enum": [
                                 "all",
                                 "first"
-                            ]
+                            ],
+                            "default": "first"
                         },
                         {
-                            "pattern": "^=.*\\S.*"
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
-                    ],
-                    "title": "Output format",
-                    "description": "Attachment output format.",
-                    "default": "first"
+                    ]
                 }
             }
         }

@@ -13,14 +13,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.
     /// </summary>
-    public class CancelAllDialogs : CancelAllDialogsBase
+    public class CancelDialog : CancelAllDialogsBase
     {
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.CancelAllDialogs";
+        public const string Kind = "Microsoft.CancelDialog";
 
         [JsonConstructor]
-        public CancelAllDialogs([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(cancelAll: true)
+        public CancelDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(cancelAll: false)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }

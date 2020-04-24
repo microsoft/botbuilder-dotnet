@@ -253,27 +253,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
         }
 
-        public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// RepromptDialog with dialogContext.
+        /// </summary>
+        /// <remarks>AdaptiveDialogs use the DC, which is available because AdaptiveDialogs handle the new AdaptiveEvents.RepromptDialog.</remarks>
+        /// <param name="dc">dc.</param>
+        /// <param name="instance">instance.</param>
+        /// <param name="cancellationToken">ct.</param>
+        /// <returns>task.</returns>
+        public virtual async Task RepromptDialogAsync(DialogContext dc, DialogInstance instance, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                // This is to handle corner case of reprompt occuring outside of normal flow (such as interruption being resumed)
-                OnPushScopedServices(turnContext);
+            // Forward to current sequence step
+            var state = (instance.State as Dictionary<string, object>)[AdaptiveKey] as AdaptiveDialogState;
 
-                // Forward to current sequence step
-                var state = (instance.State as Dictionary<string, object>)[AdaptiveKey] as AdaptiveDialogState;
-
-                if (state.Actions.Any())
-                {
-                    // We need to mockup a DialogContext so that we can call RepromptDialog
-                    // for the active step
-                    var stepDc = new DialogContext(this.Dialogs, turnContext, state.Actions[0]);
-                    await stepDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
-                }
-            }
-            finally
+            if (state.Actions.Any())
             {
-                OnPopScopedServices(turnContext);
+                // We need to mockup a DialogContext so that we can call RepromptDialog
+                // for the active step
+                var childContext = CreateChildContext(dc);
+                await childContext.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -290,7 +288,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (state.Actions != null && state.Actions.Any())
             {
-                return new DialogContext(this.Dialogs, dc, state.Actions.First());
+                var childContext = new DialogContext(this.Dialogs, dc, state.Actions.First());
+                OnSetScopedServices(childContext);
+                return childContext;
             }
 
             return null;
@@ -437,7 +437,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                                 // TODO figure out way to not use turn state to pass this value back to caller.
                                 actionContext.State.SetValue(TurnPath.Recognized, recognizedResult);
-                                
+
                                 // Bug #3572 set these here, because if allowedInterruption is true then event is not emitted, but folks still want the value.
                                 var (name, score) = recognizedResult.GetTopScoringIntent();
                                 actionContext.State.SetValue(TurnPath.TopIntent, name);
@@ -451,6 +451,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                                 handled = true;
                             }
+                        }
+
+                        break;
+
+                    case AdaptiveEvents.RepromptDialog:
+                        {
+                            // AdaptiveDialogs handle new RepromptDialog as it gives access to the dialogContext.
+                            await this.RepromptDialogAsync(actionContext, actionContext.ActiveDialog, cancellationToken).ConfigureAwait(false);
+                            handled = true;
                         }
 
                         break;
@@ -527,102 +536,82 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // from the stack and we want to detect this so we can stop processing actions.
             var instanceId = GetUniqueInstanceId(actionContext);
 
-            try
+            // Execute queued actions
+            var actionDC = CreateChildContext(actionContext);
+            while (actionDC != null)
             {
-                OnPushScopedServices(dc.Context);
+                // Continue current step
+                // DEBUG: To debug step execution set a breakpoint on line below and add a watch 
+                //        statement for actionContext.Actions.
+                var result = await actionDC.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
 
-                // Execute queued actions
-                var actionDC = CreateChildContext(actionContext);
-                while (actionDC != null)
+                // Start step if not continued
+                if (result.Status == DialogTurnStatus.Empty && GetUniqueInstanceId(actionContext) == instanceId)
                 {
-                    // Continue current step
-                    // DEBUG: To debug step execution set a breakpoint on line below and add a watch 
-                    //        statement for actionContext.Actions.
-                    var result = await actionDC.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
-
-                    // Start step if not continued
-                    if (result.Status == DialogTurnStatus.Empty && GetUniqueInstanceId(actionContext) == instanceId)
-                    {
-                        // Call begin dialog on our next step, passing the effective options we computed
-                        var nextAction = actionContext.Actions.First();
-                        result = await actionDC.BeginDialogAsync(nextAction.DialogId, nextAction.Options, cancellationToken).ConfigureAwait(false);
-                    }
-
-                    // Is the step waiting for input or were we cancelled?
-                    if (result.Status == DialogTurnStatus.Waiting || GetUniqueInstanceId(actionContext) != instanceId)
-                    {
-                        return result;
-                    }
-
-                    // End current step
-                    await EndCurrentActionAsync(actionContext, cancellationToken).ConfigureAwait(false);
-
-                    if (result.Status == DialogTurnStatus.CompleteAndWait)
-                    {
-                        // Child dialog completed, but wants us to wait for a new activity
-                        result.Status = DialogTurnStatus.Waiting;
-                        return result;
-                    }
-
-                    var parentChanges = false;
-                    DialogContext root = actionContext;
-                    var parent = actionContext.Parent;
-                    while (parent != null)
-                    {
-                        var ac = parent as ActionContext;
-                        if (ac != null && ac.Changes != null && ac.Changes.Count > 0)
-                        {
-                            parentChanges = true;
-                        }
-
-                        root = parent;
-                        parent = root.Parent;
-                    }
-
-                    // Execute next step
-                    if (parentChanges)
-                    {
-                        // Recursively call ContinueDialogAsync() to apply parent changes and continue
-                        // execution.
-                        return await root.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
-                    }
-
-                    // Apply any local changes and fetch next action
-                    await actionContext.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
-                    actionDC = CreateChildContext(actionContext);
+                    // Call begin dialog on our next step, passing the effective options we computed
+                    var nextAction = actionContext.Actions.First();
+                    result = await actionDC.BeginDialogAsync(nextAction.DialogId, nextAction.Options, cancellationToken).ConfigureAwait(false);
                 }
-            }
-            finally
-            {
-                OnPopScopedServices(dc.Context);
+
+                // Is the step waiting for input or were we cancelled?
+                if (result.Status == DialogTurnStatus.Waiting || GetUniqueInstanceId(actionContext) != instanceId)
+                {
+                    return result;
+                }
+
+                // End current step
+                await EndCurrentActionAsync(actionContext, cancellationToken).ConfigureAwait(false);
+
+                if (result.Status == DialogTurnStatus.CompleteAndWait)
+                {
+                    // Child dialog completed, but wants us to wait for a new activity
+                    result.Status = DialogTurnStatus.Waiting;
+                    return result;
+                }
+
+                var parentChanges = false;
+                DialogContext root = actionContext;
+                var parent = actionContext.Parent;
+                while (parent != null)
+                {
+                    var ac = parent as ActionContext;
+                    if (ac != null && ac.Changes != null && ac.Changes.Count > 0)
+                    {
+                        parentChanges = true;
+                    }
+
+                    root = parent;
+                    parent = root.Parent;
+                }
+
+                // Execute next step
+                if (parentChanges)
+                {
+                    // Recursively call ContinueDialogAsync() to apply parent changes and continue
+                    // execution.
+                    return await root.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                }
+
+                // Apply any local changes and fetch next action
+                await actionContext.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
+                actionDC = CreateChildContext(actionContext);
             }
 
             return await OnEndOfActionsAsync(actionContext, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// OnPushScopedServices provides ability to Push scoped services to the turnState.
+        /// OnSetScopedServices provides ability to set scoped services for the current dialogContext.
         /// </summary>
-        /// <remarks>If you override this you should make sure to call the base.OnPushScopedServices().</remarks>
-        /// <param name="turnContext">turnContext.</param>
-        protected virtual void OnPushScopedServices(ITurnContext turnContext)
+        /// <remarks>
+        /// USe dialogContext.Services.Set(object) to set a scoped object that will be inherited by all children dialogContexts.
+        /// </remarks>
+        /// <param name="dialogContext">dialog Context.</param>
+        protected virtual void OnSetScopedServices(DialogContext dialogContext)
         {
             if (Generator != null)
             {
-                turnContext.TurnState.Push(this.Generator);
-            }
-        }
-
-        /// <summary>
-        /// OnPopScopedServices provides ability to Pop scoped services from the turnState.
-        /// </summary>
-        /// <remarks>If you override this you should make sure to call the base.OnPopScopedServices().</remarks>
-        /// <param name="turnContext">turnContext.</param>
-        protected virtual void OnPopScopedServices(ITurnContext turnContext)
-        {
-            if (Generator != null)
-            {
-                turnContext.TurnState.Pop<LanguageGenerator>();
+                dialogContext.Services.Set(this.Generator);
             }
         }
 

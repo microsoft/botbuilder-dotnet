@@ -14,14 +14,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// JsonConverter which understands how to deal with strings when assigning to ILanguageGenerator.
     /// </summary>
-    public class LanguageGeneratorConverter : InterfaceConverter<LanguageGenerator>
+    internal class LanguageGeneratorConverter : InterfaceConverter<LanguageGenerator>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorConverter"/> class.
         /// </summary>
         /// <param name="resourceExplorer">resourcexplorer to use to resolve references.</param>
         /// <param name="sourceContext">sourcecontext to build debugger source map.</param>
-        public LanguageGeneratorConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
+        internal LanguageGeneratorConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
             : base(resourceExplorer, sourceContext)
         {
         }

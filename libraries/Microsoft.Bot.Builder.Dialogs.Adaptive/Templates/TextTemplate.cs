@@ -33,20 +33,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         [JsonProperty("template")]
         public string Template { get; set; }
 
-        public virtual async Task<string> BindToDataAsync(ITurnContext turnContext, object data)
+        public virtual async Task<string> BindAsync(DialogContext dialogContext, object data = null)
         {
             if (string.IsNullOrEmpty(this.Template))
             {
                 throw new ArgumentNullException(nameof(this.Template));
             }
 
-            LanguageGenerator languageGenerator = turnContext.TurnState.Get<LanguageGenerator>();
+            LanguageGenerator languageGenerator = dialogContext.Services.Get<LanguageGenerator>();
             if (languageGenerator != null)
             {
                 var result = await languageGenerator.Generate(
-                    turnContext,
+                    dialogContext,
                     template: Template,
-                    data: data).ConfigureAwait(false);
+                    data: data ?? dialogContext.State).ConfigureAwait(false);
                 return result;
             }
 
