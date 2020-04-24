@@ -1,6 +1,7 @@
 pool:
   vmImage: 'windows-2019'
 
+stages:
 - stage: Stage1
     variables:
       # NextBuild: define in Azure '[experimental]Dummy-build2'
