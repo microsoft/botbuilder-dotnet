@@ -1538,6 +1538,7 @@
                     ]
                 },
                 "dialog": {
+                    "$kind": "Microsoft.IDialog",
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -1557,7 +1558,8 @@
                                 "=user.name"
                             ]
                         }
-                    ]
+                    ],
+                    "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
                     "title": "Options",
@@ -14168,6 +14170,7 @@
                     ]
                 },
                 "dialog": {
+                    "$kind": "Microsoft.IDialog",
                     "title": "Dialog name",
                     "description": "Name of the dialog to call.",
                     "examples": [
@@ -14187,7 +14190,8 @@
                                 "=user.name"
                             ]
                         }
-                    ]
+                    ],
+                    "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
                     "title": "Options",
