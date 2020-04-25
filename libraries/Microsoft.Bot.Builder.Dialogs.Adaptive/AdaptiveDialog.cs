@@ -40,7 +40,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private readonly string changeTurnKey = Guid.NewGuid().ToString();
 
         private RecognizerSet recognizerSet = new RecognizerSet();
-
+        
+        private object syncLock = new object();
         private bool installedDependencies;
 
         private bool needsTracker = false;
@@ -730,48 +731,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         protected virtual void EnsureDependenciesInstalled()
         {
-            lock (this)
+            if (!installedDependencies)
             {
-                if (!installedDependencies)
+                lock (this.syncLock)
                 {
-                    installedDependencies = true;
-
-                    var id = 0;
-                    foreach (var trigger in Triggers)
+                    if (!installedDependencies)
                     {
-                        if (trigger is IDialogDependencies depends)
+                        installedDependencies = true;
+
+                        var id = 0;
+                        foreach (var trigger in Triggers)
                         {
-                            foreach (var dlg in depends.GetDependencies())
+                            if (trigger is IDialogDependencies depends)
                             {
-                                Dialogs.Add(dlg);
+                                foreach (var dlg in depends.GetDependencies())
+                                {
+                                    Dialogs.Add(dlg);
+                                }
+                            }
+
+                            if (trigger.RunOnce)
+                            {
+                                needsTracker = true;
+                            }
+
+                            if (trigger.Priority == null)
+                            {
+                                // Constant expression defined from order
+                                trigger.Priority = id;
+                            }
+
+                            if (trigger.Id == null)
+                            {
+                                trigger.Id = id++.ToString();
                             }
                         }
 
-                        if (trigger.RunOnce)
+                        // Wire up selector
+                        if (Selector == null)
                         {
-                            needsTracker = true;
+                            // Default to most specific then first
+                            Selector = new MostSpecificSelector { Selector = new FirstSelector() };
                         }
 
-                        if (trigger.Priority == null)
-                        {
-                            // Constant expression defined from order
-                            trigger.Priority = id;
-                        }
-
-                        if (trigger.Id == null)
-                        {
-                            trigger.Id = id++.ToString();
-                        }
+                        this.Selector.Initialize(Triggers, evaluate: true);
                     }
-
-                    // Wire up selector
-                    if (Selector == null)
-                    {
-                        // Default to most specific then first
-                        Selector = new MostSpecificSelector { Selector = new FirstSelector() };
-                    }
-
-                    this.Selector.Initialize(Triggers, evaluate: true);
                 }
             }
         }
