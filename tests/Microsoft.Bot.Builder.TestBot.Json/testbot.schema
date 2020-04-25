@@ -46,6 +46,11 @@
             "$ref": "#/definitions/Microsoft.CancelAllDialogs"
         },
         {
+            "title": "Microsoft.CancelDialog",
+            "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
+            "$ref": "#/definitions/Microsoft.CancelDialog"
+        },
+        {
             "title": "Microsoft.ChoiceInput",
             "description": "Collect information - Pick from a list of choices",
             "$ref": "#/definitions/Microsoft.ChoiceInput"
@@ -1390,15 +1395,24 @@
                     ]
                 },
                 "dialog": {
-                    "$kind": "Microsoft.IDialog",
-                    "$role": "expression",
-                    "pattern": "^.*\\S.*",
-                    "title": "Dialog name",
-                    "description": "Name of the dialog to call.",
-                    "examples": [
-                        "AddToDoDialog"
+                    "oneOf": [
+                        {
+                            "$kind": "Microsoft.IDialog",
+                            "pattern": "^(?!(=)).*",
+                            "title": "Dialog",
+                            "$ref": "#/definitions/Microsoft.IDialog"
+                        },
+                        {
+                            "examples": [
+                                "=settings.dialogId"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
                     ],
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "title": "Dialog name",
+                    "description": "Name of the dialog to call."
                 },
                 "options": {
                     "title": "Options",
@@ -1624,6 +1638,206 @@
                     "examples": [
                         "user.age > 3"
                     ],
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "Boolean",
+                            "default": false,
+                            "examples": [
+                                false
+                            ]
+                        },
+                        {
+                            "examples": [
+                                "=user.isVip"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
+                    ]
+                },
+                "activityProcessed": {
+                    "title": "Activity Processed",
+                    "description": "When set to false, the caller dialog is told it should process the current activity.",
+                    "default": true,
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "Boolean",
+                            "default": false,
+                            "examples": [
+                                false
+                            ]
+                        },
+                        {
+                            "examples": [
+                                "=user.isVip"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
+                    ]
+                },
+                "eventName": {
+                    "title": "Event name",
+                    "description": "Name of the event to emit.",
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "title": "String",
+                            "pattern": "^(?!(=)).*",
+                            "examples": [
+                                "Hello ${user.name}"
+                            ]
+                        },
+                        {
+                            "examples": [
+                                "=concat('x','y','z')"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
+                    ]
+                },
+                "eventValue": {
+                    "title": "Event value",
+                    "description": "Value to emit with the event (optional).",
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "title": "Object"
+                        },
+                        {
+                            "type": "array",
+                            "title": "Array"
+                        },
+                        {
+                            "type": "string",
+                            "title": "String",
+                            "pattern": "^(?!(=)).*",
+                            "examples": [
+                                "Hello ${user.name}"
+                            ]
+                        },
+                        {
+                            "type": "boolean",
+                            "title": "Boolean",
+                            "examples": [
+                                false
+                            ]
+                        },
+                        {
+                            "type": "number",
+                            "title": "Number",
+                            "examples": [
+                                15.5
+                            ]
+                        },
+                        {
+                            "examples": [
+                                "=..."
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
+                    ],
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.CancelDialog": {
+            "$role": "implements(Microsoft.IDialog)",
+            "title": "Cancel all dialogs",
+            "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.CancelDialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "Optional id for the dialog"
+                },
+                "disabled": {
+                    "title": "Disabled",
+                    "description": "Optional condition which if true will disable this action.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "Boolean",
+                            "default": false,
+                            "examples": [
+                                false
+                            ]
+                        },
+                        {
+                            "examples": [
+                                "=user.isVip"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
+                    ]
+                },
+                "activityProcessed": {
+                    "title": "Activity Processed",
+                    "description": "When set to false, the caller dialog is told it should process the current activity.",
+                    "default": true,
                     "$role": "expression",
                     "oneOf": [
                         {
@@ -6757,6 +6971,11 @@
                     "title": "Microsoft.CancelAllDialogs",
                     "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
                     "$ref": "#/definitions/Microsoft.CancelAllDialogs"
+                },
+                {
+                    "title": "Microsoft.CancelDialog",
+                    "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
+                    "$ref": "#/definitions/Microsoft.CancelDialog"
                 },
                 {
                     "title": "Microsoft.ChoiceInput",
@@ -13799,15 +14018,24 @@
                     ]
                 },
                 "dialog": {
-                    "$kind": "Microsoft.IDialog",
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Dialog name",
-                    "description": "Name of the dialog to call.",
-                    "examples": [
-                        "AddToDoDialog"
+                    "oneOf": [
+                        {
+                            "$kind": "Microsoft.IDialog",
+                            "pattern": "^(?!(=)).*",
+                            "title": "Dialog",
+                            "$ref": "#/definitions/Microsoft.IDialog"
+                        },
+                        {
+                            "examples": [
+                                "=settings.dialogId"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
                     ],
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "title": "Dialog name",
+                    "description": "Name of the dialog to call."
                 },
                 "options": {
                     "title": "Options",

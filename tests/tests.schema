@@ -1538,15 +1538,24 @@
                     ]
                 },
                 "dialog": {
-                    "$kind": "Microsoft.IDialog",
-                    "$role": "expression",
-                    "pattern": "^.*\\S.*",
-                    "title": "Dialog name",
-                    "description": "Name of the dialog to call.",
-                    "examples": [
-                        "AddToDoDialog"
+                    "oneOf": [
+                        {
+                            "$kind": "Microsoft.IDialog",
+                            "pattern": "^(?!(=)).*",
+                            "title": "Dialog",
+                            "$ref": "#/definitions/Microsoft.IDialog"
+                        },
+                        {
+                            "examples": [
+                                "=settings.dialogId"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
                     ],
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "title": "Dialog name",
+                    "description": "Name of the dialog to call."
                 },
                 "options": {
                     "title": "Options",
@@ -14157,15 +14166,24 @@
                     ]
                 },
                 "dialog": {
-                    "$kind": "Microsoft.IDialog",
-                    "$role": "expression",
-                    "type": "string",
-                    "title": "Dialog name",
-                    "description": "Name of the dialog to call.",
-                    "examples": [
-                        "AddToDoDialog"
+                    "oneOf": [
+                        {
+                            "$kind": "Microsoft.IDialog",
+                            "pattern": "^(?!(=)).*",
+                            "title": "Dialog",
+                            "$ref": "#/definitions/Microsoft.IDialog"
+                        },
+                        {
+                            "examples": [
+                                "=settings.dialogId"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
                     ],
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "title": "Dialog name",
+                    "description": "Name of the dialog to call."
                 },
                 "options": {
                     "title": "Options",
