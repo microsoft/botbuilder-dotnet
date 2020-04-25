@@ -19,6 +19,7 @@
             ]
         },
         "dialog": {
+            "$kind": "Microsoft.IDialog",
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/resourceExpression",
             "title": "Dialog name",
             "description": "Name of the dialog to call.",
