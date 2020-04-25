@@ -1,6 +1,6 @@
 ﻿> !# @strict = false
-> !# @registerNamespace = foo
-> !# @registerAsFunctions = GetList, Convert, GetProperty
+> !# @namespace = foo
+> !# @Exports = GetList, Convert, GetProperty, GetMessage
 
 
 # Convert(index, value)
@@ -11,3 +11,6 @@
 
 #GetProperty
 -user.tasks
+
+#GetMessage
+- This is an injected message

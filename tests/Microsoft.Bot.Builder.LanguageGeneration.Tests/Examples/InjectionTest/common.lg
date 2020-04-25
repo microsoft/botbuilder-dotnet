@@ -1,4 +1,4 @@
-﻿> !# @registerAsFunctions = looking
+﻿> !# @Exports = looking
 
 #looking
 -${{user: {name: "John"}}.user.name}

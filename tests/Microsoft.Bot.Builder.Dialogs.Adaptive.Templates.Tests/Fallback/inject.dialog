@@ -14,8 +14,8 @@
           "$designer": {
             "id": "CTL1UI"
           },
-          "property": "user.age",
-          "value": 22
+          "property": "user.message",
+          "value": "=foo.GetMessage()"
         },
         {
           "$kind": "Microsoft.SetProperty",
@@ -28,6 +28,10 @@
         {
           "$kind": "Microsoft.SendActivity",
           "activity": "${string(select(foo.GetList(user.tasks),iter,foo.Convert(iter.index,iter.value)))}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${user.message}"
         }
 
       ]

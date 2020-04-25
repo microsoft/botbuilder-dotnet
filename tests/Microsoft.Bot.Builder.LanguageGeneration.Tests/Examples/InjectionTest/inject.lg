@@ -1,6 +1,6 @@
 ﻿> !# @strict = false
-> !# @registerNamespace = foo
-> !# @registerAsFunctions = bar, cool
+> !# @namespace = foo
+> !# @Exports = bar, cool
 
 [import](common.lg)
 

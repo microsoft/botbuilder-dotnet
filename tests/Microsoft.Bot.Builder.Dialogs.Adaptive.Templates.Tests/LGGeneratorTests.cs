@@ -352,6 +352,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             })
             .Send("hello")
                 .AssertReply("[{\"Id\":0,\"Topic\":\"car\"},{\"Id\":1,\"Topic\":\"washing\"},{\"Id\":2,\"Topic\":\"food\"},{\"Id\":3,\"Topic\":\"laundry\"}]")
+                .AssertReply("This is an injected message")
             .StartTestAsync();
         }
 

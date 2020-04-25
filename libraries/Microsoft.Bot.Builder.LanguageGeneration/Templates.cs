@@ -23,6 +23,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Templates : List<Template>
     {
         private readonly string newLine = Environment.NewLine;
+        private readonly string namespaceKey = "@namespace";
+        private readonly string exportsKey = "@Exports";
 
         public Templates(
             IList<Template> templates = null,
@@ -141,7 +143,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public EvaluationOptions LgOptions => new EvaluationOptions(Options);
 
-        public string NameSpace => ExtractNameSpace(Options);
+        /// <summary>
+        /// Gets the namespace to register for current LG file.
+        /// </summary>
+        /// <value>
+        /// A string value.
+        /// </value>
+        public string Namespace => ExtractNameSpace(Options);
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -156,10 +164,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser expressionParser = null)
         {
             var curTemplate = TemplatesParser.ParseFile(filePath, importResolver, expressionParser);
-            curTemplate.InjectToExprssionFunction();
+            curTemplate.InjectToExpressionFunction();
             foreach (var refer in curTemplate.References) 
             {
-                refer.InjectToExprssionFunction();
+                refer.InjectToExpressionFunction();
             }
 
             return curTemplate;
@@ -338,14 +346,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override int GetHashCode() => (Id, Content).GetHashCode();
 
-        public void InjectToExprssionFunction()
+        private void InjectToExpressionFunction()
         {
             var globalFuncs = this.GetGlobalFunctionTable(Options);
             foreach (var templateName in globalFuncs)
             {
                 if (this.Any(u => u.Name == templateName))
                 {
-                    var newGlobalName = $"{NameSpace}.{templateName}";
+                    var newGlobalName = $"{Namespace}.{templateName}";
                     Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, ExpressionFunctions.Apply(this.GlobalTemplateFunction(templateName)), ReturnType.Object));
                 }
             }
@@ -421,17 +429,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private string ExtractNameSpace(IList<string> optionStrList)
+        private string ExtractNameSpace(IList<string> options)
         {
             string result = null;
-            foreach (var optionStr in optionStrList)
+            foreach (var option in options)
             {
-                if (!string.IsNullOrWhiteSpace(optionStr) && optionStr.Contains("="))
+                if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
                 {
-                    var index = optionStr.IndexOf('=');
-                    var key = optionStr.Substring(0, index).Trim();
-                    var value = optionStr.Substring(index + 1).Trim();
-                    if (key == "@registerNamespace")
+                    var index = option.IndexOf('=');
+                    var key = option.Substring(0, index).Trim();
+                    var value = option.Substring(index + 1).Trim();
+                    if (key == namespaceKey)
                     {
                         result = value;
                     }
@@ -453,17 +461,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        private IList<string> GetGlobalFunctionTable(IList<string> optionStrList)
+        private IList<string> GetGlobalFunctionTable(IList<string> options)
         {
             var result = new List<string>();
-            foreach (var optionStr in optionStrList)
+            foreach (var option in options)
             {
-                if (!string.IsNullOrWhiteSpace(optionStr) && optionStr.Contains("="))
+                if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
                 {
-                    var index = optionStr.IndexOf('=');
-                    var key = optionStr.Substring(0, index).Trim();
-                    var value = optionStr.Substring(index + 1).Trim();
-                    if (key == "@registerAsFunctions")
+                    var index = option.IndexOf('=');
+                    var key = option.Substring(0, index).Trim();
+                    var value = option.Substring(index + 1).Trim();
+                    if (key == exportsKey)
                     {
                         var templateList = value.Split(',').ToList();
                         templateList.ForEach(u => result.Add(u.Trim()));
