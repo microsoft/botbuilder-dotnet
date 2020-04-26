@@ -3,16 +3,16 @@
 #pragma warning disable SA1204 // Static elements should appear before instance elements
 #pragma warning disable SA1210 // Using directives should be ordered alphabetically by namespace
 #pragma warning disable SA1202 // Elements should be ordered by access
-#pragma warning disable SA1208 // System using directives should be placed before other using directives
 
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading;
+using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using System.IO;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 

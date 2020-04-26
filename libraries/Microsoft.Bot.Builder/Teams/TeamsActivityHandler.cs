@@ -250,8 +250,6 @@ namespace Microsoft.Bot.Builder.Teams
 
         protected virtual async Task OnTeamsMembersAddedDispatchAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            IDictionary<string, TeamsChannelAccount> teamMembers = null;
-
             var teamsMembersAdded = new List<TeamsChannelAccount>();
             foreach (var memberAdded in membersAdded)
             {
@@ -262,32 +260,29 @@ namespace Microsoft.Bot.Builder.Teams
                 }
                 else
                 {
-                    // TODO: this code path is intended to be temporary and should be removed in 4.7/4.8 or whenever Teams is updated 
-
-                    // we have a simple ChannelAccount so will try to flesh out the details using the GetMembersAsync call
-                    if (teamMembers == null)
+                    TeamsChannelAccount newMemberInfo = null;
+                    try
                     {
-                        var result = await TeamsInfo.GetMembersAsync(turnContext, cancellationToken).ConfigureAwait(false);
-                        teamMembers = result.ToDictionary(teamsChannelAccount => teamsChannelAccount.Id, teamsChannelAccount => teamsChannelAccount);
+                        newMemberInfo = await TeamsInfo.GetMemberAsync(turnContext, memberAdded.Id, cancellationToken).ConfigureAwait(false);
                     }
+                    catch (ErrorResponseException ex)
+                    {
+                        if (ex.Body?.Error?.Code != "ConversationNotFound")
+                        {
+                            throw;
+                        }
 
-                    if (teamMembers.TryGetValue(memberAdded.Id, out var value))
-                    {
-                        teamsMembersAdded.Add(value);
-                    }
-                    else
-                    {
-                        // unable to find the member added in ConversationUpdate Activity in the response from the GetMembersAsync call
-                        var newTeamsChannelAccount = new TeamsChannelAccount
+                        // unable to find the member added in ConversationUpdate Activity in the response from the GetMemberAsync call
+                        newMemberInfo = new TeamsChannelAccount
                         {
                             Id = memberAdded.Id,
                             Name = memberAdded.Name,
                             AadObjectId = memberAdded.AadObjectId,
-                            Role = memberAdded.Role
+                            Role = memberAdded.Role,
                         };
-
-                        teamsMembersAdded.Add(newTeamsChannelAccount);
                     }
+
+                    teamsMembersAdded.Add(newMemberInfo);
                 }
             }
 

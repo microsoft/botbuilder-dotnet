@@ -3,6 +3,9 @@
 
 using System;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,8 +15,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// JsonConverter to load ITemplate&lt;Activity&gt;.
     /// </summary>
-    public class ActivityTemplateConverter : JsonConverter
+    internal class ITemplateActivityConverter : InterfaceConverter<ITemplate<Activity>>
     {
+        internal ITemplateActivityConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
+            : base(resourceExplorer, sourceContext)
+        {
+        }
+
         public override bool CanRead => true;
 
         // if this is false, don't custom serialize activitytemplate as a string
@@ -21,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(ITemplate<Activity>) == objectType;
+            return typeof(ITemplate<Activity>).IsAssignableFrom(objectType);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -34,15 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
             else
             {
-                JObject obj = JObject.Load(reader);
-                string kind = (string)obj["$kind"]; 
-                if (kind == "Microsoft.ActivityTemplate")
-                {
-                    return obj.ToObject<ActivityTemplate>();
-                }
-
-                var activity = obj.ToObject<Activity>();
-                return new StaticActivityTemplate((Activity)activity);
+                return base.ReadJson(reader, objectType, existingValue, serializer);
             }
         }
 
@@ -57,6 +57,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 serializer.Serialize(writer, value);
             }
+        }
+
+        // ActivityTemplateConverter treats unknown objects as Activity objects, which get wrapped as StaticActivityTemplate instances
+        public override object ResolveUnknownObject(JToken jToken)
+        {
+            var jObject = jToken as JObject;
+            if (jObject != null)
+            {
+                return new StaticActivityTemplate()
+                {
+                    Activity = jObject.ToObject<Activity>()
+                };
+            }
+
+            return base.ResolveUnknownObject(jToken);
         }
     }
 }

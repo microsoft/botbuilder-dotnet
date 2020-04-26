@@ -169,6 +169,64 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await handler.OnTurnAsync(turnContext);
         }
 
+        [TestMethod]
+        public async Task TestGetMemberAsync()
+        {
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-GetGetMemberAsync",
+                ChannelId = Channels.Msteams,
+                ChannelData = new TeamsChannelData
+                {
+                    Team = new TeamInfo
+                    {
+                        Id = "team-id",
+                    },
+                },
+                ServiceUrl = "https://test.coffee",
+                From = new ChannelAccount() { Id = "id-1" }
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
+
+        [TestMethod]
+        public async Task TestGetMemberNoTeamAsync()
+        {
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-GetGetMemberAsync",
+                ChannelId = Channels.Msteams,
+                ServiceUrl = "https://test.coffee",
+                From = new ChannelAccount() { Id = "id-1" },
+                Conversation = new ConversationAccount() { Id = "conversation-id" },
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
+
         private class TestTeamsActivityHandler : TeamsActivityHandler
         {
             public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
@@ -191,6 +249,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         break;
                     case "Test-SendMessageToTeamsChannelAsync":
                         await CallSendMessageToTeamsChannelAsync(turnContext);
+                        break;
+                    case "Test-GetGetMemberAsync":
+                        await CallTeamGetMemberAsync(turnContext);
                         break;
                     default:
                         Assert.IsTrue(false);
@@ -236,6 +297,17 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Assert.AreEqual("givenName-2", members[1].GivenName);
                 Assert.AreEqual("surname-2", members[1].Surname);
                 Assert.AreEqual("userPrincipalName-2", members[1].UserPrincipalName);
+            }
+
+            private async Task CallTeamGetMemberAsync(ITurnContext turnContext)
+            {
+                var member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id);
+
+                Assert.AreEqual("id-1", member.Id);
+                Assert.AreEqual("name-1", member.Name);
+                Assert.AreEqual("givenName-1", member.GivenName);
+                Assert.AreEqual("surname-1", member.Surname);
+                Assert.AreEqual("userPrincipalName-1", member.UserPrincipalName);
             }
 
             private async Task CallGroupChatGetMembersAsync(ITurnContext turnContext)
@@ -376,6 +448,23 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             new JProperty("tenantId", "tenantId-4"),
                         },
                     };
+                    response.Content = new StringContent(content.ToString());
+                }
+
+                // Get Member
+                else if (request.RequestUri.PathAndQuery.EndsWith("team-id/members/id-1") || request.RequestUri.PathAndQuery.EndsWith("conversation-id/members/id-1"))
+                {
+                    var content = new JObject
+                        {
+                            new JProperty("id", "id-1"),
+                            new JProperty("objectId", "objectId-1"),
+                            new JProperty("name", "name-1"),
+                            new JProperty("givenName", "givenName-1"),
+                            new JProperty("surname", "surname-1"),
+                            new JProperty("email", "email-1"),
+                            new JProperty("userPrincipalName", "userPrincipalName-1"),
+                            new JProperty("tenantId", "tenantId-1"),
+                        };
                     response.Content = new StringContent(content.ToString());
                 }
 

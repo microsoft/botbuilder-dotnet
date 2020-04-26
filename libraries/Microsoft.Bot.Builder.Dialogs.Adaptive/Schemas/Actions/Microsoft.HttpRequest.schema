@@ -83,18 +83,20 @@
             "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",
             "oneOf": [
                 {
+                    "type": "string",
+                    "title": "Enum",
                     "enum": [
                         "none",
                         "json",
                         "activity",
                         "activities"
-                    ]
+                    ],
+                    "default": "json"
                 },
                 {
-                    "pattern": "^=.*\\S.*"
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                 }
-            ],
-            "default": "json"
+            ]
         }
     }
 }
