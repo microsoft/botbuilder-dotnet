@@ -59,8 +59,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int Top { get; set; }
 
         /// <summary>
-        /// Gets or sets the filters used to return answers that have the specified metadata.
-        /// [Obsolete("This field is no longer used")].
+        /// Gets or sets the filters used to return answers that have the specified metadata.       
         /// </summary>
         /// <value>
         /// The filters used to return answers that have the specified metadata.
@@ -74,6 +73,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// Miscellaneous data to boost answers.
         /// </value>
+        [Obsolete]
         [JsonProperty("metadataBoost")]
         public Metadata[] MetadataBoost { get; set; }
         
