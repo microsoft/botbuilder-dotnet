@@ -89,7 +89,8 @@
                         "none",
                         "json",
                         "activity",
-                        "activities"
+                        "activities",
+                        "binaryData"
                     ],
                     "default": "json"
                 },
