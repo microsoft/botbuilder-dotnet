@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestInitialize]
         public async Task TestInit()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 var container = CloudStorageAccount.Parse(ConnectionString)
                     .CreateCloudBlobClient()
@@ -45,28 +45,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        public bool CheckEmulator()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                var (code, output) = StorageEmulatorHelper.Status();
-                if (output.IndexOf("IsRunning: True") > 0)
-                {
-                    return true;
-                }
-
-                (code, output) = StorageEmulatorHelper.StartStorageEmulator();
-                return output.IndexOf("started") > 0;
-            }
-
-            Assert.Inconclusive("This test requires Azure Storage Emulator to run");
-            return false;
-        }
-
         [TestMethod]
         public void BlobStorageParamTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 Assert.ThrowsException<FormatException>(() => new AzureBlobStorage("123", ContainerName));
 
@@ -89,7 +71,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TestBlobStorageWriteRead()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 // Arrange
                 var storage = GetStorage();
@@ -114,7 +96,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TestBlobStorageWriteDeleteRead()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 // Arrange
                 var storage = GetStorage();
@@ -139,7 +121,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TestBlobStorageChanges()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 // Arrange
                 var storage = GetStorage();
@@ -161,7 +143,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TestConversationStateBlobStorage()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 // Arrange
                 var storage = GetStorage();
@@ -214,7 +196,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         private async Task TestConversationStateBlobStorage_Method(AzureBlobStorage storage)
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 // Arrange
                 var conversationState = new ConversationState(storage);

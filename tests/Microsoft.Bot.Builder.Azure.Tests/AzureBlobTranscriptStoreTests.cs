@@ -72,22 +72,11 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        public bool CheckEmulator()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return StorageEmulatorHelper.EnsureStarted();
-            }
-
-            Assert.Inconclusive("This test requires Azure Storage Emulator to run");
-            return false;
-        }
-
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptsEmptyTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 var unusedChannelId = Guid.NewGuid().ToString();
                 var transcripts = await TranscriptStore.ListTranscriptsAsync(unusedChannelId);
@@ -99,7 +88,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityEmptyTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 foreach (var convoId in ConversationSpecialIds)
                 {
@@ -113,7 +102,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 var loggedActivities = new IActivity[5];
                 var activities = new List<IActivity>();
@@ -133,7 +122,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemoveTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 for (var i = 0; i < 5; i++)
                 {
@@ -151,7 +140,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddSpecialCharsTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 var loggedActivities = new IActivity[ConversationSpecialIds.Length];
                 var activities = new List<IActivity>();
@@ -171,7 +160,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemoveSpecialCharsTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 for (var i = 0; i < ConversationSpecialIds.Length; i++)
                 {
@@ -189,7 +178,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddPagedResultTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 var cleanChanel = Guid.NewGuid().ToString();
 
@@ -221,7 +210,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemovePagedTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 var loggedActivities = new PagedResult<IActivity>();
                 int i;
@@ -241,7 +230,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task LongIdAddTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 try
                 {
@@ -263,7 +252,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public void BlobTranscriptParamTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 Assert.ThrowsException<FormatException>(() => new AzureBlobTranscriptStore("123", ContainerName));
 
@@ -284,7 +273,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task NullBlobTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 AzureBlobTranscriptStore store = null;
 
@@ -299,7 +288,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestCategory("Middleware")]
         public async Task LogActivities()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
@@ -346,7 +335,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestCategory("Middleware")]
         public async Task LogUpdateActivities()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
@@ -388,7 +377,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestCategory("Middleware")]
         public async Task TestDateLogUpdateActivities()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 var dateTimeStartOffset1 = new DateTimeOffset(DateTime.Now);
                 var dateTimeStartOffset2 = new DateTimeOffset(DateTime.UtcNow);
@@ -445,7 +434,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestCategory("Middleware")]
         public async Task LogDeleteActivities()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
