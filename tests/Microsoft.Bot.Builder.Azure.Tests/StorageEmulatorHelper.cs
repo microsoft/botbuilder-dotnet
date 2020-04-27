@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         public static bool CheckEmulator()
         {
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("IsBuildServer")))
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
             {
                 Assert.Inconclusive("This test requires Azure Storage Emulator to run and is disabled on the build server.");
                 return false;
