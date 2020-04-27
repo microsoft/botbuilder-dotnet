@@ -32,13 +32,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Implementation of lookup by locale.  This uses resourceId and ResourceExplorer to lookup.
         /// </summary>
-        /// <param name="context">context.</param>
+        /// <param name="dialogContext">context.</param>
         /// <param name="locale">locale to lookup.</param>
         /// <param name="languageGenerator">found LanguageGenerator.</param>
         /// <returns>true if found.</returns>
-        public override bool TryGetGenerator(ITurnContext context, string locale, out LanguageGenerator languageGenerator)
+        public override bool TryGetGenerator(DialogContext dialogContext, string locale, out LanguageGenerator languageGenerator)
         {
-            var lgm = context.TurnState.Get<LanguageGeneratorManager>();
+            var lgm = dialogContext.Services.Get<LanguageGeneratorManager>();
             var resourceId = string.IsNullOrEmpty(locale) ? this.ResourceId : this.ResourceId.Replace(".lg", $".{locale}.lg");
             return lgm.LanguageGenerators.TryGetValue(resourceId, out languageGenerator);
         }
