@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version Condition=" '$(IsBuildServer)' == '' ">4.8.0-local</Version>
+    <Version Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</Version>
     <Version Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</Version>
-    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">4.8.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</PackageVersion>
     <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -33,6 +33,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
     <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.1.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 </Project>

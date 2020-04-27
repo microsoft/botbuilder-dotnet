@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version Condition=" '$(IsBuildServer)' == '' ">4.8.0-local</Version>
+    <Version Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</Version>
     <Version Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</Version>
-    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">4.8.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</PackageVersion>
     <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release;</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="Thrzn41.WebexTeams" Version="1.6.2" />
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
