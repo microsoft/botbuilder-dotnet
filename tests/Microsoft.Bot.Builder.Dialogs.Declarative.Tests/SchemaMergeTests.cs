@@ -127,7 +127,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 Assert.IsNotNull(schema, "Missing $schema");
 
                 var folder = Path.GetDirectoryName(fileResource.FullName);
-                var pp = Path.Combine(folder, PathUtils.NormalizePath(schema));
                 Assert.IsTrue(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
 
                 jtoken.Validate(Schema);
