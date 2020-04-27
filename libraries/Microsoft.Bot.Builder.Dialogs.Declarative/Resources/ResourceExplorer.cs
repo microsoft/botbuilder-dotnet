@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     {
         private const string RefPropertyName = "$copy";
 
-        private readonly ConcurrentDictionary<Type, ICustomDeserializer> kindDeserializers = new ConcurrentDictionary<Type, ICustomDeserializer>();
+        private readonly ConcurrentDictionary<string, ICustomDeserializer> kindDeserializers = new ConcurrentDictionary<string, ICustomDeserializer>();
         private readonly ConcurrentDictionary<string, Type> kindToType = new ConcurrentDictionary<string, Type>();
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
         private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 throw new ArgumentException($"Type {kind} not registered in factory.");
             }
 
-            var found = kindDeserializers.TryGetValue(type, out kindDeserializer);
+            var found = kindDeserializers.TryGetValue(kind, out kindDeserializer);
 
             if (!found)
             {
@@ -438,7 +438,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             kinds.Add(kind);
             typeToKinds[type] = kinds;
-            kindDeserializers[type] = loader;
+            kindDeserializers[kind] = loader;
         }
 
         private string GetRefTarget(JToken token)
