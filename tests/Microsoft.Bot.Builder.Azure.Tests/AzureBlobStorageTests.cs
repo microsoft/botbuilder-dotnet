@@ -33,23 +33,21 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // These tests require Azure Storage Emulator v5.7
-        [TestInitialize]
-        public async Task TestInit()
+        public async Task ContainerInit()
         {
-            if (StorageEmulatorHelper.CheckEmulator())
-            {
-                var container = CloudStorageAccount.Parse(ConnectionString)
-                    .CreateCloudBlobClient()
-                    .GetContainerReference(ContainerName);
-                await container.DeleteIfExistsAsync();
-            }
+            var container = CloudStorageAccount.Parse(ConnectionString)
+                .CreateCloudBlobClient()
+                .GetContainerReference(ContainerName);
+            await container.DeleteIfExistsAsync();
         }
 
         [TestMethod]
-        public void BlobStorageParamTest()
+        public async Task BlobStorageParamTest()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
+                await ContainerInit();
+
                 Assert.ThrowsException<FormatException>(() => new AzureBlobStorage("123", ContainerName));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
@@ -73,6 +71,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
+                await ContainerInit();
+
                 // Arrange
                 var storage = GetStorage();
 
@@ -98,6 +98,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
+                await ContainerInit();
+
                 // Arrange
                 var storage = GetStorage();
 
@@ -123,6 +125,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
+                await ContainerInit();
+
                 // Arrange
                 var storage = GetStorage();
 
@@ -145,6 +149,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
+                await ContainerInit();
+               
                 // Arrange
                 var storage = GetStorage();
                 var conversationState = new ConversationState(storage);
@@ -198,6 +204,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
+                await ContainerInit();
+
                 // Arrange
                 var conversationState = new ConversationState(storage);
                 var propAccessor = conversationState.CreateProperty<Prop>("prop");
