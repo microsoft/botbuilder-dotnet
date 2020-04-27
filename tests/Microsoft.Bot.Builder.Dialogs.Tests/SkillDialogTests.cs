@@ -20,6 +20,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class SkillDialogTests
     {
+        /// <summary>
+        /// Helper to create a <see cref="SkillDialogOptions"/> for the skillDialog.
+        /// </summary>
+        /// <param name="conversationState"> The conversation state object.</param>
+        /// <param name="mockSkillClient"> The skil client mock.</param>
+        /// <returns> A Skill Dialog Options object.</returns>
+        public static SkillDialogOptions CreateSkillDialogOptions(ConversationState conversationState, Mock<BotFrameworkClient> mockSkillClient)
+        {
+            var dialogOptions = new SkillDialogOptions
+            {
+                BotId = Guid.NewGuid().ToString(),
+                SkillHostEndpoint = new Uri("http://test.contoso.com/skill/messages"),
+                ConversationIdFactory = new SimpleConversationIdFactory(),
+                ConversationState = conversationState,
+                SkillClient = mockSkillClient.Object,
+                Skill = new BotFrameworkSkill
+                {
+                    AppId = Guid.NewGuid().ToString(),
+                    SkillEndpoint = new Uri("http://testskill.contoso.com/api/messages")
+                }
+            };
+            return dialogOptions;
+        }
+
         [TestMethod]
         public void ConstructorValidationTests()
         {
@@ -172,27 +196,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
 
             return mockSkillClient;
-        }
-
-        /// <summary>
-        /// Helper to create a <see cref="SkillDialogOptions"/> for the skillDialog.
-        /// </summary>
-        private static SkillDialogOptions CreateSkillDialogOptions(ConversationState conversationState, Mock<BotFrameworkClient> mockSkillClient)
-        {
-            var dialogOptions = new SkillDialogOptions
-            {
-                BotId = Guid.NewGuid().ToString(),
-                SkillHostEndpoint = new Uri("http://test.contoso.com/skill/messages"),
-                ConversationIdFactory = new SimpleConversationIdFactory(),
-                ConversationState = conversationState,
-                SkillClient = mockSkillClient.Object,
-                Skill = new BotFrameworkSkill
-                {
-                    AppId = Guid.NewGuid().ToString(),
-                    SkillEndpoint = new Uri("http://testskill.contoso.com/api/messages")
-                }
-            };
-            return dialogOptions;
         }
 
         // Simple conversation ID factory for testing.

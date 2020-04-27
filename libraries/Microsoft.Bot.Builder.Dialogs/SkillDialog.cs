@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -22,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class SkillDialog : Dialog
     {
         private const string DeliverModeStateKey = "deliverymode";
+        private const string SsoConnectionNameKey = "SSOConnectionName";
 
         public SkillDialog(SkillDialogOptions dialogOptions, string dialogId = null)
             : base(dialogId)
@@ -44,9 +46,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             skillActivity.ApplyConversationReference(dc.Context.Activity.GetConversationReference(), true);
 
             dc.ActiveDialog.State[DeliverModeStateKey] = dialogArgs.Activity.DeliveryMode;
+            dc.ActiveDialog.State[SsoConnectionNameKey] = dialogArgs.ConnectionName;
 
             // Send the activity to the skill.
-            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, cancellationToken).ConfigureAwait(false);
+            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, dialogArgs.ConnectionName, cancellationToken).ConfigureAwait(false);
             if (eocActivity != null)
             {
                 return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
@@ -73,8 +76,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var skillActivity = ObjectPath.Clone(dc.Context.Activity);
                 skillActivity.DeliveryMode = dc.ActiveDialog.State[DeliverModeStateKey] as string;
 
+                var connectionName = dc.ActiveDialog.State[SsoConnectionNameKey] as string;
+
                 // Just forward to the remote skill
-                var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, cancellationToken).ConfigureAwait(false);
+                var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, connectionName, cancellationToken).ConfigureAwait(false);
                 if (eocActivity != null)
                 {
                     return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
@@ -93,7 +98,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Apply conversation reference and common properties from incoming activity before sending.
             repromptEvent.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
 
-            await SendToSkillAsync(turnContext, (Activity)repromptEvent, cancellationToken).ConfigureAwait(false);
+            // connection Name is not applicable for a RePrompt, as we don't expect as OAuthCard in response.
+            await SendToSkillAsync(turnContext, (Activity)repromptEvent, null, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
@@ -115,7 +121,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 activity.ChannelData = turnContext.Activity.ChannelData;
                 activity.Properties = turnContext.Activity.Properties;
 
-                await SendToSkillAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);
+                // connection Name is not applicable for an EndDialog, as we don't expect as OAuthCard in response.
+                await SendToSkillAsync(turnContext, activity, null, cancellationToken).ConfigureAwait(false);
             }
 
             await base.EndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
@@ -151,7 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return dialogArgs;
         }
 
-        private async Task<Activity> SendToSkillAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
+        private async Task<Activity> SendToSkillAsync(ITurnContext context, Activity activity, string connectionName, CancellationToken cancellationToken)
         {
             // Create a conversationId to interact with the skill and send the activity
             var conversationIdFactoryOptions = new SkillConversationIdFactoryOptions
@@ -187,6 +194,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                         // Capture the EndOfConversation activity if it was sent from skill
                         eocActivity = fromSkillActivity;
                     }
+                    else if (await InterceptOAuthCardsAsync(context, fromSkillActivity, connectionName, cancellationToken).ConfigureAwait(false))
+                    {
+                        // do nothing
+                    }
                     else
                     {
                         // Send the response back to the channel. 
@@ -196,6 +207,68 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return eocActivity;
+        }
+
+        private async Task<bool> InterceptOAuthCardsAsync(ITurnContext turnContext, Activity activity, string connectionName, CancellationToken cancellationToken)
+        {
+            if (activity?.Attachments != null && !string.IsNullOrWhiteSpace(connectionName))
+            {
+                foreach (var attachment in activity.Attachments.Where(a => a?.ContentType == OAuthCard.ContentType))
+                {
+                    var oauthCard = ((JObject)attachment.Content).ToObject<OAuthCard>();
+                    if (!string.IsNullOrWhiteSpace(oauthCard.TokenExchangeResource?.Uri))
+                    {
+                        // AAD token exchange
+                        var tokenExchangeProvider = turnContext.Adapter as IExtendedUserTokenProvider;
+                        if (tokenExchangeProvider == null)
+                        {
+                            return false;
+                        }
+
+                        TokenResponse result;
+                        try
+                        {
+                            result = await tokenExchangeProvider.ExchangeTokenAsync(
+                               turnContext,
+                               connectionName,
+                               turnContext.Activity.From.Id,
+                               new TokenExchangeRequest(oauthCard.TokenExchangeResource.Uri)).ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            return false;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(result?.Token))
+                        {
+                            // Send an invoke back to the skill
+                            return await SendTokenExchangeInvokeToSkillAsync(activity, oauthCard.TokenExchangeResource.Id, oauthCard.ConnectionName, result.Token, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private async Task<bool> SendTokenExchangeInvokeToSkillAsync(Activity incomingActivity, string id, string connectionName, string token, CancellationToken cancellationToken)
+        {
+            var activity = incomingActivity.CreateReply() as Activity;
+            activity.Type = ActivityTypes.Invoke;
+            activity.Name = SignInConstants.TokenExchangeOperationName;
+            activity.Value = new TokenExchangeInvokeRequest()
+            {
+                Id = id,
+                Token = token,
+                ConnectionName = connectionName
+            };
+
+            // route the activity to the skill
+            var skillInfo = DialogOptions.Skill;
+            var response = await DialogOptions.SkillClient.PostActivityAsync<ExpectedReplies>(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, incomingActivity.Conversation.Id, activity, cancellationToken).ConfigureAwait(false);
+
+            // Check response status: true if success, false if failure
+            return response.Status >= 200 && response.Status <= 299;
         }
     }
 }
