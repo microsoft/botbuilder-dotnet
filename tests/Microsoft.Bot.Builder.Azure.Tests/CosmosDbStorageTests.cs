@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private static readonly string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
         private static readonly Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("IsBuildServer")))
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
             {
                 return false;
             }
