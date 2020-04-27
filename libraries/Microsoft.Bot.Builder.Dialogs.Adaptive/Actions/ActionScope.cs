@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -58,6 +60,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             return await OnNextActionAsync(dc, result, cancellationToken).ConfigureAwait(false);
+        }
+
+        public override string GetVersion()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var action in this.Actions)
+            {
+                var v = action.GetVersion();
+                if (v != null)
+                {
+                    sb.Append(v);
+                }
+            }
+
+            return Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
         }
 
         public virtual IEnumerable<Dialog> GetDependencies()
