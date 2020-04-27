@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (StorageEmulatorHelper.CheckEmulator())
             {
                 await ContainerInit();
-               
+
                 // Arrange
                 var storage = GetStorage();
                 var conversationState = new ConversationState(storage);
@@ -185,19 +185,28 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TestConversationStateBlobStorage_TypeNameHandlingDefault()
         {
-            await TestConversationStateBlobStorage_Method(GetStorage());
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await TestConversationStateBlobStorage_Method(GetStorage());
+            }
         }
 
         [TestMethod]
         public async Task TestConversationStateBlobStorage_TypeNameHandlingNone()
         {
-            await TestConversationStateBlobStorage_Method(GetStorage(true));
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await TestConversationStateBlobStorage_Method(GetStorage(true));
+            }
         }
 
         [TestMethod]
         public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
         {
-            await StatePersistsThroughMultiTurn(GetStorage(true));
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await StatePersistsThroughMultiTurn(GetStorage(true));
+            }
         }
 
         private async Task TestConversationStateBlobStorage_Method(AzureBlobStorage storage)
