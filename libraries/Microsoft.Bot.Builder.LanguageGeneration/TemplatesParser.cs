@@ -243,7 +243,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             public Templates Transform(IParseTree parseTree)
             {
-                Visit(parseTree);
+                if (parseTree != null)
+                {
+                    Visit(parseTree);
+                }
+
                 return this.templates;
             }
 
