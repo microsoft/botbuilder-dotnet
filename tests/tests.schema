@@ -11,6 +11,11 @@
             "$ref": "#/definitions/CustomAction.dialog"
         },
         {
+            "title": "CustomAction2.dialog",
+            "description": "My Custom Action.",
+            "$ref": "#/definitions/CustomAction2.dialog"
+        },
+        {
             "title": "Microsoft.ActivityTemplate",
             "description": "",
             "$ref": "#/definitions/Microsoft.ActivityTemplate"
@@ -609,6 +614,134 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
                     "const": "CustomAction.dialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "age": {
+                    "title": "Age",
+                    "description": "The age.",
+                    "examples": [
+                        20,
+                        "=$foo"
+                    ],
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "number",
+                            "title": "Number",
+                            "default": 0,
+                            "examples": [
+                                15.5
+                            ]
+                        },
+                        {
+                            "examples": [
+                                "=dialog.quantity"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
+                    ]
+                },
+                "name": {
+                    "title": "Name",
+                    "description": "The name.",
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "title": "String",
+                            "pattern": "^(?!(=)).*",
+                            "examples": [
+                                "Hello ${user.name}"
+                            ]
+                        },
+                        {
+                            "examples": [
+                                "=concat('x','y','z')"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
+                    ]
+                },
+                "resultProperty": {
+                    "title": "Property",
+                    "description": "Property to store any value returned by the dialog that is called.",
+                    "examples": [
+                        "$name"
+                    ],
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "title": "String",
+                            "pattern": "^(?!(=)).*",
+                            "examples": [
+                                "Hello ${user.name}"
+                            ]
+                        },
+                        {
+                            "examples": [
+                                "=concat('x','y','z')"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$kind"
+                    ]
+                }
+            ]
+        },
+        "CustomAction2.dialog": {
+            "$role": "implements(Microsoft.IDialog)",
+            "title": "Custom Action",
+            "description": "My Custom Action.",
+            "type": "object",
+            "properties": {
+                "$kind": {
+                    "title": "$kind",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "CustomAction2.dialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -7080,6 +7213,11 @@
                     "title": "CustomAction.dialog",
                     "description": "My Custom Action.",
                     "$ref": "#/definitions/CustomAction.dialog"
+                },
+                {
+                    "title": "CustomAction2.dialog",
+                    "description": "My Custom Action.",
+                    "$ref": "#/definitions/CustomAction2.dialog"
                 },
                 {
                     "title": "Microsoft.AdaptiveDialog",
