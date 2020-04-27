@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.OAuth;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -439,9 +440,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                     dc.Context.Activity.ServiceUrl = state.CallerServiceUrl;
 
                     // recreate a ConnectorClient and set it in TurnState so replies use the correct one
-                    var adapter = turnContext.Adapter as BotFrameworkAdapter;
+                    if (!(turnContext.Adapter is IConnectorClientProvider connectorClientProvider))
+                    {
+                        throw new InvalidOperationException("OAuthPrompt: IConnectorClientProvider interface not implemented by the current adapter");
+                    }
+
                     var claimsIdentity = turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey);
-                    var connectorClient = await adapter.ClientManager.CreateConnectorClientAsync(dc.Context.Activity.ServiceUrl, claimsIdentity, state.Scope, cancellationToken).ConfigureAwait(false);
+                    var connectorClient = await connectorClientProvider.CreateConnectorClientAsync(dc.Context.Activity.ServiceUrl, claimsIdentity, state.Scope, cancellationToken).ConfigureAwait(false);
                     if (turnContext.TurnState.Get<IConnectorClient>() != null)
                     {
                         turnContext.TurnState.Set(connectorClient);
