@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             Activities,
 
             /// <summary>
-            /// Json Array of activity objects to send to the user
+            /// Binary data parsing from http response content
             /// </summary>
             BinaryData
         }
