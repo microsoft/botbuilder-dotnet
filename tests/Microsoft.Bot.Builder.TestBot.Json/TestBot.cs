@@ -11,6 +11,7 @@ using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -58,6 +59,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         private void LoadDialogs()
         {
             System.Diagnostics.Trace.TraceInformation("Loading resources...");
+
+            // Create a non-used dialog just to make sure the target assembly is referred so that
+            // the target assembly's component registration can be used to deserialize declarative components
+            var qnaDialog = new QnAMakerDialog();
+            System.Diagnostics.Trace.TraceInformation($"Touch ${qnaDialog.GetType().ToString()} to make sure assembly is referred.");
 
             var rootDialog = new AdaptiveDialog()
             {

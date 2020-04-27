@@ -19,17 +19,25 @@
             ]
         },
         "dialog": {
-            "$kind": "Microsoft.IDialog",
-            "$role": "expression",
-            "pattern": "^.*\\S.*",
+            "oneOf": [
+                {
+                    "$kind": "Microsoft.IDialog",
+                    "pattern": "^(?!(=)).*",
+                    "title": "Dialog"
+                },
+                {
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression",
+                    "examples": [
+                        "=settings.dialogId"
+                    ]
+                }
+            ],
             "title": "Dialog name",
-            "description": "Name of the dialog to call.",
-            "examples": [
-                "AddToDoDialog"
-            ]
+            "description": "Name of the dialog to call."
         },
         "options": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression","title": "Options",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
+            "title": "Options",
             "description": "One or more options that are passed to the dialog that is called.",
             "additionalProperties": {
                 "type": "string",

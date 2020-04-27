@@ -1,0 +1,118 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "autoEndDialog": false,
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "Test",
+                    "pattern": "(?i)test"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.AdaptiveDialog",
+                        "autoEndDialog": false,
+                        "recognizer": {
+                            "$kind": "Microsoft.RegexRecognizer",
+                            "intents": [
+                                {
+                                    "intent": "Test",
+                                    "pattern": "(?i)test"
+                                },
+                                {
+                                    "intent": "Next",
+                                    "pattern": "(?i)next"
+                                }
+                            ]
+                        },
+                        "triggers": [
+                            {
+                                "$kind": "Microsoft.OnBeginDialog",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "started"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.OnIntent",
+                                "intent": "Next",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "next"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.OnUnknownIntent",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "canceling"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.EndDialog"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Success"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Test2",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Should not match test, because activityProcessed was false on CancelDialog"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "started"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "next"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "next"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "test"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "canceling"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Success"
+        }
+    ]
+}

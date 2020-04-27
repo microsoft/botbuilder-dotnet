@@ -22,7 +22,7 @@
         "activityProcessed": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Activity Processed",
-            "description": "When set to false, the dialog that is called can process the current activity.",
+            "description": "When set to false, the skill will be started using the activity in the current turn context instead of the activity in the Activity property.",
             "default": true,
             "examples": [
                 true,

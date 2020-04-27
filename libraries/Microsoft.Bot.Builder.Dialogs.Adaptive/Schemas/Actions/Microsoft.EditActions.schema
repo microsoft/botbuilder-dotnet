@@ -23,11 +23,12 @@
             ]
         },
         "changeType": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
             "title": "Type of change",
             "description": "Type of change to apply to the current actions.",
             "oneOf": [
                 {
+                    "type": "string",
+                    "title": "Enum",
                     "enum": [
                         "insertActions",
                         "insertActionsBeforeTags",
@@ -37,7 +38,7 @@
                     ]
                 },
                 {
-                    "pattern": "^=.*\\S.*"
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                 }
             ]
         },
