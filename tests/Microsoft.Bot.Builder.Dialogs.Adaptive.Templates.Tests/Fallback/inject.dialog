@@ -3,7 +3,13 @@
   "$kind": "Microsoft.AdaptiveDialog",
   "generator": {
     "$kind": "Microsoft.ResourceMultiLanguageGenerator",
-    "resourceId": "inject.lg"
+    "resourceId": "inject.lg",
+    "languagePolicy": {
+      "en-us": [
+        "en-us",
+        ""
+      ]
+    }
   },
   "triggers": [
     {
@@ -22,12 +28,20 @@
           "$designer": {
             "id": "CTL1UI"
           },
-          "property": "=foo.GetProperty()",
+          "property": "user.tasks",
           "value": [ "car", "washing", "food", "laundry" ]
         },
         {
+          "$kind": "Microsoft.SetProperty",
+          "$designer": {
+            "id": "CTL1UI"
+          },
+          "property": "user.flatTasks",
+          "value": "=string(select(foo.GetList(user.tasks),iter,foo.Convert(iter.index,iter.value)))"
+        },
+        {
           "$kind": "Microsoft.SendActivity",
-          "activity": "${string(select(foo.GetList(user.tasks),iter,foo.Convert(iter.index,iter.value)))}"
+          "activity": "${user.flatTasks}"
         },
         {
           "$kind": "Microsoft.SendActivity",

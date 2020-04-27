@@ -23,7 +23,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Templates : List<Template>
     {
         private readonly string newLine = Environment.NewLine;
-        private readonly string namespaceKey = "@namespace";
+        private readonly Regex newLineRegex = new Regex("(\r?\n)");
+        private readonly string namespaceKey = "@Namespace";
         private readonly string exportsKey = "@Exports";
 
         public Templates(
@@ -199,7 +200,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             CheckErrors();
             var evalOpt = opt != null ? opt.Merge(LgOptions) : LgOptions;
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt);
-            return evaluator.EvaluateTemplate(templateName, scope);
+            var result = evaluator.EvaluateTemplate(templateName, scope);
+            if (evalOpt.LineBreakStyle == LGLineBreakStyle.Markdown && result is string str)
+            {
+                result = newLineRegex.Replace(str, "$1$1");
+            }
+
+            return result;
         }
 
         /// <summary>

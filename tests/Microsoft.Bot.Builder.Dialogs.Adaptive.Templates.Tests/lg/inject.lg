@@ -1,5 +1,5 @@
 ﻿> !# @strict = false
-> !# @namespace = foo
+> !# @Namespace = foo
 > !# @Exports = GetList, Convert, GetProperty, GetMessage
 
 
