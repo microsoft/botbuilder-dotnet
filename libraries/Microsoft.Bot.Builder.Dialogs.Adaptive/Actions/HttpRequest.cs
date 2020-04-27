@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -64,7 +66,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             /// <summary>
             /// Json Array of activity objects to send to the user
             /// </summary>
-            Activities
+            Activities,
+
+            /// <summary>
+            /// Json Array of activity objects to send to the user
+            /// </summary>
+            BinaryData
         }
 
         /// <summary>
@@ -331,7 +338,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                     requestResult.Content = content;
                     break;
-
+                case ResponseTypes.BinaryData:
+                    // Try to resolve binary data
+                    var bytes = await response.Content.ReadAsByteArrayAsync();
+                    var encodedString = Convert.ToBase64String(bytes);
+                    requestResult.Content = encodedString;
+                    break;
+                   
                 case ResponseTypes.None:
                 default:
                     break;
