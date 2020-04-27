@@ -517,7 +517,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext)
         {
-            var text = await resource.ReadTextAsync();
+            var text = await resource.ReadTextAsync().ConfigureAwait(false);
             using (var readerText = new StringReader(text))
             using (var readerJson = new JsonTextReader(readerText))
             {
