@@ -1,5 +1,7 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -42,7 +44,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="text">text to truncate.</param>
         /// <param name="length">length to truncate at.</param>
-        /// <returns>prefix up to length + ... + uniquehash(text)</returns>
+        /// <returns>prefix up to length + ... + uniquehash(text).</returns>
         public static string EllipsisHash(string text, int length)
         {
             if (text.Length <= length)
