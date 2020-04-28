@@ -100,7 +100,12 @@ namespace AdaptiveExpressions
         public const string StartOfMonth = "startOfMonth";
         public const string Ticks = "ticks";
         public const string HasFullDate = "hasFullDate";
-        public const string HasValidHour = "hasValidHour";
+        public const string HasValidTime = "hasValidTime";
+        public const string HasValidDuration = "hasValidDuration";
+        public const string HasValidDate = "hasValidDate";
+        public const string HasValidTimeRange = "hasValidTimeRange";
+        public const string HasValidDateRange = "hasValidDateRange";
+        public const string IsPresent = "isPresent";
 
         // Conversions
         public const string Float = "float";

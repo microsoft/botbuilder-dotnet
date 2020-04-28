@@ -2097,6 +2097,30 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
+        private static (TimexProperty, string) ParseTimexProperty(object timexExpr)
+        {
+            TimexProperty parsed = null;
+            string error = null;
+            if (timexExpr is TimexProperty timex)
+            {
+                parsed = timex;
+            }
+            else if (timexExpr is JObject jTimex)
+            {
+                parsed = jTimex.ToObject<TimexProperty>();
+            }
+            else if (timexExpr is string ts)
+            {
+                parsed = new TimexProperty(ts);
+            }
+            else
+            {
+                error = $"{timexExpr} requires a TimexProperty or a string as a argument";
+            }
+
+            return (parsed, error);
+        }
+
         private static string AddOrdinal(int num)
         {
             var hasResult = false;
@@ -3712,32 +3736,20 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            if (args[0] is TimexProperty timex)
-                            {
-                                parsed = timex;
-                            }
-                            else if (args[0] is JObject jTimex)
-                            {
-                                parsed = jTimex.ToObject<TimexProperty>();
-                            }
-                            else if (args[0] is string ts)
-                            {
-                                parsed = new TimexProperty(ts);
-                            } 
-                            else
-                            {
-                                error = $"{expr} requires a TimexProperty or a string as an argument";
-                            }
+                            (parsed, error) = ParseTimexProperty(args[0]);
                         }
 
-                        value = parsed != null && parsed.Year != null && parsed.Month != null && parsed.DayOfMonth != null;
+                        if (error == null)
+                        {
+                            value = parsed != null && parsed.Year != null && parsed.Month != null && parsed.DayOfMonth != null;
+                        }
 
                         return (value, error);
                     },
                     ReturnType.Boolean,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
                 new ExpressionEvaluator(
-                    ExpressionType.HasValidHour,
+                    ExpressionType.HasValidTime,
                     (expr, state, options) =>
                     {
                         TimexProperty parsed = null;
@@ -3747,25 +3759,132 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            if (args[0] is TimexProperty timex)
-                            {
-                                parsed = timex;
-                            }
-                            else if (args[0] is JObject jTimex)
-                            {
-                                parsed = jTimex.ToObject<TimexProperty>();
-                            }
-                            else if (args[0] is string ts)
-                            {
-                                parsed = new TimexProperty(ts);
-                            }
-                            else
-                            {
-                                error = $"{expr} requires a TimexProperty or a string as an argument";
-                            }
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+                        
+                        if (error == null)
+                        {
+                            value = parsed.Hour != null && parsed.Minute != null && parsed.Second != null;
                         }
 
-                        value = parsed != null && parsed.Hour != null;
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasValidDuration,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = parsed.Years != null || parsed.Months != null || parsed.Weeks != null || parsed.Days != null ||
+                   parsed.Hours != null || parsed.Minutes != null || parsed.Seconds != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasValidDate,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = (parsed.Month != null && parsed.DayOfMonth != null) || parsed.DayOfWeek != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasValidTimeRange,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = parsed.PartOfDay != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasValidDateRange,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = (parsed.Year != null && parsed.DayOfMonth == null) ||
+                                    (parsed.Year != null && parsed.Month != null && parsed.DayOfMonth == null) ||
+                                    (parsed.Month != null && parsed.DayOfMonth == null) ||
+                                    parsed.Season != null || parsed.WeekOfYear != null || parsed.WeekOfMonth != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.IsPresent,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = parsed.Now != null;
+                        }
 
                         return (value, error);
                     },
