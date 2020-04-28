@@ -66,10 +66,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The filters used to return answers that have the specified metadata.
         /// </value>        
         [JsonProperty("strictFilters")]
-        public Metadata[] StrictFilters { get; set; }        
-        
-        
-        
+        public Metadata[] StrictFilters { get; set; }           
+                
         /// <summary>
         /// Gets or sets context for multi-turn responses.
         /// </summary>
