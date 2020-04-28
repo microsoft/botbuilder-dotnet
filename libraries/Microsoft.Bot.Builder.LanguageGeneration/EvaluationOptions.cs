@@ -47,17 +47,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.LineBreakStyle = opt.LineBreakStyle;
         }
 
-        public EvaluationOptions(IList<string> optionStrList)
+        public EvaluationOptions(IList<string> optionsList)
         {
-            if (optionStrList != null)
+            if (optionsList != null)
             {
-                foreach (var optionStr in optionStrList)
+                foreach (var option in optionsList)
                 {
-                    if (!string.IsNullOrWhiteSpace(optionStr) && optionStr.Contains("="))
+                    if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
                     {
-                        var index = optionStr.IndexOf('=');
-                        var key = optionStr.Substring(0, index).Trim();
-                        var value = optionStr.Substring(index + 1).Trim();
+                        var index = option.IndexOf('=');
+                        var key = option.Substring(0, index).Trim();
+                        var value = option.Substring(index + 1).Trim();
                         if (key == strictModeKey)
                         {
                             if (value.ToLower() == "true")
