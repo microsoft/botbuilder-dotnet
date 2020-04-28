@@ -270,8 +270,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private static CallerInfo CreateCallerInfo(ITurnContext turnContext)
         {
-            var botIdentity = turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey);
-            if (botIdentity != null && SkillValidation.IsSkillClaim(botIdentity.Claims))
+            if (turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity botIdentity && SkillValidation.IsSkillClaim(botIdentity.Claims))
             {
                 return new CallerInfo()
                 {
