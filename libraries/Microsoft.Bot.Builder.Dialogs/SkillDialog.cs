@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class SkillDialog : Dialog
     {
         private const string DeliverModeStateKey = "deliverymode";
-        private const string SsoConnectionNameKey = "SSOConnectionName";
+        private const string SsoConnectionNameKey = "SkillDialog.SSOConnectionName";
 
         public SkillDialog(SkillDialogOptions dialogOptions, string dialogId = null)
             : base(dialogId)
