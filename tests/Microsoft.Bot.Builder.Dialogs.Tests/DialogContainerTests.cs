@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             sb.Append(base.GetInternalVersion());
             sb.Append(Property ?? string.Empty);
 
-            return Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
+            return StringUtils.Hash(sb.ToString());
         }
     }
 }

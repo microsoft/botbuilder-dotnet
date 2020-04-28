@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                 }
 
-                this._version = Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
+                this._version = StringUtils.Hash(sb.ToString());
             }
 
             return this._version;
