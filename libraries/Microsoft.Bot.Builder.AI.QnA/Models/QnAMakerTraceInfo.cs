@@ -67,15 +67,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }        
         
-        /// <summary>
-        /// Gets or sets miscellaneous data to boost answers.
-        /// </summary>
-        /// <value>
-        /// Miscellaneous data to boost answers.
-        /// </value>
-        [Obsolete]
-        [JsonProperty("metadataBoost")]
-        public Metadata[] MetadataBoost { get; set; }
+        
         
         /// <summary>
         /// Gets or sets context for multi-turn responses.
@@ -112,5 +104,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
+        
+        [Obsolete]
+        [JsonProperty("metadataBoost")]
+        public Metadata[] MetadataBoost { get; set; }
     }
 }
