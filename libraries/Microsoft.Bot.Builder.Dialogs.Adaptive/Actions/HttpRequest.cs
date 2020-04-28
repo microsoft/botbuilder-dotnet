@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             /// <summary>
             /// Binary data parsing from http response content
             /// </summary>
-            BinaryData
+            Binary
         }
 
         /// <summary>
@@ -339,11 +339,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     requestResult.Content = content;
                     break;
 
-                case ResponseTypes.BinaryData:
+                case ResponseTypes.Binary:
                     // Try to resolve binary data
                     var bytes = await response.Content.ReadAsByteArrayAsync();
-                    var encodedString = Convert.ToBase64String(bytes);
-                    requestResult.Content = encodedString;
+                    requestResult.Content = bytes;
                     break;
                    
                 case ResponseTypes.None:
