@@ -440,7 +440,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     dc.Context.Activity.ServiceUrl = state.CallerServiceUrl;
 
                     // recreate a ConnectorClient and set it in TurnState so replies use the correct one
-                    if (!(turnContext.Adapter is IConnectorClientProvider connectorClientProvider))
+                    if (!(turnContext.Adapter is IConnectorClientBuilder connectorClientProvider))
                     {
                         throw new InvalidOperationException("OAuthPrompt: IConnectorClientProvider interface not implemented by the current adapter");
                     }
