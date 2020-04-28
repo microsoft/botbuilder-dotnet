@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class SsoSkillDialogTests
     {
         [TestMethod]
-        public async Task ShouldNotInterceptOAuthCardsForCertainConditions()
+        public async Task ShouldInterceptOAuthCardsForSSO()
         {
             string connectionName = "connectionName";
             var firstResponse = new ExpectedReplies(new List<Activity>() { CreateOAuthCardAttachmentActivity("https://test") });
@@ -32,19 +32,111 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogOptions = SkillDialogTests.CreateSkillDialogOptions(conversationState, mockSkillClient);
 
             var sut = new SkillDialog(dialogOptions);
-            var activityToSend = (Activity)Activity.CreateMessageActivity();
-            activityToSend.DeliveryMode = DeliveryModes.ExpectReplies;
-            activityToSend.Text = Guid.NewGuid().ToString();
+            var activityToSend = CreateSendActivity();
             var testAdapter = new TestAdapter(Connector.Channels.Test)
-                .Use(new AutoSaveStateMiddleware(conversationState));
+            .Use(new AutoSaveStateMiddleware(conversationState));
             var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend, ConnectionName = connectionName }, conversationState: conversationState);
             testAdapter.AddExchangeableToken(connectionName, Channels.Test, "user1", "https://test", "https://test1");
             var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
+            Assert.IsNull(finalActivity);
         }
 
         [TestMethod]
-        public void ShouldInterceptOAuthCardsForCertainConditions()
+        public async Task ShouldNotInterceptOAuthCardsForEmptyConnectionName()
         {
+            string connectionName = "connectionName";
+            var firstResponse = new ExpectedReplies(new List<Activity>() { CreateOAuthCardAttachmentActivity("https://test") });
+            var mockSkillClient = new Mock<BotFrameworkClient>();
+            mockSkillClient
+                .Setup(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 200, Body = firstResponse }));
+
+            var conversationState = new ConversationState(new MemoryStorage());
+            var dialogOptions = SkillDialogTests.CreateSkillDialogOptions(conversationState, mockSkillClient);
+
+            var sut = new SkillDialog(dialogOptions);
+            var activityToSend = CreateSendActivity();
+            var testAdapter = new TestAdapter(Connector.Channels.Test)
+            .Use(new AutoSaveStateMiddleware(conversationState));
+            var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
+            testAdapter.AddExchangeableToken(connectionName, Channels.Test, "user1", "https://test", "https://test1");
+            var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
+            Assert.IsNotNull(finalActivity);
+            Assert.IsTrue(finalActivity.Attachments.Count == 1);
+        }
+
+        [TestMethod]
+        public async Task ShouldNotInterceptOAuthCardsForEmptyToken()
+        {
+            string connectionName = "connectionName";
+            var firstResponse = new ExpectedReplies(new List<Activity>() { CreateOAuthCardAttachmentActivity("https://test") });
+            var mockSkillClient = new Mock<BotFrameworkClient>();
+            mockSkillClient
+                .Setup(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 200, Body = firstResponse }));
+
+            var conversationState = new ConversationState(new MemoryStorage());
+            var dialogOptions = SkillDialogTests.CreateSkillDialogOptions(conversationState, mockSkillClient);
+
+            var sut = new SkillDialog(dialogOptions);
+            var activityToSend = CreateSendActivity();
+            var testAdapter = new TestAdapter(Connector.Channels.Test)
+            .Use(new AutoSaveStateMiddleware(conversationState));
+            var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
+
+            // dont add exchangeable token to test adapter
+            var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
+            Assert.IsNotNull(finalActivity);
+            Assert.IsTrue(finalActivity.Attachments.Count == 1);
+        }
+
+        [TestMethod]
+        public async Task ShouldNotInterceptOAuthCardsForTokenException()
+        {
+            string connectionName = "connectionName";
+            var firstResponse = new ExpectedReplies(new List<Activity>() { CreateOAuthCardAttachmentActivity("https://test") });
+            var mockSkillClient = new Mock<BotFrameworkClient>();
+            mockSkillClient
+                .Setup(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 200, Body = firstResponse }));
+
+            var conversationState = new ConversationState(new MemoryStorage());
+            var dialogOptions = SkillDialogTests.CreateSkillDialogOptions(conversationState, mockSkillClient);
+
+            var sut = new SkillDialog(dialogOptions);
+            var activityToSend = CreateSendActivity();
+            var testAdapter = new TestAdapter(Connector.Channels.Test)
+            .Use(new AutoSaveStateMiddleware(conversationState));
+            var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend, ConnectionName = connectionName }, conversationState: conversationState);
+            testAdapter.ThrowOnExchangeRequest(connectionName, Channels.Test, "user1", "https://test");
+            var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
+            Assert.IsNotNull(finalActivity);
+            Assert.IsTrue(finalActivity.Attachments.Count == 1);
+        }
+
+        [TestMethod]
+        public async Task ShouldNotInterceptOAuthCardsForBadRequest()
+        {
+            string connectionName = "connectionName";
+            var firstResponse = new ExpectedReplies(new List<Activity>() { CreateOAuthCardAttachmentActivity("https://test") });
+            var mockSkillClient = new Mock<BotFrameworkClient>();
+            mockSkillClient
+                .SetupSequence(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 200, Body = firstResponse }))
+                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 409 }));
+
+            var conversationState = new ConversationState(new MemoryStorage());
+            var dialogOptions = SkillDialogTests.CreateSkillDialogOptions(conversationState, mockSkillClient);
+
+            var sut = new SkillDialog(dialogOptions);
+            var activityToSend = CreateSendActivity();
+            var testAdapter = new TestAdapter(Connector.Channels.Test)
+            .Use(new AutoSaveStateMiddleware(conversationState));
+            var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend, ConnectionName = connectionName }, conversationState: conversationState);
+            testAdapter.AddExchangeableToken(connectionName, Channels.Test, "user1", "https://test", "https://test1");
+            var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
+            Assert.IsNotNull(finalActivity);
+            Assert.IsTrue(finalActivity.Attachments.Count == 1);
         }
 
         private static Activity CreateOAuthCardAttachmentActivity(string uri)
@@ -67,6 +159,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             attachmentActivity.From = new ChannelAccount("blah", "name");
 
             return attachmentActivity as Activity;
+        }
+
+        private Activity CreateSendActivity()
+        {
+            var activityToSend = (Activity)Activity.CreateMessageActivity();
+            activityToSend.DeliveryMode = DeliveryModes.ExpectReplies;
+            activityToSend.Text = Guid.NewGuid().ToString();
+            return activityToSend;
         }
     }
 }

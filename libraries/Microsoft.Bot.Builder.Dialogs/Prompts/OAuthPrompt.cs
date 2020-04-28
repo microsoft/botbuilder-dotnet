@@ -496,15 +496,23 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
                 else
                 {
-                    var tokenExchangeResponse = await adapter.ExchangeTokenAsync(
-                        turnContext,
-                        _settings.ConnectionName,
-                        turnContext.Activity.From.Id,
-                        new TokenExchangeRequest()
-                        {
-                            Token = tokenExchangeRequest.Token,
-                        },
-                        cancellationToken).ConfigureAwait(false);
+                    TokenResponse tokenExchangeResponse = null;
+                    try
+                    {
+                        tokenExchangeResponse = await adapter.ExchangeTokenAsync(
+                           turnContext,
+                           _settings.ConnectionName,
+                           turnContext.Activity.From.Id,
+                           new TokenExchangeRequest()
+                           {
+                               Token = tokenExchangeRequest.Token,
+                           },
+                           cancellationToken).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Ignore Exceptions
+                    }
 
                     if (tokenExchangeResponse == null || string.IsNullOrEmpty(tokenExchangeResponse.Token))
                     {

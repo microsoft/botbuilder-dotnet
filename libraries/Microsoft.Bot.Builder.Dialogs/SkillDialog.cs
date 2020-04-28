@@ -218,7 +218,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var oauthCard = ((JObject)attachment.Content).ToObject<OAuthCard>();
                     if (!string.IsNullOrWhiteSpace(oauthCard.TokenExchangeResource?.Uri))
                     {
-                        // AAD token exchange
                         var tokenExchangeProvider = turnContext.Adapter as IExtendedUserTokenProvider;
                         if (tokenExchangeProvider == null)
                         {

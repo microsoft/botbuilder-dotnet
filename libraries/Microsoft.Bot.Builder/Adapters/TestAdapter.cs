@@ -19,6 +19,8 @@ namespace Microsoft.Bot.Builder.Adapters
     /// <seealso cref="TestFlow"/>
     public class TestAdapter : BotAdapter, IExtendedUserTokenProvider
     {
+        private const string ExceptionExpected = "ExceptionExpected";
+
         private bool _sendTraceActivity;
         private readonly object _conversationLock = new object();
         private readonly object _activeQueueLock = new object();
@@ -517,6 +519,32 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        /// <summary> Adds an instruction to throw an exception during exchange requests.
+        /// </summary>
+        /// <param name="connectionName">The connection name.</param>
+        /// <param name="channelId">The channel id.</param>
+        /// <param name="userId">The user id.</param>
+        /// <param name="exchangableItem">The exchangable token or resource uri.</param>
+        public void ThrowOnExchangeRequest(string connectionName, string channelId, string userId, string exchangableItem)
+        {
+            var key = new ExchangableTokenKey()
+            {
+                ConnectionName = connectionName,
+                ChannelId = channelId,
+                UserId = userId,
+                ExchangableItem = exchangableItem
+            };
+
+            if (_exchangableToken.ContainsKey(key))
+            {
+                _exchangableToken[key] = ExceptionExpected;
+            }
+            else
+            {
+                _exchangableToken.Add(key, ExceptionExpected);
+            }
+        }
+
         /// <summary>Attempts to retrieve the token for a user that's in a login flow, using customized AppCredentials.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
@@ -808,6 +836,11 @@ namespace Microsoft.Bot.Builder.Adapters
 
             if (_exchangableToken.TryGetValue(key, out string token))
             {
+                if (token == ExceptionExpected)
+                {
+                    throw new Exception("Exception occurred during exchanging tokens");
+                }
+
                 return Task.FromResult(new TokenResponse()
                 {
                     ChannelId = key.ChannelId,
