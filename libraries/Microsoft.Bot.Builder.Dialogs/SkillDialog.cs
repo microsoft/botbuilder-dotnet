@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -196,7 +197,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else if (await InterceptOAuthCardsAsync(context, fromSkillActivity, connectionName, cancellationToken).ConfigureAwait(false))
                     {
-                        // do nothing
+                        // do nothing. Token exchange succeeded, so no oauthcard needs to be shown to the user
                     }
                     else
                     {
@@ -213,17 +214,19 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (activity?.Attachments != null && !string.IsNullOrWhiteSpace(connectionName))
             {
-                foreach (var attachment in activity.Attachments.Where(a => a?.ContentType == OAuthCard.ContentType))
+                var tokenExchangeProvider = turnContext.Adapter as IExtendedUserTokenProvider;
+                if (tokenExchangeProvider == null)
                 {
-                    var oauthCard = ((JObject)attachment.Content).ToObject<OAuthCard>();
+                    // The adapter may choose not to support token exchange, in which case we fallback to showing an oauth card to the user.
+                    return false;
+                }
+
+                var oauthCardAttachment = activity.Attachments.FirstOrDefault(a => a?.ContentType == OAuthCard.ContentType);
+                if (oauthCardAttachment != null)
+                {
+                    var oauthCard = ((JObject)oauthCardAttachment.Content).ToObject<OAuthCard>();
                     if (!string.IsNullOrWhiteSpace(oauthCard.TokenExchangeResource?.Uri))
                     {
-                        var tokenExchangeProvider = turnContext.Adapter as IExtendedUserTokenProvider;
-                        if (tokenExchangeProvider == null)
-                        {
-                            return false;
-                        }
-
                         TokenResponse result;
                         try
                         {
@@ -235,11 +238,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                         }
                         catch
                         {
+                            // Failures in token exchange are not fatal. They simply mean that the user needs to be shown the OAuth card.
                             return false;
                         }
 
                         if (!string.IsNullOrWhiteSpace(result?.Token))
                         {
+                            // If token above were null, then SSO has failed and hence we return false.
                             // Send an invoke back to the skill
                             return await SendTokenExchangeInvokeToSkillAsync(activity, oauthCard.TokenExchangeResource.Id, oauthCard.ConnectionName, result.Token, cancellationToken).ConfigureAwait(false);
                         }
@@ -267,7 +272,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var response = await DialogOptions.SkillClient.PostActivityAsync<ExpectedReplies>(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, incomingActivity.Conversation.Id, activity, cancellationToken).ConfigureAwait(false);
 
             // Check response status: true if success, false if failure
-            return response.Status >= 200 && response.Status <= 299;
+            return response.Status == (int)HttpStatusCode.OK;
         }
     }
 }

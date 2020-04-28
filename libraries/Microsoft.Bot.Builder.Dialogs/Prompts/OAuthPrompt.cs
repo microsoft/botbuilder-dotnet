@@ -512,6 +512,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                     catch
                     {
                         // Ignore Exceptions
+                        // If token exchange failed for any reason, tokenExchangeResponse above stays null , and hence we send back a failure invoke response to the caller.
+                        // This ensures that the caller shows 
                     }
 
                     if (tokenExchangeResponse == null || string.IsNullOrEmpty(tokenExchangeResponse.Token))
