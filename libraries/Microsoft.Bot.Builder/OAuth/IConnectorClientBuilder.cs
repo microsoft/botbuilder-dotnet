@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
@@ -11,7 +14,7 @@ namespace Microsoft.Bot.Builder.OAuth
     /// <summary>
     /// Abstraction to build connector clients.
     /// </summary>
-    public interface IConnectorClientProvider
+    public interface IConnectorClientBuilder
     {
         /// <summary>
         /// Creates the connector client asynchronous.

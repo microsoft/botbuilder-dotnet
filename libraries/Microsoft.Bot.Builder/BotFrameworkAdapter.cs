@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>h
-    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IExtendedUserTokenProvider, IConnectorClientProvider
+    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IExtendedUserTokenProvider, IConnectorClientBuilder
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
@@ -1306,7 +1306,7 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        Task<IConnectorClient> IConnectorClientProvider.CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        Task<IConnectorClient> IConnectorClientBuilder.CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
             return CreateConnectorClientAsync(serviceUrl, claimsIdentity, audience, cancellationToken);
         }
