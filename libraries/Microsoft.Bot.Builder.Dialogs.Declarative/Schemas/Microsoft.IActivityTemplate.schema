@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "title": "Microsoft ActivityTemplates",
+    "description": "Components which are ActivityTemplate, which is string template, an activity, or a implementation of ActivityTemplate",
+    "$role": "interface",
+    "oneOf": [
+        {
+            "type": "string"
+        },
+        {
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Activity",
+            "required":[
+                "type"
+            ]
+        }
+    ]
+}

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class SetProperties : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.SetProperties";
+        public const string Kind = "Microsoft.SetProperties";
 
         [JsonConstructor]
         public SetProperties([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets additional property assignments.
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{string.Join(",", this.Assignments)}]";
+            return $"{this.GetType().Name}[{StringUtils.Ellipsis(string.Join(",", this.Assignments), 50)}]";
         }
     }
 }

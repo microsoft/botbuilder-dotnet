@@ -3,8 +3,6 @@
 
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
@@ -18,11 +16,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnQnAMatch : OnIntent
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.OnQnAMatch";
+        public new const string Kind = "Microsoft.OnQnAMatch";
+
+        // this is a duplicate of QnAMakerRecognizer.QnAMatchIntent, but copying this here removes need to have dependency between QnA and Adaptive assemblies.
+        private const string QnAMatchIntent = "QnAMatch";
 
         [JsonConstructor]
         public OnQnAMatch(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(QnAMakerRecognizer.QnAMatchIntent, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)
+            : base(QnAMatchIntent, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)
         {
         }
     }

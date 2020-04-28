@@ -1,9 +1,9 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
-    "triggers":[
+    "triggers": [
         {
-            "$kind":"Microsoft.OnBeginDialog",    
+            "$kind": "Microsoft.OnBeginDialog",
             "actions": [
                 {
                     "$kind": "Microsoft.IfCondition",

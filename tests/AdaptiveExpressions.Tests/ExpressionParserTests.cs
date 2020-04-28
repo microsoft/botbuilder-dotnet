@@ -22,6 +22,9 @@ namespace AdaptiveExpressions.Tests
 
         private readonly object scope = new Dictionary<string, object>
         {
+            { 
+                "jsonContainsDatetime", "{\"date\": \"/Date(634250351766060665)/\", \"invalidDate\": \"/Date(whatever)/\"}"
+            },
             { "$index", "index" },
             {
                 "alist", new List<A>() { new A("item1"), new A("item2") }
@@ -50,6 +53,7 @@ namespace AdaptiveExpressions.Tests
             { "two", 2.0 },
             { "hello", "hello" },
             { "world", "world" },
+            { "newExpr", "new land" },
             { "cit", "cit" },
             { "y", "y" },
             { "istrue", true },
@@ -296,6 +300,10 @@ namespace AdaptiveExpressions.Tests
             Test("`hello ${user.nickname}` != 'hello Dong'", true),
             Test("`hi\\`[1,2,3]`", "hi`[1,2,3]"),
             Test("`hi ${join([\'jack\\`\', \'queen\', \'king\'], ',')}`", "hi jack\\`,queen,king"),
+            Test("json(`{\"foo\":${{text:\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
+            Test("json(`{\"foo\":${{\"text\":\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
+            Test("`{expr: hello all}`", "{expr: hello all}"),
+
             #endregion
 
             #region SetPathToProperty test
@@ -565,6 +573,14 @@ namespace AdaptiveExpressions.Tests
             Test("emptyList == {  }", false),
             Test("emptyObject == {  }", true),
             Test("emptyObject == [  ]", false),
+            Test("{} == null", false),
+            Test("{} != null", true),
+            Test("[] == null", false),
+            Test("{} != null", true),
+            Test("{} == {}", true),
+            Test("[] == []", true),
+            Test("{} != []", true),
+            Test("[] == {}", false),
             #endregion
 
             #region  Conversion functions test
@@ -607,6 +623,9 @@ namespace AdaptiveExpressions.Tests
             Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
             Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
+            Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
+            Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
+
             #endregion
 
             #region  Math functions test
@@ -805,6 +824,21 @@ namespace AdaptiveExpressions.Tests
             Test("xPath(xmlStr,'sum(/produce/item/count)')", 30),
             Test("jPath(jsonStr,'Manufacturers[0].Products[0].Price')", 50),
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 50)].Name')", new[] { "Anvil", "Elbow Grease" }),
+            Test("{text: 'hello'}.text", "hello"),
+            Test("string(addProperty({'key1':'value1'}, 'key2','value2'))", "{\"key1\":\"value1\",\"key2\":\"value2\"}"),
+            Test("foreach(items, x, addProperty({}, 'a', x))[0].a", "zero"),
+            Test("string(setProperty({'key1':'value1'}, 'key1','value2'))", "{\"key1\":\"value2\"}"),
+            Test("string(setProperty({}, 'key1','value2'))", "{\"key1\":\"value2\"}"),
+            Test("string([{a: 1}, {b: 2}, {c: 3}][0])", "{\"a\":1}"),
+            Test("string({obj: {'name': 'adams'}})", "{\"obj\":{\"name\":\"adams\"}}"),
+            Test("string({obj: {'name': 'adams'}, txt: {utter: 'hello'}})", "{\"obj\":{\"name\":\"adams\"},\"txt\":{\"utter\":\"hello\"}}"),
+            Test("{a: 1, b: newExpr}.b", "new land"),
+            Test("{name: user.name}.name", null),
+            Test("{name: user.nickname}.name", "John"),
+            Test("setProperty({}, 'name', user.name).name", null),
+            Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
+            Test("setProperty({}, 'name', user.nickname).name", "John"),
+            Test("addProperty({}, 'name', user.name).name", null),
             #endregion
 
             #region  Memory access
@@ -894,7 +928,7 @@ namespace AdaptiveExpressions.Tests
         [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
-        {
+        { 
             var parsed = Expression.Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);

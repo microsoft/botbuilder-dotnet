@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "triggers": [
         {
@@ -20,7 +20,7 @@
                         }
                     ],
                     "prompt": "Please select a value from below:",
-                    "style": "List",
+                    "style": "list",
                     "alwaysPrompt": true
                 },
                 {

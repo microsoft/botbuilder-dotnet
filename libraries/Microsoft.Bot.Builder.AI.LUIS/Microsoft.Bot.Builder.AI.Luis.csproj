@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version Condition=" '$(IsBuildServer)' == '' ">4.8.0-local</Version>
+    <Version Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</Version>
     <Version Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</Version>
-    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">4.8.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</PackageVersion>
     <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -13,6 +13,7 @@
     <PackageId>Microsoft.Bot.Builder.AI.Luis</PackageId>
     <Description>LUIS Middleware and Recognizers for the Microsoft Bot Builder SDK</Description>
     <Summary>This library implements C# classes for building bots using LUIS.</Summary>
+    <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -30,7 +31,6 @@
     <Content Include="**/*.lu" />
     <Content Include="**/*.schema" />
     <Content Include="**/*.qna"/>
-    <Content Include="**/*.json"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -40,13 +40,13 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
+    <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
+    <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
   <ItemGroup>

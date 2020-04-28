@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -9,12 +9,12 @@
             {
                 "$kind": "Microsoft.OnBeginDialog",
                 "actions": [
-                     {
+                    {
                         "$kind": "Microsoft.AdaptiveDialog",
                         "autoEndDialog": false,
                         "recognizer": {
                             "$kind": "Microsoft.RegexRecognizer",
-                            "intents":[
+                            "intents": [
                                 {
                                     "intent": "throw",
                                     "pattern": "throw"
@@ -32,7 +32,7 @@
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.SendActivity",
-                                        "activity":"hi"
+                                        "activity": "hi"
                                     }
                                 ]
                             },
@@ -65,7 +65,7 @@
     "script": [
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text":"hi"
+            "text": "hi"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",

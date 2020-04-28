@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             ResourceExplorer = new ResourceExplorer()
                 .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(GeneratorTests)), monitorChanges: false)
-                .RegisterType(LuisAdaptiveRecognizer.DeclarativeType, typeof(MockLuisRecognizer), new MockLuisLoader());
+                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader());
         }
 
         [TestMethod]

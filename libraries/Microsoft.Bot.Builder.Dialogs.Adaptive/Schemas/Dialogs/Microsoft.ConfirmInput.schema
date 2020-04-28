@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Confirm input dialog",
     "description": "Collect information - Ask for confirmation (yes or no).",
@@ -11,93 +11,148 @@
         {
             "properties": {
                 "outputFormat": {
-                    "$role": "expression",
-                    "type": "string",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/valueExpression",
                     "title": "Output format",
-                    "description": "Expression to format the confirm output.",
+                    "description": "Optional expression to use to format the output.",
                     "examples": [
                         "=concat('confirmation:', this.value)"
                     ]
                 },
                 "defaultLocale": {
-                    "$role": "expression",
-                    "type": "string",
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
                     "title": "Default locale",
-                    "description": "Default locale.",
-                    "default": "en-us"
+                    "description": "The Default locale or an expression which provides the default locale to use as default if not found in the activity.",
+                    "default": "en-us",
+                    "examples": [
+                        "en-us"
+                    ]
                 },
                 "style": {
                     "$role": "expression",
-                    "type": "string",
-                    "enum": [
-                        "None",
-                        "Auto",
-                        "Inline",
-                        "List",
-                        "SuggestedAction",
-                        "HeroCard"
-                    ],
                     "title": "List style",
-                    "description": "Style to render choices.",
-                    "default": "Auto"
+                    "description": "Sets the ListStyle to control how choices are rendered.",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "title": "Enum",
+                            "enum": [
+                                "none",
+                                "auto",
+                                "inline",
+                                "list",
+                                "suggestedAction",
+                                "heroCard"
+                            ],
+                            "default": "auto"
+                        },
+                        {
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
+                        }
+                    ]
                 },
                 "choiceOptions": {
-                    "$role": "expression",
-                    "type": "object",
-                    "properties": {
-                        "inlineSeparator": {
-                            "type": "string",
-                            "title": "Inline separator",
-                            "description": "Character used to separate individual choices when there are more than 2 choices",
-                            "default": ", "
+                    "title": "Choice Options",
+                    "description": "Choice Options or expression which provides Choice Options to control display choices to the user.",
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "title": "Object",
+                            "properties": {
+                                "inlineSeparator": {
+                                    "type": "string",
+                                    "title": "Inline separator",
+                                    "description": "Text to separate individual choices when there are more than 2 choices",
+                                    "default": ", "
+                                },
+                                "inlineOr": {
+                                    "type": "string",
+                                    "title": "Inline or",
+                                    "description": "Text to be inserted between the choices when their are only 2 choices",
+                                    "default": " or "
+                                },
+                                "inlineOrMore": {
+                                    "type": "string",
+                                    "title": "Inline or more",
+                                    "description": "Text to be inserted between the last 2 choices when their are more than 2 choices.",
+                                    "default": ", or "
+                                },
+                                "includeNumbers": {
+                                    "type": "boolean",
+                                    "title": "Include numbers",
+                                    "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
+                                    "default": true
+                                }
+                            }
                         },
-                        "inlineOr": {
-                            "type": "string",
-                            "title": "Inline or",
-                            "description": "Separator inserted between the choices when their are only 2 choices",
-                            "default": " or "
-                        },
-                        "inlineOrMore": {
-                            "type": "string",
-                            "title": "Inline or more",
-                            "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
-                            "default": ", or "
-                        },
-                        "includeNumbers": {
-                            "type": "boolean",
-                            "title": "Include numbers",
-                            "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
-                            "default": true
+                        {
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
-                    }
+                    ]
+                },
+                "defaultValue": {
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+                    "title": "Default value",
+                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+                    "examples": [
+                        true,
+                        "=user.age > 3"
+                    ]
+                },
+                "value": {
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+                    "title": "Value",
+                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+                    "examples": [
+                        true,
+                        "=user.isVip"
+                    ]
                 },
                 "confirmChoices": {
                     "$role": "expression",
-                    "type": "array",
-                    "items": [
+                    "title": "Array of choice objects",
+                    "oneOf": [
                         {
-                            "title": "Array of confirm choice objects",
-                            "type": "object",
-                            "properties": {
-                                "value": {
-                                    "type": "string",
-                                    "title": "Value",
-                                    "description": "Value to return when this choice is selected."
-                                },
-                                "action": {
+                            "type": "array",
+                            "title": "Strings",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "array",
+                            "title": "Objects",
+                            "items": [
+                                {
                                     "type": "object",
-                                    "title": "Action",
-                                    "description": "Card action for the choice"
-                                },
-                                "synonyms": {
-                                    "type": "array",
-                                    "title": "Synonyms",
-                                    "description": "List of synonyms to recognize in addition to the value (optional)",
-                                    "items": {
-                                        "type": "string"
+                                    "title": "Choice",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "description": "Value to return when this choice is selected."
+                                        },
+                                        "action": {
+                                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/CardAction",
+                                            "title": "Action",
+                                            "description": "Card action for the choice."
+                                        },
+                                        "synonyms": {
+                                            "type": "array",
+                                            "title": "Synonyms",
+                                            "description": "List of synonyms to recognize in addition to the value (optional).",
+                                            "items": {
+                                                "type": "string",
+                                                "title": "Synonym"
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            ]
+                        },
+                        {
+                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
                         }
                     ]
                 }

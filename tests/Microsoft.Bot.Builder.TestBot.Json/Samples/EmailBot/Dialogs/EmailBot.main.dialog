@@ -1,55 +1,39 @@
 {
-    "$schema": "../../../app.schema",
+    "$schema": "../../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "recognizer": {
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-
-                
                 "intent": "ShowEmailIntent",
-                "pattern": "(?i)show email" 
+                "pattern": "(?i)show email"
             },
             {
-
-                
                 "intent": "SendEmailIntent",
-                "pattern": "(?i)send email" 
+                "pattern": "(?i)send email"
             },
             {
-
-                
                 "intent": "HelpIntent",
-                "pattern": "(?i)help" 
+                "pattern": "(?i)help"
             },
             {
-
-                
                 "intent": "FindContactIntent",
-                "pattern": "(?i)find email contact" 
+                "pattern": "(?i)find email contact"
             },
             {
-
-                
                 "intent": "ShowNextPageIntent",
-                "pattern": "(?i)next page email" 
+                "pattern": "(?i)next page email"
             },
             {
-
-                
                 "intent": "ForwardEmailIntent",
-                "pattern": "(?i)forward email" 
+                "pattern": "(?i)forward email"
             },
             {
-
-                
                 "intent": "ReplyEmailIntent",
-                "pattern": "(?i)reply email" 
+                "pattern": "(?i)reply email"
             },
             {
-
-                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel|never mind"
             }

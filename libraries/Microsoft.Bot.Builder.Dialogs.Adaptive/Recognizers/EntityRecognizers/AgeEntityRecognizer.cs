@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class AgeEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.AgeEntityRecognizer";
+        public const string Kind = "Microsoft.AgeEntityRecognizer";
 
         public AgeEntityRecognizer()
         {

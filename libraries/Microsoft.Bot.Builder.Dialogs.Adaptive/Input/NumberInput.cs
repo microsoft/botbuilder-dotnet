@@ -11,19 +11,34 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// Input dialog for asking for numbers.
+    /// </summary>
     public class NumberInput : InputDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.NumberInput";
+        public const string Kind = "Microsoft.NumberInput";
 
         public NumberInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        /// <summary>
+        /// Gets or sets the DefaultLocale to use to parse confirmation choices if there is not one passed by the caller.
+        /// </summary>
+        /// <value>
+        /// string or expression which evaluates to a string with locale.
+        /// </value>
         [JsonProperty("defaultLocale")]
         public StringExpression DefaultLocale { get; set; } = null;
 
+        /// <summary>
+        /// Gets or sets the format of the response (value or the index of the choice).
+        /// </summary>
+        /// <value>
+        /// Expression which evaluates to a number.
+        /// </value>
         [JsonProperty("outputFormat")]
         public NumberExpression OutputFormat { get; set; }
 

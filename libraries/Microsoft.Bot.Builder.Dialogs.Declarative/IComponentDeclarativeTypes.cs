@@ -23,8 +23,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// Return an enumeration of JsonConverters for supporting loading declarative types.
         /// </summary>
         /// <param name="resourceExplorer">resourceExplorer.</param>
-        /// <param name="context">source range context stack to build debugger source map.</param>
+        /// <param name="sourceContext">SourceContext to build debugger source map.</param>
         /// <returns>jsonsconverters.</returns>
-        IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context);
+        IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext);
     }
 }

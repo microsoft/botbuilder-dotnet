@@ -14,16 +14,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class ErrorListener : BaseErrorListener
     {
         private readonly string source;
+        private readonly int lineOffset;
 
-        public ErrorListener(string errorSource)
+        public ErrorListener(string errorSource, int lineOffset = 0)
         {
             source = errorSource;
+            this.lineOffset = lineOffset;
         }
 
         public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
         {
-            var startPosition = new Position(line, charPositionInLine);
-            var stopPosition = new Position(line, charPositionInLine + offendingSymbol.StopIndex - offendingSymbol.StartIndex + 1);
+            var startPosition = new Position(lineOffset + line, charPositionInLine);
+            var stopPosition = new Position(lineOffset + line, charPositionInLine + offendingSymbol.StopIndex - offendingSymbol.StartIndex + 1);
             var range = new Range(startPosition, stopPosition);
             var diagnostic = new Diagnostic(range, TemplateErrors.SyntaxError, DiagnosticSeverity.Error, source);
             throw new TemplateException(diagnostic.ToString(), new List<Diagnostic>() { diagnostic });

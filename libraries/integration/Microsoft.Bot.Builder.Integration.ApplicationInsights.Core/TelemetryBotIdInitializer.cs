@@ -59,11 +59,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
                         {
                             conversationId = (string)conversation["id"];
 
-                            using (var sha256Hash = SHA256.Create())
-                            {
-                                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(conversationId));
-                                sessionId = Convert.ToBase64String(bytes);
-                            }
+                            sessionId = StringUtils.Hash(conversationId);
                         }
 
                         // Set the user id on the Application Insights telemetry item.

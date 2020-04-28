@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -8,7 +8,6 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    
                     "intent": "SetName",
                     "pattern": "my name is (?<name>.*)"
                 }
@@ -20,7 +19,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.TextInput",
-                        "allowInterruptions": "True",
+                        "allowInterruptions": true,
                         "property": "user.name",
                         "prompt": "Hello, what is your name?"
                     },

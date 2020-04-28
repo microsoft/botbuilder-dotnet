@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class EditActions : Dialog, IDialogDependencies
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.EditActions";
+        public const string Kind = "Microsoft.EditActions";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EditActions"/> class.
@@ -102,7 +102,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{this.GetType().Name}[{this.ChangeType?.ToString()}|{string.Join(",", idList)}]";
+
+            return $"{this.GetType().Name}[{this.ChangeType?.ToString()}|{StringUtils.Ellipsis(string.Join(",", idList), 50)}]";
         }
     }
 }

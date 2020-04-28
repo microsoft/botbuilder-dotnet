@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "generator": "ToDoLuisBot.lg",
     "triggers": [
@@ -67,7 +67,7 @@
                                 }
                             ],
                             "prompt": "Which list do you want to remove?",
-                            "style": "SuggestedAction",
+                            "style": "suggestedAction",
                             "alwaysPrompt": true
                         }
                     ]

@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public const string LoopDetected = "Loop detected:";
 
-        public const string SyntaxError = "Unexpected content. Expecting either a comment or a template definition or an import statement.";
+        public const string SyntaxError = "Unexpected content. Expecting a comment, template definition, import statement or option definition.";
 
         public const string InvalidMemory = "Scope is not a LG customized memory.";
 
@@ -81,8 +81,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static string NullExpression(string expression) => $"'{expression}' evaluated to null.";
 
         public static string ArgumentMismatch(string templateName, int expectedCount, int actualCount) => $"arguments mismatch for template '{templateName}'. Expecting '{expectedCount}' arguments, actual '{actualCount}'.";
-
-        public static string ErrorTemplateNameformat(string templateName) => $"'{templateName}' cannot be used as a template name. Template names must be avalid string.";
 
         public static string TemplateExist(string templateName) => $"template '{templateName}' already exists.";
 

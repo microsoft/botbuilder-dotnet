@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -14,7 +14,7 @@
                         "actions": [
                             {
                                 "$kind": "Microsoft.TextInput",
-                                "allowInterruptions": "False",
+                                "allowInterruptions": false,
                                 "property": "user.name",
                                 "prompt": "Hello, what is your name?"
                             }
@@ -45,7 +45,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Hello Carlos, nice to meet you!",
+            "text": "Hello Carlos, nice to meet you!"
         }
     ]
 }
