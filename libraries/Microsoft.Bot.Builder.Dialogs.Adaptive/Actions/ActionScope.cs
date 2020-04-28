@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
             }
 
-            return Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
+            return StringUtils.Hash(sb.ToString());
         }
 
         public virtual IEnumerable<Dialog> GetDependencies()
@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"ActionScope[{string.Join(",", Actions.Select(a => a.Id))}]";
+            return $"ActionScope[{StringUtils.EllipsisHash(string.Join(",", Actions.Select(a => a.Id)), 50)}]";
         }
     }
 }
