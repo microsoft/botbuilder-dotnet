@@ -558,6 +558,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return resourcePath;
         }
 
+        // Evaluator for template(templateName, ...args) 
+        // normal case we can just use templateName(...args), but template function is particularly useful when the template name is not pre-known
+        private Func<IReadOnlyList<object>, object> TemplateFunction()
+        => (IReadOnlyList<object> args) =>
+        {
+            var templateName = args[0].ToString();
+            var newScope = this.ConstructScope(templateName, args.Skip(1).ToList());
+            return this.EvaluateTemplate(templateName, newScope);
+        };
+
         // Validator for template(...)
         private void ValidateTemplateFunction(Expression expression)
         {
@@ -577,16 +587,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 CheckTemplateReference(templateName, expression.Children.Skip(1));
             }
         }
-
-        // Evaluator for template(templateName, ...args) 
-        // normal case we can just use templateName(...args), but template function is particularly useful when the template name is not pre-known
-        private Func<IReadOnlyList<object>, object> TemplateFunction()
-        => (IReadOnlyList<object> args) =>
-        {
-            var templateName = args[0].ToString();
-            var newScope = this.ConstructScope(templateName, args.Skip(1).ToList());
-            return this.EvaluateTemplate(templateName, newScope);
-        };
 
         private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName)
         => (IReadOnlyList<object> args) =>
