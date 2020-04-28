@@ -496,15 +496,25 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
                 else
                 {
-                    var tokenExchangeResponse = await adapter.ExchangeTokenAsync(
-                        turnContext,
-                        _settings.ConnectionName,
-                        turnContext.Activity.From.Id,
-                        new TokenExchangeRequest()
-                        {
-                            Token = tokenExchangeRequest.Token,
-                        },
-                        cancellationToken).ConfigureAwait(false);
+                    TokenResponse tokenExchangeResponse = null;
+                    try
+                    {
+                        tokenExchangeResponse = await adapter.ExchangeTokenAsync(
+                           turnContext,
+                           _settings.ConnectionName,
+                           turnContext.Activity.From.Id,
+                           new TokenExchangeRequest()
+                           {
+                               Token = tokenExchangeRequest.Token,
+                           },
+                           cancellationToken).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Ignore Exceptions
+                        // If token exchange failed for any reason, tokenExchangeResponse above stays null , and hence we send back a failure invoke response to the caller.
+                        // This ensures that the caller shows 
+                    }
 
                     if (tokenExchangeResponse == null || string.IsNullOrEmpty(tokenExchangeResponse.Token))
                     {

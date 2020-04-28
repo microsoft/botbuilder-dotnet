@@ -543,7 +543,7 @@ namespace Microsoft.Bot.Builder
                         try
                         {
                             var appId = GetBotAppId(turnContext);
-                            
+
                             var oAuthScope = turnContext.TurnState.Get<string>(OAuthScopeKey);
                             _ = (await GetAppCredentialsAsync(appId, oAuthScope).ConfigureAwait(false)).GetTokenAsync();
                         }
@@ -1154,22 +1154,22 @@ namespace Microsoft.Bot.Builder
 
             if (string.IsNullOrWhiteSpace(connectionName))
             {
-                throw new ArgumentNullException(nameof(connectionName));
+                LogAndThrowException(new ArgumentException(nameof(connectionName)));
             }
 
             if (string.IsNullOrWhiteSpace(userId))
             {
-                throw new ArgumentNullException(nameof(userId));
+                LogAndThrowException(new ArgumentException(nameof(userId)));
             }
 
             if (exchangeRequest == null)
             {
-                throw new ArgumentNullException(nameof(exchangeRequest));
+                LogAndThrowException(new ArgumentException(nameof(exchangeRequest)));
             }
 
             if (string.IsNullOrWhiteSpace(exchangeRequest.Token) && string.IsNullOrWhiteSpace(exchangeRequest.Uri))
             {
-                throw new ArgumentException(nameof(exchangeRequest), "Either a Token or Uri property is required on the TokenExchangeRequest");
+                LogAndThrowException(new ArgumentException(nameof(exchangeRequest), "Either a Token or Uri property is required on the TokenExchangeRequest"));
             }
 
             var activity = turnContext.Activity;
@@ -1179,7 +1179,7 @@ namespace Microsoft.Bot.Builder
 
             if (result is ErrorResponse errorResponse)
             {
-                throw new InvalidOperationException($"Unable to exchange token: ({errorResponse?.Error?.Code}) {errorResponse?.Error?.Message}");
+                LogAndThrowException(new InvalidOperationException($"Unable to exchange token: ({errorResponse?.Error?.Code}) {errorResponse?.Error?.Message}"));
             }
 
             if (result is TokenResponse tokenResponse)
@@ -1188,7 +1188,10 @@ namespace Microsoft.Bot.Builder
             }
             else
             {
-                throw new InvalidOperationException($"ExchangeAsyncAsync returned improper result: {result.GetType()}");
+                LogAndThrowException(new InvalidOperationException($"ExchangeAsyncAsync returned improper result: {result.GetType()}"));
+
+                // even though LogAndThrowException always throws, compiler gives an error about not all code paths returning a value.
+                return null;
             }
         }
 
@@ -1416,12 +1419,12 @@ namespace Microsoft.Bot.Builder
         {
             // Is the bot accepting all incoming messages?
             var isAuthDisabled = await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false);
-            if (isAuthDisabled) 
+            if (isAuthDisabled)
             {
                 // Return null so that the callerId is cleared.
                 return null;
             }
-        
+
             // Is the activity from another bot?
             if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
             {
@@ -1429,13 +1432,13 @@ namespace Microsoft.Bot.Builder
             }
 
             // Is the activity from Public Azure?
-            if (ChannelProvider == null || ChannelProvider.IsPublicAzure()) 
+            if (ChannelProvider == null || ChannelProvider.IsPublicAzure())
             {
                 return CallerIdConstants.PublicAzureChannel;
             }
 
             // Is the activity from Azure Gov?
-            if (ChannelProvider != null && ChannelProvider.IsGovernment()) 
+            if (ChannelProvider != null && ChannelProvider.IsGovernment())
             {
                 return CallerIdConstants.USGovChannel;
             }
@@ -1591,6 +1594,17 @@ namespace Microsoft.Bot.Builder
             return ChannelProvider != null && ChannelProvider.IsGovernment() ?
                 GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope :
                 AuthenticationConstants.ToChannelFromBotOAuthScope;
+        }
+
+        /// <summary>
+        /// Logs and throws an expcetion.
+        /// </summary>
+        /// <param name="ex"> Exception instance to throw.</param>
+        /// <param name="source"> Source method for the exception.</param>
+        private void LogAndThrowException(Exception ex, string source = "ExchangeTokenAsync")
+        {
+            Logger.LogError(ex, source);
+            throw ex;
         }
 
         /// <summary>
