@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class RecognizerSet : Recognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.RecognizerSet";
+        public const string Kind = "Microsoft.RecognizerSet";
 
         [JsonConstructor]
         public RecognizerSet()
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // merge intents
             var result = MergeResults(results);
 
-            this.TelemetryClient.TrackEvent("RecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "RecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
 
             return result;
         }

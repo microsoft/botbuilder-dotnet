@@ -748,14 +748,40 @@ namespace Microsoft.Bot.Builder.Tests
 
             var storage = new MemoryStorage(new Dictionary<string, JObject>());
 
-            var conversationState = new ConversationState(storage);
-            (await conversationState
+            // This was changed from ConversationSate to TestBotState
+            // because TestBotState has a context service key
+            // that is different from the name of its type
+            var botState = new TestBotState(storage);
+            (await botState
                 .CreateProperty<TestPocoState>("test-name")
                 .GetAsync(turnContext, () => new TestPocoState())).Value = "test-value";
 
-            var json = conversationState.Get(turnContext);
+            var json = botState.Get(turnContext);
 
             Assert.AreEqual("test-value", json["test-name"]["Value"].ToString());
+        }
+
+        [TestMethod]
+        public async Task BotStateGetCachedState()
+        {
+            var turnContext = TestUtilities.CreateEmptyContext();
+            turnContext.Activity.Conversation = new ConversationAccount { Id = "1234" };
+
+            var storage = new MemoryStorage(new Dictionary<string, JObject>());
+            var botState = new TestBotState(storage);
+
+            (await botState
+                .CreateProperty<TestPocoState>("test-name")
+                .GetAsync(turnContext, () => new TestPocoState())).Value = "test-value";
+
+            var cache = botState.GetCachedState(turnContext);
+
+            Assert.IsNotNull(cache);
+
+            Assert.AreSame(
+                cache,
+                botState.GetCachedState(turnContext),
+                "Subsequent call to GetCachedState returned a different instance");
         }
 
         [TestMethod]

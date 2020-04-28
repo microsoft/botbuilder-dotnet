@@ -1,12 +1,13 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.OnChooseProperty",
     "actions": [
         {
             "$kind": "Microsoft.Ask",
             "activity": "${chooseProperties()}",
-            "expectedProperties": ["PropertyToChange"]
+            "expectedProperties": [
+                "PropertyToChange"
+            ]
         }
     ]
 }

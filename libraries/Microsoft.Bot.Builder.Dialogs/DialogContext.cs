@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
             State = new DialogStateManager(this);
+            Services = new TurnContextStateCollection();
 
             ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.Activity, Context.Activity);
         }
@@ -49,6 +50,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             : this(dialogs, parentDialogContext.Context, state)
         {
             Parent = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
+            
+            if (Parent.Services != null)
+            {
+                // copy parent services into this dialogcontext.
+                foreach (var service in Parent.Services)
+                {
+                    Services[service.Key] = service.Value;
+                }
+            }
         }
 
         /// <summary>
@@ -135,6 +145,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// DialogStateManager with unified memory view of all memory scopes.
         /// </value>
         public DialogStateManager State { get; set; }
+
+        /// <summary>
+        /// Gets the services collection which is contextual to this dialog context.
+        /// </summary>
+        /// <value>Services collection.</value>
+        public TurnContextStateCollection Services { get; private set; }
 
         /// <summary>
         /// Starts a new dialog and pushes it onto the dialog stack.

@@ -53,6 +53,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         }
 
         /// <summary>
+        /// Gets the wrapper for the underlying Slack client used by the adapter.
+        /// </summary>
+        /// <value>The wrapper for the underlying Slack client used by the adapter.</value>
+        public SlackClientWrapper SlackClientWrapper => _slackClient;
+
+        /// <summary>
         /// Standard BotBuilder adapter method to send a message from the bot to the messaging API.
         /// </summary>
         /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>

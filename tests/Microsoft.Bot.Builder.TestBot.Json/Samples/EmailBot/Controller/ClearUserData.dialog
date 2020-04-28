@@ -1,73 +1,68 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "actions": [
-    // Reset data
-    {
-      "$kind": "Microsoft.SetProperty",
-      "value": "msgraph",
-      "property": "user.mailType"
-    },
-    {
-      "$kind": "Microsoft.SetProperty",
-      "value": "=3",
-      "property": "user.pageSize"
-    },
-    {
-      "$kind": "Microsoft.SetProperty",
-      "value": "=0",
-      "property": "user.showIndex"
-    },
-    {
-      "$kind": "Microsoft.SetProperty",
-      "property": "user.emailCount",
-      "value": "=0"
-    },
-    {
-      "$kind": "Microsoft.DeleteProperty",
-      "property": "user.focusedEmail"
-    },
-    {
-      "$kind": "Microsoft.EditArray",
-      "changeType": "clear",
-      "itemsProperty": "user.emails"
-    },
-    {
-      "$kind": "Microsoft.EditArray",
-      "changeType": "clear",
-      "itemsProperty": "user.recipients"
-    },
-    {
-      "$kind": "Microsoft.DeleteProperty",
-      "property": "user.email"
-    },
-    {
-      "$kind": "Microsoft.DeleteProperty",
-      "property": "user.subject"
-    },
-    {
-      "$kind": "Microsoft.DeleteProperty",
-      "property": "user.body"
-    },
-    {
-      "$kind": "Microsoft.DeleteProperty",
-      "property": "user.fwContent"
-    },
-    {
-      "$kind": "Microsoft.DeleteProperty",
-      "property": "user.fwSubject"
-    },
-    {
-      "$kind": "Microsoft.DeleteProperty",
-      "property": "user.toContent"
-    },
-    {
-      "$kind": "Microsoft.DeleteProperty",
-      "property": "user.toSubject"
-    }
-    //{
-    //  "$kind": "Microsoft.SendActivity",
-    //  "activity": "Clear done!"
-    //}
-  ]
+    "$schema": "../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "actions": [
+        {
+            "$kind": "Microsoft.SetProperty",
+            "value": "msgraph",
+            "property": "user.mailType"
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "value": "=3",
+            "property": "user.pageSize"
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "value": "=0",
+            "property": "user.showIndex"
+        },
+        {
+            "$kind": "Microsoft.SetProperty",
+            "property": "user.emailCount",
+            "value": "=0"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.focusedEmail"
+        },
+        {
+            "$kind": "Microsoft.EditArray",
+            "changeType": "clear",
+            "itemsProperty": "user.emails"
+        },
+        {
+            "$kind": "Microsoft.EditArray",
+            "changeType": "clear",
+            "itemsProperty": "user.recipients"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.email"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.subject"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.body"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.fwContent"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.fwSubject"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.toContent"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.toSubject"
+        }
+    ]
 }

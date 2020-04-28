@@ -1,4 +1,6 @@
-
+[sandwich-QuantityEntity.lg](sandwich-QuantityEntity.lg)
+[sandwich-library.lg](sandwich-library.lg)
+[sandwich-library-Missing.lg](sandwich-library-Missing.lg)
 
 # AskQuantity
 - ${askNumber('Quantity')}
@@ -10,6 +12,3 @@
 
 # Quantity(val)
 - ${QuantityEntity(val)}
-[sandwich-QuantityEntity.lg](sandwich-QuantityEntity.lg)
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Missing.lg](sandwich-library-Missing.lg)

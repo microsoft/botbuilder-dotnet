@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     public class TrueSelector : TriggerSelector
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.TrueSelector";
+        public const string Kind = "Microsoft.TrueSelector";
 
         private List<OnCondition> _conditionals;
         private bool _evaluate;

@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     public enum AttachmentOutputFormat
     {
         /// <summary>
-        /// Pass iputs in a List.
+        /// Pass inputs in a List.
         /// </summary>
         All,
 
@@ -28,16 +28,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         First
     }
 
+    /// <summary>
+    /// Input dialog which prompts the user to send a file.
+    /// </summary>
     public class AttachmentInput : InputDialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.AttachmentInput";
+        public const string Kind = "Microsoft.AttachmentInput";
 
         public AttachmentInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        /// <summary>
+        /// Gets or sets the AttachmentOutputFormat for the attachments. 
+        /// </summary>
+        /// <value>
+        /// The AttachmentOutputFormat or an expression which evaluates to an AttachmentOutputFormat.
+        /// </value>
         [JsonProperty("outputFormat")]
         public EnumExpression<AttachmentOutputFormat> OutputFormat { get; set; } = AttachmentOutputFormat.First;
 

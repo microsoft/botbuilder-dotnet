@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "triggers": [
         {
@@ -11,7 +11,7 @@
                 },
                 {
                     "$kind": "Microsoft.EndDialog",
-                    "value" : 13
+                    "value": 13
                 }
             ]
         }

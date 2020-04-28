@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -7,17 +7,14 @@
             "$kind": "Microsoft.RegexRecognizer",
             "intents": [
                 {
-                    
                     "intent": "a",
                     "pattern": "a"
                 },
                 {
-                    
                     "intent": "b",
                     "pattern": "b"
                 },
                 {
-                    
                     "intent": "trigger",
                     "pattern": "trigger"
                 }
@@ -104,7 +101,6 @@
             {
                 "$kind": "Microsoft.OnIntent",
                 "intent": "trigger",
-                "condition": "",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",

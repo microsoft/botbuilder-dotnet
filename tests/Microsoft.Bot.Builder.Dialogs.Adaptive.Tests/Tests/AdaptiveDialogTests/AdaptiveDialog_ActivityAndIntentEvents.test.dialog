@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -27,7 +27,6 @@
             },
             {
                 "$kind": "Microsoft.OnMessageActivity",
-                "type": "message",
                 "condition": "turn.activity.text == 'magic'",
                 "actions": [
                     {

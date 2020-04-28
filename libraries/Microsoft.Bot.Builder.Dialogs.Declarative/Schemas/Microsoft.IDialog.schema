@@ -1,0 +1,11 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "title": "Microsoft Dialogs",
+    "description": "Components which derive from Dialog",
+    "$role": "interface",
+    "oneOf": [
+        {
+            "type": "string"
+        }
+    ]
+}

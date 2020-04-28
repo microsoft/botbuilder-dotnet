@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnEndOfConversationActivity : OnActivity
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.OnEndOfConversationActivity";
+        public new const string Kind = "Microsoft.OnEndOfConversationActivity";
 
         [JsonConstructor]
         public OnEndOfConversationActivity(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

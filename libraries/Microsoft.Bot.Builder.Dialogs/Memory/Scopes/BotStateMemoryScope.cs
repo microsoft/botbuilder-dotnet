@@ -2,12 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
@@ -40,8 +36,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException($"{nameof(dialogContext)} is null");
             }
 
-            var cachedState = dialogContext.Context.TurnState.Get<object>(typeof(T).Name);
-            return cachedState.GetType().GetProperty("State").GetValue(cachedState);
+            var botState = GetBotState(dialogContext);
+            var cachedState = botState?.GetCachedState(dialogContext.Context);
+
+            return cachedState?.State;
         }
 
         /// <summary>
@@ -56,24 +54,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException($"{nameof(dialogContext)} is null");
             }
 
+            var botState = GetBotState(dialogContext);
+
+            if (botState == null)
+            {
+                throw new ArgumentException($"{typeof(T).Name} is not available.");
+            }
+
             throw new NotSupportedException("You cannot replace the root BotState object");
         }
 
         public override async Task LoadAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
-            var botState = dialogContext.Context.TurnState.Get<T>();
-            await botState.LoadAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
+            var botState = GetBotState(dialogContext);
+
+            if (botState != null)
+            {
+                await botState.LoadAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         public override async Task SaveChangesAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
-            var botState = dialogContext.Context.TurnState.Get<T>();
-            await botState.SaveChangesAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
+            var botState = GetBotState(dialogContext);
+
+            if (botState != null)
+            {
+                await botState.SaveChangesAsync(dialogContext.Context, force, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         public override Task DeleteAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
+
+        private static T GetBotState(DialogContext dialogContext) => dialogContext.Context.TurnState.Get<T>();
     }
 }

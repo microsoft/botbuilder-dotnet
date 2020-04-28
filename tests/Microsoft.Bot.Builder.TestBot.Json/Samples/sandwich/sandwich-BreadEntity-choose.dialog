@@ -1,13 +1,14 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.OnChooseEntity",
     "entity": "BreadEntity",
     "actions": [
         {
             "$kind": "Microsoft.Ask",
             "activity": "${chooseBreadEntity()}",
-            "expectedProperties": ["Bread"]
+            "expectedProperties": [
+                "Bread"
+            ]
         }
     ]
 }

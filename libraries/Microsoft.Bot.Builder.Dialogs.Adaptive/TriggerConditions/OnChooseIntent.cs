@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnChooseIntent : OnIntent
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.OnChooseIntent";
+        public new const string Kind = "Microsoft.OnChooseIntent";
 
         [JsonConstructor]
         public OnChooseIntent(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

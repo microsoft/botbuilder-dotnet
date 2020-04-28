@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
@@ -434,13 +435,19 @@ namespace Microsoft.Bot.Builder
         {
             try
             {
-                if (turnContext.Activity.Name == SignInConstants.VerifyStateOperationName || turnContext.Activity.Name == SignInConstants.TokenExchangeOperationName)
+                switch (turnContext.Activity.Name)
                 {
-                    await OnSignInInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
-                    return CreateInvokeResponse();
-                }
+                    case SignInConstants.VerifyStateOperationName:
+                    case SignInConstants.TokenExchangeOperationName:
+                        await OnSignInInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                        return CreateInvokeResponse();
 
-                throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+                    case "healthCheck":
+                        return CreateInvokeResponse(await OnHealthCheckAsync(turnContext, cancellationToken).ConfigureAwait(false));
+
+                    default:
+                        throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+                }
             }
             catch (InvokeResponseException e)
             {
@@ -470,6 +477,26 @@ namespace Microsoft.Bot.Builder
         protected virtual Task OnSignInInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+        }
+
+        /// <summary>
+        /// Invoked when the bot is sent a health check from the hosting infrastructure or, in the case of Skills the parent bot.
+        /// <see cref="OnHealthCheckAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/> is used.
+        /// By default, this method acknowledges the health state of the bot.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        /// method receives an Invoke with a <see cref="IInvokeActivity.Name"/> of `healthCheck`,
+        /// it calls this method.
+        /// </remarks>
+        /// <seealso cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        protected virtual Task<HealthCheckResponse> OnHealthCheckAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(HealthCheck.CreateHealthCheckResponse(turnContext.TurnState.Get<IConnectorClient>()));
         }
 
         /// <summary>

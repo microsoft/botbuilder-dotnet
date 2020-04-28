@@ -22,21 +22,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>DeclarativeTypes enumeration.</returns>
         public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
-            yield return new DeclarativeType<TextTemplate>(TextTemplate.DeclarativeType);
-            yield return new DeclarativeType<ActivityTemplate>(ActivityTemplate.DeclarativeType);
-            yield return new DeclarativeType<StaticActivityTemplate>(StaticActivityTemplate.DeclarativeType);
+            yield return new DeclarativeType<TextTemplate>(TextTemplate.Kind);
+            yield return new DeclarativeType<ActivityTemplate>(ActivityTemplate.Kind);
+            yield return new DeclarativeType<StaticActivityTemplate>(StaticActivityTemplate.Kind);
         }
 
         /// <summary>
         /// Return JsonConverters for LanguageGeneration resources.
         /// </summary>
         /// <param name="resourceExplorer">resource explorer to use for resolving references.</param>
-        /// <param name="context">source range context stack to build debugger source map.</param>
+        /// <param name="sourceContext">SourceContext to build debugger source map.</param>
         /// <returns>enumeration of jsonconverters.</returns>
-        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
+        public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
-            yield return new LanguageGeneratorConverter(resourceExplorer, context);
-            yield return new ActivityTemplateConverter();
+            yield return new LanguageGeneratorConverter(resourceExplorer, sourceContext);
+            yield return new ITemplateActivityConverter(resourceExplorer, sourceContext);
         }
     }
 }

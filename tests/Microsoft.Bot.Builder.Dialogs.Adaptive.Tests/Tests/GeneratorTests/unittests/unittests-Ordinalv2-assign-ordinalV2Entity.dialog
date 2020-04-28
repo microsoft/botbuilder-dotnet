@@ -1,6 +1,5 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Ordinalv2",
     "entity": "ordinalV2",
@@ -8,16 +7,16 @@
         {
             "$kind": "Microsoft.SendActivity",
             "activity": "${setObjectPropertyMessage('Ordinalv2', concat(string(@ordinalV2.offset), ' ', @ordinalV2.relativeTo))}"
-        }, 
+        },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Ordinalv2.offset",
-            "value": "=@ordinalV2.offset"          
+            "value": "=@ordinalV2.offset"
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Ordinalv2.relativeTo",
-            "value": "=@ordinalV2.relativeTo"          
+            "value": "=@ordinalV2.relativeTo"
         }
-    ]               
+    ]
 }

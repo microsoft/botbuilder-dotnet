@@ -1,0 +1,13 @@
+﻿> !# @strict = true
+> !# @replaceNull = The ${path} is undefined  
+> !# @lineBreakStyle = markdown
+
+#SayHello
+- hi ${user.name}
+
+#testInlineString
+-```m
+s
+f
+t
+```

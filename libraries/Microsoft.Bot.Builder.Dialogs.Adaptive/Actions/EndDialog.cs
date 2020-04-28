@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class EndDialog : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.EndDialog";
+        public const string Kind = "Microsoft.EndDialog";
 
         [JsonConstructor]
         public EndDialog(object value = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

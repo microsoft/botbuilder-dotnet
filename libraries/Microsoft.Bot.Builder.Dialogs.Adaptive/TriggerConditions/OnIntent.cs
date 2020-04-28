@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnIntent : OnDialogEvent
     {
         [JsonProperty("$kind")]
-        public new const string DeclarativeType = "Microsoft.OnIntent";
+        public new const string Kind = "Microsoft.OnIntent";
 
         [JsonConstructor]
         public OnIntent(string intent = null, List<string> entities = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

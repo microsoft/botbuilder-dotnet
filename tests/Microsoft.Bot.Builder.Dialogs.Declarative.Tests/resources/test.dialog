@@ -1,1 +1,5 @@
-{}
+{
+    "$schema": "../../tests.schema",
+    "$kind": "Microsoft.SendActivity",
+    "activity": "hello"
+}

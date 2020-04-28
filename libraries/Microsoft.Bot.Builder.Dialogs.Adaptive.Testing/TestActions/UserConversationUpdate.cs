@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     public class UserConversationUpdate : TestAction
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.Test.UserConversationUpdate";
+        public const string Kind = "Microsoft.Test.UserConversationUpdate";
 
         [JsonConstructor]
         public UserConversationUpdate([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)

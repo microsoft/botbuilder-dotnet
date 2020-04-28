@@ -70,20 +70,21 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public Metadata[] StrictFilters { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
+        /// Gets or sets a value indicating whether to call test or prod environment of knowledge base to be called. 
         /// </summary>
         /// <value>
-        /// A value indicating whether to call test or prod environment of knowledgebase. 
+        /// A value indicating whether to call test or prod environment of knowledge base. 
         /// </value>
         [JsonProperty("isTest")]
         public bool IsTest { get; set; }
 
         /// <summary>
-        /// Gets or sets ranker Types.
+        /// Gets or sets the QnA Maker ranker type to use.
         /// </summary>
         /// <value>
-        /// Ranker Types.
+        /// The QnA Maker ranker type to use.
         /// </value>
+        /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
 

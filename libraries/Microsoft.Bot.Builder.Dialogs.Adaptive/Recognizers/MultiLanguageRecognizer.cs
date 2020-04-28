@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class MultiLanguageRecognizer : Recognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.MultiLanguageRecognizer";
+        public const string Kind = "Microsoft.MultiLanguageRecognizer";
 
         [JsonConstructor]
         public MultiLanguageRecognizer()
@@ -43,9 +43,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
-            if (!LanguagePolicy.TryGetValue(activity.Locale ?? string.Empty, out string[] policy))
+            var policy = new List<string>();
+            if (LanguagePolicy.TryGetValue(activity.Locale, out string[] targetpolicy))
             {
-                policy = new string[] { string.Empty };
+                policy.AddRange(targetpolicy);
+            }
+
+            if (activity.Locale != string.Empty && LanguagePolicy.TryGetValue(string.Empty, out string[] defaultPolicy))
+            {
+                // we now explictly add defaultPolicy instead of coding that into target's policy
+                policy.AddRange(defaultPolicy);
             }
 
             foreach (var option in policy)
@@ -53,12 +60,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 if (this.Recognizers.TryGetValue(option, out var recognizer))
                 {
                     var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
-                    this.TelemetryClient.TrackEvent("MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+                    this.TrackRecognizerResult(dialogContext, "MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
                     return result;
                 }
             }
 
-            this.TelemetryClient.TrackEvent("MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(new RecognizerResult() { }, telemetryProperties), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(new RecognizerResult() { }, telemetryProperties), telemetryMetrics);
             
             // nothing recognized
             return new RecognizerResult() { };

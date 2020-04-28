@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -15,8 +15,8 @@
                     },
                     {
                         "$kind": "Microsoft.ChoiceInput",
-                        "choices": "user.choices",
-                        "styles": 2,
+                        "choices": "=user.choices",
+                        "style": "inline",
                         "property": "user.color",
                         "prompt": "Please select a color:",
                         "unrecognizedPrompt": "Not a color. Please select a color:"
@@ -27,8 +27,8 @@
                     },
                     {
                         "$kind": "Microsoft.ChoiceInput",
-                        "choices": "user.choices",
-                        "styles": 2,
+                        "choices": "=user.choices",
+                        "style": "inline",
                         "alwaysPrompt": true,
                         "property": "user.color",
                         "prompt": "Please select a color:",
@@ -40,8 +40,8 @@
                     },
                     {
                         "$kind": "Microsoft.ChoiceInput",
-                        "choices": "user.choices",
-                        "styles": 2,
+                        "choices": "=user.choices",
+                        "style": "inline",
                         "alwaysPrompt": true,
                         "property": "user.color",
                         "prompt": "Please select a color:",

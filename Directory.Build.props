@@ -1,4 +1,9 @@
 <Project>
+  
+  <PropertyGroup>
+    <LocalPackageVersion>4.9.0-local</LocalPackageVersion>
+  </PropertyGroup>
+
   <PropertyGroup>
     <PackageOutputPath>$(MSBuildThisFileDirectory)outputpackages\</PackageOutputPath>
   </PropertyGroup>
@@ -61,6 +66,7 @@
       replace PackageLicenseUrl with PackageLicenseExpression.
     -->
     <NoWarn>$(NoWarn);NU5125</NoWarn>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>

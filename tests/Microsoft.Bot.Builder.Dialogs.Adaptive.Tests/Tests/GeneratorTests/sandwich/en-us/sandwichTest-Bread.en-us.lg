@@ -1,4 +1,6 @@
-
+[sandwichTest-BreadEntity.lg](sandwichTest-BreadEntity.lg)
+[sandwichTest-library.lg](sandwichTest-library.lg)
+[sandwichTest-library-Missing.lg](sandwichTest-library-Missing.lg)
 
 # AskBread
 - ${askEnum('Bread')}
@@ -10,6 +12,3 @@
 
 # Bread(val)
 - ${BreadEntity(val)}
-[sandwichTest-BreadEntity.lg](sandwichTest-BreadEntity.lg)
-[sandwichTest-library.lg](sandwichTest-library.lg)
-[sandwichTest-library-Missing.lg](sandwichTest-library-Missing.lg)

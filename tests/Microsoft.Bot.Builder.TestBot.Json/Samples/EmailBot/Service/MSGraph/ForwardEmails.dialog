@@ -1,38 +1,38 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "actions": [
-    {
-      "$kind": "Microsoft.IfCondition",
-      "condition": "dialog.token == null",
-      "actions": [
+    "$schema": "../../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "actions": [
         {
-          "$kind": "Microsoft.OAuthInput",
-          "ConnectionName": "msgraph",
-          "Title": "Log in",
-          "Text": "Please log in to your email account",
-          "Property": "dialog.token"
+            "$kind": "Microsoft.IfCondition",
+            "condition": "dialog.token == null",
+            "actions": [
+                {
+                    "$kind": "Microsoft.OAuthInput",
+                    "ConnectionName": "msgraph",
+                    "Title": "Log in",
+                    "Text": "Please log in to your email account",
+                    "Property": "dialog.token"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.HttpRequest",
+            "url": "https://graph.microsoft.com/v1.0/me/messages/{user.focusedEmail.id}/forward",
+            "method": "POST",
+            "header": {
+                "Authorization": "Bearer {dialog.token.Token}"
+            },
+            "body": {
+                "comment": "{user.fwContent}",
+                "toRecipients": [
+                    {
+                        "emailAddress": {
+                            "address": "{user.email}"
+                        }
+                    }
+                ]
+            },
+            "Property": "dialog.postResponse"
         }
-      ]
-    },
-    {
-      "$kind": "Microsoft.HttpRequest",
-      "url": "https://graph.microsoft.com/v1.0/me/messages/{user.focusedEmail.id}/forward",
-      "method": "POST",
-      "header": {
-        "Authorization": "Bearer {dialog.token.Token}"
-      },
-      "body": {
-        "comment": "{user.fwContent}",
-        "toRecipients": [
-          {
-            "emailAddress": {
-              "address": "{user.email}"
-            }
-          }
-        ]
-      },
-      "Property": "dialog.postResponse"
-    }
-  ]
+    ]
 }

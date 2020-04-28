@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 this.Configuration = new DialogStateManagerConfiguration();
 
                 // get all of the component memory scopes
-                foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentMemoryScopes>())
+                foreach (var component in ComponentRegistration.Components.Value.OfType<IComponentMemoryScopes>())
                 {
                     foreach (var memoryScope in component.GetMemoryScopes())
                     {
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 }
 
                 // get all of the component path resolvers
-                foreach (var component in ComponentRegistration.Registrations.Value.OfType<IComponentPathResolvers>())
+                foreach (var component in ComponentRegistration.Components.Value.OfType<IComponentPathResolvers>())
                 {
                     foreach (var pathResolver in component.GetPathResolvers())
                     {

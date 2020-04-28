@@ -1,42 +1,42 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "actions": [
-    {
-      "$kind": "Microsoft.TextInput",
-      "prompt": "OK, please enter the subject of your email.",
-      "property": "user.subject"
-    },
-    {
-      "$kind": "Microsoft.TextInput",
-      "prompt": "OK, please enter the body of your email.",
-      "property": "user.body"
-    },
-    "FindContact",
-    {
-      "$kind": "Microsoft.ConfirmInput",
-      "property": "dialog.confirmed",
-      "prompt": "Are you sure to send this email?",
-      "retryPrompt": "Please try again.",
-      "invalidPrompt": "Please input yes/no.",
-      "alwaysPrompt": true
-    },
-    {
-      "$kind": "Microsoft.IfCondition",
-      "condition": "dialog.confirmed",
-      "actions": [
-        "SendEmails",
+    "$schema": "../../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "actions": [
         {
-          "$kind": "Microsoft.SendActivity",
-          "activity": "Your email has been sent succsessfully"
-        }
-      ],
-      "elseActions": [
+            "$kind": "Microsoft.TextInput",
+            "prompt": "OK, please enter the subject of your email.",
+            "property": "user.subject"
+        },
         {
-          "$kind": "Microsoft.SendActivity",
-          "activity": "OK, let's do it next time."
+            "$kind": "Microsoft.TextInput",
+            "prompt": "OK, please enter the body of your email.",
+            "property": "user.body"
+        },
+        "FindContact",
+        {
+            "$kind": "Microsoft.ConfirmInput",
+            "property": "dialog.confirmed",
+            "prompt": "Are you sure to send this email?",
+            "retryPrompt": "Please try again.",
+            "invalidPrompt": "Please input yes/no.",
+            "alwaysPrompt": true
+        },
+        {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "dialog.confirmed",
+            "actions": [
+                "SendEmails",
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Your email has been sent succsessfully"
+                }
+            ],
+            "elseActions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "OK, let's do it next time."
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

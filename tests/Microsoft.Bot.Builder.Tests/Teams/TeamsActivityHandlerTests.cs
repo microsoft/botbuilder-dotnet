@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Type = ActivityTypes.ConversationUpdate,
                 MembersAdded = new List<ChannelAccount>
                 {
-                    new ChannelAccount { Id = "id-3" },
+                    new ChannelAccount { Id = "id-1" },
                 },
                 Recipient = new ChannelAccount { Id = "b" },
                 Conversation = new ConversationAccount { Id = "conversation-id" },
@@ -1020,7 +1020,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
-
+                
                 // GetMembers (Team)
                 if (request.RequestUri.PathAndQuery.EndsWith("team-id/members"))
                 {
@@ -1080,6 +1080,21 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             new JProperty("tenantId", "tenantId-4"),
                         },
                     };
+                    response.Content = new StringContent(content.ToString());
+                }
+                else if (request.RequestUri.PathAndQuery.EndsWith("team-id/members/id-1") || request.RequestUri.PathAndQuery.EndsWith("conversation-id/members/id-1"))
+                {
+                    var content = new JObject
+                        {
+                            new JProperty("id", "id-1"),
+                            new JProperty("objectId", "objectId-1"),
+                            new JProperty("name", "name-1"),
+                            new JProperty("givenName", "givenName-1"),
+                            new JProperty("surname", "surname-1"),
+                            new JProperty("email", "email-1"),
+                            new JProperty("userPrincipalName", "userPrincipalName-1"),
+                            new JProperty("tenantId", "tenantId-1"),
+                        };
                     response.Content = new StringContent(content.ToString());
                 }
 

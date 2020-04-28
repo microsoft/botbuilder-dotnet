@@ -1,5 +1,5 @@
-﻿{
-    "$schema": "../../../../schemas/sdk.schema",
+{
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -8,7 +8,7 @@
             "applicationId": "=settings.luis.DynamicLists_test_en_us_lu",
             "endpoint": "=settings.luis.endpoint",
             "endpointKey": "=settings.luis.endpointKey",
-            "dynamicLists": "json(\"[{'entity': 'alphaEntity', 'list': [{'canonicalForm': 'a', 'synonyms': ['a', 'aa']}, {'canonicalForm': 'b', 'synonyms': ['b', 'bb']}]}, {'entity': 'numberEntity', 'list': [{'canonicalForm': '1', 'synonyms': ['1', 'one']}, {'canonicalForm': '2', 'synonyms': ['2', 'two']}]}]\")"
+            "dynamicLists": "=json(\"[{'entity': 'alphaEntity', 'list': [{'canonicalForm': 'a', 'synonyms': ['a', 'aa']}, {'canonicalForm': 'b', 'synonyms': ['b', 'bb']}]}, {'entity': 'numberEntity', 'list': [{'canonicalForm': '1', 'synonyms': ['1', 'one']}, {'canonicalForm': '2', 'synonyms': ['2', 'two']}]}]\")"
         },
         "triggers": [
             {

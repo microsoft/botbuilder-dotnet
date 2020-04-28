@@ -1,3 +1,6 @@
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Help.lg](unittests-library-Help.lg)
+
 # chooseEnumEntity(property)
 - ```
 ${askHelp()}
@@ -9,5 +12,3 @@ Please choose a value for ${name(property)} from [${join(foreach(turn.dialogEven
 
 # choosePropertyEntity(property)
 - "${property.entity.text}" as ${name(property.property)}
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Help.lg](unittests-library-Help.lg)

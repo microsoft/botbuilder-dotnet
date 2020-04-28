@@ -434,25 +434,17 @@ namespace Microsoft.Bot.Builder
 
             using (var context = new TurnContext(this, activity))
             {
+                activity.CallerId = await GenerateCallerIdAsync(claimsIdentity).ConfigureAwait(false);
+
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
-                context.TurnState.Add<BotCallbackHandler>(callback);
 
-                // To create the correct cache key, provide the OAuthScope when calling CreateConnectorClientAsync.
                 // The OAuthScope is also stored on the TurnState to get the correct AppCredentials if fetching a token is required.
-                string scope;
-                if (!SkillValidation.IsSkillClaim(claimsIdentity.Claims))
-                {
-                    scope = GetBotFrameworkOAuthScope();
-                }
-                else
-                {
-                    // For activities received from another bot, the appropriate audience is obtained from the claims.
-                    scope = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
-                }
-
+                var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : GetBotFrameworkOAuthScope();
                 context.TurnState.Add(OAuthScopeKey, scope);
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, scope, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
+
+                context.TurnState.Add(callback);
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
 
@@ -842,6 +834,7 @@ namespace Microsoft.Bot.Builder
                     Bot = activity.Recipient,       // Activity is from the user to the bot
                     ChannelId = activity.ChannelId,
                     Conversation = activity.Conversation,
+                    Locale = activity.Locale,
                     ServiceUrl = activity.ServiceUrl,
                     User = activity.From,
                 },
@@ -909,6 +902,7 @@ namespace Microsoft.Bot.Builder
                     Bot = activity.Recipient,       // Activity is from the user to the bot
                     ChannelId = activity.ChannelId,
                     Conversation = activity.Conversation,
+                    Locale = activity.Locale,
                     ServiceUrl = activity.ServiceUrl,
                     User = activity.From,
                 },
@@ -1114,6 +1108,7 @@ namespace Microsoft.Bot.Builder
                     Bot = activity.Recipient,       // Activity is from the user to the bot
                     ChannelId = activity.ChannelId,
                     Conversation = activity.Conversation,
+                    Locale = activity.Locale,
                     ServiceUrl = activity.ServiceUrl,
                     User = activity.From,
                 },
@@ -1421,6 +1416,42 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Generates the CallerId property for the activity based on
+        /// https://github.com/microsoft/botframework-obi/blob/master/protocols/botframework-activity/botframework-activity.md#appendix-v---caller-id-values.
+        /// </summary>
+        private async Task<string> GenerateCallerIdAsync(ClaimsIdentity claimsIdentity)
+        {
+            // Is the bot accepting all incoming messages?
+            var isAuthDisabled = await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false);
+            if (isAuthDisabled) 
+            {
+                // Return null so that the callerId is cleared.
+                return null;
+            }
+        
+            // Is the activity from another bot?
+            if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
+            {
+                return $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
+            }
+
+            // Is the activity from Public Azure?
+            if (ChannelProvider == null || ChannelProvider.IsPublicAzure()) 
+            {
+                return CallerIdConstants.PublicAzureChannel;
+            }
+
+            // Is the activity from Azure Gov?
+            if (ChannelProvider != null && ChannelProvider.IsGovernment()) 
+            {
+                return CallerIdConstants.USGovChannel;
+            }
+
+            // Return null so that the callerId is cleared.
+            return null;
+        }
+
+        /// <summary>
         /// Creates the connector client asynchronous.
         /// </summary>
         /// <param name="serviceUrl">The service URL.</param>
@@ -1511,7 +1542,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>App credentials.</returns>
         private async Task<AppCredentials> GetAppCredentialsAsync(string appId, string oAuthScope, CancellationToken cancellationToken = default)
         {
-            if (appId == null)
+            if (string.IsNullOrWhiteSpace(appId))
             {
                 return MicrosoftAppCredentials.Empty;
             }

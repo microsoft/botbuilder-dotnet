@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -20,11 +20,21 @@
                         }
                     ],
                     "entities": [
-                        { "$kind": "Microsoft.AgeEntityRecognizer" },
-                        { "$kind": "Microsoft.NumberEntityRecognizer" },
-                        { "$kind": "Microsoft.PercentageEntityRecognizer" },
-                        { "$kind": "Microsoft.PhoneNumberEntityRecognizer" },
-                        { "$kind": "Microsoft.TemperatureEntityRecognizer" }
+                        {
+                            "$kind": "Microsoft.AgeEntityRecognizer"
+                        },
+                        {
+                            "$kind": "Microsoft.NumberEntityRecognizer"
+                        },
+                        {
+                            "$kind": "Microsoft.PercentageEntityRecognizer"
+                        },
+                        {
+                            "$kind": "Microsoft.PhoneNumberEntityRecognizer"
+                        },
+                        {
+                            "$kind": "Microsoft.TemperatureEntityRecognizer"
+                        }
                     ]
                 },
                 {
@@ -41,21 +51,20 @@
                         }
                     ],
                     "entities": [
-                        { "$kind": "Microsoft.UrlEntityRecognizer" },
                         {
-
+                            "$kind": "Microsoft.UrlEntityRecognizer"
+                        },
+                        {
                             "$kind": "Microsoft.RegexEntityRecognizer",
                             "name": "color",
                             "pattern": "(?i)(red|green|blue|purple|orange|violet|white|black)"
                         },
                         {
-
                             "$kind": "Microsoft.RegexEntityRecognizer",
                             "name": "backgroundColor",
                             "pattern": "(?i)(back|background)"
                         },
                         {
-
                             "$kind": "Microsoft.RegexEntityRecognizer",
                             "name": "foregroundColor",
                             "pattern": "(?i)(foreground|front) {color}"

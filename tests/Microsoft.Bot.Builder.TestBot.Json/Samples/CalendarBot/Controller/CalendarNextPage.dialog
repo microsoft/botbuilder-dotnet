@@ -1,16 +1,16 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "triggers": [
-    {
-      "$kind": "Microsoft.OnBeginDialog",
-      "actions": [
+    "$schema": "../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
         {
-          "$kind": "Microsoft.SetProperty",
-          "value": "=user.showIndex + 1",
-          "property": "user.showIndex"
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "value": "=user.showIndex + 1",
+                    "property": "user.showIndex"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

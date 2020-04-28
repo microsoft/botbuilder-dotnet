@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
@@ -23,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnCondition : IItemIdentity, IDialogDependencies
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.OnCondition";
+        public const string Kind = "Microsoft.OnCondition";
 
         private ActionScope actionScope;
 

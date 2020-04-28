@@ -1,37 +1,27 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "autoEndDialog": false,
     "recognizer": {
         "$kind": "Microsoft.RegexRecognizer",
         "intents": [
             {
-
-                
                 "intent": "ToDoIntent",
-                "pattern": "(?i)todo" 
+                "pattern": "(?i)todo"
             },
             {
-
-                
                 "intent": "EmailIntent",
-                "pattern": "(?i)email" 
+                "pattern": "(?i)email"
             },
             {
-
-                
                 "intent": "CalendarIntent",
-                "pattern": "(?i)meeting" 
+                "pattern": "(?i)meeting"
             },
             {
-
-                
                 "intent": "HelpIntent",
-                "pattern": "(?i)help" 
+                "pattern": "(?i)help"
             },
             {
-
-                
                 "intent": "CancelIntent",
                 "pattern": "(?i)cancel"
             }

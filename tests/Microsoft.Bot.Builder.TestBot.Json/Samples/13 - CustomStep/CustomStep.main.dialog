@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "triggers": [
         {
@@ -19,8 +19,8 @@
                 },
                 {
                     "$kind": "Testbot.Multiply",
-                    "arg1": "conversation.width",
-                    "arg2": "conversation.height",
+                    "arg1": "=conversation.width",
+                    "arg2": "=conversation.height",
                     "result": "conversation.area"
                 },
                 {
