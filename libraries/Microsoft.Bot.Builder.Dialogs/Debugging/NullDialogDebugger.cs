@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     name = item?.GetType().Name ?? "null";
                 }
 
-                var threadText = $"'{Ellipsis(turnText, 18)}'";
+                var threadText = $"'{StringUtils.Ellipsis(turnText, 18)}'";
                 if (context.State.GetMemoryScope(ScopePath.Dialog) != null && context.State.TryGetValue<uint>(DialogPath.EventCounter, out var count))
                 {
                     threadText = $"{count}: {threadText}";
@@ -61,25 +61,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             return Task.CompletedTask;
-        }
-
-        private static string Ellipsis(string text, int length)
-        {
-            if (text == null)
-            {
-                return string.Empty;
-            }
-
-            if (text.Length > length)
-            {
-                int pos = text.IndexOf(" ", length);
-                if (pos >= 0)
-                {
-                    return text.Substring(0, pos) + "...";
-                }
-            }
-
-            return text;
         }
     }
 }

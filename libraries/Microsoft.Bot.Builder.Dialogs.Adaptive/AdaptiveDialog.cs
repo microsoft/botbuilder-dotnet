@@ -331,7 +331,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 sb.Append(trigger.GetExpression().ToString());
             }
 
-            return Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
+            return StringUtils.Hash(sb.ToString());
         }
 
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
