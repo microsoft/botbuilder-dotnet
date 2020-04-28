@@ -54,5 +54,39 @@ namespace Microsoft.Bot.Builder
 
             return $"{Ellipsis(text, length)}{Hash(text)}";
         }
+
+        /// <summary>
+        /// Truncate stringbuilder string with ...
+        /// </summary>
+        /// <param name="sb">stringbuilder which will be truncated.</param>
+        /// <param name="length">length to truncate text.</param>
+        /// <returns>original stringbuilder modified.</returns>
+        public static StringBuilder Ellipsis(StringBuilder sb, int length)
+        {
+            if (sb.Length > length)
+            {
+                sb.Length = length;
+                sb.Append($"...");
+            }
+
+            return sb;
+        }
+
+        /// <summary>
+        /// EllipsisHash - return truncated string with unique hash for the truncated part.
+        /// </summary>
+        /// <param name="sb">text to truncate.</param>
+        /// <param name="length">length to truncate at.</param>
+        /// <returns>original stringbuilder modified.</returns>
+        public static StringBuilder EllipsisHash(StringBuilder sb, int length)
+        {
+            if (sb.Length > length)
+            {
+                var hash = Hash(sb.ToString());
+                return Ellipsis(sb, length).Append(hash);
+            }
+
+            return sb;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -52,6 +53,23 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual($"...{StringUtils.Hash(test1)}", StringUtils.EllipsisHash(test1, 0));
             Assert.AreEqual($"{test1.Substring(0, 5)}...{StringUtils.Hash(test1)}", StringUtils.EllipsisHash(test1, 5));
             Assert.AreEqual(test1, StringUtils.EllipsisHash(test1, 1000));
+        }
+
+        [TestMethod]
+        public void TestEllipsisStringBuilder()
+        {
+            Assert.AreEqual("...", StringUtils.Ellipsis(new StringBuilder(test1), 0).ToString());
+           
+            Assert.AreEqual($"{test1.Substring(0, 5)}...", StringUtils.Ellipsis(new StringBuilder(test1), 5).ToString());
+            Assert.AreEqual(test1, StringUtils.Ellipsis(new StringBuilder(test1), 1000).ToString());
+        }
+
+        [TestMethod]
+        public void TestEllipsisHashStringBuilder()
+        {
+            Assert.AreEqual($"...{StringUtils.Hash(test1)}", StringUtils.EllipsisHash(new StringBuilder(test1), 0).ToString());
+            Assert.AreEqual($"{test1.Substring(0, 5)}...{StringUtils.Hash(test1)}", StringUtils.EllipsisHash(new StringBuilder(test1), 5).ToString());
+            Assert.AreEqual(test1, StringUtils.EllipsisHash(new StringBuilder(test1), 1000).ToString());
         }
     }
 }
