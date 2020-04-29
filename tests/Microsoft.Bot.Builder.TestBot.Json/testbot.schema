@@ -301,11 +301,6 @@
             "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
         },
         {
-            "title": "Microsoft.OnCustomEvent",
-            "description": "Actions to perform when a custom event is detected. Use 'Emit a custom event' action to raise a custom event.",
-            "$ref": "#/definitions/Microsoft.OnCustomEvent"
-        },
-        {
             "title": "Microsoft.OnDialogEvent",
             "description": "Actions to perform when a specific dialog event occurs.",
             "$ref": "#/definitions/Microsoft.OnDialogEvent"
@@ -7405,11 +7400,6 @@
                     "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
                 },
                 {
-                    "title": "Microsoft.OnCustomEvent",
-                    "description": "Actions to perform when a custom event is detected. Use 'Emit a custom event' action to raise a custom event.",
-                    "$ref": "#/definitions/Microsoft.OnCustomEvent"
-                },
-                {
                     "title": "Microsoft.OnDialogEvent",
                     "description": "Actions to perform when a specific dialog event occurs.",
                     "$ref": "#/definitions/Microsoft.OnDialogEvent"
@@ -10381,148 +10371,6 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "$kind"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.OnCustomEvent": {
-            "$role": "implements(Microsoft.ITrigger)",
-            "title": "On custom event",
-            "description": "Actions to perform when a custom event is detected. Use 'Emit a custom event' action to raise a custom event.",
-            "type": "object",
-            "properties": {
-                "$kind": {
-                    "title": "$kind",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnCustomEvent"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "condition": {
-                    "title": "Condition",
-                    "description": "Condition (expression).",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "$role": "expression",
-                    "oneOf": [
-                        {
-                            "type": "string",
-                            "title": "Expression",
-                            "pattern": "^.*\\S.*",
-                            "examples": [
-                                "user.age > 13"
-                            ]
-                        },
-                        {
-                            "type": "boolean",
-                            "title": "Boolean",
-                            "default": true,
-                            "examples": [
-                                false
-                            ]
-                        }
-                    ]
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions to execute.",
-                    "items": {
-                        "$kind": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                },
-                "priority": {
-                    "title": "priority",
-                    "$role": "expression",
-                    "oneOf": [
-                        {
-                            "type": "integer",
-                            "title": "Integer",
-                            "default": 0,
-                            "examples": [
-                                15
-                            ]
-                        },
-                        {
-                            "examples": [
-                                "=user.age"
-                            ],
-                            "type": "string",
-                            "title": "Expression",
-                            "pattern": "^=.*\\S.*"
-                        }
-                    ]
-                },
-                "runOnce": {
-                    "title": "Run Once",
-                    "description": "True if rule should run once per unique conditions",
-                    "examples": [
-                        true,
-                        "=f(x)"
-                    ],
-                    "$role": "expression",
-                    "oneOf": [
-                        {
-                            "type": "boolean",
-                            "title": "Boolean",
-                            "default": false,
-                            "examples": [
-                                false
-                            ]
-                        },
-                        {
-                            "examples": [
-                                "=user.isVip"
-                            ],
-                            "type": "string",
-                            "title": "Expression",
-                            "pattern": "^=.*\\S.*"
-                        }
-                    ]
-                },
-                "event": {
-                    "type": "string",
-                    "title": "Custom event name",
-                    "description": "Name of the custom event."
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "event",
                         "$kind"
                     ]
                 }
@@ -13861,6 +13709,32 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "allowLoop": {
+                    "title": "AllowLoop",
+                    "description": "Optional condition which if true will allow loop of the repeated dialog.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "Boolean",
+                            "default": false,
+                            "examples": [
+                                false
+                            ]
+                        },
+                        {
+                            "examples": [
+                                "=user.isVip"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
+                    ]
+                },
                 "disabled": {
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
@@ -14792,7 +14666,7 @@
                 },
                 "activityProcessed": {
                     "title": "Activity Processed",
-                    "description": "When set to false, the dialog that is called can process the current activity.",
+                    "description": "When set to false, the skill will be started using the activity in the current turn context instead of the activity in the Activity property.",
                     "default": true,
                     "examples": [
                         true,

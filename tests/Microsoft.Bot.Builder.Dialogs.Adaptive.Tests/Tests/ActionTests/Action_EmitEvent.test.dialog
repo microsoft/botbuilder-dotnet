@@ -57,7 +57,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.OnCustomEvent",
+                "$kind": "Microsoft.OnDialogEvent",
                 "event": "CustomEvent",
                 "actions": [
                     {
