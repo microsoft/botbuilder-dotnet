@@ -17,11 +17,6 @@ namespace Microsoft.Bot.Builder
         /// <returns>string length + ...</returns>
         public static string Ellipsis(string text, int length)
         {
-            if (text == null)
-            {
-                return string.Empty;
-            }
-
             if (text.Length <= length)
             {
                 return text;

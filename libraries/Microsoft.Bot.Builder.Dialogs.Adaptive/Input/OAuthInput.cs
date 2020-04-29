@@ -396,6 +396,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 });
             }
 
+            // Add the login timeout specified in OAuthPromptSettings to TurnState so it can be referenced if polling is needed
+            if (!turnContext.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey) && Timeout != null)
+            {
+                turnContext.TurnState.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, TimeSpan.FromMilliseconds(Timeout.GetValue(dc.State)));
+            }
+
             // Set input hint
             if (string.IsNullOrEmpty(prompt.InputHint))
             {
