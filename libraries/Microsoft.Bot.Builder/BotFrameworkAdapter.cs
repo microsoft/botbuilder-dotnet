@@ -13,6 +13,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration;
+using Microsoft.Bot.Builder.OAuth;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -42,7 +44,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>h
-    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IExtendedUserTokenProvider
+    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IExtendedUserTokenProvider, IConnectorClientBuilder
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
@@ -1302,6 +1304,11 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        Task<IConnectorClient> IConnectorClientBuilder.CreateConnectorClientAsync(string serviceUrl, ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        {
+            return CreateConnectorClientAsync(serviceUrl, claimsIdentity, audience, cancellationToken);
+        }
+
         /// <summary>
         /// Creates an OAuth client for the bot with the credentials.
         /// </summary>
@@ -1452,6 +1459,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="serviceUrl">The service URL.</param>
         /// <param name="claimsIdentity">The claims claimsIdentity.</param>
+        /// <param name="audience">The target audience for the connector.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>ConnectorClient instance.</returns>
         /// <exception cref="NotSupportedException">ClaimsIdentity cannot be null. Pass Anonymous ClaimsIdentity if authentication is turned off.</exception>
