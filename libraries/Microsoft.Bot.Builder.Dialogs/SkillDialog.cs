@@ -218,6 +218,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             return eocActivity;
         }
 
+        /// <summary>
+        /// Tells is if we should intercept the OAuthCard message.
+        /// </summary>
+        /// <remarks>
+        /// The SkillDialog only attempts to intercept OAuthCards when the following criteria are met:
+        /// 1. An OAuthCard was sent from the skill
+        /// 2. The SkillDialog was called with a connectionName
+        /// 3. The current adapter supports token exchange
+        /// If any of these criteria are false, return false.
+        /// </remarks>
         private async Task<bool> InterceptOAuthCardsAsync(ITurnContext turnContext, Activity activity, string connectionName, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(connectionName) || !(turnContext.Adapter is IExtendedUserTokenProvider tokenExchangeProvider))
