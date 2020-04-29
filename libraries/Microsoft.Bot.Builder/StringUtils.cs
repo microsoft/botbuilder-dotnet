@@ -33,7 +33,6 @@ namespace Microsoft.Bot.Builder
         /// <returns>string which is unique SHA256 hash.</returns>
         public static string Hash(string text)
         {
-            text = text ?? new ArgumentNullException(nameof(text));
             using (var sha256Hash = SHA256.Create())
             {
                 byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(text));
