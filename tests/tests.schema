@@ -227,7 +227,7 @@
         },
         {
             "title": "Microsoft.LuisRecognizer",
-            "description": "LUIS recognizer.",
+            "description": "Luis recognizer.",
             "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
@@ -7590,7 +7590,7 @@
                 },
                 {
                     "title": "Microsoft.LuisRecognizer",
-                    "description": "LUIS recognizer.",
+                    "description": "Luis recognizer.",
                     "$ref": "#/definitions/Microsoft.LuisRecognizer"
                 },
                 {
@@ -8198,8 +8198,8 @@
         },
         "Microsoft.LuisRecognizer": {
             "$role": "implements(Microsoft.IRecognizer)",
-            "title": "LUIS Recognizer",
-            "description": "LUIS recognizer.",
+            "title": "Luis Recognizer",
+            "description": "Luis recognizer.",
             "type": "object",
             "additionalProperties": false,
             "properties": {

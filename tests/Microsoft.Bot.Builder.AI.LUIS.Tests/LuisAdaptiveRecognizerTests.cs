@@ -6,9 +6,8 @@ using System.IO;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Converters;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.Testing;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Luis;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,7 +16,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     [TestClass]
-    public class LuisRecognizerTests
+    public class LuisAdaptiveRecognizerTests
     {
         private const string DynamicListJSon = @"[
                 {
@@ -66,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             'endpoint': '=settings.luis.endpoint',
             'endpointKey': '=settings.luis.endpointKey', 'dynamicLists': " + DynamicListJSon + "}";
 
-        private readonly string dynamicListsDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\LuisRecognizerTests");
+        private readonly string dynamicListsDirectory = PathUtils.NormalizePath(@"..\..\..\Tests\LuisAdaptiveRecognizerTests");
         
         public static ResourceExplorer ResourceExplorer { get; set; }
 
@@ -76,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public static void ClassInitialize(TestContext context)
         {
             ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(LuisRecognizerTests)), monitorChanges: false)
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(LuisAdaptiveRecognizerTests)), monitorChanges: false)
                 .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader());
         }
 
