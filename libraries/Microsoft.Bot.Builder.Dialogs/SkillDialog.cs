@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var response = await DialogOptions.SkillClient.PostActivityAsync<ExpectedReplies>(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
 
             // Inspect the skill response status
-            if (!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode())
             {
                 throw new HttpRequestException($"Error invoking the skill id: \"{skillInfo.Id}\" at \"{skillInfo.SkillEndpoint}\" (status is {response.Status}). \r\n {response.Body}");
             }
@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var response = await DialogOptions.SkillClient.PostActivityAsync<ExpectedReplies>(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, incomingActivity.Conversation.Id, activity, cancellationToken).ConfigureAwait(false);
 
             // Check response status: true if success, false if failure
-            return response.IsSuccessStatusCode;
+            return response.IsSuccessStatusCode();
         }
 
         private async Task<string> CreateSkillConversationIdAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)

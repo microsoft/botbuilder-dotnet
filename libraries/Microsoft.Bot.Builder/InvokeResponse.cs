@@ -30,10 +30,10 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets a value indicating whether the invoke response was successful.
         /// </summary>
-        /// <value>
+        /// <returns>
         /// A value that indicates if the HTTP response was successful.
         /// true if <see cref="Status"/> was in the Successful range (200-299); otherwise false.
-        /// </value>
-        public bool IsSuccessStatusCode => Status >= 200 && Status <= 299;
+        /// </returns>
+        public bool IsSuccessStatusCode() => Status >= 200 && Status <= 299;
     }
 }
