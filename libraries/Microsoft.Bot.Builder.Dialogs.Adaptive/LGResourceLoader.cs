@@ -13,9 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </summary>
     public class LGResourceLoader
     {
-        public static Dictionary<string, IList<IResource>> GroupByLocale(ResourceExplorer resourceExplorer)
+        public static Dictionary<string, IList<Resource>> GroupByLocale(ResourceExplorer resourceExplorer)
         {
-            var resourceMapping = new Dictionary<string, IList<IResource>>();
+            var resourceMapping = new Dictionary<string, IList<Resource>>();
             var allResources = resourceExplorer.GetResources("lg");
             var languagePolicy = new LanguagePolicy();
             foreach (var item in languagePolicy)
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                                 existNames.Add(prefixName);
                                 if (!resourceMapping.ContainsKey(locale))
                                 {
-                                    resourceMapping.Add(locale, new List<IResource> { resourceWithSuchSuffix });
+                                    resourceMapping.Add(locale, new List<Resource> { resourceWithSuchSuffix });
                                 }
                                 else
                                 {
@@ -143,9 +143,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="resourceMapping">input resource mapping.</param>
         /// <returns>merged resource mapping.</returns>
-        private static Dictionary<string, IList<IResource>> FallbackMultiLangResource(Dictionary<string, IList<IResource>> resourceMapping)
+        private static Dictionary<string, IList<Resource>> FallbackMultiLangResource(Dictionary<string, IList<Resource>> resourceMapping)
         {
-            var resourcePoolDict = new Dictionary<string, IList<IResource>>();
+            var resourcePoolDict = new Dictionary<string, IList<Resource>>();
             foreach (var languageItem in resourceMapping)
             {
                 var currentLocale = languageItem.Key;
@@ -203,7 +203,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return string.Empty;
         }
 
-        private static bool HasSameResourcePool(IList<IResource> resourceMapping1, IList<IResource> resourceMapping2)
+        private static bool HasSameResourcePool(IList<Resource> resourceMapping1, IList<Resource> resourceMapping2)
         {
             if (resourceMapping1 == null && resourceMapping2 == null)
             {
