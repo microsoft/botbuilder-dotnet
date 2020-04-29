@@ -402,6 +402,8 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 },
                 new QnAMakerOptions
                 {
+
+                    ScoreThreshold = 0.9F,
                     Top = 5,
                 });
 
@@ -410,6 +412,18 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.AreEqual(results.Length, 4, "should get four results");
 
             var filteredResults = qna.GetLowScoreVariation(results);
+            Assert.IsNotNull(filteredResults);
+            Assert.AreEqual(filteredResults.Length, 3, "should get three results");
+
+            mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer_DisableActiveLearning.json"));
+           
+            results = await qna.GetAnswersAsync(GetContext("Q11"));
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 4, "should get four results");
+
+            filteredResults = qna.GetLowScoreVariation(results);
             Assert.IsNotNull(filteredResults);
             Assert.AreEqual(filteredResults.Length, 3, "should get three results");
         }
