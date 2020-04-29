@@ -15,7 +15,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -39,7 +39,7 @@
             ]
         },
         "url": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Url",
             "description": "URL to call (supports data binding).",
             "examples": [
@@ -47,13 +47,13 @@
             ]
         },
         "body": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/valueExpression",
+            "$ref": "schema:#/definitions/valueExpression",
             "title": "Body",
             "description": "Body to include in the HTTP call (supports data binding).",
             "additionalProperties": true
         },
         "resultProperty": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Result property",
             "description": "Property to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
             "examples": [
@@ -61,7 +61,7 @@
             ]
         },
         "contentType": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Content type",
             "description": "Content media type for the body.",
             "examples": [
@@ -72,17 +72,19 @@
         "headers": {
             "type": "object",
             "additionalProperties": {
-                "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression"
+                "$ref": "schema:#/definitions/stringExpression"
             },
             "title": "Headers",
             "description": "One or more headers to include in the request (supports data binding)."
         },
         "responseType": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Response type",
             "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",
             "oneOf": [
                 {
+                    "title": "Standard response",
+                    "description": "Standard response type.",
                     "enum": [
                         "none",
                         "json",
@@ -91,6 +93,8 @@
                     ]
                 },
                 {
+                    "title": "Open response",
+                    "description": "Open response type.",
                     "pattern": "^=.*\\S.*"
                 }
             ],

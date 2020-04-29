@@ -1,14 +1,9 @@
 {
     "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
-    "$role": "implements(Microsoft.ITrigger)",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On MessageUpdate activity",
     "description": "Actions to perform on receipt of an activity with type 'MessageUpdate'.",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.OnCondition.schema#"
-        }
-    ],
     "required": [
         "actions"
     ]

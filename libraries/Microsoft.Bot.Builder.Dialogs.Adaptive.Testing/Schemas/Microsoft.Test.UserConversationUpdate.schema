@@ -11,7 +11,9 @@
             "title": "Members Added",
             "description": "Names of the members to add",
             "items": {
-                "type": "string"
+                "type": "string",
+                "title": "Name",
+                "description": "Name of member to add."
             }
         },
         "membersRemoved": {
@@ -19,7 +21,9 @@
             "title": "Members Removed",
             "description": "Names of the members to remove",
             "items": {
-                "type": "string"
+                "type": "string",
+                "title": "Name",
+                "description": "Name of member to remove."
             }
         }
     }

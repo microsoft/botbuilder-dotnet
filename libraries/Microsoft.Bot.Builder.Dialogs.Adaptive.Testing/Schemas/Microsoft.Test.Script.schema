@@ -16,6 +16,7 @@
         },
         "script": {
             "type": "array",
+            "title": "Test actions",
             "description": "Sequence of test actions to execute.",
             "items": {
                 "$kind": "Microsoft.Test.ITestAction"

@@ -14,11 +14,13 @@
             "description": "Optional id for the dialog"
         },
         "changeType": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Type of change",
             "description": "Type of change to the array in memory.",
             "oneOf": [
                 {
+                    "title": "Standard change",
+                    "description": "Standard change type.",
                     "enum": [
                         "push",
                         "pop",
@@ -28,13 +30,15 @@
                     ]
                 },
                 {
+                    "title": "Open change",
+                    "description": "Open change type.",
                     "pattern": "^=.*\\S.*"
                 }
             ],
             "default": "push"
         },
         "disabled": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -42,17 +46,17 @@
             ]
         },
         "itemsProperty": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Items property",
             "description": "Property that holds the array to update."
         },
         "resultProperty": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Result Property",
             "description": "Property to store the result of this action."
         },
         "value": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/valueExpression",
+            "$ref": "schema:#/definitions/valueExpression",
             "title": "Value",
             "description": "New value or expression.",
             "examples": [

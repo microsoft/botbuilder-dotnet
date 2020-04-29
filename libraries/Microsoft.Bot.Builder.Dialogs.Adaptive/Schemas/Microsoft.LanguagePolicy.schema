@@ -5,9 +5,12 @@
     "type": "object",
     "additionalProperties": {
         "type": "array",
+        "title": "Per-locale policy",
+        "description": "Language policy per locale.",
         "items": {
             "type": "string",
-            "title": "language code like en-us"
+            "title": "Locale",
+            "description": "Locale like en-us."
         }
     }
 }

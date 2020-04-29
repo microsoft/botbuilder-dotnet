@@ -6,7 +6,7 @@
     "properties": {
         "template": {
             "title": "Template",
-            "Description": "Language Generator template to use to create the activity",
+            "description": "Language Generator template to use to create the activity",
             "type": "string"
         }
     },

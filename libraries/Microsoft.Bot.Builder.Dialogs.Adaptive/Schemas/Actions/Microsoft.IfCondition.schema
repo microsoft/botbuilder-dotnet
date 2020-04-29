@@ -15,7 +15,7 @@
             "description": "Optional id for the dialog"
         },
         "condition": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/condition",
+            "$ref": "schema:#/definitions/condition",
             "title": "Condition",
             "description": "Expression to evaluate.",
             "examples": [
@@ -23,7 +23,7 @@
             ]
         },
         "disabled": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [

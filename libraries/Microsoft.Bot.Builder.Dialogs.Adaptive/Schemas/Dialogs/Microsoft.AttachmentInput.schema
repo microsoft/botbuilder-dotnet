@@ -1,61 +1,62 @@
 {
     "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
-    "$role": "implements(Microsoft.IDialog)",
+    "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.InputDialog)" ],
     "title": "Attachment input dialog",
     "description": "Collect information - Ask for a file or image.",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.InputDialog.json#"
-        },
-        {
-            "properties": {
-                "defaultValue": {
-                    "$role": "expression",
-                    "oneOf": [
-                        {
-                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment"
-                        },
-                        {
-                            "type": "string",
-                            "pattern": "^.*\\S.*"
-                        }
-                    ],
-                    "title": "Default value",
-                    "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded."
+    "properties": {
+        "defaultValue": {
+            "$role": "expression",
+            "oneOf": [
+                {
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/protocol/botframework.json#/definitions/Attachment"
                 },
-                "value": {
-                    "$role": "expression",
-                    "oneOf": [
-                        {
-                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment"
-                        },
-                        {
-                            "type": "string",
-                            "pattern": "^.*\\S.*"
-                        }
-                    ],
-                    "title": "Value",
-                    "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null."
-                },
-                "outputFormat": {
-                    "$role": "expression",
+                {
                     "type": "string",
-                    "oneOf": [
-                        {
-                            "enum": [
-                                "all",
-                                "first"
-                            ]
-                        },
-                        {
-                            "pattern": "^=.*\\S.*"
-                        }
-                    ],
-                    "title": "Output format",
-                    "description": "Attachment output format.",
-                    "default": "first"
+                    "pattern": "^.*\\S.*",
+                    "title": "Default value",
+                    "description": "Default value for input dialog."
                 }
-            }
+            ],
+            "title": "Default value",
+            "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded."
+        },
+        "value": {
+            "$role": "expression",
+            "oneOf": [
+                {
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/protocol/botframework.json#/definitions/Attachment"
+                },
+                {
+                    "type": "string",
+                    "pattern": "^.*\\S.*",
+                    "title": "Property to set",
+                    "description": "Property to set to input response."
+                }
+            ],
+            "title": "Value",
+            "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null."
+        },
+        "outputFormat": {
+            "$role": "expression",
+            "type": "string",
+            "oneOf": [
+                {
+                    "title": "Known format",
+                    "description": "Known output formats.",
+                    "enum": [
+                        "all",
+                        "first"
+                    ]
+                },
+                {
+                    "pattern": "^=.*\\S.*",
+                    "title": "Open output format",
+                    "description": "User-defined output format."
+                }
+            ],
+            "title": "Output format",
+            "description": "Attachment output format.",
+            "default": "first"
         }
-    ]
+    }
 }

@@ -6,7 +6,7 @@
     "type": "object",
     "properties": {
         "condition": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema#/definitions/condition",
+            "$ref": "schema:#/definitions/condition",
             "title": "Condition",
             "description": "Expression to evaluate"
         },
