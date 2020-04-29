@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Bot.Builder.AI.LuisV3;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Luis
+namespace Microsoft.Bot.Builder.AI.Luis
 {
     /// <summary>
     /// Defines an extension for a list entity.
