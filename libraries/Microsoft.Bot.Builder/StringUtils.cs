@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>string length + ...</returns>
         public static string Ellipsis(string text, int length)
         {
+            text = text ?? string.Empty;
             if (text.Length <= length)
             {
                 return text;
@@ -47,6 +48,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>prefix up to length + ... + uniquehash(text).</returns>
         public static string EllipsisHash(string text, int length)
         {
+            text = text ?? string.Empty;
             if (text.Length <= length)
             {
                 return text;
