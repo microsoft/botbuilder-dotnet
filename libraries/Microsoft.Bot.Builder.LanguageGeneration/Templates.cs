@@ -24,8 +24,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         private readonly string newLine = Environment.NewLine;
         private readonly Regex newLineRegex = new Regex("(\r?\n)");
-        private readonly string namespaceKey = "@Namespace";
-        private readonly string exportsKey = "@Exports";
+        private readonly string namespaceKey = "@namespace";
+        private readonly string exportsKey = "@exports";
 
         public Templates(
             IList<Template> templates = null,
@@ -444,7 +444,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
                 {
                     var index = option.IndexOf('=');
-                    var key = option.Substring(0, index).Trim();
+                    var key = option.Substring(0, index).Trim().ToLower();
                     var value = option.Substring(index + 1).Trim();
                     if (key == nameOfKey)
                     {

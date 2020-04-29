@@ -1,4 +1,4 @@
-﻿> !# @Exports = looking, countTotal, sumFourNumbers
+﻿> !# @exports = looking, countTotal, sumFourNumbers
 
 #looking
 -${{user: {name: "John"}}.user.name}
