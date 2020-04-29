@@ -402,8 +402,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 },
                 new QnAMakerOptions
                 {
-
-                    ScoreThreshold = 0.9F,
+                    ScoreThreshold = 0.8F,
                     Top = 5,
                 });
 
