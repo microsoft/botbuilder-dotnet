@@ -14147,6 +14147,32 @@
                     "title": "Id",
                     "description": "Optional id for the dialog"
                 },
+                "allowLoop": {
+                    "title": "AllowLoop",
+                    "description": "Optional condition which if true will allow loop of the repeated dialog.",
+                    "examples": [
+                        "user.age > 3"
+                    ],
+                    "$role": "expression",
+                    "oneOf": [
+                        {
+                            "type": "boolean",
+                            "title": "Boolean",
+                            "default": false,
+                            "examples": [
+                                false
+                            ]
+                        },
+                        {
+                            "examples": [
+                                "=user.isVip"
+                            ],
+                            "type": "string",
+                            "title": "Expression",
+                            "pattern": "^=.*\\S.*"
+                        }
+                    ]
+                },
                 "disabled": {
                     "title": "Disabled",
                     "description": "Optional condition which if true will disable this action.",
