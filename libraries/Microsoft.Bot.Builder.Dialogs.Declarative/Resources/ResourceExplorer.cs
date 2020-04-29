@@ -469,7 +469,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     // this can be reentrant, and we only want to do once.
                     this.typesLoaded = true;
 
-                    foreach (var component in ComponentRegistration.Components.Value.OfType<IComponentDeclarativeTypes>())
+                    foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
                     {
                         if (component != null)
                         {
@@ -489,7 +489,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             var converters = new List<JsonConverter>();
 
             // get converters
-            foreach (var component in ComponentRegistration.Components.Value.OfType<IComponentDeclarativeTypes>())
+            foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
             {
                 var result = component.GetConverters(this, sourceContext);
                 if (result.Any())
