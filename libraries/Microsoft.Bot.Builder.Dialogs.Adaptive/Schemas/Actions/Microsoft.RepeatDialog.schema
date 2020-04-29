@@ -10,6 +10,14 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
+        "allowLoop": {
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "title": "AllowLoop",
+            "description": "Optional condition which if true will allow loop of the repeated dialog.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
         "disabled": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
             "title": "Disabled",
