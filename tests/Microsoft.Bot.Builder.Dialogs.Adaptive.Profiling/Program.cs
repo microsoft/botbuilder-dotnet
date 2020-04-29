@@ -3,8 +3,8 @@
 
 using System;
 using System.IO;
+using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.Testing;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Extensions.Configuration;
