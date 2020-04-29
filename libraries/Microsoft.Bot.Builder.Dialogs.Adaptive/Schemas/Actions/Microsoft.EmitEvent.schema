@@ -45,6 +45,7 @@
                     ]
                 },
                 {
+                    "type": "string",
                     "title": "Custom event",
                     "pattern": "^(?!(beginDialog$|resumeDialog$|repromptDialog$|cancelDialog$|endDialog$|activityReceived$|recognizedIntent$|unknownIntent$|actionsStarted$|actionsSaved$|actionsEnded$|actionsResumed))(\\S){1}.*"
                 },
