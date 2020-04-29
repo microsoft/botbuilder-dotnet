@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            var dialogArgs = ValidateBeginDialogArgs(dc, options);
+            var dialogArgs = ValidateBeginDialogArgs(options);
 
             await dc.Context.TraceActivityAsync($"{GetType().Name}.BeginDialogAsync()", label: $"Using activity of type: {dialogArgs.Activity.Type}", cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -61,7 +61,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
-            ValidateContinueActivity(dc);
+            if (!OnValidateActivity(dc.Context.Activity))
+            {
+                return EndOfTurn;
+            }
 
             await dc.Context.TraceActivityAsync($"{GetType().Name}.ContinueDialogAsync()", label: $"ActivityType: {dc.Context.Activity.Type}", cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -128,35 +131,24 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Validates the activity sent during <see cref="BeginDialogAsync"/>.
-        /// </summary>
-        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
-        /// <remarks>
-        /// Override this method to implement a custom validator for the activity being sent during the <see cref="BeginDialogAsync"/>.
-        /// This method can be used to reject activities of a certain type if needed.
-        /// Throw an exception if the activity is not valid.
-        /// </remarks>
-        protected virtual void ValidateBeginActivity(DialogContext dc)
-        {
-        }
-
-        /// <summary>
         /// Validates the activity sent during <see cref="ContinueDialogAsync"/>.
         /// </summary>
-        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="activity">The <see cref="Activity"/> for the current turn of conversation.</param>
         /// <remarks>
         /// Override this method to implement a custom validator for the activity being sent during the <see cref="ContinueDialogAsync"/>.
-        /// This method can be used to reject activities of a certain type if needed.
-        /// Throw an exception if the activity is not valid.
-        ///  </remarks>
-        protected virtual void ValidateContinueActivity(DialogContext dc)
+        /// This method can be used to ignore activities of a certain type if needed.
+        /// If this method returns false, the dialog will end the turn without processing the activity. 
+        /// </remarks>
+        /// <returns>true if the activity is valid, false if not.</returns>
+        protected virtual bool OnValidateActivity(Activity activity)
         {
+            return true;
         }
 
         /// <summary>
         /// Validates the required properties are set in the options argument passed to the BeginDialog call.
         /// </summary>
-        private BeginSkillDialogOptions ValidateBeginDialogArgs(DialogContext dc, object options)
+        private BeginSkillDialogOptions ValidateBeginDialogArgs(object options)
         {
             if (options == null)
             {
@@ -172,8 +164,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 throw new ArgumentNullException(nameof(options), $"{nameof(dialogArgs.Activity)} is null in {nameof(options)}");
             }
-
-            ValidateBeginActivity(dc);
 
             return dialogArgs;
         }
