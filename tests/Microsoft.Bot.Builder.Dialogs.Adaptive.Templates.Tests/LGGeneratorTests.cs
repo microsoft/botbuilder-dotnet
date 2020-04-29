@@ -373,6 +373,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public async Task TestLGInjection()
+        {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+            DialogManager dm = new DialogManager()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration("inject.lg");
+            dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("inject.dialog");
+
+            await CreateFlow(async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+            .Send("hello")
+                .AssertReply("[{\"Id\":0,\"Topic\":\"car\"},{\"Id\":1,\"Topic\":\"washing\"},{\"Id\":2,\"Topic\":\"food\"},{\"Id\":3,\"Topic\":\"laundry\"}]")
+                .AssertReply("This is an injected message")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task TestNoResourceExplorerLanguageGeneration()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);

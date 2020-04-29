@@ -1250,6 +1250,37 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(6.0, evaled);
         }
 
+        [TestMethod]
+        public void TestInjectLG()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("./InjectionTest/inject.lg"));
+            
+            var (evaled, error) = Expression.Parse("foo.bar()").TryEvaluate(null);
+            
+            Assert.AreEqual("3", evaled.ToString());
+
+            (evaled, error) = Expression.Parse("foo.cool(2)").TryEvaluate(null);
+            Assert.AreEqual("3", evaled.ToString());
+
+            (evaled, error) = Expression.Parse("common.looking()").TryEvaluate(null);
+            Assert.AreEqual("John", evaled);
+
+            var scope1 = new { a = new List<string> { "cat", "dog" }, b = 12.10, c = new List<string> { "lion" } };
+            (evaled, error) = Expression.Parse("string(common.countTotal(a, c))").TryEvaluate(scope1);
+            Assert.IsNull(error);
+            Assert.AreEqual("3", evaled);
+
+            (evaled, error) = Expression.Parse("common.countTotal()").TryEvaluate(scope1);
+            Assert.IsNotNull(error);
+
+            (evaled, error) = Expression.Parse("common.countTotal(a, b, c)").TryEvaluate(scope1);
+            Assert.IsNotNull(error);
+
+            var scope2 = new { i = 1, j = 2, k = 3, l = 4 };
+            (evaled, error) = Expression.Parse("common.sumFourNumbers(i, j, k, l)").TryEvaluate(scope2);
+            Assert.AreEqual("10", evaled.ToString());
+        }
+
         public class LoopClass
         {
             public string Name { get; set; }
