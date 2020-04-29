@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -7,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     /// <summary>
     /// Class which represents a file as a resource.
     /// </summary>
-    public class FileResource : IResource
+    public class FileResource : Resource
     {
         private Task<byte[]> contentTask;
         private Task<string> textTask;
@@ -23,14 +26,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Gets resource Id for the resource.
-        /// </summary>
-        /// <value>
-        /// ResourceId.
-        /// </value>
-        public string Id { get; }
-
-        /// <summary>
         /// Gets the resource path.
         /// </summary>
         /// <value>
@@ -42,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// Open a stream to the resource.
         /// </summary>
         /// <returns>Stream for accesssing the content of the resource.</returns>
-        public async Task<Stream> OpenStreamAsync()
+        public override async Task<Stream> OpenStreamAsync()
         {
             if (contentTask == null)
             {
@@ -70,25 +65,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             var content = await contentTask.ConfigureAwait(false);
             return new MemoryStream(content);
-        }
-
-        /// <summary>
-        /// Get resource as a text.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> with the string.</returns>
-        public Task<string> ReadTextAsync()
-        {
-            if (this.textTask == null)
-            {
-                this.textTask = Task.Run(async () =>
-                {
-                    var stream = await OpenStreamAsync().ConfigureAwait(false);
-                    TextReader textReader = new StreamReader(stream);
-                    return await textReader.ReadToEndAsync().ConfigureAwait(false);
-                });
-            }
-
-            return this.textTask;
         }
 
         public override string ToString()

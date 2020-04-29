@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -18,8 +19,6 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
-    public delegate void ResourceChangedEventHandler(IResource[] resources);
-
     /// <summary>
     /// Class which gives standard access to content resources.
     /// </summary>
@@ -27,12 +26,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     {
         private const string RefPropertyName = "$copy";
 
-        private readonly ConcurrentDictionary<Type, ICustomDeserializer> kindDeserializers = new ConcurrentDictionary<Type, ICustomDeserializer>();
+        private readonly ConcurrentDictionary<string, ICustomDeserializer> kindDeserializers = new ConcurrentDictionary<string, ICustomDeserializer>();
         private readonly ConcurrentDictionary<string, Type> kindToType = new ConcurrentDictionary<string, Type>();
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
-        private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
+        private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
-        private ConcurrentBag<IResource> changedResources = new ConcurrentBag<IResource>();
+        private ConcurrentBag<Resource> changedResources = new ConcurrentBag<Resource>();
         private bool typesLoaded = false;
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
         }
 
-        public ResourceExplorer(IEnumerable<IResourceProvider> providers)
+        public ResourceExplorer(IEnumerable<ResourceProvider> providers)
             : this()
         {
             this.resourceProviders = providers.ToList();
@@ -51,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Event which fires when a resource is changed.
         /// </summary>
-        public event ResourceChangedEventHandler Changed;
+        public event EventHandler<IEnumerable<Resource>> Changed;
 
         /// <summary>
         /// Gets the resource providers.
@@ -59,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <value>
         /// The resource providers.
         /// </value>
-        public IEnumerable<IResourceProvider> ResourceProviders
+        public IEnumerable<ResourceProvider> ResourceProviders
         {
             get { return this.resourceProviders; }
         }
@@ -81,11 +80,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         };
 
         /// <summary>
+        /// Add a resource Type to resource list.
+        /// </summary>
+        /// <param name="type">resource type.</param>
+        public void AddResourceType(string type)
+        {
+            ResourceTypes.Add(type.TrimStart('.'));
+            Refresh();
+        }
+
+        /// <summary>
+        /// Reload any cached data.
+        /// </summary>
+        public void Refresh()
+        {
+            foreach (var resourceProvider in resourceProviders)
+            {
+                resourceProvider.Refresh();
+            }
+        }
+
+        /// <summary>
         /// Add a resource provider to the resources managed by the resource explorer.
         /// </summary>
         /// <param name="resourceProvider">resource provider.</param>
         /// <returns>resource explorer so that you can fluently call multiple methods on the resource explorer.</returns>
-        public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
+        public ResourceExplorer AddResourceProvider(ResourceProvider resourceProvider)
         {
             resourceProvider.Changed += ResourceProvider_Changed;
 
@@ -115,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <typeparam name="T">type to create.</typeparam>
         /// <param name="resource">resource to bind to.</param>
         /// <returns>created type.</returns>
-        public T LoadType<T>(IResource resource)
+        public T LoadType<T>(Resource resource)
         {
             return LoadTypeAsync<T>(resource).GetAwaiter().GetResult();
         }
@@ -126,7 +146,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <typeparam name="T">type to create.</typeparam>
         /// <param name="resource">resource to bind to.</param>
         /// <returns>task which will resolve to created type.</returns>
-        public async Task<T> LoadTypeAsync<T>(IResource resource)
+        public async Task<T> LoadTypeAsync<T>(Resource resource)
         {
             RegisterComponentTypes();
 
@@ -139,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             try
             {
                 var sourceContext = new SourceContext();
-                var (json, range) = await resource.ReadTokenRangeAsync(sourceContext);
+                var (json, range) = await ReadTokenRangeAsync(resource, sourceContext);
                 using (new SourceScope(sourceContext, range))
                 {
                     var result = Load<T>(json, sourceContext);
@@ -171,7 +191,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="fileExtension">File extension filter.</param>
         /// <returns>The resources.</returns>
-        public IEnumerable<IResource> GetResources(string fileExtension)
+        public IEnumerable<Resource> GetResources(string fileExtension)
         {
             foreach (var resourceProvider in this.resourceProviders)
             {
@@ -187,7 +207,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="id">The resource id.</param>
         /// <returns>The resource, or throws if not found.</returns>
-        public IResource GetResource(string id)
+        public Resource GetResource(string id)
         {
             if (TryGetResource(id, out var resource))
             {
@@ -203,7 +223,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="id">The id.</param>
         /// <param name="resource">resource that was found or null.</param>
         /// <returns>true if found.</returns>
-        public bool TryGetResource(string id, out IResource resource)
+        public bool TryGetResource(string id, out Resource resource)
         {
             foreach (var resourceProvider in this.resourceProviders)
             {
@@ -262,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 throw new ArgumentException($"Type {kind} not registered in factory.");
             }
 
-            var found = kindDeserializers.TryGetValue(type, out kindDeserializer);
+            var found = kindDeserializers.TryGetValue(kind, out kindDeserializer);
 
             if (!found)
             {
@@ -353,7 +373,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             // see if there is a dialog file for this resource.id
-            if (!this.TryGetResource($"{refTarget}.dialog", out IResource resource))
+            if (!this.TryGetResource($"{refTarget}.dialog", out Resource resource))
             {
                 // if not, try loading the resource directly.
                 if (!this.TryGetResource(refTarget, out resource))
@@ -362,7 +382,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
-            var (json, range) = await resource.ReadTokenRangeAsync(sourceContext);
+            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
             {
@@ -396,6 +416,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return json;
         }
 
+        protected virtual void OnChanged(Resource[] resources)
+        {
+            Changed?.Invoke(this, resources);
+        }
+
         private void RegisterTypeInternal(string kind, Type type, ICustomDeserializer loader = null)
         {
             // Default loader if none specified
@@ -413,7 +438,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             kinds.Add(kind);
             typeToKinds[type] = kinds;
-            kindDeserializers[type] = loader;
+            kindDeserializers[kind] = loader;
         }
 
         private string GetRefTarget(JToken token)
@@ -490,7 +515,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return token.ToObject<T>(serializer);
         }
 
-        private void ResourceProvider_Changed(IResource[] resources)
+        private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext)
+        {
+            var text = await resource.ReadTextAsync().ConfigureAwait(false);
+            using (var readerText = new StringReader(text))
+            using (var readerJson = new JsonTextReader(readerText))
+            {
+                var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
+
+                if (resource is FileResource fileResource)
+                {
+                    range.Path = fileResource.FullName;
+                }
+
+                return (token, range);
+            }
+        }
+
+        private void ResourceProvider_Changed(object sender, IEnumerable<Resource> resources)
         {
             if (this.Changed != null)
             {
@@ -512,8 +554,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                             }
 
                             var changed = changedResources.ToArray();
-                            changedResources = new ConcurrentBag<IResource>();
-                            this.Changed(changed);
+                            changedResources = new ConcurrentBag<Resource>();
+                            this.OnChanged(changed);
                         }).ContinueWith(t => t.Status);
                 }
             }

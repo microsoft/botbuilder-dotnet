@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(Dialogs))]
-        public async Task TestDialogResourcesAreValidForSchema(IResource resource)
+        public async Task TestDialogResourcesAreValidForSchema(Resource resource)
         {
             if (Schema == null)
             {
