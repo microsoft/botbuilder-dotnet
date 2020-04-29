@@ -1,0 +1,36 @@
+﻿{
+  "$schema": "../../tests.schema",
+  "$kind": "Microsoft.AdaptiveDialog",
+  "generator": "inject.lg",
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnBeginDialog",
+      "actions": [
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.message",
+          "value": "=foo.GetMessage()"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.tasks",
+          "value": [ "car", "washing", "food", "laundry" ]
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.flatTasks",
+          "value": "=string(select(foo.GetList(user.tasks),iter,foo.Convert(iter.index,iter.value)))"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${user.flatTasks}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${user.message}"
+        }
+
+      ]
+    }
+  ]
+}

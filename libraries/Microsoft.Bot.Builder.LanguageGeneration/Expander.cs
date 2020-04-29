@@ -107,14 +107,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new List<object>();
             expanderResult.ForEach(u =>
             {
-                if (lgOptions.LineBreakStyle == LGLineBreakStyle.Markdown && u is string str)
-                {
-                    result.Add(Evaluator.NewLineRegex.Replace(str, "$1$1"));
-                }
-                else
-                {
-                    result.Add(u);
-                }
+                result.Add(u);
             });
             return result;
         }
