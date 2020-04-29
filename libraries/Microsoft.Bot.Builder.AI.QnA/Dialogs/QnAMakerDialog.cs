@@ -439,12 +439,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             // Check if active learning is enabled.
             // maximumScoreForLowScoreVariation is the score above which no need to check for feedback.
-            if (isActiveLearningEnabled && response.Answers.Any() && response.Answers.First().Score <= maximumScoreForLowScoreVariation)
+            if (response.Answers.Any() && response.Answers.First().Score <= maximumScoreForLowScoreVariation)
             {
                 // Get filtered list of the response that support low score variation criteria.
                 response.Answers = qnaClient.GetLowScoreVariation(response.Answers);
 
-                if (response.Answers.Count() > 1)
+                if (response.Answers.Count() > 1 && isActiveLearningEnabled)
                 {
                     var suggestedQuestions = new List<string>();
                     foreach (var qna in response.Answers)
