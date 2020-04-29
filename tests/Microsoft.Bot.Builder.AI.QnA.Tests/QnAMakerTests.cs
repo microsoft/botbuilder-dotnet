@@ -402,8 +402,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 },
                 new QnAMakerOptions
                 {
-                    ScoreThreshold = 0.8F,
-                    Top = 5,
+                   Top = 5,
                 });
 
             var results = await qna.GetAnswersAsync(GetContext("Q11"));
