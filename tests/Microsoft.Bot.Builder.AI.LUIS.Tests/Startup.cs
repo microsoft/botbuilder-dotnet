@@ -1,8 +1,9 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.Dialogs;
 
-//using Microsoft.Bot.Builder.Dialogs.Adaptive;
-//using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-//using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder
@@ -14,12 +15,11 @@ namespace Microsoft.Bot.Builder
         public static void Initialize(TestContext testContext)
         {
             ComponentRegistration.Add(new DialogsComponentRegistration());
-
-            //ComponentRegistration.Add(new DeclarativeComponentRegistration());
-            //ComponentRegistration.Add(new AdaptiveComponentRegistration());
-            //ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());
-            //ComponentRegistration.Add(new LuisComponentRegistration());
-            //ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
+            ComponentRegistration.Add(new DeclarativeComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());
+            ComponentRegistration.Add(new LuisComponentRegistration());
+            ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
         }
     }
 }
