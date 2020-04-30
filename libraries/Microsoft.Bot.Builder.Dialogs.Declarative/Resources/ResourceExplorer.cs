@@ -85,8 +85,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="type">resource type.</param>
         public void AddResourceType(string type)
         {
-            ResourceTypes.Add(type.TrimStart('.'));
-            Refresh();
+            type = type.TrimStart('.');
+            if (!ResourceTypes.Contains(type))
+            {
+                ResourceTypes.Add(type);
+                Refresh();
+            }
         }
 
         /// <summary>
