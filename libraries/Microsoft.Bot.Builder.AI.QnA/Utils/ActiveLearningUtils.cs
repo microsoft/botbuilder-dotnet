@@ -24,14 +24,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Maximum Score For Low Variation.
         /// </summary>
-        private static double maximumScoreForLowScoreVariation  = 95.0;
+        private static double maximumScoreForLowScoreVariation = 95.0;
 
         /// <summary>
         /// Minimum Score For Low Variation.
         /// </summary>
-        private static double minimumScoreForLowScoreVariation  = 20.0;
+        private static double minimumScoreForLowScoreVariation = 20.0;
 
         public static double MaximumScoreForLowScoreVariation { get => maximumScoreForLowScoreVariation; set => maximumScoreForLowScoreVariation = value; }
+        
         public static double MinimumScoreForLowScoreVariation { get => minimumScoreForLowScoreVariation; set => minimumScoreForLowScoreVariation = value; }
 
         /// <summary>
