@@ -12,11 +12,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public static class ActiveLearningUtils
     {
         /// <summary>
-        /// Minimum Score For Low Score Variation.
-        /// </summary>
-        private double minimumScoreForLowScoreVariation = 20.0;
-
-        /// <summary>
         /// Previous Low Score Variation Multiplier.
         /// </summary>
         private const double PreviousLowScoreVariationMultiplier = 0.7;
@@ -27,12 +22,17 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private const double MaxLowScoreVariationMultiplier = 1.0;
 
         /// <summary>
-        /// Maximum Score For Low Score Variation.
+        /// Maximum Score For Low Variation.
         /// </summary>
-        private double maximumScoreForLowScoreVariation = 95.0;
+        private static double maximumScoreForLowScoreVariation  = 95.0;
 
-        public double MaximumScoreForLowScoreVariation { get => this.maximumScoreForLowScoreVariation; set => this.maximumScoreForLowScoreVariation = value; }
-        public double MinimumScoreForLowScoreVariation { get => this.minimumScoreForLowScoreVariation; set => this.minimumScoreForLowScoreVariation = value; }
+        /// <summary>
+        /// Minimum Score For Low Variation.
+        /// </summary>
+        private static double minimumScoreForLowScoreVariation  = 20.0;
+
+        public static double MaximumScoreForLowScoreVariation { get => maximumScoreForLowScoreVariation; set => maximumScoreForLowScoreVariation = value; }
+        public static double MinimumScoreForLowScoreVariation { get => minimumScoreForLowScoreVariation; set => minimumScoreForLowScoreVariation = value; }
 
         /// <summary>
         /// Returns list of qnaSearch results which have low score variation.
