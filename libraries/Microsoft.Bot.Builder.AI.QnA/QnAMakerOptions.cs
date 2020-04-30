@@ -69,7 +69,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }        
         
-        [JsonProperty("metadataBoost")]
+        [Obsolete("This property is no longer used and will be ignored")]
+        [JsonIgnore]
         public Metadata[] MetadataBoost { get; set; }
 
         /// <summary>
