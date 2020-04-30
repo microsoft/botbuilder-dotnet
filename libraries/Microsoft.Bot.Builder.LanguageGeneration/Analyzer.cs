@@ -187,11 +187,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        private EvaluationTarget CurrentTarget() =>
-
-            // just don't want to write evaluationTargetStack.Peek() everywhere
-            evaluationTargetStack.Peek();
-
         /// <summary>
         /// Extract the templates ref out from an expression
         /// return only those without parameters.
