@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
         
         [Obsolete]
-        [JsonProperty("metadataBoost")]
+        [JsonIgnore]
         public Metadata[] MetadataBoost { get; set; }
     }
 }
