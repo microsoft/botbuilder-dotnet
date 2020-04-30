@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
-    public class TestingComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
+    public class AdaptiveTestingComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
         public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
