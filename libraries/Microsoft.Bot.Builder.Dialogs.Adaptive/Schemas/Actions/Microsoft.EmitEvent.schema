@@ -22,12 +22,13 @@
             ]
         },
         "eventName": {
-            "$ref": "schema:#/definitions/stringExpression",
+            "$role": "expression",
             "title": "Event name",
             "description": "Name of the event to emit.",
             "oneOf": [
                 {
-                    "title": "Standard event",
+                    "type": "string",
+                    "title": "Built-in event",
                     "description": "Standard event type.",
                     "enum": [
                         "beginDialog",
@@ -45,9 +46,13 @@
                     ]
                 },
                 {
-                    "title": "Open event",
-                    "description": "Open event type",
+                    "type": "string",
+                    "title": "Custom event",
+                    "description": "Custom event type",
                     "pattern": "^(?!(beginDialog$|resumeDialog$|repromptDialog$|cancelDialog$|endDialog$|activityReceived$|recognizedIntent$|unknownIntent$|actionsStarted$|actionsSaved$|actionsEnded$|actionsResumed))(\\S){1}.*"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
             ]
         },

@@ -77,15 +77,24 @@
             ]
         },
         "rankerType": {
-            "$ref": "schema:#/definitions/stringExpression",
             "title": "Ranker Type",
-            "enum": [
-                "default",
-                "questionOnly",
-                "autoSuggestQuestion"
-            ],
             "description": "Type of Ranker.",
-            "default": "default"
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "Ranker type",
+                    "description": "Type of Ranker.",
+                    "enum": [
+                        "default",
+                        "questionOnly",
+                        "autoSuggestQuestion"
+                    ],
+                    "default": "default"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
         },
         "includeDialogNameInMetadata": {
             "$ref": "schema:#/definitions/booleanExpression",

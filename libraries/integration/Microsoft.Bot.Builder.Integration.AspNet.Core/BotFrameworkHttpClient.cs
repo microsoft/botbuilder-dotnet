@@ -78,6 +78,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var originalConversationId = activity.Conversation.Id;
             var originalServiceUrl = activity.ServiceUrl;
             var originalRelatesTo = activity.RelatesTo;
+            var originalRecipient = activity.Recipient;
             try
             {
                 activity.RelatesTo = new ConversationReference()
@@ -96,9 +97,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         Role = activity.Conversation.Role,
                         TenantId = activity.Conversation.TenantId,
                     },
+                    Locale = activity.Locale
                 };
                 activity.Conversation.Id = conversationId;
                 activity.ServiceUrl = serviceUrl.ToString();
+                if (activity.Recipient == null)
+                {
+                    activity.Recipient = new ChannelAccount();
+                }
 
                 using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
                 {
@@ -130,6 +136,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 activity.Conversation.Id = originalConversationId;
                 activity.ServiceUrl = originalServiceUrl;
                 activity.RelatesTo = originalRelatesTo;
+                activity.Recipient = originalRecipient;
             }
         }
 

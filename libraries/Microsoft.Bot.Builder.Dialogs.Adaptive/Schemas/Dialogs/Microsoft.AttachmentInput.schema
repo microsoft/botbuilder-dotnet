@@ -6,57 +6,51 @@
     "properties": {
         "defaultValue": {
             "$role": "expression",
+            "title": "Default value",
+            "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded.",
             "oneOf": [
                 {
-                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/protocol/botframework.json#/definitions/Attachment"
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/protocol/botframework.json#/definitions/Attachment",
+                    "title": "Object"
                 },
                 {
-                    "type": "string",
-                    "pattern": "^.*\\S.*",
-                    "title": "Default value",
-                    "description": "Default value for input dialog."
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
-            ],
-            "title": "Default value",
-            "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded."
+            ]
         },
         "value": {
             "$role": "expression",
+            "title": "Value",
+            "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null.",
             "oneOf": [
                 {
-                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/protocol/botframework.json#/definitions/Attachment"
+                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/protocol/botframework.json#/definitions/Attachment",
+                    "title": "Object"
                 },
                 {
-                    "type": "string",
-                    "pattern": "^.*\\S.*",
-                    "title": "Property to set",
-                    "description": "Property to set to input response."
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
-            ],
-            "title": "Value",
-            "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null."
+            ]
         },
         "outputFormat": {
             "$role": "expression",
-            "type": "string",
+            "title": "Output format",
+            "description": "Attachment output format.",
             "oneOf": [
                 {
-                    "title": "Known format",
-                    "description": "Known output formats.",
+                    "type": "string",
+                    "title": "Standard format",
+                    "description": "Standard output formats.",
                     "enum": [
                         "all",
                         "first"
-                    ]
+                    ],
+                    "default": "first"
                 },
                 {
-                    "pattern": "^=.*\\S.*",
-                    "title": "Open output format",
-                    "description": "User-defined output format."
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
-            ],
-            "title": "Output format",
-            "description": "Attachment output format.",
-            "default": "first"
+            ]
         }
     }
 }

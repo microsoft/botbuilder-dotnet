@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.AreEqual(activity.Recipient.Id, conversationReference.Bot.Id);
             Assert.AreEqual(activity.Conversation.Id, conversationReference.Conversation.Id);
             Assert.AreEqual(activity.ChannelId, conversationReference.ChannelId);
+            Assert.AreEqual(activity.Locale, conversationReference.Locale);
             Assert.AreEqual(activity.ServiceUrl, conversationReference.ServiceUrl);
         }
 
@@ -44,6 +45,7 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.AreEqual(activity.Recipient.Id, conversationReference.Bot.Id);
             Assert.AreEqual(activity.Conversation.Id, conversationReference.Conversation.Id);
             Assert.AreEqual(activity.ChannelId, conversationReference.ChannelId);
+            Assert.AreEqual(activity.Locale, conversationReference.Locale);
             Assert.AreEqual(activity.ServiceUrl, conversationReference.ServiceUrl);
         }
 
@@ -124,11 +126,13 @@ namespace Microsoft.Bot.Schema.Tests
                     Id = "cr_def",
                 },
                 ActivityId = "cr_12345",
+                Locale = "en-uS" // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
             };
 
             activity.ApplyConversationReference(conversationReference, true);
 
             Assert.AreEqual(conversationReference.ChannelId, activity.ChannelId);
+            Assert.AreEqual(conversationReference.Locale, activity.Locale);
             Assert.AreEqual(conversationReference.ServiceUrl, activity.ServiceUrl);
             Assert.AreEqual(conversationReference.Conversation.Id, activity.Conversation.Id);
 
@@ -159,11 +163,13 @@ namespace Microsoft.Bot.Schema.Tests
                     Id = "def",
                 },
                 ActivityId = "12345",
+                Locale = "en-uS" // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
             };
 
             activity.ApplyConversationReference(conversationReference, false);
 
             Assert.AreEqual(conversationReference.ChannelId, activity.ChannelId);
+            Assert.AreEqual(conversationReference.Locale, activity.Locale);
             Assert.AreEqual(conversationReference.ServiceUrl, activity.ServiceUrl);
             Assert.AreEqual(conversationReference.Conversation.Id, activity.Conversation.Id);
 
@@ -253,6 +259,7 @@ namespace Microsoft.Bot.Schema.Tests
                 Recipient = account2,
                 Conversation = conversationAccount,
                 ChannelId = "ChannelId123",
+                Locale = "en-uS", // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
                 ServiceUrl = "ServiceUrl123",
             };
 

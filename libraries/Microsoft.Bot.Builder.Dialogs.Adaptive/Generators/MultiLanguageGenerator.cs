@@ -34,11 +34,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Implementation of lookup by locale.  This uses internal dictionary to lookup.
         /// </summary>
-        /// <param name="context">Context for the current turn of conversation with the user.</param>\
+        /// <param name="dialogContext">Context for the current turn of conversation with the user.</param>\
         /// <param name="locale">locale.</param>
         /// <param name="languageGenerator">generator to return.</param>
         /// <returns>true if found.</returns>
-        public override bool TryGetGenerator(ITurnContext context, string locale, out LanguageGenerator languageGenerator)
+        public override bool TryGetGenerator(DialogContext dialogContext, string locale, out LanguageGenerator languageGenerator)
         {
             return this.LanguageGenerators.TryGetValue(locale, out languageGenerator);
         }

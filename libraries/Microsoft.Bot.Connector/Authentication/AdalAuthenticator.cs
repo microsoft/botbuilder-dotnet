@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -15,6 +16,10 @@ namespace Microsoft.Bot.Connector.Authentication
     public class AdalAuthenticator : IAuthenticator
     {
         private const string MsalTemporarilyUnavailable = "temporarily_unavailable";
+
+        // When TargetFramework moves to netstandard2.1, use HttpStatusCode.TooManyRequests
+        // https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?view=netstandard-2.1#System_Net_HttpStatusCode_TooManyRequests
+        private const int HttpTooManyRequests = 429;
 
         // Semaphore to control concurrency while refreshing tokens from ADAL.
         // Whenever a token expires, we want only one request to retrieve a token.
@@ -202,6 +207,10 @@ namespace Microsoft.Bot.Connector.Authentication
                 ThrottleException throttlException = (ThrottleException)ex;
                 return throttlException.RetryParams ?? RetryParams.DefaultBackOff(currentRetryCount);
             }
+            else if (IsAdalServiceInvalidRequest(ex))
+            {
+                return RetryParams.StopRetrying;
+            }
             else
             {
                 // We end up here is the exception is not an ADAL exception. An example, is under high traffic
@@ -221,7 +230,27 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // When the Service Token Server (STS) is too busy because of “too many requests”,
             // it returns an HTTP error 429
-            return adalServiceException.ErrorCode == MsalTemporarilyUnavailable || adalServiceException.StatusCode == 429;
+            return adalServiceException.ErrorCode == MsalTemporarilyUnavailable || adalServiceException.StatusCode == HttpTooManyRequests;
+        }
+
+        /// <summary>
+        /// Determine whether exception represents an invalid request from AAD.
+        /// </summary>
+        /// <param name="ex">Exception.</param>
+        /// <returns>True if the exception represents an invalid request.</returns>
+        private bool IsAdalServiceInvalidRequest(Exception ex)
+        {
+            if (ex is AdalServiceException adal)
+            {
+                // ErrorCode is "invalid_request"
+                // but HTTP StatusCode covers more non-retryable conditions
+                if (adal.StatusCode == (int)HttpStatusCode.BadRequest)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private RetryParams ComputeAdalRetry(Exception ex)
@@ -232,7 +261,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 // When the Service Token Server (STS) is too busy because of “too many requests”,
                 // it returns an HTTP error 429 with a hint about when you can try again (Retry-After response field) as a delay in seconds
-                if (adalServiceException.ErrorCode == MsalTemporarilyUnavailable || adalServiceException.StatusCode == 429)
+                if (adalServiceException.ErrorCode == MsalTemporarilyUnavailable || adalServiceException.StatusCode == HttpTooManyRequests)
                 {
                     RetryConditionHeaderValue retryAfter = adalServiceException.Headers.RetryAfter;
 

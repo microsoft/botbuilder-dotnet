@@ -28,19 +28,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
-        private readonly bool strictMode;
+        private readonly EvaluationOptions lgOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Evaluator"/> class.
         /// </summary>
         /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">Expression parser.</param>
-        /// <param name="strictMode">Strict mode. If strictMode == true, exception in expression would throw outside.</param>
-        public Evaluator(List<Template> templates, ExpressionParser expressionParser, bool strictMode = false)
+        /// <param name="opt">Options for LG. </param>
+        public Evaluator(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
-            this.strictMode = strictMode;
+            this.lgOptions = opt;
 
             // generate a new customized expression parser by injecting the template as functions
             ExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup));
@@ -232,7 +232,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override object VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
-
             var result = new List<object>();
             foreach (ITerminalNode node in context.children)
             {
@@ -272,7 +271,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var parameters = TemplateMap[templateName].Parameters;
-            var currentScope = CurrentTarget().Scope;
+            var currentScope = evaluationTargetStack.Count > 0 ? CurrentTarget().Scope : new CustomizedMemory(null);
 
             if (args.Count == 0)
             {
@@ -389,7 +388,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (strictMode && (error != null || result == null))
+            if (lgOptions.StrictMode == true && (error != null || result == null))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -415,7 +414,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (error != null || (result == null && strictMode))
+            if (error != null || (result == null && lgOptions.StrictMode == true))
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (evaluationTargetStack.Count > 0)
@@ -425,7 +424,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
             }
-            else if (result == null && !strictMode)
+            else if (result == null && lgOptions.StrictMode != false)
             {
                 result = "null";
             }
@@ -441,8 +440,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
             var parse = this.ExpressionParser.Parse(exp);
-            var result = parse.TryEvaluate(scope);
-            return result;
+            var opt = new Options();
+            opt.NullSubstitution = lgOptions.NullSubstitution;
+            return parse.TryEvaluate(scope, opt);
         }
 
         // Generate a new lookup function based on one lookup function

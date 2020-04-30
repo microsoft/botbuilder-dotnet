@@ -179,6 +179,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Gets a unique string which represents the version of this dialog.  If the version changes between turns the dialog system will emit a DialogChanged event.
+        /// </summary>
+        /// <returns>Unique string which should only change when dialog has changed in a way that should restart the dialog.</returns>
+        public virtual string GetVersion()
+        {
+            return this.Id;
+        }
+
+        /// <summary>
         /// Called when an event has been raised, using `DialogContext.emitEvent()`, by either the current dialog or a dialog that the current dialog started.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>

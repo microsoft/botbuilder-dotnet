@@ -1,0 +1,16 @@
+﻿> !# @strict = false
+> !# @namespace = foo
+> !# @Exports = GetList, Convert, GetProperty, GetMessage
+
+
+# Convert(index, value)
+- ${setProperty(setProperty({}, "Id", index),"Topic",value)}
+
+#GetList(tasks)
+- ${indicesAndValues(tasks)}
+
+#GetProperty
+-user.tasks
+
+#GetMessage
+- This is an injected message

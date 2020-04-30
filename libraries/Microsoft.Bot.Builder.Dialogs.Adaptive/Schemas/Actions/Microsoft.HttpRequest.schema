@@ -83,6 +83,7 @@
             "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",
             "oneOf": [
                 {
+                    "type": "string",
                     "title": "Standard response",
                     "description": "Standard response type.",
                     "enum": [
@@ -90,15 +91,13 @@
                         "json",
                         "activity",
                         "activities"
-                    ]
+                    ],
+                    "default": "json"
                 },
                 {
-                    "title": "Open response",
-                    "description": "Open response type.",
-                    "pattern": "^=.*\\S.*"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
-            ],
-            "default": "json"
+            ]
         }
     }
 }

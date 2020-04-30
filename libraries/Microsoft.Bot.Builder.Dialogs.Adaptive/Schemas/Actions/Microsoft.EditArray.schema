@@ -14,12 +14,12 @@
             "description": "Optional id for the dialog"
         },
         "changeType": {
-            "$ref": "schema:#/definitions/stringExpression",
             "title": "Type of change",
             "description": "Type of change to the array in memory.",
             "oneOf": [
                 {
-                    "title": "Standard change",
+                    "type": "string",
+                    "title": "Enum",
                     "description": "Standard change type.",
                     "enum": [
                         "push",
@@ -30,12 +30,9 @@
                     ]
                 },
                 {
-                    "title": "Open change",
-                    "description": "Open change type.",
-                    "pattern": "^=.*\\S.*"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
-            ],
-            "default": "push"
+            ]
         },
         "disabled": {
             "$ref": "schema:#/definitions/booleanExpression",

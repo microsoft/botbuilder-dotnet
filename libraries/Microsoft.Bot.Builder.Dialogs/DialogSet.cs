@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -16,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         private readonly IStatePropertyAccessor<DialogState> _dialogState;
         private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
-
+        private string _version;
         private IBotTelemetryClient _telemetryClient;
 
         /// <summary>
@@ -65,6 +67,30 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Gets a unique string which represents the combined versions of all dialogs in this this dialogset.  
+        /// </summary>
+        /// <returns>Version will change when any of the child dialogs version changes.</returns>
+        public virtual string GetVersion()
+        {
+            if (this._version == null)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var dialog in this._dialogs)
+                {
+                    var v = this._dialogs[dialog.Key].GetVersion();
+                    if (v != null)
+                    {
+                        sb.Append(v);
+                    }
+                }
+
+                this._version = StringUtils.Hash(sb.ToString());
+            }
+
+            return this._version;
+        }
+
+        /// <summary>
         /// Adds a new dialog to the set and returns the set to allow fluent chaining.
         /// If the Dialog.Id being added already exists in the set, the dialogs id will be updated to 
         /// include a suffix which makes it unique. So adding 2 dialogs named "duplicate" to the set
@@ -77,6 +103,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <see cref="TelemetryClient"/> of the dialog set.</remarks>
         public DialogSet Add(Dialog dialog)
         {
+            // Ensure new version hash is computed
+            this._version = null;
+
             if (dialog == null)
             {
                 throw new ArgumentNullException(nameof(dialog));

@@ -24,11 +24,13 @@
         },
         "style": {
             "$role": "expression",
-            "type": "string",
+            "title": "List style",
+            "description": "Sets the ListStyle to control how choices are rendered.",
             "oneOf": [
                 {
+                    "type": "string",
                     "title": "Standard style",
-                    "description": "Standard styles for confirm input.",
+                    "description": "Standard style for rendering choices.",
                     "enum": [
                         "none",
                         "auto",
@@ -36,48 +38,53 @@
                         "list",
                         "suggestedAction",
                         "heroCard"
-                    ]
+                    ],
+                    "default": "auto"
                 },
                 {
-                    "title": "Open style",
-                    "description": "User defined choice input style choices.",
-                    "pattern": "^=.*\\S.*"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
-            ],
-            "title": "List style",
-            "description": "Sets the ListStyle to control how choices are rendered.",
-            "default": "auto"
+            ]
         },
         "choiceOptions": {
-            "$ref": "schema:#/definitions/objectExpression",
             "title": "Choice Options",
             "description": "Choice Options or expression which provides Choice Options to control display choices to the user.",
-            "properties": {
-                "inlineSeparator": {
-                    "type": "string",
-                    "title": "Inline separator",
-                    "description": "Text to separate individual choices when there are more than 2 choices",
-                    "default": ", "
+            "oneOf": [
+                {
+                    "type": "object",
+                    "title": "Choice options",
+                    "description": "Choice options.",
+                    "properties": {
+                        "inlineSeparator": {
+                            "type": "string",
+                            "title": "Inline separator",
+                            "description": "Text to separate individual choices when there are more than 2 choices",
+                            "default": ", "
+                        },
+                        "inlineOr": {
+                            "type": "string",
+                            "title": "Inline or",
+                            "description": "Text to be inserted between the choices when their are only 2 choices",
+                            "default": " or "
+                        },
+                        "inlineOrMore": {
+                            "type": "string",
+                            "title": "Inline or more",
+                            "description": "Text to be inserted between the last 2 choices when their are more than 2 choices.",
+                            "default": ", or "
+                        },
+                        "includeNumbers": {
+                            "type": "boolean",
+                            "title": "Include numbers",
+                            "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
+                            "default": true
+                        }
+                    }
                 },
-                "inlineOr": {
-                    "type": "string",
-                    "title": "Inline or",
-                    "description": "Text to be inserted between the choices when their are only 2 choices",
-                    "default": " or "
-                },
-                "inlineOrMore": {
-                    "type": "string",
-                    "title": "Inline or more",
-                    "description": "Text to be inserted between the last 2 choices when their are more than 2 choices.",
-                    "default": ", or "
-                },
-                "includeNumbers": {
-                    "type": "boolean",
-                    "title": "Include numbers",
-                    "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
-                    "default": true
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
-            }
+            ]
         },
         "defaultValue": {
             "$ref": "schema:#/definitions/booleanExpression",
@@ -100,10 +107,10 @@
         "confirmChoices": {
             "$role": "expression",
             "title": "Array of choice objects",
-            "description": "Choices to choose from.",
-            "type": "array",
+            "description": "Array of simple or structured choices.",
             "oneOf": [
                 {
+                    "type": "array",
                     "title": "Simple choices",
                     "description": "Simple choices to confirm from.",
                     "items": [
@@ -115,6 +122,7 @@
                     ]
                 },
                 {
+                    "type": "array",
                     "title": "Structured choices",
                     "description": "Structured choices for confirmations.",
                     "items": [
@@ -146,6 +154,9 @@
                             }
                         }
                     ]
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
             ]
         }

@@ -23,11 +23,11 @@
             ]
         },
         "changeType": {
-            "$ref": "schema:#/definitions/stringExpression",
             "title": "Type of change",
             "description": "Type of change to apply to the current actions.",
             "oneOf": [
                 {
+                    "type": "string",
                     "title": "Standard change",
                     "description": "Standard change types.",
                     "enum": [
@@ -39,9 +39,7 @@
                     ]
                 },
                 {
-                    "title": "Open change",
-                    "description": "Open change type.",
-                    "pattern": "^=.*\\S.*"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
             ]
         },

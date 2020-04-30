@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
-            
+
             if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{this.GetType().Name}({this.Condition?.ToString()}|{string.Join(",", idList)})";
+            return $"{this.GetType().Name}({this.Condition?.ToString()}|{StringUtils.Ellipsis(string.Join(",", idList), 50)})";
         }
     }
 }

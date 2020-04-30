@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var activity = await Activity.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+            var activity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
             var properties = new Dictionary<string, string>()
             {
                 { "template", JsonConvert.SerializeObject(Activity) },
@@ -93,27 +93,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (Activity is ActivityTemplate at)
             {
-                return $"{this.GetType().Name}({Ellipsis(at.Template.Trim(), 30)})";
+                return $"{this.GetType().Name}({StringUtils.Ellipsis(at.Template.Trim(), 30)})";
             }
 
-            return $"{this.GetType().Name}('{Ellipsis(Activity?.ToString().Trim(), 30)}')";
-        }
-
-        private static string Ellipsis(string text, int length)
-        {
-            if (text.Length <= length)
-            {
-                return text;
-            }
-
-            var pos = text.IndexOf(" ", length);
-
-            if (pos >= 0)
-            {
-                return text.Substring(0, pos) + "...";
-            }
-
-            return text;
+            return $"{this.GetType().Name}('{StringUtils.Ellipsis(Activity?.ToString().Trim(), 30)}')";
         }
     }
 }

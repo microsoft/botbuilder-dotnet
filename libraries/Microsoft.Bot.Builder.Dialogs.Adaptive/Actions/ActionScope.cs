@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -58,6 +60,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             return await OnNextActionAsync(dc, result, cancellationToken).ConfigureAwait(false);
+        }
+
+        public override string GetVersion()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var action in this.Actions)
+            {
+                var v = action.GetVersion();
+                if (v != null)
+                {
+                    sb.Append(v);
+                }
+            }
+
+            return StringUtils.Hash(sb.ToString());
         }
 
         public virtual IEnumerable<Dialog> GetDependencies()
@@ -195,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"ActionScope[{string.Join(",", Actions.Select(a => a.Id))}]";
+            return $"ActionScope[{StringUtils.EllipsisHash(string.Join(",", Actions.Select(a => a.Id)), 50)}]";
         }
     }
 }

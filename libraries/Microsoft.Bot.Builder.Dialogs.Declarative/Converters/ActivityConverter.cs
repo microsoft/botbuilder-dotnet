@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
-    public class ActivityConverter : JsonConverter
+    internal class ActivityConverter : JsonConverter
     {
         public override bool CanRead => true;
 

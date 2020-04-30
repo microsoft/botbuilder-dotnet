@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 ProcessStartInfo startInfo;
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bfd.cmd dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath} -b \"\"");
+                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bf.cmd dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath} -b \"\"");
                     startInfo.WorkingDirectory = projectPath;
                 }
                 else
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
         [DataTestMethod]
         [DynamicData(nameof(Dialogs))]
-        public async Task TestDialogResourcesAreValidForSchema(IResource resource)
+        public async Task TestDialogResourcesAreValidForSchema(Resource resource)
         {
             if (Schema == null)
             {

@@ -105,15 +105,13 @@
                         "default",
                         "questionOnly",
                         "autoSuggestQuestion"
-                    ]
+                    ],
+                    "default": "default"
                 },
                 {
-                    "title": "Open ranker",
-                    "description": "Open ranker types.",
-                    "pattern": "^=.*\\S.*"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
-            ],
-            "default": "default"
+            ]
         }
     },
     "required": [

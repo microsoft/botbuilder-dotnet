@@ -1,0 +1,11 @@
+﻿> !# @strict = false
+> !# @Namespace = foo
+> !# @Exports = bar, cool
+
+[import](common.lg)
+
+#bar()
+- ${add(1,2)}
+
+#cool(a)
+- ${add(1,a)}
