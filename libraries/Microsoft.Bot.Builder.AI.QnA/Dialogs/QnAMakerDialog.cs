@@ -289,6 +289,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
         public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
+      
+        public float MaximumScoreForLowScoreVariation { get => maximumScoreForLowScoreVariation; set => maximumScoreForLowScoreVariation = value; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
