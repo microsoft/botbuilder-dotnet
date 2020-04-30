@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
         
-        [Obsolete]
+        [Obsolete("This property is no longer used and will be ignored")]
         [JsonIgnore]
         public Metadata[] MetadataBoost { get; set; }
     }
