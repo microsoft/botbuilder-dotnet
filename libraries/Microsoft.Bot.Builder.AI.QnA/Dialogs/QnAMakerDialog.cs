@@ -289,7 +289,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
         public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
-      
+
+        /// <summary>
+        /// Gets or sets the Maximum Score For LowScoreVariation to use.
+        /// </summary>
+        /// <value>
+        /// Max score for LowScoreVariation
+        /// </value>
+        /// <seealso cref="RankerTypes"/>
+        [JsonProperty("maximumScoreForLowScoreVariation")]
         public float MaximumScoreForLowScoreVariation { get => maximumScoreForLowScoreVariation; set => maximumScoreForLowScoreVariation = value; }
 
         /// <summary>
