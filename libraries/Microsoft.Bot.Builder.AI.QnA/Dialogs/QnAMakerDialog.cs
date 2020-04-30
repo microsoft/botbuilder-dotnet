@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Gets or sets the Maximum Score For LowScoreVariation to use.
         /// </summary>
         /// <value>
-        /// Max score for LowScoreVariation
+        /// Max score for LowScoreVariation.
         /// </value>
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("maximumScoreForLowScoreVariation")]
