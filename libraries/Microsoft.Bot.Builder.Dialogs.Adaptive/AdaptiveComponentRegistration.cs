@@ -30,9 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Conditionals
             yield return new DeclarativeType<OnCondition>(OnCondition.Kind);
             yield return new DeclarativeType<OnError>(OnError.Kind);
-
             yield return new DeclarativeType<OnDialogEvent>(OnDialogEvent.Kind);
-            yield return new DeclarativeType<OnCustomEvent>(OnCustomEvent.Kind);
 
             yield return new DeclarativeType<OnBeginDialog>(OnBeginDialog.Kind);
             yield return new DeclarativeType<OnCancelDialog>(OnCancelDialog.Kind);
