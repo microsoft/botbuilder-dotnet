@@ -145,9 +145,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     foreach (var body in bodys)
                     {
-                        if (body.objectStructureLine() != null)
+                        if (body.expressionInStructure() != null)
                         {
-                            result.AddRange(CheckExpression(body.objectStructureLine().GetText(), body.objectStructureLine()));
+                            result.AddRange(CheckExpression(body.expressionInStructure()));
                         }
                         else
                         {
@@ -156,9 +156,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                             var errorPrefix = "Property '" + body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText() + "':";
                             foreach (var structureValue in structureValues)
                             {
-                                foreach (var expression in structureValue.EXPRESSION_IN_STRUCTURE_BODY())
+                                foreach (var expression in structureValue.expressionInStructure())
                                 {
-                                    result.AddRange(CheckExpression(expression.GetText(), structureValue, errorPrefix));
+                                    result.AddRange(CheckExpression(expression, errorPrefix));
                                 }
                             }
                         }
@@ -213,19 +213,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 // check rule should should with one and only expression
                 if (!elseExpr)
                 {
-                    if (ifRules[idx].ifCondition().EXPRESSION().Length != 1)
+                    if (ifRules[idx].ifCondition().expression().Length != 1)
                     {
                         result.Add(BuildLGDiagnostic(TemplateErrors.InvalidExpressionInCondition, context: conditionNode));
                     }
                     else
                     {
-                        var errorPrefix = "Condition '" + conditionNode.EXPRESSION(0).GetText() + "': ";
-                        result.AddRange(CheckExpression(conditionNode.EXPRESSION(0).GetText(), conditionNode, errorPrefix));
+                        var errorPrefix = "Condition '" + conditionNode.expression(0).GetText() + "': ";
+                        result.AddRange(CheckExpression(conditionNode.expression(0), errorPrefix));
                     }
                 }
                 else
                 {
-                    if (ifRules[idx].ifCondition().EXPRESSION().Length != 0)
+                    if (ifRules[idx].ifCondition().expression().Length != 0)
                     {
                         result.Add(BuildLGDiagnostic(TemplateErrors.ExtraExpressionInCondition, context: conditionNode));
                     }
@@ -296,20 +296,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (switchExpr || caseExpr)
                 {
-                    if (switchCaseNode.EXPRESSION().Length != 1)
+                    if (switchCaseNode.expression().Length != 1)
                     {
                         result.Add(BuildLGDiagnostic(TemplateErrors.InvalidExpressionInSwiathCase, context: switchCaseNode));
                     }
                     else
                     {
                         var errorPrefix = switchExpr ? "Switch" : "Case";
-                        errorPrefix += " '" + switchCaseNode.EXPRESSION(0).GetText() + "': ";
-                        result.AddRange(CheckExpression(switchCaseNode.EXPRESSION(0).GetText(), switchCaseNode, errorPrefix));
+                        errorPrefix += " '" + switchCaseNode.expression(0).GetText() + "': ";
+                        result.AddRange(CheckExpression(switchCaseNode.expression(0), errorPrefix));
                     }
                 }
                 else
                 {
-                    if (switchCaseNode.EXPRESSION().Length != 0 || switchCaseNode.TEXT().Length != 0)
+                    if (switchCaseNode.expression().Length != 0 || switchCaseNode.TEXT().Length != 0)
                     {
                         result.Add(BuildLGDiagnostic(TemplateErrors.ExtraExpressionInSwitchCase, context: switchCaseNode));
                     }
@@ -336,9 +336,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var prefixErrorMsg = context.GetPrefixErrorMessage();
             var result = new List<Diagnostic>();
 
-            foreach (var expression in context.EXPRESSION())
+            foreach (var expression in context.expression())
             {
-                result.AddRange(CheckExpression(expression.GetText(), context, prefixErrorMsg));
+                result.AddRange(CheckExpression(expression, prefixErrorMsg));
             }
 
             var multiLinePrefix = context.MULTILINE_PREFIX();
@@ -352,12 +352,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context, string prefix = "")
+        private List<Diagnostic> CheckExpression(ParserRuleContext expressionContext, string prefix = "")
         {
+            var exp = expressionContext.GetText();
             var result = new List<Diagnostic>();
             if (!exp.EndsWith("}"))
             {
-                result.Add(BuildLGDiagnostic(TemplateErrors.NoCloseBracket, context: context));
+                result.Add(BuildLGDiagnostic(TemplateErrors.NoCloseBracket, context: expressionContext));
             }
             else
             {
@@ -372,7 +373,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var suffixErrorMsg = Evaluator.ConcatErrorMsg(TemplateErrors.ExpressionParseError(exp), e.Message);
                     var errorMsg = Evaluator.ConcatErrorMsg(prefix, suffixErrorMsg);
 
-                    result.Add(BuildLGDiagnostic(errorMsg, context: context));
+                    result.Add(BuildLGDiagnostic(errorMsg, context: expressionContext));
                     return result;
                 }
             }
