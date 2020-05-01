@@ -209,6 +209,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
+                        if (activityFromSkill.Type == ActivityTypesEx.InvokeResponse && activityFromSkill.Value is JObject jObject)
+                        {
+                            // Ensure the value in the invoke response is of type InvokeResponse (it gets deserialized as JObject by default).
+                            activityFromSkill.Value = jObject.ToObject<InvokeResponse>();
+                        }
+
                         // Send the response back to the channel. 
                         await context.SendActivityAsync(activityFromSkill, cancellationToken).ConfigureAwait(false);
                     }
