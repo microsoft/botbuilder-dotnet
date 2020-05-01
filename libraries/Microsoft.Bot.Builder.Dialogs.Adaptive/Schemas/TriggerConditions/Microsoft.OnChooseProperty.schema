@@ -1,5 +1,5 @@
 {
-    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On choose property",
     "description": "Actions to take when there are multiple possible mappings of entities to properties.",

@@ -1,5 +1,5 @@
 {
-    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Adaptive Dialog",
     "description": "Flexible, data driven dialog that can adapt to the conversation.",
@@ -49,13 +49,10 @@
         },
         "schema": {
             "title": "Schema",
-            "description": "Schema used to drive ",
+            "description": "Schema to fill in.",
             "anyOf": [
                 {
-                    "title": "Schema",
-                    "description": "Schema to fill in.",
-                    "type": "object",
-                    "additionalProperties": true
+                    "$ref": "http://json-schema.org/draft-07/schema#"
                 },
                 {
                     "type": "string",

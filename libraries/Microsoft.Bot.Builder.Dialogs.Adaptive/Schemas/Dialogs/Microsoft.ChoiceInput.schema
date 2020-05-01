@@ -1,5 +1,5 @@
 {
-    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.InputDialog)" ],
     "title": "Choice input dialog",
     "description": "Collect information - Pick from a list of choices",
@@ -78,7 +78,7 @@
                                     "description": "Value to return when this choice is selected."
                                 },
                                 "action": {
-                                    "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/protocol/botframework.json#/definitions/CardAction",
+                                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/CardAction",
                                     "title": "Action",
                                     "description": "Card action for the choice."
                                 },

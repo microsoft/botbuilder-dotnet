@@ -1,5 +1,6 @@
 {
-    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$role": [],
     "title": "Test Script",
     "description": "Defines a sequence of test actions to perform to validate the behavior of dialogs.",
     "type": "object",

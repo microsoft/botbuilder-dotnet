@@ -1,12 +1,12 @@
 {
-    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IActivityTemplate)",
     "title": "Microsoft Static Activity Template",
     "description": "This allows you to define a static Activity object",
     "type": "object",
     "properties": {
         "activity": {
-            "$ref": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/protocol/botframework.json#/definitions/Activity",
+            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Activity",
             "title": "Activity",
             "description": "A static Activity to used.",
             "required": [

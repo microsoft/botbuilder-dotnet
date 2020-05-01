@@ -1,5 +1,5 @@
 {
-    "$schema": "file:///c:/users/chrim/source/repos/botframework-sdk/schemas/component/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IRecognizer)",
     "title": "Regex recognizer",
     "description": "Use regular expressions to recognize intents and entities from user input.",
