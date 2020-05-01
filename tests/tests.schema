@@ -186,9 +186,6 @@
 			"$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
 		},
 		{
-			"$ref": "#/definitions/Microsoft.OnCustomEvent"
-		},
-		{
 			"$ref": "#/definitions/Microsoft.OnDialogEvent"
 		},
 		{
@@ -4066,6 +4063,96 @@
 					"$ref": "#/definitions/Microsoft.Test.AssertCondition"
 				},
 				{
+					"$ref": "#/definitions/Microsoft.BeginDialog"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.CancelDialog"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.ContinueLoop"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.BreakLoop"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.DeleteActivity"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.DeleteProperty"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.DebugBreak"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.EditActions"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.DeleteProperties"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.CancelAllDialogs"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.EmitEvent"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.EndDialog"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.EndTurn"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.Foreach"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.ForeachPage"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.GetActivityMembers"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.GetConversationMembers"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.GotoAction"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.HttpRequest"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.LogAction"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.IfCondition"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.RepeatDialog"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.ReplaceDialog"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.SendActivity"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.SetProperties"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.SetProperty"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.SignOutUser"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.SwitchCondition"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.TraceActivity"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.UpdateActivity"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.Ask"
 				},
 				{
@@ -4073,6 +4160,9 @@
 				},
 				{
 					"$ref": "#/definitions/Microsoft.ChoiceInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.DateTimeInput"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.ConfirmInput"
@@ -4090,100 +4180,7 @@
 					"$ref": "#/definitions/Microsoft.TextInput"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.DateTimeInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.BeginDialog"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.BreakLoop"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.CancelAllDialogs"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.CancelDialog"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.DebugBreak"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.DeleteActivity"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.DeleteProperty"
-				},
-				{
 					"$ref": "#/definitions/Microsoft.EditArray"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.ContinueLoop"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.EditActions"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.EmitEvent"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.EndDialog"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.EndTurn"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.ForeachPage"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Foreach"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.GotoAction"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.GetConversationMembers"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.DeleteProperties"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.HttpRequest"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.IfCondition"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.GetActivityMembers"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.LogAction"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.RepeatDialog"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.SendActivity"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.ReplaceDialog"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.SetProperties"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.SignOutUser"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.SwitchCondition"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.SetProperty"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.TraceActivity"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.UpdateActivity"
 				},
 				{
 					"$ref": "#/definitions/Testbot.JavascriptAction"
@@ -4291,13 +4288,13 @@
 					"type": "string"
 				},
 				{
+					"$ref": "#/definitions/Microsoft.LuisRecognizer"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.LuisRecognizer"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
@@ -4352,16 +4349,13 @@
 					"$ref": "#/definitions/Microsoft.OnChooseIntent"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnChooseProperty"
-				},
-				{
 					"$ref": "#/definitions/Microsoft.OnCondition"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
+					"$ref": "#/definitions/Microsoft.OnChooseProperty"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnCustomEvent"
+					"$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnDialogEvent"
@@ -5997,77 +5991,6 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.OnConversationUpdateActivity"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.OnCustomEvent": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "On custom event",
-			"description": "Actions to perform when a custom event is detected. Use 'Emit a custom event' action to raise a custom event.",
-			"type": "object",
-			"required": [
-				"actions",
-				"event",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"event": {
-					"type": "string",
-					"title": "Custom event name",
-					"description": "Name of the custom event."
-				},
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.OnCustomEvent"
 				},
 				"$designer": {
 					"title": "Designer information",
