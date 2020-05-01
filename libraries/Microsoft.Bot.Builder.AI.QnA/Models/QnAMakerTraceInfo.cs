@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -59,23 +60,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int Top { get; set; }
 
         /// <summary>
-        /// Gets or sets the filters used to return answers that have the specified metadata.
+        /// Gets or sets the filters used to return answers that have the specified metadata.       
         /// </summary>
         /// <value>
         /// The filters used to return answers that have the specified metadata.
-        /// </value>
+        /// </value>        
         [JsonProperty("strictFilters")]
-        public Metadata[] StrictFilters { get; set; }
-
-        /// <summary>
-        /// Gets or sets miscellaneous data to boost answers.
-        /// </summary>
-        /// <value>
-        /// Miscellaneous data to boost answers.
-        /// </value>
-        [JsonProperty("metadataBoost")]
-        public Metadata[] MetadataBoost { get; set; }
-
+        public Metadata[] StrictFilters { get; set; }           
+                
         /// <summary>
         /// Gets or sets context for multi-turn responses.
         /// </summary>
@@ -111,5 +103,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
+        
+        [Obsolete("This property is no longer used and will be ignored")]
+        [JsonIgnore]
+        public Metadata[] MetadataBoost { get; set; }
     }
 }
