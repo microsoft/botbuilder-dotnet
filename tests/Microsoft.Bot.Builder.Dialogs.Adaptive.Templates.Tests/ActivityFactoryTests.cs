@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic data = new JObject();
             data.title = "titleContent";
             data.text = "textContent";
-            var lgResult = GetNormalStructureLGFile().Evaluate("HerocardWithCardAction", data).ToString();
+            var lgResult = GetNormalStructureLGFile().Evaluate("HerocardWithCardAction", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertCardActionActivity(activity);
         }
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.adaptiveCardTitle = "test";
-            var lgResult = GetNormalStructureLGFile().Evaluate("adaptivecardActivity", data).ToString();
+            var lgResult = GetNormalStructureLGFile().Evaluate("adaptivecardActivity", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertAdaptiveCardActivity(activity);
         }
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             dynamic data = new JObject();
             data.adaptiveCardTitle = "test";
-            var lgResult = GetNormalStructureLGFile().Evaluate("externalAdaptiveCardActivity", data).ToString();
+            var lgResult = GetNormalStructureLGFile().Evaluate("externalAdaptiveCardActivity", data);
             var activity = ActivityFactory.FromObject(lgResult);
             AssertAdaptiveCardActivity(activity);
         }

@@ -367,7 +367,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     }
                 });
 
-                await dialogContext.Context.SendActivityAsync(result);
+                await dialogContext.Context.SendActivityAsync(result.ToString());
 
                 return await dialogContext.EndDialogAsync();
             }
@@ -473,9 +473,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
     public class MockLanguageGenerator : LanguageGenerator
     {
-        public override Task<string> Generate(DialogContext dialogContext, string template, object data)
+        public override Task<object> Generate(DialogContext dialogContext, string template, object data)
         {
-            return Task.FromResult(template);
+            return Task.FromResult((object)template);
         }
     }
 }
