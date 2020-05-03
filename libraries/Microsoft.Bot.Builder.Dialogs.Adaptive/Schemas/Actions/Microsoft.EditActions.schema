@@ -15,7 +15,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -28,7 +28,8 @@
             "oneOf": [
                 {
                     "type": "string",
-                    "title": "Enum",
+                    "title": "Standard change",
+                    "description": "Standard change types.",
                     "enum": [
                         "insertActions",
                         "insertActionsBeforeTags",
@@ -38,7 +39,7 @@
                     ]
                 },
                 {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
             ]
         },

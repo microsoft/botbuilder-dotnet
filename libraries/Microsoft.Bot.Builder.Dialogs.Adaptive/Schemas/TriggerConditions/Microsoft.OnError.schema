@@ -1,12 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.ITrigger)",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On Error",
     "description": "Action to perform when an 'Error' dialog event occurs.",
-    "type": "object",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.OnCondition.schema#"
-        }
-    ]
+    "type": "object"
 }

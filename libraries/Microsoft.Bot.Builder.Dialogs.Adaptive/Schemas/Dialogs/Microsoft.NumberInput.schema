@@ -1,49 +1,42 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.IDialog)",
+    "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.InputDialog)" ],
     "title": "Number input dialog",
     "description": "Collect information - Ask for a number.",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.InputDialog.json#"
+    "properties": {
+        "defaultValue": {
+            "$ref": "schema:#/definitions/numberExpression",
+            "title": "Default value",
+            "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+            "examples": [
+                13,
+                "=user.age"
+            ]
         },
-        {
-            "properties": {
-                "defaultValue": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        13,
-                        "=user.age"
-                    ]
-                },
-                "value": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        13,
-                        "=user.age"
-                    ]
-                },
-                "outputFormat": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/expression",
-                    "title": "Output format",
-                    "description": "Expression to format the number output.",
-                    "examples": [
-                        "=this.value",
-                        "=int(this.text)"
-                    ]
-                },
-                "defaultLocale": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
-                    "title": "Default locale",
-                    "description": "Default locale to use if there is no locale available..",
-                    "default": "en-us"
-                }
-            }
+        "value": {
+            "$ref": "schema:#/definitions/numberExpression",
+            "title": "Value",
+            "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+            "examples": [
+                13,
+                "=user.age"
+            ]
+        },
+        "outputFormat": {
+            "$ref": "schema:#/definitions/expression",
+            "title": "Output format",
+            "description": "Expression to format the number output.",
+            "examples": [
+                "=this.value",
+                "=int(this.text)"
+            ]
+        },
+        "defaultLocale": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Default locale",
+            "description": "Default locale to use if there is no locale available..",
+            "default": "en-us"
         }
-    ]
+    }
 }

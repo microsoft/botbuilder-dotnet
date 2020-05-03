@@ -1,11 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.ITrigger)",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On end of actions",
-    "description": "Actions to take when there are no more actions in the current dialog.",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.OnCondition.schema#"
-        }
-    ]
+    "description": "Actions to take when there are no more actions in the current dialog."
 }

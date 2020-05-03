@@ -11,7 +11,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -26,7 +26,7 @@
                     "title": "Dialog"
                 },
                 {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression",
+                    "$ref": "schema:#/definitions/equalsExpression",
                     "examples": [
                         "=settings.dialogId"
                     ]
@@ -36,12 +36,13 @@
             "description": "Name of the dialog to call."
         },
         "options": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
+            "$ref": "schema:#/definitions/objectExpression",
             "title": "Options",
             "description": "One or more options that are passed to the dialog that is called.",
             "additionalProperties": {
                 "type": "string",
-                "title": "Options"
+                "title": "Options",
+                "description": "Options for dialog."
             },
             "examples": [
                 {
@@ -50,13 +51,13 @@
             ]
         },
         "activityProcessed": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Activity Processed",
             "description": "When set to false, the dialog that is called can process the current activity.",
             "default": true
         },
         "resultProperty": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Property",
             "description": "Property to store any value returned by the dialog that is called.",
             "examples": [

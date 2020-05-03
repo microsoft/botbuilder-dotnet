@@ -20,6 +20,7 @@
                 {
                     "type": "string",
                     "title": "Enum",
+                    "description": "Standard change type.",
                     "enum": [
                         "push",
                         "pop",
@@ -29,12 +30,12 @@
                     ]
                 },
                 {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
             ]
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -42,17 +43,17 @@
             ]
         },
         "itemsProperty": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Items property",
             "description": "Property that holds the array to update."
         },
         "resultProperty": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Result Property",
             "description": "Property to store the result of this action."
         },
         "value": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/valueExpression",
+            "$ref": "schema:#/definitions/valueExpression",
             "title": "Value",
             "description": "New value or expression.",
             "examples": [

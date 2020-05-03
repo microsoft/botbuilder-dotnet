@@ -1,12 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "$role": "implements(Microsoft.ITrigger)",
     "title": "On cancel dialog",
     "description": "Actions to perform on cancel dialog event.",
-    "type": "object",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.OnCondition.schema#"
-        }
-    ]
+    "type": "object"
 }

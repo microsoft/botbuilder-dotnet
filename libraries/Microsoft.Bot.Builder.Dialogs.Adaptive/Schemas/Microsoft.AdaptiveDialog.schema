@@ -42,15 +42,17 @@
             "description": "List of triggers defined for this dialog.",
             "title": "Triggers",
             "items": {
-                "$kind": "Microsoft.ITrigger"
+                "$kind": "Microsoft.ITrigger",
+                "title": "Event triggers",
+                "description": "Event triggers for handling events."
             }
         },
         "schema": {
+            "title": "Schema",
+            "description": "Schema to fill in.",
             "anyOf": [
                 {
-                    "title": "The schema to be filled in.",
-                    "type": "object",
-                    "additionalProperties": true
+                    "$ref": "http://json-schema.org/draft-07/schema#"
                 },
                 {
                     "type": "string",

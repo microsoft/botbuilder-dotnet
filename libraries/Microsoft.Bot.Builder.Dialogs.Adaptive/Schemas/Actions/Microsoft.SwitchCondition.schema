@@ -14,7 +14,7 @@
             "description": "Optional id for the dialog"
         },
         "condition": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Condition",
             "description": "Property to evaluate.",
             "examples": [
@@ -22,7 +22,7 @@
             ]
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -33,9 +33,11 @@
         "cases": {
             "type": "array",
             "title": "Cases",
-            "desc": "Actions for each possible condition.",
+            "description": "Actions for each possible condition.",
             "items": {
                 "type": "object",
+                "title": "Case",
+                "description": "Case and actions.",
                 "properties": {
                     "value": {
                         "type": [

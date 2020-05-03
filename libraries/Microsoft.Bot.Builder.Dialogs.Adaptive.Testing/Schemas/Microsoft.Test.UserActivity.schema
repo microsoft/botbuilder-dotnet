@@ -10,6 +10,8 @@
     "properties": {
         "activity": {
             "type": "object",
+            "title": "Activity",
+            "description": "Activity to send to bot.",
             "additionalProperties": true
         },
         "user": {

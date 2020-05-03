@@ -1,48 +1,41 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.IDialog)",
+    "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.InputDialog)" ],
     "title": "Date/time input dialog",
     "description": "Collect information - Ask for date and/ or time",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.InputDialog.json#"
+    "properties": {
+        "defaultValue": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "format": "date-time",
+            "title": "Default Date",
+            "description": "'Property' will be set to the value or the result of the expression when max turn count is exceeded.",
+            "examples": [
+                "=user.birthday"
+            ]
         },
-        {
-            "properties": {
-                "defaultValue": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
-                    "format": "date-time",
-                    "title": "Default Date",
-                    "description": "'Property' will be set to the value or the result of the expression when max turn count is exceeded.",
-                    "examples": [
-                        "=user.birthday"
-                    ]
-                },
-                "value": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
-                    "format": "date-time",
-                    "title": "Value",
-                    "description": "'Property' will be set to the value or the result of the expression unless it evaluates to null.",
-                    "examples": [
-                        "=user.birthday"
-                    ]
-                },
-                "outputFormat": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
-                    "title": "Output format",
-                    "description": "Expression to use for formatting the output.",
-                    "examples": [
-                        "=this.value[0].Value"
-                    ]
-                }
-            },
-            "defaultLocale": {
-                "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
-                "title": "Default locale",
-                "description": "Default locale.",
-                "default": "en-us"
-            }
+        "value": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "format": "date-time",
+            "title": "Value",
+            "description": "'Property' will be set to the value or the result of the expression unless it evaluates to null.",
+            "examples": [
+                "=user.birthday"
+            ]
+        },
+        "outputFormat": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Output format",
+            "description": "Expression to use for formatting the output.",
+            "examples": [
+                "=this.value[0].Value"
+            ]
         }
-    ]
+    },
+    "defaultLocale": {
+        "$ref": "schema:#/definitions/stringExpression",
+        "title": "Default locale",
+        "description": "Default locale.",
+        "default": "en-us"
+    }
 }

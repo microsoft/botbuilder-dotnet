@@ -32,7 +32,6 @@
     <Content Include="**/*.lu" />
     <Content Include="**/*.schema" />
     <Content Include="**/*.qna" />
-    <Content Include="Schemas\Dialogs\Microsoft.InputDialog.json" />
   </ItemGroup>
 
   <ItemGroup>
