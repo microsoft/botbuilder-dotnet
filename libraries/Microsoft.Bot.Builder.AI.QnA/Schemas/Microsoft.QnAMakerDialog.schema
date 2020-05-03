@@ -110,6 +110,12 @@
             ]
         }
     },
+        "maximumScoreForLowScoreVariation": {
+           "type": "float",
+            "title": "maximumScoreForLowVariation",
+            "description": "Maximum score For Low Variation",
+            "default": 0.95F
+        },
     "required": [
         "knowledgeBaseId",
         "endpointKey",
