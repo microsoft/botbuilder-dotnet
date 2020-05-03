@@ -3,7 +3,7 @@
     "$kind": "Microsoft.AdaptiveDialog",
     "recognizer": "sandwichTest.lu",
     "generator": "sandwichTest.lg",
-    "schema": "sandwichTest.schema",
+    "schema": "sandwichTest.json",
     "triggers": [
         "sandwichTest-Quantity-missing",
         "sandwichTest-Quantity-assign-numberEntity",

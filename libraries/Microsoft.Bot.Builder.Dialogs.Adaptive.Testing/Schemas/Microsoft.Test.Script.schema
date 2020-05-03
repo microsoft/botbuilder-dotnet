@@ -1,5 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$role": [],
     "title": "Test Script",
     "description": "Defines a sequence of test actions to perform to validate the behavior of dialogs.",
     "type": "object",
@@ -16,6 +17,7 @@
         },
         "script": {
             "type": "array",
+            "title": "Test actions",
             "description": "Sequence of test actions to execute.",
             "items": {
                 "$kind": "Microsoft.Test.ITestAction"

@@ -3,7 +3,7 @@
     "$kind": "Microsoft.AdaptiveDialog",
     "recognizer": "unittests.lu",
     "generator": "unittests.lg",
-    "schema": "unittests.schema",
+    "schema": "unittests.json",
     "triggers": [
         "unittests-Personname-missing",
         "unittests-Personname-assign-personNameEntity",

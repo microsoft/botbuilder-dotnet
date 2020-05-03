@@ -64,9 +64,9 @@
     <None Remove="Tests\GeneratorTests\sandwich\sandwich-NotUnderstood.dialog" />
     <None Remove="Tests\GeneratorTests\sandwich\sandwich-PropertyToChangeSet.dialog" />
     <None Remove="Tests\GeneratorTests\sandwich\sandwich-sandwichIntent.dialog" />
+    <None Remove="Tests\GeneratorTests\sandwich\sandwich.json" />
     <None Remove="Tests\GeneratorTests\sandwich\sandwich.lu.dialog" />
     <None Remove="Tests\GeneratorTests\sandwich\sandwich.main.dialog" />
-    <None Remove="Tests\GeneratorTests\sandwich\sandwich.schema.dialog" />
   </ItemGroup>
 
   <ItemGroup>
@@ -117,7 +117,7 @@
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-PropertyToChangeSet.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich-sandwichIntent.dialog" />
     <Content Include="Tests\GeneratorTests\sandwich\sandwich.main.dialog" />
-    <Content Include="Tests\GeneratorTests\sandwich\sandwich.schema.dialog" />
+    <Content Include="Tests\GeneratorTests\sandwich\sandwich.json" />
   </ItemGroup>
 
   <ItemGroup>
