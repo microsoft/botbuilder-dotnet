@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
            
             var adapter = (TestAdapter)new TestAdapter(TestAdapter.CreateConversation(testName))
                 .UseStorage(storage)
-                .UseState(userState, convoState)
+                .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
             
             adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);

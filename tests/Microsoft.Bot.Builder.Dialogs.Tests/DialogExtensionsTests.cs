@@ -126,7 +126,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(conversationId));
             adapter
                 .UseStorage(storage)
-                .UseState(userState, convoState)
+                .UseBotState(userState, convoState)
+                .Use(new AutoSaveStateMiddleware(userState, convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>

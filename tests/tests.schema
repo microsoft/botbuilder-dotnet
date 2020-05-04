@@ -1,6 +1,5 @@
 {
 	"$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-	"$id": "file:///C:/Users/chrim/source/repos/botbuilder-dotnet/tests/tests.schema#",
 	"type": "object",
 	"title": "Component kinds",
 	"description": "These are all of the kinds that can be created by the loader.",
@@ -4063,10 +4062,10 @@
 					"$ref": "#/definitions/Microsoft.Test.AssertCondition"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.BreakLoop"
+					"$ref": "#/definitions/Microsoft.BeginDialog"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.BeginDialog"
+					"$ref": "#/definitions/Microsoft.BreakLoop"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.CancelAllDialogs"
@@ -4099,10 +4098,10 @@
 					"$ref": "#/definitions/Microsoft.EmitEvent"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.EndTurn"
+					"$ref": "#/definitions/Microsoft.EndDialog"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.EndDialog"
+					"$ref": "#/definitions/Microsoft.EndTurn"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.Foreach"
@@ -4256,10 +4255,10 @@
 					"$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+					"$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+					"$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
 				}
 			]
 		},
@@ -4382,10 +4381,10 @@
 					"$ref": "#/definitions/Microsoft.OnInvokeActivity"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnMessageDeleteActivity"
+					"$ref": "#/definitions/Microsoft.OnMessageActivity"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnMessageActivity"
+					"$ref": "#/definitions/Microsoft.OnMessageDeleteActivity"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnMessageReactionActivity"
