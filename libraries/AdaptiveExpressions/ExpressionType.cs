@@ -99,12 +99,14 @@ namespace AdaptiveExpressions
         public const string StartOfHour = "startOfHour";
         public const string StartOfMonth = "startOfMonth";
         public const string Ticks = "ticks";
-        public const string HasFullDate = "hasFullDate";
-        public const string HasValidTime = "hasValidTime";
-        public const string HasValidDuration = "hasValidDuration";
-        public const string HasValidDate = "hasValidDate";
-        public const string HasValidTimeRange = "hasValidTimeRange";
-        public const string HasValidDateRange = "hasValidDateRange";
+
+        // Timex 
+        public const string IsDefinite = "isDefinite";
+        public const string IsTime = "isTime";
+        public const string IsDuration = "isDuration";
+        public const string IsDate = "isDate";
+        public const string IsTimeRange = "isTimeRange";
+        public const string IsDateRange = "isDateRange";
         public const string IsPresent = "isPresent";
 
         // Conversions
