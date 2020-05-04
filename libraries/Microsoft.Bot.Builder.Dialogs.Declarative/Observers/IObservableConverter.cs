@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
 {
     /// <summary>
-    /// Marks a <see cref="JsonConverter"/> that allows registrations of <see cref="IConverterObserver"/>
+    /// Marks a <see cref="JsonConverter"/> that allows registrations of <see cref="IConverterObserver"/>.
     /// </summary>
     public interface IObservableConverter
     {

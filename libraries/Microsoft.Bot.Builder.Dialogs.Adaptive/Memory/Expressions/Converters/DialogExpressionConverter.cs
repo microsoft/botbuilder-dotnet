@@ -69,8 +69,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                 }
             }
             else
-            { 
-                result = new DialogExpression((Dialog)this.converter.ReadJson(reader, objectType, existingValue, serializer));
+            {
+                result = new DialogExpression((Dialog)this.converter.ReadJson(new JTokenReader(jToken), objectType, existingValue, serializer));
             }
 
             foreach (var observer in observers)

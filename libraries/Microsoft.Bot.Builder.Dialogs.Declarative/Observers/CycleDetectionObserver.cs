@@ -13,9 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
     /// </summary>
     internal class CycleDetectionObserver : IConverterObserver
     {
-        private readonly Dictionary<long, object> cache = new Dictionary<long, object>();
-        private readonly HashSet<long> visitedPassOne = new HashSet<long>();
-        private readonly HashSet<long> visitedPassTwo = new HashSet<long>();
+        private readonly Dictionary<int, object> cache = new Dictionary<int, object>();
+        private readonly HashSet<int> visitedPassOne = new HashSet<int>();
+        private readonly HashSet<int> visitedPassTwo = new HashSet<int>();
 
         /// <summary>
         /// Gets or sets the current pass of the algorithm.
@@ -29,10 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
         public bool OnBeforeLoadToken<T>(JToken token, out T result)
             where T : class
         {
-            // JTokenEqualityComparer does a deep hash code for JToken objects
             // The deep hash code provides a pseudo-unique id for a given token
-            var jTokenComparer = new JTokenEqualityComparer();
-            var hashCode = jTokenComparer.GetHashCode(token);
+            var hashCode = Hash<T>(token);
 
             // Pass 1: We track the already visited objects' hash in the 'visited' collection
             // If we've already visited this hash code and we are still in pass 1, 
@@ -92,8 +90,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
         public bool OnAfterLoadToken<T>(JToken token, T loaded, out T result)
             where T : class
         {
-            var jTokenComparer = new JTokenEqualityComparer();
-            var hashCode = jTokenComparer.GetHashCode(token);
+            // The deep hash code provides a pseudo-unique id for a given token
+            var hashCode = Hash<T>(token);
 
             // In pass 1, after we build an object, we add it to the cache.
             if (CycleDetectionPass == CycleDetectionPasses.PassOne) 
@@ -109,9 +107,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
             else
             {
                 visitedPassTwo.Add(hashCode);
-                result = cache[hashCode] as T;
-                return true;
+                
+                result = null;
+                return false;
             }
+        }
+
+        private static int Hash<T>(JToken jToken)
+        {
+            // JTokenEqualityComparer does a deep hash code for JToken objects
+            var jTokenComparer = new JTokenEqualityComparer();
+
+            // The same json may resolve to two types. The cache key should include
+            // type information.
+            return CombineHashCodes(new[] { jTokenComparer.GetHashCode(), typeof(T).GetHashCode() });
+        }
+
+        private static int CombineHashCodes(IEnumerable<int> hashCodes)
+        {
+            // System.String.GetHashCode(): http://referencesource.microsoft.com/#mscorlib/system/string.cs,0a17bbac4851d0d4
+            // System.Web.Util.StringUtil.GetStringHashCode(System.String): http://referencesource.microsoft.com/#System.Web/Util/StringUtil.cs,c97063570b4e791a
+
+            int hash1 = (5381 << 16) + 5381;
+            int hash2 = hash1;
+
+            int i = 0;
+            foreach (var hashCode in hashCodes)
+            {
+                if (i % 2 == 0)
+                {
+                    hash1 = ((hash1 << 5) + hash1 + (hash1 >> 27)) ^ hashCode;
+                }
+                else
+                {
+                    hash2 = ((hash2 << 5) + hash2 + (hash2 >> 27)) ^ hashCode;
+                }
+
+                ++i;
+            }
+
+            return hash1 + (hash2 * 1566083941);
         }
     }
 }
