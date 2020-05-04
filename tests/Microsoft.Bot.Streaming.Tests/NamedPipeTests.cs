@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.IO.Pipes;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Streaming;
@@ -17,7 +15,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
     public class NamedPipeTests
     {
         [Fact]
-        public void Close_DisconnectsStreamAsync()
+        public async Task DisconnectWorksAsIntendedAsync()
         {
             var pipeName = Guid.NewGuid().ToString();
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
@@ -28,21 +26,32 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             try
             {
+                // The ConnectAsync task returns only after the connection has been disposed.
+                // In this context it makes for ugly code, but in the context of blocking an HTTP
+                // response until the the streaming connection has ended it creates an easier to
+                // follow user experience.
                 reader.ConnectAsync();
-                writer.StartAsync();
+                await writer.StartAsync();
 
-                readStream.WaitForConnectionAsync().ConfigureAwait(false);
-                writeStream.ConnectAsync(500).ConfigureAwait(false);
-                writer.Disconnect();
+                // The writeStream can only connect to the readStream if the readStream is listening for new connections.
+                // This creates a dependency between the two tasks below, requiring the two to be running in parallel until
+                // the readStream receives an incoming connection and the writeStream establishes an outgoing connection.
+                Task.WaitAll(new Task[] { readStream.WaitForConnectionAsync(), writeStream.ConnectAsync() });
+
+                // Assert that the reader is now connected.
+                Assert.True(reader.IsConnected, "Reader failed to connect.");
+
+                // The line we're actually testing.                
                 reader.Disconnect();
+
+                // Assert that the reader and writer are no longer connected
+                Assert.False(reader.IsConnected, "Reader did not disconnect.");
             }
             finally
             {
                 readStream.Dispose();
                 writeStream.Dispose();
             }
-
-            Assert.False(reader.IsConnected);
         }
     }
 }
