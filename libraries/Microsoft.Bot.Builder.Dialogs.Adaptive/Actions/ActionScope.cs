@@ -202,6 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 { "DialogId", action.Id },
                 { "Kind", $"Microsoft.{actionName}" },
+                { "ActionId", $"Microsoft.{action.Id}" },
             };
             TelemetryClient.TrackEvent("AdaptiveDialogAction", properties);
 
