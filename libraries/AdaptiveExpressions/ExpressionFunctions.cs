@@ -3726,7 +3726,7 @@ namespace AdaptiveExpressions
                     ReturnType.Number,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
                 new ExpressionEvaluator(
-                    ExpressionType.HasFullDate,
+                    ExpressionType.IsDefinite,
                     (expr, state, options) =>
                     {
                         TimexProperty parsed = null;
@@ -3749,7 +3749,7 @@ namespace AdaptiveExpressions
                     ReturnType.Boolean,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
                 new ExpressionEvaluator(
-                    ExpressionType.HasValidTime,
+                    ExpressionType.IsTime,
                     (expr, state, options) =>
                     {
                         TimexProperty parsed = null;
@@ -3772,7 +3772,7 @@ namespace AdaptiveExpressions
                     ReturnType.Boolean,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
                 new ExpressionEvaluator(
-                    ExpressionType.HasValidDuration,
+                    ExpressionType.IsDuration,
                     (expr, state, options) =>
                     {
                         TimexProperty parsed = null;
@@ -3796,7 +3796,7 @@ namespace AdaptiveExpressions
                     ReturnType.Boolean,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
                 new ExpressionEvaluator(
-                    ExpressionType.HasValidDate,
+                    ExpressionType.IsDate,
                     (expr, state, options) =>
                     {
                         TimexProperty parsed = null;
@@ -3819,7 +3819,7 @@ namespace AdaptiveExpressions
                     ReturnType.Boolean,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
                 new ExpressionEvaluator(
-                    ExpressionType.HasValidTimeRange,
+                    ExpressionType.IsTimeRange,
                     (expr, state, options) =>
                     {
                         TimexProperty parsed = null;
@@ -3842,7 +3842,7 @@ namespace AdaptiveExpressions
                     ReturnType.Boolean,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
                 new ExpressionEvaluator(
-                    ExpressionType.HasValidDateRange,
+                    ExpressionType.IsDateRange,
                     (expr, state, options) =>
                     {
                         TimexProperty parsed = null;

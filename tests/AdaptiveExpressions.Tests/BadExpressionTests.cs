@@ -172,18 +172,18 @@ namespace AdaptiveExpressions.Tests
             #endregion
             
             #region Date and time function test
-            Test("hasFullDate(12345)"), // should hava a string or a TimexProperty parameter
-            Test("hasFullDate('world', 123445)"), // should have only one parameter
-            Test("hasValidTime(123445)"), // should hava a string or a TimexProperty parameter
-            Test("hasValidTime('world', 123445)"), // should have only one parameter
-            Test("hasValidDuration(123445)"), // should hava a string or a TimexProperty parameter
-            Test("hasValidDuration('world', 123445)"), // should have only one parameter
-            Test("hasValidDate(123445)"), // should hava a string or a TimexProperty parameter
-            Test("hasValidDate('world', 123445)"), // should have only one parameter
-            Test("hasValidTimeRange(123445)"), // should hava a string or a TimexProperty parameter
-            Test("hasValidTimeRange('world', 123445)"), // should have only one parameter
-            Test("hasValidDateRange(123445)"), // should hava a string or a TimexProperty parameter
-            Test("hasValidDateRange('world', 123445)"), // should have only one parameter
+            Test("isDefinite(12345)"), // should hava a string or a TimexProperty parameter
+            Test("isDefinite('world', 123445)"), // should have only one parameter
+            Test("isTime(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isTime('world', 123445)"), // should have only one parameter
+            Test("isDuration(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDuration('world', 123445)"), // should have only one parameter
+            Test("isDate(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDate('world', 123445)"), // should have only one parameter
+            Test("isTimeRange(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isTimeRange('world', 123445)"), // should have only one parameter
+            Test("isDateRange(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDateRange('world', 123445)"), // should have only one parameter
             Test("isPresent(123445)"), // should hava a string or a TimexProperty parameter
             Test("isPresent('world', 123445)"), // should have only one parameter
             Test("addDays('errortime', 1)"), // error datetime format
