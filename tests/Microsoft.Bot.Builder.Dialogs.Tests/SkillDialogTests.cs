@@ -226,10 +226,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var testAdapter = new TestAdapter(Channels.Test)
                 .Use(new AutoSaveStateMiddleware(conversationState));
 
-            var dialogOptions = CreateSkillDialogOptions(conversationState, mockSkillClient);
+            var dialogOptions = CreateSkillDialogOptions(conversationState, mockSkillClient, connectionName);
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = CreateSendActivity();
-            var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend, ConnectionName = connectionName }, conversationState: conversationState);
+            var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
             testAdapter.AddExchangeableToken(connectionName, Channels.Test, "user1", "https://test", "https://test1");
             var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
             Assert.IsNull(finalActivity);
@@ -302,17 +302,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }));
 
             var conversationState = new ConversationState(new MemoryStorage());
-            var dialogOptions = CreateSkillDialogOptions(conversationState, mockSkillClient);
+            var dialogOptions = CreateSkillDialogOptions(conversationState, mockSkillClient, connectionName);
 
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = CreateSendActivity();
             var testAdapter = new TestAdapter(Channels.Test)
                 .Use(new AutoSaveStateMiddleware(conversationState));
-            var initialDialogOptions = new BeginSkillDialogOptions
-            {
-                Activity = activityToSend,
-                ConnectionName = connectionName
-            };
+            var initialDialogOptions = new BeginSkillDialogOptions { Activity = activityToSend };
             var client = new DialogTestClient(testAdapter, sut, initialDialogOptions, conversationState: conversationState);
             testAdapter.ThrowOnExchangeRequest(connectionName, Channels.Test, "user1", "https://test");
             var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
@@ -332,13 +328,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 409 }));
 
             var conversationState = new ConversationState(new MemoryStorage());
-            var dialogOptions = SkillDialogTests.CreateSkillDialogOptions(conversationState, mockSkillClient);
+            var dialogOptions = SkillDialogTests.CreateSkillDialogOptions(conversationState, mockSkillClient, connectionName);
 
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = CreateSendActivity();
             var testAdapter = new TestAdapter(Channels.Test)
                 .Use(new AutoSaveStateMiddleware(conversationState));
-            var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend, ConnectionName = connectionName }, conversationState: conversationState);
+            var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
             testAdapter.AddExchangeableToken(connectionName, Channels.Test, "user1", "https://test", "https://test1");
             var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
             Assert.IsNotNull(finalActivity);
@@ -373,7 +369,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         /// <param name="conversationState"> The conversation state object.</param>
         /// <param name="mockSkillClient"> The skill client mock.</param>
         /// <returns> A Skill Dialog Options object.</returns>
-        private static SkillDialogOptions CreateSkillDialogOptions(ConversationState conversationState, Mock<BotFrameworkClient> mockSkillClient)
+        private static SkillDialogOptions CreateSkillDialogOptions(ConversationState conversationState, Mock<BotFrameworkClient> mockSkillClient, string connectionName = null)
         {
             var dialogOptions = new SkillDialogOptions
             {
@@ -386,7 +382,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     AppId = Guid.NewGuid().ToString(),
                     SkillEndpoint = new Uri("http://testskill.contoso.com/api/messages")
-                }
+                },
+                ConnectionName = connectionName
             };
             return dialogOptions;
         }

@@ -47,10 +47,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Store delivery mode and connection name in dialog state for later use.
             dc.ActiveDialog.State[DeliverModeStateKey] = dialogArgs.Activity.DeliveryMode;
-            dc.ActiveDialog.State[SsoConnectionNameKey] = dialogArgs.ConnectionName;
+            dc.ActiveDialog.State[SsoConnectionNameKey] = DialogOptions.ConnectionName;
 
             // Send the activity to the skill.
-            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, dialogArgs.ConnectionName, cancellationToken).ConfigureAwait(false);
+            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false);
             if (eocActivity != null)
             {
                 return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);

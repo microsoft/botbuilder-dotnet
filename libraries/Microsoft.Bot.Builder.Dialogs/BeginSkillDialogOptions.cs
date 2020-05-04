@@ -17,13 +17,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// The <see cref="Activity"/> to send to the skill.
         /// </value>
         public Activity Activity { get; set; }
-
-        /// <summary>
-        /// Gets or sets the OAuth Connection Name, that would be used to perform Single SignOn with a skill.
-        /// </summary>
-        /// <value>
-        /// The OAuth Connection Name for the Parent Bot.
-        /// </value>
-        public string ConnectionName { get; set; }
     }
 }
