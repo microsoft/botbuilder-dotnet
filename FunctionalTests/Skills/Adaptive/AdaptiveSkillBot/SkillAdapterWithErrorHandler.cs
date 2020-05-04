@@ -13,11 +13,11 @@ namespace Microsoft.BotBuilderSamples.AdaptiveSkillBot
 {
     public class SkillAdapterWithErrorHandler : BotFrameworkHttpAdapter
     {
-        public SkillAdapterWithErrorHandler(IConfiguration configuration, ILogger<SkillAdapterWithErrorHandler> logger, IStorage storage, UserState userState, ConversationState conversationState)
+        public SkillAdapterWithErrorHandler(IConfiguration configuration, ILogger<SkillAdapterWithErrorHandler> logger, IStorage storage, ConversationState conversationState)
             : base(configuration, logger)
         {
             this.UseStorage(storage);
-            this.UseState(userState, conversationState, false);
+            this.UseBotState(conversationState);
 
             OnTurnError = async (turnContext, exception) =>
             {
