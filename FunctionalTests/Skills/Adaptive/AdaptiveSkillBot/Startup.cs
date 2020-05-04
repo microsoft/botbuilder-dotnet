@@ -37,9 +37,6 @@ namespace Microsoft.BotBuilderSamples.AdaptiveSkillBot
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
 
-            // Create the User state. (Used by the Dialog system itself.)
-            services.AddSingleton<UserState>();
-
             // Register LUIS recognizer
             services.AddSingleton<DialogSkillBotRecognizer>();
 
