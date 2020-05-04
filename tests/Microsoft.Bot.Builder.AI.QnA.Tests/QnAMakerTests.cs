@@ -17,7 +17,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
@@ -41,11 +40,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
         public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
                 .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -107,9 +106,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
         public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -403,7 +402,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 },
                 new QnAMakerOptions
                 {
-                    Top = 5,
+                   Top = 5,
                 });
 
             var results = await qna.GetAnswersAsync(GetContext("Q11"));
@@ -411,6 +410,18 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.AreEqual(results.Length, 4, "should get four results");
 
             var filteredResults = qna.GetLowScoreVariation(results);
+            Assert.IsNotNull(filteredResults);
+            Assert.AreEqual(filteredResults.Length, 3, "should get three results");
+
+            mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer_DisableActiveLearning.json"));
+           
+            results = await qna.GetAnswersAsync(GetContext("Q11"));
+            Assert.IsNotNull(results);
+            Assert.AreEqual(results.Length, 4, "should get four results");
+
+            filteredResults = qna.GetLowScoreVariation(results);
             Assert.IsNotNull(filteredResults);
             Assert.AreEqual(filteredResults.Length, 3, "should get three results");
         }
@@ -894,11 +905,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var options = new QnAMakerOptions
             {
-                MetadataBoost = new Metadata[]
-                {
-                    new Metadata() { Name = "artist", Value = "drake" },
-                },
-                Top = 1,
+               Top = 1,
             };
 
             var results = await qna.GetAnswersAsync(GetContext("who loves me?"), options);
@@ -1653,7 +1660,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerDialog2()
+                            new QnAMakerDialog()
                             {
                                 KnowledgeBaseId = knowlegeBaseId,
                                 HostName = host,

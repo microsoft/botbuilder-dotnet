@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "triggers": [
         {
@@ -20,7 +20,6 @@
                     "$kind": "Microsoft.NumberInput",
                     "property": "user.result",
                     "alwaysPrompt": true,
-                    "precision": 2,
                     "prompt": "2 * 2.2 equals?"
                 },
                 {

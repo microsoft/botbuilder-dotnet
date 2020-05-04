@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Adaptive Dialog",
     "description": "Flexible, data driven dialog that can adapt to the conversation.",
@@ -14,7 +14,7 @@
             "type": "boolean",
             "title": "Auto end dialog",
             "description": "If set to true the dialog will automatically end when there are no further actions.  If set to false, remember to manually end the dialog using EndDialog action.",
-            "default": "true"
+            "default": true
         },
         "defaultResultProperty": {
             "type": "string",
@@ -42,15 +42,17 @@
             "description": "List of triggers defined for this dialog.",
             "title": "Triggers",
             "items": {
-                "$kind": "Microsoft.ITrigger"
+                "$kind": "Microsoft.ITrigger",
+                "title": "Event triggers",
+                "description": "Event triggers for handling events."
             }
         },
         "schema": {
+            "title": "Schema",
+            "description": "Schema to fill in.",
             "anyOf": [
                 {
-                    "title": "The schema to be filled in.",
-                    "type": "object",
-                    "additionalProperties": true
+                    "$ref": "http://json-schema.org/draft-07/schema#"
                 },
                 {
                     "type": "string",

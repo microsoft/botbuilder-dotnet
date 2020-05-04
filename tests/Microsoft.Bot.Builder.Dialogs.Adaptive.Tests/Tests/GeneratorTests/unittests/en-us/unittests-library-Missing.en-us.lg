@@ -1,3 +1,6 @@
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Help.lg](unittests-library-Help.lg)
+
 # askEnum(property)
 - ```
 ${askHelp()}
@@ -25,5 +28,3 @@ Enter a value for ${name(property)}
 ${askHelp()}
 Enter a value for ${name(property)}: true or false
 ```
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Help.lg](unittests-library-Help.lg)

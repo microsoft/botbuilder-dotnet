@@ -1,27 +1,19 @@
 {
-    "$schema": "../../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "recognizer": {
-            "$kind": "Microsoft.RecognizerSet",
-            "recognizers": [
+            "$kind": "Microsoft.RegexRecognizer",
+            "id": "y",
+            "intents": [
                 {
-                    "$kind": "Microsoft.ValueRecognizer"
+                    "intent": "None",
+                    "pattern": "none"
                 },
                 {
-                    "$kind": "Microsoft.RegexRecognizer",
-                    "id": "y",
-                    "intents": [
-                        {
-                            "intent": "None",
-                            "pattern": "none"
-                        },
-                        {
-                            "intent": "Test",
-                            "pattern": "test"
-                        }
-                    ]
+                    "intent": "Test",
+                    "pattern": "test"
                 }
             ]
         },

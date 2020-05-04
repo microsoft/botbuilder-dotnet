@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         protected override string OnComputeId()
         {
             LoadScript();
-            return $"{this.GetType().Name}({this.script.GetHashCode()})";
+            return $"{this.GetType().Name}({StringUtils.Hash(this.script)})";
         }
 
         protected object BindOptions(DialogContext dc, object options)

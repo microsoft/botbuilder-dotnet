@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -900,15 +901,7 @@ namespace AdaptiveExpressions
             }
             else if (instance is JObject jobj)
             {
-                if (value != null)
-                {
-                    result = JToken.FromObject(value);
-                    jobj[property] = (JToken)result;
-                }
-                else
-                {
-                    jobj[property] = null;
-                }
+                jobj[property] = ConvertToJToken(value);
             }
             else
             {
@@ -1549,7 +1542,7 @@ namespace AdaptiveExpressions
                 {
                     list = Object2KVPairList(jobj);
                 }
-                else if (JToken.FromObject(instance) is JObject jobject)
+                else if (ConvertToJToken(instance) is JObject jobject)
                 {
                     list = Object2KVPairList(jobject);
                 }
@@ -1608,7 +1601,7 @@ namespace AdaptiveExpressions
                 {
                     list = Object2KVPairList(jobj);
                 }
-                else if (JToken.FromObject(instance) is JObject jobject)
+                else if (ConvertToJToken(instance) is JObject jobject)
                 {
                     list = Object2KVPairList(jobject);
                 }
@@ -1649,7 +1642,7 @@ namespace AdaptiveExpressions
                         {
                             TryAccessProperty(item, "key", out var keyVal);
                             TryAccessProperty(item, "value", out var val);
-                            jobjResult.Add(keyVal as string, JToken.FromObject(val));
+                            jobjResult.Add(keyVal as string, ConvertToJToken(val));
                         }
 
                         result = jobjResult;
@@ -2104,6 +2097,30 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
+        private static (TimexProperty, string) ParseTimexProperty(object timexExpr)
+        {
+            TimexProperty parsed = null;
+            string error = null;
+            if (timexExpr is TimexProperty timex)
+            {
+                parsed = timex;
+            }
+            else if (timexExpr is JObject jTimex)
+            {
+                parsed = jTimex.ToObject<TimexProperty>();
+            }
+            else if (timexExpr is string ts)
+            {
+                parsed = new TimexProperty(ts);
+            }
+            else
+            {
+                error = $"{timexExpr} requires a TimexProperty or a string as a argument";
+            }
+
+            return (parsed, error);
+        }
+
         private static string AddOrdinal(int num)
         {
             var hasResult = false;
@@ -2321,6 +2338,11 @@ namespace AdaptiveExpressions
             }
 
             return (result, error);
+        }
+
+        private static JToken ConvertToJToken(object value)
+        {
+            return value == null ? JValue.CreateNull() : JToken.FromObject(value);
         }
 
         // collection functions
@@ -2547,7 +2569,7 @@ namespace AdaptiveExpressions
                 {
                     result = Object2List(jobj);
                 }
-                else if (JToken.FromObject(instance) is JObject jobject)
+                else if (ConvertToJToken(instance) is JObject jobject)
                 {
                     result = Object2List(jobject);
                 }
@@ -2562,9 +2584,10 @@ namespace AdaptiveExpressions
 
         private static bool IsEqual(IReadOnlyList<object> args)
         {
-            if (args[0] == null)
+            if (args[0] == null || args[1] == null)
             {
-                return args[1] == null;
+                // null will only equals to null
+                return args[0] == null && args[1] == null;
             }
 
             if (TryParseList(args[0], out IList l0) && l0.Count == 0 && (TryParseList(args[1], out IList l1) && l1.Count == 0))
@@ -3702,6 +3725,171 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.Number,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasFullDate,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = parsed != null && parsed.Year != null && parsed.Month != null && parsed.DayOfMonth != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasValidTime,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+                        
+                        if (error == null)
+                        {
+                            value = parsed.Hour != null && parsed.Minute != null && parsed.Second != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasValidDuration,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = parsed.Years != null || parsed.Months != null || parsed.Weeks != null || parsed.Days != null ||
+                   parsed.Hours != null || parsed.Minutes != null || parsed.Seconds != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasValidDate,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = (parsed.Month != null && parsed.DayOfMonth != null) || parsed.DayOfWeek != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasValidTimeRange,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = parsed.PartOfDay != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.HasValidDateRange,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = (parsed.Year != null && parsed.DayOfMonth == null) ||
+                                    (parsed.Year != null && parsed.Month != null && parsed.DayOfMonth == null) ||
+                                    (parsed.Month != null && parsed.DayOfMonth == null) ||
+                                    parsed.Season != null || parsed.WeekOfYear != null || parsed.WeekOfMonth != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.IsPresent,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        bool? value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            value = parsed.Now != null;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Boolean,
+                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
 
                 // URI Parsing
                 new ExpressionEvaluator(
@@ -3854,9 +4042,9 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.Int, Apply(args => Convert.ToInt64(args[0])), ReturnType.Number, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Binary, Apply(args => ToBinary(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(
-                    ExpressionType.Base64, 
+                    ExpressionType.Base64,
                     Apply(
-                        (args) => 
+                        (args) =>
                         {
                             byte[] byteArray;
                             if (args[0] is byte[] byteArr)
@@ -3869,8 +4057,8 @@ namespace AdaptiveExpressions
                             }
 
                             return Convert.ToBase64String(byteArray);
-                        }), 
-                    ReturnType.String, 
+                        }),
+                    ReturnType.String,
                     ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToBinary, Apply(args => Convert.FromBase64String(args[0].ToString()), VerifyString), ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Base64ToString, Apply(args => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(args[0].ToString())), VerifyString), ReturnType.String, ValidateUnary),
@@ -3956,7 +4144,21 @@ namespace AdaptiveExpressions
                     ValidateUnary),
 
                 // Object manipulation and construction functions
-                new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0].ToString())), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.Json,
+                    Apply(
+                        args =>
+                        {
+                            using (var textReader = new StringReader(args[0].ToString()))
+                            {
+                                using (var jsonReader = new JsonTextReader(textReader) { DateParseHandling = DateParseHandling.None })
+                                {
+                                    return JToken.ReadFrom(jsonReader);
+                                }
+                            }
+                        }), 
+                    ReturnType.Object,
+                    (expr) => ValidateOrder(expr, null, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.AddProperty,
                     ApplyWithError(args =>
@@ -3970,7 +4172,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                newJobj[prop] = JToken.FromObject(args[2]);
+                                newJobj[prop] = ConvertToJToken(args[2]);
                             }
 
                             return (newJobj, error);
@@ -3982,8 +4184,7 @@ namespace AdaptiveExpressions
                     Apply(args =>
                         {
                             var newJobj = (IDictionary<string, JToken>)args[0];
-                            newJobj[args[1].ToString()] = JToken.FromObject(args[2]);
-
+                            newJobj[args[1].ToString()] = ConvertToJToken(args[2]);
                             return newJobj;
                         }),
                     ReturnType.Object,

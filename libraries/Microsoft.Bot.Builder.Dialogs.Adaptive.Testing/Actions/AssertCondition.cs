@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
     public class AssertCondition : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.Test.AssertCondition";
+        public const string Kind = "Microsoft.Test.AssertCondition";
         
         [JsonConstructor]
         public AssertCondition([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)

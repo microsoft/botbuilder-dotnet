@@ -1,3 +1,5 @@
+[sandwichTest-library-PROPERTYName.lg](sandwichTest-library-PROPERTYName.lg)
+
 > This file contains the generic templates to use for properties of particular types.
 
 # welcome
@@ -46,4 +48,3 @@
 
 # notUnderstood
 - Sorry, I do not understand ${join(foreach(turn.unrecognizedtext, chunk, concat("'", chunk, "'")), ' or ')}
-[sandwichTest-library-PROPERTYName.lg](sandwichTest-library-PROPERTYName.lg)

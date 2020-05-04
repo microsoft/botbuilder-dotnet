@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using AdaptiveExpressions.Memory;
+using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -22,6 +23,9 @@ namespace AdaptiveExpressions.Tests
 
         private readonly object scope = new Dictionary<string, object>
         {
+            { 
+                "jsonContainsDatetime", "{\"date\": \"/Date(634250351766060665)/\", \"invalidDate\": \"/Date(whatever)/\"}"
+            },
             { "$index", "index" },
             {
                 "alist", new List<A>() { new A("item1"), new A("item2") }
@@ -97,6 +101,12 @@ namespace AdaptiveExpressions.Tests
             { "byteArr", new byte[] { 3, 5, 1, 12 } },
             { "timestamp", "2018-03-15T13:00:00.000Z" },
             { "notISOTimestamp", "2018/03/15 13:00:00" },
+            { "validFullDateTimex", new TimexProperty("2020-02-20") },
+            { "invalidFullDateTimex", new TimexProperty("xxxx-02-20") },
+            { "validHourTimex", new TimexProperty("2020-02-20T07:30") },
+            { "validTimeRange", new TimexProperty() { PartOfDay = "morning" } },
+            { "validNow", new TimexProperty() { Now = true } },
+            { "invalidHourTimex", new TimexProperty("2001-02-20") },
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
             { "unixTimestamp", 1521118800 },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
@@ -570,6 +580,14 @@ namespace AdaptiveExpressions.Tests
             Test("emptyList == {  }", false),
             Test("emptyObject == {  }", true),
             Test("emptyObject == [  ]", false),
+            Test("{} == null", false),
+            Test("{} != null", true),
+            Test("[] == null", false),
+            Test("{} != null", true),
+            Test("{} == {}", true),
+            Test("[] == []", true),
+            Test("{} != []", true),
+            Test("[] == {}", false),
             #endregion
 
             #region  Conversion functions test
@@ -612,6 +630,9 @@ namespace AdaptiveExpressions.Tests
             Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
             Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
+            Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
+            Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
+
             #endregion
 
             #region  Math functions test
@@ -650,6 +671,23 @@ namespace AdaptiveExpressions.Tests
             #region  Date and time function test
 
             // init dateTime: 2018-03-15T13:00:00Z
+            Test("hasFullDate('helloworld')", false),
+            Test("hasFullDate('2012-12-21')", true),
+            Test("hasFullDate('xxxx-12-21')", false),
+            Test("hasFullDate(validFullDateTimex)", true),
+            Test("hasFullDate(invalidFullDateTimex)", false),
+            Test("hasValidTime(validHourTimex)", true),
+            Test("hasValidTime(invalidHourTimex)", false),
+            Test("hasValidDuration('PT30M')", true),
+            Test("hasValidDuration('2012-12-21T12:30')", false),
+            Test("hasValidDate('PT30M')", false),
+            Test("hasValidDate('2012-12-21T12:30')", true),
+            Test("hasValidTimeRange('PT30M')", false),
+            Test("hasValidTimeRange(validTimeRange)", true),
+            Test("hasValidDateRange('PT30M')", false),
+            Test("hasValidDateRange('2012-02')", true),
+            Test("isPresent('PT30M')", false),
+            Test("isPresent(validNow)", true),
             Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
             Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.000Z"),
@@ -819,6 +857,12 @@ namespace AdaptiveExpressions.Tests
             Test("string({obj: {'name': 'adams'}})", "{\"obj\":{\"name\":\"adams\"}}"),
             Test("string({obj: {'name': 'adams'}, txt: {utter: 'hello'}})", "{\"obj\":{\"name\":\"adams\"},\"txt\":{\"utter\":\"hello\"}}"),
             Test("{a: 1, b: newExpr}.b", "new land"),
+            Test("{name: user.name}.name", null),
+            Test("{name: user.nickname}.name", "John"),
+            Test("setProperty({}, 'name', user.name).name", null),
+            Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
+            Test("setProperty({}, 'name', user.nickname).name", "John"),
+            Test("addProperty({}, 'name', user.name).name", null),
             #endregion
 
             #region  Memory access
@@ -908,7 +952,7 @@ namespace AdaptiveExpressions.Tests
         [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
-        {
+        { 
             var parsed = Expression.Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);

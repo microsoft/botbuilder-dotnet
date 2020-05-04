@@ -1,4 +1,6 @@
-
+[unittests-Enum2Entity.lg](unittests-Enum2Entity.lg)
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Missing.lg](unittests-library-Missing.lg)
 
 # AskEnum2
 - ${askEnum('Enum2')}
@@ -10,6 +12,3 @@
 
 # Enum2(val)
 - ${Enum2Entity(val)}
-[unittests-Enum2Entity.lg](unittests-Enum2Entity.lg)
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Missing.lg](unittests-library-Missing.lg)

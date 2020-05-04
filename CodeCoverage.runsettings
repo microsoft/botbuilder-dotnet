@@ -77,6 +77,8 @@
                 <Source>.*\\ExpressionAntlrParser.cs</Source>
                 <Source>.*\\LGFileLexer.cs</Source>
                 <Source>.*\\LGFileParser.cs</Source>
+                <Source>.*\\LGTemplateLexer.cs</Source>
+                <Source>.*\\LGTemplateParser.cs</Source>
               </Exclude>
             </Sources>
           </CodeCoverage>

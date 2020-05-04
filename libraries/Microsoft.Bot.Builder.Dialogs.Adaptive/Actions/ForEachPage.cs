@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class ForeachPage : ActionScope
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.ForeachPage";
+        public const string Kind = "Microsoft.ForeachPage";
 
         private const string FOREACHPAGE = "dialog.foreach.page";
         private const string FOREACHPAGEINDEX = "dialog.foreach.pageindex";

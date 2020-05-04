@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version Condition=" '$(IsBuildServer)' == '' ">4.8.0-local</Version>
+    <Version Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</Version>
     <Version Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</Version>
-    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">4.8.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</PackageVersion>
     <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
@@ -35,11 +35,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.ApplicationInsights" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.ApplicationInsights" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.ApplicationInsights" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' == '' " Version="4.8.0-local" />
+    <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
 

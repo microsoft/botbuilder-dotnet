@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     public class TemplateEngineLanguageGenerator : LanguageGenerator
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.TemplateEngineLanguageGenerator";
+        public const string Kind = "Microsoft.TemplateEngineLanguageGenerator";
 
         private const string DEFAULTLABEL = "Unknown";
 
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="lgText">lg template text.</param>
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<IResource>> resourceMapping)
+        public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<Resource>> resourceMapping)
         {
             this.Id = id ?? DEFAULTLABEL;
             var (_, locale) = LGResourceLoader.ParseLGFileName(id);
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="filePath">lg template file absolute path.</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<IResource>> resourceMapping)
+        public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<Resource>> resourceMapping)
         {
             filePath = PathUtils.NormalizePath(filePath);
             this.Id = Path.GetFileName(filePath);
@@ -81,11 +81,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Method to generate text from given template and data.
         /// </summary>
-        /// <param name="turnContext">Context for the current turn of conversation.</param>
+        /// <param name="dialogContext">Context for the current turn of conversation.</param>
         /// <param name="template">template to evaluate.</param>
         /// <param name="data">data to bind to.</param>
         /// <returns>generated text.</returns>
-        public override async Task<string> Generate(ITurnContext turnContext, string template, object data)
+        public override async Task<string> Generate(DialogContext dialogContext, string template, object data)
         {
             try
             {

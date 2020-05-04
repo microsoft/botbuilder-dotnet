@@ -1,6 +1,5 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.OnAssignEntity",
     "property": "Age",
     "entity": "age",
@@ -8,16 +7,16 @@
         {
             "$kind": "Microsoft.SendActivity",
             "activity": "${setObjectPropertyMessage('Age', concat(string(@age.number), ' ', @age.units))}"
-        }, 
+        },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Age.number",
-            "value": "=@age.number"          
+            "value": "=@age.number"
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$Age.units",
-            "value": "=@age.units"          
+            "value": "=@age.units"
         }
-    ]               
+    ]
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -67,27 +68,29 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int QnAId { get; set; }
 
         [JsonProperty("strictFilters")]
-        public Metadata[] StrictFilters { get; set; }
+        public Metadata[] StrictFilters { get; set; }        
+        
+        [Obsolete("This property is no longer used and will be ignored")]
+        [JsonIgnore]
+        public Metadata[] MetadataBoost { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
+        /// Gets or sets a value indicating whether to call test or prod environment of knowledge base to be called. 
         /// </summary>
         /// <value>
-        /// A value indicating whether to call test or prod environment of knowledgebase. 
+        /// A value indicating whether to call test or prod environment of knowledge base. 
         /// </value>
         [JsonProperty("isTest")]
         public bool IsTest { get; set; }
 
         /// <summary>
-        /// Gets or sets ranker Types.
+        /// Gets or sets the QnA Maker ranker type to use.
         /// </summary>
         /// <value>
-        /// Ranker Types.
+        /// The QnA Maker ranker type to use.
         /// </value>
+        /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
-
-        [JsonProperty("metadataBoost")]
-        public Metadata[] MetadataBoost { get; set; }
     }
 }

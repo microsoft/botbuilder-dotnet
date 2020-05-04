@@ -1,12 +1,11 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "actions": [
-    // Todo: check page boundary.
-    {
-      "$kind": "Microsoft.SetProperty",
-      "value": "=user.showIndex+1",
-      "property": "user.showIndex"
-    }
-  ]
+    "$schema": "../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "actions": [
+        {
+            "$kind": "Microsoft.SetProperty",
+            "value": "=user.showIndex+1",
+            "property": "user.showIndex"
+        }
+    ]
 }

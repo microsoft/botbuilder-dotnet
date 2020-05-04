@@ -1,15 +1,14 @@
 {
-  "$schema": "../../app.schema",
-  "$kind": "Microsoft.AdaptiveDialog",
-  "actions": [
-    // Reset data
-    {
-      "$kind": "Microsoft.DeleteProperty",
-      "property": "user.fwContent"
-    },
-    {
-      "$kind": "Microsoft.DeleteProperty",
-      "property": "user.fwSubject"
-    },
-  ]
+    "$schema": "../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "actions": [
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.fwContent"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.fwSubject"
+        }
+    ]
 }

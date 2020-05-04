@@ -1,4 +1,6 @@
-
+[unittests-PercentageEntity.lg](unittests-PercentageEntity.lg)
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Missing.lg](unittests-library-Missing.lg)
 
 # AskPercentage
 - ${askString('Percentage')}
@@ -10,6 +12,3 @@
 
 # Percentage(val)
 - ${PercentageEntity(val)}
-[unittests-PercentageEntity.lg](unittests-PercentageEntity.lg)
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Missing.lg](unittests-library-Missing.lg)

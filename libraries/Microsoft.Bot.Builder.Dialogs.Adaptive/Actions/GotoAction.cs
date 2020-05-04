@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class GotoAction : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.GotoAction";
+        public const string Kind = "Microsoft.GotoAction";
 
         public GotoAction(string actionId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {

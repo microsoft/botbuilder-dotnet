@@ -38,12 +38,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             object result = null)
             : base(
                   dc.Dialogs,
-                  turnContext: dc.Context,
+                  parentDialogContext: dc,
                   state: new DialogState(dc.Stack))
         {
             _parentWaterfall = parentWaterfall;
             _nextCalled = false;
-            Parent = dc.Parent;
             Index = index;
             Options = options;
             Reason = reason;

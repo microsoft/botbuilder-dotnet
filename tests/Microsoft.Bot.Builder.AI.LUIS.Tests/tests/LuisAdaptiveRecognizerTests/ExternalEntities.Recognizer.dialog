@@ -1,0 +1,17 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.RegexRecognizer",
+    "intents": [],
+    "entities": [
+        {
+            "$kind": "Microsoft.RegexEntityRecognizer",
+            "name": "alphaEntity",
+            "pattern": "a"
+        },
+        {
+            "$kind": "Microsoft.RegexEntityRecognizer",
+            "name": "numberEntity",
+            "pattern": "one"
+        }
+    ]
+}

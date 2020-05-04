@@ -48,6 +48,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_CancelDialog()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_CancelDialog_Processed()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task Action_CancelAllDialogs()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
@@ -138,6 +150,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_Foreach_Empty()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task Action_ForeachPage()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
@@ -199,6 +217,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [TestMethod]
         public async Task Action_RepeatDialog()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_RepeatDialogLoop()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }

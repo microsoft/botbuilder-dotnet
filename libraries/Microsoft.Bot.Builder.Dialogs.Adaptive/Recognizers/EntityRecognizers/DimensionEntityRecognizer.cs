@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class DimensionEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.DimensionEntityRecognizer";
+        public const string Kind = "Microsoft.DimensionEntityRecognizer";
 
         public DimensionEntityRecognizer()
         {

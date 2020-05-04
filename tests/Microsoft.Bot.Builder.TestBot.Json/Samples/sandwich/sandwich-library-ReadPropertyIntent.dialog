@@ -1,17 +1,16 @@
-
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/sdk.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.OnIntent",
     "intent": "ReadProperty",
     "actions": [
         {
             "$kind": "Microsoft.SendActivity",
-            "activity": "${textProperty(@PropertyName)}"           
+            "activity": "${textProperty(@PropertyName)}"
         },
         {
             "$kind": "Microsoft.SetProperty",
             "property": "$PropertyToRemember",
-            "value": "=@PROPERTYName" 
+            "value": "=@PROPERTYName"
         },
         {
             "$kind": "Microsoft.Ask",

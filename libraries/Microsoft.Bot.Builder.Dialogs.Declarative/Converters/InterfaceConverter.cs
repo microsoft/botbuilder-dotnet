@@ -16,13 +16,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         where T : class
     {
         private readonly ResourceExplorer resourceExplorer;
-        private readonly Stack<SourceRange> context;
         private readonly List<IConverterObserver> observers = new List<IConverterObserver>();
+        private readonly SourceContext sourceContext;
 
-        public InterfaceConverter(ResourceExplorer resourceExplorer, Stack<SourceRange> context)
+        public InterfaceConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(InterfaceConverter<T>.resourceExplorer));
-            this.context = context ?? throw new ArgumentNullException(nameof(context));
+            this.sourceContext = sourceContext ?? throw new ArgumentNullException(nameof(sourceContext));
         }
 
         public override bool CanRead => true;
@@ -34,40 +34,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var (jsonObject, range) = SourceContext.ReadTokenRange(reader, context);
-
-            using (new SourceContext(context, range))
+            var (jToken, range) = SourceScope.ReadTokenRange(reader, sourceContext);
+            using (new SourceScope(sourceContext, range))
             {
-                if (this.resourceExplorer.IsRef(jsonObject))
+                if (this.resourceExplorer.IsRef(jToken))
                 {
                     // We can't do this asynchronously as the Json.NET interface is synchronous
-                    jsonObject = this.resourceExplorer.ResolveRefAsync(jsonObject, context).GetAwaiter().GetResult();
+                    jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
                 }
 
                 foreach (var observer in this.observers)
                 {
-                    if (observer.OnBeforeLoadToken(jsonObject, out T interceptResult))
+                    if (observer.OnBeforeLoadToken(jToken, out T interceptResult))
                     {
                         return interceptResult;
                     }
                 }
 
-                var kind = (string)jsonObject["$kind"];
+                var kind = (string)jToken["$kind"];
+              
                 if (kind == null)
                 {
-                    throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jsonObject)}");
+                    // see if there is jObject resolver
+                    var result = ResolveUnknownObject(jToken);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+
+                    throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jToken)}");
                 }
 
                 // if reference resolution made a source context available for the JToken, then add it to the context stack
-                var found = DebugSupport.SourceMap.TryGetValue(jsonObject, out var rangeResolved);
-                using (found ? new SourceContext(context, rangeResolved) : null)
+                var found = DebugSupport.SourceMap.TryGetValue(jToken, out var rangeResolved);
+                using (found ? new SourceScope(context, rangeResolved) : null)
                 {
-                    T result = this.resourceExplorer.BuildType<T>(kind, jsonObject, serializer);
+                    T result = this.resourceExplorer.BuildType<T>(kind, jToken, serializer);
 
                     // associate the most specific source context information with this item
-                    if (context.Count > 0)
+                    if (sourceContext.CallStack.Count > 0)
                     {
-                        range = context.Peek().DeepClone();
+                        range = sourceContext.CallStack.Peek().DeepClone();
                         DebugSupport.SourceMap.Add(result, range);
                     }
 
@@ -82,6 +89,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     return result;
                 }
             }
+        }
+
+        public virtual object ResolveUnknownObject(JToken jToken)
+        {
+            return null;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

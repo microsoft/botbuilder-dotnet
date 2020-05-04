@@ -13,8 +13,6 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Newtonsoft.Json.Linq;
 
-[assembly: CLSCompliant(false)]
-
 namespace AdaptiveExpressions
 {
     /// <summary>

@@ -125,6 +125,7 @@ namespace Microsoft.Bot.Builder.Skills
             turnContext.Activity.ReplyToId = endOfConversationActivity.ReplyToId;
             turnContext.Activity.Value = endOfConversationActivity.Value;
             turnContext.Activity.Entities = endOfConversationActivity.Entities;
+            turnContext.Activity.Locale = endOfConversationActivity.Locale;
             turnContext.Activity.LocalTimestamp = endOfConversationActivity.LocalTimestamp;
             turnContext.Activity.Timestamp = endOfConversationActivity.Timestamp;
             turnContext.Activity.ChannelData = endOfConversationActivity.ChannelData;
@@ -142,6 +143,7 @@ namespace Microsoft.Bot.Builder.Skills
             turnContext.Activity.ReplyToId = eventActivity.ReplyToId;
             turnContext.Activity.Value = eventActivity.Value;
             turnContext.Activity.Entities = eventActivity.Entities;
+            turnContext.Activity.Locale = eventActivity.Locale;
             turnContext.Activity.LocalTimestamp = eventActivity.LocalTimestamp;
             turnContext.Activity.Timestamp = eventActivity.Timestamp;
             turnContext.Activity.ChannelData = eventActivity.ChannelData;
@@ -150,7 +152,7 @@ namespace Microsoft.Bot.Builder.Skills
 
         private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
         {
-            SkillConversationReference skillConversationReference = null;
+            SkillConversationReference skillConversationReference;
             try
             {
                 skillConversationReference = await _conversationIdFactory.GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
@@ -175,15 +177,12 @@ namespace Microsoft.Bot.Builder.Skills
                 throw new KeyNotFoundException();
             }
 
-            var activityConversationReference = activity.GetConversationReference();
-
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
-                turnContext.TurnState.Add(SkillConversationReferenceKey, activityConversationReference);
-
+                turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
                 activity.ApplyConversationReference(skillConversationReference.ConversationReference);
-
                 turnContext.Activity.Id = replyToActivityId;
+                turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
                 switch (activity.Type)
                 {
                     case ActivityTypes.EndOfConversation:

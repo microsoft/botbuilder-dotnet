@@ -1,7 +1,0 @@
-{
-    "$kind": "Microsoft.MultiLanguageRecognizer",
-    "recognizers": {
-        "en-us": "DynamicLists.test.en_us.lu",
-        "": "DynamicLists.test.en_us.lu"
-    }
-}

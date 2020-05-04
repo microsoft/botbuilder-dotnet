@@ -1,5 +1,5 @@
 {
-    "$schema": "../../app.schema",
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.SkillDialog",
     "skillAppId": "f3fe8762-e50c-4688-b202-a040f522d916",
     "skillEndpoint": "http://localhost:39783/api/messages",

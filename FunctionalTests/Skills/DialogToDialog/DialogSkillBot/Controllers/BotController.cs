@@ -18,7 +18,7 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot.Controllers
         private readonly IBotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
 
-        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot)
+        public BotController(BotFrameworkHttpAdapter adapter, IBot bot)
         {
             _adapter = adapter;
             _bot = bot;

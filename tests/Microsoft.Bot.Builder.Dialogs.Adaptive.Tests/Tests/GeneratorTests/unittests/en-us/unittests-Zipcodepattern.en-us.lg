@@ -1,4 +1,6 @@
-
+[unittests-ZipcodepatternEntity.lg](unittests-ZipcodepatternEntity.lg)
+[unittests-library.lg](unittests-library.lg)
+[unittests-library-Missing.lg](unittests-library-Missing.lg)
 
 # AskZipcodepattern
 - ${askString('Zipcodepattern')}
@@ -10,6 +12,3 @@
 
 # Zipcodepattern(val)
 - ${ZipcodepatternEntity(val)}
-[unittests-ZipcodepatternEntity.lg](unittests-ZipcodepatternEntity.lg)
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Missing.lg](unittests-library-Missing.lg)

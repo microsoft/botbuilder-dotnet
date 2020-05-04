@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     public class UserTyping : TestAction
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.Test.UserTyping";
+        public const string Kind = "Microsoft.Test.UserTyping";
 
         [JsonConstructor]
         public UserTyping([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)

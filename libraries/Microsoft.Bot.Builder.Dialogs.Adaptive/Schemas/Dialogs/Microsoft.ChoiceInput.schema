@@ -1,98 +1,147 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/master/schemas/component.schema",
-    "$role": "implements(Microsoft.IDialog)",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.InputDialog)" ],
     "title": "Choice input dialog",
     "description": "Collect information - Pick from a list of choices",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.InputDialog.json#"
+    "properties": {
+        "defaultValue": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Default value",
+            "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+            "examples": [
+                "hello world",
+                "Hello ${user.name}",
+                "=concat(user.firstname, user.lastName)"
+            ]
         },
-        {
-            "properties": {
-                "outputFormat": {
-                    "$role": "expression",
+        "value": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Value",
+            "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+            "examples": [
+                "hello world",
+                "Hello ${user.name}",
+                "=concat(user.firstname, user.lastName)"
+            ]
+        },
+        "outputFormat": {
+            "$role": "expression",
+            "title": "Output format",
+            "description": "Sets the desired choice output format (either value or index into choices).",
+            "oneOf": [
+                {
                     "type": "string",
+                    "title": "Standard",
+                    "description": "Standard output format.",
                     "enum": [
                         "value",
                         "index"
                     ],
-                    "title": "Output format",
-                    "description": "Choice output format.",
                     "default": "value"
                 },
-                "choices": {
-                    "$role": "expression",
-                    "oneOf": [
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "choices": {
+            "$role": "expression",
+            "title": "Array of choices",
+            "description": "Choices to choose from.",
+            "oneOf": [
+                {
+                    "type": "array",
+                    "title": "Simple choices",
+                    "description": "Simple choices to choose from.",
+                    "items": [
                         {
-                            "title": "Array of strings",
-                            "type": "array",
-                            "items": [
-                                {
-                                    "type": "string"
-                                }
-                            ]
-                        },
-                        {
-                            "title": "Array of choice objects",
-                            "type": "array",
-                            "items": [
-                                {
-                                    "title": "Choice",
-                                    "type": "object",
-                                    "properties": {
-                                        "value": {
-                                            "type": "string",
-                                            "title": "Value",
-                                            "description": "Value to return when this choice is selected."
-                                        },
-                                        "action": {
-                                            "type": "object",
-                                            "title": "Action",
-                                            "description": "Card action for the choice."
-                                        },
-                                        "synonyms": {
-                                            "type": "array",
-                                            "title": "Synonyms",
-                                            "description": "List of synonyms to recognize in addition to the value (optional).",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "type": "string",
+                            "title": "Simple choice",
+                            "description": "One choice for choice input."
                         }
                     ]
                 },
-                "appendChoices": {
-                    "type": "boolean",
-                    "title": "Append choices",
-                    "description": "Compose an output activity containing a set of choices",
-                    "default": "true"
+                {
+                    "type": "array",
+                    "title": "Structured choices",
+                    "description": "Choices that allow full control.",
+                    "items": [
+                        {
+                            "type": "object",
+                            "title": "Structured choice",
+                            "description": "Structured choice to choose from.",
+                            "properties": {
+                                "value": {
+                                    "type": "string",
+                                    "title": "Value",
+                                    "description": "Value to return when this choice is selected."
+                                },
+                                "action": {
+                                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/CardAction",
+                                    "title": "Action",
+                                    "description": "Card action for the choice."
+                                },
+                                "synonyms": {
+                                    "type": "array",
+                                    "title": "Synonyms",
+                                    "description": "List of synonyms to recognize in addition to the value (optional).",
+                                    "items": {
+                                        "type": "string",
+                                        "title": "Synonym",
+                                        "description": "Synonym for value."
+                                    }
+                                }
+                            }
+                        }
+                    ]
                 },
-                "defaultLocale": {
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "defaultLocale": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Default locale",
+            "description": "The default locale to use to parse confirmation choices if there is not one passed by the caller.",
+            "default": "en-us",
+            "examples": [
+                "en-us"
+            ]
+        },
+        "style": {
+            "$role": "expression",
+            "title": "List style",
+            "description": "Sets the ListStyle to control how choices are rendered.",
+            "oneOf": [
+                {
                     "type": "string",
-                    "title": "Default locale",
-                    "description": "Default locale.",
-                    "default": "en-us"
-                },
-                "style": {
-                    "type": "string",
-                    "enum": [
-                        "None",
-                        "Auto",
-                        "Inline",
-                        "List",
-                        "SuggestedAction",
-                        "HeroCard"
-                    ],
                     "title": "List style",
-                    "description": "Style to render choices.",
-                    "default": "Auto"
+                    "description": "Standard list style.",
+                    "enum": [
+                        "none",
+                        "auto",
+                        "inline",
+                        "list",
+                        "suggestedAction",
+                        "heroCard"
+                    ],
+                    "default": "auto"
                 },
-                "choiceOptions": {
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "choiceOptions": {
+            "title": "Choice options",
+            "description": "Sets the choice options used for controlling how choices are combined.",
+            "oneOf": [
+                {
                     "type": "object",
+                    "title": "Object",
+                    "description": "Choice options object.",
                     "properties": {
                         "inlineSeparator": {
                             "type": "string",
@@ -120,8 +169,19 @@
                         }
                     }
                 },
-                "recognizerOptions": {
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "recognizerOptions": {
+            "title": "Recognizer options",
+            "description": "Sets how to recognize choices in the response",
+            "oneOf": [
+                {
                     "type": "object",
+                    "title": "Object",
+                    "description": "Options for recognizer.",
                     "properties": {
                         "noValue": {
                             "type": "boolean",
@@ -132,12 +192,27 @@
                         "noAction": {
                             "type": "boolean",
                             "title": "No action",
-                            "description": "If true, the the choices action.title field will NOT be searched over",
+                            "description": "If true, the choices action.title field will NOT be searched over",
                             "default": false
+                        },
+                        "recognizeNumbers": {
+                            "type": "boolean",
+                            "title": "Recognize numbers",
+                            "description": "If true, the number recognizer will be used to recognize an index response (1,2,3...) to the prompt.",
+                            "default": true
+                        },
+                        "recognizeOrdinals": {
+                            "type": "boolean",
+                            "title": "Recognize ordinals",
+                            "description": "If true, the ordinal recognizer will be used to recognize ordinal response (first/second/...) to the prompt.",
+                            "default": true
                         }
                     }
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
-            }
+            ]
         }
-    ]
+    }
 }

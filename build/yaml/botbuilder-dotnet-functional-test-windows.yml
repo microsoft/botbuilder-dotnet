@@ -9,6 +9,7 @@ pool:
   vmImage: 'windows-2019'
 
 trigger: # ci trigger
+  batch: true
   branches:
     include:
      - master

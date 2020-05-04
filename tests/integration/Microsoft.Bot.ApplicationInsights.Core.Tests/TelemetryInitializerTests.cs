@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             var fromID = "FROMID";
             var channelID = "CHANNELID";
             var conversationID = "CONVERSATIONID";
-            var sessionId = GetHashedConversationId(conversationID);
+            var sessionId = StringUtils.Hash(conversationID);
             var activityID = "ACTIVITYID";
             var activity = Activity.CreateMessageActivity();
             activity.From = new ChannelAccount(fromID);
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             var channelID = "CHANNELID";
             var conversationID = "CONVERSATIONID";
             var activityID = "ACTIVITYID";
-            var sessionId = GetHashedConversationId(conversationID);
+            var sessionId = StringUtils.Hash(conversationID);
             var activity = Activity.CreateMessageActivity();
             activity.From = new ChannelAccount(fromID);
             activity.ChannelId = channelID;
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             var fromID = "FROMID";
             var channelID = "CHANNELID";
             var conversationID = "CONVERSATIONID";
-            var sessionId = GetHashedConversationId(conversationID);
+            var sessionId = StringUtils.Hash(conversationID);
             var activityID = "ACTIVITYID";
             var activity = Activity.CreateMessageActivity();
             activity.From = new ChannelAccount(fromID);
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             var fromID = "FROMID";
             var channelID = "CHANNELID";
             var conversationID = "CONVERSATIONID";
-            var sessionId = GetHashedConversationId(conversationID);
+            var sessionId = StringUtils.Hash(conversationID);
             var activityID = "ACTIVITYID";
             var activity = Activity.CreateMessageActivity();
             activity.From = new ChannelAccount(fromID);
@@ -270,7 +270,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             var fromID = "FROMID";
             var channelID = "CHANNELID";
             var conversationID = "CONVERSATIONID";
-            var sessionId = GetHashedConversationId(conversationID);
+            var sessionId = StringUtils.Hash(conversationID);
             var activityID = "ACTIVITYID";
             var activity = Activity.CreateMessageActivity();
             activity.From = new ChannelAccount(fromID);
@@ -469,15 +469,6 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             // Assert
             Assert.IsNull(mockHttpContextAccessor.Object.HttpContext);
             Assert.AreEqual(mockTelemetryClient.Invocations.Count, 0);
-        }
-
-        private string GetHashedConversationId(string conversationID)
-        {
-            using (var sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(conversationID));
-                return Convert.ToBase64String(bytes);
-            }
         }
     }
 }

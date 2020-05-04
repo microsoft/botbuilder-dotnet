@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class DateTimeEntityRecognizer : TextEntityRecognizer
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.DateTimeEntityRecognizer";
+        public const string Kind = "Microsoft.DateTimeEntityRecognizer";
 
         public DateTimeEntityRecognizer()
         {

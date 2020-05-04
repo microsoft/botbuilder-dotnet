@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class GetActivityMembers : Dialog
     {
         [JsonProperty("$kind")]
-        public const string DeclarativeType = "Microsoft.GetActivityMembers";
+        public const string Kind = "Microsoft.GetActivityMembers";
 
         [JsonConstructor]
         public GetActivityMembers([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

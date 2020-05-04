@@ -1,0 +1,9 @@
+﻿> !# @strict = true
+> !# @replaceNull = ${path} is evaluated to null, please check!
+
+#testInlineString
+-```m
+s
+f
+t
+```

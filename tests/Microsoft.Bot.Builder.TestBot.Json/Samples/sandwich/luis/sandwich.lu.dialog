@@ -3,5 +3,6 @@
     "recognizers": {
         "en-us": "sandwich.en-us.lu",
         "": "sandwich.en-us.lu"
-    }
+    },
+    "$schema": "../../../testbot.schema"
 }

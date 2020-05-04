@@ -380,6 +380,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("dupNameWithTemplate").ToString();
             Assert.AreEqual(evaled, "2");
+
+            evaled = templates.Evaluate("foo", new { property = "Show" }).ToString();
+            Assert.AreEqual(evaled, "you made it!");
         }
 
         [TestMethod]
@@ -422,7 +425,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(evaled == "Hi 2" || evaled == "Hello 2");
 
             // Assert 6.lg of relative path is imported from text.
-            templates = Templates.ParseText("# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", GetExampleFilePath("xx.lg"));
+            templates = Templates.ParseText("[import](./6.lg)\r\n# basicTemplate\r\n- Hi\r\n- Hello\r\n", GetExampleFilePath("xx.lg"));
 
             Assert.AreEqual(8, templates.AllTemplates.Count());
             evaled = templates.Evaluate("basicTemplate", null).ToString();
@@ -1110,6 +1113,85 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestLGOptions()
+        {
+            //LGOptionTest has no import files.
+            var templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/LGOptionTest.lg"));
+
+            var evaled = templates.Evaluate("SayHello");
+
+            Assert.AreEqual("hi The user.name is undefined", evaled);
+
+            evaled = templates.Evaluate("testInlineString");
+
+            Assert.AreEqual($"m\n\ns\n\nf\n\nt\n\n", evaled.ToString().Replace("\r\n", "\n"));
+
+            //a1.lg imports b1.lg. 
+            //a1's option is strictMode is false, replaceNull = ${path} is undefined, and defalut lineBreakStyle.
+            //b1's option is strictMode is true, replaceNull = The ${path} is undefined, and markdown lineBreakStyle.
+            var templates2 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a1.lg"));
+
+            var evaled2 = templates2.Evaluate("SayHello");
+
+            Assert.AreEqual("hi user.name is undefined", evaled2);
+
+            Assert.AreEqual(templates2.LgOptions.LineBreakStyle, LGLineBreakStyle.Default);
+
+            //a2.lg imports b2.lg and c2.lg. 
+            //a2.lg: replaceNull = The ${path} is undefined  
+            //b2.lg: strict = true, replaceNull = ${path} is evaluated to null, please check!
+            //c2: lineBreakStyle = markdown
+            var templates3 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a2.lg"));
+
+            var evaled3 = templates3.Evaluate("SayHello");
+
+            Assert.AreEqual("hi The user.name is undefined", evaled3);
+
+            Assert.AreEqual(templates3.LgOptions.LineBreakStyle, null);
+
+            //a3.lg imports b3.lg and c3.lg in sequence. 
+            //b3.lg imports d3.lg 
+            //a3.lg: lineBreakStyle = markdown, replaceNull = the ${path} is undefined a3!
+            //b3.lg: lineBreakStyle = default
+            //d3: replaceNull = ${path} is evaluated to null in d3!
+            //c3: replaceNull = ${path} is evaluated to null in c3!
+            var templates4 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a3.lg"));
+
+            var evaled4 = templates4.Evaluate("SayHello");
+
+            Assert.AreEqual("hi the user.name is undefined a3!", evaled4);
+
+            Assert.AreEqual(templates4.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
+
+            //Test use an defined option in Evaluate method, which will override all options in LG files.
+            var optionStrList = new string[] { "@strictMode = false", "@replaceNull = ${ path } is undefined", "@lineBreakStyle = defalut" };
+            var newOpt = new EvaluationOptions(optionStrList);
+            evaled4 = templates4.Evaluate("SayHello", null, newOpt);
+
+            Assert.AreEqual("hi user.name is undefined", evaled4);
+
+            evaled4 = templates4.Evaluate("testInlineString", null, newOpt);
+
+            Assert.AreEqual($"m\ns\nf\nt\n", evaled4.ToString().Replace("\r\n", "\n"));
+
+            //a4.lg imports b4.lg and c4.lg in sequence. 
+            //b4.lg imports d3.lg, c4.lg imports f4.lg.
+            //a4.lg: replaceNull = the ${path} is undefined a4!.
+            //b4.lg, c4.lg: nothing but import statement.
+            //d4: only have template definition.
+            //f4: only options, strictMode = true, replaceNull = The ${path} is undefined, lineBreaStyle = markdown.
+            var templates5 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a4.lg"));
+
+            var evaled5 = templates5.Evaluate("SayHello");
+
+            Assert.AreEqual("hi the user.name is undefined a4!", evaled5);
+
+            Assert.AreEqual(templates5.LgOptions.StrictMode, null);
+
+            Assert.AreEqual(templates5.LgOptions.LineBreakStyle, null);
+        }
+
+        [TestMethod]
         public void TestInlineEvaluate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("2.lg"));
@@ -1166,6 +1248,37 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var templates = Templates.ParseFile(GetExampleFilePath("CustomFunction2.lg"), null);
             var evaled = templates.Evaluate("custom");
             Assert.AreEqual(6.0, evaled);
+        }
+
+        [TestMethod]
+        public void TestInjectLG()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("./InjectionTest/inject.lg"));
+            
+            var (evaled, error) = Expression.Parse("foo.bar()").TryEvaluate(null);
+            
+            Assert.AreEqual("3", evaled.ToString());
+
+            (evaled, error) = Expression.Parse("foo.cool(2)").TryEvaluate(null);
+            Assert.AreEqual("3", evaled.ToString());
+
+            (evaled, error) = Expression.Parse("common.looking()").TryEvaluate(null);
+            Assert.AreEqual("John", evaled);
+
+            var scope1 = new { a = new List<string> { "cat", "dog" }, b = 12.10, c = new List<string> { "lion" } };
+            (evaled, error) = Expression.Parse("string(common.countTotal(a, c))").TryEvaluate(scope1);
+            Assert.IsNull(error);
+            Assert.AreEqual("3", evaled);
+
+            (evaled, error) = Expression.Parse("common.countTotal()").TryEvaluate(scope1);
+            Assert.IsNotNull(error);
+
+            (evaled, error) = Expression.Parse("common.countTotal(a, b, c)").TryEvaluate(scope1);
+            Assert.IsNotNull(error);
+
+            var scope2 = new { i = 1, j = 2, k = 3, l = 4 };
+            (evaled, error) = Expression.Parse("common.sumFourNumbers(i, j, k, l)").TryEvaluate(scope2);
+            Assert.AreEqual("10", evaled.ToString());
         }
 
         public class LoopClass

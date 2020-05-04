@@ -7,12 +7,11 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.QnA;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -386,7 +385,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             var adapter = InitializeAdapter();
             var dialog = resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
-            var qnaMakerDialog = (QnAMakerDialog2)dialog.Triggers[0].Actions[0];
+            var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
 
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 
@@ -397,7 +396,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             var adapter = InitializeAdapter();
             var dialog = resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
-            var qnaMakerDialog = (QnAMakerDialog2)dialog.Triggers[0].Actions[0];
+            var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
             qnaMakerDialog.IsTest = true;
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 
@@ -408,7 +407,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             var adapter = InitializeAdapter();
             var dialog = resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
-            var qnaMakerDialog = (QnAMakerDialog2)dialog.Triggers[0].Actions[0];
+            var qnAMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
+            var qnaMakerDialog = qnAMakerDialog;
             qnaMakerDialog.RankerType = RankerTypes.QuestionOnly;
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
 

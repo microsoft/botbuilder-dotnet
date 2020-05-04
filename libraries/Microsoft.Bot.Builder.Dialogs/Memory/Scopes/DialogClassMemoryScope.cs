@@ -6,7 +6,7 @@ using System;
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
     /// <summary>
-    /// DialogMemoryScope maps "class" -> dc.ActiveDialog.Properties.
+    /// DialogMemoryScope maps "dialogclass" -> dc.Parent.ActiveDialog Properties.
     /// </summary>
     public class DialogClassMemoryScope : MemoryScope
     {
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         public override void SetMemory(DialogContext dc, object memory)
         {
-            throw new NotSupportedException("You can't modify the class scope");
+            throw new NotSupportedException("You can't modify the dialogclass scope");
         }
     }
 }
