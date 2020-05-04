@@ -16,8 +16,17 @@ namespace Microsoft.Bot.Builder
         /// Initializes a new instance of the <see cref="RegisterClassMiddleware{T}"/> class.
         /// </summary>
         /// <param name="service">The object or service to add.</param>
+        public RegisterClassMiddleware(T service)
+        {
+            this.Service = service;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RegisterClassMiddleware{T}"/> class.
+        /// </summary>
+        /// <param name="service">The object or service to add.</param>
         /// <param name="key">optional key for service object in turn state (default is instance.GetType().FullName).</param>
-        public RegisterClassMiddleware(T service, string key = null)
+        public RegisterClassMiddleware(T service, string key)
         {
             this.Service = service;
             this.key = key;
