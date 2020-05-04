@@ -21,8 +21,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             : base(configuration, credentialProvider)
         {
             this.UseStorage(storage);
-            this.UseBotState(userState);
-            this.UseBotState(conversationState);
+            this.UseBotState(userState, conversationState);
             this.UseDebugger(configuration.GetValue("debugport", 4712), logger: logger);
 
             HostContext.Current.Set<IConfiguration>(configuration);

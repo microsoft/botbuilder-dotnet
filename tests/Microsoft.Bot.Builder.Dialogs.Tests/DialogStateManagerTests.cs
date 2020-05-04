@@ -639,8 +639,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseBotState(userState)
-                .UseBotState(conversationState)
+                .UseBotState(userState, conversationState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             adapter.OnTurnError = async (context, exception) =>
@@ -677,8 +676,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseBotState(userState)
-                .UseBotState(conversationState);
+                .UseBotState(userState, conversationState);
 
             adapter.OnTurnError = async (context, exception) =>
             {

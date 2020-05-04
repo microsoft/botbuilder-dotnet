@@ -25,20 +25,24 @@ namespace Microsoft.Bot.Builder
         /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{typeof(instance)}()"/> method.
         /// </summary>
         /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the storage object.</param>
-        /// <param name="botState">The <see cref="BotState"/> object to register.</param>
+        /// <param name="botStates">One or <see cref="BotState"/> object to register.</param>
         /// <returns>The updated adapter.</returns>
         /// <remarks>
         /// This adds <see cref="IMiddleware"/> to register the a BotState object into turnstate.
         /// </remarks>
-        public static BotAdapter UseBotState(this BotAdapter botAdapter, BotState botState)
+        public static BotAdapter UseBotState(this BotAdapter botAdapter, params BotState[] botStates)
         {
-            if (botState == null)
+            if (botStates == null)
             {
-                throw new ArgumentNullException(nameof(botState));
+                throw new ArgumentNullException(nameof(botStates));
             }
 
-            var middleware = new RegisterClassMiddleware<BotState>(botState, botState.GetType().FullName);
-            return botAdapter.Use(middleware);
+            foreach (var botState in botStates)
+            {
+                botAdapter.Use(new RegisterClassMiddleware<BotState>(botState, botState.GetType().FullName));
+            }
+
+            return botAdapter;
         }
     }
 }
