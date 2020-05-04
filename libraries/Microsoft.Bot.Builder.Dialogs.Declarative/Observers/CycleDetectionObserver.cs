@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
 
             // The same json may resolve to two types. The cache key should include
             // type information.
-            return CombineHashCodes(new[] { jTokenComparer.GetHashCode(), typeof(T).GetHashCode() });
+            return CombineHashCodes(new[] { jTokenComparer.GetHashCode(jToken), typeof(T).GetHashCode() });
         }
 
         private static int CombineHashCodes(IEnumerable<int> hashCodes)
