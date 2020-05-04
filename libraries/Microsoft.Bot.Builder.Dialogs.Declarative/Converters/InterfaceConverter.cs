@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
                 // if reference resolution made a source context available for the JToken, then add it to the context stack
                 var found = DebugSupport.SourceMap.TryGetValue(jToken, out var rangeResolved);
-                using (found ? new SourceScope(context, rangeResolved) : null)
+                using (found ? new SourceScope(sourceContext, rangeResolved) : null)
                 {
                     T result = this.resourceExplorer.BuildType<T>(kind, jToken, serializer);
 
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
                     foreach (var observer in this.observers)
                     {
-                        if (observer.OnAfterLoadToken(jsonObject, result, out T interceptedResult))
+                        if (observer.OnAfterLoadToken(jToken, result, out T interceptedResult))
                         {
                             return interceptedResult;
                         }

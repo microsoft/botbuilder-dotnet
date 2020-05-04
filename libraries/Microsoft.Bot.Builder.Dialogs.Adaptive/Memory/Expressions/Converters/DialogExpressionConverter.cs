@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
         /// <param name="sourceContext">SourceContext to build debugger source map.</param>
         public DialogExpressionConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
-            this.converter = new InterfaceConverter<Dialog>(resourceExplorer, context);
+            this.converter = new InterfaceConverter<Dialog>(resourceExplorer, sourceContext);
             this.resourceExplorer = resourceExplorer;
         }
 
