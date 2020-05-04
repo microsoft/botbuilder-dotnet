@@ -758,7 +758,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     { "DialogId", Id },
                     { "Expression", evt.GetExpression().ToString() },
                     { "Kind", $"Microsoft.{evt.GetType().Name}" },
-                    { "Instance", JsonConvert.SerializeObject(evt, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }).ToString() }
                 };
                 TelemetryClient.TrackEvent("AdaptiveDialogTrigger", properties);
 

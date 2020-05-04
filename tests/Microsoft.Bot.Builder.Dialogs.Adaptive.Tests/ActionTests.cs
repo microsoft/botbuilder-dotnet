@@ -210,6 +210,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_ReplaceDialogRecursive()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task Action_SignOutUser()
         {
             await TestUtils.RunTestScript(ResourceExplorer);

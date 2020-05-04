@@ -28,13 +28,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
             resourceExplorer = new ResourceExplorer()
-                .LoadProject(projPath, monitorChanges: false);
+                .LoadProject(projPath, monitorChanges: false)
+                .AddFolder(Path.Combine(Environment.CurrentDirectory, @"resources\CycleDetection"));
         }
 
         [ClassCleanup]
         public static void ClassCleanup()
         {
             resourceExplorer.Dispose();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_CycleDetection()
+        {
+            await BuildTestFlow(@"Root.dialog")
+                .SendConversationUpdate()
+                .AssertReply("Hello")
+                .Send("Hello what?")
+                .AssertReply("World")
+                .Send("World what?")
+                .AssertReply("Hello")
+            .StartTestAsync();
         }
 
         [TestMethod]
