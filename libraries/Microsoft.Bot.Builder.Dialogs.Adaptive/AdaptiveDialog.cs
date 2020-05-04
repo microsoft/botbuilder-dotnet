@@ -840,20 +840,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var selection = await Selector.Select(actionContext, cancellationToken).ConfigureAwait(false);
             if (selection.Any())
             {
-                var evt = selection.First();
-                await actionContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
-                Trace.TraceInformation($"Executing Dialog: {Id} Rule[{evt.Id}]: {evt.GetType().Name}: {evt.GetExpression()}");
+                var condition = selection.First();
+                await actionContext.DebuggerStepAsync(condition, dialogEvent, cancellationToken).ConfigureAwait(false);
+                Trace.TraceInformation($"Executing Dialog: {Id} Rule[{condition.Id}]: {condition.GetType().Name}: {condition.GetExpression()}");
 
                 var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
-                    { "Expression", evt.GetExpression().ToString() },
-                    { "Kind", $"Microsoft.{evt.GetType().Name}" },
-                    { "Instance", JsonConvert.SerializeObject(evt, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }).ToString() }
+                    { "Expression", condition.GetExpression().ToString() },
+                    { "Kind", $"Microsoft.{condition.GetType().Name}" },
+                    { "ConditionId", condition.Id },
                 };
                 TelemetryClient.TrackEvent("AdaptiveDialogTrigger", properties);
 
-                var changes = await evt.ExecuteAsync(actionContext).ConfigureAwait(false);
+                var changes = await condition.ExecuteAsync(actionContext).ConfigureAwait(false);
 
                 if (changes != null && changes.Any())
                 {
