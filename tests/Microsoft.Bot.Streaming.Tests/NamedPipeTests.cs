@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 // The writeStream can only connect to the readStream if the readStream is listening for new connections.
                 // This creates a dependency between the two tasks below, requiring the two to be running in parallel until
                 // the readStream receives an incoming connection and the writeStream establishes an outgoing connection.
-                Task.WaitAll(new Task[] { readStream.WaitForConnectionAsync(), writeStream.ConnectAsync() });
+                await Task.WhenAll(readStream.WaitForConnectionAsync(), writeStream.ConnectAsync());
 
                 // Assert that the reader is now connected.
                 Assert.True(reader.IsConnected, "Reader failed to connect.");
