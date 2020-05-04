@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         private static async Task AssertResourceType(string path, ResourceExplorer explorer, string resourceType)
         {
             var resources = explorer.GetResources(resourceType).ToArray();
-            Assert.AreEqual(3, resources.Length);
+            Assert.AreEqual(1, resources.Length);
             Assert.AreEqual($".{resourceType}", Path.GetExtension(resources[0].Id));
             await Task.FromResult<object>(null);
         }
