@@ -16,6 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Samples\CycleDetection\Child1.dialog" />
+    <Content Remove="Samples\CycleDetection\Root.dialog" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Samples\QnAMakerBot\QnAMakerBot.main.dialog" />
   </ItemGroup>
 
@@ -48,6 +53,15 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Samples\CycleDetection\Child1.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Samples\CycleDetection\Root.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

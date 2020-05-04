@@ -27,8 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
             resourceExplorer = new ResourceExplorer()
-                .LoadProject(projPath, monitorChanges: false)
-                .AddFolder(@"resources\CycleDetection");
+                .LoadProject(projPath, monitorChanges: false);
         }
 
         [ClassCleanup]
