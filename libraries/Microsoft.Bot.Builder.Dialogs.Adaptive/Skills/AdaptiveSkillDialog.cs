@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
         /// The OAuth Connection Name for the Parent Bot.
         /// </value>
         [JsonProperty("connectionName")]
-        public StringExpression ConnectionName { get; set; }
+        public StringExpression ConnectionName { get; set; } = "=settings.connectionName";
 
         /// <summary>
         /// Gets or sets template for the activity.
