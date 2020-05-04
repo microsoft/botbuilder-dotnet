@@ -37,6 +37,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
+        public async Task JsonDialogLoad_CycleDetection()
+        {
+            await BuildTestFlow(@"Root.dialog")
+                .SendConversationUpdate()
+                .AssertReply("Hello")
+                .Send("Hello what?")
+                .AssertReply("World")
+                .Send("World what?")
+                .AssertReply("Hello")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task JsonDialogLoad_Actions()
         {
             await BuildTestFlow(@"Actions.main.dialog")
