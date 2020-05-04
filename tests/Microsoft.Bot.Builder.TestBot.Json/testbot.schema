@@ -1,6 +1,5 @@
 {
 	"$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-	"$id": "file:///C:/Users/chrim/source/repos/botbuilder-dotnet/tests/Microsoft.Bot.Builder.TestBot.Json/testbot.schema#",
 	"type": "object",
 	"title": "Component kinds",
 	"description": "These are all of the kinds that can be created by the loader.",
