@@ -115,12 +115,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
 
         private static int Hash<T>(JToken jToken)
         {
-            // JTokenEqualityComparer does a deep hash code for JToken objects
-            var jTokenComparer = new JTokenEqualityComparer();
-
             // The same json may resolve to two types. The cache key should include
             // type information.
-            return CombineHashCodes(new[] { jTokenComparer.GetHashCode(jToken), typeof(T).GetHashCode() });
+            return CombineHashCodes(new[] { jToken.GetHashCode(), typeof(T).GetHashCode() });
         }
 
         private static int CombineHashCodes(IEnumerable<int> hashCodes)
