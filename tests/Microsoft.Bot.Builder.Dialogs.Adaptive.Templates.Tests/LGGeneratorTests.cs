@@ -449,7 +449,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(storage)
-                .UseState(userState, convoState)
+                .UseBotState(userState)
+                .UseBotState(convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return new TestFlow(adapter, handler);
@@ -464,7 +465,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(storage)
-                .UseState(userState, convoState)
+                .UseBotState(userState)
+                .UseBotState(convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return new TestFlow(adapter, handler);

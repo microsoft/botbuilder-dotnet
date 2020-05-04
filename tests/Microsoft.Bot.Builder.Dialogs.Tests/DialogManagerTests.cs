@@ -167,7 +167,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter();
             adapter
                 .UseStorage(storage)
-                .UseState(userState, convoState)
+                .UseBotState(userState)
+                .UseBotState(convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var rootDialog = new AdaptiveDialog()
@@ -300,7 +301,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(conversationId));
             adapter
                 .UseStorage(storage)
-                .UseState(userState, convoState)
+                .UseBotState(userState)
+                .UseBotState(convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var dm = new DialogManager(dialog, dialogStateProperty: dialogStateProperty);

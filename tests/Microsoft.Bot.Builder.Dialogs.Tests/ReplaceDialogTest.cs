@@ -22,7 +22,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var conversationState = new ConversationState(storage);
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseState(userState, conversationState);
+                .UseBotState(userState)
+                .UseBotState(conversationState);
             var dialogManager = new DialogManager(dialog);
 
             await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
@@ -49,7 +50,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var conversationState = new ConversationState(storage);
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseState(userState, conversationState);
+                .UseBotState(userState)
+                .UseBotState(conversationState);
             var dialogManager = new DialogManager(dialog);
 
             await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
@@ -79,7 +81,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var conversationState = new ConversationState(storage);
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseState(userState, conversationState);
+                .UseBotState(userState)
+                .UseBotState(conversationState);
             var dialogManager = new DialogManager(dialog);
 
             await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>

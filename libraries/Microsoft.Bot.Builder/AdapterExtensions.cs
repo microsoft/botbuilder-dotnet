@@ -17,49 +17,28 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public static BotAdapter UseStorage(this BotAdapter botAdapter, IStorage storage)
         {
-            return botAdapter.Use(new RegisterClassMiddleware<IStorage>(storage));
+            return botAdapter.Use(new RegisterClassMiddleware<IStorage>(storage ?? throw new ArgumentNullException(nameof(storage))));
         }
 
         /// <summary>
-        /// Registers user and conversation state objects with the adapter. These objects will be available via the turn context's
-        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{T}()"/> method.
+        /// Registers bot state object into the TurnContext. The botstate will be available via the turn context's
+        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{typeof(instance)}()"/> method.
         /// </summary>
         /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the storage object.</param>
-        /// <param name="userState">The <see cref="UserState"/> object to register.</param>
-        /// <param name="conversationState">The <see cref="ConversationState"/> object to register.</param>
-        /// <param name="auto">`true` to automatically persist state each turn; otherwise, `false`.
-        /// When false, it is your responsibility to persist state each turn.</param>
+        /// <param name="botState">The <see cref="BotState"/> object to register.</param>
         /// <returns>The updated adapter.</returns>
         /// <remarks>
-        /// This adds <see cref="IMiddleware"/> to register the user and conversation state management objects.
-        /// If <paramref name="auto"/> is true, this also adds middleware to automatically persist state before each turn ends.
+        /// This adds <see cref="IMiddleware"/> to register the a BotState object into turnstate.
         /// </remarks>
-        public static BotAdapter UseState(this BotAdapter botAdapter, UserState userState, ConversationState conversationState, bool auto = true)
+        public static BotAdapter UseBotState(this BotAdapter botAdapter, BotState botState)
         {
-            if (botAdapter == null)
+            if (botState == null)
             {
-                throw new ArgumentNullException(nameof(botAdapter));
+                throw new ArgumentNullException(nameof(botState));
             }
 
-            if (userState == null)
-            {
-                throw new ArgumentNullException(nameof(userState));
-            }
-
-            if (conversationState == null)
-            {
-                throw new ArgumentNullException(nameof(conversationState));
-            }
-
-            botAdapter.Use(new RegisterClassMiddleware<UserState>(userState));
-            botAdapter.Use(new RegisterClassMiddleware<ConversationState>(conversationState));
-
-            if (auto)
-            {
-                return botAdapter.Use(new AutoSaveStateMiddleware(userState, conversationState));
-            }
-
-            return botAdapter;
+            var middleware = new RegisterClassMiddleware<BotState>(botState, botState.GetType().FullName);
+            return botAdapter.Use(middleware);
         }
     }
 }

@@ -409,7 +409,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
             adapter
                 .UseStorage(storage)
-                .UseState(userState, convoState)
+                .UseBotState(userState)
+                .UseBotState(convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return adapter;

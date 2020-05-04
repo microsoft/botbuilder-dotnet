@@ -379,7 +379,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var storage = new MemoryStorage();
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseState(new UserState(storage), new ConversationState(storage));
+                .UseBotState(new UserState(storage))
+                .UseBotState(new ConversationState(storage));
 
             var dm1 = new DialogManager(CreateDialog("test"));
             var dm2 = new DialogManager(CreateDialog("test"));
@@ -405,7 +406,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var storage = new MemoryStorage();
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseState(new UserState(storage), new ConversationState(storage));
+                .UseBotState(new UserState(storage))
+                .UseBotState(new ConversationState(storage));
 
             var dm1 = new DialogManager(CreateDialog("test"));
             var dm2 = new DialogManager(CreateDialog("test2"));

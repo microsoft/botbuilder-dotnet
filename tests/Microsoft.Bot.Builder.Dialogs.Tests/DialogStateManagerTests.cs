@@ -38,7 +38,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(new MemoryStorage())
-                .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()));
+                .UseBotState(new UserState(new MemoryStorage()))
+                .UseBotState(new ConversationState(new MemoryStorage()));
 
             DialogManager dm = new DialogManager(new LamdaDialog(handler));
             dm.TurnState.Set<ResourceExplorer>(new ResourceExplorer());
@@ -638,7 +639,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseState(userState, conversationState)
+                .UseBotState(userState)
+                .UseBotState(conversationState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             adapter.OnTurnError = async (context, exception) =>
@@ -675,7 +677,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestAdapter()
                 .UseStorage(storage)
-                .UseState(userState, conversationState);
+                .UseBotState(userState)
+                .UseBotState(conversationState);
 
             adapter.OnTurnError = async (context, exception) =>
             {
@@ -738,7 +741,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
                 .UseStorage(new MemoryStorage())
-                .UseState(new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage()))
+                .UseBotState(new UserState(new MemoryStorage()))
+                .UseBotState(convoState ?? new ConversationState(new MemoryStorage()))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var dm = new DialogManager(dialog);
