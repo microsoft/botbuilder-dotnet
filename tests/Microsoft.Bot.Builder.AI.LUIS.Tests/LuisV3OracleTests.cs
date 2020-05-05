@@ -286,6 +286,9 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public async Task NoEntitiesInstanceTrue() => await TestJson<RecognizerResult>("NoEntitiesInstanceTrue.json");
 
         [TestMethod]
+        public async Task DateTimeReference() => await TestJson<RecognizerResult>("DateTimeReference.json");
+
+        [TestMethod]
         public void TopIntentReturnsTopIntent()
         {
             var greetingIntent = LuisRecognizer.TopIntent(_mockedResults);
