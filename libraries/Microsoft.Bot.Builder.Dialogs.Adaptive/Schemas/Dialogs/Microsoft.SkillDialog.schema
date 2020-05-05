@@ -56,10 +56,7 @@
             "$ref": "schema:#/definitions/stringExpression",
             "title": "OAuth Connection Name (SSO)",
             "description": "The OAuth Connection Name, that would be used to perform Single SignOn with a skill.",
-            "default": "=settings.connectionName",
-            "examples": [
-                "https://mybot.contoso.com/api/skills/"
-            ]
+            "default": "=settings.connectionName"
         },
         "skillAppId": {
             "$ref": "schema:#/definitions/stringExpression",
