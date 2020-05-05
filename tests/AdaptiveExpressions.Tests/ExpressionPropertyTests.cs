@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public void ExpressionPropertyTests_TestImplicitCasts()
         {
             var data = new object();
-            
+
             // test implicit casts as string
             var test = new ImplicitCastTest()
             {
@@ -234,7 +234,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Int = "13",
                 Number = "3.14",
                 Enm = "two",
-                Bool = "true"
+                Bool = "true",
+                Strings = new string[] { "one", "two", "three" }
             };
 
             Assert.AreEqual("test", test.Str.TryGetValue(data).Value);
@@ -242,6 +243,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(3.14F, test.Number.TryGetValue(data).Value);
             Assert.AreEqual(TestEnum.Two, test.Enm.TryGetValue(data).Value);
             Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
+            Assert.AreEqual("one", test.Strings.TryGetValue(data).Value[0]);
+            Assert.AreEqual("two", test.Strings.TryGetValue(data).Value[1]);
+            Assert.AreEqual("three", test.Strings.TryGetValue(data).Value[2]);
 
             // Test expressions with =
             test.Str = "='test2'";
@@ -249,12 +253,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             test.Number = "=13.14";
             test.Enm = "=three";
             test.Bool = "=true";
+            test.Strings = "=createArray('a','b','c')";
 
             Assert.AreEqual("test2", test.Str.TryGetValue(data).Value);
             Assert.AreEqual(113, test.Int.TryGetValue(data).Value);
             Assert.AreEqual(13.14F, test.Number.TryGetValue(data).Value);
             Assert.AreEqual(TestEnum.Three, test.Enm.TryGetValue(data).Value);
             Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
+            Assert.AreEqual("a", test.Strings.TryGetValue(data).Value[0]);
+            Assert.AreEqual("b", test.Strings.TryGetValue(data).Value[1]);
+            Assert.AreEqual("c", test.Strings.TryGetValue(data).Value[2]);
 
             // test serialization
             var json = JsonConvert.SerializeObject(test, settings: settings);
@@ -264,6 +272,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(13.14F, test2.Number.TryGetValue(data).Value);
             Assert.AreEqual(TestEnum.Three, test2.Enm.TryGetValue(data).Value);
             Assert.AreEqual(true, test2.Bool.TryGetValue(data).Value);
+            Assert.AreEqual("a", test2.Strings.TryGetValue(data).Value[0]);
+            Assert.AreEqual("b", test2.Strings.TryGetValue(data).Value[1]);
+            Assert.AreEqual("c", test2.Strings.TryGetValue(data).Value[2]);
 
             // Test constant expressions.
             test.Str = Expression.ConstantExpression("test2");
@@ -303,6 +314,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(13.14F, test.Number.TryGetValue(data).Value);
             Assert.AreEqual(TestEnum.Three, test.Enm.TryGetValue(data).Value);
             Assert.AreEqual(true, test.Bool.TryGetValue(data).Value);
+
+            // test null assignment
+            var testNull = new ImplicitCastTest()
+            {
+                Str = default(string),
+                Int = default(int),
+                Number = default(float),
+                Enm = default(TestEnum),
+                Bool = default(bool),
+                Strings = default(string[])
+            };
+            Assert.AreEqual(default(string), testNull.Str.TryGetValue(data).Value);
+            Assert.AreEqual(default(int), testNull.Int.TryGetValue(data).Value);
+            Assert.AreEqual(default(float), testNull.Number.TryGetValue(data).Value);
+            Assert.AreEqual(default(TestEnum), testNull.Enm.TryGetValue(data).Value);
+            Assert.AreEqual(default(bool), testNull.Bool.TryGetValue(data).Value);
+            Assert.AreEqual(default(string[]), testNull.Strings.TryGetValue(data).Value);
         }
 
         [TestMethod]
@@ -713,17 +741,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         public class ImplicitCastTest
         {
-            public StringExpression Str { get; set; } = new StringExpression();
+            public StringExpression Str { get; set; } 
 
-            public IntExpression Int { get; set; } = new IntExpression();
+            public IntExpression Int { get; set; } 
 
-            public EnumExpression<TestEnum> Enm { get; set; } = new EnumExpression<TestEnum>();
+            public EnumExpression<TestEnum> Enm { get; set; } 
 
-            public NumberExpression Number { get; set; } = new NumberExpression();
+            public NumberExpression Number { get; set; } 
 
-            public ValueExpression Value { get; set; } = new ValueExpression();
+            public ValueExpression Value { get; set; } 
 
-            public BoolExpression Bool { get; set; } = new BoolExpression();
+            public BoolExpression Bool { get; set; }
+
+            public ArrayExpression<string> Strings { get; set; } 
         }
 
         [JsonConverter(typeof(StringEnumConverter), /*camelCase*/ true)]
