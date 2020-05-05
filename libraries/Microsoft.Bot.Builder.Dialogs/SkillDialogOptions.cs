@@ -58,5 +58,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// The <see cref="ConversationState"/> to be used by the dialog.
         /// </value>
         public ConversationState ConversationState { get; set; }
+
+        /// <summary>
+        /// Gets or sets the OAuth Connection Name, that would be used to perform Single SignOn with a skill.
+        /// </summary>
+        /// <value>
+        /// The OAuth Connection Name for the Parent Bot.
+        /// </value>
+        public string ConnectionName { get; set; }
     }
 }
