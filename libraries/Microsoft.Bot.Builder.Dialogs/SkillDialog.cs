@@ -23,7 +23,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class SkillDialog : Dialog
     {
         private const string DeliverModeStateKey = "deliverymode";
-        private const string SsoConnectionNameKey = "SkillDialog.SSOConnectionName";
 
         public SkillDialog(SkillDialogOptions dialogOptions, string dialogId = null)
             : base(dialogId)
@@ -47,7 +46,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Store delivery mode and connection name in dialog state for later use.
             dc.ActiveDialog.State[DeliverModeStateKey] = dialogArgs.Activity.DeliveryMode;
-            dc.ActiveDialog.State[SsoConnectionNameKey] = DialogOptions.ConnectionName;
 
             // Send the activity to the skill.
             var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false);
@@ -79,10 +77,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             var skillActivity = ObjectPath.Clone(dc.Context.Activity);
 
             skillActivity.DeliveryMode = dc.ActiveDialog.State[DeliverModeStateKey] as string;
-            var connectionName = dc.ActiveDialog.State[SsoConnectionNameKey] as string;
 
             // Just forward to the remote skill
-            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, connectionName, cancellationToken).ConfigureAwait(false);
+            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false);
             if (eocActivity != null)
             {
                 return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
