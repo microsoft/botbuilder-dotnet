@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         internal const string MetadataKey = "$instance";
         internal const string GeoV2 = "builtin.geographyV2.";
         internal static readonly HashSet<string> _dateSubtypes = new HashSet<string> { "date", "daterange", "datetime", "datetimerange", "duration", "set", "time", "timerange" };
-        internal static readonly HashSet<string> _geographySubtypes = new HashSet<string> { "poi", "city", "countryRegion", "continet", "state" };
+        internal static readonly HashSet<string> _geographySubtypes = new HashSet<string> { "poi", "city", "countryRegion", "continent", "state" };
         
         internal static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
 
