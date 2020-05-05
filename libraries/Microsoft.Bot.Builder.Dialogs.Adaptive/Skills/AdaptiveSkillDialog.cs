@@ -95,6 +95,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
         public StringExpression SkillEndpoint { get; set; }
 
         /// <summary>
+        /// Gets or sets the OAuth Connection Name, that would be used to perform Single SignOn with a skill.
+        /// </summary>
+        /// <value>
+        /// The OAuth Connection Name for the Parent Bot.
+        /// </value>
+        [JsonProperty("connectionName")]
+        public StringExpression ConnectionName { get; set; } = "=settings.connectionName";
+
+        /// <summary>
         /// Gets or sets template for the activity.
         /// </summary>
         /// <value>
@@ -116,6 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             DialogOptions.ConversationIdFactory = HostContext.Current.Get<SkillConversationIdFactoryBase>() ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in HostContext");
             DialogOptions.SkillClient = HostContext.Current.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in HostContext");
             DialogOptions.ConversationState = dc.Context.TurnState.Get<ConversationState>() ?? throw new NullReferenceException($"Unable to get an instance of {nameof(ConversationState)} from TurnState.");
+            DialogOptions.ConnectionName = ConnectionName.GetValue(dc.State);
 
             // Set the skill to call
             DialogOptions.Skill.Id = DialogOptions.Skill.AppId = SkillAppId.GetValue(dc.State);
