@@ -93,6 +93,14 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         public bool PreferExternalEntities { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets datetimeV2 offset. The format for the datetimeReference is ISO 8601.
+        /// </summary>
+        /// <value>
+        /// DateTimeReference.
+        /// </value>
+        public string DateTimeReference { get; set; }
+
+        /// <summary>
         /// Gets or sets the LUIS slot to use for the application.
         /// </summary>
         /// <value>
