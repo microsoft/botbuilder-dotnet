@@ -56,12 +56,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         public UserState UserState { get; set; }
 
         /// <summary>
-        /// Gets turnState to use when turn context happens.
+        /// Gets InitialTurnState collection to copy into the turnstate on every turn.
         /// </summary>
         /// <value>
         /// TurnState.
         /// </value>
-        public TurnContextStateCollection TurnState { get; } = new TurnContextStateCollection();
+        public TurnContextStateCollection InitialTurnState { get; } = new TurnContextStateCollection();
 
         /// <summary>
         /// Gets or sets root dialog to use to start conversation.
@@ -131,10 +131,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             var botStateSet = new BotStateSet();
 
             // Preload TurnState with DM TurnState.
-            foreach (var pair in TurnState)
+            foreach (var pair in InitialTurnState)
             {
                 context.TurnState.Set(pair.Key, pair.Value);
             }
+
+            // register DialogManager with turnstate.
+            context.TurnState.Set(this);
 
             if (ConversationState == null)
             {
@@ -150,6 +153,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (UserState == null)
             {
                 UserState = context.TurnState.Get<UserState>();
+            }
+            else
+            {
+                context.TurnState.Set(UserState);
             }
 
             if (UserState != null)
@@ -184,8 +191,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 dc.Services[service.Key] = service.Value;
             }
 
-            // map initial turnstate into root dialog context.services
-            foreach (var service in this.TurnState)
+            // map turnstate into root dialog context.services
+            foreach (var service in context.TurnState)
             {
                 dc.Services[service.Key] = service.Value;
             }

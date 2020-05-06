@@ -14,30 +14,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public static ResourceExplorer ResourceExplorer { get; set; }
 
+        public static IConfiguration Configuration { get; set; }
+
         public TestContext TestContext { get; set; }
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+            Configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                .Build();
 
             ResourceExplorer = new ResourceExplorer()
                 .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(SettingsStateTests)), monitorChanges: false);
-
-            HostContext.Current.Set<IConfiguration>(builder.Build());
         }
 
         [TestMethod]
         public async Task SettingsStateTests_SettingsTest()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(ResourceExplorer, configuration: Configuration);
         }
 
         [TestMethod]
         public async Task SettingsStateTests_TestTurnStateAcrossBoundaries()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(ResourceExplorer, configuration: Configuration);
         }
     }
 }
