@@ -4077,12 +4077,14 @@ namespace AdaptiveExpressions
                     ApplyWithError(
                         args => 
                         {
-                            double? result = null;
+                            string result = null;
                             string error = null;
                             var originalNum = CultureInvariantDoubleConvert(args[0]);
-                            if (args[1] is int digits)
+                            if (args[1].IsInteger())
                             {
-                                result = Math.Round(originalNum, digits);
+                                var digits = Convert.ToInt32(args[1]);
+                                var fmt = "0." + new string('0', digits);
+                                result = Math.Round(originalNum, digits).ToString(fmt, CultureInfo.InvariantCulture);
                             }
                             else
                             {
@@ -4091,7 +4093,7 @@ namespace AdaptiveExpressions
 
                             return (result, error);
                         }), 
-                    ReturnType.Number, 
+                    ReturnType.String, 
                     ValidateBinaryNumber),
 
                 // Misc
