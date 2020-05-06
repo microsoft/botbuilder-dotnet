@@ -312,7 +312,6 @@ namespace AdaptiveExpressions.Tests
             Test("json(`{\"foo\":${{text:\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("json(`{\"foo\":${{\"text\":\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("`{expr: hello all}`", "{expr: hello all}"),
-
             #endregion
 
             #region SetPathToProperty test
@@ -632,6 +631,10 @@ namespace AdaptiveExpressions.Tests
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
             Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
             Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
+            Test("formatNumber(20.0000, 2)", "20.00"),
+            Test("formatNumber(12.123, 2)", "12.12"),
+            Test("formatNumber(1.555, 2)", "1.56"),
+            Test("formatNumber(12.123, 4)", "12.1230"),
             #endregion
 
             #region  Math functions test
