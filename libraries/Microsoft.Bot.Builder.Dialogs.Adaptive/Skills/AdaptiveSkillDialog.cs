@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -160,6 +161,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             }
 
             return base.ContinueDialogAsync(dc, cancellationToken);
+        }
+
+        protected override string OnComputeId()
+        {
+            var appId = string.Empty;
+            if (!string.IsNullOrWhiteSpace(SkillAppId?.Value))
+            {
+                appId = SkillAppId.Value;
+            }
+
+            if (Activity is ActivityTemplate at)
+            {
+                return $"Skill[{appId}:('{StringUtils.Ellipsis(at.Template.Trim(), 30)}')]";
+            }
+
+            return $"Skill[{appId}:('{StringUtils.Ellipsis(Activity?.ToString().Trim(), 30)}')]";
         }
     }
 }
