@@ -9,6 +9,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -4117,22 +4118,37 @@ namespace AdaptiveExpressions
                         {
                             string result = null;
                             string error = null;
-                            var originalNum = CultureInvariantDoubleConvert(args[0]);
-                            if (args[1].IsInteger())
+                            if (!args[0].IsNumber())
                             {
-                                var digits = Convert.ToInt32(args[1]);
-                                var fmt = "0." + new string('0', digits);
-                                result = Math.Round(originalNum, digits).ToString(fmt, CultureInfo.InvariantCulture);
+                                error = $"formatNumber first argument ${args[0]} must be number";
+                            }
+                            else if (!args[1].IsNumber())
+                            {
+                                error = $"formatNumber second argument ${args[1]} must be number";
+                            }
+                            else if (args.Count == 3 && !(args[2] is string))
+                            {
+                                error = $"formatNumber third agument ${args[2]} must be a locale";
                             }
                             else
                             {
-                                error = $"In formatNumber, the second parameter {args[1]} must be an integer";
+                                try
+                                {
+                                    var number = Convert.ToDouble(args[0]);
+                                    var precision = Convert.ToInt32(args[1]);
+                                    var locale = args.Count == 3 ? new CultureInfo(args[2] as string) : CultureInfo.InvariantCulture;
+                                    result = number.ToString("F" + precision.ToString(), locale);
+                                }
+                                catch
+                                {
+                                    error = $"{args[3]} is not a valid locale for formatNumber";
+                                }
                             }
 
                             return (result, error);
                         }),
                     ReturnType.String,
-                    ValidateBinaryNumber),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number, ReturnType.Number)),
 
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
