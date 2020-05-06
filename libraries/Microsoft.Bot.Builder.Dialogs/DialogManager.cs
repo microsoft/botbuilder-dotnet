@@ -151,6 +151,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 UserState = context.TurnState.Get<UserState>();
             }
+            else
+            {
+                context.TurnState.Set(UserState);
+            }
 
             if (UserState != null)
             {
