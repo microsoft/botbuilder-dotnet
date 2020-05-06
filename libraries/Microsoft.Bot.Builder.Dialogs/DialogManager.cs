@@ -327,7 +327,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{endMessageText}", value: turnResult.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Send End of conversation at the end.
-                var activity = new Activity(ActivityTypes.EndOfConversation) { Value = turnResult.Result };
+                var activity = new Activity(ActivityTypes.EndOfConversation) { Value = turnResult.Result, Locale = turnContext.Activity.Locale };
                 await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             }
 
