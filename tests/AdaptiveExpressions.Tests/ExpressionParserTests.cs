@@ -23,7 +23,7 @@ namespace AdaptiveExpressions.Tests
 
         private readonly object scope = new Dictionary<string, object>
         {
-            { 
+            {
                 "jsonContainsDatetime", "{\"date\": \"/Date(634250351766060665)/\", \"invalidDate\": \"/Date(whatever)/\"}"
             },
             { "$index", "index" },
@@ -109,6 +109,8 @@ namespace AdaptiveExpressions.Tests
             { "invalidHourTimex", new TimexProperty("2001-02-20") },
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
             { "unixTimestamp", 1521118800 },
+            { "unixTimestampFraction", 1521118800.5 },
+            { "ticks", 637243624200000000 },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
             {
                 "jsonStr", @"{
@@ -280,10 +282,6 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
-            Test("formatNumber(20.0000, 2)", "20.00"),
-            Test("formatNumber(12.123, 2)", "12.12"),
-            Test("formatNumber(1.555, 2)", "1.56"),
-            Test("formatNumber(12.123, 4)", "12.1230"),
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
@@ -361,7 +359,6 @@ namespace AdaptiveExpressions.Tests
             Test("hello + nullObj", "hello"),
             Test("one + two + hello + world", "3helloworld"),
             Test("one + two + hello + one + two", "3hello12"),
-
             Test("2^2", 4.0),
             Test("2^\r\n2", 4.0),
             Test("3^2^2", 81.0),
@@ -492,7 +489,6 @@ namespace AdaptiveExpressions.Tests
             Test("addOrdinal(11 + 13)", "24th"),
             Test("addOrdinal(-1)", "-1"), // original string value
             Test("join(createArray('a','b', 'c', 'd'), '\n')", "a\nb\nc\nd"),
-            
             #endregion
 
             #region  Logical comparison functions test
@@ -636,7 +632,6 @@ namespace AdaptiveExpressions.Tests
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
             Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
             Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
-
             #endregion
 
             #region  Math functions test
@@ -707,12 +702,14 @@ namespace AdaptiveExpressions.Tests
             Test("date(timestamp)", "3/15/2018"), // Default. TODO
             Test("year(timestamp)", 2018),
             Test("length(utcNow())", 24),
-            Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")),
+            Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")), 
             Test("formatDateTime(notISOTimestamp)", "2018-03-15T13:00:00.000Z"),
             Test("formatDateTime(notISOTimestamp, 'MM-dd-yy')", "03-15-18"),
             Test("formatDateTime('2018-03-15')", "2018-03-15T00:00:00.000Z"),
             Test("formatDateTime(timestampObj)", "2018-03-15T13:00:00.000Z"),
-            Test("formatDateTime(unixTimestamp)", "2018-03-15T13:00:00.000Z"),
+            Test("formatEpoch(unixTimestamp)", "2018-03-15T13:00:00.000Z"),
+            Test("formatEpoch(unixTimestampFraction)", "2018-03-15T13:00:00.500Z"),
+            Test("formatTicks(ticks)", "2020-05-06T11:47:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Year')", "2017-03-15T13:00:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Month')", "2018-02-15T13:00:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Week')", "2018-03-08T13:00:00.000Z"),
@@ -746,7 +743,6 @@ namespace AdaptiveExpressions.Tests
             Test("startOfHour('2018-03-15T13:30:30.000Z')", "2018-03-15T13:00:00.000Z"),
             Test("startOfMonth('2018-03-15T13:30:30.000Z')", "2018-03-01T00:00:00.000Z"),
             Test("ticks('2018-01-01T08:00:00.000Z')", 636503904000000000),
-            Test("formatDateTime((ticks('2018-01-01T08:00:00.000Z') - ticks('1970-01-01T00:00:00.000Z'))/10000000)", "2018-01-01T08:00:00.000Z"),
             #endregion
 
             #region uri parsing function test
@@ -933,9 +929,9 @@ namespace AdaptiveExpressions.Tests
             Test(string.Empty, string.Empty),
             #endregion
 
-#region TriggerTree Tests
+            #region TriggerTree Tests
             Test("ignore(true)", true),
-#endregion
+            #endregion
         };
 
         public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
@@ -956,7 +952,7 @@ namespace AdaptiveExpressions.Tests
         [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
-        { 
+        {
             var parsed = Expression.Parse(input);
             Assert.IsNotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
@@ -977,7 +973,7 @@ namespace AdaptiveExpressions.Tests
         [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void EvaluateInOtherCultures(string input, object expected, HashSet<string> expectedRefs)
-        { 
+        {
             var cultureList = new List<string>() { "de-DE", "fr-FR", "es-ES" };
             foreach (var newCultureInfo in cultureList)
             {
@@ -1000,7 +996,7 @@ namespace AdaptiveExpressions.Tests
                 AssertObjectEquals(actual, newActual);
 
                 Thread.CurrentThread.CurrentCulture = originalCuture;
-            } 
+            }
         }
 
         [DataTestMethod]
@@ -1093,7 +1089,7 @@ namespace AdaptiveExpressions.Tests
             {
                 NullSubstitution = (path) => $"{path} is undefined"
             };
-                
+
             object value = null;
             string error = null;
 

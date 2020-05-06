@@ -5,11 +5,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
 using System.Text;
@@ -17,7 +15,6 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using AdaptiveExpressions.Memory;
-using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -927,7 +924,7 @@ namespace AdaptiveExpressions
         /// <summary>
         /// Convert constant JValue to base type value.
         /// </summary>
-        /// <param name="obj">input object.</param>
+        /// <param name="obj">Input object.</param>
         /// <returns>Corresponding base type if input is a JValue.</returns>
         public static object ResolveValue(object obj)
         {
@@ -941,7 +938,7 @@ namespace AdaptiveExpressions
                 value = jval.Value;
                 if (jval.Type == JTokenType.Integer)
                 {
-                    value = jval.ToObject<int>();
+                    value = jval.ToObject<long>();
                 }
                 else if (jval.Type == JTokenType.String)
                 {
@@ -953,7 +950,7 @@ namespace AdaptiveExpressions
                 }
                 else if (jval.Type == JTokenType.Float)
                 {
-                    value = jval.ToObject<float>();
+                    value = jval.ToObject<double>();
                 }
             }
 
@@ -3371,29 +3368,70 @@ namespace AdaptiveExpressions
                         {
                             object result = null;
                             string error = null;
-                            object timestamp = args[0];
-                            if (Extensions.IsNumber(timestamp))
-                            {
-                                if (double.TryParse(args[0].ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out double unixTimestamp))
-                                {
-                                    var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                                    timestamp = dateTime.AddSeconds(unixTimestamp);
-                                }
-                            }
-
+                            var timestamp = args[0];
                             if (timestamp is string tsString)
                             {
                                 (result, error) = ParseTimestamp(tsString, dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture));
                             }
+                            else if (timestamp is DateTime dt)
+                            {
+                                result = dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture);
+                            }
                             else
                             {
-                                (result, error) = ParseTimestamp((string)((DateTime)timestamp).ToString(CultureInfo.InvariantCulture), dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture));
+                                error = $"formatDateTime has invalid first argument {timestamp}";
                             }
 
                             return (result, error);
                         }),
                     ReturnType.String,
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.FormatEpoch,
+                    ApplyWithError(
+                        args =>
+                        {
+                            object result = null;
+                            string error = null;
+                            var timestamp = args[0];
+                            if (timestamp.IsNumber())
+                            {
+                                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                                dateTime = dateTime.AddSeconds(Convert.ToDouble(timestamp));
+                                result = dateTime.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture);
+                            }
+                            else
+                            {
+                                error = $"formatEpoch first argument {timestamp} is not a number";
+                            }
+
+                            return (result, error);
+                        }),
+                    ReturnType.String,
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number)),
+                new ExpressionEvaluator(
+                    ExpressionType.FormatTicks,
+                    ApplyWithError(
+                        args =>
+                        {
+                            object result = null;
+                            string error = null;
+                            var timestamp = args[0];
+                            if (timestamp.IsInteger())
+                            {
+                                var ticks = Convert.ToInt64(timestamp);
+                                var dateTime = new DateTime(ticks);
+                                result = dateTime.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture);
+                            }
+                            else
+                            {
+                                error = $"formatTicks first arugment {timestamp} must be an integer";
+                            }
+
+                            return (result, error);
+                        }),
+                    ReturnType.String,
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SubtractFromTime,
                     (expr, state, options) =>
@@ -3761,7 +3799,7 @@ namespace AdaptiveExpressions
                         {
                             (parsed, error) = ParseTimexProperty(args[0]);
                         }
-                        
+
                         if (error == null)
                         {
                             value = parsed.Hour != null && parsed.Minute != null && parsed.Second != null;
@@ -4073,9 +4111,9 @@ namespace AdaptiveExpressions
                 Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ToXml(args[0])), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(
-                    ExpressionType.FormatNumber, 
+                    ExpressionType.FormatNumber,
                     ApplyWithError(
-                        args => 
+                        args =>
                         {
                             string result = null;
                             string error = null;
@@ -4088,12 +4126,12 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"The second parameter {args[1]} should be an integer";
+                                error = $"In formatNumber, the second parameter {args[1]} must be an integer";
                             }
 
                             return (result, error);
-                        }), 
-                    ReturnType.String, 
+                        }),
+                    ReturnType.String,
                     ValidateBinaryNumber),
 
                 // Misc
@@ -4179,7 +4217,7 @@ namespace AdaptiveExpressions
                                     return JToken.ReadFrom(jsonReader);
                                 }
                             }
-                        }), 
+                        }),
                     ReturnType.Object,
                     (expr) => ValidateOrder(expr, null, ReturnType.String)),
                 new ExpressionEvaluator(
@@ -4294,9 +4332,9 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(
                     ExpressionType.IsDateTime,
                     Apply(
-                        args => 
+                        args =>
                         {
-                            if (args[0] is string) 
+                            if (args[0] is string)
                             {
                                 object value = null;
                                 string error = null;
@@ -4316,7 +4354,7 @@ namespace AdaptiveExpressions
             var eval = new ExpressionEvaluator(ExpressionType.Optional, (expression, state, options) => throw new NotImplementedException(), ReturnType.Boolean, ValidateUnaryBoolean);
             eval.Negation = eval;
             functions.Add(eval);
-            
+
             eval = new ExpressionEvaluator(ExpressionType.Ignore, (expression, state, options) => expression.Children[0].TryEvaluate(state, options), ReturnType.Boolean, ValidateUnaryBoolean);
             eval.Negation = eval;
             functions.Add(eval);
