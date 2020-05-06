@@ -124,6 +124,7 @@ namespace AdaptiveExpressions
         public const string UriComponent = "uriComponent";
         public const string UriComponentToString = "uriComponentToString";
         public const string Xml = "xml";
+        public const string FormatNumber = "formatNumber";
 
         // URI Parsing Functions
         public const string UriHost = "uriHost";

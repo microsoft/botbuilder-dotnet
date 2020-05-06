@@ -632,6 +632,10 @@ namespace AdaptiveExpressions.Tests
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
             Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
             Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
+            Test("formatNumber(12.123, 2)", 12.12),
+            Test("formatNumber(20, 2)", 20.00),
+            Test("formatNumber(1.555, 2)", 1.56),
+            Test("formatNumber(12.123, 4)", 12.1230),
 
             #endregion
 

@@ -4072,6 +4072,27 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
                 Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ToXml(args[0])), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.FormatNumber, 
+                    ApplyWithError(
+                        args => 
+                        {
+                            double? result = null;
+                            string error = null;
+                            var originalNum = CultureInvariantDoubleConvert(args[0]);
+                            if (args[1] is int digits)
+                            {
+                                result = Math.Round(originalNum, digits);
+                            }
+                            else
+                            {
+                                error = $"The second parameter {args[1]} should be an integer";
+                            }
+
+                            return (result, error);
+                        }), 
+                    ReturnType.Number, 
+                    ValidateBinaryNumber),
 
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),

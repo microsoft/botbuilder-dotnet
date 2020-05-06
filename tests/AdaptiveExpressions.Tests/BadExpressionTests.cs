@@ -139,6 +139,9 @@ namespace AdaptiveExpressions.Tests
             Test("base64ToBinary(one)"), // should have string param
             Test("base64ToString(hello, world)"), // shoule have 1 param
             Test("base64ToString(false)"), // should have string param
+            Test("formatNumber(1,2,3)"), // should have 2 parameters
+            Test("formatNumber(1,2.0)"), // the second parameter should be an integer
+            Test("formatNumber(hello,2.0)"), // the first parameter should be a number
             #endregion
 
             #region Math functions test
