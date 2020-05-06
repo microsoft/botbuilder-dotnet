@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -366,7 +367,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     }
                 });
 
-                await dialogContext.Context.SendActivityAsync(result);
+                await dialogContext.Context.SendActivityAsync(result.ToString());
 
                 return await dialogContext.EndDialogAsync();
             }
@@ -448,7 +449,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(storage)
-                .UseState(userState, convoState)
+                .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return new TestFlow(adapter, handler);
@@ -463,7 +464,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(storage)
-                .UseState(userState, convoState)
+                .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return new TestFlow(adapter, handler);
@@ -472,9 +473,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
     public class MockLanguageGenerator : LanguageGenerator
     {
-        public override Task<string> Generate(DialogContext dialogContext, string template, object data)
+        public override Task<object> Generate(DialogContext dialogContext, string template, object data)
         {
-            return Task.FromResult(template);
+            return Task.FromResult((object)template);
         }
     }
 }

@@ -1,0 +1,34 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "autoEndDialog": false,
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I'm a joke bot. To get started say 'tell me a joke'"
+                    },
+                    {
+                        "$kind": "Microsoft.ReplaceDialog",
+                        "options": {},
+                        "dialog": "Action_ReplaceDialogRecursive.test"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I'm a joke bot. To get started say 'tell me a joke'"
+        }
+    ]
+}

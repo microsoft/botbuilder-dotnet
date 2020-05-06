@@ -6,7 +6,7 @@
     "type": "object",
     "properties": {
         "age": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
+            "$ref": "schema:#/definitions/numberExpression",
             "title": "Age",
             "description": "The age.",
             "examples": [
@@ -15,12 +15,12 @@
             ]
         },
         "name": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Name",
             "description": "The name."
         },
         "resultProperty": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Property",
             "description": "Property to store any value returned by the dialog that is called.",
             "examples": [

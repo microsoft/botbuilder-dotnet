@@ -11,7 +11,7 @@
             "description": "Optional id for the skill dialog"
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -20,7 +20,7 @@
             ]
         },
         "activityProcessed": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Activity Processed",
             "description": "When set to false, the skill will be started using the activity in the current turn context instead of the activity in the Activity property.",
             "default": true,
@@ -30,7 +30,7 @@
             ]
         },
         "resultProperty": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Property",
             "description": "Property to store any value returned by the dialog that is called.",
             "examples": [
@@ -38,13 +38,13 @@
             ]
         },
         "botId": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Skill host bot ID",
             "description": "The Microsoft App ID that will be calling the skill.",
             "default": "=settings.MicrosoftAppId"
         },
         "skillHostEndpoint": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Skill host",
             "description": "The callback Url for the skill host.",
             "default": "=settings.skillHostEndpoint",
@@ -52,13 +52,19 @@
                 "https://mybot.contoso.com/api/skills/"
             ]
         },
+        "connectionName": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "OAuth Connection Name (SSO)",
+            "description": "The OAuth Connection Name, that would be used to perform Single SignOn with a skill.",
+            "default": "=settings.connectionName"
+        },
         "skillAppId": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Skill App ID",
             "description": "The Microsoft App ID for the skill."
         },
         "skillEndpoint": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Skill endpoint ",
             "description": "The /api/messages endpoint for the skill.",
             "examples": [

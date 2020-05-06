@@ -172,6 +172,20 @@ namespace AdaptiveExpressions.Tests
             #endregion
             
             #region Date and time function test
+            Test("isDefinite(12345)"), // should hava a string or a TimexProperty parameter
+            Test("isDefinite('world', 123445)"), // should have only one parameter
+            Test("isTime(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isTime('world', 123445)"), // should have only one parameter
+            Test("isDuration(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDuration('world', 123445)"), // should have only one parameter
+            Test("isDate(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDate('world', 123445)"), // should have only one parameter
+            Test("isTimeRange(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isTimeRange('world', 123445)"), // should have only one parameter
+            Test("isDateRange(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDateRange('world', 123445)"), // should have only one parameter
+            Test("isPresent(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isPresent('world', 123445)"), // should have only one parameter
             Test("addDays('errortime', 1)"), // error datetime format
             Test("addDays(timestamp, 'hi')"), // second param should be integer
             Test("addDays(timestamp)"), // should have 2 or 3 params

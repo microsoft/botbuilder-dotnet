@@ -10,6 +10,8 @@ namespace Microsoft.Bot.Builder
     public class RegisterClassMiddleware<T> : IMiddleware
         where T : class
     {
+        private string key;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RegisterClassMiddleware{T}"/> class.
         /// </summary>
@@ -17,6 +19,17 @@ namespace Microsoft.Bot.Builder
         public RegisterClassMiddleware(T service)
         {
             this.Service = service;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RegisterClassMiddleware{T}"/> class.
+        /// </summary>
+        /// <param name="service">The object or service to add.</param>
+        /// <param name="key">optional key for service object in turn state (default is instance.GetType().FullName).</param>
+        public RegisterClassMiddleware(T service, string key)
+        {
+            this.Service = service;
+            this.key = key;
         }
 
         /// <summary>
@@ -40,7 +53,15 @@ namespace Microsoft.Bot.Builder
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
             // Register service
-            turnContext.TurnState.Add(this.Service);
+            if (this.key != null)
+            {
+                turnContext.TurnState.Add(this.key, this.Service);
+            }
+            else
+            {
+                turnContext.TurnState.Add(this.Service);
+            }
+
             await nextTurn(cancellationToken).ConfigureAwait(false);
         }
     }

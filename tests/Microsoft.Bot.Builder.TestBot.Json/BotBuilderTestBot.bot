@@ -31,13 +31,19 @@
         {
             "type": "endpoint",
             "endpoint": "http://localhost:51478/api/messages",
-            "name": "ddd",
-            "id": "244"
+            "id": "244",
+            "name": "ddd"
+        },
+        {
+            "type": "endpoint",
+            "endpoint": "http://localhost:51478/api/messages",
+            "id": "180",
+            "name": "test"
         }
     ],
     "padlock": "",
     "version": "2.0",
-    "overrides": null,
     "path": "C:\\source\\GitHub\\botbuilder-dotnet\\tests\\Microsoft.Bot.Builder.TestBot.Json\\BotBuilderTestBot.bot",
+    "overrides": null,
     "secretKey": ""
 }

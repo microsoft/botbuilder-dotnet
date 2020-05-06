@@ -12,17 +12,17 @@
             "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
         },
         "applicationId": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "LUIS Application ID",
             "description": "Application ID for your model from the LUIS service."
         },
         "endpoint": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "LUIS Endpoint",
             "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com."
         },
         "endpointKey": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "LUIS prediction key",
             "description": "LUIS prediction key used to call endpoint."
         },
@@ -32,7 +32,7 @@
             "description": "Entities recognized by this recognizer will be passed to LUIS as external entities."
         },
         "dynamicLists": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
+            "$ref": "schema:#/definitions/arrayExpression",
             "title": "Dynamic lists",
             "description": "Runtime defined entity lists.",
             "items": {
@@ -51,6 +51,8 @@
                         "type": "array",
                         "items": {
                             "type": "object",
+                            "title": "List entry",
+                            "description": "Canonical form and synonynms.",
                             "properties": {
                                 "canonicalForm": {
                                     "title": "Canonical form",
@@ -62,6 +64,8 @@
                                     "description": "List of synonyms for a canonical form.",
                                     "type": "array",
                                     "items": {
+                                        "title": "Synonym",
+                                        "description": "Synonym for canonical form.",
                                         "type": "string"
                                     }
                                 }
@@ -73,6 +77,8 @@
         },
         "predictionOptions": {
             "type": "object",
+            "title": "Prediction options",
+            "description": "Options to control LUIS prediction behavior.",
             "properties": {
                 "includeAllIntents": {
                     "type": "boolean",

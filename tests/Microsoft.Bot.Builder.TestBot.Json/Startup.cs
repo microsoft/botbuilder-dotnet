@@ -3,7 +3,12 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
@@ -37,6 +42,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             // Register AuthConfiguration to enable custom claim validation.
             services.AddSingleton<AuthenticationConfiguration>();
+
+            // register components.
+            ComponentRegistration.Add(new DialogsComponentRegistration());
+            ComponentRegistration.Add(new DeclarativeComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveComponentRegistration());
+            ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
+            ComponentRegistration.Add(new QnAMakerComponentRegistration());
+            ComponentRegistration.Add(new LuisComponentRegistration());
 
             // Create the Bot Framework Adapter with error handling enabled.
             // Note: some classes use the base BotAdapter so we add an extra registration that pulls the same instance.

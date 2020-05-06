@@ -6,17 +6,21 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Observers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
 {
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    public class DialogExpressionConverter : JsonConverter<DialogExpression>
+    public class DialogExpressionConverter : JsonConverter<DialogExpression>, IObservableConverter
     {
         private readonly InterfaceConverter<Dialog> converter;
+        private readonly ResourceExplorer resourceExplorer;
+        private readonly List<IConverterObserver> observers = new List<IConverterObserver>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogExpressionConverter"/> class.
@@ -26,31 +30,59 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
         public DialogExpressionConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             this.converter = new InterfaceConverter<Dialog>(resourceExplorer, sourceContext);
+            this.resourceExplorer = resourceExplorer;
         }
 
         public override bool CanRead => true;
 
         public override DialogExpression ReadJson(JsonReader reader, Type objectType, DialogExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
+            var jToken = JToken.Load(reader);
+
+            foreach (var observer in observers)
+            {
+                if (observer.OnBeforeLoadToken(jToken, out DialogExpression interceptResult))
+                {
+                    return interceptResult;
+                }
+            }
+
+            DialogExpression result = null;
+
             if (reader.ValueType == typeof(string))
             {
                 var id = (string)reader.Value;
                 if (id.StartsWith("="))
                 {
-                    return new DialogExpression(id);
+                    result = new DialogExpression(id);
                 }
+                else
+                {
+                    try
+                    {
+                        result = new DialogExpression((Dialog)this.converter.ReadJson(new JsonTextReader(new StringReader($"\"{id}\"")), objectType, existingValue, serializer));
+                    }
+                    catch (Exception)
+                    {
+                        result = new DialogExpression($"='{id}'");
+                    }
+                }
+            }
+            else
+            {
+                result = new DialogExpression((Dialog)this.converter.ReadJson(new JTokenReader(jToken), objectType, existingValue, serializer));
+            }
 
-                try
+            foreach (var observer in observers)
+            {
+                if (observer.OnAfterLoadToken(jToken, result, out DialogExpression interceptedResult))
                 {
-                    return new DialogExpression((Dialog)this.converter.ReadJson(new JsonTextReader(new StringReader($"\"{id}\"")), objectType, existingValue, serializer));
-                }
-                catch (Exception)
-                {
-                    return new DialogExpression($"='{id}'");
+                    interceptedResult.SetValue(result.Value);
+                    result = interceptedResult;
                 }
             }
 
-            return new DialogExpression((Dialog)this.converter.ReadJson(reader, objectType, existingValue, serializer));
+            return result;
         }
 
         public override void WriteJson(JsonWriter writer, DialogExpression value, JsonSerializer serializer)
@@ -63,6 +95,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
             {
                 serializer.Serialize(writer, value.Value);
             }
+        }
+
+        /// <inheritdoc/>
+        public void RegisterObserver(IConverterObserver observer)
+        {
+            if (observer == null)
+            {
+                throw new ArgumentNullException(nameof(observer));
+            }
+
+            this.observers.Add(observer);
+            this.converter.RegisterObserver(observer);
         }
     }
 }

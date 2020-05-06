@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <Version Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</Version>
-    <Version Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</Version>
+    <Version Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</Version>
     <PackageVersion Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</PackageVersion>
-    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -41,7 +41,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="AdaptiveExpressions" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="AdaptiveExpressions" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="AdaptiveExpressions" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

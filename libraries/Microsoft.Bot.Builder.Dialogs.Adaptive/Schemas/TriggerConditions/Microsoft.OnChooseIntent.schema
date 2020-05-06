@@ -1,26 +1,21 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.ITrigger)",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On ambigious intent",
     "description": "Actions to perform on when an intent is ambigious.",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.OnCondition.schema#"
-        },
-        {
-            "properties": {
-                "intents": {
-                    "type": "array",
-                    "title": "Intents",
-                    "description": "Intents that must be in the ChooseIntent result for this condition to trigger.",
-                    "items": {
-                        "type": "string"
-                    }
-                }
+    "properties": {
+        "intents": {
+            "type": "array",
+            "title": "Intents",
+            "description": "Intents that must be in the ChooseIntent result for this condition to trigger.",
+            "items": {
+                "title": "Intent",
+                "description": "Intent name to trigger on.",
+                "type": "string"
             }
         }
-    ],
+    },
     "required": [
         "actions"
     ]

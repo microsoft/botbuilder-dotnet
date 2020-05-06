@@ -37,6 +37,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
+        public async Task JsonDialogLoad_CycleDetection()
+        {
+            await BuildTestFlow(@"Root.dialog")
+                .SendConversationUpdate()
+                .AssertReply("Hello")
+                .Send("Hello what?")
+                .AssertReply("World")
+                .Send("World what?")
+                .AssertReply("Hello")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task JsonDialogLoad_Actions()
         {
             await BuildTestFlow(@"Actions.main.dialog")
@@ -409,7 +422,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
             adapter
                 .UseStorage(storage)
-                .UseState(userState, convoState)
+                .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             return adapter;

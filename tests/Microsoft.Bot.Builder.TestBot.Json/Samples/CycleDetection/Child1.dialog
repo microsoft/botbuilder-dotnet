@@ -1,0 +1,21 @@
+﻿{
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+          "actions": [
+              {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "World"
+              },
+              {
+                  "$kind": "Microsoft.EndTurn"
+              },
+              {
+                  "$kind": "Microsoft.BeginDialog",
+                  "dialog": "Root.dialog"
+              }
+          ]
+        }
+    ]
+}

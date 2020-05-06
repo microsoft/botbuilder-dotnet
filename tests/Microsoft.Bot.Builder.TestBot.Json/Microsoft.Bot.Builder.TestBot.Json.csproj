@@ -16,6 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Samples\CycleDetection\Child1.dialog" />
+    <Content Remove="Samples\CycleDetection\Root.dialog" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Samples\QnAMakerBot\QnAMakerBot.main.dialog" />
   </ItemGroup>
 
@@ -36,7 +41,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Samples\sandwich\sandwich.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.LUIS\Microsoft.Bot.Builder.AI.Luis.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.QnA\Microsoft.Bot.Builder.AI.QnA.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Debugging\Microsoft.Bot.Builder.Dialogs.Debugging.csproj" />
@@ -44,6 +54,15 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Samples\CycleDetection\Child1.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Samples\CycleDetection\Root.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -100,6 +100,15 @@ namespace AdaptiveExpressions
         public const string StartOfMonth = "startOfMonth";
         public const string Ticks = "ticks";
 
+        // Timex 
+        public const string IsDefinite = "isDefinite";
+        public const string IsTime = "isTime";
+        public const string IsDuration = "isDuration";
+        public const string IsDate = "isDate";
+        public const string IsTimeRange = "isTimeRange";
+        public const string IsDateRange = "isDateRange";
+        public const string IsPresent = "isPresent";
+
         // Conversions
         public const string Float = "float";
         public const string Int = "int";

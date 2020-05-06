@@ -35,7 +35,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(new MemoryStorage())
-                .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()));
+                .UseBotState(new UserState(new MemoryStorage()))
+                .UseBotState(new ConversationState(new MemoryStorage()));
             DialogManager dm = new DialogManager(new LamdaDialog(handler));
             return new TestFlow(adapter, (context, ct) =>
             {
@@ -185,7 +186,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(new MemoryStorage())
-                .UseState(new UserState(new MemoryStorage()), new ConversationState(new MemoryStorage()));
+                .UseBotState(new UserState(new MemoryStorage()))
+                .UseBotState(new ConversationState(new MemoryStorage()));
             DialogManager dm = new DialogManager(new AdaptiveDialog("adaptiveDialog")
             {
                 Triggers = new List<Adaptive.Conditions.OnCondition>()
@@ -256,7 +258,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var storage = new MemoryStorage();
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .UseStorage(storage)
-                .UseState(new UserState(storage), new ConversationState(storage))
+                .UseBotState(new UserState(storage))
+                .UseBotState(new ConversationState(storage))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(new BotStateTestDialog());
@@ -276,7 +279,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var storage = new MemoryStorage();
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .UseStorage(storage)
-                .UseState(new UserState(storage), new ConversationState(storage))
+                .UseBotState(new UserState(storage))
+                .UseBotState(new ConversationState(storage))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(new MemoryScopeTestDialog());
@@ -303,7 +307,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var storage = new MemoryStorage();
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .UseStorage(storage)
-                .UseState(new UserState(storage), new ConversationState(storage))
+                .UseBotState(new UserState(storage))
+                .UseBotState(new ConversationState(storage))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(new SettingsScopeTestDialog());
@@ -345,7 +350,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var storage = new MemoryStorage();
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .UseStorage(storage)
-                .UseState(new UserState(storage), new ConversationState(storage))
+                .UseBotState(new UserState(storage))
+                .UseBotState(new ConversationState(storage))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(new PathResolverTestDialog())

@@ -8,7 +8,7 @@
         "activity": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Activity",
             "title": "Activity",
-            "Description": "A static Activity to used",
+            "description": "A static Activity to used.",
             "required": [
                 "type"
             ]

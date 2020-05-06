@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 { "DialogId", action.Id },
                 { "Kind", $"Microsoft.{actionName}" },
-                { "Instance", JsonConvert.SerializeObject(action, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }).ToString() }
+                { "ActionId", $"Microsoft.{action.Id}" },
             };
             TelemetryClient.TrackEvent("AdaptiveDialogAction", properties);
 

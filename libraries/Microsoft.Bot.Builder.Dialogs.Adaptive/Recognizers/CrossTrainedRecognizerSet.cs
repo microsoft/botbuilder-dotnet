@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -52,7 +53,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public const string NoneIntent = "None";
 
         [JsonConstructor]
-        public CrossTrainedRecognizerSet()
+        public CrossTrainedRecognizerSet([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(callerPath, callerLine)
         {
         }
 

@@ -11,8 +11,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Observers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -85,8 +87,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="type">resource type.</param>
         public void AddResourceType(string type)
         {
-            ResourceTypes.Add(type.TrimStart('.'));
-            Refresh();
+            type = type.TrimStart('.');
+            if (!ResourceTypes.Contains(type))
+            {
+                ResourceTypes.Add(type);
+                Refresh();
+            }
         }
 
         /// <summary>
@@ -469,7 +475,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     // this can be reentrant, and we only want to do once.
                     this.typesLoaded = true;
 
-                    foreach (var component in ComponentRegistration.Components.Value.OfType<IComponentDeclarativeTypes>())
+                    foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
                     {
                         if (component != null)
                         {
@@ -487,15 +493,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private T Load<T>(JToken token, SourceContext sourceContext)
         {
             var converters = new List<JsonConverter>();
-
+            
             // get converters
-            foreach (var component in ComponentRegistration.Components.Value.OfType<IComponentDeclarativeTypes>())
+            foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
             {
                 var result = component.GetConverters(this, sourceContext);
                 if (result.Any())
                 {
                     converters.AddRange(result);
                 }
+            }
+
+            // Create a cycle detection observer
+            var cycleDetector = new CycleDetectionObserver();
+
+            // Register our cycle detector on the converters that support observer registration
+            foreach (var observableConverter in converters.Where(c => c is IObservableConverter))
+            {
+                (observableConverter as IObservableConverter).RegisterObserver(cycleDetector);
             }
 
             var serializer = JsonSerializer.Create(new JsonSerializerSettings()
@@ -506,12 +521,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 {
                     var ctx = args.ErrorContext;
                 },
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 ContractResolver = new DefaultContractResolver
                 {
-                    NamingStrategy = new CamelCaseNamingStrategy()
+                    NamingStrategy = new CamelCaseNamingStrategy(),
                 }
             });
 
+            // Pass 1 of cycle detection. This pass fills the cycle detector cache excluding cycles.
+            var pass1Result = token.ToObject<T>(serializer);
+
+            cycleDetector.CycleDetectionPass = CycleDetectionPasses.PassTwo;
+
+            // Pass 2 of cycle detection. This pass stitches objects from the cache into the places
+            // where we found cycles.
             return token.ToObject<T>(serializer);
         }
 

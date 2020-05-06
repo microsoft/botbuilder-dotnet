@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
                     dialogContext,
                     template: Template,
                     data: data ?? dialogContext.State).ConfigureAwait(false);
-                return result;
+                return result.ToString();
             }
 
             return null;

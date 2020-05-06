@@ -14,7 +14,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -22,7 +22,7 @@
             ]
         },
         "actionId": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Action Id",
             "description": "Action Id to execute next"
         }

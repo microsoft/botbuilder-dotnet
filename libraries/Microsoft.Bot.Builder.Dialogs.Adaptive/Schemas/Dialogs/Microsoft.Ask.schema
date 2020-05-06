@@ -1,40 +1,34 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.IDialog)",
+    "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.SendActivity)" ],
     "title": "Send Activity to Ask a question",
     "description": "This is an action which sends an activity to the user when a response is expected",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "../Actions/Microsoft.SendActivity.schema#"
+    "properties": {
+        "expectedProperties": {
+            "$ref": "schema:#/definitions/arrayExpression",
+            "title": "Expected Properties",
+            "description": "Properties expected from the user.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "title": "Name",
+                "description": "Name of the property"
+            },
+            "examples": [
+                [
+                    "age",
+                    "name"
+                ]
+            ]
         },
-        {
-            "properties": {
-                "expectedProperties": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
-                    "title": "Expected Properties",
-                    "description": "Properties expected from the user.",
-                    "items": {
-                        "type": "string",
-                        "title": "Name",
-                        "description": "Name of the property"
-                    },
-                    "examples": [
-                        [
-                            "age",
-                            "name"
-                        ]
-                    ]
-                },
-                "defaultOperation": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
-                    "title": "Default Operation",
-                    "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
-                    "examples": [
-                        "add"
-                    ]
-                }
-            }
+        "defaultOperation": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Default Operation",
+            "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
+            "examples": [
+                "add"
+            ]
         }
-    ]
+    }
 }

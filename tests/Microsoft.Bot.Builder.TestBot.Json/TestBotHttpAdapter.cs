@@ -12,16 +12,16 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         public TestBotHttpAdapter(
             ICredentialProvider credentialProvider,
-            IConfiguration configuration, 
+            IConfiguration configuration,
             ILogger<BotFrameworkHttpAdapter> logger,
-            IStorage storage, 
-            UserState userState, 
-            ConversationState conversationState, 
+            IStorage storage,
+            UserState userState,
+            ConversationState conversationState,
             ResourceExplorer resourceExplorer)
             : base(configuration, credentialProvider)
         {
             this.UseStorage(storage);
-            this.UseState(userState, conversationState);
+            this.UseBotState(userState, conversationState);
             this.UseDebugger(configuration.GetValue("debugport", 4712), logger: logger);
 
             HostContext.Current.Set<IConfiguration>(configuration);

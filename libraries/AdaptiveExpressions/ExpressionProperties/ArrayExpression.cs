@@ -26,7 +26,7 @@ namespace AdaptiveExpressions.Properties
         /// Initializes a new instance of the <see cref="ArrayExpression{T}"/> class.
         /// </summary>
         /// <param name="value">collection of (T).</param>
-        public ArrayExpression(List<T> value)
+        public ArrayExpression(IEnumerable<T> value)
             : base(value)
         {
         }
@@ -67,7 +67,7 @@ namespace AdaptiveExpressions.Properties
         {
         }
 
-        public static implicit operator ArrayExpression<T>(T[] value) => new ArrayExpression<T>(value.ToList());
+        public static implicit operator ArrayExpression<T>(T[] value) => new ArrayExpression<T>(value);
 
         public static implicit operator ArrayExpression<T>(List<T> value) => new ArrayExpression<T>(value);
 
