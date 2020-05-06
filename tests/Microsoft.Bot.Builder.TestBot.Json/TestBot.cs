@@ -35,8 +35,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory)
         {
-            HostContext.Current.Set(skillClient);
-            HostContext.Current.Set(conversationIdFactory);
             this.dialogStateAccessor = conversationState.CreateProperty<DialogState>("RootDialogState");
             this.resourceExplorer = resourceExplorer;
 
@@ -49,6 +47,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 }
             };
             LoadDialogs();
+
+            this.dialogManager.TurnState.Set(skillClient);
+            this.dialogManager.TurnState.Set(conversationIdFactory);
         }
 
         public override Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))

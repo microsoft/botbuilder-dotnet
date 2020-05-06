@@ -56,8 +56,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
 
             var resourceExplorer = new ResourceExplorer().AddFolder(rootFolder, monitorChanges: false);
-            HostContext.Current.Set(configuration);
             var script = resourceExplorer.LoadType<TestScript>(resourceId ?? $"{testName}.test.dialog");
+            script.Configuration = configuration;
             script.Description = script.Description ?? resourceId;
             await script.ExecuteAsync(testName: testName, resourceExplorer: resourceExplorer).ConfigureAwait(false);
         }
