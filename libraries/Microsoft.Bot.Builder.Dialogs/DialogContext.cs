@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets the current DialogManager for this dialogContext.
         /// </summary>
         /// <value>
-        /// The root dialogManager that was used to create this dialog context chain. (if any)
+        /// The root dialogManager that was used to create this dialog context chain.
         /// </value>
         public DialogManager DialogManager => this.Context.TurnState.Get<DialogManager>();
 
