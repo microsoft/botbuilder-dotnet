@@ -75,7 +75,13 @@
                         "maximum": 100
                     }
                 }
-            }
+            },
+        "maximumScoreForLowScoreVariation": {
+           "type": "float",
+            "title": "maximumScoreForLowVariation",
+            "description": "Maximum score For Low Variation",
+            "default": 0.95
+        }
         },
         "top": {
             "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
@@ -110,12 +116,6 @@
             ]
         }
     },
-        "maximumScoreForLowScoreVariation": {
-           "type": "float",
-            "title": "maximumScoreForLowVariation",
-            "description": "Maximum score For Low Variation",
-            "default": 0.95F
-        },
     "required": [
         "knowledgeBaseId",
         "endpointKey",
