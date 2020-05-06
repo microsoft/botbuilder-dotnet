@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new ArgumentNullException(nameof(resourceExplorer));
             }
 
-            dialogManager.TurnState.Add(resourceExplorer);
+            dialogManager.InitialTurnState.Add(resourceExplorer);
 
             return dialogManager;
         }

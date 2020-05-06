@@ -48,8 +48,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             };
             LoadDialogs();
 
-            this.dialogManager.TurnState.Set(skillClient);
-            this.dialogManager.TurnState.Set(conversationIdFactory);
+            this.dialogManager.InitialTurnState.Set(skillClient);
+            this.dialogManager.InitialTurnState.Set(conversationIdFactory);
         }
 
         public override Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
