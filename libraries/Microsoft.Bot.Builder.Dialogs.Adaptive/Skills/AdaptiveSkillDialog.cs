@@ -165,18 +165,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
 
         protected override string OnComputeId()
         {
-            var appId = string.Empty;
-            if (!string.IsNullOrWhiteSpace(SkillAppId?.Value))
-            {
-                appId = SkillAppId.Value;
-            }
+            var appId = SkillAppId?.ToString() ?? string.Empty;
+            string activity;
 
             if (Activity is ActivityTemplate at)
             {
-                return $"Skill[{appId}:('{StringUtils.Ellipsis(at.Template.Trim(), 30)}')]";
+                activity = StringUtils.Ellipsis(at.Template.Trim(), 30);
+            }
+            else
+            {
+                activity = StringUtils.Ellipsis(Activity?.ToString().Trim(), 30);
             }
 
-            return $"Skill[{appId}:('{StringUtils.Ellipsis(Activity?.ToString().Trim(), 30)}')]";
+            return $"{this.GetType().Name}[Skill('{appId}'),('{activity}')]";
         }
     }
 }
