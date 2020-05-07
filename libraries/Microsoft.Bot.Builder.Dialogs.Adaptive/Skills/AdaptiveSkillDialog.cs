@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
                 activity = StringUtils.Ellipsis(Activity?.ToString().Trim(), 30);
             }
 
-            return $"{this.GetType().Name}[Skill('{appId}'),'{activity}']";
+            return $"{this.GetType().Name}['{appId}','{activity}']";
         }
     }
 }
