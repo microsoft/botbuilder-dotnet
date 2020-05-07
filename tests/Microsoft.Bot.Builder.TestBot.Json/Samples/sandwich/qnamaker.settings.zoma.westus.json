@@ -1,0 +1,6 @@
+{
+    "qna": {
+        "sandwich_en_us_qna": "f032a67f-803e-4c7b-9031-f804e32385b1",
+        "hostname": "https://hualxielearn2-qnahost.azurewebsites.net/qnamaker"
+    }
+}

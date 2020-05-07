@@ -1,0 +1,24 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "AddToProperty",
+	"property": "CancelConfirmation",
+	"entity": "boolean",
+	"actions": [
+		{
+			"$kind": "Microsoft.SetProperty",
+			"property": "$CancelConfirmation",
+			"value": "=@boolean"
+		},
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$CancelConfirmation == 'true'",
+			"actions": [
+				{
+					"$kind": "Microsoft.EndDialog"
+				}
+			]
+		}
+	],
+	"$Generator": "c9ff5a6da3f47fd4d0883fdc6b613605"
+}

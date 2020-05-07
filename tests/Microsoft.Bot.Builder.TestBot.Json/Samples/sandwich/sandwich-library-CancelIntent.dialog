@@ -1,15 +1,16 @@
 {
-    "$schema": "../../testbot.schema",
-    "$kind": "Microsoft.OnIntent",
-    "intent": "Cancel",
-    "condition": "turn.recognized.score > 0.5",
-    "actions": [
-        {
-            "$kind": "Microsoft.Ask",
-            "activity": "${cancel()}",
-            "expectedProperties": [
-                "CancelConfirmation"
-            ]
-        }
-    ]
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnIntent",
+	"intent": "Cancel",
+	"condition": "turn.recognized.score > 0.5",
+	"actions": [
+		{
+			"$kind": "Microsoft.Ask",
+			"activity": "${cancel()}",
+			"expectedProperties": [
+				"CancelConfirmation"
+			]
+		}
+	],
+	"$Generator": "8c64b745e17f47d3d9ec53df535866b5"
 }

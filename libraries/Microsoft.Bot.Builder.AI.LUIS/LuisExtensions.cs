@@ -47,6 +47,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 }
             }
 
+            foreach (var file in di.GetFiles($"qnamaker.settings.{environment.ToLower()}.{luisRegion}.json", SearchOption.AllDirectories))
+            {
+                var relative = file.FullName.Substring(di.FullName.Length);
+                if (!relative.Contains("bin\\") && !relative.Contains("obj\\"))
+                {
+                    builder.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
+                }
+            }
+
             return builder;
         }
     }

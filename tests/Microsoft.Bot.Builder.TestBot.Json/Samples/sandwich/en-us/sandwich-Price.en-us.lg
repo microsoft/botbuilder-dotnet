@@ -1,5 +1,6 @@
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Missing.lg](sandwich-library-Missing.lg)
+
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
 
 # AskPrice
 - ${askString('Price')}
@@ -7,3 +8,12 @@
 
 # PriceName
 - price
+
+# Price(val)
+- IF: ${val}
+- ${join(foreach(indicesAndValues(val), entry, entry.value), ' ')}
+- ELSE:
+- no value
+
+
+> Generator: de9791513de8889ad23d0e27134a1232

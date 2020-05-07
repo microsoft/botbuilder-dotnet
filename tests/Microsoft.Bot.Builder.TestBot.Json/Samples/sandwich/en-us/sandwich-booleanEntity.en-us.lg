@@ -1,0 +1,11 @@
+
+# booleanEntity(value)
+- SWITCH: ${value}
+- CASE: ${'true'}
+    - true  
+- CASE: ${'false'}
+    - false
+- DEFAULT:
+    - no value
+
+> Generator: 943be502d744d4f2b5af9825ff530f4a

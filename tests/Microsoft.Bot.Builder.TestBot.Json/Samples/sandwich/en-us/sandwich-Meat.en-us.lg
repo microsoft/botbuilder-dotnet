@@ -1,6 +1,7 @@
-[sandwich-MeatEntity.lg](sandwich-MeatEntity.lg)
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Missing.lg](sandwich-library-Missing.lg)
+
+[sandwich-MeatEntity.en-us.lg](sandwich-MeatEntity.en-us.lg)
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
 
 # AskMeat
 - ${askEnum('Meat')}
@@ -9,6 +10,8 @@
 # MeatName
 - meat
 
-
 # Meat(val)
 - ${MeatEntity(val)}
+
+
+> Generator: 6329bf4634a81c439923a58258faa10c

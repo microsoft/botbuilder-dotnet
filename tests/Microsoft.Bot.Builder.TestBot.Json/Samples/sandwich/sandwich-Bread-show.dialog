@@ -1,0 +1,14 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "ShowProperty",
+	"entity": "PROPERTYName",
+	"condition": "@PROPERTYName == 'Bread'",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${showPropertyMessage(@PROPERTYName)}"
+		}
+	],
+	"$Generator": "4a8b589365bbb5eaf1c776a69298ea0b"
+}

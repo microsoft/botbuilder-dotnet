@@ -1,0 +1,30 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "AddToProperty",
+	"property": "Toppings",
+	"entity": "ToppingsEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${setArrayPropertyMessage('Toppings', @ToppingsEntity)}"
+		},
+		{
+			"$kind": "Microsoft.EditArray",
+			"changeType": "push",
+			"itemsProperty": "$Toppings",
+			"value": "=@ToppingsEntity"
+		},
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$PropertyToChange == 'Toppings'",
+			"actions": [
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "$PropertyToChange"
+				}
+			]
+		}
+	],
+	"$Generator": "b91cf8238020578da95ecf639085dac9"
+}

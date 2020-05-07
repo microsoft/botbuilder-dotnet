@@ -1,0 +1,2 @@
+echo Building LUIS model and QNA model
+bf cross-train --in . && bf luis:build --in ./cross-trained/sandwich.en-us.lu --botName sandwich --authoringKey %luiskey% --log --dialog --out . --suffix zoma --force && bf qnamaker:build --subscriptionKey %qnakey% --in ./cross-trained/sandwich.en-us.qna --out . --botName sandwich --log --dialog --suffix zoma --force 

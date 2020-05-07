@@ -1,0 +1,13 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnIntent",
+	"intent": "sandwich",
+	"condition": "count(turn.recognizedentities) == 0",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${notUnderstood()}"
+		}
+	],
+	"$Generator": "922b8d19b03d0644ffc5123122f1b626"
+}

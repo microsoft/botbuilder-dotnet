@@ -1,3 +1,8 @@
 
- # QuantityEntity(val)
+# QuantityEntity(val)
+ - IF: ${val}
  - ${val}
+ - ELSE:
+ - no value
+
+> Generator: 65ada4d17b73b0beffe989e37d3eb0e5

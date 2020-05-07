@@ -1,0 +1,18 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "ClearProperty",
+	"entity": "PROPERTYName",
+	"condition": "@PROPERTYName == 'Length'",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${clearPropertyMessage('Length')}"
+		},
+		{
+			"$kind": "Microsoft.DeleteProperty",
+			"property": "$Length"
+		}
+	],
+	"$Generator": "2c8f9d6ab018117a8ffcf39807bc0003"
+}

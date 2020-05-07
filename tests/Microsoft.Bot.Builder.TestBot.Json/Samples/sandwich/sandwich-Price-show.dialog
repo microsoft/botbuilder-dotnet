@@ -1,0 +1,14 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "ShowProperty",
+	"entity": "PROPERTYName",
+	"condition": "@PROPERTYName == 'Price'",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${showPropertyMessage(@PROPERTYName)}"
+		}
+	],
+	"$Generator": "6238ffa674cc7425d13a6954ae3cdaa7"
+}

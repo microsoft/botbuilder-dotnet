@@ -1,0 +1,14 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "ShowProperty",
+	"entity": "PROPERTYName",
+	"condition": "@PROPERTYName == 'Toppings'",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${showPropertyMessage(@PROPERTYName)}"
+		}
+	],
+	"$Generator": "a86d808aeae4fc6cd33c07506393ec1a"
+}

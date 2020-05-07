@@ -1,10 +1,18 @@
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Help.lg](sandwich-library-Help.lg)
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+
+[sandwich-library-Help.en-us.lg](sandwich-library-Help.en-us.lg)
+
 
 # askEnum(property)
 - ```
 ${askHelp()}
 Which value do you want for ${name(property)}?
+```
+
+# askEnumArray(property)
+- ```
+${askHelp()}
+What values do you want to add for ${name(property)}?
 ```
 
 # askNumber(property)
@@ -28,3 +36,8 @@ Enter a value for ${name(property)}
 ${askHelp()}
 Enter a value for ${name(property)}: true or false
 ```
+
+# enumArrayValue(property, values)
+- ${if(isArray(values), join(foreach(values, value, template(`${property}Entity`, value)), ', '), template(`${property}Entity`, values))}
+
+> Generator: c8064d479626d0d8c0117d661037a479

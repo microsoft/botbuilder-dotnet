@@ -1,6 +1,6 @@
 
- # PROPERTYName(value) 
- - SWITCH: ${value}
+# PROPERTYName(value) 
+- SWITCH: ${value}
 
  - CASE: ${'Quantity'} 
   - quantity,
@@ -14,8 +14,14 @@
   - meat,
  - CASE: ${'Cheese'} 
   - cheese,
+ - CASE: ${'Toppings'} 
+  - toppings,
+ - CASE: ${'Sauces'} 
+  - sauces,
  - CASE: ${'Price'} 
   - price
 
  - DEFAULT: 
   - I don't understand ${value}
+
+> Generator: 0939d9d7bd5fa1a9f6931a016cdb0e21

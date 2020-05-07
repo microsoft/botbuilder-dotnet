@@ -1,6 +1,7 @@
-[sandwich-NameEntity.lg](sandwich-NameEntity.lg)
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Missing.lg](sandwich-library-Missing.lg)
+
+[sandwich-NameEntity.en-us.lg](sandwich-NameEntity.en-us.lg)
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
 
 # AskName
 - ${askString('Name')}
@@ -9,6 +10,11 @@
 # NameName
 - name
 
-
 # Name(val)
-- ${NameEntity(val)}
+ - IF: ${val}
+ - ${val}
+ - ELSE:
+ - no value
+
+
+> Generator: 481f9ec519379d8ecf7344c71cf901e1

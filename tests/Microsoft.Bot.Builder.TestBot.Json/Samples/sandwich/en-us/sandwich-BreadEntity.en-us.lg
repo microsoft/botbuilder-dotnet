@@ -1,19 +1,23 @@
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Choose.lg](sandwich-library-Choose.lg)
- 
- # BreadEntity(value) 
- - SWITCH: ${value}
- - CASE: ${'multiGrainWheat'} 
-  - multi grain wheat
- - CASE: ${'rye'} 
-  - rye
- - CASE: ${'white'} 
-  - white
- - CASE: ${'wholeWheat'} 
-  - whole wheat
- - DEFAULT: 
-  - I don't understand ${value}
 
- 
- # chooseBreadEntity
- - ${chooseEnumEntity('Bread')}
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Choose.en-us.lg](sandwich-library-Choose.en-us.lg)
+
+# BreadEntity(value) 
+- SWITCH: ${value}
+  - CASE: ${'multiGrainWheat'} 
+    - multi grain wheat
+  - CASE: ${'rye'} 
+    - rye
+  - CASE: ${'white'} 
+    - white
+  - CASE: ${'wholeWheat'} 
+    - whole wheat
+  - DEFAULT: 
+    - no value
+
+
+# chooseBreadEntity
+- ${chooseEnumEntity('Bread')}
+
+
+> Generator: fb851103da3d9bbfa4821755c0e41d3f
