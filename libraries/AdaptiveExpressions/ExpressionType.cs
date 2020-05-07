@@ -87,6 +87,8 @@ namespace AdaptiveExpressions
         public const string Year = "year";
         public const string UtcNow = "utcNow";
         public const string FormatDateTime = "formatDateTime";
+        public const string FormatEpoch = "formatEpoch";
+        public const string FormatTicks = "formatTicks";
         public const string SubtractFromTime = "subtractFromTime";
         public const string DateReadBack = "dateReadBack";
         public const string GetTimeOfDay = "getTimeOfDay";
@@ -124,6 +126,7 @@ namespace AdaptiveExpressions
         public const string UriComponent = "uriComponent";
         public const string UriComponentToString = "uriComponentToString";
         public const string Xml = "xml";
+        public const string FormatNumber = "formatNumber";
 
         // URI Parsing Functions
         public const string UriHost = "uriHost";
