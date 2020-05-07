@@ -4122,7 +4122,7 @@ namespace AdaptiveExpressions
                             {
                                 error = $"formatNumber first argument ${args[0]} must be number";
                             }
-                            else if (!args[1].IsNumber())
+                            else if (!args[1].IsInteger())
                             {
                                 error = $"formatNumber second argument ${args[1]} must be number";
                             }
@@ -4137,7 +4137,7 @@ namespace AdaptiveExpressions
                                     var number = Convert.ToDouble(args[0]);
                                     var precision = Convert.ToInt32(args[1]);
                                     var locale = args.Count == 3 ? new CultureInfo(args[2] as string) : CultureInfo.InvariantCulture;
-                                    result = number.ToString("F" + precision.ToString(), locale);
+                                    result = number.ToString("N" + precision.ToString(), locale);
                                 }
                                 catch
                                 {
