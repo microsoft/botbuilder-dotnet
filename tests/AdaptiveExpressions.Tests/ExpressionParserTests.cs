@@ -633,7 +633,7 @@ namespace AdaptiveExpressions.Tests
             Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
             Test("formatNumber(20.0000, 2)", "20.00"),
             Test("formatNumber(12.123, 2)", "12.12"),
-            Test("formatNumber(1.555, 2)", "1.56"),
+            Test("formatNumber(1.551, 2)", "1.55"),
             Test("formatNumber(12.123, 4)", "12.1230"),
             Test("formatNumber(12000.3, 4, 'fr-fr')", "12\x00a0000,3000"),
             #endregion
