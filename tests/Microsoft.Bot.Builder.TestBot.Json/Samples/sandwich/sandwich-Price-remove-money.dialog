@@ -1,0 +1,24 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "RemoveFromProperty",
+	"property": "Price",
+	"entity": "money",
+	"actions": [
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$Price == @money",
+			"actions": [
+				{
+					"$kind": "Microsoft.SendActivity",
+					"activity": "${removePropertyMessage('Price', @money)}"
+				},
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "Price"
+				}
+			]
+		}
+	],
+	"$Generator": "448a245f71b1f33200d8e518a23489f9"
+}

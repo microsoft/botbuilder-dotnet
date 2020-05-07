@@ -1,18 +1,20 @@
 {
-    "$schema": "../../testbot.schema",
-    "$kind": "Microsoft.OnEndOfActions",
-    "condition": "empty(where(dialog.requiredProperties, property, !dialog[property]))",
-    "actions": [
-        {
-            "$kind": "Microsoft.SendActivity",
-            "activity": "${readForm('sandwich')}"
-        },
-        {
-            "$kind": "Microsoft.Ask",
-            "activity": "${confirmChange()}",
-            "expectedProperties": [
-                "CompleteConfirmation"
-            ]
-        }
-    ]
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnEndOfActions",
+	"condition": "empty(where(dialog.requiredProperties, property, !dialog[property]))",
+	"priority": "1000",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${showForm('sandwich', publicProperties())}"
+		},
+		{
+			"$kind": "Microsoft.Ask",
+			"activity": "${confirmChange()}",
+			"expectedProperties": [
+				"CompleteConfirmation"
+			]
+		}
+	],
+	"$Generator": "173504bff38eb3520a7f13ff4f1f97d5"
 }

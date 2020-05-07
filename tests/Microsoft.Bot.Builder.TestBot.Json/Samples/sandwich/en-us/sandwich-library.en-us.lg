@@ -1,17 +1,25 @@
 > This file contains the generic templates to use for properties of particular types.
-[sandwich-library-PROPERTYName.lg](sandwich-library-PROPERTYName.lg)
+[sandwich-library-PROPERTYName.en-us.lg](sandwich-library-PROPERTYName.en-us.lg)
+
+
+> This is to provide consistent line endings in templates using Windows standard
+# EOL
+-\n
 
 # welcome
 - Welcome!
 
 # name(property)
-- ${template(concat(property, 'Name'))}
+- ${template(`${property}Name`)}
 
 # value(property, val)
 - ${template(property, val)}
 
 # enumEntityValue(property, val)
-- ${template(concat(property, 'Entity'), val)}
+- ${template(`${property}Entity`, val)}
+
+# publicProperties
+-${dialogClass.schema.$public}
 
 # requiredProperties
 - IF: ${count(dialogClass.schema.required) > 0}
@@ -19,25 +27,20 @@
 - ELSE:
 - 
 
-> TODO: We should enable this when where/foreach works over objects.
 # optionalProperties
--
-> - IF: ${add(count(dialogClass.schema.required),count(dialogClass.schema.$expectedOnly)) < count(dialogClass.schema.properties)}
-> - Optional properties include: ${join(foreach(where(dialogClass.schema.properties, property, !contains(dialogClass.schema.required, property) && !contains(dialogClass.schema.$expectedOnly, property)), property, name(property)), ', ')}\n
-> - ELSE:
-> - 
+- IF: ${add(count(dialogClass.schema.required),count(dialogClass.schema.$expectedOnly)) < count(dialogClass.schema.properties)}
+- Optional properties include: ${join(foreach(where(dialogClass.schema.properties, property, !contains(dialogClass.schema.required, property) && !contains(dialogClass.schema.$expectedOnly, property)), property, name(property)), ', ')}${EOL()}
+- ELSE:
+- 
 
 # possibleValues(property)
 - ${foreach(dialogClass.schema.properties[property].enum, enum, value(property, enum))}
 
+# possibleArrayValues(property)
+- ${foreach(dialogClass.schema.properties[property].items.enum, enum, value(property, enum))}
+
 # cancel
 - Do you want to end the conversation? (yes/no)
-
-# confirmChangeProperty(property)
-- IF: ${dialog[property]}
-- Do you want to change the value of ${toLower(property)}? (yes or no)
-- ELSE: 
-- Do you want to add a value for ${toLower(property)}? (yes or no)
 
 # confirmChange
 - Is there any property you want to change? (no or the property name)
@@ -46,4 +49,7 @@
 - Which property do you want to change?
 
 # notUnderstood
-- Sorry, I do not understand ${join(foreach(turn.unrecognizedtext, chunk, concat("'", chunk, "'")), ' or ')}
+- Sorry, I do not understand ${join(foreach(turn.unrecognizedtext, chunk, `'${chunk}'`), ' or ')}
+
+
+> Generator: 74ef006e1988f437df8e0881c06f11ea

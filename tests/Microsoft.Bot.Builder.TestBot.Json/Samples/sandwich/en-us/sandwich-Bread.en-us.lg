@@ -1,6 +1,7 @@
-[sandwich-BreadEntity.lg](sandwich-BreadEntity.lg)
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Missing.lg](sandwich-library-Missing.lg)
+
+[sandwich-BreadEntity.en-us.lg](sandwich-BreadEntity.en-us.lg)
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
 
 # AskBread
 - ${askEnum('Bread')}
@@ -9,6 +10,8 @@
 # BreadName
 - bread
 
-
 # Bread(val)
 - ${BreadEntity(val)}
+
+
+> Generator: 96eb0e80cd3b2cf6a2c7b6e1b3ce1d9c

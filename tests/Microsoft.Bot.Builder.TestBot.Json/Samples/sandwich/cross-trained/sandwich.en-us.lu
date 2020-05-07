@@ -1,0 +1,93 @@
+
+> !# @app.culture = en-us
+[sandwich-Quantity-number.en-us.lu](../en-us/sandwich-Quantity-number.en-us.lu)
+[sandwich-Length-dimension.en-us.lu](../en-us/sandwich-Length-dimension.en-us.lu)
+[sandwich-NameEntity.en-us.lu](../en-us/sandwich-NameEntity.en-us.lu)
+[sandwich-Name-personName.en-us.lu](../en-us/sandwich-Name-personName.en-us.lu)
+[sandwich-BreadEntity.en-us.lu](../en-us/sandwich-BreadEntity.en-us.lu)
+[sandwich-MeatEntity.en-us.lu](../en-us/sandwich-MeatEntity.en-us.lu)
+[sandwich-CheeseEntity.en-us.lu](../en-us/sandwich-CheeseEntity.en-us.lu)
+[sandwich-ToppingsEntity.en-us.lu](../en-us/sandwich-ToppingsEntity.en-us.lu)
+[sandwich-SaucesEntity.en-us.lu](../en-us/sandwich-SaucesEntity.en-us.lu)
+[sandwich-Price-money.en-us.lu](../en-us/sandwich-Price-money.en-us.lu)
+[sandwich-booleanEntity.en-us.lu](../en-us/sandwich-booleanEntity.en-us.lu)
+[sandwich-library-HelpIntent.en-us.lu](../en-us/sandwich-library-HelpIntent.en-us.lu)
+[sandwich-library-CancelIntent.en-us.lu](../en-us/sandwich-library-CancelIntent.en-us.lu)
+[sandwich-library-NoneIntent.en-us.lu](../en-us/sandwich-library-NoneIntent.en-us.lu)
+[sandwich-trigger.en-us.lu](../en-us/sandwich-trigger.en-us.lu)
+[sandwich-library-ShowFormIntent.en-us.lu](../en-us/sandwich-library-ShowFormIntent.en-us.lu)
+[sandwich-library-PROPERTYName.en-us.lu](../en-us/sandwich-library-PROPERTYName.en-us.lu)
+
+# Happy
+- happy
+
+> Generator: c08f4f5f6e41924e28a1c2ee5400347b
+
+> Source: cross training. Please do not edit these directly!
+# DeferToRecognizer_QnA_sandwich
+- Cook me something
+- Have you any dreams?
+- Dont you ever sleep?
+- Do you play games?
+- Can you fly?
+- What's your age?
+- Are you old?
+- How old are you?
+- Getting tired of you
+- I am tired of you
+- You are boring
+- Who is your boss?
+- Are you busy?
+- Who invented you?
+- Who created you?
+- Who made you?
+- What did you do last week?
+- What did you do yesterday?
+- Whats going on?
+- What are you doing?
+- What are you doing tomorrow?
+- What are you doing later?
+- Who is your father?
+- Do you have a family?
+- Who is your mother?
+- Who is your favorite bot?
+- What's your favorite color?
+- You a guy?
+- Are you a girl?
+- Are you male or female?
+- You seem happy!
+- Are you happy?
+- Don't you get hungry?
+- Are you hungry?
+- Do you know other chatbots?
+- Do you know other AI?
+- how do you feel about working late?
+- What do you think about *?
+- how do you feel about love?
+- Whats the answer to the universe?
+- What is the meaning of life?
+- Are you prettier than me?
+- Are you smarter than me?
+- What do you think about bots?
+- What do you think about AI?
+- What do you think about technology?
+- How do I look today?
+- What should I do?
+- Do you like Siri?
+- Do you like Cortana?
+- Do you like Google Home?
+- What do you think of other bots?
+- Are you real?
+- Do you want to rule the world?
+- Are you lesbian?
+- Are you straight?
+- Are you gay?
+- Are you a person?
+- You are a genius!
+- Are you smart?
+- Are you spying on me?
+- anyone there?
+- Are you there?
+- Where have you come from?
+- Where are you?
+- Who are you?

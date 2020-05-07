@@ -1,5 +1,6 @@
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Missing.lg](sandwich-library-Missing.lg)
+
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
 
 # AskLength
 - ${askString('Length')}
@@ -7,3 +8,12 @@
 
 # LengthName
 - length
+
+# Length(val)
+- IF: ${val}
+- ${join(foreach(indicesAndValues(val), entry, entry.value), ' ')}
+- ELSE:
+- no value
+
+
+> Generator: f0bdec54a307933f6570f2e1ceeff48a

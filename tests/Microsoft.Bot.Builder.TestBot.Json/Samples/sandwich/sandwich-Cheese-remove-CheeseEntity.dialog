@@ -1,0 +1,24 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "RemoveFromProperty",
+	"property": "Cheese",
+	"entity": "CheeseEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$Cheese == @CheeseEntity",
+			"actions": [
+				{
+					"$kind": "Microsoft.SendActivity",
+					"activity": "${removePropertyMessage('Cheese', @CheeseEntity)}"
+				},
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "Cheese"
+				}
+			]
+		}
+	],
+	"$Generator": "b93e648548e2f7a5d90ba8ee4d0e6181"
+}

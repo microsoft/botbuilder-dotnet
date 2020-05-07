@@ -1,3 +1,8 @@
 
- # NameEntity(val)
+# NameEntity(val)
+ - IF: ${val}
  - ${val}
+ - ELSE:
+ - no value
+
+> Generator: 8617b2a7b9823ffb063cd845fc12aa0d

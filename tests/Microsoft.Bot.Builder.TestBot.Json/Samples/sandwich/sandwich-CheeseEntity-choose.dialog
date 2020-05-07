@@ -1,14 +1,15 @@
 {
-    "$schema": "../../testbot.schema",
-    "$kind": "Microsoft.OnChooseEntity",
-    "entity": "CheeseEntity",
-    "actions": [
-        {
-            "$kind": "Microsoft.Ask",
-            "activity": "${chooseCheeseEntity()}",
-            "expectedProperties": [
-                "Cheese"
-            ]
-        }
-    ]
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnChooseEntity",
+	"entity": "CheeseEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.Ask",
+			"activity": "${chooseCheeseEntity()}",
+			"expectedProperties": [
+				"Cheese"
+			]
+		}
+	],
+	"$Generator": "31e4f159bc0f2c58543ba94258a9fcba"
 }

@@ -1,15 +1,16 @@
 {
-    "$schema": "../../testbot.schema",
-    "$kind": "Microsoft.OnEndOfActions",
-    "condition": "!$Price",
-    "priority": "=indexOf(dialog.requiredProperties, 'Price')",
-    "actions": [
-        {
-            "$kind": "Microsoft.Ask",
-            "activity": "${AskPrice()}",
-            "expectedProperties": [
-                "Price"
-            ]
-        }
-    ]
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnEndOfActions",
+	"condition": "!$Price || $PropertyToChange == 'Price'",
+	"priority": "indexOf(dialog.requiredProperties, 'Price')",
+	"actions": [
+		{
+			"$kind": "Microsoft.Ask",
+			"activity": "${AskPrice()}",
+			"expectedProperties": [
+				"Price"
+			]
+		}
+	],
+	"$Generator": "434efb92ec02adf5ceeb4ca20c85ed71"
 }

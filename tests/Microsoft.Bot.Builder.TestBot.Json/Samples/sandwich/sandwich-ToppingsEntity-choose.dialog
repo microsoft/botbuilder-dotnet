@@ -1,0 +1,15 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnChooseEntity",
+	"entity": "ToppingsEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.Ask",
+			"activity": "${chooseToppingsEntity()}",
+			"expectedProperties": [
+				"Toppings"
+			]
+		}
+	],
+	"$Generator": "edbfb37f880631af3d549adda08ecb88"
+}

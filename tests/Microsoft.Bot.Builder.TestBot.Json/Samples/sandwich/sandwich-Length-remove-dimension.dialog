@@ -1,0 +1,24 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "RemoveFromProperty",
+	"property": "Length",
+	"entity": "dimension",
+	"actions": [
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$Length == @dimension",
+			"actions": [
+				{
+					"$kind": "Microsoft.SendActivity",
+					"activity": "${removePropertyMessage('Length', @dimension)}"
+				},
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "Length"
+				}
+			]
+		}
+	],
+	"$Generator": "b2877a055dae159cc67b998fc2f78b02"
+}

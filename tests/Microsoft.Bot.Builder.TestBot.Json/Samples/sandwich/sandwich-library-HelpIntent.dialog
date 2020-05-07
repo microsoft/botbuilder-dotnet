@@ -1,11 +1,12 @@
 {
-    "$schema": "../../testbot.schema",
-    "$kind": "Microsoft.OnIntent",
-    "intent": "Help",
-    "actions": [
-        {
-            "$kind": "Microsoft.SendActivity",
-            "activity": "${help(@PropertyName)}"
-        }
-    ]
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnIntent",
+	"intent": "Help",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${help(@PropertyName)}"
+		}
+	],
+	"$Generator": "13ceb8656a57ec31858d3e87132bc941"
 }

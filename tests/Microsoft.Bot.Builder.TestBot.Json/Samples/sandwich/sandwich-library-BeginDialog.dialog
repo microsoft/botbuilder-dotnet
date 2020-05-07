@@ -1,11 +1,12 @@
 {
-    "$schema": "../../testbot.schema",
-    "$kind": "Microsoft.OnBeginDialog",
-    "$comment": "TODO: This is a hack to work around the lack of a way to remit activity or not when invoked.",
-    "actions": [
-        {
-            "$kind": "Microsoft.SendActivity",
-            "activity": "${welcome()}"
-        }
-    ]
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnBeginDialog",
+	"$comment": "TODO: This is a hack to work around the lack of a way to remit activity or not when invoked.",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${welcome()}"
+		}
+	],
+	"$Generator": "208f35f254dcaff4d1b78fef3c012082"
 }
