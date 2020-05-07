@@ -302,10 +302,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AddJsonFile(@"test.settings.json")
                 .Build();
 
-            HostContext.Current.Set<IConfiguration>(configuration);
-
             var storage = new MemoryStorage();
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new RegisterClassMiddleware<IConfiguration>(configuration))
                 .UseStorage(storage)
                 .UseBotState(new UserState(storage))
                 .UseBotState(new ConversationState(storage))

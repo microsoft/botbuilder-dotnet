@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 defaultLg = "main.lg";
             }
 
-            var resourceExplorer = dialogManager.TurnState.Get<ResourceExplorer>();
+            var resourceExplorer = dialogManager.InitialTurnState.Get<ResourceExplorer>();
 
             if (resourceExplorer.TryGetResource(defaultLg, out var resource))
             {
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>botAdapter.</returns>
         public static DialogManager UseLanguageGeneration(this DialogManager dialogManager, LanguageGenerator languageGenerator)
         {
-            var resourceExplorer = dialogManager.TurnState.Get<ResourceExplorer>();
+            var resourceExplorer = dialogManager.InitialTurnState.Get<ResourceExplorer>();
 
             lock (languageGeneratorManagers)
             {
@@ -60,8 +60,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     languageGeneratorManagers[resourceExplorer] = lgm;
                 }
 
-                dialogManager.TurnState.Add<LanguageGeneratorManager>(lgm);
-                dialogManager.TurnState.Add<LanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator)));
+                dialogManager.InitialTurnState.Add<LanguageGeneratorManager>(lgm);
+                dialogManager.InitialTurnState.Add<LanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator)));
 
                 return dialogManager;
             }
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>botAdapter.</returns>
         public static DialogManager UseLanguagePolicy(this DialogManager dialogManager, LanguagePolicy policy)
         {
-            dialogManager.TurnState.Add<LanguagePolicy>(policy);
+            dialogManager.InitialTurnState.Add<LanguagePolicy>(policy);
             return dialogManager;
         }
     }
