@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     // increase the turnCount as last step
                     dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
-                    var prompt = await this.OnRenderPrompt(dc, inputState).ConfigureAwait(false);
+                    var prompt = await this.OnRenderPromptAsync(dc, inputState).ConfigureAwait(false);
                     await dc.Context.SendActivityAsync(prompt).ConfigureAwait(false);
                     await SendOAuthCardAsync(dc, promptOptions?.Prompt, cancellationToken).ConfigureAwait(false);
                     return Dialog.EndOfTurn;
@@ -295,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             await adapter.SignOutUserAsync(dc.Context, ConnectionName.GetValue(dc.State), dc.Context.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
         }
 
-        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
+        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

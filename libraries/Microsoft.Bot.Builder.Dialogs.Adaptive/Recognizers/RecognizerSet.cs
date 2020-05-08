@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
 
             // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics)));
+            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics))).ConfigureAwait(false);
 
             // merge intents
             var result = MergeResults(results);

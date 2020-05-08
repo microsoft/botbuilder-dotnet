@@ -16,22 +16,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         {
         }
 
-        public virtual Task<IEnumerable<Entity>> RecognizeEntities(DialogContext dialogContext, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
+        public virtual Task<IEnumerable<Entity>> RecognizeEntitiesAsync(DialogContext dialogContext, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
         {
-            return this.RecognizeEntities(dialogContext, dialogContext.Context.Activity, entities, cancellationToken);
+            return this.RecognizeEntitiesAsync(dialogContext, dialogContext.Context.Activity, entities, cancellationToken);
         }
 
-        public virtual async Task<IEnumerable<Entity>> RecognizeEntities(DialogContext dialogContext, Activity activity, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<Entity>> RecognizeEntitiesAsync(DialogContext dialogContext, Activity activity, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
         {
             if (activity.Type == ActivityTypes.Message)
             {
-                return await this.RecognizeEntities(dialogContext, activity.Text, activity.Locale, entities, cancellationToken).ConfigureAwait(false);
+                return await this.RecognizeEntitiesAsync(dialogContext, activity.Text, activity.Locale, entities, cancellationToken).ConfigureAwait(false);
             }
 
             return new List<Entity>();
         }
 
-        public virtual Task<IEnumerable<Entity>> RecognizeEntities(DialogContext dialogContext, string text, string locale, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
+        public virtual Task<IEnumerable<Entity>> RecognizeEntitiesAsync(DialogContext dialogContext, string text, string locale, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
         {
             return Task.FromResult<IEnumerable<Entity>>(Array.Empty<Entity>());
         }
