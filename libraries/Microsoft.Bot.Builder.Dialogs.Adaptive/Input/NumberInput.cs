@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         [JsonProperty("outputFormat")]
         public NumberExpression OutputFormat { get; set; }
 
-        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
+        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc)
         {
             var input = dc.State.GetValue<object>(VALUE_PROPERTY);
 

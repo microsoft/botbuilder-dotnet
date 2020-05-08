@@ -26,6 +26,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="actionContext">Dialog context for evaluation.</param>
         /// <param name="cancel">Cancellation token.</param>
         /// <returns>Best rule in original list to execute or -1 if none.</returns>
-        public abstract Task<IReadOnlyList<OnCondition>> Select(ActionContext actionContext, CancellationToken cancel = default);
+        public abstract Task<IReadOnlyList<OnCondition>> SelectAsync(ActionContext actionContext, CancellationToken cancel = default);
     }
 }

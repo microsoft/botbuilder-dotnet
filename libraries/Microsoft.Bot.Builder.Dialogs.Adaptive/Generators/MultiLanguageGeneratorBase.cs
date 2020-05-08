@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="template">The template.</param>
         /// <param name="data">data to bind to.</param>
         /// <returns>The generator.</returns>
-        public override async Task<object> Generate(DialogContext dialogContext, string template, object data)
+        public override async Task<object> GenerateAsync(DialogContext dialogContext, string template, object data)
         {
             var targetLocale = dialogContext.Context.Activity.Locale?.ToLower() ?? string.Empty;
 
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 try
                 {
-                    return await generator.Generate(dialogContext, template, data);
+                    return await generator.GenerateAsync(dialogContext, template, data).ConfigureAwait(false);
                 }
                 catch (Exception err)
                 {

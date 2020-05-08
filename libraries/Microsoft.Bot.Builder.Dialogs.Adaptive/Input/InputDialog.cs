@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 dc.State.SetValue(property, null);
             }
 
-            var state = alwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc, 0);
+            var state = alwaysPrompt ? InputState.Missing : await this.RecognizeInputAsync(dc, 0).ConfigureAwait(false);
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(VALUE_PROPERTY);
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 dc.State.SetValue(property, input);
 
                 // return as result too
-                return await dc.EndDialogAsync(input);
+                return await dc.EndDialogAsync(input).ConfigureAwait(false);
             }
             else
             {
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 // We will set the turn count to 1 so the input will not pick from "dialog.value"
                 // and instead go with "turn.activity.text"
                 dc.State.SetValue(TURN_COUNT_PROPERTY, 1);
-                return await this.PromptUser(dc, state);
+                return await this.PromptUserAsync(dc, state).ConfigureAwait(false);
             }
         }
 
@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
-            var state = await this.RecognizeInput(dc, interrupted ? 0 : turnCount);
+            var state = await this.RecognizeInputAsync(dc, interrupted ? 0 : turnCount).ConfigureAwait(false);
 
             if (state == InputState.Valid)
             {
@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 // increase the turnCount as last step
                 dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
-                return await this.PromptUser(dc, state).ConfigureAwait(false);
+                return await this.PromptUserAsync(dc, state).ConfigureAwait(false);
             }
             else
             {
@@ -260,7 +260,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.PromptUser(dc, InputState.Missing).ConfigureAwait(false);
+            return await this.PromptUserAsync(dc, InputState.Missing).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </summary>
         /// <param name="dc">dialogContext.</param>
         /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
-        protected abstract Task<InputState> OnRecognizeInput(DialogContext dc);
+        protected abstract Task<InputState> OnRecognizeInputAsync(DialogContext dc);
 
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
@@ -383,7 +383,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="dc">dialogcontext.</param>
         /// <param name="state">inputState.</param>
         /// <returns>activity to send to the user.</returns>
-        protected virtual async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
+        protected virtual async Task<IActivity> OnRenderPromptAsync(DialogContext dc, InputState state)
         {
             IMessageActivity msg = null;
             ITemplate<Activity> template = null;
@@ -436,7 +436,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return msg;
         }
 
-        private async Task<InputState> RecognizeInput(DialogContext dc, int turnCount)
+        private async Task<InputState> RecognizeInputAsync(DialogContext dc, int turnCount)
         {
             dynamic input = null;
 
@@ -487,7 +487,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(VALUE_PROPERTY, input);
             if (input != null)
             {
-                var state = await this.OnRecognizeInput(dc).ConfigureAwait(false);
+                var state = await this.OnRecognizeInputAsync(dc).ConfigureAwait(false);
                 if (state == InputState.Valid)
                 {
                     foreach (var validation in this.Validations)
@@ -513,9 +513,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
         }
 
-        private async Task<DialogTurnResult> PromptUser(DialogContext dc, InputState state)
+        private async Task<DialogTurnResult> PromptUserAsync(DialogContext dc, InputState state)
         {
-            var prompt = await this.OnRenderPrompt(dc, state).ConfigureAwait(false);
+            var prompt = await this.OnRenderPromptAsync(dc, state).ConfigureAwait(false);
             await dc.Context.SendActivityAsync(prompt).ConfigureAwait(false);
             return Dialog.EndOfTurn;
         }

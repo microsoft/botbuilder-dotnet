@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         [JsonProperty("outputFormat")]
         public ValueExpression OutputFormat { get; set; }
 
-        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
+        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc)
         {
             var input = dc.State.GetValue<object>(VALUE_PROPERTY);
             if (dc.Context.Activity.Type == ActivityTypes.Message)
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return Task.FromResult(InputState.Valid);
         }
 
-        protected override async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
+        protected override async Task<IActivity> OnRenderPromptAsync(DialogContext dc, InputState state)
         {
             // Format prompt to send
             var channelId = dc.Context.Activity.ChannelId;
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var choiceOptions = ChoiceOptions?.GetValue(dc.State) ?? defaults.Item3;
             var confirmChoices = ConfirmChoices?.GetValue(dc.State) ?? new List<Choice>() { defaults.Item1, defaults.Item2 };
 
-            var prompt = await base.OnRenderPrompt(dc, state);
+            var prompt = await base.OnRenderPromptAsync(dc, state).ConfigureAwait(false);
             var (style, error) = this.Style.TryGetValue(dc.State);
             return this.AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, style, choiceOptions);
         }

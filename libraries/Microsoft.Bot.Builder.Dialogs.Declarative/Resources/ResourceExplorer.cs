@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             try
             {
                 var sourceContext = new SourceContext();
-                var (json, range) = await ReadTokenRangeAsync(resource, sourceContext);
+                var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
                 using (new SourceScope(sourceContext, range))
                 {
                     var result = Load<T>(json, sourceContext);
@@ -388,7 +388,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
-            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext);
+            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
             {
