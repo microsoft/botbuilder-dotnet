@@ -217,7 +217,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Bind each string token to the data in state
             if (instanceBody != null)
             {
-                await ReplaceJTokenRecursively(dc, instanceBody);
+                await ReplaceJTokenRecursivelyAsync(dc, instanceBody, cancellationToken).ConfigureAwait(false);
             }
 
             // Set headers
@@ -243,14 +243,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case HttpMethod.POST:
                     if (instanceBody == null)
                     {
-                        response = await client.PostAsync(instanceUrl, null);
+                        response = await client.PostAsync(instanceUrl, content: null, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
                     else
                     {
                         var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await client.PostAsync(instanceUrl, postContent);
+                        response = await client.PostAsync(instanceUrl, postContent, cancellationToken).ConfigureAwait(false);
                     }
 
                     break;
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     if (instanceBody == null)
                     {
                         var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        response = await client.SendAsync(request);
+                        response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                     }
                     else
                     {
@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await client.SendAsync(request);
+                        response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                     }
 
                     break;
@@ -275,24 +275,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case HttpMethod.PUT:
                     if (instanceBody == null)
                     {
-                        response = await client.PutAsync(instanceUrl, null);
+                        response = await client.PutAsync(instanceUrl, content: null, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
                     else
                     {
                         var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await client.PutAsync(instanceUrl, putContent);
+                        response = await client.PutAsync(instanceUrl, putContent, cancellationToken).ConfigureAwait(false);
                     }
 
                     break;
 
                 case HttpMethod.DELETE:
-                    response = await client.DeleteAsync(instanceUrl);
+                    response = await client.DeleteAsync(instanceUrl, cancellationToken).ConfigureAwait(false);
                     break;
 
                 case HttpMethod.GET:
-                    response = await client.GetAsync(instanceUrl);
+                    response = await client.GetAsync(instanceUrl, cancellationToken).ConfigureAwait(false);
                     break;
             }
 
@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 ReasonPhrase = response.ReasonPhrase,
             };
 
-            object content = (object)await response.Content.ReadAsStringAsync();
+            object content = (object)await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             switch (this.ResponseType.GetValue(dc.State))
             {
@@ -348,7 +348,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // return the actionResult as the result of this operation
-            return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken);
+            return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
@@ -356,14 +356,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return $"{this.GetType().Name}[{Method} {Url?.ToString()}]";
         }
 
-        private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
+        private async Task ReplaceJTokenRecursivelyAsync(DialogContext dc, JToken token, CancellationToken cancellationToken = default(CancellationToken))
         {
             switch (token.Type)
             {
                 case JTokenType.Object:
                     foreach (var child in token.Children<JProperty>())
                     {
-                        await ReplaceJTokenRecursively(dc, child);
+                        await ReplaceJTokenRecursivelyAsync(dc, child, cancellationToken).ConfigureAwait(false);
                     }
 
                     break;
@@ -372,13 +372,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     // NOTE: ToList() is required because JToken.Replace will break the enumeration.
                     foreach (var child in token.Children().ToList())
                     {
-                        await ReplaceJTokenRecursively(dc, child);
+                        await ReplaceJTokenRecursivelyAsync(dc, child, cancellationToken).ConfigureAwait(false);
                     }
 
                     break;
 
                 case JTokenType.Property:
-                    await ReplaceJTokenRecursively(dc, ((JProperty)token).Value);
+                    await ReplaceJTokenRecursivelyAsync(dc, ((JProperty)token).Value, cancellationToken).ConfigureAwait(false);
                     break;
 
                 default:
