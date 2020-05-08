@@ -26,4 +26,7 @@
 # qna_answer()
 - ${@answer}
 
+# choose_intent()
+- which recognizer do you prefer?
+
 > Generator: 33a4be6c88303a61b49506bffb31a875

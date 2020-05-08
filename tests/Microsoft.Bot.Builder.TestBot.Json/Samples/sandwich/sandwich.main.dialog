@@ -17,15 +17,6 @@
 	"generator": "sandwich.lg",
 	"schema": "sandwich.schema",
 	"triggers": [
-		{
-			"$kind": "Microsoft.OnQnAMatch",
-			"actions": [
-				{
-					"$kind": "Microsoft.SendActivity",
-					"activity": "${qna_answer()}"
-				}
-			]
-		},
 		"sandwich-Quantity-missing",
 		"sandwich-Quantity-clear",
 		"sandwich-Quantity-show",
@@ -90,8 +81,9 @@
 		"sandwich-library-HelpIntent",
 		"sandwich-library-NotUnderstood",
 		"sandwich-library-trigger",
-		"sandwich-library-ShowFormIntent"
-	
+		"sandwich-library-ShowFormIntent",
+		"sandwich-library-QnAIntent.dialog",
+		"sandwich-library-ChooseIntent.dialog"
 	],
 	"$Generator": "adb88807dfe5be3f95b0a47c5b21e022"
 }

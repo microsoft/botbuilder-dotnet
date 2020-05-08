@@ -1,0 +1,11 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnQnAMatch",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${qna_answer()}"
+		}
+	],
+	"$Generator": "f4eeb391e499411a9de19183ddb2f9ed"
+}

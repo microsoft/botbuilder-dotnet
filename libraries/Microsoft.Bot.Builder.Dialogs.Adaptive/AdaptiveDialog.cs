@@ -1051,6 +1051,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     };
                     if (instance != null)
                     {
+                        if (instance.startIndex == null) 
+                        {
+                            break;
+                        }
+
                         info.Start = (int)instance.startIndex;
                         info.End = (int)instance.endIndex;
                         info.Text = (string)(instance.text ?? string.Empty);
