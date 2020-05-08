@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -84,8 +85,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="dialogContext">Context for the current turn of conversation.</param>
         /// <param name="template">template to evaluate.</param>
         /// <param name="data">data to bind to.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>generated text.</returns>
-        public override Task<object> GenerateAsync(DialogContext dialogContext, string template, object data)
+        public override Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
             try
             {

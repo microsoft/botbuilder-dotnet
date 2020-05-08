@@ -368,8 +368,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="refToken">reference.</param>
         /// <param name="sourceContext">source context to build debugger source map.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>resolved object the reference refers to.</returns>
-        public async Task<JToken> ResolveRefAsync(JToken refToken, SourceContext sourceContext)
+        public async Task<JToken> ResolveRefAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
         {
             var refTarget = GetRefTarget(refToken);
 
@@ -388,7 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
-            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext, cancellationToken).ConfigureAwait(false);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
             {
@@ -538,7 +539,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return token.ToObject<T>(serializer);
         }
 
-        private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext)
+        private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, CancellationToken cancellationToken = default)
         {
             var text = await resource.ReadTextAsync().ConfigureAwait(false);
             using (var readerText = new StringReader(text))

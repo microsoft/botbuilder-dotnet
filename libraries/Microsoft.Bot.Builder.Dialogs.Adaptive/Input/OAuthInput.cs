@@ -295,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             await adapter.SignOutUserAsync(dc.Context, ConnectionName.GetValue(dc.State), dc.Context.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
         }
 
-        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc)
+        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
