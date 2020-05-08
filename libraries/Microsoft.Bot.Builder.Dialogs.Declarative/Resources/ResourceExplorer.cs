@@ -151,8 +151,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <typeparam name="T">type to create.</typeparam>
         /// <param name="resource">resource to bind to.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>task which will resolve to created type.</returns>
-        public async Task<T> LoadTypeAsync<T>(Resource resource)
+        public async Task<T> LoadTypeAsync<T>(Resource resource, CancellationToken cancellationToken = default)
         {
             RegisterComponentTypes();
 
@@ -165,7 +166,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             try
             {
                 var sourceContext = new SourceContext();
-                var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+                var (json, range) = await ReadTokenRangeAsync(resource, sourceContext, cancellationToken).ConfigureAwait(false);
                 using (new SourceScope(sourceContext, range))
                 {
                     var result = Load<T>(json, sourceContext);

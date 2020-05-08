@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     {
         public IDictionary<string, HashSet<string>> EndorsementTable { get; } = new Dictionary<string, HashSet<string>>();
 
-        public Task<IDictionary<string, HashSet<string>>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancel)
+        public Task<IDictionary<string, HashSet<string>>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancellationToken)
         {
             return Task.FromResult(EndorsementTable);
         }
