@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 dc.State.SetValue(property, null);
             }
 
-            var state = alwaysPrompt ? InputState.Missing : await this.RecognizeInputAsync(dc, 0).ConfigureAwait(false);
+            var state = alwaysPrompt ? InputState.Missing : await this.RecognizeInputAsync(dc, 0, cancellationToken).ConfigureAwait(false);
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(VALUE_PROPERTY);
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 // We will set the turn count to 1 so the input will not pick from "dialog.value"
                 // and instead go with "turn.activity.text"
                 dc.State.SetValue(TURN_COUNT_PROPERTY, 1);
-                return await this.PromptUserAsync(dc, state).ConfigureAwait(false);
+                return await this.PromptUserAsync(dc, state, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
-            var state = await this.RecognizeInputAsync(dc, interrupted ? 0 : turnCount).ConfigureAwait(false);
+            var state = await this.RecognizeInputAsync(dc, interrupted ? 0 : turnCount, cancellationToken).ConfigureAwait(false);
 
             if (state == InputState.Valid)
             {
@@ -221,13 +221,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     dc.State.SetValue(this.Property.GetValue(dc.State), input);
                 }
 
-                return await dc.EndDialogAsync(input).ConfigureAwait(false);
+                return await dc.EndDialogAsync(input, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount.GetValue(dc.State))
             {
                 // increase the turnCount as last step
                 dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
-                return await this.PromptUserAsync(dc, state).ConfigureAwait(false);
+                return await this.PromptUserAsync(dc, state, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     var (value, error) = this.DefaultValue.TryGetValue(dc.State);
                     if (this.DefaultValueResponse != null)
                     {
-                        var response = await this.DefaultValueResponse.BindAsync(dc).ConfigureAwait(false);
+                        var response = await this.DefaultValueResponse.BindAsync(dc, cancellationToken).ConfigureAwait(false);
 
                         var properties = new Dictionary<string, string>()
                         {
@@ -245,13 +245,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         };
                         TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-                        await dc.Context.SendActivityAsync(response).ConfigureAwait(false);
+                        await dc.Context.SendActivityAsync(response, cancellationToken).ConfigureAwait(false);
                     }
 
                     // set output property
                     dc.State.SetValue(this.Property.GetValue(dc.State), value);
 
-                    return await dc.EndDialogAsync(value).ConfigureAwait(false);
+                    return await dc.EndDialogAsync(value, cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -260,7 +260,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.PromptUserAsync(dc, InputState.Missing).ConfigureAwait(false);
+            return await this.PromptUserAsync(dc, InputState.Missing, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
