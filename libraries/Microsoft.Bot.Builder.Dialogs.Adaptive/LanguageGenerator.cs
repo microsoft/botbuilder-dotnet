@@ -17,6 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="template">template or [templateId].</param>
         /// <param name="data">data to bind to.</param>
         /// <returns>object or text.</returns>
-        public abstract Task<object> Generate(DialogContext dialogContext, string template, object data);
+        public abstract Task<object> GenerateAsync(DialogContext dialogContext, string template, object data);
     }
 }

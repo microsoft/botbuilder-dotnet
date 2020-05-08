@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
             LanguageGenerator languageGenerator = dialogContext.Services.Get<LanguageGenerator>();
             if (languageGenerator != null)
             {
-                var result = await languageGenerator.Generate(
+                var result = await languageGenerator.GenerateAsync(
                     dialogContext,
                     template: Template,
                     data: data ?? dialogContext.State).ConfigureAwait(false);

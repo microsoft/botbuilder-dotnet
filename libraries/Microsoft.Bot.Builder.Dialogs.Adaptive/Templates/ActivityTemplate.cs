@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
                 var languageGenerator = dialogContext.Services.Get<LanguageGenerator>();
                 if (languageGenerator != null)
                 {
-                    var lgStringResult = await languageGenerator.Generate(dialogContext, this.Template, data ?? dialogContext.State).ConfigureAwait(false);
+                    var lgStringResult = await languageGenerator.GenerateAsync(dialogContext, this.Template, data ?? dialogContext.State).ConfigureAwait(false);
                     var result = ActivityFactory.FromObject(lgStringResult);
                     return result;
                 }

@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         {
         }
 
-        public override Task<IEnumerable<Entity>> RecognizeEntities(DialogContext dialogContext, string text, string locale, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<Entity>> RecognizeEntitiesAsync(DialogContext dialogContext, string text, string locale, IEnumerable<Entity> entities, CancellationToken cancellationToken = default)
         {
             List<Entity> newEntities = new List<Entity>();
             var culture = Culture.MapToNearestLanguage(locale ?? string.Empty);
