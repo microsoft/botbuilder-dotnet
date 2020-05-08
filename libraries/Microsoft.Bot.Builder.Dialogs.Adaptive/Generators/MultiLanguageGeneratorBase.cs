@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -39,8 +40,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="dialogContext">Context for the current turn of conversation.</param>
         /// <param name="template">The template.</param>
         /// <param name="data">data to bind to.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>The generator.</returns>
-        public override async Task<object> Generate(DialogContext dialogContext, string template, object data)
+        public override async Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
             var targetLocale = dialogContext.Context.Activity.Locale?.ToLower() ?? string.Empty;
 
@@ -89,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 try
                 {
-                    return await generator.Generate(dialogContext, template, data);
+                    return await generator.GenerateAsync(dialogContext, template, data, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception err)
                 {

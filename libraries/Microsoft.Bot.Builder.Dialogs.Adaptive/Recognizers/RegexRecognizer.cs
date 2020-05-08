@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             {
                 // process entities using EntityRecognizerSet
                 var entitySet = new EntityRecognizerSet(this.Entities);
-                var newEntities = await entitySet.RecognizeEntities(dialogContext, text, locale, entityPool).ConfigureAwait(false);
+                var newEntities = await entitySet.RecognizeEntitiesAsync(dialogContext, text, locale, entityPool).ConfigureAwait(false);
                 if (newEntities.Any())
                 {
                     entityPool.AddRange(newEntities);

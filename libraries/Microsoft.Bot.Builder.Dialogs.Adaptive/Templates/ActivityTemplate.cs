@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Schema;
@@ -40,14 +41,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         [JsonProperty("template")]
         public string Template { get; set; }
 
-        public virtual async Task<Activity> BindAsync(DialogContext dialogContext, object data = null)
+        public virtual async Task<Activity> BindAsync(DialogContext dialogContext, object data = null, CancellationToken cancellationToken = default)
         {
             if (!string.IsNullOrEmpty(this.Template))
             {
                 var languageGenerator = dialogContext.Services.Get<LanguageGenerator>();
                 if (languageGenerator != null)
                 {
-                    var lgStringResult = await languageGenerator.Generate(dialogContext, this.Template, data ?? dialogContext.State).ConfigureAwait(false);
+                    var lgStringResult = await languageGenerator.GenerateAsync(dialogContext, this.Template, data ?? dialogContext.State, cancellationToken).ConfigureAwait(false);
                     var result = ActivityFactory.FromObject(lgStringResult);
                     return result;
                 }

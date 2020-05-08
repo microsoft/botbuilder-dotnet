@@ -231,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 dc.State.SetValue(this.ResultProperty.GetValue(dc.State), result);
             }
 
-            return await dc.EndDialogAsync(result);
+            return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
