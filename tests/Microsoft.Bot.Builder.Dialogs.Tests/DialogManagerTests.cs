@@ -226,6 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     Assert.AreEqual(activity.Type, ActivityTypes.EndOfConversation);
                     Assert.AreEqual(((Activity)activity).Value, "Carlos");
+                    Assert.AreEqual(((Activity)activity).Locale, "en-us");
                 })
                 .StartTestAsync();
             Assert.AreEqual(DialogTurnStatus.Complete, _dmTurnResult.TurnResult.Status);
