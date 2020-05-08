@@ -23,6 +23,9 @@
 			"$ref": "#/definitions/Microsoft.BeginDialog"
 		},
 		{
+			"$ref": "#/definitions/Microsoft.BeginSkill"
+		},
+		{
 			"$ref": "#/definitions/Microsoft.BreakLoop"
 		},
 		{
@@ -273,9 +276,6 @@
 		},
 		{
 			"$ref": "#/definitions/Microsoft.SignOutUser"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.SkillDialog"
 		},
 		{
 			"$ref": "#/definitions/Microsoft.StaticActivityTemplate"
@@ -1077,6 +1077,108 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.BeginDialog"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.BeginSkill": {
+			"$role": "implements(Microsoft.IDialog)",
+			"title": "Begin a skill dialog",
+			"description": "Begin a remote skill dialog.",
+			"type": "object",
+			"required": [
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"id": {
+					"type": "string",
+					"title": "Id",
+					"description": "Optional id for the skill dialog"
+				},
+				"disabled": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Disabled",
+					"description": "Optional condition which if true will disable this action.",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"activityProcessed": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Activity Processed",
+					"description": "When set to false, the skill will be started using the activity in the current turn context instead of the activity in the Activity property.",
+					"default": true,
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"resultProperty": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Property",
+					"description": "Property to store any value returned by the dialog that is called.",
+					"examples": [
+						"dialog.userName"
+					]
+				},
+				"botId": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Skill host bot ID",
+					"description": "The Microsoft App ID that will be calling the skill.",
+					"default": "=settings.MicrosoftAppId"
+				},
+				"skillHostEndpoint": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Skill host",
+					"description": "The callback Url for the skill host.",
+					"default": "=settings.skillHostEndpoint",
+					"examples": [
+						"https://mybot.contoso.com/api/skills/"
+					]
+				},
+				"connectionName": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "OAuth Connection Name (SSO)",
+					"description": "The OAuth Connection Name, that would be used to perform Single SignOn with a skill.",
+					"default": "=settings.connectionName"
+				},
+				"skillAppId": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Skill App ID",
+					"description": "The Microsoft App ID for the skill."
+				},
+				"skillEndpoint": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Skill endpoint ",
+					"description": "The /api/messages endpoint for the skill.",
+					"examples": [
+						"https://myskill.contoso.com/api/messages/"
+					]
+				},
+				"activity": {
+					"$kind": "Microsoft.IActivityTemplate",
+					"title": "Activity",
+					"description": "The activity to send to the skill.",
+					"$ref": "#/definitions/Microsoft.IActivityTemplate"
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.BeginSkill"
 				},
 				"$designer": {
 					"title": "Designer information",
@@ -3927,10 +4029,10 @@
 					}
 				},
 				{
-					"$ref": "#/definitions/Microsoft.StaticActivityTemplate"
+					"$ref": "#/definitions/Microsoft.ActivityTemplate"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.ActivityTemplate"
+					"$ref": "#/definitions/Microsoft.StaticActivityTemplate"
 				}
 			]
 		},
@@ -3955,16 +4057,22 @@
 					"$ref": "#/definitions/Microsoft.BeginDialog"
 				},
 				{
+					"$ref": "#/definitions/Microsoft.BeginSkill"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.BreakLoop"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.CancelAllDialogs"
 				},
 				{
+					"$ref": "#/definitions/Microsoft.CancelDialog"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.ContinueLoop"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.CancelDialog"
+					"$ref": "#/definitions/Microsoft.DebugBreak"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.DeleteActivity"
@@ -3973,49 +4081,46 @@
 					"$ref": "#/definitions/Microsoft.DeleteProperties"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.DebugBreak"
+					"$ref": "#/definitions/Microsoft.DeleteProperty"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.EditActions"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.DeleteProperty"
-				},
-				{
 					"$ref": "#/definitions/Microsoft.EditArray"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.EndDialog"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.EmitEvent"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.EndTurn"
+					"$ref": "#/definitions/Microsoft.EndDialog"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.ForeachPage"
+					"$ref": "#/definitions/Microsoft.EndTurn"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.Foreach"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.GetConversationMembers"
+					"$ref": "#/definitions/Microsoft.ForeachPage"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.GetActivityMembers"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.HttpRequest"
+					"$ref": "#/definitions/Microsoft.GetConversationMembers"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.GotoAction"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.LogAction"
+					"$ref": "#/definitions/Microsoft.HttpRequest"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.IfCondition"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.LogAction"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.RepeatDialog"
@@ -4036,10 +4141,10 @@
 					"$ref": "#/definitions/Microsoft.SignOutUser"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.TraceActivity"
+					"$ref": "#/definitions/Microsoft.SwitchCondition"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.SwitchCondition"
+					"$ref": "#/definitions/Microsoft.TraceActivity"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.UpdateActivity"
@@ -4051,10 +4156,10 @@
 					"$ref": "#/definitions/Microsoft.AttachmentInput"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.ConfirmInput"
+					"$ref": "#/definitions/Microsoft.ChoiceInput"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.ChoiceInput"
+					"$ref": "#/definitions/Microsoft.ConfirmInput"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.DateTimeInput"
@@ -4069,13 +4174,10 @@
 					"$ref": "#/definitions/Microsoft.TextInput"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.SkillDialog"
+					"$ref": "#/definitions/Testbot.JavascriptAction"
 				},
 				{
 					"$ref": "#/definitions/Testbot.Multiply"
-				},
-				{
-					"$ref": "#/definitions/Testbot.JavascriptAction"
 				}
 			]
 		},
@@ -4133,13 +4235,13 @@
 					"$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+					"$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+					"$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
@@ -4180,10 +4282,10 @@
 					"$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.RecognizerSet"
+					"$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+					"$ref": "#/definitions/Microsoft.RecognizerSet"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.RegexRecognizer"
@@ -4214,13 +4316,13 @@
 					"description": "Reference to Microsoft.ITrigger .dialog file."
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnBeginDialog"
-				},
-				{
 					"$ref": "#/definitions/Microsoft.OnActivity"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnAssignEntity"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnBeginDialog"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnCancelDialog"
@@ -4241,25 +4343,25 @@
 					"$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnEndOfActions"
+					"$ref": "#/definitions/Microsoft.OnDialogEvent"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnDialogEvent"
+					"$ref": "#/definitions/Microsoft.OnEndOfActions"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnEventActivity"
-				},
-				{
 					"$ref": "#/definitions/Microsoft.OnError"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnIntent"
+					"$ref": "#/definitions/Microsoft.OnEventActivity"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnHandoffActivity"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnIntent"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnInvokeActivity"
@@ -4277,16 +4379,16 @@
 					"$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnRepromptDialog"
-				},
-				{
 					"$ref": "#/definitions/Microsoft.OnQnAMatch"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.OnUnknownIntent"
+					"$ref": "#/definitions/Microsoft.OnRepromptDialog"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnTypingActivity"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnUnknownIntent"
 				}
 			]
 		},
@@ -4301,19 +4403,19 @@
 					"description": "Reference to Microsoft.ITriggerSelector .dialog file."
 				},
 				{
+					"$ref": "#/definitions/Microsoft.ConditionalSelector"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.FirstSelector"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.ConditionalSelector"
+					"$ref": "#/definitions/Microsoft.MostSpecificSelector"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.RandomSelector"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.TrueSelector"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.MostSpecificSelector"
 				}
 			]
 		},
@@ -7964,102 +8066,6 @@
 				}
 			}
 		},
-		"Microsoft.SkillDialog": {
-			"$role": "implements(Microsoft.IDialog)",
-			"title": "Begin a skill dialog",
-			"description": "Begin a remote skill dialog.",
-			"type": "object",
-			"required": [
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"id": {
-					"type": "string",
-					"title": "Id",
-					"description": "Optional id for the skill dialog"
-				},
-				"disabled": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Disabled",
-					"description": "Optional condition which if true will disable this action.",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"activityProcessed": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Activity Processed",
-					"description": "When set to false, the skill will be started using the activity in the current turn context instead of the activity in the Activity property.",
-					"default": true,
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"resultProperty": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Property",
-					"description": "Property to store any value returned by the dialog that is called.",
-					"examples": [
-						"dialog.userName"
-					]
-				},
-				"botId": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Skill host bot ID",
-					"description": "The Microsoft App ID that will be calling the skill.",
-					"default": "=settings.MicrosoftAppId"
-				},
-				"skillHostEndpoint": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Skill host",
-					"description": "The callback Url for the skill host.",
-					"default": "=settings.skillHostEndpoint",
-					"examples": [
-						"https://mybot.contoso.com/api/skills/"
-					]
-				},
-				"skillAppId": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Skill App ID",
-					"description": "The Microsoft App ID for the skill."
-				},
-				"skillEndpoint": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Skill endpoint ",
-					"description": "The /api/messages endpoint for the skill.",
-					"examples": [
-						"https://myskill.contoso.com/api/messages/"
-					]
-				},
-				"activity": {
-					"$kind": "Microsoft.IActivityTemplate",
-					"title": "Activity",
-					"description": "The activity to send to the skill.",
-					"$ref": "#/definitions/Microsoft.IActivityTemplate"
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.SkillDialog"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
 		"Microsoft.StaticActivityTemplate": {
 			"$role": "implements(Microsoft.IActivityTemplate)",
 			"title": "Microsoft Static Activity Template",
@@ -8509,10 +8515,10 @@
 					"$ref": "#/definitions/Microsoft.Test.AssertReply"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
+					"$ref": "#/definitions/Microsoft.Test.AssertReplyActivity"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.Test.AssertReplyActivity"
+					"$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.Test.UserActivity"

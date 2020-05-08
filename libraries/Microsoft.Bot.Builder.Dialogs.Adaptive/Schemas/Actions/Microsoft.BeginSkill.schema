@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Begin a skill dialog",
-    "description": "Begin a remote skill dialog.",
+    "title": "Begin a skill",
+    "description": "Begin a remote skill.",
     "type": "object",
     "properties": {
         "id": {
