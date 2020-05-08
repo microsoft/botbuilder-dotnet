@@ -1,4 +1,5 @@
 ﻿{
+    "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
     "triggers": [
         {
