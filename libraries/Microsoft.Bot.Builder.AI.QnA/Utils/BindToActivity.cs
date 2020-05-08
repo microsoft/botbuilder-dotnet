@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -15,7 +16,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
             this.activity = activity;
         }
 
-        public Task<Activity> BindAsync(DialogContext context, object data = null)
+        public Task<Activity> BindAsync(DialogContext context, object data = null, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(activity);
         }

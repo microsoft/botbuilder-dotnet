@@ -473,7 +473,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
     public class MockLanguageGenerator : LanguageGenerator
     {
-        public override Task<object> GenerateAsync(DialogContext dialogContext, string template, object data)
+        public override Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
             return Task.FromResult((object)template);
         }

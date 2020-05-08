@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 dc.State.SetValue(property, input);
 
                 // return as result too
-                return await dc.EndDialogAsync(input).ConfigureAwait(false);
+                return await dc.EndDialogAsync(input, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -267,8 +267,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Called when input has been received, override this method to cutomize recognition of the input.
         /// </summary>
         /// <param name="dc">dialogContext.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
-        protected abstract Task<InputState> OnRecognizeInputAsync(DialogContext dc);
+        protected abstract Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken);
 
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
@@ -382,8 +383,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <remarks>Override this to customize the output sent to the user.</remarks>
         /// <param name="dc">dialogcontext.</param>
         /// <param name="state">inputState.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>activity to send to the user.</returns>
-        protected virtual async Task<IActivity> OnRenderPromptAsync(DialogContext dc, InputState state)
+        protected virtual async Task<IActivity> OnRenderPromptAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))
         {
             IMessageActivity msg = null;
             ITemplate<Activity> template = null;
@@ -393,12 +395,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (this.UnrecognizedPrompt != null)
                     {
                         template = this.UnrecognizedPrompt;
-                        msg = await this.UnrecognizedPrompt.BindAsync(dc).ConfigureAwait(false);
+                        msg = await this.UnrecognizedPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
                     else if (this.InvalidPrompt != null)
                     {
                         template = this.InvalidPrompt;
-                        msg = await this.InvalidPrompt.BindAsync(dc).ConfigureAwait(false);
+                        msg = await this.InvalidPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
 
                     break;
@@ -407,12 +409,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (this.InvalidPrompt != null)
                     {
                         template = this.InvalidPrompt;
-                        msg = await this.InvalidPrompt.BindAsync(dc).ConfigureAwait(false);
+                        msg = await this.InvalidPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
                     else if (this.UnrecognizedPrompt != null)
                     {
                         template = this.UnrecognizedPrompt;
-                        msg = await this.UnrecognizedPrompt.BindAsync(dc).ConfigureAwait(false);
+                        msg = await this.UnrecognizedPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
 
                     break;
@@ -421,7 +423,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (msg == null)
             {
                 template = this.Prompt;
-                msg = await this.Prompt.BindAsync(dc).ConfigureAwait(false);
+                msg = await this.Prompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             msg.InputHint = InputHints.ExpectingInput;
@@ -436,7 +438,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return msg;
         }
 
-        private async Task<InputState> RecognizeInputAsync(DialogContext dc, int turnCount)
+        private async Task<InputState> RecognizeInputAsync(DialogContext dc, int turnCount, CancellationToken cancellationToken = default(CancellationToken))
         {
             dynamic input = null;
 
@@ -487,7 +489,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(VALUE_PROPERTY, input);
             if (input != null)
             {
-                var state = await this.OnRecognizeInputAsync(dc).ConfigureAwait(false);
+                var state = await this.OnRecognizeInputAsync(dc, cancellationToken).ConfigureAwait(false);
                 if (state == InputState.Valid)
                 {
                     foreach (var validation in this.Validations)
@@ -513,10 +515,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
         }
 
-        private async Task<DialogTurnResult> PromptUserAsync(DialogContext dc, InputState state)
+        private async Task<DialogTurnResult> PromptUserAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var prompt = await this.OnRenderPromptAsync(dc, state).ConfigureAwait(false);
-            await dc.Context.SendActivityAsync(prompt).ConfigureAwait(false);
+            var prompt = await this.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
+            await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
             return Dialog.EndOfTurn;
         }
     }

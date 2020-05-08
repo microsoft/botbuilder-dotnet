@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
             }
 
-            return await dc.EndDialogAsync(cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }
