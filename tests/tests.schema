@@ -29,7 +29,7 @@
 			"$ref": "#/definitions/Microsoft.BeginDialog"
 		},
 		{
-			"$ref": "#/definitions/Microsoft.BeginSkillDialog"
+			"$ref": "#/definitions/Microsoft.BeginSkill"
 		},
 		{
 			"$ref": "#/definitions/Microsoft.BreakLoop"
@@ -1195,7 +1195,7 @@
 				}
 			}
 		},
-		"Microsoft.BeginSkillDialog": {
+		"Microsoft.BeginSkill": {
 			"$role": "implements(Microsoft.IDialog)",
 			"title": "Begin a skill dialog",
 			"description": "Begin a remote skill dialog.",
@@ -1288,7 +1288,7 @@
 					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.BeginSkillDialog"
+					"const": "Microsoft.BeginSkill"
 				},
 				"$designer": {
 					"title": "Designer information",
@@ -4167,7 +4167,7 @@
 					"$ref": "#/definitions/Microsoft.BeginDialog"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.BeginSkillDialog"
+					"$ref": "#/definitions/Microsoft.BeginSkill"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.BreakLoop"

@@ -15,15 +15,15 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Begin a SkillDialog.
+    /// Begin a Skill.
     /// </summary>
-    public class BeginSkillDialog : SkillDialog
+    public class BeginSkill : SkillDialog
     {
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.BeginSkillDialog";
+        public const string Kind = "Microsoft.BeginSkill";
 
         [JsonConstructor]
-        public BeginSkillDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public BeginSkill([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(new SkillDialogOptions())
         {
             DialogOptions.Skill = new BotFrameworkSkill();

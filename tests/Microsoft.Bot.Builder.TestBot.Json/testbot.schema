@@ -23,7 +23,7 @@
 			"$ref": "#/definitions/Microsoft.BeginDialog"
 		},
 		{
-			"$ref": "#/definitions/Microsoft.BeginSkillDialog"
+			"$ref": "#/definitions/Microsoft.BeginSkill"
 		},
 		{
 			"$ref": "#/definitions/Microsoft.BreakLoop"
@@ -1085,7 +1085,7 @@
 				}
 			}
 		},
-		"Microsoft.BeginSkillDialog": {
+		"Microsoft.BeginSkill": {
 			"$role": "implements(Microsoft.IDialog)",
 			"title": "Begin a skill dialog",
 			"description": "Begin a remote skill dialog.",
@@ -1178,7 +1178,7 @@
 					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.BeginSkillDialog"
+					"const": "Microsoft.BeginSkill"
 				},
 				"$designer": {
 					"title": "Designer information",
@@ -4054,34 +4054,10 @@
 					"$ref": "#/definitions/Microsoft.Test.AssertCondition"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.Ask"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.AttachmentInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.ChoiceInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.ConfirmInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.DateTimeInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.NumberInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.OAuthInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.TextInput"
-				},
-				{
 					"$ref": "#/definitions/Microsoft.BeginDialog"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.BeginSkillDialog"
+					"$ref": "#/definitions/Microsoft.BeginSkill"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.BreakLoop"
@@ -4172,6 +4148,30 @@
 				},
 				{
 					"$ref": "#/definitions/Microsoft.UpdateActivity"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.Ask"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.AttachmentInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.ChoiceInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.ConfirmInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.DateTimeInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.NumberInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OAuthInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.TextInput"
 				},
 				{
 					"$ref": "#/definitions/Testbot.JavascriptAction"
