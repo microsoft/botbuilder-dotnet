@@ -139,6 +139,10 @@ namespace AdaptiveExpressions.Tests
             Test("base64ToBinary(one)"), // should have string param
             Test("base64ToString(hello, world)"), // shoule have 1 param
             Test("base64ToString(false)"), // should have string param
+            Test("formatNumber(1,2,3)"), // invalid locale type
+            Test("formatNumber(1,2,'dlkj'"), // invalid locale
+            Test("formatNumber(1,2.0)"), // the second parameter should be an integer
+            Test("formatNumber(hello,2.0)"), // the first parameter should be a number
             #endregion
 
             #region Math functions test
@@ -228,7 +232,13 @@ namespace AdaptiveExpressions.Tests
             Test("formatDateTime(notValidTimestamp)"), // error datetime format
             Test("formatDateTime(notValidTimestamp2)"), // error datetime format
             Test("formatDateTime(notValidTimestamp3)"), // error datetime format
-            Test("formatDateTime(timestamp, 'yyyy', 1)"), // should have 2 or 3 params
+            Test("formatDateTime({})"), // error valid datetime
+            Test("formatDateTime(timestamp, 1)"), // invalid format string
+            Test("formatEpoch('time')"), // error string
+            Test("formatEpoch(timestamp, 'yyyy', 1)"), // should have 1 or 2 params
+            Test("formatTicks('string')"), // String is not valid
+            Test("formatTicks(2.3)"), // float is not valid
+            Test("formatTicks({})"), // object is not valid
             Test("subtractFromTime('errortime', 'yyyy', 1)"), // error datetime format
             Test("subtractFromTime(timestamp, 1, 'W')"), // error time unit
             Test("subtractFromTime(timestamp, timestamp, 'W')"), // error parameters format
@@ -338,7 +348,7 @@ namespace AdaptiveExpressions.Tests
             Test("sortBy(createArray('H','e','l','l','o'), 'x', hi)"), // second param should be string
 #endregion
 
-#region Object manipulation and construction functions test
+            #region Object manipulation and construction functions test
             Test("json(1,2)"), // should have 1 parameter
             Test("json(1)"), // should be string parameter
             Test("json('{\"key1\":value1\"}')"), // invalid json format string 
@@ -356,25 +366,25 @@ namespace AdaptiveExpressions.Tests
             Test("jPath(hello,'Manufacturers[0].Products[0].Price')"), // not a valid json
             Test("jPath(hello,'Manufacturers[0]/Products[0]/Price')"), // not a valid path
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
-#endregion
+            #endregion
 
-#region Memory access test
+            #region Memory access test
             Test("getProperty(bag, 1)"), // second param should be string
             Test("Accessor(1)"), // first param should be string
             Test("Accessor(bag, 1)"), // second should be object
             Test("one[0]"),  // one is not list
             Test("items[3]"), // index out of range
             Test("items[one+0.5]"), // index is not integer
-#endregion
+            #endregion
             
-#region Regex
+            #region Regex
             Test("isMatch('^[a-z]+$')"), // should have 2 parameter
             Test("isMatch('abC', one)"), // second param should be string
             Test("isMatch(1, '^[a-z]+$')"), // first param should be string
             Test("isMatch('abC', '^[a-z+$')"), // bad regular expression
-#endregion
+            #endregion
 
-#region Type Checking
+            #region Type Checking
             Test("isString(hello, hello)"), // should have 1 parameter
             Test("isInteger(2, 3)"), // should have 1 parameter
             Test("isFloat(1.2, 3.1)"), // should have 1 parameter
@@ -382,18 +392,18 @@ namespace AdaptiveExpressions.Tests
             Test("isObejct(emptyJObject, hello)"), // should have 1 parameter
             Test("isDateTime('2018-03-15T13:00:00.000Z', hello)"), // should have 1 parameter
             Test("isBoolean(false, false)"), // should have 1 parameter
-#endregion
+            #endregion
 
-#region SetPathToValue tests
+            #region SetPathToValue tests
             Test("setPathToValue(2+3, 4)"), // Not a real path
             Test("setPathToValue(a)"), // Missing value
-#endregion
+            #endregion
 
-#region TriggerTree Tests
+            #region TriggerTree Tests
 
             // optional throws because it's a placeholder only interpreted by trigger tree and is removed before evaluation
             Test("optional(true)"), 
-#endregion
+            #endregion
         };
 
         /// <summary>

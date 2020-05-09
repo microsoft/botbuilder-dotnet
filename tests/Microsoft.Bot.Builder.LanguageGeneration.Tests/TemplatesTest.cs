@@ -707,10 +707,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(evaled, "{\"ctx\":{\"count\":13}}");
 
             evaled = templates.Evaluate("template10");
-            Assert.AreEqual(evaled, 13);
+            Assert.AreEqual(evaled, 13L);
 
             evaled = templates.Evaluate("template11");
-            Assert.AreEqual(evaled, 18);
+            Assert.AreEqual(evaled, 18L);
         }
 
         [TestMethod]

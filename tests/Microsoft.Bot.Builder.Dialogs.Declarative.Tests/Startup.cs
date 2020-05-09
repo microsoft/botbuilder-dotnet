@@ -12,7 +12,6 @@ namespace Microsoft.Bot.Builder
         [AssemblyInitialize]
         public static void Initialize(TestContext testContext)
         {
-            ComponentRegistration.Add(new DialogsComponentRegistration());
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
             ComponentRegistration.Add(new LanguageGenerationComponentRegistration());

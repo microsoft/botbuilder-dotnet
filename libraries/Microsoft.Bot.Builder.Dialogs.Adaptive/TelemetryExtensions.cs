@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>botAdapter.</returns>
         public static DialogManager UseTelemetry(this DialogManager dialogManager, IBotTelemetryClient telemetryClient)
         {
-            dialogManager.TurnState.Set<IBotTelemetryClient>(telemetryClient);
+            dialogManager.InitialTurnState.Set<IBotTelemetryClient>(telemetryClient);
             dialogManager.Dialogs.TelemetryClient = telemetryClient;
             return dialogManager;
         }

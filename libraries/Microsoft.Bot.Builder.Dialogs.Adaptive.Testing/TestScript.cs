@@ -44,7 +44,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <remarks>If adapter is not provided a standard test adapter with all services will be registered.</remarks>
         public TestScript()
         {
+            Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
         }
+
+        /// <summary>
+        /// Gets or sets configuration to use for the test.
+        /// </summary>
+        /// <value>
+        /// IConfiguration to use for the test.
+        /// </value>
+        [JsonIgnore]
+        public IConfiguration Configuration { get; set; } 
 
         /// <summary>
         /// Gets or sets the description property.
@@ -100,6 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             var userState = new UserState(storage);
            
             var adapter = (TestAdapter)new TestAdapter(TestAdapter.CreateConversation(testName))
+                .Use(new RegisterClassMiddleware<IConfiguration>(this.Configuration))
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
