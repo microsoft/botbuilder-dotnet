@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +32,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public DialogStateManager(DialogContext dc, DialogStateManagerConfiguration configuration = null)
         {
+            ComponentRegistration.Add(new DialogsComponentRegistration());
+
             dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
             this.Configuration = configuration ?? dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
             if (this.Configuration == null)
@@ -181,7 +184,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             value = default;
             path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
 
-            var memoryScope = ResolveMemoryScope(path, out var remainingPath);
+            MemoryScope memoryScope = null;
+            string remainingPath;
+            
+            try
+            {
+                memoryScope = ResolveMemoryScope(path, out remainingPath);
+            }
+            catch (Exception err)
+            {
+                Trace.TraceError(err.Message);
+                return false;
+            }
+
             if (memoryScope == null)
             {
                 return false;
@@ -490,7 +505,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         private string GetBadScopeMessage(string path)
         {
-            return $"'{path}' does not match memory scopes:{string.Join(",", Configuration.MemoryScopes.Select(ms => ms.Name))}";
+            return $"'{path}' does not match memory scopes:[{string.Join(",", Configuration.MemoryScopes.Select(ms => ms.Name))}]";
         }
 
         private bool TrackChange(string path, object value)

@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .UseBotState(new ConversationState(new MemoryStorage()));
 
             DialogManager dm = new DialogManager(new LamdaDialog(handler));
-            dm.TurnState.Set<ResourceExplorer>(new ResourceExplorer());
+            dm.InitialTurnState.Set<ResourceExplorer>(new ResourceExplorer());
             return new TestFlow(adapter, dm.OnTurnAsync).SendConversationUpdate();
         }
 

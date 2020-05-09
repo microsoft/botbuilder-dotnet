@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -17,17 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         private readonly string sandwichDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\sandwich\");
         private readonly string unitTestsDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\unittests\");
 
-        public static ResourceExplorer ResourceExplorer { get; set; }
-
         public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(GeneratorTests)), monitorChanges: false)
-                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader());
-        }
 
         [TestMethod]
         public async Task Generator_sandwich()
@@ -35,9 +26,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var config = new ConfigurationBuilder()
                 .UseMockLuisSettings(sandwichDirectory, "TestBot")
                 .Build();
-            HostContext.Current.Set<IConfiguration>(config);
+            
+            var resourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(GeneratorTests)), monitorChanges: false)
+                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
 
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(resourceExplorer, configuration: config);
         }
 
         [TestMethod]
@@ -46,9 +40,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var config = new ConfigurationBuilder()
                 .UseMockLuisSettings(unitTestsDirectory, "TestBot")
                 .Build();
-            HostContext.Current.Set<IConfiguration>(config);
 
-            await TestUtils.RunTestScript(ResourceExplorer);
+            var resourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(GeneratorTests)), monitorChanges: false)
+                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
+
+            await TestUtils.RunTestScript(resourceExplorer, configuration: config);
         }
     }
 }
