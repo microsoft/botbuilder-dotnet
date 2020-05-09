@@ -217,7 +217,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adaptiveDialog = CreateTestDialog(property: "conversation.name");
 
-            await CreateFlow(adaptiveDialog, storage, firstConversationId, isSkillFlow: true)
+            await CreateFlow(adaptiveDialog, storage, firstConversationId, isSkillFlow: true, locale: "en-GB")
                 .Send("hi")
                 .AssertReply("Hello, what is your name?")
                 .Send("Carlos")
@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     Assert.AreEqual(activity.Type, ActivityTypes.EndOfConversation);
                     Assert.AreEqual(((Activity)activity).Value, "Carlos");
-                    Assert.AreEqual(((Activity)activity).Locale, "en-us");
+                    Assert.AreEqual(((Activity)activity).Locale, "en-GB");
                 })
                 .StartTestAsync();
             Assert.AreEqual(DialogTurnStatus.Complete, _dmTurnResult.TurnResult.Status);
@@ -293,7 +293,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return new AskForNameDialog(property.Replace(".", string.Empty), property);
         }
 
-        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId, string dialogStateProperty = null, bool isSkillFlow = false, bool isSkillResponse = true)
+        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId, string dialogStateProperty = null, bool isSkillFlow = false, bool isSkillResponse = true, string locale = null)
         {
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -303,6 +303,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            if (!string.IsNullOrEmpty(locale))
+            {
+                adapter.Locale = locale;
+            }
 
             var dm = new DialogManager(dialog, dialogStateProperty: dialogStateProperty);
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
