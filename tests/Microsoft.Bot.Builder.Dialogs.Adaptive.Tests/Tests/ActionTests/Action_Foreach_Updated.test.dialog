@@ -1,0 +1,56 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "dialog.todo",
+                        "value": "=['a', 'b', 'c']"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "dialog.todo",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.SetProperty",
+                                "property": "dialog.todo",
+                                "value": "=[]"
+                            },
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "index is: ${dialog.foreach.index} and value is: ${dialog.foreach.value}"
+
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 0 and value is: a"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 1 and value is: b"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 2 and value is: c"
+        }
+    ]
+}

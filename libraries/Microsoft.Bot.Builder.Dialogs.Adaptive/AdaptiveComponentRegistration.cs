@@ -51,6 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<OnTypingActivity>(OnTypingActivity.Kind);
             yield return new DeclarativeType<OnHandoffActivity>(OnHandoffActivity.Kind);
             yield return new DeclarativeType<OnChooseIntent>(OnChooseIntent.Kind);
+            yield return new DeclarativeType<OnQnAMatch>(OnQnAMatch.Kind);
 
             yield return new DeclarativeType<OnEndOfActions>(OnEndOfActions.Kind);
             yield return new DeclarativeType<OnChooseProperty>(OnChooseProperty.Kind);
