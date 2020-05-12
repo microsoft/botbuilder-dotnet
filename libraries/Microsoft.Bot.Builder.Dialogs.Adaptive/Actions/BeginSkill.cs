@@ -7,19 +7,23 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    public class AdaptiveSkillDialog : SkillDialog
+    /// <summary>
+    /// Begin a Skill.
+    /// </summary>
+    public class BeginSkill : SkillDialog
     {
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.SkillDialog";
+        public const string Kind = "Microsoft.BeginSkill";
 
         [JsonConstructor]
-        public AdaptiveSkillDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public BeginSkill([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(new SkillDialogOptions())
         {
             DialogOptions.Skill = new BotFrameworkSkill();
@@ -160,6 +164,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             }
 
             return base.ContinueDialogAsync(dc, cancellationToken);
+        }
+
+        protected override string OnComputeId()
+        {
+            var appId = SkillAppId?.ToString() ?? string.Empty;
+            string activity;
+
+            if (Activity is ActivityTemplate at)
+            {
+                activity = StringUtils.Ellipsis(at.Template.Trim(), 30);
+            }
+            else
+            {
+                activity = StringUtils.Ellipsis(Activity?.ToString().Trim(), 30);
+            }
+
+            return $"{this.GetType().Name}['{appId}','{activity}']";
         }
     }
 }

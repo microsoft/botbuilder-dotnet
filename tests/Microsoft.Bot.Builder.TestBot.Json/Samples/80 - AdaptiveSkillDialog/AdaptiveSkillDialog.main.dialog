@@ -1,6 +1,6 @@
 {
     "$schema": "../../testbot.schema",
-    "$kind": "Microsoft.SkillDialog",
+    "$kind": "Microsoft.BeginSkill",
     "skillAppId": "f3fe8762-e50c-4688-b202-a040f522d916",
     "skillEndpoint": "http://localhost:39783/api/messages",
     "activity": {
