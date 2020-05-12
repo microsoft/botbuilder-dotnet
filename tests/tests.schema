@@ -29,6 +29,9 @@
 			"$ref": "#/definitions/Microsoft.BeginDialog"
 		},
 		{
+			"$ref": "#/definitions/Microsoft.BeginSkill"
+		},
+		{
 			"$ref": "#/definitions/Microsoft.BreakLoop"
 		},
 		{
@@ -279,9 +282,6 @@
 		},
 		{
 			"$ref": "#/definitions/Microsoft.SignOutUser"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.SkillDialog"
 		},
 		{
 			"$ref": "#/definitions/Microsoft.StaticActivityTemplate"
@@ -1187,6 +1187,108 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.BeginDialog"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.BeginSkill": {
+			"$role": "implements(Microsoft.IDialog)",
+			"title": "Begin a skill dialog",
+			"description": "Begin a remote skill dialog.",
+			"type": "object",
+			"required": [
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"id": {
+					"type": "string",
+					"title": "Id",
+					"description": "Optional id for the skill dialog"
+				},
+				"disabled": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Disabled",
+					"description": "Optional condition which if true will disable this action.",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"activityProcessed": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Activity Processed",
+					"description": "When set to false, the skill will be started using the activity in the current turn context instead of the activity in the Activity property.",
+					"default": true,
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"resultProperty": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Property",
+					"description": "Property to store any value returned by the dialog that is called.",
+					"examples": [
+						"dialog.userName"
+					]
+				},
+				"botId": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Skill host bot ID",
+					"description": "The Microsoft App ID that will be calling the skill.",
+					"default": "=settings.MicrosoftAppId"
+				},
+				"skillHostEndpoint": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Skill host",
+					"description": "The callback Url for the skill host.",
+					"default": "=settings.skillHostEndpoint",
+					"examples": [
+						"https://mybot.contoso.com/api/skills/"
+					]
+				},
+				"connectionName": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "OAuth Connection Name (SSO)",
+					"description": "The OAuth Connection Name, that would be used to perform Single SignOn with a skill.",
+					"default": "=settings.connectionName"
+				},
+				"skillAppId": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Skill App ID",
+					"description": "The Microsoft App ID for the skill."
+				},
+				"skillEndpoint": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Skill endpoint ",
+					"description": "The /api/messages endpoint for the skill.",
+					"examples": [
+						"https://myskill.contoso.com/api/messages/"
+					]
+				},
+				"activity": {
+					"$kind": "Microsoft.IActivityTemplate",
+					"title": "Activity",
+					"description": "The activity to send to the skill.",
+					"$ref": "#/definitions/Microsoft.IActivityTemplate"
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.BeginSkill"
 				},
 				"$designer": {
 					"title": "Designer information",
@@ -4065,6 +4167,9 @@
 					"$ref": "#/definitions/Microsoft.BeginDialog"
 				},
 				{
+					"$ref": "#/definitions/Microsoft.BeginSkill"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.BreakLoop"
 				},
 				{
@@ -4174,9 +4279,6 @@
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OAuthInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.SkillDialog"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.TextInput"
@@ -8072,108 +8174,6 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.SignOutUser"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.SkillDialog": {
-			"$role": "implements(Microsoft.IDialog)",
-			"title": "Begin a skill dialog",
-			"description": "Begin a remote skill dialog.",
-			"type": "object",
-			"required": [
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"id": {
-					"type": "string",
-					"title": "Id",
-					"description": "Optional id for the skill dialog"
-				},
-				"disabled": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Disabled",
-					"description": "Optional condition which if true will disable this action.",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"activityProcessed": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Activity Processed",
-					"description": "When set to false, the skill will be started using the activity in the current turn context instead of the activity in the Activity property.",
-					"default": true,
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"resultProperty": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Property",
-					"description": "Property to store any value returned by the dialog that is called.",
-					"examples": [
-						"dialog.userName"
-					]
-				},
-				"botId": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Skill host bot ID",
-					"description": "The Microsoft App ID that will be calling the skill.",
-					"default": "=settings.MicrosoftAppId"
-				},
-				"skillHostEndpoint": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Skill host",
-					"description": "The callback Url for the skill host.",
-					"default": "=settings.skillHostEndpoint",
-					"examples": [
-						"https://mybot.contoso.com/api/skills/"
-					]
-				},
-				"connectionName": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "OAuth Connection Name (SSO)",
-					"description": "The OAuth Connection Name, that would be used to perform Single SignOn with a skill.",
-					"default": "=settings.connectionName"
-				},
-				"skillAppId": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Skill App ID",
-					"description": "The Microsoft App ID for the skill."
-				},
-				"skillEndpoint": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Skill endpoint ",
-					"description": "The /api/messages endpoint for the skill.",
-					"examples": [
-						"https://myskill.contoso.com/api/messages/"
-					]
-				},
-				"activity": {
-					"$kind": "Microsoft.IActivityTemplate",
-					"title": "Activity",
-					"description": "The activity to send to the skill.",
-					"$ref": "#/definitions/Microsoft.IActivityTemplate"
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.SkillDialog"
 				},
 				"$designer": {
 					"title": "Designer information",

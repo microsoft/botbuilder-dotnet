@@ -226,8 +226,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     // increase the turnCount as last step
                     dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
-                    var prompt = await this.OnRenderPrompt(dc, inputState).ConfigureAwait(false);
-                    await dc.Context.SendActivityAsync(prompt).ConfigureAwait(false);
+                    var prompt = await this.OnRenderPromptAsync(dc, inputState, cancellationToken).ConfigureAwait(false);
+                    await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
                     await SendOAuthCardAsync(dc, promptOptions?.Prompt, cancellationToken).ConfigureAwait(false);
                     return Dialog.EndOfTurn;
                 }
@@ -238,23 +238,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         var (value, _) = this.DefaultValue.TryGetValue(dc.State);
                         if (this.DefaultValueResponse != null)
                         {
-                            var response = await this.DefaultValueResponse.BindAsync(dc).ConfigureAwait(false);
+                            var response = await this.DefaultValueResponse.BindAsync(dc, cancellationToken).ConfigureAwait(false);
                             var properties = new Dictionary<string, string>()
                             {
                                 { "template", JsonConvert.SerializeObject(this.DefaultValueResponse) },
                                 { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
                             };
                             TelemetryClient.TrackEvent("GeneratorResult", properties);
-                            await dc.Context.SendActivityAsync(response).ConfigureAwait(false);
+                            await dc.Context.SendActivityAsync(response, cancellationToken).ConfigureAwait(false);
                         }
 
                         // set output property
                         dc.State.SetValue(this.Property.GetValue(dc.State), value);
-                        return await dc.EndDialogAsync(value).ConfigureAwait(false);
+                        return await dc.EndDialogAsync(value, cancellationToken).ConfigureAwait(false);
                     }
                 }
 
-                return await dc.EndDialogAsync().ConfigureAwait(false);
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -295,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             await adapter.SignOutUserAsync(dc.Context, ConnectionName.GetValue(dc.State), dc.Context.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
         }
 
-        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
+        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

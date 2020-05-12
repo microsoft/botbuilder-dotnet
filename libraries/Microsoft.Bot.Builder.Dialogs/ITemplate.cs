@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -15,7 +16,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogContext">dialogContext.</param>
         /// <param name="data">data to bind to. If Null, then dc.State will be used.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for this task.</param>
         /// <returns>instance of T.</returns>
-        Task<T> BindAsync(DialogContext dialogContext, object data = null);
+        Task<T> BindAsync(DialogContext dialogContext, object data = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
