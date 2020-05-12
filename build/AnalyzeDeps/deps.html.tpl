@@ -1,5 +1,5 @@
 $(
-  $repo_name = 'azure-sdk-for-net'
+  $repo_name = 'botbuilder-dotnet'
   $branch    = if ($Env:SYSTEM_PULLREQUEST_SOURCEBRANCH) { "$Env:SYSTEM_PULLREQUEST_SOURCEBRANCH" } else { "$Env:BUILD_SOURCEBRANCHNAME" }
   $build     = "$Env:BUILD_BUILDNUMBER"
   $build_url = "$Env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI$Env:SYSTEM_TEAMPROJECT/_build/results?buildId=$Env:BUILD_BUILDID"
@@ -7,7 +7,7 @@ $(
   $isfork    = "$Env:SYSTEM_PULLREQUEST_ISFORK" -eq "True"
   $rel_url   = "$Env:RELEASE_RELEASEWEBURL"
   $release   = "$Env:RELEASE_RELEASENAME"
-  $repo      = if ($isfork) { "$Env:BUILD_REPOSITORY_NAME" } else { "Azure/$repo_name" }
+  $repo      = if ($isfork) { "$Env:BUILD_REPOSITORY_NAME" } else { "botbuilder-dotnet/$repo_name" }
 
   function Capitalize($str) {
     if ($str) { 
