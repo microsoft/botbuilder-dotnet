@@ -1,6 +1,6 @@
 ﻿{
     "$kind": "Microsoft.AdaptiveDialog",
-    "id": "sub2",
+    "id": "Issue_3913_sub1",
     "triggers": [
         {
             "$kind": "Microsoft.OnBeginDialog",
