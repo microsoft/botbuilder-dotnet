@@ -61,7 +61,17 @@
                                         "activity": "Canceled"
                                     },
                                     {
-                                        "$kind": "Microsoft.CancelAllDialogs"
+                                        "$kind": "Microsoft.SetProperty",
+                                        "property": "$disabled",
+                                        "value": "=false"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.CancelAllDialogs",
+                                        "disabled": "=$disabled"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Not cancelled"
                                     }
                                 ]
                             },
@@ -74,7 +84,17 @@
                                         "activity": "Restarted"
                                     },
                                     {
-                                        "$kind": "Microsoft.CancelAllDialogs"
+                                        "$kind": "Microsoft.SetProperty",
+                                        "property": "$disabled",
+                                        "value": "=true"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.CancelAllDialogs",
+                                        "disabled": "=$disabled"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Not cancelled"
                                     }
                                 ]
                             }
@@ -122,12 +142,8 @@
             "text": "Restarted"
         },
         {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "hi"
-        },
-        {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Why did the chicken cross the road?"
-        }
+            "text": "Not cancelled"
+        },
     ]
 }
