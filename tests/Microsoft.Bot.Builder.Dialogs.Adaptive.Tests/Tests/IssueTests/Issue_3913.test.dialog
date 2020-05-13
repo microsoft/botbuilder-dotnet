@@ -1,0 +1,71 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "id": "x",
+            "intents": [
+                {
+                    "intent": "aIntent",
+                    "pattern": "a"
+                },
+                {
+                    "intent": "bIntent",
+                    "pattern": "b"
+                },
+                {
+                    "intent": "cIntent",
+                    "pattern": "c"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "aIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "dialog": "Issue_3913_sub0"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "bIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "dialog": "Issue_3913_sub1"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "cIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "dialog": "Issue_3913_sub1"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "b"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "sub0"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "sub0"
+        }
+    ]
+}

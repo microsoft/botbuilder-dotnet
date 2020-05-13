@@ -1,0 +1,20 @@
+﻿{
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "sub2",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "Issue_3913_sub0"
+                },
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "Issue_3913_sub0"
+                }
+            ]
+        }
+    ],
+    "$schema": "../../../tests.schema"
+}

@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dialog));
             }
 
-            if (_dialogs.ContainsKey(dialog.Id))
+            if (_dialogs.ContainsKey(dialog.Id) && _dialogs[dialog.Id] != dialog)
             {
                 var nextSuffix = 2;
 
