@@ -487,7 +487,7 @@ namespace Microsoft.Bot.Schema
             this.ChannelId = reference.ChannelId;
             this.ServiceUrl = reference.ServiceUrl;
             this.Conversation = reference.Conversation;
-            this.Locale = reference.Locale;
+            this.Locale = reference.Locale ?? this.Locale;
 
             if (isIncoming)
             {
