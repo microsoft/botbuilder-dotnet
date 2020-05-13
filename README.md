@@ -42,6 +42,7 @@ The [Bot Framework Samples](https://github.com/microsoft/botbuilder-samples) inc
 
 To use the daily builds, which are published to MyGet, please follow the instructions [here](UsingMyGet.md).
 
+[DependencyGraph](doc/DependencyGraph/InterdependencyGraph.html)
 
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
