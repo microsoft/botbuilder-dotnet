@@ -141,5 +141,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <value>A <see cref="FacebookRequestThreadControl"/> holding the contents of the pass_thread_control property.</value>.
         [JsonProperty(PropertyName = "request_thread_control")]
         public FacebookRequestThreadControl RequestThreadControl { get; set; }
+
+        /// <summary>
+        ///  Gets or sets the contents of the referral info when launched from m.me link.
+        /// </summary>
+        /// <value>A <see cref="referral"/> holding the contents of the pass_thread_control property.</value>.
+        [JsonProperty(PropertyName = "referral")]
+        public FacebookReferral Referral { get; set; }
     }
 }
