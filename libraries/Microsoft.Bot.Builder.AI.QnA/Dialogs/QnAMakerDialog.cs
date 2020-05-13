@@ -333,6 +333,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return await base.BeginDialogAsync(dc, dialogOptions, cancellationToken).ConfigureAwait(false);
         }
 
+        protected override Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            // disable interruption
+            return Task.FromResult(true);
+        }
+
         /// <summary>
         /// Gets an <see cref="IQnAMakerClient"/> to use to access the QnA Maker knowledge base.
         /// </summary>
