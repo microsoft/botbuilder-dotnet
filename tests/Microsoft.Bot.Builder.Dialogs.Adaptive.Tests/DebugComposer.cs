@@ -30,11 +30,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task DebugComposerBot()
         {
+            // luis.settings.{environment}.{region}.json
+            var environment = Environment.UserName;
+            var region = "westus";
             var botPath = Path.Combine(TestUtils.GetProjectPath(), "Tests");
             var testScript = "debug.test.dialog";
             var locale = "en-US";
-            var environment = Environment.UserName; // luis.settings.{environment}.{region}.json
-            var region = "westus"; // luis.settings.{environment}.{region}.json
 
             var resourceExplorer = new ResourceExplorer()
                 .AddFolder(botPath, monitorChanges: false);
