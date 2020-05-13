@@ -593,6 +593,7 @@ namespace AdaptiveExpressions.Tests
             Test("float('10.333')", 10.333f),
             Test("float('10')", 10.0f),
             Test("int('10')", 10),
+            Test("int(12345678912345678 + 1)", 12345678912345679),
             Test("string('str')", "str"),
             Test("string(one)", "1.0"),
             Test("string(bool(1))", "true"),
@@ -1155,10 +1156,10 @@ namespace AdaptiveExpressions.Tests
         {
             if (IsNumber(actual) && IsNumber(expected))
             {
-                if (actual is int)
+                if (actual is int || actual is long)
                 {
-                    Assert.IsTrue(expected is int);
-                    Assert.AreEqual(expected, actual);
+                    Assert.IsTrue(expected is int || expected is long);
+                    Assert.AreEqual(Convert.ToInt64(expected), Convert.ToInt64(actual));
                 }
                 else
                 {
