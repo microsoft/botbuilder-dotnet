@@ -113,6 +113,15 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (_dialogs.ContainsKey(dialog.Id))
             {
+                // If we are trying to add the same exact instance, it's not a name collision.
+                // No operation required since the instance is already in the dialog set.
+                if (_dialogs[dialog.Id] == dialog)
+                {
+                    return this;
+                }
+
+                // If we are adding a new dialog with a conflicting name, add a suffix to avoid
+                // dialog name collisions.
                 var nextSuffix = 2;
 
                 while (true)
