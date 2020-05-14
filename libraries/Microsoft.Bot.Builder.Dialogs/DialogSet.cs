@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dialog));
             }
 
-            if (_dialogs.ContainsKey(dialog.Id) && _dialogs[dialog.Id] != dialog)
+            if (_dialogs.ContainsKey(dialog.Id))
             {
                 // If we are trying to add the same exact instance, it's not a name collision.
                 // No operation required since the instance is already in the dialog set.
