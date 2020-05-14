@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
                 // to conserve references.
                 if (cache.ContainsKey(hashCode))
                 {
-                    result = ObjectPath.Clone<T>(cache[hashCode] as T);
+                    result = cache[hashCode] as T;
                 }
 
                 // If we don't have a cached value for this hash code, we send null as the value.

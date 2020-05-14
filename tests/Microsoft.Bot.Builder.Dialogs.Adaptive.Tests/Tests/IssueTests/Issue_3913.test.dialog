@@ -5,7 +5,6 @@
         "$kind": "Microsoft.AdaptiveDialog",
         "recognizer": {
             "$kind": "Microsoft.RegexRecognizer",
-            "id": "x",
             "intents": [
                 {
                     "intent": "aIntent",
@@ -58,6 +57,18 @@
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "b"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "sub0"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "sub0"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "c"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
