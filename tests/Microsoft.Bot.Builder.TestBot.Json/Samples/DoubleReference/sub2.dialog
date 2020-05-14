@@ -1,0 +1,56 @@
+﻿{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "sub2",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "$designer": {
+                        "id": "713992",
+                        "name": "Branch: If/Else"
+                    },
+                    "condition": "dialog.count > 0",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.IfCondition",
+                            "$designer": {
+                                "id": "5SKPJu"
+                            },
+                            "condition": "=dialog.containsAll == null",
+                            "elseActions": [
+                                {
+                                    "$kind": "Microsoft.IfCondition",
+                                    "$designer": {
+                                        "id": "KTnZSa"
+                                    },
+                                    "condition": "=dialog.result",
+                                    "elseActions": [
+                                        {
+                                            "$kind": "Microsoft.ReplaceDialog",
+                                            "$designer": {
+                                                "id": "epKzn4"
+                                            },
+                                            "dialog": "sub0",
+                                            "options": "=dialog.result"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "$kind": "Microsoft.ReplaceDialog",
+                            "$designer": {
+                                "id": "mFf8Hl"
+                            },
+                            "dialog": "sub0",
+                            "options": "=dialog.result"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

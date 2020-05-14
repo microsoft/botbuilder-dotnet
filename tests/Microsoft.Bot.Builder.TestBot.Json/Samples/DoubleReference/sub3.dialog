@@ -1,0 +1,16 @@
+﻿{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "sub3",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "sub0"
+                }
+            ]
+        }
+    ]
+}

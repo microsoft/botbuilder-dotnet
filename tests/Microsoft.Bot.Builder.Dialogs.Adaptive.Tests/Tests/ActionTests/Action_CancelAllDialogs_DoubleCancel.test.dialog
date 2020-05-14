@@ -1,0 +1,149 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "CancelIntent",
+                    "pattern": "(?i)cancel|never mind"
+                },
+                {
+                    "intent": "RestartIntent",
+                    "pattern": "(?i)restart"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.AdaptiveDialog",
+                        "recognizer": {
+                            "$kind": "Microsoft.RegexRecognizer",
+                            "intents": [
+                                {
+                                    "intent": "CancelIntent",
+                                    "pattern": "(?i)cancel|never mind"
+                                },
+                                {
+                                    "intent": "RestartIntent",
+                                    "pattern": "(?i)restart"
+                                }
+                            ]
+                        },
+                        "triggers": [
+                            {
+                                "$kind": "Microsoft.OnBeginDialog",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Why did the chicken cross the road?"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.EndTurn"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "To get to the other side"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.OnIntent",
+                                "intent": "CancelIntent",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Canceled"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.SetProperty",
+                                        "property": "$disabled",
+                                        "value": "=false"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.CancelAllDialogs",
+                                        "disabled": "=$disabled"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Not cancelled"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.OnIntent",
+                                "intent": "RestartIntent",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Restarted"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.SetProperty",
+                                        "property": "$disabled",
+                                        "value": "=true"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.CancelAllDialogs",
+                                        "disabled": "=$disabled"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "Not cancelled"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "What am I doing here?"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Why did the chicken cross the road?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "cancel"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Canceled"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Why did the chicken cross the road?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "restart"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Restarted"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Not cancelled"
+        },
+    ]
+}
