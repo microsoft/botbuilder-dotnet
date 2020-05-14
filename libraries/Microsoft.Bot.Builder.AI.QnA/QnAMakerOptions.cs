@@ -92,5 +92,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
+
+        /// <summary>
+        /// Gets or sets AnswerSpanRequest of the previous turn.
+        /// </summary>
+        /// <value>
+        /// The context of previous turn.
+        /// </value>
+        [JsonProperty("answerSpanRequest")]
+        public AnswerSpanRequest AnswerSpanRequest { get; set; }
     }
 }
