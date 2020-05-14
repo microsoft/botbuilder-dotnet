@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The answer text.
         /// </value>
         [JsonProperty("enable")]
-        public Boolean Enable { get; set; }
+        public bool Enable { get; set; }
 
         /// <summary>
         /// Gets or sets the TopAnswersWithSpan.
@@ -23,7 +23,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The answer TopAnswersWithSpan.
         /// </value>
         [JsonProperty("topAnswersWithSpan")]
-
         public int TopAnswersWithSpan { get; set; }
     }
 }
