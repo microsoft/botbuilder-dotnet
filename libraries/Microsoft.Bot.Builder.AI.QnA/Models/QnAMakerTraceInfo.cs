@@ -115,6 +115,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The AnswerSpanRequest.
         /// </value>
         [JsonProperty("answerSpanRequest")]
-        public AnswerSpanRequest answerSpanRequest { get; set; }
+        public AnswerSpanRequest AnswerSpanRequest { get; set; }
     }
 }

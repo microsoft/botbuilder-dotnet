@@ -175,6 +175,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 hydratedOptions.QnAId = queryOptions.QnAId;
                 hydratedOptions.IsTest = queryOptions.IsTest;
                 hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
+                hydratedOptions.AnswerSpanRequest = queryOptions.AnswerSpanRequest;
             }
 
             return hydratedOptions;
@@ -193,7 +194,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     context = options.Context,
                     qnaId = options.QnAId,
                     isTest = options.IsTest,
-                    rankerType = options.RankerType
+                    rankerType = options.RankerType,
+                    answerSpanRequest = options.AnswerSpanRequest
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(httpClient);
@@ -213,11 +215,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
                 ScoreThreshold = options.ScoreThreshold,
                 Top = options.Top,
-                StrictFilters = options.StrictFilters,               
+                StrictFilters = options.StrictFilters,
                 Context = options.Context,
                 QnAId = options.QnAId,
                 IsTest = options.IsTest,
-                RankerType = options.RankerType
+                RankerType = options.RankerType,
+                AnswerSpanRequest = options.AnswerSpanRequest
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
