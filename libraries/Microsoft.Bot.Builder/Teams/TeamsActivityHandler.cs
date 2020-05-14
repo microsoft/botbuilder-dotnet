@@ -253,9 +253,9 @@ namespace Microsoft.Bot.Builder.Teams
             var teamsMembersAdded = new List<TeamsChannelAccount>();
             foreach (var memberAdded in membersAdded)
             {
-                if (memberAdded.Properties.HasValues)
+                if (memberAdded.Properties.HasValues || memberAdded.Id == turnContext.Activity?.Recipient?.Id)
                 {
-                    // when the ChannelAccount object is fully a TeamsChannelAccount (when Teams changes the service to return the full details)
+                    // when the ChannelAccount object is fully a TeamsChannelAccount, or the bot (when Teams changes the service to return the full details)
                     teamsMembersAdded.Add(JObject.FromObject(memberAdded).ToObject<TeamsChannelAccount>());
                 }
                 else
