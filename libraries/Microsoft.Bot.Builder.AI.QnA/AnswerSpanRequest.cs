@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
-    public class  AnswerSpanRequest
+    public class AnswerSpanRequest
     {
         /// <summary>
         /// Gets or sets the enablet.
