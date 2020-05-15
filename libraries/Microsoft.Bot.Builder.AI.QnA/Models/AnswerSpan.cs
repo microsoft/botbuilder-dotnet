@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The answer text.
         /// </value>
         [JsonProperty("text")]
-        public string text { get; set; }
+        public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets the answer score.
