@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization.Json;
@@ -3764,6 +3765,41 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.Number,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.DateTimeDiff,
+                    (expr, state, options) =>
+                    {
+                        object dateTimeStart = null;
+                        object dateTimeEnd = null;
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (args[0] is string ts1 && args[1] is string ts2)
+                            {
+                                (dateTimeStart, error) = Ticks(ts1);
+                                if (error == null)
+                                {
+                                    (dateTimeEnd, error) = Ticks(ts2);
+                                }
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            value = (long)dateTimeStart - (long)dateTimeEnd;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    expr => ValidateArityAndAnyType(expr, 2, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.IsDefinite,
                     (expr, state, options) =>
