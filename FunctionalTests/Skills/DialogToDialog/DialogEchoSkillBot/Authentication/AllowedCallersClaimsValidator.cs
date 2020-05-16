@@ -31,7 +31,7 @@ namespace Microsoft.BotBuilderSamples.DialogEchoSkillBot.Authentication
             // to add a new parent bot simply go to the AllowedCallers and add
             // the parent bot's microsoft app id to the list
             var section = config.GetSection(ConfigKey);
-            var appsList = section.Get<string[]>();
+            var appsList = new string[] { "e3f806ce-f76b-44eb-bc7d-6d0e135b2155" };
             _allowedCallers = appsList != null ? new List<string>(appsList) : null;
         }
 

@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the task is successful, the result contains the property value, otherwise it will be default(T).</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
-        protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
 

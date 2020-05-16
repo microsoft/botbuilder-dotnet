@@ -55,6 +55,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot
 
             // Register the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
+            services.AddSingleton<UserState>();
 
             // Register Conversation state (used by the Dialog system itself).
             services.AddSingleton<ConversationState>();
