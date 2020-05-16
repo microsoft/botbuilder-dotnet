@@ -3785,7 +3785,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} must have two ISO timestamps.";
                             }
                         }
 
