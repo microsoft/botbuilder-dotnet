@@ -635,7 +635,7 @@ namespace AdaptiveExpressions.Tests
             Test("formatNumber(12.123, 2)", "12.12"),
             Test("formatNumber(1.551, 2)", "1.55"),
             Test("formatNumber(12.123, 4)", "12.1230"),
-            Test("formatNumber(12000.3, 4, 'fr-fr')", "12\x00a0000,3000"),
+            Test("formatNumber(12000.3, 4, 'fr-fr')", "12\x202F000,3000"),
             #endregion
 
             #region  Math functions test
