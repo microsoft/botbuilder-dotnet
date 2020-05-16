@@ -981,7 +981,7 @@ namespace AdaptiveExpressions.Tests
             var cultureList = new List<string>() { "de-DE", "fr-FR", "es-ES" };
             foreach (var newCultureInfo in cultureList)
             {
-                var originalCuture = Thread.CurrentThread.CurrentCulture;
+                var originalCulture = Thread.CurrentThread.CurrentCulture;
                 Thread.CurrentThread.CurrentCulture = new CultureInfo(newCultureInfo);
                 var parsed = Expression.Parse(input);
                 Assert.IsNotNull(parsed);
@@ -991,7 +991,7 @@ namespace AdaptiveExpressions.Tests
                 if (expectedRefs != null)
                 {
                     var actualRefs = parsed.References();
-                    Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+                    Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} actual: {string.Join(',', actualRefs)}");
                 }
 
                 // ToString re-parse
@@ -999,7 +999,7 @@ namespace AdaptiveExpressions.Tests
                 var newActual = newExpression.TryEvaluate(scope).value;
                 AssertObjectEquals(actual, newActual);
 
-                Thread.CurrentThread.CurrentCulture = originalCuture;
+                Thread.CurrentThread.CurrentCulture = originalCulture;
             }
         }
 
