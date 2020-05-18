@@ -82,6 +82,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             var hydratedOptions = HydrateOptions(options);
+            
             ValidateOptions(hydratedOptions);
 
             var result = await QueryQnaServiceAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
@@ -175,7 +176,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 hydratedOptions.QnAId = queryOptions.QnAId;
                 hydratedOptions.IsTest = queryOptions.IsTest;
                 hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
-                hydratedOptions.MRCEnable = queryOptions.MRCEnable;
             }
 
             return hydratedOptions;
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
             var answerSpanRequest = new AnswerSpanRequest();
-            answerSpanRequest.Enable = options.MRCEnable;
+            answerSpanRequest.Enable = QnAMakerOptions.MRCEnable;
             var jsonRequest = JsonConvert.SerializeObject(
                 new
                 {
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
             var answerSpanRequest = new AnswerSpanRequest();
-            answerSpanRequest.Enable = options.MRCEnable;
+            answerSpanRequest.Enable = QnAMakerOptions.MRCEnable;
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = (Activity)messageActivity,

@@ -11,10 +11,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMakerOptions
     {
+        private static bool mRCEnable;
+
         public QnAMakerOptions()
         {
             ScoreThreshold = 0.3f;
         }
+
+        public static bool MRCEnable { get => mRCEnable; set => mRCEnable = value; }
 
         /// <summary>
         /// Gets or sets the minimum score threshold, used to filter returned results.
@@ -92,14 +96,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether gets or sets MRCEnable.
-        /// </summary>
-        /// <value>
-        /// To enable MRC.
-        /// </value>
-        [JsonProperty("mRCEnable")]
-        public bool MRCEnable { get; set; }
     }
 }
