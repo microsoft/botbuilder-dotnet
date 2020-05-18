@@ -98,6 +98,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             var result = new PromptRecognizerResult<IList<DateTimeResolution>>();
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
+                if (string.IsNullOrEmpty(turnContext.Activity.Text))
+                {
+                    return Task.FromResult(result);
+                }
+
                 var message = turnContext.Activity.AsMessageActivity();
                 var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English;
                 var refTime = turnContext.Activity.LocalTimestamp?.LocalDateTime;

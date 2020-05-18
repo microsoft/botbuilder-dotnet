@@ -169,6 +169,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             var result = new PromptRecognizerResult<bool>();
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
+                if (string.IsNullOrEmpty(turnContext.Activity.Text))
+                {
+                    return Task.FromResult(result);
+                }
+
                 // Recognize utterance
                 var message = turnContext.Activity.AsMessageActivity();
                 var culture = DetermineCulture(turnContext.Activity);
