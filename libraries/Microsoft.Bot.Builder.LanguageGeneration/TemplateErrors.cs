@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string NoTemplate = "LG file must have at least one template definition.";
 
-        public const string InvalidTemplateName = "Invalid template name. Each part of template splited by dot(.) should start with letter/_ and only contains letter/_/number.";
+        public const string InvalidTemplateName = "Invalid template name. Each part of template name split by dot(.) should start with letter/_ and can only contain letter/_/number.";
 
         public const string InvalidTemplateBody = "Invalid template body. Expecting '-' prefix. ";
 
