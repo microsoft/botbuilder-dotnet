@@ -22,3 +22,6 @@
 # the-name-of-template
 - the body of template
 
+> each part splited by dot should start with letter/_ and only contains letter/_/number
+# t1.1
+- hi
