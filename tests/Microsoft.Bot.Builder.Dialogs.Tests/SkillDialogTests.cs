@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // Send something to the dialog to start it
             await client.SendActivityAsync<Activity>("irrelevant");
 
-            // Assert results and data sent to the SkillClient for fist turn
+            // Assert results and data sent to the SkillClient for first turn
             Assert.AreEqual(dialogOptions.BotId, fromBotIdSent);
             Assert.AreEqual(dialogOptions.Skill.AppId, toBotIdSent);
             Assert.AreEqual(dialogOptions.Skill.SkillEndpoint.ToString(), toUriSent.ToString());
@@ -375,7 +375,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 BotId = Guid.NewGuid().ToString(),
                 SkillHostEndpoint = new Uri("http://test.contoso.com/skill/messages"),
-                ConversationIdFactory = new SimpleConversationIdFactory(),
+                ConversationIdFactory = new SkillConversationReferenceStorage(new MemoryStorage()),
                 ConversationState = conversationState,
                 SkillClient = mockSkillClient.Object,
                 Skill = new BotFrameworkSkill
@@ -416,33 +416,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             activityToSend.DeliveryMode = DeliveryModes.ExpectReplies;
             activityToSend.Text = Guid.NewGuid().ToString();
             return activityToSend;
-        }
-
-        // Simple conversation ID factory for testing.
-        private class SimpleConversationIdFactory : SkillConversationIdFactoryBase
-        {
-            private readonly ConcurrentDictionary<string, SkillConversationReference> _conversationRefs = new ConcurrentDictionary<string, SkillConversationReference>();
-
-            public override Task<string> CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions options, CancellationToken cancellationToken)
-            {
-                var key = (options.Activity.Conversation.Id + options.Activity.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
-                _conversationRefs.GetOrAdd(key, new SkillConversationReference
-                {
-                    ConversationReference = options.Activity.GetConversationReference(),
-                    OAuthScope = options.FromBotOAuthScope
-                });
-                return Task.FromResult(key);
-            }
-
-            public override Task<SkillConversationReference> GetSkillConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
-            {
-                return Task.FromResult(_conversationRefs[skillConversationId]);
-            }
-
-            public override Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 }
