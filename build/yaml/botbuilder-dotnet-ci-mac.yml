@@ -8,6 +8,7 @@ name: $(Build.BuildId)
 pool:
     vmImage: 'macOS-10.14'
 
+# No "paths exclude" here: not supported by github required status checks.
 trigger: # ci trigger
   branches:
     include:
