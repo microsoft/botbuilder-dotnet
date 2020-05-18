@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class AnswerSpanRequest
     {
         /// <summary>
-        /// Gets or sets the enablet.
+        /// Gets or sets a value indicating whether gets or sets the enablet.
         /// </summary>
         /// <value>
         /// The answer text.
