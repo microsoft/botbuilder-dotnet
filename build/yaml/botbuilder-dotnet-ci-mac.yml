@@ -12,31 +12,11 @@ trigger: # ci trigger
   branches:
     include:
      - master
-  paths:
-    include:
-      - '*'
-    exclude:
-      - doc/
-      - specs/
-      - Changes.md
-      - LICENSE
-      - README.md
-      - UsingMyGet.md
 
 pr: # pr trigger
   branches:
     include:
      - master
-  paths:
-    include:
-      - '*'
-    exclude:
-      - doc/
-      - specs/
-      - Changes.md
-      - LICENSE
-      - README.md
-      - UsingMyGet.md
 
 variables:
   BuildConfiguration: debug
