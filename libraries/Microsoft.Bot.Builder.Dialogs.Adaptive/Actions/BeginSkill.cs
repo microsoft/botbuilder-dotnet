@@ -124,10 +124,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // Update the dialog options with the runtime settings.
+            var storage = dc.Context.TurnState.Get<IStorage>();
             DialogOptions.BotId = BotId.GetValue(dc.State);
             DialogOptions.SkillHostEndpoint = new Uri(SkillHostEndpoint.GetValue(dc.State));
-            DialogOptions.ConversationIdFactory = dc.Context.TurnState.Get<SkillConversationIdFactoryBase>() ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in HostContext");
-            DialogOptions.SkillClient = dc.Context.TurnState.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in HostContext");
+            DialogOptions.ConversationIdFactory = dc.Context.TurnState.Get<SkillConversationIdFactoryBase>() ?? new SkillConversationReferenceStorage(storage ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in turnstate"));
+            DialogOptions.SkillClient = dc.Context.TurnState.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in turnstate");
             DialogOptions.ConversationState = dc.Context.TurnState.Get<ConversationState>() ?? throw new NullReferenceException($"Unable to get an instance of {nameof(ConversationState)} from TurnState.");
             DialogOptions.ConnectionName = ConnectionName.GetValue(dc.State);
 
