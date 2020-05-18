@@ -1,0 +1,22 @@
+﻿{
+  "$schema": "../../tests.schema",
+  "$kind": "Microsoft.AdaptiveDialog",
+  "generator": "test.lg",
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnBeginDialog",
+      "actions": [
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.date",
+          "value": "2018-01-01T08:00:00.000Z"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${addToTime(user.date, 120, 'Second')}"
+        }
+
+      ]
+    }
+  ]
+}

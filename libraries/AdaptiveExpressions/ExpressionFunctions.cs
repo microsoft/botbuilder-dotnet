@@ -932,7 +932,14 @@ namespace AdaptiveExpressions
             object value;
             if (!(obj is JValue jval))
             {
-                value = obj;
+                if (obj is DateTime dt)
+                {
+                    value = dt.ToString("yyyy-MM-ddThh:mm:ss.fffZ");
+                }
+                else
+                {
+                    value = obj;
+                }
             }
             else
             {
@@ -1107,7 +1114,7 @@ namespace AdaptiveExpressions
         {
             if (memory.TryGetValue(property, out var result) && result != null)
             {
-                return (result, null);
+                return (ResolveValue(result), null);
             }
 
             if (options.NullSubstitution != null)
