@@ -76,5 +76,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty(PropertyName = "context")]
         public QnAResponseContext Context { get; set; }
+
+        /// <summary>
+        /// Gets or sets AnswerSpan of the previous turn.
+        /// </summary>
+        /// <value>
+        /// The answerspan value.
+        /// </value>
+        [JsonProperty("answerSpan")]
+        public AnswerSpan AnswerSpan { get; set; }
     }
 }

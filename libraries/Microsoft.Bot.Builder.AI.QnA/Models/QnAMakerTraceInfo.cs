@@ -103,9 +103,18 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
-        
+
         [Obsolete("This property is no longer used and will be ignored")]
         [JsonIgnore]
         public Metadata[] MetadataBoost { get; set; }
+
+        /// <summary>
+        /// Gets or sets AnswerSpanRequest of the previous turn.
+        /// </summary>
+        /// <value>
+        /// The AnswerSpanRequest.
+        /// </value>
+        [JsonProperty("answerSpanRequest")]
+        public AnswerSpanRequest AnswerSpanRequest { get; set; }
     }
 }

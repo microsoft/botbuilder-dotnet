@@ -92,5 +92,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
+
+        /// <summary>
+        /// Gets or sets MRCEnable of the previous turn.
+        /// </summary>
+        /// <value>
+        /// To enable MRC
+        /// </value>
+        [JsonProperty("MRCEnable")]
+        public bool MRCEnable { get; set; }
     }
 }
