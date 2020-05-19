@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -31,12 +32,19 @@ namespace Microsoft.Bot.Builder.Skills
         public string OAuthScope { get; set; }
 
         /// <summary>
-        /// Gets or sets the EndOfConversationActivity.
+        /// Gets or sets the contextual activities.
         /// </summary>
         /// <value>
-        /// The EndOfConversation activity which the skill sent back to the skill host to indicate the end of the conversation result.
+        /// For async post back we collect Event and EndOfConversation activites to be processed on skillhost calling context.
         /// </value>
-        [JsonProperty("endOfConversationActivity")]
-        public Activity Activity { get; set; } = null;
+        [JsonProperty("activities")]
+        public List<Activity> Activities { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether a skill host is waiting on the skill to complete it's turn.
+        /// </summary>
+        /// <value>If this is true there is a skillHost waiting on the skill to complete the turn, activites should.</value>
+        [JsonProperty("skillHostWaiting")]
+        public bool SkillHostWaiting { get; set; }
     }
 }

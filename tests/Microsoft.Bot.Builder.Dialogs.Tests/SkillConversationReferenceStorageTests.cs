@@ -65,9 +65,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(cr.Bot.Id, record.ConversationReference.Bot.Id);
             Assert.AreEqual(cr.ChannelId, record.ConversationReference.ChannelId);
             Assert.AreEqual(cr.Conversation.Id, record.ConversationReference.Conversation.Id);
-            Assert.IsNull(record.Activity);
+            Assert.IsNull(record.Activities);
 
-            record.Activity = new Activity() { Type = ActivityTypes.EndOfConversation };
+            record.Activities = new List<Activity> { new Activity() { Type = ActivityTypes.EndOfConversation } };
             await scr.SaveSkillConversationReferenceAsync(record, CancellationToken.None);
 
             record = await scr.GetSkillConversationReferenceAsync(id, CancellationToken.None);
@@ -78,8 +78,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(cr.Bot.Id, record.ConversationReference.Bot.Id);
             Assert.AreEqual(cr.ChannelId, record.ConversationReference.ChannelId);
             Assert.AreEqual(cr.Conversation.Id, record.ConversationReference.Conversation.Id);
-            Assert.IsNotNull(record.Activity);
-            Assert.AreEqual(ActivityTypes.EndOfConversation, record.Activity.Type);
+            Assert.IsNotNull(record.Activities);
+            Assert.AreEqual(ActivityTypes.EndOfConversation, record.Activities[0].Type);
 
             await scr.DeleteConversationReferenceAsync(id, CancellationToken.None);
 
