@@ -104,6 +104,10 @@
         {
           "$kind": "Microsoft.SendActivity",
           "activity": "${ticks(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${isDateTime(user.date)}"
         }
       ]
     }

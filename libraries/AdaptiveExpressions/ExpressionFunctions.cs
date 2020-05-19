@@ -4348,15 +4348,12 @@ namespace AdaptiveExpressions
                     Apply(
                         args =>
                         {
-                            if (args[0] is string)
+                            object value = null;
+                            string error = null;
+                            (value, error) = NormalizeToDateTime(args[0]);
+                            if (error == null)
                             {
-                                object value = null;
-                                string error = null;
-                                (value, error) = ParseISOTimestamp(args[0] as string);
-                                if (error == null)
-                                {
-                                    return true;
-                                }
+                                return true;
                             }
 
                             return false;
