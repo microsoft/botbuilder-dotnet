@@ -183,17 +183,41 @@ namespace Microsoft.Bot.Builder.Skills
                 activity.ApplyConversationReference(skillConversationReference.ConversationReference);
                 turnContext.Activity.Id = replyToActivityId;
                 turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
+
                 switch (activity.Type)
                 {
                     case ActivityTypes.EndOfConversation:
-                        await _conversationIdFactory.DeleteConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
-                        ApplyEoCToTurnContextActivity(turnContext, activity);
-                        await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+                        if (skillConversationReference.SkillHostWaiting)
+                        {
+                            // add to the skillConversationReference.Activities so that the SkillHost can process in their context.
+                            skillConversationReference.Activities.Add(activity);
+                            await _conversationIdFactory.SaveSkillConversationReferenceAsync(skillConversationReference, cancellationToken).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            // create a turn and process on this callback context
+                            ApplyEoCToTurnContextActivity(turnContext, activity);
+                            await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+                        }
+
                         break;
+
                     case ActivityTypes.Event:
-                        ApplyEventToTurnContextActivity(turnContext, activity);
-                        await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+                        if (skillConversationReference.SkillHostWaiting)
+                        {
+                            // add to the skillConversationReference.Activities so that the SkillHost can process in their context.
+                            skillConversationReference.Activities.Add(activity);
+                            await _conversationIdFactory.SaveSkillConversationReferenceAsync(skillConversationReference, cancellationToken).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            // create a turn and process on this callback context
+                            ApplyEventToTurnContextActivity(turnContext, activity);
+                            await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+                        }
+
                         break;
+
                     default:
                         await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                         break;
