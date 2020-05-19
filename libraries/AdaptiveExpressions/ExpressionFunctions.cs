@@ -765,10 +765,10 @@ namespace AdaptiveExpressions
                     (args, error) = EvaluateChildren(expr, state, options);
                     if (error == null)
                     {
-                        if (args[0] is string string0 && args[1].IsInteger())
+                        if (args[1].IsInteger())
                         {
                             var formatString = (args.Count() == 3 && args[2] is string string1) ? string1 : DefaultDateTimeFormat;
-                            (value, error) = ParseISOTimestamp(string0, dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
+                            (value, error) = NormalizeToDateTime(args[0], dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
                         }
                         else
                         {
@@ -1772,7 +1772,7 @@ namespace AdaptiveExpressions
             }
             else
             {
-                error = $"{timestamp} is neither standard ISO format string, nor a DateTime object.";
+                error = $"{timestamp} is neither a standard ISO format string, nor a DateTime object.";
             }
 
             return (result, error);
@@ -3358,37 +3358,37 @@ namespace AdaptiveExpressions
                 TimeTransform(ExpressionType.AddSeconds, (ts, add) => ts.AddSeconds(add)),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfMonth,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Day), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Day)),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfWeek,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => Convert.ToInt32(dt.DayOfWeek)), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => Convert.ToInt32(dt.DayOfWeek))),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfYear,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.DayOfYear), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.DayOfYear)),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Month,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Month), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Month)),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Date,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture)), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture))),
                     ReturnType.String,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Year,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Year), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Year)),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.UtcNow,
-                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0].ToString() : DefaultDateTimeFormat), VerifyString),
+                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0].ToString() : DefaultDateTimeFormat)),
                     ReturnType.String),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
@@ -3512,8 +3512,7 @@ namespace AdaptiveExpressions
                             }
 
                             return (result, error);
-                        },
-                        VerifyString),
+                        }),
                     ReturnType.String,
                     expr => ValidateOrder(expr, null, ReturnType.String, ReturnType.String)),
                 new ExpressionEvaluator(
@@ -3554,8 +3553,7 @@ namespace AdaptiveExpressions
                             }
 
                             return (value, error);
-                        },
-                        VerifyString),
+                        }),
                     ReturnType.String,
                     ValidateUnary),
                 new ExpressionEvaluator(
