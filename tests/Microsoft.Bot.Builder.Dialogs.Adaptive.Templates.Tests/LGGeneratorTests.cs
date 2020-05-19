@@ -393,7 +393,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public async Task TestDateTimeLG()
+        public async Task TestDateTimeFunctions()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
             DialogManager dm = new DialogManager()
@@ -427,6 +427,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .AssertReply("2018-01-20T08:00:00.000Z")
                 .AssertReply("2018-01-01T00:00:00.000Z")
                 .AssertReply("636503904000000000")
+                .AssertReply("True")
             .StartTestAsync();
         }
 
