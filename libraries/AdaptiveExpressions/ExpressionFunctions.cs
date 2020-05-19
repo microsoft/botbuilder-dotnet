@@ -1772,7 +1772,7 @@ namespace AdaptiveExpressions
             }
             else
             {
-                error = $"{timestamp} is neither a standard ISO format string, nor a DateTime object.";
+                error = $"{timestamp} should be a standard ISO format string or a DateTime object.";
             }
 
             return (result, error);
