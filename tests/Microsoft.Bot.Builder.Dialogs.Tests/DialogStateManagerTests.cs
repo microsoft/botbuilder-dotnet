@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Castle.DynamicProxy.Contributors;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
+using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
@@ -18,6 +20,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class DialogStateManagerTests
     {
+        public class LamdaMultiTurnDialog : Dialog
+        {
+            private Func<DialogContext, CancellationToken, Task<DialogTurnResult>> handler;
+
+            public LamdaMultiTurnDialog(Func<DialogContext, CancellationToken, Task<DialogTurnResult>> handler)
+            {
+                this.handler = handler;
+            }
+
+            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                return await this.handler(dc, cancellationToken);
+            }
+
+            public async override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            {
+                return await this.handler(dc, cancellationToken);
+            }
+        }
+
         private Foo foo = new Foo()
         {
             Name = "Tom",
@@ -41,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .UseBotState(new UserState(new MemoryStorage()))
                 .UseBotState(new ConversationState(new MemoryStorage()));
 
-            DialogManager dm = new DialogManager(new LamdaDialog(handler));
+            var dm = new DialogManager(new LamdaDialog(handler));
             dm.InitialTurnState.Set<ResourceExplorer>(new ResourceExplorer());
             return new TestFlow(adapter, dm.OnTurnAsync).SendConversationUpdate();
         }
@@ -112,6 +134,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     }
                 }
             })
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestMemorySnapshotTracing()
+        {
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTraceActivity: true);
+            adapter
+                .UseStorage(new MemoryStorage())
+                .UseBotState(new UserState(new MemoryStorage()))
+                .UseBotState(new ConversationState(new MemoryStorage()));
+
+            var dm = new DialogManager(new LamdaMultiTurnDialog(async (dc, ct) =>
+            {
+                var counter = dc.State.GetValue<int>("this.counter");
+                if (counter == 0)
+                {
+                    dc.State.SetValue("this.counter", 1);
+
+                    // should send trace
+                    await dc.State.SaveAllChangesAsync("save1");
+
+                    // should not send trace activity
+                    await dc.State.SaveAllChangesAsync("save2");
+                    return new DialogTurnResult(DialogTurnStatus.Waiting);
+                }
+                else if (counter == 1)
+                {
+                    dc.State.SetValue("this.counter", 2);
+
+                    // should send trace activity
+                    await dc.State.SaveAllChangesAsync("save3");
+
+                    // should not send trace activity
+                    await dc.State.SaveAllChangesAsync("save4");
+
+                    return new DialogTurnResult(DialogTurnStatus.Waiting);
+                }
+
+                return await dc.EndDialogAsync();
+            }));
+            dm.InitialTurnState.Set<ResourceExplorer>(new ResourceExplorer());
+
+            await new TestFlow(adapter, dm.OnTurnAsync)
+                .SendConversationUpdate()
+                .AssertReply((a) => Assert.IsTrue(((Activity)a).Type == ActivityTypes.Trace && ((Activity)a).Label == "save1"))
+                .Send("test")
+                .AssertReply((a) => Assert.IsTrue(((Activity)a).Type == ActivityTypes.Trace && ((Activity)a).Label == "save3"))
+                .Send("test")
+                .AssertReply((a) => Assert.IsTrue(((Activity)a).Type == ActivityTypes.Trace && ((Activity)a).Label == "Bot State"))
+                .AssertNoReply(timeout: 1000)
             .StartTestAsync();
         }
 

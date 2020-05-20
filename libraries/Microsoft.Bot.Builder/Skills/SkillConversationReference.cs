@@ -30,21 +30,5 @@ namespace Microsoft.Bot.Builder.Skills
 
         [JsonProperty("oAuthScope")]
         public string OAuthScope { get; set; }
-
-        /// <summary>
-        /// Gets or sets the contextual activities.
-        /// </summary>
-        /// <value>
-        /// For async post back we collect Event and EndOfConversation activites to be processed on skillhost calling context.
-        /// </value>
-        [JsonProperty("activities")]
-        public List<Activity> Activities { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether a skill host is waiting on the skill to complete it's turn.
-        /// </summary>
-        /// <value>If this is true there is a skillHost waiting on the skill to complete the turn, activites should.</value>
-        [JsonProperty("skillHostWaiting")]
-        public bool SkillHostWaiting { get; set; }
     }
 }

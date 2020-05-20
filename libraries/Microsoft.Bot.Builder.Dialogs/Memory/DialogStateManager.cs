@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
+using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
@@ -186,7 +188,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             MemoryScope memoryScope = null;
             string remainingPath;
-            
+
             try
             {
                 memoryScope = ResolveMemoryScope(path, out remainingPath);
@@ -372,6 +374,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             foreach (var scope in this.Configuration.MemoryScopes)
             {
                 await scope.SaveChangesAsync(this.dialogContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Save all changes with a trace snapshot activity (only if different from last trace).
+        /// </summary>
+        /// <param name="traceLabel">trace label for the memory snapshot.</param>
+        /// <param name="cancellationToken">cancellationtoken.</param>
+        /// <returns>task.</returns>
+        public async Task SaveAllChangesAsync(string traceLabel, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // save changes
+            await SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            // trace memory snapshot
+            var snapshot = GetActiveDialogContext(this.dialogContext).State.GetMemorySnapshot();
+
+            // only trace if it's changed since last time we traced it.
+            var snapshotHash = StringUtils.Hash(JsonConvert.SerializeObject(snapshot));
+            this.dialogContext.Context.TurnState.TryGetValue("lastSnapshotHash", out object lastSnapshotHash);
+            if ((string)lastSnapshotHash != snapshotHash)
+            {
+                this.dialogContext.Context.TurnState["lastSnapshotHash"] = snapshotHash;
+                var traceActivity = (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", snapshot, traceLabel);
+                await this.dialogContext.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -588,6 +615,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             return false;
+        }
+
+        // Recursively walk up the DC stack to find the active DC.
+        private DialogContext GetActiveDialogContext(DialogContext dialogContext)
+        {
+            var child = dialogContext.Child;
+            if (child == null)
+            {
+                return dialogContext;
+            }
+
+            return GetActiveDialogContext(child);
         }
     }
 }

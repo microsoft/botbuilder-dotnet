@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class SkillDialog : Dialog
     {
         private const string DeliverModeStateKey = "deliverymode";
-        private const string SkillConversationIdPath = "this.skillConversationReferenceId";
+        private const string SkillConversationIdKey = "skillConversationReferenceId";
 
         public SkillDialog(SkillDialogOptions dialogOptions, string dialogId = null)
             : base(dialogId)
@@ -52,24 +52,31 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // create skillConversationReference record.
             var skillConversationId = await CreateSkillConversationIdAsync(dc.Context, skillActivity, cancellationToken).ConfigureAwait(false);
-            dc.State.SetValue(SkillConversationIdPath, skillConversationId);
+            dc.ActiveDialog.State[SkillConversationIdKey] = skillConversationId;
 
             // Send the activity to the skill.
-            var eocActivity = await SendToSkillAsync(dc, skillConversationId, skillActivity, cancellationToken).ConfigureAwait(false);
+            var eocActivity = await SendToSkillAsync(dc, skillActivity, cancellationToken).ConfigureAwait(false);
 
             // if it has a EndOfConversationActivity then it has ended
             if (eocActivity != null)
             {
-                // end dialog the eocActivity.Value as result
+                // end dialog with the eocActivity.value
+                await OnSkillResultAsync(dc, eocActivity.Value, cancellationToken).ConfigureAwait(false);
                 return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
             }
 
-            // conversation is not done, signal to continue calling us so we can route to skill.
+            // IMPORTANT: In Async mode, the Skill posts back to the SkillHost, and execution of this dialog stack is run as a seperate async turn on that machine 
+            // The issue is that the Skill post back may be executed before it has returned the status to this context's call to SendToSkillAsync() call, 
+            // (we are still awaiting the completion of SendToSkillAsync() while it is posting back to us and moving the dialog state machine forward which get persisted to
+            // state)
+            // In order to avoid data loss with SendToSkillAsync() in async postback mode, you MUST make no state changes and you MUST END THE TURN immediately.
             return EndOfTurn;
         }
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
+            var skillConversationId = (string)dc.ActiveDialog.State[SkillConversationIdKey];
+
             if (!OnValidateActivity(dc.Context.Activity))
             {
                 return EndOfTurn;
@@ -77,31 +84,35 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             await dc.Context.TraceActivityAsync($"{GetType().Name}.ContinueDialogAsync()", label: $"ActivityType: {dc.Context.Activity.Type}", cancellationToken: cancellationToken).ConfigureAwait(false);
 
+            // If we receive a EOC then we end the dialog.
+            if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation)
+            {
+                // clean up and end dialog. Skill should have been told we are ending, so we can delete record.
+                await DialogOptions.ConversationIdFactory.DeleteConversationReferenceAsync(skillConversationId, cancellationToken).ConfigureAwait(false);
+                await OnSkillResultAsync(dc, dc.Context.Activity.Value, cancellationToken).ConfigureAwait(false);
+                return await dc.EndDialogAsync(dc.Context.Activity.Value, cancellationToken).ConfigureAwait(false);
+            }
+
             // Create deep clone of the original activity to avoid altering it before forwarding it.
             var skillActivity = ObjectPath.Clone(dc.Context.Activity);
             skillActivity.DeliveryMode = dc.ActiveDialog.State[DeliverModeStateKey] as string;
 
-            var skillConversationId = dc.State.GetValue<string>(SkillConversationIdPath);
-
             // Just forward to the remote skill
-            var eocActivity = await SendToSkillAsync(dc, skillConversationId, skillActivity, cancellationToken).ConfigureAwait(false);
+            var eocActivity = await SendToSkillAsync(dc, skillActivity, cancellationToken).ConfigureAwait(false);
 
             // if skill sent back a EndOfConversationActivity then dialog has ended
             if (eocActivity != null)
             {
                 // end dialog with the eocActivity.value
+                await OnSkillResultAsync(dc, eocActivity.Value, cancellationToken).ConfigureAwait(false);
                 return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
             }
 
-            // if this activity is actually a EOC then we got it from a channel
-            if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation)
-            {
-                // clean up and end dialog. Skill should have been told we are ending, so we can delete record.
-                await DialogOptions.ConversationIdFactory.DeleteConversationReferenceAsync(skillConversationId, cancellationToken).ConfigureAwait(false);
-                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-
-            // end turn so next activity will be routed to the skill.
+            // IMPORTANT: In Async mode, the Skill posts back to the SkillHost, and execution of this dialog stack is run as a seperate async turn on that machine 
+            // The issue is that the Skill post back may be executed before it has returned the status to this context's call to SendToSkillAsync() call, 
+            // (we are still awaiting the completion of SendToSkillAsync() while it is posting back to us and moving the dialog state machine forward which get persisted to
+            // state)
+            // In order to avoid data loss with SendToSkillAsync() in async postback mode, you MUST make no state changes and you MUST END THE TURN immediately.
             return EndOfTurn;
         }
 
@@ -114,7 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
-            var skillConversationId = instance.State[SkillConversationIdPath.Replace("this.", string.Empty)].ToString();
+            var skillConversationId = instance.State[SkillConversationIdKey].ToString();
 
             // Send EndOfConversation to the skill if the dialog has been cancelled. 
             if (reason == DialogReason.CancelCalled || reason == DialogReason.ReplaceCalled)
@@ -139,6 +150,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             await base.EndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Method which is notified of result of calling the skill.
+        /// </summary>
+        /// <param name="dc">dc.</param>
+        /// <param name="result">EndOfConversationActivity.Value.</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
+        /// <returns>task.</returns>
+        protected virtual Task OnSkillResultAsync(DialogContext dc, object result, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
         protected async override Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             // look for dialogEvents.RepromptDialog so we have a Dc based RepromptDialog
@@ -152,10 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 repromptEvent.ApplyConversationReference(dc.Context.Activity.GetConversationReference(), true);
 
                 // connection Name is not applicable for a RePrompt, as we don't expect as OAuthCard in response.
-
-                var skillConversationId = dc.State.GetValue<string>(SkillConversationIdPath);
-
-                await SendToSkillAsync(dc, skillConversationId, (Activity)repromptEvent, cancellationToken).ConfigureAwait(false);
+                await SendToSkillAsync(dc, (Activity)repromptEvent, cancellationToken).ConfigureAwait(false);
 
                 // handled
                 return true;
@@ -202,8 +222,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             return dialogArgs;
         }
 
-        private async Task<Activity> SendToSkillAsync(DialogContext dc, string skillConversationReferenceId, Activity activity, CancellationToken cancellationToken)
+        private async Task<Activity> SendToSkillAsync(DialogContext dc, Activity activity, CancellationToken cancellationToken)
         {
+            var skillConversationReferenceId = dc.ActiveDialog.State[SkillConversationIdKey].ToString();
+
             if (activity.Type == ActivityTypes.Invoke)
             {
                 // Force ExpectReplies for invoke activities so we can get the replies right away and send them back to the channel if needed.
@@ -213,22 +235,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Always save state before forwarding
             // (the dialog stack won't get updated with the skillDialog and things won't work if you don't)
-            await dc.State.SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
-
-            // if we are async mode then we mark SkillConversationReference that this skillHost is waiting on the skill to complete the operation.
-            var skillConversationReference = await DialogOptions.ConversationIdFactory.GetSkillConversationReferenceAsync(skillConversationReferenceId, cancellationToken).ConfigureAwait(false);
-            if (activity.DeliveryMode != DeliveryModes.ExpectReplies)
-            {
-                skillConversationReference.SkillHostWaiting = true;
-                skillConversationReference.Activities = new List<Activity>();
-            }
-            else
-            {
-                skillConversationReference.SkillHostWaiting = false;
-                skillConversationReference.Activities = null;
-            }
-
-            await DialogOptions.ConversationIdFactory.SaveSkillConversationReferenceAsync(skillConversationReference, cancellationToken).ConfigureAwait(false);
+            await dc.State.SaveAllChangesAsync(traceLabel: "Bot State", cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var skillInfo = DialogOptions.Skill;
             var response = await DialogOptions.SkillClient.PostActivityAsync<ExpectedReplies>(DialogOptions.BotId, skillInfo.AppId, skillInfo.SkillEndpoint, DialogOptions.SkillHostEndpoint, skillConversationReferenceId, activity, cancellationToken).ConfigureAwait(false);
@@ -239,83 +246,65 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new HttpRequestException($"Error invoking the skill id: \"{skillInfo.Id}\" at \"{skillInfo.SkillEndpoint}\" (status is {response.Status}). \r\n {response.Body}");
             }
 
-            IList<Activity> activitiesFromSkill = null;
             if (activity.DeliveryMode == DeliveryModes.ExpectReplies && response.Body.Activities != null)
             {
                 // activitiesFromSkill came as inline response body.
-                activitiesFromSkill = response.Body.Activities;
-            }
-            else
-            {
-                // we are async mode then get SKillConversationReference (it could be different)
-                skillConversationReference = await DialogOptions.ConversationIdFactory.GetSkillConversationReferenceAsync(skillConversationReferenceId, cancellationToken).ConfigureAwait(false);
+                var activitiesFromSkill = response.Body.Activities;
 
-                // we mark SkillConversationReference that this skillHost is no longer waiting on the skill to complete the operation.
-                skillConversationReference.SkillHostWaiting = false;
-
-                if (skillConversationReference.Activities != null)
+                // if we have any skill activities to process in this turn context.
+                if (activitiesFromSkill.Any())
                 {
-                    activitiesFromSkill = skillConversationReference.Activities;
-                    skillConversationReference.Activities = null;
-                }
+                    bool changesPending = false;
 
-                // save updated record.
-                await DialogOptions.ConversationIdFactory.SaveSkillConversationReferenceAsync(skillConversationReference, cancellationToken).ConfigureAwait(false);
-            }
-
-            // if we have any skill activities to process in this turn context.
-            if (activitiesFromSkill != null && activitiesFromSkill.Any())
-            {
-                bool changesPending = false;
-
-                foreach (var activityFromSkill in activitiesFromSkill)
-                {
-                    if (activityFromSkill.Type == ActivityTypes.EndOfConversation)
+                    foreach (var activityFromSkill in activitiesFromSkill)
                     {
-                        // return the EndOfConversation activity, we are done.
-                        return activityFromSkill;
-                    }
-                    else if (activityFromSkill.Type == ActivityTypes.Event)
-                    {
-                        // emit event to accumulate plan changes.
-                        if (await dc.EmitEventAsync(DialogEvents.ActivityReceived, activityFromSkill, cancellationToken: cancellationToken).ConfigureAwait(false))
+                        if (activityFromSkill.Type == ActivityTypes.EndOfConversation)
                         {
-                            changesPending = true;
+                            // return the EndOfConversation activity, we are done.
+                            return activityFromSkill;
+                        }
+                        else if (activityFromSkill.Type == ActivityTypes.Event)
+                        {
+                            // emit event to accumulate plan changes.
+                            if (await dc.EmitEventAsync(DialogEvents.ActivityReceived, activityFromSkill, cancellationToken: cancellationToken).ConfigureAwait(false))
+                            {
+                                changesPending = true;
+                            }
+                        }
+                        else if (await InterceptOAuthCardsAsync(dc.Context, activityFromSkill, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false))
+                        {
+                            // do nothing. Token exchange succeeded, so no oauthcard needs to be shown to the user
+                        }
+                        else
+                        {
+                            // capture value from InvokeResponse 
+                            if (activityFromSkill.Type == ActivityTypesEx.InvokeResponse && activityFromSkill.Value is JObject jObject)
+                            {
+                                // Ensure the value in the invoke response is of type InvokeResponse (it gets deserialized as JObject by default).
+                                activityFromSkill.Value = jObject.ToObject<InvokeResponse>();
+                            }
+
+                            // Send the response back to the channel. 
+                            await dc.Context.SendActivityAsync(activityFromSkill, cancellationToken).ConfigureAwait(false);
                         }
                     }
-                    else if (await InterceptOAuthCardsAsync(dc.Context, activityFromSkill, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false))
+
+                    // If we have changesPending then we need to call rootDc.ContinueDialog()
+                    if (changesPending)
                     {
-                        // do nothing. Token exchange succeeded, so no oauthcard needs to be shown to the user
-                    }
-                    else
-                    {
-                        // capture value from InvokeResponse 
-                        if (activityFromSkill.Type == ActivityTypesEx.InvokeResponse && activityFromSkill.Value is JObject jObject)
+                        // find root
+                        var rootDc = dc;
+                        while (rootDc.Parent != null)
                         {
-                            // Ensure the value in the invoke response is of type InvokeResponse (it gets deserialized as JObject by default).
-                            activityFromSkill.Value = jObject.ToObject<InvokeResponse>();
+                            rootDc = rootDc.Parent;
                         }
 
-                        // Send the response back to the channel. 
-                        await dc.Context.SendActivityAsync(activityFromSkill, cancellationToken).ConfigureAwait(false);
-                    }
-                }
-
-                // If we have changesPending then we need to call rootDc.ContinueDialog()
-                if (changesPending)
-                {
-                    // find root
-                    var rootDc = dc;
-                    while (rootDc.Parent != null)
-                    {
-                        rootDc = rootDc.Parent;
-                    }
-
-                    // call rootDC to continue (to handle any plan changes)
-                    if (rootDc != null)
-                    {
-                        // call ContinueDialogAsync() to apply changes and continue execution.
-                        await rootDc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                        // call rootDC to continue (to handle any plan changes)
+                        if (rootDc != null)
+                        {
+                            // call ContinueDialogAsync() to apply changes and continue execution.
+                            await rootDc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                        }
                     }
                 }
             }

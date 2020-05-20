@@ -210,6 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // or we have had an exception AND there was an OnError action which captured the error.  We need to continue the 
             // turn based on the actions the OnError handler introduced.
             var endOfTurn = false;
+            string traceLabel = "Bot State";
             while (!endOfTurn)
             {
                 try
@@ -218,11 +219,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         // The bot is running as a skill.
                         turnResult = await HandleSkillOnTurnAsync(dc, cancellationToken).ConfigureAwait(false);
+                        traceLabel = "Skill State";
                     }
                     else
                     {
                         // The bot is running as root bot.
                         turnResult = await HandleBotOnTurnAsync(dc, cancellationToken).ConfigureAwait(false);
+                        traceLabel = "Bot State";
                     }
 
                     // turn successfully completed, break the loop
@@ -241,24 +244,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            // save all state scopes to their respective botState locations.
-            await dialogStateManager.SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
+            // save all state scopes, with a TraceActivity, which includes custom memory scopes which may not be botstate.
+            await dialogStateManager.SaveAllChangesAsync(traceLabel: traceLabel, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            // save BotState changes
+            // save BotState changes (dialogStateManager may not have all botstates in it)
             await botStateSet.SaveAllChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);
 
             return new DialogManagerResult { TurnResult = turnResult };
-        }
-
-        /// <summary>
-        /// Helper to send a trace activity with a memory snapshot of the active dialog DC. 
-        /// </summary>
-        private static async Task SendStateSnapshotTraceAsync(DialogContext dc, string traceLabel, CancellationToken cancellationToken)
-        {
-            // send trace of memory
-            var snapshot = GetActiveDialogContext(dc).State.GetMemorySnapshot();
-            var traceActivity = (Activity)Activity.CreateTraceActivity("BotState", "https://www.botframework.com/schemas/botState", snapshot, traceLabel);
-            await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
         }
 
         private static bool IsFromParentToSkill(ITurnContext turnContext)
@@ -272,7 +264,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         // Recursively walk up the DC stack to find the active DC.
-        private static DialogContext GetActiveDialogContext(DialogContext dialogContext)
+        private DialogContext GetActiveDialogContext(DialogContext dialogContext)
         {
             var child = dialogContext.Child;
             if (child == null)
@@ -325,8 +317,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 turnResult = await dc.BeginDialogAsync(_rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            await SendStateSnapshotTraceAsync(dc, "Skill State", cancellationToken).ConfigureAwait(false);
-
             // Send end of conversation if it is completed or cancelled.
             if (turnResult.Status == DialogTurnStatus.Complete || turnResult.Status == DialogTurnStatus.Cancelled)
             {
@@ -363,8 +353,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                     turnResult = await dc.BeginDialogAsync(_rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
             }
-
-            await SendStateSnapshotTraceAsync(dc, "Bot State", cancellationToken).ConfigureAwait(false);
 
             return turnResult;
         }
