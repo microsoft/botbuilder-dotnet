@@ -787,7 +787,7 @@ namespace AdaptiveExpressions
         /// <param name="instance">Instance with property.</param>
         /// <param name="index">Property to lookup.</param>
         /// <returns>Value and error information if any.</returns>
-        public static (object value, string error) AccessIndex(object instance, int index)
+        public static (object value, string error) AccessIndex(object instance, long index)
         {
             // NOTE: This returns null rather than an error if property is not present
             if (instance == null)
@@ -802,7 +802,7 @@ namespace AdaptiveExpressions
             {
                 if (index >= 0 && index < list.Count)
                 {
-                    value = list[index];
+                    value = list[Convert.ToInt32(index)];
                 }
                 else
                 {

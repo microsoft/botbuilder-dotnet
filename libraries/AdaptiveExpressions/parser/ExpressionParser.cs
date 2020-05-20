@@ -159,6 +159,11 @@ namespace AdaptiveExpressions
 
             public override Expression VisitNumericAtom([NotNull] ExpressionAntlrParser.NumericAtomContext context)
             {
+                if (int.TryParse(context.GetText(), out var intValue))
+                {
+                    return Expression.ConstantExpression(intValue);
+                }
+
                 if (long.TryParse(context.GetText(), out var longValue))
                 {
                     return Expression.ConstantExpression(longValue);
