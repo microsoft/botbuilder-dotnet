@@ -587,6 +587,8 @@ namespace AdaptiveExpressions.Tests
             Test("[] == []", true),
             Test("{} != []", true),
             Test("[] == {}", false),
+            Test("null < 1", false),
+            Test("null >= 1", false),
             #endregion
 
             #region  Conversion functions test
