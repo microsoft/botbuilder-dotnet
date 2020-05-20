@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task HandlesBotAndSkillsTestCases(FlowTestCase testCase, bool shouldSendEoc)
         {
             var dialog = new SimpleComponentDialog();
-            var testFlow = CreateTestFlow(dialog, testCase);
+            var testFlow = CreateTestFlow(dialog, testCase, locale: "en-GB");
             await testFlow.Send("Hi")
                 .AssertReply("Hello, what is your name?")
                 .Send("SomeName")
@@ -74,6 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.IsNotNull(_eocSent, "Skills should send EndConversation to channel");
                 Assert.AreEqual(ActivityTypes.EndOfConversation, _eocSent.Type);
                 Assert.AreEqual("SomeName", _eocSent.Value);
+                Assert.AreEqual("en-GB", _eocSent.Locale);
             }
             else
             {
@@ -116,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         /// <summary>
         /// Creates a TestFlow instance with state data to recreate and assert the different test case.
         /// </summary>
-        private TestFlow CreateTestFlow(Dialog dialog, FlowTestCase testCase)
+        private TestFlow CreateTestFlow(Dialog dialog, FlowTestCase testCase, string locale = null)
         {
             var conversationId = Guid.NewGuid().ToString();
             var storage = new MemoryStorage();
@@ -129,6 +130,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .UseBotState(userState, convoState)
                 .Use(new AutoSaveStateMiddleware(userState, convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            if (!string.IsNullOrEmpty(locale))
+            {
+                adapter.Locale = locale;
+            }
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
