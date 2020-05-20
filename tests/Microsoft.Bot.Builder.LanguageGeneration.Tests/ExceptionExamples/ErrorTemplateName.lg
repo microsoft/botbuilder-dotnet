@@ -22,6 +22,6 @@
 # the-name-of-template
 - the body of template
 
-> Each part of template name split by dot(.) should start with letter/_ and can only contain letter/_/number.
+> Template names can only contain letter, underscore '_' or number. Any part of a template name (split by '.') cannot start with a number.
 # t1.1
 - hi
