@@ -20,6 +20,7 @@
                                 "id": "5SKPJu"
                             },
                             "condition": "=dialog.containsAll == null",
+                            "actions": [],
                             "elseActions": [
                                 {
                                     "$kind": "Microsoft.IfCondition",
@@ -27,6 +28,7 @@
                                         "id": "KTnZSa"
                                     },
                                     "condition": "=dialog.result",
+                                    "actions": [],
                                     "elseActions": [
                                         {
                                             "$kind": "Microsoft.ReplaceDialog",

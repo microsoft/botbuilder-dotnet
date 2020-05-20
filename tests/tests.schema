@@ -1197,8 +1197,8 @@
 		},
 		"Microsoft.BeginSkill": {
 			"$role": "implements(Microsoft.IDialog)",
-			"title": "Begin a skill dialog",
-			"description": "Begin a remote skill dialog.",
+			"title": "Begin a skill",
+			"description": "Begin a remote skill.",
 			"type": "object",
 			"required": [
 				"$kind"
@@ -4164,6 +4164,30 @@
 					"$ref": "#/definitions/Microsoft.Test.AssertCondition"
 				},
 				{
+					"$ref": "#/definitions/Microsoft.Ask"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.AttachmentInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.ChoiceInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.ConfirmInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.DateTimeInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.NumberInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OAuthInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.TextInput"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.BeginDialog"
 				},
 				{
@@ -4258,30 +4282,6 @@
 				},
 				{
 					"$ref": "#/definitions/Microsoft.UpdateActivity"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Ask"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.AttachmentInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.ChoiceInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.ConfirmInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.DateTimeInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.NumberInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.OAuthInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.TextInput"
 				},
 				{
 					"$ref": "#/definitions/Testbot.JavascriptAction"
