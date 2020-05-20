@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -108,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
             // NOTE: this is handled by OnPreBubbleEvent() so we have dc.
-            await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
+            await dc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
             return EndOfTurn;
         }
 
@@ -139,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await base.EndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
         }
 
-        protected async override Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             // look for dialogEvents.RepromptDialog so we have a Dc based RepromptDialog
             if (e.Name == DialogEvents.RepromptDialog)
@@ -220,12 +219,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (activity.DeliveryMode != DeliveryModes.ExpectReplies)
             {
                 skillConversationReference.SkillHostWaiting = true;
-                skillConversationReference.Activities = new List<Activity>();
             }
             else
             {
                 skillConversationReference.SkillHostWaiting = false;
-                skillConversationReference.Activities = null;
             }
 
             await DialogOptions.ConversationIdFactory.SaveSkillConversationReferenceAsync(skillConversationReference, cancellationToken).ConfigureAwait(false);
@@ -239,11 +236,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new HttpRequestException($"Error invoking the skill id: \"{skillInfo.Id}\" at \"{skillInfo.SkillEndpoint}\" (status is {response.Status}). \r\n {response.Body}");
             }
 
-            IList<Activity> activitiesFromSkill = null;
+            List<Activity> activitiesFromSkill = null;
             if (activity.DeliveryMode == DeliveryModes.ExpectReplies && response.Body.Activities != null)
             {
                 // activitiesFromSkill came as inline response body.
-                activitiesFromSkill = response.Body.Activities;
+                activitiesFromSkill = response.Body.Activities.ToList();
             }
             else
             {
@@ -253,10 +250,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // we mark SkillConversationReference that this skillHost is no longer waiting on the skill to complete the operation.
                 skillConversationReference.SkillHostWaiting = false;
 
-                if (skillConversationReference.Activities != null)
+                if (skillConversationReference.Activities.Any())
                 {
-                    activitiesFromSkill = skillConversationReference.Activities;
-                    skillConversationReference.Activities = null;
+                    activitiesFromSkill = new List<Activity>(skillConversationReference.Activities);
+                    skillConversationReference.Activities.Clear();
                 }
 
                 // save updated record.
@@ -266,7 +263,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // if we have any skill activities to process in this turn context.
             if (activitiesFromSkill != null && activitiesFromSkill.Any())
             {
-                bool changesPending = false;
+                var changesPending = false;
 
                 foreach (var activityFromSkill in activitiesFromSkill)
                 {
@@ -275,7 +272,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                         // return the EndOfConversation activity, we are done.
                         return activityFromSkill;
                     }
-                    else if (activityFromSkill.Type == ActivityTypes.Event)
+
+                    if (activityFromSkill.Type == ActivityTypes.Event)
                     {
                         // emit event to accumulate plan changes.
                         if (await dc.EmitEventAsync(DialogEvents.ActivityReceived, activityFromSkill, cancellationToken: cancellationToken).ConfigureAwait(false))

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,9 +66,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(cr.Bot.Id, record.ConversationReference.Bot.Id);
             Assert.AreEqual(cr.ChannelId, record.ConversationReference.ChannelId);
             Assert.AreEqual(cr.Conversation.Id, record.ConversationReference.Conversation.Id);
-            Assert.IsNull(record.Activities);
+            Assert.IsFalse(record.Activities.Any());
 
-            record.Activities = new List<Activity> { new Activity() { Type = ActivityTypes.EndOfConversation } };
+            record.Activities.AddRange(new List<Activity> { new Activity() { Type = ActivityTypes.EndOfConversation } });
             await scr.SaveSkillConversationReferenceAsync(record, CancellationToken.None);
 
             record = await scr.GetSkillConversationReferenceAsync(id, CancellationToken.None);

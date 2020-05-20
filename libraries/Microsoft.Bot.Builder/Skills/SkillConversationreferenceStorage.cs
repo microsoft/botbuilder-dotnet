@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -16,11 +15,11 @@ namespace Microsoft.Bot.Builder.Skills
     /// </summary>
     public class SkillConversationReferenceStorage : SkillConversationIdFactoryBase
     {
-        private IStorage storage;
+        private readonly IStorage _storage;
 
         public SkillConversationReferenceStorage(IStorage storage)
         {
-            this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
         /// <summary>
@@ -32,9 +31,9 @@ namespace Microsoft.Bot.Builder.Skills
         /// <remarks>
         /// It should be possible to use the returned string on a request URL and it should not contain special characters. 
         /// </remarks>
-        public async override Task<string> CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions options, CancellationToken cancellationToken)
+        public override async Task<string> CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions options, CancellationToken cancellationToken)
         {
-            var skillState = new SkillConversationReference()
+            var skillState = new SkillConversationReference
             {
                 Id = Guid.NewGuid().ToString("n"),
                 ConversationReference = options.Activity.GetConversationReference(),
@@ -43,7 +42,7 @@ namespace Microsoft.Bot.Builder.Skills
 
             var changes = new Dictionary<string, object>();
             changes[skillState.Id] = skillState;
-            await this.storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
+            await _storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
 
             return skillState.Id;
         }
@@ -55,7 +54,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>The caller's <see cref="ConversationReference"/> for a skillConversationId. null if not found.</returns>
         [Obsolete("Method is deprecated, please use GetSkillConversationReferenceAsync() instead.", false)]
-        public async override Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        public override async Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
         {
             var result = await GetSkillConversationReferenceAsync(skillConversationId, cancellationToken).ConfigureAwait(false);
             if (result != null)
@@ -72,9 +71,9 @@ namespace Microsoft.Bot.Builder.Skills
         /// <param name="skillConversationId">A skill conversationId created using <see cref="CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions,System.Threading.CancellationToken)"/>.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>The caller's <see cref="ConversationReference"/> for a skillConversationId, with originatingAudience. Null if not found.</returns>
-        public async override Task<SkillConversationReference> GetSkillConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        public override async Task<SkillConversationReference> GetSkillConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
         {
-            var results = await this.storage.ReadAsync(new string[] { skillConversationId }, cancellationToken).ConfigureAwait(false);
+            var results = await _storage.ReadAsync(new[] { skillConversationId }, cancellationToken).ConfigureAwait(false);
             if (results.TryGetValue(skillConversationId, out var reference))
             {
                 if (reference is SkillConversationReference scr)
@@ -94,11 +93,11 @@ namespace Microsoft.Bot.Builder.Skills
         /// <param name="skillConversationReference">A skill conversation reference.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>task.</returns>
-        public override Task SaveSkillConversationReferenceAsync(SkillConversationReference skillConversationReference, CancellationToken cancellationToken)
+        public override async Task SaveSkillConversationReferenceAsync(SkillConversationReference skillConversationReference, CancellationToken cancellationToken)
         {
             var changes = new Dictionary<string, object>();
             changes[skillConversationReference.Id] = skillConversationReference;
-            return this.storage.WriteAsync(changes, cancellationToken);
+            await _storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -107,9 +106,9 @@ namespace Microsoft.Bot.Builder.Skills
         /// <param name="skillConversationId">A skill conversationId created using <see cref="CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions,System.Threading.CancellationToken)"/>.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+        public override async Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
         {
-            return this.storage.DeleteAsync(new string[] { skillConversationId }, cancellationToken);
+            await _storage.DeleteAsync(new[] { skillConversationId }, cancellationToken).ConfigureAwait(false);
         }
     }
 }
