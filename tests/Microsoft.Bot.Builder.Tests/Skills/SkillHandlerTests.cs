@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         private readonly Mock<IBot> _mockBot = new Mock<IBot>();
         private readonly string _botId = Guid.NewGuid().ToString("N");
         private readonly string _skillId = Guid.NewGuid().ToString("N");
-        private readonly SkillConversationIdFactoryBase _testConversationIdFactory = new SkillConversationReferenceStorage(new MemoryStorage());
+        private readonly TestConversationIdFactory _testConversationIdFactory = new TestConversationIdFactory();
 
         public SkillHandlerTests()
         {
@@ -44,11 +44,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             var activity = (Activity)Activity.CreateMessageActivity();
             activity.ApplyConversationReference(_conversationReference);
-            var skill = new BotFrameworkSkill() 
-            { 
-                AppId = _skillId, 
-                Id = "skill", 
-                SkillEndpoint = new Uri("http://testbot.com/api/messages") 
+            var skill = new BotFrameworkSkill()
+            {
+                AppId = _skillId,
+                Id = "skill",
+                SkillEndpoint = new Uri("http://testbot.com/api/messages")
             };
 
             var options = new SkillConversationIdFactoryOptions
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 Activity = activity,
                 BotFrameworkSkill = skill
             };
-            
+
             _conversationId = _testConversationIdFactory.CreateSkillConversationIdAsync(options, CancellationToken.None).Result;
         }
 
@@ -293,6 +293,39 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         private SkillHandlerInstanceForTests CreateSkillHandlerForTesting(SkillConversationIdFactoryBase overrideFactory = null)
         {
             return new SkillHandlerInstanceForTests(_mockAdapter.Object, _mockBot.Object, overrideFactory ?? _testConversationIdFactory, new Mock<ICredentialProvider>().Object, new AuthenticationConfiguration());
+        }
+
+        /// <summary>
+        /// An in memory dictionary based ConversationIdFactory for testing.
+        /// </summary>
+        private class TestConversationIdFactory
+            : SkillConversationIdFactoryBase
+        {
+            private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
+
+            public override Task<string> CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions options, CancellationToken cancellationToken)
+            {
+                var skillConversationReference = new SkillConversationReference
+                {
+                    ConversationReference = options.Activity.GetConversationReference(),
+                    OAuthScope = options.FromBotOAuthScope
+                };
+                var key = $"{options.FromBotId}-{options.BotFrameworkSkill.AppId}-{skillConversationReference.ConversationReference.Conversation.Id}-{skillConversationReference.ConversationReference.ChannelId}-skillconvo";
+                _conversationRefs.GetOrAdd(key, JsonConvert.SerializeObject(skillConversationReference));
+                return Task.FromResult(key);
+            }
+
+            public override Task<SkillConversationReference> GetSkillConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+            {
+                var conversationReference = JsonConvert.DeserializeObject<SkillConversationReference>(_conversationRefs[skillConversationId]);
+                return Task.FromResult(conversationReference);
+            }
+
+            public override Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
+            {
+                _conversationRefs.TryRemove(skillConversationId, out var value);
+                return Task.CompletedTask;
+            }
         }
 
         /// <summary>

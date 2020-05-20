@@ -66,17 +66,6 @@ namespace Microsoft.Bot.Builder.Skills
         }
 
         /// <summary>
-        /// Saves the <see cref="SkillConversationReference"/> used during <see cref="CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions,System.Threading.CancellationToken)"/> for a skillConversationId.
-        /// </summary>
-        /// <param name="skillConversationReference">A skill conversation reference.</param>
-        /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>task.</returns>
-        public virtual Task SaveSkillConversationReferenceAsync(SkillConversationReference skillConversationReference, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Deletes a <see cref="ConversationReference"/>.
         /// </summary>
         /// <param name="skillConversationId">A skill conversationId created using <see cref="CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions,System.Threading.CancellationToken)"/>.</param>

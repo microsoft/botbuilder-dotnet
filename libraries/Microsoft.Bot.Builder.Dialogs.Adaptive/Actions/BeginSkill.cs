@@ -124,11 +124,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // Update the dialog options with the runtime settings.
-            var storage = dc.Context.TurnState.Get<IStorage>();
             DialogOptions.BotId = BotId.GetValue(dc.State);
             DialogOptions.SkillHostEndpoint = new Uri(SkillHostEndpoint.GetValue(dc.State));
-            DialogOptions.ConversationIdFactory = dc.Context.TurnState.Get<SkillConversationIdFactoryBase>() ?? new SkillConversationReferenceStorage(storage ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in turnstate"));
-            DialogOptions.SkillClient = dc.Context.TurnState.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in turnstate");
+            DialogOptions.ConversationIdFactory = dc.Context.TurnState.Get<SkillConversationIdFactoryBase>() ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in HostContext");
+            DialogOptions.SkillClient = dc.Context.TurnState.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in HostContext");
             DialogOptions.ConversationState = dc.Context.TurnState.Get<ConversationState>() ?? throw new NullReferenceException($"Unable to get an instance of {nameof(ConversationState)} from TurnState.");
             DialogOptions.ConnectionName = ConnectionName.GetValue(dc.State);
 
@@ -153,18 +152,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity }, cancellationToken).ConfigureAwait(false);
         }
 
-        public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+        protected override Task OnSkillResultAsync(DialogContext dc, object result, CancellationToken cancellationToken)
         {
-            if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation)
+            // Capture the result of the skill into ResultProperty.
+            if (ResultProperty != null)
             {
-                // Capture the result of the dialog if the property is set
-                if (ResultProperty != null)
-                {
-                    dc.State.SetValue(ResultProperty.GetValue(dc.State), dc.Context.Activity.Value);
-                }
+                dc.State.SetValue(ResultProperty.GetValue(dc.State), result);
             }
 
-            return base.ContinueDialogAsync(dc, cancellationToken);
+            return Task.CompletedTask;
         }
 
         protected override string OnComputeId()
