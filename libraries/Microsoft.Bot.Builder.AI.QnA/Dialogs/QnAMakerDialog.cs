@@ -504,6 +504,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             var result = new List<QueryResult>();
             if (response.Answers.Any())
             {
+                if (response.Answers.First() != null && response.Answers.First().AnswerSpan != null && !string.IsNullOrEmpty(response.Answers.First().AnswerSpan.Text)) 
+                { 
+                    response.Answers.First().Answer = response.Answers.First().AnswerSpan.Text;
+                }
+
                 result.Add(response.Answers.First());
             }
 
