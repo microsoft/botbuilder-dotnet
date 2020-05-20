@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Skills
 
             if (skillConversationReference == null)
             {
-                throw new KeyNotFoundException();
+                throw new NotSupportedException("The SkillHost doesn't support this conversationId");
             }
 
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
