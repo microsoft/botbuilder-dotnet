@@ -81,8 +81,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         /// <param name="result">Result to be dispalyed as prompts.</param>
         /// <param name="cardNoMatchText">No match text.</param>
+        /// <param name="renderingOption">renderingchoice.</param>
         /// <returns>IMessageActivity.</returns>
-        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
+        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText, int renderingOption)
         {
             if (result == null)
             {
@@ -115,11 +116,64 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 Buttons = buttonList
             };
 
+            // For content choice Both Precise and Content
+            if (renderingOption == 1)
+            {
+                plCard.Text = result.Answer;
+                chatActivity.Text = result.AnswerSpan.Text;
+            }
+
+            // For content choice Precise only
+            if (renderingOption == 0)
+            {
+                chatActivity.Text = result.AnswerSpan.Text;
+            }
+
             // Create the attachment.
             var attachment = plCard.ToAttachment();
 
             chatActivity.Attachments.Add(attachment);
 
+            return chatActivity;
+        }
+
+        /// <summary>
+        /// Get active learning suggestions card.
+        /// </summary>
+        /// <param name="result">Result to be dispalyed as prompts.</param>
+        /// <param name="renderingOption">renderingchoice.</param>
+        /// <returns>IMessageActivity.</returns>
+        public static IMessageActivity GetAnswerSpanCard(QueryResult result, int renderingOption)
+        {
+            if (result == null)
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
+
+            var chatActivity = Activity.CreateMessageActivity();
+            chatActivity.Text = result.Answer;
+
+            // For content choice Precise only
+            if (renderingOption == 0)
+            {
+                chatActivity.Text = result.AnswerSpan.Text;
+            }
+
+            var plCard = new HeroCard()
+            {                
+            };
+
+            // For content choice Both Precise and Content
+            if (renderingOption == 1)
+            {
+                plCard.Text = result.Answer;
+                chatActivity.Text = result.AnswerSpan.Text;
+                var attachment = plCard.ToAttachment();
+
+                // Create the attachment.
+                chatActivity.Attachments.Add(attachment);
+            }
+ 
             return chatActivity;
         }
     }

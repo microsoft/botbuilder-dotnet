@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// To enable MRC.
         /// </value>
-        [JsonProperty("mRCEnable")]
-        public bool MRCEnable { get; set; }
+        [JsonProperty("enableMRC")]
+        public bool EnablePreciseAnswer { get; set; }
     }
 }

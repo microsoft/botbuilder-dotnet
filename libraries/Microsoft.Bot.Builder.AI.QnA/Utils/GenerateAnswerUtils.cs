@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
             var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(this.Options));
-
+            
             if (queryOptions != null)
             {
                 if (queryOptions.ScoreThreshold != hydratedOptions.ScoreThreshold && queryOptions.ScoreThreshold != 0)
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 hydratedOptions.QnAId = queryOptions.QnAId;
                 hydratedOptions.IsTest = queryOptions.IsTest;
                 hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
-                hydratedOptions.MRCEnable = queryOptions.MRCEnable;
+                hydratedOptions.EnablePreciseAnswer = queryOptions.EnablePreciseAnswer;
             }
 
             return hydratedOptions;
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
             var answerSpanRequest = new AnswerSpanRequest();
-            answerSpanRequest.Enable = options.MRCEnable;
+            answerSpanRequest.Enable = options.EnablePreciseAnswer;
             var jsonRequest = JsonConvert.SerializeObject(
                 new
                 {
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
             var answerSpanRequest = new AnswerSpanRequest();
-            answerSpanRequest.Enable = options.MRCEnable;
+            answerSpanRequest.Enable = options.EnablePreciseAnswer;
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = (Activity)messageActivity,

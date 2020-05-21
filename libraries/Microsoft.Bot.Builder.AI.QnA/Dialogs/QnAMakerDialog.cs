@@ -504,15 +504,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             var result = new List<QueryResult>();
             if (response.Answers.Any())
             {
-                if (response.Answers.First() != null && response.Answers.First().AnswerSpan != null && !string.IsNullOrEmpty(response.Answers.First().AnswerSpan.Text)) 
-                { 
-                    response.Answers.First().Answer = response.Answers.First().AnswerSpan.Text;
-                }
-
                 result.Add(response.Answers.First());
             }
 
             stepContext.Values[ValueProperty.QnAData] = result;
+
             ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
             // If card is not shown, move to next step with top QnA response.
@@ -630,8 +626,23 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, PreviousQnAId, answer.Id);
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
+                    int contentChoice = -1;
+
+                    if (answer.AnswerSpan != null && !string.IsNullOrEmpty(answer.AnswerSpan.Text)) 
+                    {
+                        if (dialogOptions.ResponseOptions.ContentChoice.Equals(QnADialogResponseOptions.PreciseAnswer))
+                        {
+                            contentChoice = 0;
+                        }
+
+                        if (dialogOptions.ResponseOptions.ContentChoice.Equals(QnADialogResponseOptions.Both))
+                        {
+                            contentChoice = 1;
+                        }
+                    }
+
                     // Get multi-turn prompts card activity.
-                    var message = QnACardBuilder.GetQnAPromptsCard(answer, dialogOptions.ResponseOptions.CardNoMatchText);
+                    var message = QnACardBuilder.GetQnAPromptsCard(answer, dialogOptions.ResponseOptions.CardNoMatchText, contentChoice);
                     await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
@@ -641,6 +652,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return await stepContext.NextAsync(stepContext.Result, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets the options the dialog will use to display query results to the user.
+        /// </summary>
+        /// <param name="stepContext">The <see cref="WaterfallStepContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the current turn of conversation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result contains the response options to use.</remarks>
         private async Task<DialogTurnResult> DisplayQnAResultAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
@@ -672,7 +690,25 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             // If response is present then show that response, else default answer.
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
-                await stepContext.Context.SendActivityAsync(response.First().Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var firstAnswer = response.First();
+                var answer = firstAnswer.Answer;
+                int contentChoice = -1;
+
+                if (firstAnswer.AnswerSpan != null && !string.IsNullOrEmpty(firstAnswer.AnswerSpan.Text))
+                {
+                    if (dialogOptions.ResponseOptions.ContentChoice.Equals(QnADialogResponseOptions.PreciseAnswer))
+                    {
+                        contentChoice = 0;
+                    }
+
+                    if (dialogOptions.ResponseOptions.ContentChoice.Equals(QnADialogResponseOptions.Both))
+                    {
+                        contentChoice = 1;
+                    }
+                }
+
+                var message = QnACardBuilder.GetAnswerSpanCard(firstAnswer,  contentChoice);
+                await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
             }
             else
             {
