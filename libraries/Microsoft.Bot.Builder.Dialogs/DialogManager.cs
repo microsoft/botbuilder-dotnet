@@ -327,7 +327,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             await SendStateSnapshotTraceAsync(dc, "Skill State", cancellationToken).ConfigureAwait(false);
 
-            if (SendEoCToParent(turnContext, turnResult))
+            if (ShouldSendEndOfConversationToParent(turnContext, turnResult))
             {
                 var endMessageText = $"Dialog {_rootDialogId} has **completed**. Sending EndOfConversation.";
                 await turnContext.TraceActivityAsync($"{GetType().Name}.OnTurnAsync()", label: $"{endMessageText}", value: turnResult.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -373,9 +373,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Helper to determine if we should send an EoC to the parent or not.
+        /// Helper to determine if we should send an EndOfConversation to the parent or not.
         /// </summary>
-        private bool SendEoCToParent(ITurnContext context, DialogTurnResult turnResult)
+        private bool ShouldSendEndOfConversationToParent(ITurnContext context, DialogTurnResult turnResult)
         {
             if (!(turnResult.Status == DialogTurnStatus.Complete || turnResult.Status == DialogTurnStatus.Cancelled))
             {
