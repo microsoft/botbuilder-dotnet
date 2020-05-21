@@ -327,7 +327,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             await SendStateSnapshotTraceAsync(dc, "Skill State", cancellationToken).ConfigureAwait(false);
 
-            // Send end of conversation if it is completed or cancelled and if it is not .
             if (SendEoCToParent(turnContext, turnResult))
             {
                 var endMessageText = $"Dialog {_rootDialogId} has **completed**. Sending EndOfConversation.";
