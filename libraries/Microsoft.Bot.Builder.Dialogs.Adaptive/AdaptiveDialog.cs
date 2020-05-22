@@ -963,7 +963,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             var childInstance = composite["$instance"];
                             foreach (var child in composite)
                             {
-                                ExpandEntity(child, childInstance, name, turn, text, entityToInfo);
+                                // Drop PROPERTYName from operation since it is encoded in operation
+                                if (child.Name != "PROPERTYName")
+                                {
+                                    ExpandEntity(child, childInstance, name, turn, text, entityToInfo);
+                                }
                             }
                         }
                     }
@@ -1305,6 +1309,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         alternative.Entity.Operation = DefaultOperation(alternative, askDefaultOp, defaultOp);
                     }
+
+                    alternative.Operation = alternative.Entity.Operation;
                 }
 
                 candidate.AddAlternatives(alternatives);
