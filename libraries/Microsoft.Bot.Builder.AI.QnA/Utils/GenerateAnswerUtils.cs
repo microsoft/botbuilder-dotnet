@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             if (options.RankerType == null)
             {
                 options.RankerType = RankerTypes.DefaultRankerType;
-            }
+            }                      
         }
 
         /// <summary>
@@ -184,8 +184,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task<QueryResults> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
-            var answerSpanRequest = new AnswerSpanRequest();
-            answerSpanRequest.Enable = options.EnablePreciseAnswer;
+            AnswerSpanRequest answerSpanRequest = null;
+            if (options.EnablePreciseAnswer)
+            {
+                answerSpanRequest = new AnswerSpanRequest();
+                answerSpanRequest.Enable = options.EnablePreciseAnswer;
+            }
+
             var jsonRequest = JsonConvert.SerializeObject(
                 new
                 {
@@ -210,8 +215,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
-            var answerSpanRequest = new AnswerSpanRequest();
-            answerSpanRequest.Enable = options.EnablePreciseAnswer;
+            AnswerSpanRequest answerSpanRequest = null;
+            if (options.EnablePreciseAnswer)
+            {
+                answerSpanRequest = new AnswerSpanRequest();
+                answerSpanRequest.Enable = options.EnablePreciseAnswer;
+            }
+
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = (Activity)messageActivity,
