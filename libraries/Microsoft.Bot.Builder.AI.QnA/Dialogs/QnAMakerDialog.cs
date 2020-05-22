@@ -642,7 +642,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     }
 
                     // Get multi-turn prompts card activity.
-                    var message = QnACardBuilder.GetQnAPromptsCard(answer, dialogOptions.ResponseOptions.CardNoMatchText, contentChoice);
+                    var message = QnACardBuilder.GetQnAPromptsContentCard(answer, dialogOptions.ResponseOptions.CardNoMatchText, contentChoice);
                     await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
