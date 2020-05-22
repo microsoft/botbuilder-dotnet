@@ -961,19 +961,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         {
                             var composite = entry.Value[i];
                             var childInstance = composite["$instance"];
+                            EntityInfo pname = null;
+                            if (composite.Count > 1)
+                            {
+                                // Find PROPERTYName so we can apply it to other entities
+                                foreach (var child in composite)
+                                {
+                                    if (child.Name == "PROPERTYName")
+                                    {
+                                        // Expand PROPERTYName and fold single match into siblings span
+                                        // TODO: Would we ever need to handle multiple?
+                                        var infos = new Dictionary<string, List<EntityInfo>>();
+                                        ExpandEntity(child, childInstance, name, null, turn, text, infos);
+                                        pname = infos["PROPERTYName"].First();
+                                        break;
+                                    }
+                                }
+                            }
+
                             foreach (var child in composite)
                             {
-                                // Drop PROPERTYName from operation since it is encoded in operation
-                                if (child.Name != "PROPERTYName")
+                                // Drop PROPERTYName if we are applying it to other entities
+                                if (pname == null || child.Name != "PROPERTYName")
                                 {
-                                    ExpandEntity(child, childInstance, name, turn, text, entityToInfo);
+                                    ExpandEntity(child, childInstance, name, pname, turn, text, entityToInfo);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        ExpandEntity(entry, metaData, null, turn, text, entityToInfo);
+                        ExpandEntity(entry, metaData, null, null, turn, text, entityToInfo);
                     }
                 }
             }
@@ -1028,7 +1046,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return entityToInfo;
         }
 
-        private void ExpandEntity(dynamic entry, dynamic metaData, string op, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
+        private void ExpandEntity(dynamic entry, dynamic metaData, string op, EntityInfo propertyName, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
         {
             var name = entry.Name;
             if (!name.StartsWith("$"))
@@ -1065,7 +1083,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // Eventually this could be passed in
                     info.Priority = info.Role == null ? 1 : 0;
                     info.Coverage = (info.End - info.Start) / (double)text.Length;
-                    infos.Add(info);
+                    if (propertyName != null)
+                    {
+                        // Add property information to entities
+                        if (propertyName.Start < info.Start)
+                        {
+                            info.Start = propertyName.Start;
+                        }
+
+                        if (propertyName.End > info.End)
+                        {
+                            info.End = propertyName.End;
+                        }
+
+                        // Expand entity to include possible property names
+                        foreach (var property in propertyName.Value as JArray)
+                        {
+                            var newInfo = info.Clone() as EntityInfo;
+                            newInfo.Property = property.Value<string>();
+                            infos.Add(newInfo);
+                        }
+                    }
+                    else
+                    {
+                        if (name == "PROPERTYName")
+                        {
+                            // Expand PROPERTYName choices in case they overlap
+                            foreach (var property in info.Value as JArray)
+                            {
+                                var newInfo = info.Clone() as EntityInfo;
+                                newInfo.Property = property.Value<string>();
+                                newInfo.Value = new JArray { newInfo.Property };
+                                infos.Add(newInfo);
+                            }
+                        }
+                        else
+                        {
+                            infos.Add(info);
+                        }
+                    }
                 }
             }
         }
@@ -1074,7 +1130,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private IEnumerable<EntityAssignment> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
             var globalExpectedOnly = dialogSchema.Schema["$expectedOnly"]?.ToObject<List<string>>() ?? new List<string>();
-            var used = new HashSet<string> { "utterance" };
+            var usedEntityType = new HashSet<string> { "utterance" };
+            var usedEntity = new HashSet<EntityInfo>();
+
+            // Emit entities that already have a property
+            foreach (var alternatives in entities.Values)
+            {
+                foreach (var alternative in alternatives)
+                {
+                    if (alternative.Property != null)
+                    {
+                        usedEntity.Add(alternative);
+                        yield return new EntityAssignment
+                        {
+                            Entity = alternative,
+                            Property = alternative.Property,
+                            Operation = alternative.Operation,
+                            IsExpected = expected.Contains(alternative.Property)
+                        };
+                    }
+                }
+            }
+
+            // Find possible mappings to properties
             foreach (var propSchema in dialogSchema.Property.Children)
             {
                 var isExpected = expected.Contains(propSchema.Name);
@@ -1083,16 +1161,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     if (entities.TryGetValue(entityName, out var matches) && (isExpected || !expectedOnly.Contains(entityName)))
                     {
-                        used.Add(entityName);
+                        usedEntityType.Add(entityName);
                         foreach (var entity in matches)
                         {
-                            yield return new EntityAssignment
+                            if (!usedEntity.Contains(entity))
                             {
-                                Entity = entity,
-                                Property = propSchema.Name,
-                                Operation = entity.Operation,
-                                IsExpected = isExpected
-                            };
+                                yield return new EntityAssignment
+                                {
+                                    Entity = entity,
+                                    Property = propSchema.Name,
+                                    Operation = entity.Operation,
+                                    IsExpected = isExpected
+                                };
+                            }
                         }
                     }
                 }
@@ -1102,15 +1183,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var entityPreferences = EntityPreferences(null);
             foreach (var entry in entities)
             {
-                if (!used.Contains(entry.Key) && entityPreferences.Contains(entry.Key))
+                if (!usedEntityType.Contains(entry.Key) && entityPreferences.Contains(entry.Key))
                 {
                     foreach (var entity in entry.Value)
                     {
-                        yield return new EntityAssignment
+                        if (!usedEntity.Contains(entity))
                         {
-                            Entity = entity,
-                            Operation = entity.Operation
-                        };
+                            yield return new EntityAssignment
+                            {
+                                Entity = entity,
+                                Operation = entity.Operation,
+                                Property = entity.Property
+                            };
+                        }
                     }
                 }
             }
@@ -1212,6 +1297,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         }
                     }
                     while (candidate != null);
+                }
+
+                // Keep remaining properties for things like show/clear that are not property specific
+                foreach (var choice in choices)
+                {
+                    yield return choice;
                 }
             }
         }
@@ -1344,7 +1435,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return usedEntities.ToList();
         }
 
-        // a replaces b when it refers to the same singleton property and is newer or later in same utterance
+        // a replaces b when it refers to the same singleton property and is newer or later in same utterance and it is not over PROPERTYName
         // -1 a replaces b
         //  0 no replacement
         // +1 b replaces a
@@ -1355,7 +1446,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 foreach (var bAlt in b.Alternatives)
                 {
-                    if (aAlt.Property == bAlt.Property)
+                    if (aAlt.Property == bAlt.Property && aAlt.Entity.Name != "PROPERTYName" && bAlt.Entity.Name != "PROPERTYName")
                     {
                         var prop = dialogSchema.PathToSchema(aAlt.Property);
                         if (!prop.IsArray)
