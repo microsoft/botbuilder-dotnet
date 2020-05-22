@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private readonly string changeTurnKey = Guid.NewGuid().ToString();
 
         private RecognizerSet recognizerSet = new RecognizerSet();
-        
+
         private object syncLock = new object();
         private bool installedDependencies;
 
@@ -1213,6 +1212,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        private string DefaultOperation(EntityAssignment assignment, JObject askDefault, JObject dialogDefault)
+        {
+            string operation = null;
+            if (askDefault != null && (askDefault.TryGetValue(assignment.Entity.Name, out var askOp) || askDefault.TryGetValue(string.Empty, out askOp)))
+            {
+                operation = askOp.Value<string>();
+            }
+            else if (dialogDefault != null
+                    && (dialogDefault.TryGetValue(assignment.Property, out var entities)
+                        || dialogDefault.TryGetValue(string.Empty, out entities))
+                    && ((entities as JObject).TryGetValue(assignment.Entity.Name, out var dialogOp)
+                        || (entities as JObject).TryGetValue(string.Empty, out dialogOp)))
+            {
+                operation = dialogOp.Value<string>();
+            }
+
+            return operation;
+        }
+
         private List<EntityInfo> AssignEntities(ActionContext actionContext, Dictionary<string, List<EntityInfo>> entities, EntityAssignments existing, string lastEvent)
         {
             var assignments = new EntityAssignments();
@@ -1222,10 +1240,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             // default op from the last Ask action.
-            var askDefaultOp = actionContext.State.GetValue<string>(DialogPath.DefaultOperation);
+            var askDefaultOp = actionContext.State.GetValue<JObject>(DialogPath.DefaultOperation);
 
             // default operation from the current adaptive dialog.
-            var defaultOp = dialogSchema.Schema["$defaultOperation"]?.ToObject<string>();
+            var defaultOp = dialogSchema.Schema["$defaultOperation"]?.ToObject<JObject>();
 
             var nextAssignment = existing.NextAssignment();
             var candidates = (from candidate in RemoveOverlappingPerProperty(Candidates(entities, expected))
@@ -1239,11 +1257,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var candidate = candidates.First();
                 var alternatives = (from alt in candidates where candidate.Entity.Overlaps(alt.Entity) select alt).ToList();
                 candidates = candidates.Except(alternatives).ToList();
+                foreach (var alternative in alternatives)
+                {
+                    usedEntities.Add(alternative.Entity);
+                }
+
                 if (candidate.IsExpected && candidate.Entity.Name != "utterance")
                 {
-                    // If expected binds entity, drop alternatives
+                    // If expected binds entity, drop unexpected alternatives
                     alternatives.RemoveAll(a => !a.IsExpected);
                 }
+
+                // Find alternative that covers the largest amount of utterance
+                candidate = (from alternative in alternatives orderby alternative.Entity.Name == "utterance" ? 0 : alternative.Entity.End - alternative.Entity.Start descending select alternative).First();
+
+                // Remove all alternatives that are fully contained in largest
+                alternatives.RemoveAll(a => candidate.Entity.Covers(a.Entity));
 
                 var mapped = false;
                 if (lastEvent == AdaptiveEvents.ChooseEntity && candidate.Property == nextAssignment.Property)
@@ -1272,12 +1301,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 foreach (var alternative in alternatives)
                 {
-                    if (alternative.Operation == null)
+                    if (alternative.Entity.Operation == null)
                     {
-                        alternative.Operation = alternative.IsExpected ? (askDefaultOp ?? defaultOp) : defaultOp;
+                        alternative.Entity.Operation = DefaultOperation(alternative, askDefaultOp, defaultOp);
                     }
-
-                    usedEntities.Add(alternative.Entity);
                 }
 
                 candidate.AddAlternatives(alternatives);
