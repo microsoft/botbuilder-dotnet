@@ -23,11 +23,11 @@
             ]
         },
         "defaultOperation": {
-            "$ref": "schema:#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/objectExpression",
             "title": "Default Operation",
-            "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
+            "description": "Sets the default operation for each entity that will be used when no operation is recognized in the response to this Ask.",
             "examples": [
-                "add"
+                { "number: "add" }
             ]
         }
     }
