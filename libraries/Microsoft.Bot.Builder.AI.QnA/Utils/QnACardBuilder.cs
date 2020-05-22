@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="cardNoMatchText">No match text.</param>
         /// <param name="renderingOption">renderingchoice.</param>
         /// <returns>IMessageActivity.</returns>
-        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText, int renderingOption)
+        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText, int renderingOption = 0)
         {
             if (result == null)
             {
@@ -117,14 +117,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
             };
 
             // For content choice Both Precise and Content
-            if (renderingOption == 1)
+            if (renderingOption == 1 && result.AnswerSpan != null)
             {
                 plCard.Text = result.Answer;
                 chatActivity.Text = result.AnswerSpan.Text;
             }
 
             // For content choice Precise only
-            if (renderingOption == 0)
+            if (renderingOption == 0 && result.AnswerSpan != null)
             {
                 chatActivity.Text = result.AnswerSpan.Text;
             }
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             chatActivity.Text = result.Answer;
 
             // For content choice Precise only
-            if (renderingOption == 0)
+            if (renderingOption == 0 && result.AnswerSpan != null)
             {
                 chatActivity.Text = result.AnswerSpan.Text;
             }
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             };
 
             // For content choice Both Precise and Content
-            if (renderingOption == 1)
+            if (renderingOption == 1 && result.AnswerSpan != null)
             {
                 plCard.Text = result.Answer;
                 chatActivity.Text = result.AnswerSpan.Text;

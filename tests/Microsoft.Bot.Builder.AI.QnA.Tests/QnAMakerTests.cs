@@ -46,8 +46,60 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
             mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q13\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"enablePreciseAnswer\":true}")
+                .Respond("application/json", GetResponse("QnaMaker.MRCEnable.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
+        }
+
+        public AdaptiveDialog QnAMakerAction_PreciseDialogBase()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+            mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
+                .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
+               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q13\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true}}")
+                .Respond("application/json", GetResponse("QnaMaker.MRCEnable.json"));
+            return CreateQnAMakerPreciseActionDialog(mockHttp);
+        }
+
+        public AdaptiveDialog QnAMakerAction_ContentBothDialogBase()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+            mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
+                .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
+               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q13\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true}}")
+                .Respond("application/json", GetResponse("QnaMaker.MRCEnable.json"));
+            return CreateQnAMakerContentBothDialog(mockHttp);
+        }
+
+        [TestMethod]
+        public async Task QnAMaker_EnablePreciseAnswer()
+        {
+            var rootDialog = QnAMakerAction_PreciseDialogBase();
+            
+            await CreateFlow(rootDialog)
+            .Send("Q13")               
+                .AssertReply("some precise text")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task QnAMaker_ContentBothAnswer()
+        {
+            var rootDialog = QnAMakerAction_ContentBothDialogBase();
+
+            await CreateFlow(rootDialog)
+            .Send("Q13")
+                .AssertReply("some precise text")
+            .StartTestAsync();
         }
 
         [TestMethod]
@@ -1669,6 +1721,126 @@ namespace Microsoft.Bot.Builder.AI.Tests
                                 NoAnswer = noAnswerActivity,
                                 ActiveLearningCardTitle = activeLearningCardTitle,
                                 CardNoMatchText = "None of the above.",
+                            }
+                        }
+                    }
+                }
+            };
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new BeginDialog(outerDialog.Id)
+                        }
+                    },
+                    new OnDialogEvent()
+                    {
+                        Event = "UnhandledUnknownIntent",
+                        Actions = new List<Dialog>()
+                        {
+                            new EditArray(),
+                            new SendActivity("magenta")
+                        }
+                    }
+                }
+            };
+            rootDialog.Dialogs.Add(outerDialog);
+            return rootDialog;
+        }
+
+        private AdaptiveDialog CreateQnAMakerPreciseActionDialog(MockHttpMessageHandler mockHttp)
+        {
+            var client = new HttpClient(mockHttp);
+
+            var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
+            var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
+            var knowlegeBaseId = "dummy-id";
+            var endpointKey = "dummy-key";
+            var activeLearningCardTitle = "QnAMaker Active Learning";
+
+            var outerDialog = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new QnAMakerPreciseContentDialog()
+                            {
+                                KnowledgeBaseId = knowlegeBaseId,
+                                HostName = host,
+                                EndpointKey = endpointKey,
+                                HttpClient = client,
+                                NoAnswer = noAnswerActivity,
+                                ActiveLearningCardTitle = activeLearningCardTitle,
+                                CardNoMatchText = "None of the above."            
+                            }
+                        }
+                    }
+                }
+            };
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new BeginDialog(outerDialog.Id)
+                        }
+                    },
+                    new OnDialogEvent()
+                    {
+                        Event = "UnhandledUnknownIntent",
+                        Actions = new List<Dialog>()
+                        {
+                            new EditArray(),
+                            new SendActivity("magenta")
+                        }
+                    }
+                }
+            };
+            rootDialog.Dialogs.Add(outerDialog);
+            return rootDialog;
+        }
+
+        private AdaptiveDialog CreateQnAMakerContentBothDialog(MockHttpMessageHandler mockHttp)
+        {
+            var client = new HttpClient(mockHttp);
+
+            var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
+            var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
+            var knowlegeBaseId = "dummy-id";
+            var endpointKey = "dummy-key";
+            var activeLearningCardTitle = "QnAMaker Active Learning";
+
+            var outerDialog = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new QnAMakerContentBothDialog()
+                            {
+                                KnowledgeBaseId = knowlegeBaseId,
+                                HostName = host,
+                                EndpointKey = endpointKey,
+                                HttpClient = client,
+                                NoAnswer = noAnswerActivity,
+                                ActiveLearningCardTitle = activeLearningCardTitle,
+                                CardNoMatchText = "None of the above."
                             }
                         }
                     }
