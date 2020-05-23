@@ -1,0 +1,23 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "RemoveFromQuantity",
+	"entity": "number",
+	"actions": [
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$Quantity == @number",
+			"actions": [
+				{
+					"$kind": "Microsoft.SendActivity",
+					"activity": "${removePropertyMessage('Quantity', @number)}"
+				},
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "Quantity"
+				}
+			]
+		}
+	],
+	"$Generator": "e565a8300f56eaa149ea37fae2d06220"
+}

@@ -1,0 +1,265 @@
+
+@ prebuilt dimension 
+
+> Define how Length is recognized as a property name
+@ list PROPERTYName
+    - Length:
+		- length
+
+
+> Define operations for property
+@ml AddToLength = 
+    - @dimension dimension
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromLength = 
+    - @dimension dimension
+    - @PROPERTYName PROPERTYName
+@ml ClearLength =
+    - @PROPERTYName PROPERTYName
+@ml ShowLength =
+    - @PROPERTYName PROPERTYName
+# sandwich
+> Add only
+- {@AddToLength=add {@dimension=200 sq feet}}
+- {@AddToLength=add {@dimension=2 feet}}
+- {@AddToLength=add {@dimension=19 inches}}
+- {@AddToLength=with {@dimension=2 feet}}
+- {@AddToLength=with {@dimension=19 inches}}
+- {@AddToLength=with {@dimension=2.5 meters}}
+- {@AddToLength=add {@dimension=200 sq feet} and {@dimension=2.5 meters}}
+- {@AddToLength=add {@dimension=2 feet} and {@dimension=19 inches}}
+- {@AddToLength=add {@dimension=19 inches} and {@dimension=2.5 meters}}
+- {@AddToLength=with {@dimension=19 inches} and {@dimension=2.5 meters}}
+- {@AddToLength=with {@dimension=200 sq feet} and {@dimension=2.5 meters}}
+- {@AddToLength=with {@dimension=19 inches} and {@dimension=200 sq feet}}
+- {@AddToLength=add {@dimension=2 feet}, {@dimension=19 inches} and {@dimension=2 feet}}
+- {@AddToLength=add {@dimension=19 inches}, {@dimension=200 sq feet} and {@dimension=2 feet}}
+- {@AddToLength=add {@dimension=2.5 meters}, {@dimension=19 inches} and {@dimension=200 sq feet}}
+- {@AddToLength=with {@dimension=2 feet}, {@dimension=2.5 meters} and {@dimension=2.5 meters}}
+- {@AddToLength=with {@dimension=2 feet}, {@dimension=2.5 meters} and {@dimension=200 sq feet}}
+- {@AddToLength=with {@dimension=2 feet}, {@dimension=2 feet} and {@dimension=2.5 meters}}
+- {@AddToLength={@PROPERTYName=length} is {@dimension=2.5 meters}}
+- {@AddToLength={@PROPERTYName=length} is {@dimension=2 feet}}
+- {@AddToLength={@PROPERTYName=length} is {@dimension=19 inches}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=2 feet} and {@dimension=200 sq feet}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=2.5 meters} and {@dimension=19 inches}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=200 sq feet} and {@dimension=200 sq feet}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=2.5 meters}, {@dimension=19 inches} and {@dimension=2 feet}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=200 sq feet}, {@dimension=2 feet} and {@dimension=2.5 meters}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=2.5 meters}, {@dimension=200 sq feet} and {@dimension=2.5 meters}}
+- {@AddToLength=add {@dimension=19 inches} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@AddToLength=with {@dimension=19 inches} {@PROPERTYName=length}}
+- {@AddToLength=with {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength=with {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2.5 meters} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=200 sq feet} and {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=200 sq feet} and {@dimension=19 inches} {@PROPERTYName=length}}
+- {@AddToLength=with {@dimension=200 sq feet} and {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@AddToLength=with {@dimension=2 feet} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength=with {@dimension=2.5 meters} and {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2.5 meters}, {@dimension=2.5 meters} and {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=200 sq feet}, {@dimension=200 sq feet} and {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=19 inches}, {@dimension=19 inches} and {@dimension=19 inches} {@PROPERTYName=length}}
+- {@AddToLength=with {@dimension=2 feet}, {@dimension=19 inches} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength=with {@dimension=19 inches}, {@dimension=2.5 meters} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength=with {@dimension=200 sq feet}, {@dimension=200 sq feet} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength={@PROPERTYName=length} is {@dimension=2.5 meters}}
+- {@AddToLength={@PROPERTYName=length} is {@dimension=2 feet}}
+- {@AddToLength={@PROPERTYName=length} is {@dimension=200 sq feet}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=200 sq feet} and {@dimension=200 sq feet}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=200 sq feet} and {@dimension=2.5 meters}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=2 feet} and {@dimension=2 feet}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=19 inches}, {@dimension=200 sq feet} and {@dimension=2.5 meters}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=2 feet}, {@dimension=2 feet} and {@dimension=2 feet}}
+- {@AddToLength={@PROPERTYName=length} are {@dimension=19 inches}, {@dimension=200 sq feet} and {@dimension=19 inches}}
+> Remove only
+- {@RemoveFromLength=remove {@dimension=200 sq feet}}
+- {@RemoveFromLength=remove {@dimension=19 inches}}
+- {@RemoveFromLength=remove {@dimension=2 feet}}
+- {@RemoveFromLength=remove {@dimension=19 inches} and {@dimension=200 sq feet}}
+- {@RemoveFromLength=remove {@dimension=19 inches} and {@dimension=19 inches}}
+- {@RemoveFromLength=remove {@dimension=2.5 meters} and {@dimension=200 sq feet}}
+- {@RemoveFromLength=remove {@dimension=2.5 meters}, {@dimension=2 feet} and {@dimension=2.5 meters}}
+- {@RemoveFromLength=remove {@dimension=2 feet}, {@dimension=200 sq feet} and {@dimension=2.5 meters}}
+- {@RemoveFromLength=remove {@dimension=2.5 meters}, {@dimension=19 inches} and {@dimension=2.5 meters}}
+- {@RemoveFromLength=delete {@dimension=19 inches}}
+- {@RemoveFromLength=delete {@dimension=200 sq feet}}
+- {@RemoveFromLength=delete {@dimension=2.5 meters}}
+- {@RemoveFromLength=delete {@dimension=2 feet} and {@dimension=2.5 meters}}
+- {@RemoveFromLength=delete {@dimension=200 sq feet} and {@dimension=2.5 meters}}
+- {@RemoveFromLength=delete {@dimension=200 sq feet} and {@dimension=19 inches}}
+- {@RemoveFromLength=delete {@dimension=200 sq feet}, {@dimension=2 feet} and {@dimension=2 feet}}
+- {@RemoveFromLength=delete {@dimension=19 inches}, {@dimension=19 inches} and {@dimension=2.5 meters}}
+- {@RemoveFromLength=delete {@dimension=200 sq feet}, {@dimension=19 inches} and {@dimension=2.5 meters}}
+- {@RemoveFromLength=without {@dimension=2 feet}}
+- {@RemoveFromLength=without {@dimension=2.5 meters}}
+- {@RemoveFromLength=without {@dimension=200 sq feet}}
+- {@RemoveFromLength=without {@dimension=2.5 meters} and {@dimension=2 feet}}
+- {@RemoveFromLength=without {@dimension=200 sq feet} and {@dimension=19 inches}}
+- {@RemoveFromLength=without {@dimension=2.5 meters} and {@dimension=19 inches}}
+- {@RemoveFromLength=without {@dimension=19 inches}, {@dimension=19 inches} and {@dimension=200 sq feet}}
+- {@RemoveFromLength=without {@dimension=2 feet}, {@dimension=2 feet} and {@dimension=2.5 meters}}
+- {@RemoveFromLength=without {@dimension=200 sq feet}, {@dimension=2 feet} and {@dimension=200 sq feet}}
+- {@RemoveFromLength=with no {@dimension=19 inches}}
+- {@RemoveFromLength=with no {@dimension=2 feet}}
+- {@RemoveFromLength=with no {@dimension=200 sq feet}}
+- {@RemoveFromLength=with no {@dimension=2.5 meters} and {@dimension=19 inches}}
+- {@RemoveFromLength=with no {@dimension=2.5 meters} and {@dimension=2 feet}}
+- {@RemoveFromLength=with no {@dimension=2.5 meters} and {@dimension=200 sq feet}}
+- {@RemoveFromLength=with no {@dimension=19 inches}, {@dimension=200 sq feet} and {@dimension=19 inches}}
+- {@RemoveFromLength=with no {@dimension=2.5 meters}, {@dimension=200 sq feet} and {@dimension=19 inches}}
+- {@RemoveFromLength=with no {@dimension=2.5 meters}, {@dimension=2 feet} and {@dimension=2.5 meters}}
+- {@RemoveFromLength=remove {@dimension=19 inches} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet} and {@dimension=19 inches} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2.5 meters} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2 feet} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet}, {@dimension=2 feet} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2.5 meters}, {@dimension=200 sq feet} and {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet}, {@dimension=2.5 meters} and {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@RemoveFromLength=delete {@dimension=19 inches} {@PROPERTYName=length}}
+- {@RemoveFromLength=delete {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=delete {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@RemoveFromLength=delete {@dimension=19 inches} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=delete {@dimension=2.5 meters} and {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@RemoveFromLength=delete {@dimension=2.5 meters} and {@dimension=19 inches} {@PROPERTYName=length}}
+- {@RemoveFromLength=delete {@dimension=19 inches}, {@dimension=200 sq feet} and {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=delete {@dimension=2.5 meters}, {@dimension=2 feet} and {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@RemoveFromLength=delete {@dimension=19 inches}, {@dimension=200 sq feet} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=without {@dimension=200 sq feet}}
+- {@RemoveFromLength=without {@dimension=2 feet}}
+- {@RemoveFromLength=without {@dimension=19 inches}}
+- {@RemoveFromLength=without {@dimension=2.5 meters} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=without {@dimension=200 sq feet} and {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=without {@dimension=2.5 meters} and {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=without {@dimension=19 inches}, {@dimension=19 inches} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=without {@dimension=2 feet}, {@dimension=19 inches} and {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=without {@dimension=2 feet}, {@dimension=19 inches} and {@dimension=19 inches} {@PROPERTYName=length}}
+- {@RemoveFromLength=with no {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=with no {@dimension=19 inches} {@PROPERTYName=length}}
+- {@RemoveFromLength=with no {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=with no {@dimension=19 inches} and {@dimension=19 inches} {@PROPERTYName=length}}
+- {@RemoveFromLength=with no {@dimension=2 feet} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=with no {@dimension=2 feet} and {@dimension=19 inches} {@PROPERTYName=length}}
+- {@RemoveFromLength=with no {@dimension=2 feet}, {@dimension=200 sq feet} and {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@RemoveFromLength=with no {@dimension=200 sq feet}, {@dimension=19 inches} and {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@RemoveFromLength=with no {@dimension=19 inches}, {@dimension=19 inches} and {@dimension=200 sq feet} {@PROPERTYName=length}}
+> Clear only
+- {@ClearLength=clear {@PROPERTYName=length}}
+- {@ClearLength=remove {@PROPERTYName=length}}
+- {@ClearLength=empty {@PROPERTYName=length}}
+- {@ClearLength=please clear {@PROPERTYName=length}}
+- {@ClearLength=please remove {@PROPERTYName=length}}
+- {@ClearLength=please empty {@PROPERTYName=length}}
+- {@ClearLength=can you clear {@PROPERTYName=length}}
+- {@ClearLength=can you remove {@PROPERTYName=length}}
+- {@ClearLength=can you empty {@PROPERTYName=length}}
+> Show only
+- {@ShowLength=value of {@PROPERTYName=length}}
+- {@ShowLength=value for {@PROPERTYName=length}}
+- {@ShowLength=selection of {@PROPERTYName=length}}
+- {@ShowLength=selection for {@PROPERTYName=length}}
+- {@ShowLength=display {@PROPERTYName=length}}
+- {@ShowLength=show {@PROPERTYName=length}}
+- {@ShowLength=value of {@PROPERTYName=length}}
+- {@ShowLength=value for {@PROPERTYName=length}}
+- {@ShowLength={@PROPERTYName=length} value}
+- {@ShowLength={@PROPERTYName=length} values}
+- {@ShowLength={@PROPERTYName=length} selection}
+> Combinations
+- {@AddToLength=add {@dimension=200 sq feet}} {@RemoveFromLength=and remove {@dimension=19 inches}}
+- {@AddToLength=add {@dimension=200 sq feet}} {@RemoveFromLength=and remove {@dimension=2.5 meters}}
+- {@AddToLength=add {@dimension=2 feet}} {@RemoveFromLength=and remove {@dimension=19 inches}}
+- {@AddToLength=add {@dimension=2 feet}} {@RemoveFromLength=remove {@dimension=2 feet}}
+- {@AddToLength=add {@dimension=2.5 meters}} {@RemoveFromLength=remove {@dimension=200 sq feet}}
+- {@AddToLength=add {@dimension=200 sq feet}} {@RemoveFromLength=remove {@dimension=2.5 meters}}
+- {@AddToLength=add {@dimension=2 feet}}, {@RemoveFromLength=remove {@dimension=2.5 meters}}
+- {@AddToLength=add {@dimension=19 inches}}, {@RemoveFromLength=remove {@dimension=2 feet}}
+- {@AddToLength=add {@dimension=2 feet}}, {@RemoveFromLength=remove {@dimension=200 sq feet}}
+- {@AddToLength=add {@dimension=200 sq feet} and {@dimension=19 inches}} {@RemoveFromLength=and remove {@dimension=19 inches}}
+- {@AddToLength=add {@dimension=2 feet} and {@dimension=19 inches}} {@RemoveFromLength=and remove {@dimension=2.5 meters}}
+- {@AddToLength=add {@dimension=200 sq feet} and {@dimension=200 sq feet}} {@RemoveFromLength=and remove {@dimension=2 feet}}
+- {@AddToLength=add {@dimension=2 feet}, {@dimension=200 sq feet} and {@dimension=200 sq feet}} {@RemoveFromLength=and remove {@dimension=2.5 meters} and {@dimension=2.5 meters}}
+- {@AddToLength=add {@dimension=2 feet}, {@dimension=2 feet} and {@dimension=2 feet}} {@RemoveFromLength=and remove {@dimension=2.5 meters} and {@dimension=19 inches}}
+- {@AddToLength=add {@dimension=2.5 meters}, {@dimension=2 feet} and {@dimension=19 inches}} {@RemoveFromLength=and remove {@dimension=2.5 meters} and {@dimension=2 feet}}
+- {@AddToLength=add {@dimension=200 sq feet}, {@dimension=2.5 meters} and {@dimension=200 sq feet}} {@RemoveFromLength=remove {@dimension=2.5 meters} and {@dimension=2.5 meters}}
+- {@AddToLength=add {@dimension=19 inches}, {@dimension=2 feet} and {@dimension=2 feet}} {@RemoveFromLength=remove {@dimension=2 feet} and {@dimension=200 sq feet}}
+- {@AddToLength=add {@dimension=2 feet}, {@dimension=2 feet} and {@dimension=200 sq feet}} {@RemoveFromLength=remove {@dimension=19 inches} and {@dimension=19 inches}}
+- {@AddToLength=add {@dimension=2 feet}}{@RemoveFromLength=, remove {@dimension=200 sq feet}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=19 inches}}{@RemoveFromLength=, remove {@dimension=2.5 meters}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=19 inches}}{@RemoveFromLength=, remove {@dimension=19 inches}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2 feet}} {@AddToLength=and add {@dimension=19 inches}}
+- {@RemoveFromLength=remove {@dimension=19 inches}} {@AddToLength=and add {@dimension=19 inches}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet}} {@AddToLength=and add {@dimension=2.5 meters}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet} and {@dimension=2 feet}} {@AddToLength=and add {@dimension=2 feet}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet} and {@dimension=19 inches}} {@AddToLength=and add {@dimension=2.5 meters}}
+- {@RemoveFromLength=remove {@dimension=2 feet} and {@dimension=2 feet}} {@AddToLength=and add {@dimension=2 feet}}
+- {@RemoveFromLength=remove {@dimension=19 inches}, {@dimension=200 sq feet} and {@dimension=19 inches}} {@AddToLength=and add {@dimension=200 sq feet} and {@dimension=2 feet}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet}, {@dimension=2 feet} and {@dimension=2 feet}} {@AddToLength=and add {@dimension=2.5 meters} and {@dimension=2 feet}}
+- {@RemoveFromLength=remove {@dimension=19 inches}, {@dimension=2.5 meters} and {@dimension=200 sq feet}} {@AddToLength=and add {@dimension=200 sq feet} and {@dimension=200 sq feet}}
+- {@RemoveFromLength=remove {@dimension=19 inches}}{@AddToLength=, add {@dimension=2.5 meters}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet}}{@AddToLength=, add {@dimension=200 sq feet}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet}}{@AddToLength=, add {@dimension=19 inches}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet}} {@AddToLength=and add {@dimension=200 sq feet}}
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=19 inches}} {@AddToLength=and add {@dimension=19 inches}}
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=200 sq feet}} {@AddToLength=and add {@dimension=200 sq feet}}
+- {@ShowLength=show {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet}} {@ShowLength=and display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet}} {@AddToLength=and add {@dimension=19 inches}}
+- {@ShowLength=show {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet}} {@ShowLength=and display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2.5 meters}} {@AddToLength=and add {@dimension=2.5 meters}}
+- {@ShowLength=show {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=19 inches}} {@ShowLength=and display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet}} {@AddToLength=and add {@dimension=2 feet}}
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet}} {@AddToLength=add {@dimension=2 feet}} 
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=19 inches}} {@AddToLength=add {@dimension=2.5 meters}} 
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=19 inches}} {@AddToLength=add {@dimension=19 inches}} 
+- {@AddToLength=add {@dimension=19 inches} {@PROPERTYName=length}} {@RemoveFromLength=and remove {@dimension=19 inches} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2 feet} {@PROPERTYName=length}} {@RemoveFromLength=and remove {@dimension=19 inches} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=200 sq feet} {@PROPERTYName=length}} {@RemoveFromLength=and remove {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=19 inches} {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2 feet} {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=200 sq feet} {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=19 inches} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=19 inches} {@PROPERTYName=length}}, {@RemoveFromLength=remove {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=19 inches} {@PROPERTYName=length}}, {@RemoveFromLength=remove {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2.5 meters} {@PROPERTYName=length}}, {@RemoveFromLength=remove {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=200 sq feet} and {@dimension=200 sq feet} {@PROPERTYName=length}} {@RemoveFromLength=and remove {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2.5 meters} and {@dimension=19 inches} {@PROPERTYName=length}} {@RemoveFromLength=and remove {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2 feet} and {@dimension=2 feet} {@PROPERTYName=length}} {@RemoveFromLength=and remove {@dimension=19 inches} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2 feet}, {@dimension=19 inches} and {@dimension=2 feet} {@PROPERTYName=length}} {@RemoveFromLength=and remove {@dimension=200 sq feet} and {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=19 inches}, {@dimension=2 feet} and {@dimension=19 inches} {@PROPERTYName=length}} {@RemoveFromLength=and remove {@dimension=200 sq feet} and {@dimension=19 inches} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=200 sq feet}, {@dimension=19 inches} and {@dimension=2.5 meters} {@PROPERTYName=length}} {@RemoveFromLength=and remove {@dimension=19 inches} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2.5 meters}, {@dimension=19 inches} and {@dimension=2.5 meters} {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2.5 meters} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=200 sq feet}, {@dimension=200 sq feet} and {@dimension=2 feet} {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=19 inches} and {@dimension=19 inches} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=19 inches}, {@dimension=19 inches} and {@dimension=2.5 meters} {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet} and {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2 feet} {@PROPERTYName=length}}{@RemoveFromLength=, remove {@dimension=2.5 meters} {@PROPERTYName=length}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=2.5 meters} {@PROPERTYName=length}}{@RemoveFromLength=, remove {@dimension=2.5 meters} {@PROPERTYName=length}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@AddToLength=add {@dimension=19 inches} {@PROPERTYName=length}}{@RemoveFromLength=, remove {@dimension=19 inches} {@PROPERTYName=length}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2.5 meters} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2 feet} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2.5 meters} and {@dimension=2 feet} {@PROPERTYName=length}} {@AddToLength=and add **MISSING**}
+- {@RemoveFromLength=remove {@dimension=2.5 meters} and {@dimension=2.5 meters} {@PROPERTYName=length}} {@AddToLength=and add **MISSING**}
+- {@RemoveFromLength=remove {@dimension=19 inches} and {@dimension=19 inches} {@PROPERTYName=length}} {@AddToLength=and add **MISSING**}
+- {@RemoveFromLength=remove {@dimension=200 sq feet}, {@dimension=2 feet} and {@dimension=19 inches} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=2.5 meters} and {@dimension=2 feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2 feet}, {@dimension=2.5 meters} and {@dimension=19 inches} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=19 inches} and {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=200 sq feet}, {@dimension=2 feet} and {@dimension=2 feet} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=2.5 meters} and {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2 feet} {@PROPERTYName=length}}{@AddToLength=, add {@dimension=2 feet} {@PROPERTYName=length}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=2 feet} {@PROPERTYName=length}}{@AddToLength=, add {@dimension=200 sq feet} {@PROPERTYName=length}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@RemoveFromLength=remove {@dimension=19 inches} {@PROPERTYName=length}}{@AddToLength=, add {@dimension=2 feet} {@PROPERTYName=length}} {@ShowLength=and show {@PROPERTYName=length}}
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=2 feet} {@PROPERTYName=length}}
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=200 sq feet} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=2 feet} {@PROPERTYName=length}}
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=200 sq feet} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@ShowLength=show {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet} {@PROPERTYName=length}} {@ShowLength=and display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2.5 meters} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@ShowLength=show {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=19 inches} {@PROPERTYName=length}} {@ShowLength=and display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=200 sq feet} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=200 sq feet} {@PROPERTYName=length}}
+- {@ShowLength=show {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet} {@PROPERTYName=length}} {@ShowLength=and display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=200 sq feet} {@PROPERTYName=length}} {@AddToLength=and add {@dimension=2.5 meters} {@PROPERTYName=length}}
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2.5 meters} {@PROPERTYName=length}} {@AddToLength=add {@dimension=2 feet} {@PROPERTYName=length}} 
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=200 sq feet} {@PROPERTYName=length}} {@AddToLength=add {@dimension=2 feet} {@PROPERTYName=length}} 
+- {@ShowLength=display {@PROPERTYName=length}} {@RemoveFromLength=remove {@dimension=2 feet} {@PROPERTYName=length}} {@AddToLength=add {@dimension=2 feet} {@PROPERTYName=length}} 
+- 2 feet
+- 19 inches
+- 2.5 meters
+- 200 sq feet
+
+- Length
+
+
+> Generator: 490a2602048fa4a44876b454581e0db2

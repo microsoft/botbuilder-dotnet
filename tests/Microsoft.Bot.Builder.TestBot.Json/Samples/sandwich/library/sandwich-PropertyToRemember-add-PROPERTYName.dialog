@@ -1,0 +1,14 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "SetPropertyToRemember",
+	"entity": "PROPERTYName",
+	"actions": [
+		{
+			"$kind": "Microsoft.SetProperty",
+			"property": "$PropertyToRemember",
+			"value": "=@PROPERTYName"
+		}
+	],
+	"$Generator": "0acb9d9a948568ee5ed73e81b3eac66c"
+}

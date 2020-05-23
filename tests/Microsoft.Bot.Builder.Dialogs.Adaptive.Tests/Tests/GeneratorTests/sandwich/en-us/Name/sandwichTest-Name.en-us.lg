@@ -1,0 +1,22 @@
+
+[sandwichTest-NameEntity.en-us.lg](sandwichTest-NameEntity.en-us.lg)
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
+[sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
+
+# AskName
+- ${askString('Name')}
+
+
+> How to display the name of Name
+# NameName
+- name
+
+> How to display a Name value
+# Name(val)
+ - IF: ${val}
+ - ${val}
+ - ELSE:
+ - no value
+
+
+> Generator: 90c71beecee881d7c31b82d4ca238843

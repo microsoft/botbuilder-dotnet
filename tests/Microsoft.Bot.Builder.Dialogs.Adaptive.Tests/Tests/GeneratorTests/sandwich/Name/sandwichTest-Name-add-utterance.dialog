@@ -1,0 +1,28 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "AddToName",
+	"entity": "utterance",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${setPropertyMessage('Name', @utterance)}"
+		},
+		{
+			"$kind": "Microsoft.SetProperty",
+			"property": "$Name",
+			"value": "=@utterance"
+		},
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$PropertyToChange == 'Name'",
+			"actions": [
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "$PropertyToChange"
+				}
+			]
+		}
+	],
+	"$Generator": "8ac78949b9f12bc34f0b66dc61dc28b1"
+}

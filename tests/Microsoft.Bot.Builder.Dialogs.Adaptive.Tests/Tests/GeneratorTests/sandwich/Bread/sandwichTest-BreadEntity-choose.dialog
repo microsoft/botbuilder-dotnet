@@ -1,0 +1,15 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnChooseEntity",
+	"entity": "BreadEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.Ask",
+			"activity": "${chooseBreadEntity()}",
+			"expectedProperties": [
+				"Bread"
+			]
+		}
+	],
+	"$Generator": "f6e0e6e9eaa46616e6f0527bd42187cc"
+}

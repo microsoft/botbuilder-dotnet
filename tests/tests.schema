@@ -1,6 +1,5 @@
 {
 	"$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-	"$id": "file:///C:/Users/chrim/source/repos/botbuilder-dotnet/tests/tests.schema#",
 	"type": "object",
 	"title": "Component kinds",
 	"description": "These are all of the kinds that can be created by the loader.",
@@ -866,25 +865,21 @@
 					"$ref": "#/definitions/arrayExpression",
 					"title": "Expected Properties",
 					"description": "Properties expected from the user.",
-					"type": "array",
 					"examples": [
 						[
 							"age",
 							"name"
 						]
-					],
-					"items": {
-						"type": "string",
-						"title": "Name",
-						"description": "Name of the property"
-					}
+					]
 				},
 				"defaultOperation": {
-					"$ref": "#/definitions/stringExpression",
+					"$ref": "#/definitions/objectExpression",
 					"title": "Default Operation",
-					"description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
+					"description": "Sets the default operation for each property and entity that will be used when no operation is recognized in the response to this Ask.",
 					"examples": [
-						"add"
+						{
+							"number": "add"
+						}
 					]
 				},
 				"id": {
