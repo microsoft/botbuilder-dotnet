@@ -783,6 +783,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private async Task<bool> ProcessQueuesAsync(ActionContext actionContext, CancellationToken cancellationToken)
         {
             DialogEvent evt;
+            bool handled = false;
             var assignments = EntityAssignments.Read(actionContext);
             var nextAssignment = assignments.NextAssignment();
             if (nextAssignment != null)
@@ -808,27 +809,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     actionContext.State.SetValue($"{TurnPath.Recognized}.entities.{nextAssignment.Entity.Name}", entity);
                     assignments.Dequeue(actionContext);
                 }
+
+                actionContext.State.SetValue(DialogPath.LastEvent, evt.Name);
+                handled = await this.ProcessEventAsync(actionContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (!handled)
+                {
+                    // If event wasn't handled, remove it
+                    if (nextAssignment != null && nextAssignment.Event != AdaptiveEvents.AssignEntity)
+                    {
+                        assignments.Dequeue(actionContext);
+                    }
+
+                    // See if more assignements or end of actions
+                    handled = await this.ProcessQueuesAsync(actionContext, cancellationToken);
+                }
             }
             else
             {
+                // Emit end of actions
                 evt = new DialogEvent() { Name = AdaptiveEvents.EndOfActions, Bubble = false };
-            }
-
-            actionContext.State.SetValue(DialogPath.LastEvent, evt.Name);
-            var handled = await this.ProcessEventAsync(actionContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-            if (!handled)
-            {
-                // If event wasn't handled, remove it
-                if (nextAssignment != null && nextAssignment.Event != AdaptiveEvents.AssignEntity)
-                {
-                    assignments.Dequeue(actionContext);
-                }
-
-                // Keep going if more assignments
-                if (assignments.Assignments.Any())
-                {
-                    handled = await this.ProcessQueuesAsync(actionContext, cancellationToken);
-                }
+                actionContext.State.SetValue(DialogPath.LastEvent, evt.Name);
+                handled = await this.ProcessEventAsync(actionContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             return handled;
@@ -1111,14 +1112,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     }
                     else
                     {
-                        if (name == "PROPERTYName")
+                        if (op != null && name == "PROPERTYName")
                         {
-                            // Expand PROPERTYName choices in case they overlap
-                            foreach (var property in info.Value as JArray)
+                            foreach (var property in val as JArray)
                             {
                                 var newInfo = info.Clone() as EntityInfo;
                                 newInfo.Property = property.Value<string>();
-                                newInfo.Value = new JArray { newInfo.Property };
                                 infos.Add(newInfo);
                             }
                         }
@@ -1381,11 +1380,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     existing.Dequeue(actionContext);
                     lastEvent = null;
                 }
-                else if (lastEvent == AdaptiveEvents.ChooseProperty
-                        /* TODO: When LUIS fixes a modeling bug this should be added back
-                         * && candidate.Operation == null 
-                         */
-                        && candidate.Entity.Name == "PROPERTYName")
+                else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Operation == null && candidate.Entity.Name == "PROPERTYName")
                 {
                     // NOTE: This assumes the existence of an entity named PROPERTYName for resolving this ambiguity
                     choices = existing.NextAssignment().Alternatives.ToList();
