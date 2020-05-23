@@ -1,0 +1,25 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "SetChangePropertyConfirmation",
+	"entity": "boolean",
+	"actions": [
+		{
+			"$kind": "Microsoft.SetProperty",
+			"property": "$ChangePropertyConfirmation",
+			"value": "=@boolean"
+		},
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$ChangePropertyConfirmation == 'true'",
+			"actions": [
+				{
+					"$kind": "Microsoft.Ask",
+					"activity": "${template(concat('Ask',$PropertyToRemember))}",
+					"expectedProperties": "createArray($PropertyToRemember)"
+				}
+			]
+		}
+	],
+	"$Generator": "6c380106c2a3c0f65b62467716b062ef"
+}

@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             Alternative = null;
             foreach (var alternative in alternatives)
             {
-                if (alternative != current)
+                if (alternative != this)
                 {
                     current.Alternative = alternative;
                     current = alternative;

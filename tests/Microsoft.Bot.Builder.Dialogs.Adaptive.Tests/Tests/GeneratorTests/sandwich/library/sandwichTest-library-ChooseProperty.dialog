@@ -1,0 +1,14 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnChooseProperty",
+	"actions": [
+		{
+			"$kind": "Microsoft.Ask",
+			"activity": "${chooseProperties()}",
+			"expectedProperties": [
+				"PropertyToChange"
+			]
+		}
+	],
+	"$Generator": "4b680106e8b7276e9bf9c3b06a69b78f"
+}

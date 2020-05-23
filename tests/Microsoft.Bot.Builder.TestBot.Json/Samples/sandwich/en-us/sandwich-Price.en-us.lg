@@ -1,9 +1,0 @@
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Missing.lg](sandwich-library-Missing.lg)
-
-# AskPrice
-- ${askString('Price')}
-
-
-# PriceName
-- price

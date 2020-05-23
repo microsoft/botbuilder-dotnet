@@ -1,0 +1,33 @@
+
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
+[sandwichTest-library-Choose.en-us.lg](sandwichTest-library-Choose.en-us.lg)
+
+# ToppingsEntity(value) 
+- SWITCH: ${value}
+
+  - CASE: ${'tomato'} 
+    - tomato
+  - CASE: ${'lettuce'} 
+    - lettuce
+  - CASE: ${'pickles'} 
+    - pickles
+  - CASE: ${'greenPeppers'} 
+    - green peppers
+  - CASE: ${'redPepppers'} 
+    - red pepppers
+  - CASE: ${'whiteOnions'} 
+    - white onions
+  - CASE: ${'redOnions'} 
+    - red onions
+
+  - DEFAULT: 
+    - no value
+
+
+
+# chooseToppingsEntity
+- ${chooseEnumArrayEntity('Toppings')}
+
+
+
+> Generator: 9f74c350d2913349dedf697ad46c683e
