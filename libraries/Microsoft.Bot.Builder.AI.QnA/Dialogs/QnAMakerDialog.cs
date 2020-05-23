@@ -615,7 +615,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 if (answer.Context != null && answer.Context.Prompts.Count() > 0)
                 {
                     var previousContextData = ObjectPath.GetPathValue(stepContext.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
-                    var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);
 
                     foreach (var prompt in answer.Context.Prompts)
                     {
@@ -626,23 +625,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, PreviousQnAId, answer.Id);
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
-                    int contentChoice = -1;
-
-                    if (answer.AnswerSpan != null && !string.IsNullOrEmpty(answer.AnswerSpan.Text)) 
-                    {
-                        if (dialogOptions.ResponseOptions.ContentChoice.Equals(QnADialogResponseOptions.PreciseAnswer))
-                        {
-                            contentChoice = 0;
-                        }
-
-                        if (dialogOptions.ResponseOptions.ContentChoice.Equals(QnADialogResponseOptions.Both))
-                        {
-                            contentChoice = 1;
-                        }
-                    }
-
                     // Get multi-turn prompts card activity.
-                    var message = QnACardBuilder.GetQnAPromptsContentCard(answer, dialogOptions.ResponseOptions.CardNoMatchText, contentChoice);
+                    var message = QnACardBuilder.GetQnADefaultResponse(answer, dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
                     await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
@@ -690,24 +674,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             // If response is present then show that response, else default answer.
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
-                var firstAnswer = response.First();
-                var answer = firstAnswer.Answer;
-                int contentChoice = -1;
-
-                if (firstAnswer.AnswerSpan != null && !string.IsNullOrEmpty(firstAnswer.AnswerSpan.Text))
-                {
-                    if (dialogOptions.ResponseOptions.ContentChoice.Equals(QnADialogResponseOptions.PreciseAnswer))
-                    {
-                        contentChoice = 0;
-                    }
-
-                    if (dialogOptions.ResponseOptions.ContentChoice.Equals(QnADialogResponseOptions.Both))
-                    {
-                        contentChoice = 1;
-                    }
-                }
-
-                var message = QnACardBuilder.GetAnswerSpanCard(firstAnswer,  contentChoice);
+                var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
                 await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
             }
             else

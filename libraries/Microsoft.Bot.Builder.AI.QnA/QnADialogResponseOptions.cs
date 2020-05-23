@@ -10,10 +10,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnADialogResponseOptions
     {
-        public const string PreciseAnswer = "PreciseAnswer";
-
-        public const string Both = "Both";
-        
         /// <summary>
         /// Gets or sets get or set for Active learning card title.
         /// </summary>
@@ -47,11 +43,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public Activity CardNoMatchResponse { get; set; }
 
         /// <summary>
-        /// Gets or sets get or set for MRCAnswerSpanRenderingOption.
+        /// Gets or sets a value indicating whether DisplayPreciseAnswerOnly.
         /// </summary>
         /// <value>
-        /// Get or set for Card no match MRCAnswerSpanRenderingOption.
+        /// Get or set for Card no match DisplayPreciseAnswerOnly.
         /// </value>
-        public string ContentChoice { get; set; } = PreciseAnswer;
+        public bool DisplayPreciseAnswerOnly { get; set; }
     }
 }

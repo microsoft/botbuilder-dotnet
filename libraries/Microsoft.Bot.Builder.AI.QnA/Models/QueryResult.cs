@@ -84,6 +84,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The answerspan value.
         /// </value>
         [JsonProperty("answerSpan")]
-        public AnswerSpan AnswerSpan { get; set; }
+        public AnswerSpanResponse AnswerSpan { get; set; }
     }
 }

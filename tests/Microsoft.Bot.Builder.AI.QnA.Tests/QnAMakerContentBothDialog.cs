@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 CardNoMatchText = DefaultCardNoMatchText,
                 NoAnswer = noAnswer,
                 CardNoMatchResponse = cardNoMatchResponse,
-                ContentChoice = QnADialogResponseOptions.Both
+                DisplayPreciseAnswerOnly = false
             };
 
             return responseOptions;

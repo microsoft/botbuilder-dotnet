@@ -77,84 +77,23 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Get active learning suggestions card.
+        /// Get Card for MultiTurn scenario. (Can be deprected from 4.10.0 release of sdk).
         /// </summary>
         /// <param name="result">Result to be dispalyed as prompts.</param>
         /// <param name="cardNoMatchText">No match text.</param>       
         /// <returns>IMessageActivity.</returns>
         public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
         {
-           return GetQnAPromptsContentCard(result, cardNoMatchText, 0);
+            return GetQnADefaultResponse(result, true);
         }
 
         /// <summary>
-        /// Get active learning suggestions content card.
+        /// Get Card for MultiTurn scenario.
         /// </summary>
         /// <param name="result">Result to be dispalyed as prompts.</param>
-        /// <param name="cardNoMatchText">No match text.</param>
-        /// <param name="renderingOption">renderingchoice.</param>
+        /// <param name="displayPreciseAnswerOnly">renderingchoice.</param>
         /// <returns>IMessageActivity.</returns>
-        public static IMessageActivity GetQnAPromptsContentCard(QueryResult result, string cardNoMatchText, int renderingOption)
-        {
-            if (result == null)
-            {
-                throw new ArgumentNullException(nameof(result));
-            }
-
-            if (cardNoMatchText == null)
-            {
-                throw new ArgumentNullException(nameof(cardNoMatchText));
-            }
-
-            var chatActivity = Activity.CreateMessageActivity();
-            chatActivity.Text = result.Answer;
-            var buttonList = new List<CardAction>();
-
-            // Add all prompt
-            foreach (var prompt in result.Context.Prompts)
-            {
-                buttonList.Add(
-                    new CardAction()
-                    {
-                        Value = prompt.DisplayText,
-                        Type = "imBack",
-                        Title = prompt.DisplayText,
-                    });
-            }
-
-            var plCard = new HeroCard()
-            {
-                Buttons = buttonList
-            };
-
-            // For content choice Both Precise and Content
-            if (renderingOption == 1 && result.AnswerSpan != null)
-            {
-                plCard.Text = result.Answer;
-                chatActivity.Text = result.AnswerSpan.Text;
-            }
-
-            // For content choice Precise only
-            if (renderingOption == 0 && result.AnswerSpan != null)
-            {
-                chatActivity.Text = result.AnswerSpan.Text;
-            }
-
-            // Create the attachment.
-            var attachment = plCard.ToAttachment();
-
-            chatActivity.Attachments.Add(attachment);
-
-            return chatActivity;
-       }
-
-        /// <summary>
-        /// Get active learning suggestions card.
-        /// </summary>
-        /// <param name="result">Result to be dispalyed as prompts.</param>
-        /// <param name="renderingOption">renderingchoice.</param>
-        /// <returns>IMessageActivity.</returns>
-        public static IMessageActivity GetAnswerSpanCard(QueryResult result, int renderingOption)
+        public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly)
         {
             if (result == null)
             {
@@ -163,25 +102,55 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var chatActivity = Activity.CreateMessageActivity();
             chatActivity.Text = result.Answer;
-
-            // For content choice Precise only
-            if (renderingOption == 0 && result.AnswerSpan != null)
+            
+            List<CardAction> buttonList = null;
+            if (result?.Context?.Prompts != null &&
+                result.Context.Prompts.Any())
             {
-                chatActivity.Text = result.AnswerSpan.Text;
+                buttonList = new List<CardAction>();
+
+                // Add all prompt
+                foreach (var prompt in result.Context.Prompts)
+                {
+                    buttonList.Add(
+                        new CardAction()
+                        {
+                            Value = prompt.DisplayText,
+                            Type = "imBack",
+                            Title = prompt.DisplayText,
+                        });
+                }
             }
 
-            var plCard = new HeroCard()
+            string heroCardText = null;
+            if (!string.IsNullOrWhiteSpace(result?.AnswerSpan?.Text))
             {
-            };
-
-            // For content choice Both Precise and Content
-            if (renderingOption == 1 && result.AnswerSpan != null)
-            {
-                plCard.Text = result.Answer;
                 chatActivity.Text = result.AnswerSpan.Text;
-                var attachment = plCard.ToAttachment();
+
+                // For content choice Precise only
+                if (!displayPreciseAnswerOnly)
+                {
+                    heroCardText = result.Answer;
+                }
+            }
+
+            if (buttonList != null || !string.IsNullOrWhiteSpace(heroCardText))
+            {
+                var plCard = new HeroCard();
+
+                if (buttonList != null)
+                {
+                    plCard.Buttons = buttonList;
+                }
+
+                if (!string.IsNullOrWhiteSpace(heroCardText))
+                {
+                    plCard.Text = heroCardText;
+                }
 
                 // Create the attachment.
+                var attachment = plCard.ToAttachment();
+
                 chatActivity.Attachments.Add(attachment);
             }
 
