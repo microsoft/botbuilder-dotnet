@@ -232,7 +232,7 @@
 
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "toppings is a list from: [tomato, lettuce, pickles, green peppers, red pepppers, white onions, red onions]\r\nWhat values do you want to add for toppings?"
+            "text": "toppings is a list from: [tomato, lettuce, pickles, green peppers, red pepppers, white onions, red onions]\nWhat values do you want to add for toppings?"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
