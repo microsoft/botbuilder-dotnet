@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Begin a skill dialog",
-    "description": "Begin a remote skill dialog.",
+    "title": "Begin a skill",
+    "description": "Begin a remote skill.",
     "type": "object",
     "properties": {
         "id": {
@@ -51,6 +51,12 @@
             "examples": [
                 "https://mybot.contoso.com/api/skills/"
             ]
+        },
+        "connectionName": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "OAuth Connection Name (SSO)",
+            "description": "The OAuth Connection Name, that would be used to perform Single SignOn with a skill.",
+            "default": "=settings.connectionName"
         },
         "skillAppId": {
             "$ref": "schema:#/definitions/stringExpression",

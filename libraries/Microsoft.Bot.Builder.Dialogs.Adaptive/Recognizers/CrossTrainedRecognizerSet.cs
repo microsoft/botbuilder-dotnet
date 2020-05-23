@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
                 result.Properties["id"] = recognizer.Id;
                 return result;
-            }));
+            })).ConfigureAwait(false);
 
             var result = ProcessResults(results);
 

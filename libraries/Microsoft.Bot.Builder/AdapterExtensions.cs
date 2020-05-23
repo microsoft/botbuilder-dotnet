@@ -17,7 +17,32 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public static BotAdapter UseStorage(this BotAdapter botAdapter, IStorage storage)
         {
-            return botAdapter.Use(new RegisterClassMiddleware<IStorage>(storage));
+            return botAdapter.Use(new RegisterClassMiddleware<IStorage>(storage ?? throw new ArgumentNullException(nameof(storage))));
+        }
+
+        /// <summary>
+        /// Registers bot state object into the TurnContext. The botstate will be available via the turn context's
+        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{typeof(instance)}()"/> method.
+        /// </summary>
+        /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the storage object.</param>
+        /// <param name="botStates">One or <see cref="BotState"/> object to register.</param>
+        /// <returns>The updated adapter.</returns>
+        /// <remarks>
+        /// This adds <see cref="IMiddleware"/> to register the a BotState object into turnstate.
+        /// </remarks>
+        public static BotAdapter UseBotState(this BotAdapter botAdapter, params BotState[] botStates)
+        {
+            if (botStates == null)
+            {
+                throw new ArgumentNullException(nameof(botStates));
+            }
+
+            foreach (var botState in botStates)
+            {
+                botAdapter.Use(new RegisterClassMiddleware<BotState>(botState, botState.GetType().FullName));
+            }
+
+            return botAdapter;
         }
 
         /// <summary>
@@ -34,6 +59,7 @@ namespace Microsoft.Bot.Builder
         /// This adds <see cref="IMiddleware"/> to register the user and conversation state management objects.
         /// If <paramref name="auto"/> is true, this also adds middleware to automatically persist state before each turn ends.
         /// </remarks>
+        [Obsolete("This method is deprecated in 4.9.  You should use the method .UseBotState() instead.")]
         public static BotAdapter UseState(this BotAdapter botAdapter, UserState userState, ConversationState conversationState, bool auto = true)
         {
             if (botAdapter == null)

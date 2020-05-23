@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
@@ -28,12 +29,12 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         [AssemblyInitialize]
         public static void Initialize(TestContext testContext)
         {
-            ComponentRegistration.Add(new DialogsComponentRegistration());
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
             ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
             ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());
             ComponentRegistration.Add(new LuisComponentRegistration());
+            ComponentRegistration.Add(new QnAMakerComponentRegistration());
         }
 
         public void ConfigureServices(IServiceCollection services)

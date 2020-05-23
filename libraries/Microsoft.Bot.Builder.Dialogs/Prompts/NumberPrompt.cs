@@ -103,9 +103,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             var result = new PromptRecognizerResult<T>();
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                var message = turnContext.Activity.AsMessageActivity();
+                var utterance = turnContext.Activity.AsMessageActivity().Text;
+                if (string.IsNullOrEmpty(utterance))
+                {
+                    return Task.FromResult(result);
+                }
+
                 var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English;
-                var results = RecognizeNumberWithUnit(message.Text, culture);
+                var results = RecognizeNumberWithUnit(utterance, culture);
                 if (results.Count > 0)
                 {
                     // Try to parse value based on type

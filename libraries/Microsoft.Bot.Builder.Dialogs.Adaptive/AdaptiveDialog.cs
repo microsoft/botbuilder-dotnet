@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             EnsureDependenciesInstalled();
 
-            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
+            await this.CheckForVersionChangeAsync(dc, cancellationToken).ConfigureAwait(false);
 
             if (!dc.State.ContainsKey(DialogPath.EventCounter))
             {
@@ -216,10 +216,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             EnsureDependenciesInstalled();
 
-            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
+            await this.CheckForVersionChangeAsync(dc, cancellationToken).ConfigureAwait(false);
 
             // Continue step execution
-            return await ContinueActionsAsync(dc, null, cancellationToken).ConfigureAwait(false);
+            return await ContinueActionsAsync(dc, options: null, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
@@ -229,14 +229,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
             }
 
-            await this.CheckForVersionChangeAsync(dc).ConfigureAwait(false);
+            await this.CheckForVersionChangeAsync(dc, cancellationToken).ConfigureAwait(false);
 
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
             // resumeDialog() when the pushed on dialog ends.
             // To avoid the container prematurely ending we need to implement this method and simply
             // ask our inner dialog stack to re-prompt.
-            await RepromptDialogAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
+            await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
 
             return EndOfTurn;
         }
@@ -463,7 +463,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             if (activity.Type == ActivityTypes.Message)
                             {
                                 // Recognize utterance
-                                var recognizedResult = await OnRecognize(actionContext, activity, cancellationToken).ConfigureAwait(false);
+                                var recognizedResult = await OnRecognizeAsync(actionContext, activity, cancellationToken).ConfigureAwait(false);
 
                                 // TODO figure out way to not use turn state to pass this value back to caller.
                                 actionContext.State.SetValue(TurnPath.Recognized, recognizedResult);
@@ -680,7 +680,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return new DialogTurnResult(DialogTurnStatus.Cancelled);
         }
 
-        protected async Task<RecognizerResult> OnRecognize(ActionContext actionContext, Activity activity, CancellationToken cancellationToken = default)
+        protected async Task<RecognizerResult> OnRecognizeAsync(ActionContext actionContext, Activity activity, CancellationToken cancellationToken = default)
         {
             if (Recognizer != null)
             {
@@ -842,7 +842,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private async Task<bool> QueueFirstMatchAsync(ActionContext actionContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken)
         {
-            var selection = await Selector.Select(actionContext, cancellationToken).ConfigureAwait(false);
+            var selection = await Selector.SelectAsync(actionContext, cancellationToken).ConfigureAwait(false);
             if (selection.Any())
             {
                 var condition = selection.First();

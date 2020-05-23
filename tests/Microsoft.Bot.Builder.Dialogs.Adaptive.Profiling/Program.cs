@@ -92,9 +92,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
 
                     var explorer = new ResourceExplorer()
                         .AddFolder(dir, monitorChanges: false)
-                        .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader()); 
-                    HostContext.Current.Set(config);
+                        .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config)); 
+                    
                     var script = explorer.LoadType<TestScript>(name);
+                    script.Configuration = config;
                     var timer = new System.Diagnostics.Stopwatch();
                     Console.WriteLine($"Executing {arg} for {iterations} iterations");
                     timer.Start();
@@ -104,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
                     Console.WriteLine($" loading took {loading} ms");
 
                     var iterationTime = 0L;
-                    var firstTime = 0l;
+                    var firstTime = 0L;
                     for (var iter = 0; iter < iterations; ++iter)
                     {
                         timer.Restart();

@@ -7,19 +7,23 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    public class AdaptiveSkillDialog : SkillDialog
+    /// <summary>
+    /// Begin a Skill.
+    /// </summary>
+    public class BeginSkill : SkillDialog
     {
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.SkillDialog";
+        public const string Kind = "Microsoft.BeginSkill";
 
         [JsonConstructor]
-        public AdaptiveSkillDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public BeginSkill([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(new SkillDialogOptions())
         {
             DialogOptions.Skill = new BotFrameworkSkill();
@@ -95,6 +99,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
         public StringExpression SkillEndpoint { get; set; }
 
         /// <summary>
+        /// Gets or sets the OAuth Connection Name, that would be used to perform Single SignOn with a skill.
+        /// </summary>
+        /// <value>
+        /// The OAuth Connection Name for the Parent Bot.
+        /// </value>
+        [JsonProperty("connectionName")]
+        public StringExpression ConnectionName { get; set; } = "=settings.connectionName";
+
+        /// <summary>
         /// Gets or sets template for the activity.
         /// </summary>
         /// <value>
@@ -113,9 +126,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             // Update the dialog options with the runtime settings.
             DialogOptions.BotId = BotId.GetValue(dc.State);
             DialogOptions.SkillHostEndpoint = new Uri(SkillHostEndpoint.GetValue(dc.State));
-            DialogOptions.ConversationIdFactory = HostContext.Current.Get<SkillConversationIdFactoryBase>() ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in HostContext");
-            DialogOptions.SkillClient = HostContext.Current.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in HostContext");
+            DialogOptions.ConversationIdFactory = dc.Context.TurnState.Get<SkillConversationIdFactoryBase>() ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in HostContext");
+            DialogOptions.SkillClient = dc.Context.TurnState.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in HostContext");
             DialogOptions.ConversationState = dc.Context.TurnState.Get<ConversationState>() ?? throw new NullReferenceException($"Unable to get an instance of {nameof(ConversationState)} from TurnState.");
+            DialogOptions.ConnectionName = ConnectionName.GetValue(dc.State);
 
             // Set the skill to call
             DialogOptions.Skill.Id = DialogOptions.Skill.AppId = SkillAppId.GetValue(dc.State);
@@ -150,6 +164,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Skills
             }
 
             return base.ContinueDialogAsync(dc, cancellationToken);
+        }
+
+        protected override string OnComputeId()
+        {
+            var appId = SkillAppId?.ToString() ?? string.Empty;
+            string activity;
+
+            if (Activity is ActivityTemplate at)
+            {
+                activity = StringUtils.Ellipsis(at.Template.Trim(), 30);
+            }
+            else
+            {
+                activity = StringUtils.Ellipsis(Activity?.ToString().Trim(), 30);
+            }
+
+            return $"{this.GetType().Name}['{appId}','{activity}']";
         }
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -46,6 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// CheckForVersionChangeAsync.
         /// </summary>
         /// <param name="dc">dialog context.</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>task.</returns>
         /// <remarks>
         /// Checks to see if a containers child dialogs have changed since the current dialog instance
@@ -53,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// 
         /// This should be called at the start of `beginDialog()`, `continueDialog()`, and `resumeDialog()`.
         /// </remarks>
-        protected virtual async Task CheckForVersionChangeAsync(DialogContext dc)
+        protected virtual async Task CheckForVersionChangeAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             var current = dc.ActiveDialog.Version;
             dc.ActiveDialog.Version = this.GetInternalVersion();
@@ -64,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Give bot an opportunity to handle the change.
                 // - If bot handles it the changeHash will have been updated as to avoid triggering the 
                 //   change again.
-                var handled = await dc.EmitEventAsync(DialogEvents.VersionChanged, this.Id, true, false).ConfigureAwait(false);
+                var handled = await dc.EmitEventAsync(DialogEvents.VersionChanged, this.Id, true, false, cancellationToken).ConfigureAwait(false);
                 if (!handled)
                 {
                     // Throw an error for bot to catch
