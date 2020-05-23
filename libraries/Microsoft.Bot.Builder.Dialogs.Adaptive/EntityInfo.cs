@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             => Start <= entity.Start && End >= entity.End && End - Start > entity.End - entity.Start;
 
         public override string ToString()
-            => $"{Name}:{Value} P{Priority} {Score} {Coverage}";
+            => $"{Operation}({Name}:{Value}) P{Priority} {Score} {Coverage}";
 
         /// <summary>
         /// Returns a clone of this EntityInfo.

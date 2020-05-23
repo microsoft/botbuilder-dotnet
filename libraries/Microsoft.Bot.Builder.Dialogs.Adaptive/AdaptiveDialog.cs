@@ -818,10 +818,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var handled = await this.ProcessEventAsync(actionContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (!handled)
             {
-                // If event wasn't handled, remove it from assignments and keep going if things changed
+                // If event wasn't handled, remove it
                 if (nextAssignment != null && nextAssignment.Event != AdaptiveEvents.AssignEntity)
                 {
                     assignments.Dequeue(actionContext);
+                }
+
+                // Keep going if more assignments
+                if (assignments.Assignments.Any())
+                {
                     handled = await this.ProcessQueuesAsync(actionContext, cancellationToken);
                 }
             }
@@ -1376,7 +1381,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     existing.Dequeue(actionContext);
                     lastEvent = null;
                 }
-                else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Operation == null && candidate.Entity.Name == "PROPERTYName")
+                else if (lastEvent == AdaptiveEvents.ChooseProperty
+                        /* TODO: When LUIS fixes a modeling bug this should be added back
+                         * && candidate.Operation == null 
+                         */
+                        && candidate.Entity.Name == "PROPERTYName")
                 {
                     // NOTE: This assumes the existence of an entity named PROPERTYName for resolving this ambiguity
                     choices = existing.NextAssignment().Alternatives.ToList();
@@ -1396,12 +1405,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 foreach (var alternative in alternatives)
                 {
-                    if (alternative.Entity.Operation == null)
+                    if (alternative.Operation == null)
                     {
-                        alternative.Entity.Operation = DefaultOperation(alternative, askDefaultOp, defaultOp);
+                        alternative.Operation = DefaultOperation(alternative, askDefaultOp, defaultOp);
                     }
-
-                    alternative.Operation = alternative.Entity.Operation;
                 }
 
                 candidate.AddAlternatives(alternatives);
