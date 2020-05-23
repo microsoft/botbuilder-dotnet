@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         [JsonProperty("template")]
         public string Template { get; set; }
 
-        public virtual async Task<string> BindAsync(DialogContext dialogContext, object data = null)
+        public virtual async Task<string> BindAsync(DialogContext dialogContext, object data = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(this.Template))
             {
@@ -43,10 +44,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
             LanguageGenerator languageGenerator = dialogContext.Services.Get<LanguageGenerator>();
             if (languageGenerator != null)
             {
-                var result = await languageGenerator.Generate(
+                var result = await languageGenerator.GenerateAsync(
                     dialogContext,
                     template: Template,
-                    data: data ?? dialogContext.State).ConfigureAwait(false);
+                    data: data ?? dialogContext.State,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
                 return result.ToString();
             }
 

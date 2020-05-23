@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
@@ -30,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         [JsonProperty("outputFormat")]
         public StringExpression OutputFormat { get; set; } 
 
-        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
+        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             var input = dc.State.GetValue<string>(VALUE_PROPERTY);
 

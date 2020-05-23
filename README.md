@@ -9,7 +9,7 @@ This repo is part of the [Microsoft Bot Framework](https://github.com/Microsoft/
 
  | Branch | Description        | Build Status | Coverage Status | Windows Bot Test Status | Linux Bot Test Status |
  |----|---------------|--------------|-----------------|--|--|
- |Master | 4.9.* Preview Builds |[![Build Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/BotBuilder-DotNet-Signed-daily?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=277&branchName=master) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=master&service=github)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=master) | [![Tests status](https://fuselabs.vsrm.visualstudio.com/_apis/public/Release/badge/86659c66-c9df-418a-a371-7de7aed35064/48/48)](https://fuselabs.visualstudio.com/SDK_v4/_release?definitionId=48&_a=releases) |  [![Tests status](https://fuselabs.vsrm.visualstudio.com/_apis/public/Release/badge/86659c66-c9df-418a-a371-7de7aed35064/47/47)](https://fuselabs.visualstudio.com/SDK_v4/_release?definitionId=47&_a=releases)
+ |Master | 4.10.* Preview Builds |[![Build Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/BotBuilder-DotNet-Signed-daily?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=277&branchName=master) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=master&service=github)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=master) | [![Tests Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/FunctionalTests/BotBuilder-DotNet-Functional-Tests-Windows-yaml?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=834&branchName=master) |  [![Tests Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/FunctionalTests/BotBuilder-DotNet-Functional-Tests-Linux-yaml?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=779&branchName=master)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Microsoft/botbuilder-dotnet/blob/master/LICENSE)
 [![Gitter](https://img.shields.io/gitter/room/Microsoft/BotBuilder.svg)](https://gitter.im/Microsoft/BotBuilder)
@@ -40,8 +40,9 @@ The [Bot Framework Samples](https://github.com/microsoft/botbuilder-samples) inc
 | Microsoft.Bot.Connector               | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Connector?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Connector/)                             | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Connector?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Connector) |
 | Microsoft.Bot.Schema                  | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Schema?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Schema/)                                   | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Schema?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Schema) |
 
-To use the daily builds, which are published to MyGet, please follow the instructions [here](UsingMyGet.md).
+[![Dependencies Graph](https://img.shields.io/badge/dependency-graph-blue.svg)](https://botbuildersdkblobstorage.blob.core.windows.net/sdk-dotnet-dependency-reports/4.9.1/InterdependencyGraph.html)
 
+To use the daily builds, which are published to MyGet, please follow the instructions [here](UsingMyGet.md).
 
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a

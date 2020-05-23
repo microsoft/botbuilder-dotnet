@@ -197,8 +197,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 };
             var queryOptions = new JObject
                 {
-                    { "overridePredictions", options.PreferExternalEntities },
+                    { "preferExternalEntities", options.PreferExternalEntities },
                 };
+
+            if (!string.IsNullOrEmpty(options.DateTimeReference))
+            {
+                queryOptions.Add("datetimeReference", options.DateTimeReference);
+            }
+
             content.Add("options", queryOptions);
 
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };

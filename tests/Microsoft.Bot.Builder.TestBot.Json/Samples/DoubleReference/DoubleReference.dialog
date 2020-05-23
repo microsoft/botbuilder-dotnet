@@ -1,0 +1,110 @@
+﻿{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "id": "x",
+        "intents": [
+            {
+                "intent": "aIntent",
+                "pattern": "a"
+            },
+            {
+                "intent": "bIntent",
+                "pattern": "b"
+            },
+            {
+                "intent": "cIntent",
+                "pattern": "c"
+            },
+            {
+                "intent": "dIntent",
+                "pattern": "d"
+            },
+            {
+                "intent": "eIntent",
+                "pattern": "e"
+            },
+            {
+                "intent": "fIntent",
+                "pattern": "f"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "AskForName",
+                    "resultProperty": "$name"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Hello ${dialog.name}, nice to meet you!"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "aIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "sub3"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "bIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "sub2"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "cIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "sub0"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "dIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "sub0"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "eIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "sub3"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "fIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "dialog": "sub2"
+                }
+            ]
+        }
+    ]
+}

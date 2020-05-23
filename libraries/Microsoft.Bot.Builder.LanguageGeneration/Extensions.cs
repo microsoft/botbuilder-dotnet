@@ -81,6 +81,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     return value.Substring(1);
                 }
+                else if (value == "\\`")
+                {
+                    return value.Substring(1);
+                }
 
                 return value;
             }));

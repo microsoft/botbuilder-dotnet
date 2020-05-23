@@ -293,3 +293,4 @@ appsettings.Development.json
 **/*/.luisrc
 /.vscode/launch.json
 /outputpackages
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Tests/Tests/ComposerBugs

@@ -33,15 +33,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
             var hashCode = Hash<T>(token);
 
             // Pass 1: We track the already visited objects' hash in the 'visited' collection
-            // If we've already visited this hash code and we are still in pass 1, 
-            // we found a loop! If we found a loop, we want to return a value and stop deserializing
-            // to avoid infinite loops.
+            // If we've already visited this hash code and we are still in pass 1, no need to revisit.
             if (visitedPassOne.Contains(hashCode) && CycleDetectionPass == CycleDetectionPasses.PassOne) 
             {
-                // If we already have a hydrated object for this hash code, return it
+                // If we already have a hydrated object for this hash code, 
+                // there is no cycle, just repetition of the object in different parts of the object tree. 
+                // We can get it from the cache but we don't necessarily want it to be the same reference.
+                // In pass 2 when we connect cycles, we won't actually clone because at that point we do want 
+                // to conserve references.
                 if (cache.ContainsKey(hashCode))
                 {
-                    result = cache[hashCode] as T;
+                    result = ObjectPath.Clone<T>(cache[hashCode] as T);
                 }
 
                 // If we don't have a cached value for this hash code, we send null as the value.

@@ -23,7 +23,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class SkillDialog : Dialog
     {
         private const string DeliverModeStateKey = "deliverymode";
-        private const string SsoConnectionNameKey = "SkillDialog.SSOConnectionName";
 
         public SkillDialog(SkillDialogOptions dialogOptions, string dialogId = null)
             : base(dialogId)
@@ -47,10 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Store delivery mode and connection name in dialog state for later use.
             dc.ActiveDialog.State[DeliverModeStateKey] = dialogArgs.Activity.DeliveryMode;
-            dc.ActiveDialog.State[SsoConnectionNameKey] = dialogArgs.ConnectionName;
 
             // Send the activity to the skill.
-            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, dialogArgs.ConnectionName, cancellationToken).ConfigureAwait(false);
+            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, cancellationToken).ConfigureAwait(false);
             if (eocActivity != null)
             {
                 return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
@@ -79,10 +77,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             var skillActivity = ObjectPath.Clone(dc.Context.Activity);
 
             skillActivity.DeliveryMode = dc.ActiveDialog.State[DeliverModeStateKey] as string;
-            var connectionName = dc.ActiveDialog.State[SsoConnectionNameKey] as string;
 
             // Just forward to the remote skill
-            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, connectionName, cancellationToken).ConfigureAwait(false);
+            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, cancellationToken).ConfigureAwait(false);
             if (eocActivity != null)
             {
                 return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
@@ -101,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             repromptEvent.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
 
             // connection Name is not applicable for a RePrompt, as we don't expect as OAuthCard in response.
-            await SendToSkillAsync(turnContext, (Activity)repromptEvent, null, cancellationToken).ConfigureAwait(false);
+            await SendToSkillAsync(turnContext, (Activity)repromptEvent, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
@@ -124,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 activity.Properties = turnContext.Activity.Properties;
 
                 // connection Name is not applicable for an EndDialog, as we don't expect as OAuthCard in response.
-                await SendToSkillAsync(turnContext, activity, null, cancellationToken).ConfigureAwait(false);
+                await SendToSkillAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);
             }
 
             await base.EndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
@@ -168,7 +165,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return dialogArgs;
         }
 
-        private async Task<Activity> SendToSkillAsync(ITurnContext context, Activity activity, string connectionName, CancellationToken cancellationToken)
+        private async Task<Activity> SendToSkillAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
         {
             if (activity.Type == ActivityTypes.Invoke)
             {
@@ -203,7 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         // Capture the EndOfConversation activity if it was sent from skill
                         eocActivity = activityFromSkill;
                     }
-                    else if (await InterceptOAuthCardsAsync(context, activityFromSkill, connectionName, cancellationToken).ConfigureAwait(false))
+                    else if (await InterceptOAuthCardsAsync(context, activityFromSkill, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false))
                     {
                         // do nothing. Token exchange succeeded, so no oauthcard needs to be shown to the user
                     }
