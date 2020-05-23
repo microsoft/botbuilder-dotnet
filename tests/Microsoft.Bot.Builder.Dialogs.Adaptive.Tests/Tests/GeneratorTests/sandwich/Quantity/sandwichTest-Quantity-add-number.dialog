@@ -1,0 +1,30 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "AddToQuantity",
+	"entity": "number",
+	"actions": [
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "@number < dialogClass.schema.properties['Quantity'].minimum || @number > dialogClass.schema.properties['Quantity'].maximum",
+			"actions": [
+				{
+					"$kind": "Microsoft.SendActivity",
+					"activity": "${numberValidation('Quantity', @number)}"
+				}
+			],
+			"elseActions": [
+				{
+					"$kind": "Microsoft.SendActivity",
+					"activity": "${setPropertyMessage('Quantity', @number)}"
+				},
+				{
+					"$kind": "Microsoft.SetProperty",
+					"property": "$Quantity",
+					"value": "=@number"
+				}
+			]
+		}
+	],
+	"$Generator": "5f343f2b1e30e4513c4aeac1ed77adaf"
+}

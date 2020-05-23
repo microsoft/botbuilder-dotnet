@@ -1,0 +1,31 @@
+
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Choose.en-us.lg](sandwich-library-Choose.en-us.lg)
+
+# CheeseEntity(value) 
+- SWITCH: ${value}
+  - CASE: ${'american'} 
+    - american
+  - CASE: ${'cheddar'} 
+    - cheddar
+  - CASE: ${'feta'} 
+    - feta
+  - CASE: ${'gouda'} 
+    - gouda
+  - CASE: ${'pepper jack'} 
+    - pepper jack
+  - CASE: ${'provolone'} 
+    - provolone
+  - CASE: ${'swiss'} 
+    - swiss
+  - CASE: ${'none'} 
+    - none
+  - DEFAULT: 
+    - no value
+
+
+# chooseCheeseEntity
+- ${chooseEnumEntity('Cheese')}
+
+
+> Generator: 92a1cc1da2baba861637c654ae5dc043

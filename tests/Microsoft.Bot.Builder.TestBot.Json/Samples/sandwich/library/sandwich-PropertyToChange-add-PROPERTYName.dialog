@@ -1,0 +1,13 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "SetPropertyToChange",
+	"entity": "PROPERTYName",
+	"actions": [
+		{
+			"$kind": "Microsoft.DeleteProperty",
+			"property": "dialog[@PROPERTYName]"
+		}
+	],
+	"$Generator": "101df68f2da8b7297e78a68f8458d3a7"
+}

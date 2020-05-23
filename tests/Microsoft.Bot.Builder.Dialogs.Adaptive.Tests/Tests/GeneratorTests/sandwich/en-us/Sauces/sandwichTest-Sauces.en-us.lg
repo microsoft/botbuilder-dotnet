@@ -1,0 +1,16 @@
+
+[sandwichTest-SaucesEntity.en-us.lg](sandwichTest-SaucesEntity.en-us.lg)
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
+[sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
+
+# AskSauces
+- ${askEnumArray('Sauces')}
+
+> How to display the name of Sauces
+# SaucesName
+- sauces
+
+# Sauces(values)
+- ${enumArrayValue('Sauces', values)}
+
+> Generator: d44ffb25c21a9f251c770d3ca7240be0

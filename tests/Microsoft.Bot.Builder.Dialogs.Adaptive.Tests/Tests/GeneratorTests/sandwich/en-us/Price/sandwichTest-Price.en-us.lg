@@ -1,0 +1,20 @@
+
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
+[sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
+
+# AskPrice
+- ${askString('Price')}
+
+
+> How to display the name of Price
+# PriceName
+- price
+
+# Price(val)
+- IF: ${val}
+- ${join(foreach(indicesAndValues(val), entry, entry.value), ' ')}
+- ELSE:
+- no value
+
+
+> Generator: c6029213cb52671b66027f005c82bbb4

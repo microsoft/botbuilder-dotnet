@@ -1,0 +1,18 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "AddToLength",
+	"entity": "dimension",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${setObjectPropertyMessage('Length', @dimension)}"
+		},
+		{
+			"$kind": "Microsoft.SetProperty",
+			"property": "$Length",
+			"value": "=@dimension"
+		}
+	],
+	"$Generator": "07538ad46e82b25a8a7463bbdaf8ff9d"
+}

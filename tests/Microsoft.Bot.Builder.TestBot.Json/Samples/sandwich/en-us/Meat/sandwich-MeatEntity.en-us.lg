@@ -1,0 +1,31 @@
+
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Choose.en-us.lg](sandwich-library-Choose.en-us.lg)
+
+# MeatEntity(value) 
+- SWITCH: ${value}
+  - CASE: ${'bacon'} 
+    - bacon
+  - CASE: ${'chicken'} 
+    - chicken
+  - CASE: ${'ham'} 
+    - ham
+  - CASE: ${'pulled pork'} 
+    - pulled pork
+  - CASE: ${'roast beef'} 
+    - roast beef
+  - CASE: ${'salami'} 
+    - salami
+  - CASE: ${'turkey'} 
+    - turkey
+  - CASE: ${'none'} 
+    - none
+  - DEFAULT: 
+    - no value
+
+
+# chooseMeatEntity
+- ${chooseEnumEntity('Meat')}
+
+
+> Generator: 5f24eb1cb5afc79bb493233843868fc8

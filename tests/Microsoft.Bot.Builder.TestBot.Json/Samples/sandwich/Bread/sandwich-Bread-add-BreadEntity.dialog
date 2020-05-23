@@ -1,0 +1,28 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "AddToBread",
+	"entity": "BreadEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${setPropertyMessage('Bread', @BreadEntity)}"
+		},
+		{
+			"$kind": "Microsoft.SetProperty",
+			"property": "$Bread",
+			"value": "=@BreadEntity"
+		},
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$PropertyToChange == 'Bread'",
+			"actions": [
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "$PropertyToChange"
+				}
+			]
+		}
+	],
+	"$Generator": "cb2dce5fef44e55fd210a2973ebdd262"
+}

@@ -1,0 +1,8 @@
+
+{
+    "botName": "sandwichTest",
+    "deleteOldVersion": true, 
+    "out": ".",
+    "dialog": "multiLanguage",
+    "models": ["en-us/sandwichTest.en-us.lu"]
+}
