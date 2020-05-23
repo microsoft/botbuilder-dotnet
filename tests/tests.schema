@@ -865,25 +865,21 @@
 					"$ref": "#/definitions/arrayExpression",
 					"title": "Expected Properties",
 					"description": "Properties expected from the user.",
-					"type": "array",
 					"examples": [
 						[
 							"age",
 							"name"
 						]
-					],
-					"items": {
-						"type": "string",
-						"title": "Name",
-						"description": "Name of the property"
-					}
+					]
 				},
 				"defaultOperation": {
-					"$ref": "#/definitions/stringExpression",
+					"$ref": "#/definitions/objectExpression",
 					"title": "Default Operation",
-					"description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
+					"description": "Sets the default operation for each property and entity that will be used when no operation is recognized in the response to this Ask.",
 					"examples": [
-						"add"
+						{
+							"number": "add"
+						}
 					]
 				},
 				"id": {
@@ -3563,7 +3559,7 @@
 				"resultProperty": {
 					"$ref": "#/definitions/stringExpression",
 					"title": "Result property",
-					"description": "Property to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
+					"description": "A property to store the result of this action. The result can include any of the 4 properties from the HTTP response: statusCode, reasonPhrase, content, and headers. If the content is JSON it will be a deserialized object. The values can be accessed via .content for example.",
 					"examples": [
 						"dialog.contosodata"
 					]
@@ -4164,30 +4160,6 @@
 					"$ref": "#/definitions/Microsoft.Test.AssertCondition"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.Ask"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.AttachmentInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.ChoiceInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.ConfirmInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.DateTimeInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.NumberInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.OAuthInput"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.TextInput"
-				},
-				{
 					"$ref": "#/definitions/Microsoft.BeginDialog"
 				},
 				{
@@ -4282,6 +4254,30 @@
 				},
 				{
 					"$ref": "#/definitions/Microsoft.UpdateActivity"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.Ask"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.AttachmentInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.ChoiceInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.ConfirmInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.DateTimeInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.NumberInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OAuthInput"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.TextInput"
 				},
 				{
 					"$ref": "#/definitions/Testbot.JavascriptAction"
