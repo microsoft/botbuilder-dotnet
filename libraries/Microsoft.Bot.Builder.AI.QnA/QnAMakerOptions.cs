@@ -94,10 +94,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether  MRCEnable of the previous turn.
+        /// Gets or sets a value indicating whether  enable Precise Answer.
         /// </summary>
         /// <value>
-        /// To enable MRC.
+        /// To enable Precise Answer or not.
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
         public bool EnablePreciseAnswer { get; set; }

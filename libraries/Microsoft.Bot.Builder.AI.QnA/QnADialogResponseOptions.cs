@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets a value indicating whether DisplayPreciseAnswerOnly.
         /// </summary>
         /// <value>
-        /// Get or set for Card no match DisplayPreciseAnswerOnly.
+        /// Get or set whether to display Precise Answer Only or Both.
         /// </value>
         public bool DisplayPreciseAnswerOnly { get; set; }
     }

@@ -291,6 +291,24 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
 
         /// <summary>
+        /// Gets or sets a value indicating whether gets or sets enablePreciseAnswer. 
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to enable Precise Answer or not. 
+        /// </value>
+        [JsonProperty("enablePreciseAnswer")]
+        public bool EnablePreciseAnswer { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or sets displayPreciseAnswerOnly. 
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to display Precise Answer Only or Both. 
+        /// </value>
+        [JsonProperty("displayPreciseAnswerOnly")]
+        public bool DisplayPreciseAnswerOnly { get; set; }
+
+        /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -427,8 +445,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 Context = new QnARequestContext(),
                 QnAId = 0,
                 RankerType = this.RankerType?.GetValue(dc.State),
-                IsTest = this.IsTest
-            });
+                IsTest = this.IsTest,
+                EnablePreciseAnswer = this.EnablePreciseAnswer
+            }); 
         }
 
         /// <summary>
@@ -444,7 +463,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 NoAnswer = await this.NoAnswer.BindAsync(dc, dc.State).ConfigureAwait(false),
                 ActiveLearningCardTitle = this.ActiveLearningCardTitle?.GetValue(dc.State) ?? DefaultCardTitle,
                 CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
-                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
+                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false),
+                DisplayPreciseAnswerOnly = this.DisplayPreciseAnswerOnly
             };
         }
 

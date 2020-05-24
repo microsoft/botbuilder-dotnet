@@ -39,6 +39,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 }
             }
 
+            // Check for text
+            if (activity1.Text != null && activity2.Text != null)
+            {
+                if (activity1.Attachments.Count != activity2.Attachments.Count)
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
