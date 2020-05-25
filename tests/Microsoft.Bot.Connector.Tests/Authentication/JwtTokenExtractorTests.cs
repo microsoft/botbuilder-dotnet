@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         {
             var now = DateTimeOffset.UtcNow;
 
-            // Create expired self-signed certificate
+            // Create valid self-signed certificate
             var cert = CreateSelfSignedCertificate("test.cert.botframework.com", from: now.AddDays(-10), to: now.AddDays(9));
 
             // Build token extractor and use it to validate a token created from the cert
