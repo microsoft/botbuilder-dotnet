@@ -75,7 +75,7 @@ steps:
     projects: |
      Tests/**/*Tests.csproj
      
-    arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+    arguments: '-v n  --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests&Platform!=WindowsOnly" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: build folder'
