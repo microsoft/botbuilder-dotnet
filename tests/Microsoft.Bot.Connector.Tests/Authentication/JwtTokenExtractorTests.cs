@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Claims;
@@ -19,8 +20,9 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 {
     public class JwtTokenExtractorTests
     {
-        private readonly HttpClient client;
-        private readonly HttpClient emptyClient;
+        private const int NTEBADKEYSET = unchecked((int)0x80090016);
+
+        private static readonly HttpClient Client = new HttpClient();
 
         public JwtTokenExtractorTests()
         {
@@ -28,11 +30,6 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             EmulatorValidation.ToBotFromEmulatorTokenValidationParameters.ValidateLifetime = false;
             ChannelValidation.ToBotFromChannelTokenValidationParameters.ValidateLifetime = false;
             GovernmentChannelValidation.ToBotFromGovernmentChannelTokenValidationParameters.ValidateLifetime = false;
-            client = new HttpClient
-            {
-                BaseAddress = new Uri("https://webchat.botframework.com/"),
-            };
-            emptyClient = new HttpClient();
         }
 
         [Fact]
@@ -58,6 +55,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         public async Task JwtTokenExtractor_WithExpiredCert_ShouldNotAllowCertSigningKey()
         {
             var now = DateTimeOffset.UtcNow;
+            var cn = "test.cert.botframework.com";
 
             // Create expired self-signed certificate
             var cert = CreateSelfSignedCertificate("test.cert.botframework.com", from: now.AddDays(-10), to: now.AddDays(-9));
@@ -65,6 +63,8 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             // Build token extractor and use it to validate a token created from the cert
             // Since the cert is expired, it should fail since the signing key is bad
             await Assert.ThrowsAnyAsync<SecurityTokenInvalidSigningKeyException>(() => BuildExtractorAndValidateToken(cert));
+
+            DeleteKeyContainer(cn);
         }
 
         [Fact]
@@ -72,22 +72,25 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         public async Task JwtTokenExtractor_WithValidCert_ShouldNotAllowCertSigningKey()
         {
             var now = DateTimeOffset.UtcNow;
+            var cn = "test.cert.botframework.com";
 
             // Create valid self-signed certificate
-            var cert = CreateSelfSignedCertificate("test.cert.botframework.com", from: now.AddDays(-10), to: now.AddDays(9));
+            var cert = CreateSelfSignedCertificate(cn, from: now.AddDays(-10), to: now.AddDays(9));
 
             // Build token extractor and use it to validate a token created from the cert
             await BuildExtractorAndValidateToken(cert);
+
+            DeleteKeyContainer(cn);
         }
 
-        private Task<ClaimsIdentity> BuildExtractorAndValidateToken(X509Certificate2 cert, TokenValidationParameters validationParameters = null)
+        private static Task<ClaimsIdentity> BuildExtractorAndValidateToken(X509Certificate2 cert, TokenValidationParameters validationParameters = null)
         {
             // Custom validation parameters that allow us to test the extractor logic
             var tokenValidationParams = validationParameters ?? CreateTokenValidationParameters(cert);
 
             // Build Jwt extractor to be tested
             var tokenExtractor = new JwtTokenExtractor(
-                emptyClient,
+                Client,
                 tokenValidationParams,
                 "https://login.botframework.com/v1/.well-known/openidconfiguration",
                 AuthenticationConstants.AllowedSigningAlgorithms);
@@ -97,7 +100,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             return tokenExtractor.GetIdentityAsync($"Bearer {token}", "test");
         }
 
-        private string CreateTokenForCertificate(X509Certificate2 cert)
+        private static string CreateTokenForCertificate(X509Certificate2 cert)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -110,7 +113,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             return tokenHandler.WriteToken(stoken);
         }
 
-        private TokenValidationParameters CreateTokenValidationParameters(X509Certificate2 cert)
+        private static TokenValidationParameters CreateTokenValidationParameters(X509Certificate2 cert)
         {
             return new TokenValidationParameters()
             {
@@ -128,7 +131,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             };
         }
 
-        private X509Certificate2 CreateSelfSignedCertificate(string cn, DateTimeOffset from, DateTimeOffset to)
+        private static X509Certificate2 CreateSelfSignedCertificate(string cn, DateTimeOffset from, DateTimeOffset to)
         {
             var parameters = new CspParameters(24, "Microsoft Enhanced RSA and AES Cryptographic Provider")
             {
@@ -152,5 +155,31 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
 
             return cert;
         }
+
+        private static void DeleteKeyContainer(string cn)
+        {
+            // %APPDATA%\Microsoft\Crypto\RSA
+            var parameters = new CspParameters()
+            {
+                KeyContainerName = cn,
+                Flags = CspProviderFlags.NoPrompt | CspProviderFlags.UseExistingKey,
+            };
+
+            try
+            {
+                using (var provider = new RSACryptoServiceProvider(parameters))
+                {
+                    provider.PersistKeyInCsp = false;
+                    provider.Clear();
+                }
+            }
+            catch (CryptographicException error) when (IsKeySetDoesNotExist(error))
+            {
+                Debug.WriteLine(error.ToString());
+            }
+        }
+
+        private static bool IsKeySetDoesNotExist(Exception error) =>
+            error.HResult == NTEBADKEYSET;
     }
 }
