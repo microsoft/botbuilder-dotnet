@@ -49,51 +49,41 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return CreateQnAMakerActionDialog(mockHttp);
         }
 
-        public AdaptiveDialog QnAMakerAction_PreciseDialogBase(bool displayPreciseAnswerOnly)
-        {
-            var mockHttp = new MockHttpMessageHandler();          
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"PreciseAnswerQuestion\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true}}")
-                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswersWithPreciseAnswer.json"));
-            return CreateQnAMakerActionDialog(mockHttp, true, displayPreciseAnswerOnly);
-        }
-
         [TestMethod]
         public async Task QnaMaker_ReturnAnswer_WithDisplayPreciseAnswerOnly()
         {
-            var rootDialog = QnAMakerAction_PreciseDialogBase(true);
-            
-            await CreateFlow(rootDialog)
-            .Send("PreciseAnswerQuestion")               
-                .AssertReply("some precise text")
-            .StartTestAsync();
-
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswersWithPreciseAnswer.json")));
-            var preciseAnswerActivity = QnACardBuilder.GetQnADefaultResponse(response.Answers[0], true);
-            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
-
-            await CreateFlow(rootDialog)
-            .Send("PreciseAnswerQuestion")
-                .AssertReply(preciseAnswerActivity, equalityComparer: qnAMakerCardEqualityComparer)            
-            .StartTestAsync();
+           await QnAMaker_ReturnAnswer_PreciseAnswersValidate(true);
         }
 
         [TestMethod]
         public async Task QnAMaker_ReturnAnswer_WithDisplayRegularAndPreciseAnswers()
         {
-            var rootDialog = QnAMakerAction_PreciseDialogBase(false);
+           await QnAMaker_ReturnAnswer_PreciseAnswersValidate(false);
+        }
 
-            await CreateFlow(rootDialog)
-            .Send("PreciseAnswerQuestion")
-                .AssertReply("some precise text")
-            .StartTestAsync();
+        public async Task QnAMaker_ReturnAnswer_PreciseAnswersValidate(bool displayPreciseAnswerOnly)
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"PreciseAnswerQuestion\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true}}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswersWithPreciseAnswer.json"));
+            var rootDialog = CreateQnAMakerActionDialog(mockHttp, true, displayPreciseAnswerOnly);
 
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswersWithPreciseAnswer.json")));
-            var preciseAnswerActivity = QnACardBuilder.GetQnADefaultResponse(response.Answers[0], false);
-            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+            var queryResult = response.Answers[0];
+
+            var preciseAnswerActivity = Activity.CreateMessageActivity();
+            preciseAnswerActivity.Text = queryResult.AnswerSpan.Text;
+
+            if (!displayPreciseAnswerOnly)
+            {
+                var plCard = new HeroCard();
+                plCard.Text = queryResult.Answer;
+                preciseAnswerActivity.Attachments.Add(plCard.ToAttachment());
+            }
 
             await CreateFlow(rootDialog)
             .Send("PreciseAnswerQuestion")
-                .AssertReply(preciseAnswerActivity, equalityComparer: qnAMakerCardEqualityComparer)
+                .AssertReply(preciseAnswerActivity, new QnAMakerCardEqualityComparer())
             .StartTestAsync();
         }
 
@@ -1696,7 +1686,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
             var knowlegeBaseId = "dummy-id";
             var endpointKey = "dummy-key";
-            var activeLearningCardTitle = "QnAMaker Active Learning";
+            var activeLearningCardTitle = "Did you mean:";
 
             var outerDialog = new AdaptiveDialog("outer")
             {

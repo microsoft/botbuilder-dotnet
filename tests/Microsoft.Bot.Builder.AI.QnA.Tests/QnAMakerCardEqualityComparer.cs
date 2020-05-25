@@ -30,6 +30,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 return false;
             }
 
+            if ((activity1.Attachments == null && activity2.Attachments != null) ||
+                (activity1.Attachments != null && activity2.Attachments == null))
+            {
+                return false;
+            }
+
             // Check for attachments
             if (activity1.Attachments != null && activity2.Attachments != null)
             {
@@ -39,16 +45,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 }
             }
 
-            // Check for text
-            if (activity1.Text != null && activity2.Text != null)
-            {
-                if (activity1.Attachments.Count != activity2.Attachments.Count)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return string.Equals(activity1.Text, activity2.Text);
         }
 
         public int GetHashCode(IActivity obj)

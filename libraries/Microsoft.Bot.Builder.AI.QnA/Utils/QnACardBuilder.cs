@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Get Card for MultiTurn scenario.
+        /// Get Card for Default QnA Maker scenario.
         /// </summary>
         /// <param name="result">Result to be dispalyed as prompts.</param>
         /// <param name="displayPreciseAnswerOnly">renderingchoice.</param>
