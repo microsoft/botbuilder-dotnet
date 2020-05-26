@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Gets or sets a value indicating whether gets or sets displayPreciseAnswerOnly. 
         /// </summary>
         /// <value>
-        /// A value indicating whether to display Precise Answer Only or Both. 
+        /// A value indicating whether to display Precise Answer Only or Both Precise Answer and Source Content from which answer is obtained. 
         /// </value>
         [JsonProperty("displayPreciseAnswerOnly")]
         public bool DisplayPreciseAnswerOnly { get; set; }
