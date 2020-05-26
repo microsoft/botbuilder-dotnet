@@ -101,6 +101,9 @@ namespace AdaptiveExpressions
         public const string StartOfHour = "startOfHour";
         public const string StartOfMonth = "startOfMonth";
         public const string Ticks = "ticks";
+        public const string TicksToDays = "ticksToDays";
+        public const string TicksToHours = "ticksToHours";
+        public const string TicksToMinutes = "ticksToMinutes";
 
         // Timex 
         public const string IsDefinite = "isDefinite";

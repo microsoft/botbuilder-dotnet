@@ -284,6 +284,9 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            Test("ticksToDays(2193385800000000)", 2538),
+            Test("ticksToHours(2193385800000000)", 15),
+            Test("ticksToMinutes(2193385800000000)", 23), 
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
