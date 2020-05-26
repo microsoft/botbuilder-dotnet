@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Gets or sets a value indicating whether to enable PreciseAnswer Generation. 
         /// </summary>
         /// <value>
-        /// A value indicating whether to enable Precise Answer or not. 
+        /// A value indicating whether to enable Precise Answer Feature of QnAMaker Dynamic Answer Generation or not. 
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
         public bool EnablePreciseAnswer { get; set; }
