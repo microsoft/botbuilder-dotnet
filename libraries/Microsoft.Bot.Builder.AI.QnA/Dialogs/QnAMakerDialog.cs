@@ -291,7 +291,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets enablePreciseAnswer. 
+        /// Gets or sets a value indicating whether to enable PreciseAnswer Generation. 
         /// </summary>
         /// <value>
         /// A value indicating whether to enable Precise Answer or not. 
