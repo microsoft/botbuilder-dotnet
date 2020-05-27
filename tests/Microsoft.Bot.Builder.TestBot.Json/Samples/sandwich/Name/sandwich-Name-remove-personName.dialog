@@ -1,0 +1,23 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "RemoveFromName",
+	"entity": "personName",
+	"actions": [
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$Name == @personName",
+			"actions": [
+				{
+					"$kind": "Microsoft.SendActivity",
+					"activity": "${removePropertyMessage('Name', @personName)}"
+				},
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "Name"
+				}
+			]
+		}
+	],
+	"$Generator": "6f34abf3a44f2d6bedccf0bcb7802d3d"
+}

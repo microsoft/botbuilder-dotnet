@@ -66,6 +66,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestMultiline()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Multiline.lg"));
+            string evaled = templates.Evaluate("template1").ToString();
+            var generatedTemplates = Templates.ParseText(evaled);
+            var result = generatedTemplates.Evaluate("generated1");
+            Assert.AreEqual("hi", result);
+
+            evaled = templates.Evaluate("template2", new { evaluateNow = "please input" }).ToString();
+            generatedTemplates = Templates.ParseText(evaled);
+            result = generatedTemplates.Evaluate("generated2", new { name = "jack" });
+            Assert.AreEqual("please input jack", result.ToString().Trim());
+        }
+
+        [TestMethod]
         public void TestBasicConditionalTemplateWithoutDefault()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("5.lg"));

@@ -43,4 +43,4 @@ jobs:
   steps:
   - template: ci-build-steps.yml
   - template: sign-steps.yml
-  - template: functional-test-setup-steps.yml
+#  - template: functional-test-setup-steps.yml

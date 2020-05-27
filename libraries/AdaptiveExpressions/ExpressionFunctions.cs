@@ -764,10 +764,10 @@ namespace AdaptiveExpressions
                     (args, error) = EvaluateChildren(expr, state, options);
                     if (error == null)
                     {
-                        if (args[0] is string string0 && args[1].IsInteger())
+                        if (args[1].IsInteger())
                         {
                             var formatString = (args.Count() == 3 && args[2] is string string1) ? string1 : DefaultDateTimeFormat;
-                            (value, error) = ParseISOTimestamp(string0, dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
+                            (value, error) = NormalizeToDateTime(args[0], dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
                         }
                         else
                         {
@@ -786,7 +786,7 @@ namespace AdaptiveExpressions
         /// <param name="instance">Instance with property.</param>
         /// <param name="index">Property to lookup.</param>
         /// <returns>Value and error information if any.</returns>
-        public static (object value, string error) AccessIndex(object instance, int index)
+        public static (object value, string error) AccessIndex(object instance, long index)
         {
             // NOTE: This returns null rather than an error if property is not present
             if (instance == null)
@@ -801,7 +801,7 @@ namespace AdaptiveExpressions
             {
                 if (index >= 0 && index < list.Count)
                 {
-                    value = list[index];
+                    value = list[Convert.ToInt32(index)];
                 }
                 else
                 {
@@ -1733,6 +1733,7 @@ namespace AdaptiveExpressions
         {
             object result = null;
             string error = null;
+
             if (DateTime.TryParse(
                     s: timeStamp,
                     provider: CultureInfo.InvariantCulture,
@@ -1751,6 +1752,26 @@ namespace AdaptiveExpressions
             else
             {
                 error = $"Could not parse {timeStamp}";
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, object> transform = null)
+        {
+            object result = null;
+            string error = null;
+            if (timestamp is string ts)
+            {
+                (result, error) = ParseISOTimestamp(ts, transform);
+            }
+            else if (timestamp is DateTime dt)
+            {
+                result = transform != null ? transform(dt) : dt;
+            }
+            else
+            {
+                error = $"{timestamp} should be a standard ISO format string or a DateTime object.";
             }
 
             return (result, error);
@@ -1798,14 +1819,14 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, string) ConvertFromUTC(string utcTimestamp, string timezone, string format)
+        private static (string, string) ConvertFromUTC(object utcTimestamp, string timezone, string format)
         {
             string error = null;
             string result = null;
             var utcDt = DateTime.UtcNow;
             object parsed = null;
             object convertedTimeZone = null;
-            (parsed, error) = ParseISOTimestamp(utcTimestamp);
+            (parsed, error) = NormalizeToDateTime(utcTimestamp);
             if (error == null)
             {
                 utcDt = ((DateTime)parsed).ToUniversalTime();
@@ -1825,14 +1846,21 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, string) ConvertToUTC(string sourceTimestamp, string sourceTimezone, string format)
+        private static (string, string) ConvertToUTC(object sourceTimestamp, string sourceTimezone, string format)
         {
             string error = null;
             string result = null;
             var srcDt = DateTime.UtcNow;
             try
             {
-                srcDt = DateTime.Parse(sourceTimestamp);
+                if (sourceTimestamp is string st)
+                {
+                    srcDt = DateTime.Parse(st);
+                }
+                else
+                {
+                    srcDt = (DateTime)sourceTimestamp;
+                }
             }
             catch
             {
@@ -1853,12 +1881,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, string) AddToTime(string timestamp, long interval, string timeUnit, string format)
+        private static (string, string) AddToTime(object timestamp, long interval, string timeUnit, string format)
         {
             string result = null;
             string error = null;
             object parsed = null;
-            (parsed, error) = ParseISOTimestamp(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
             if (error == null)
             {
                 var ts = (DateTime)parsed;
@@ -1874,12 +1902,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) StartOfDay(string timestamp, string format)
+        private static (object, string) StartOfDay(object timestamp, string format)
         {
             string result = null;
             string error = null;
             object parsed = null;
-            (parsed, error) = ParseISOTimestamp(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
 
             if (error == null)
             {
@@ -1891,12 +1919,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) StartOfHour(string timestamp, string format)
+        private static (object, string) StartOfHour(object timestamp, string format)
         {
             string result = null;
             string error = null;
             object parsed = null;
-            (parsed, error) = ParseISOTimestamp(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
 
             if (error == null)
             {
@@ -1910,12 +1938,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) StartOfMonth(string timestamp, string format)
+        private static (object, string) StartOfMonth(object timestamp, string format)
         {
             string result = null;
             object parsed = null;
             string error = null;
-            (parsed, error) = ParseISOTimestamp(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
 
             if (error == null)
             {
@@ -1929,12 +1957,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) Ticks(string timestamp)
+        private static (object, string) Ticks(object timestamp)
         {
             object result = null;
             object parsed = null;
             string error = null;
-            (parsed, error) = ParseISOTimestamp(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
 
             if (error == null)
             {
@@ -3329,37 +3357,37 @@ namespace AdaptiveExpressions
                 TimeTransform(ExpressionType.AddSeconds, (ts, add) => ts.AddSeconds(add)),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfMonth,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Day), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Day)),
                     ReturnType.Number,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfWeek,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => Convert.ToInt32(dt.DayOfWeek)), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => Convert.ToInt32(dt.DayOfWeek))),
                     ReturnType.Number,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfYear,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.DayOfYear), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.DayOfYear)),
                     ReturnType.Number,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Month,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Month), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Month)),
                     ReturnType.Number,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Date,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture)), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture))),
                     ReturnType.String,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Year,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Year), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Year)),
                     ReturnType.Number,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.UtcNow,
-                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0].ToString() : DefaultDateTimeFormat), VerifyString),
+                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0].ToString() : DefaultDateTimeFormat)),
                     ReturnType.String),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
@@ -3442,14 +3470,14 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            if (args[0] is string string0 && args[1].IsInteger() && args[2] is string string2)
+                            if (args[1].IsInteger() && args[2] is string string2)
                             {
                                 var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[1]), string2);
                                 if (error == null)
                                 {
-                                    (value, error) = ParseISOTimestamp(string0, dt => timeConverter(dt).ToString(format));
+                                    (value, error) = NormalizeToDateTime(args[0], dt => timeConverter(dt).ToString(format));
                                 }
                             }
                             else
@@ -3461,7 +3489,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.DateReadBack,
                     ApplyWithError(
@@ -3469,11 +3497,11 @@ namespace AdaptiveExpressions
                         {
                             object result = null;
                             string error;
-                            (result, error) = ParseISOTimestamp((string)args[0]);
+                            (result, error) = NormalizeToDateTime(args[0]);
                             if (error == null)
                             {
                                 var timestamp1 = (DateTime)result;
-                                (result, error) = ParseISOTimestamp((string)args[1]);
+                                (result, error) = NormalizeToDateTime(args[1]);
                                 if (error == null)
                                 {
                                     var timestamp2 = (DateTime)result;
@@ -3483,8 +3511,7 @@ namespace AdaptiveExpressions
                             }
 
                             return (result, error);
-                        },
-                        VerifyString),
+                        }),
                     ReturnType.String,
                     expr => ValidateOrder(expr, null, ReturnType.String, ReturnType.String)),
                 new ExpressionEvaluator(
@@ -3494,7 +3521,7 @@ namespace AdaptiveExpressions
                         {
                             object value = null;
                             string error = null;
-                            (value, error) = ParseISOTimestamp((string)args[0]);
+                            (value, error) = NormalizeToDateTime(args[0]);
                             if (error == null)
                             {
                                 var timestamp = (DateTime)value;
@@ -3525,10 +3552,9 @@ namespace AdaptiveExpressions
                             }
 
                             return (value, error);
-                        },
-                        VerifyString),
+                        }),
                     ReturnType.String,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.GetFutureTime,
                     (expr, state, options) =>
@@ -3600,9 +3626,9 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp && args[1] is string targetTimeZone)
+                            if (args[1] is string targetTimeZone)
                             {
-                                (value, error) = ConvertFromUTC(timestamp, targetTimeZone, format);
+                                (value, error) = ConvertFromUTC(args[0], targetTimeZone, format);
                             }
                             else
                             {
@@ -3625,9 +3651,9 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp && args[1] is string sourceTimeZone)
+                            if (args[1] is string sourceTimeZone)
                             {
-                                (value, error) = ConvertToUTC(timestamp, sourceTimeZone, format);
+                                (value, error) = ConvertToUTC(args[0], sourceTimeZone, format);
                             }
                             else
                             {
@@ -3650,9 +3676,9 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp && args[1].IsInteger() && args[2] is string timeUnit)
+                            if (args[1].IsInteger() && args[2] is string timeUnit)
                             {
-                                (value, error) = AddToTime(timestamp, Convert.ToInt64(args[1]), timeUnit, format);
+                                (value, error) = AddToTime(args[0], Convert.ToInt64(args[1]), timeUnit, format);
                             }
                             else
                             {
@@ -3663,7 +3689,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.String,
-                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
+                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.StartOfDay,
                     (expr, state, options) =>
@@ -3675,14 +3701,7 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp)
-                            {
-                                (value, error) = StartOfDay(timestamp, format);
-                            }
-                            else
-                            {
-                                error = $"{expr} can't evaluate.";
-                            }
+                            (value, error) = StartOfDay(args[0], format);
                         }
 
                         return (value, error);
@@ -3700,14 +3719,7 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp)
-                            {
-                                (value, error) = StartOfHour(timestamp, format);
-                            }
-                            else
-                            {
-                                error = $"{expr} can't evaluate.";
-                            }
+                            (value, error) = StartOfHour(args[0], format);
                         }
 
                         return (value, error);
@@ -3725,14 +3737,7 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp)
-                            {
-                                (value, error) = StartOfMonth(timestamp, format);
-                            }
-                            else
-                            {
-                                error = $"{expr} can't evaluate.";
-                            }
+                            (value, error) = StartOfMonth(args[0], format);
                         }
 
                         return (value, error);
@@ -3749,14 +3754,7 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            if (args[0] is string ts)
-                            {
-                                (value, error) = Ticks(ts);
-                            }
-                            else
-                            {
-                                error = $"{expr} can't evaluate.";
-                            }
+                            (value, error) = Ticks(args[0]);
                         }
 
                         return (value, error);
@@ -4384,15 +4382,12 @@ namespace AdaptiveExpressions
                     Apply(
                         args =>
                         {
-                            if (args[0] is string)
+                            object value = null;
+                            string error = null;
+                            (value, error) = NormalizeToDateTime(args[0]);
+                            if (error == null)
                             {
-                                object value = null;
-                                string error = null;
-                                (value, error) = ParseISOTimestamp(args[0] as string);
-                                if (error == null)
-                                {
-                                    return true;
-                                }
+                                return true;
                             }
 
                             return false;

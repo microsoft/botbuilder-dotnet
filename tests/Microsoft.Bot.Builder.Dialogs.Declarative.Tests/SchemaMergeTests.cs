@@ -127,9 +127,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 Assert.IsNotNull(schema, "Missing $schema");
 
                 var folder = Path.GetDirectoryName(fileResource.FullName);
-                Assert.IsTrue(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
 
-                jtoken.Validate(Schema);
+                // NOTE: Some schemas are not local.  We don't validate against those because they often depend on the SDK itself
+                if (!schema.StartsWith("http"))
+                {
+                    Assert.IsTrue(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
+                    jtoken.Validate(Schema);
+                }
             }
             catch (JSchemaValidationException err)
             {

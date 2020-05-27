@@ -1,0 +1,14 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "SetPropertyToChange",
+	"entity": "PROPERTYName",
+	"actions": [
+		{
+			"$kind": "Microsoft.SetProperty",
+			"property": "$PropertyToChange",
+			"value": "=@PropertyName"
+		}
+	],
+	"$Generator": "501a1bf3ae78d9a44df605947f93dd22"
+}

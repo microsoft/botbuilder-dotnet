@@ -164,6 +164,11 @@ namespace AdaptiveExpressions
                     return Expression.ConstantExpression(intValue);
                 }
 
+                if (long.TryParse(context.GetText(), out var longValue))
+                {
+                    return Expression.ConstantExpression(longValue);
+                }
+
                 if (double.TryParse(context.GetText(), NumberStyles.Any, CultureInfo.InvariantCulture, out var doubleValue))
                 {
                     return Expression.ConstantExpression(doubleValue);

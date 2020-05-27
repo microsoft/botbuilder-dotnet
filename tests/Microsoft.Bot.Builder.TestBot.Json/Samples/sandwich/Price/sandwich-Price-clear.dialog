@@ -1,0 +1,17 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "ClearPrice",
+	"property": "Price",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${clearPropertyMessage('Price')}"
+		},
+		{
+			"$kind": "Microsoft.DeleteProperty",
+			"property": "$Price"
+		}
+	],
+	"$Generator": "8a8ad9ace17d7b1f01315a1974ea85b5"
+}

@@ -1,1 +1,0 @@
-{"query":"98004","prediction":{"topIntent":"unittests","intents":{"unittests":{"score":0.99999}},"entities":{"number":[98004],"$instance":{"number":[{"type":"builtin.number","text":"98004","startIndex":0,"length":5,"modelTypeId":2,"modelType":"Prebuilt Entity Extractor","recognitionSources":["model"]}]}}}}

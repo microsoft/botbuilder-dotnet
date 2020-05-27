@@ -5,11 +5,12 @@ lexer grammar LGFileLexer;
 
 @lexer::members {
   bool startTemplate = false;
+  bool startLine = true;
 }
 
 fragment WHITESPACE : ' '|'\t'|'\ufeff'|'\u00a0';
 
-NEWLINE : '\r'? '\n';
+NEWLINE : '\r'? '\n' {startLine = true;};
 
 OPTION : WHITESPACE* '>' WHITESPACE* '!#' ~('\r'|'\n')+ { !startTemplate }?;
 
@@ -17,8 +18,18 @@ COMMENT : WHITESPACE* '>' ~('\r'|'\n')* { !startTemplate }?;
 
 IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' WHITESPACE* { !startTemplate }?;
 
-TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { startTemplate = true; };
+TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { startLine }? { startTemplate = true; };
 
-TEMPLATE_BODY_LINE : ~('\r'|'\n')+ { startTemplate }?;
+MULTILINE_PREFIX: WHITESPACE* '-' WHITESPACE* '```' { startTemplate && startLine }? -> pushMode(MULTILINE_MODE);
+
+TEMPLATE_BODY : ~('\r'|'\n') { startTemplate }? { startLine = false; };
 
 INVALID_LINE :  ~('\r'|'\n')+ { !startTemplate }?;
+
+
+mode MULTILINE_MODE;
+MULTILINE_SUFFIX : '```' -> popMode;
+
+ESCAPE_CHARACTER : '\\' ~[\r\n]?;
+
+MULTILINE_TEXT : .+?;
