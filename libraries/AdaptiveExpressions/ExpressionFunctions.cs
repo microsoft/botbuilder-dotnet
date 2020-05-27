@@ -772,7 +772,7 @@ namespace AdaptiveExpressions
                         }
                         else
                         {
-                            error = $"{expr} should contain a ISO format timestamp and an integer of time interval.";
+                            error = $"{expr} should contain an ISO format timestamp and an integer of time interval.";
                         }
                     }
 
