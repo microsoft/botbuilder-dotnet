@@ -772,6 +772,7 @@ namespace AdaptiveExpressions.Tests
             Test("ticks('2018-01-01T08:00:00.000Z')", 636503904000000000),
             Test("dateTimeDiff('2019-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z')", 315360000000000),
             Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z')", -315360000000000),
+            Test("dateTimeDiff(timestampObj,timestampObj2)", 62604000000000),
             Test("ticks(timestampObj3)", 636503904000000000),
             #endregion
 

@@ -3773,13 +3773,10 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            if (args[0] is string ts1 && args[1] is string ts2)
+                            (dateTimeStart, error) = Ticks(args[0]);
+                            if (error == null)
                             {
-                                (dateTimeStart, error) = Ticks(ts1);
-                                if (error == null)
-                                {
-                                    (dateTimeEnd, error) = Ticks(ts2);
-                                }
+                                (dateTimeEnd, error) = Ticks(args[1]);
                             }
                             else
                             {
