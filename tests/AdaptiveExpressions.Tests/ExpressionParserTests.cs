@@ -284,9 +284,6 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
-            Test("ticksToDays(2193385800000000)", 2538),
-            Test("ticksToHours(2193385800000000)", 15),
-            Test("ticksToMinutes(2193385800000000)", 23), 
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
@@ -774,6 +771,9 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth(timestampObj)", "2018-03-01T00:00:00.000Z"),
             Test("ticks('2018-01-01T08:00:00.000Z')", 636503904000000000),
             Test("ticks(timestampObj3)", 636503904000000000),
+            Test("ticksToDays(2193385800000000)", 2538),
+            Test("ticksToHours(2193385800000000)", 60927),
+            Test("ticksToMinutes(2193385800000000)", 3655643), 
             #endregion
 
             #region uri parsing function test

@@ -3800,7 +3800,7 @@ namespace AdaptiveExpressions
                         {
                             if (args[0].IsInteger())
                             {
-                                value = Math.Round((double)((Convert.ToInt64(args[0]) / ticksPerHour) % 24));
+                                value = Math.Floor((double)(Convert.ToInt64(args[0]) / ticksPerHour));
                             }
                             else
                             {
@@ -3825,82 +3825,7 @@ namespace AdaptiveExpressions
                         {
                             if (args[0].IsInteger())
                             {
-                                value = Math.Round((double)((Convert.ToInt64(args[0]) / ticksPerMinute) % 60));
-                            }
-                            else
-                            {
-                                error = $"{expr} should contain an integer of ticks";
-                            }
-                        }
-
-                        return (value, error);
-                    },
-                    ReturnType.Number,
-                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Number)),
-                new ExpressionEvaluator(
-                    ExpressionType.TicksToDays,
-                    (expr, state, options) =>
-                    {
-                        object value = null;
-                        string error = null;
-                        IReadOnlyList<object> args;
-                        long ticksPerDay = 864000000000;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        if (error == null)
-                        {
-                            if (args[0].IsInteger())
-                            {
-                                value = Math.Floor((double)(Convert.ToInt64(args[0]) / ticksPerDay));
-                            }
-                            else
-                            {
-                                error = $"{expr} should contain an integer of ticks";
-                            }
-                        }
-
-                        return (value, error);
-                    },
-                    ReturnType.Number,
-                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Number)),
-                new ExpressionEvaluator(
-                    ExpressionType.TicksToHours,
-                    (expr, state, options) =>
-                    {
-                        object value = null;
-                        string error = null;
-                        IReadOnlyList<object> args;
-                        long ticksPerHour = 36000000000;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        if (error == null)
-                        {
-                            if (args[0].IsInteger())
-                            {
-                                value = Math.Round((double)((Convert.ToInt64(args[0]) / ticksPerHour) % 24));
-                            }
-                            else
-                            {
-                                error = $"{expr} should contain an integer of ticks";
-                            }
-                        }
-
-                        return (value, error);
-                    },
-                    ReturnType.Number,
-                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Number)),
-                new ExpressionEvaluator(
-                    ExpressionType.TicksToMinutes,
-                    (expr, state, options) =>
-                    {
-                        object value = null;
-                        string error = null;
-                        IReadOnlyList<object> args;
-                        long ticksPerMinute = 600000000;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        if (error == null)
-                        {
-                            if (args[0].IsInteger())
-                            {
-                                value = Math.Round((double)((Convert.ToInt64(args[0]) / ticksPerMinute) % 60));
+                                value = Math.Floor((double)(Convert.ToInt64(args[0]) / ticksPerMinute));
                             }
                             else
                             {

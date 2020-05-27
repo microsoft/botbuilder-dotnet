@@ -283,6 +283,10 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth(notValidTimeStamp)"), // not valid timestamp
             Test("startOfMonth(timeStamp, 'A')"), // not valid format
             Test("ticks(notValidTimeStamp)"), // not valid timestamp
+            Test("ticksToDays(12.12)"), // not an integer
+            Test("ticksToHours(timestamp)"), // not an integer
+            Test("ticksToMinutes(timestamp)"), // not an integer
+
             #endregion
 
             #region uri parsing function test
