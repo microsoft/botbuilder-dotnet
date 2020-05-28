@@ -771,9 +771,9 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth(timestampObj)", "2018-03-01T00:00:00.000Z"),
             Test("ticks('2018-01-01T08:00:00.000Z')", 636503904000000000),
             Test("ticks(timestampObj3)", 636503904000000000),
-            Test("ticksToDays(2193385800000000)", 2538),
-            Test("ticksToHours(2193385800000000)", 60927),
-            Test("ticksToMinutes(2193385800000000)", 3655643), 
+            Test("ticksToDays(2193385800000000)", 2538.64097222),
+            Test("ticksToHours(2193385800000000)", 60927.383333333331),
+            Test("ticksToMinutes(2193385811100000)", 3655643.0185), 
             #endregion
 
             #region uri parsing function test

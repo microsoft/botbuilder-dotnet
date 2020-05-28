@@ -217,6 +217,13 @@ namespace AdaptiveExpressions
             => ValidateArityAndAnyType(expression, 1, 1, ReturnType.String);
 
         /// <summary>
+        /// Validate there is a single number argument.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateUnaryNumber(Expression expression)
+        => ValidateArityAndAnyType(expression, 1, 1, ReturnType.Number);
+
+        /// <summary>
         /// Validate there is a single boolean argument.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
@@ -3775,7 +3782,7 @@ namespace AdaptiveExpressions
                         {
                             if (args[0].IsInteger())
                             {
-                                value = Math.Floor((double)(Convert.ToInt64(args[0]) / ticksPerDay));
+                                value = Convert.ToDouble(args[0]) / ticksPerDay;
                             }
                             else
                             {
@@ -3786,7 +3793,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.Number,
-                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Number)),
+                    expr => ValidateUnaryNumber(expr)),
                 new ExpressionEvaluator(
                     ExpressionType.TicksToHours,
                     (expr, state, options) =>
@@ -3800,7 +3807,7 @@ namespace AdaptiveExpressions
                         {
                             if (args[0].IsInteger())
                             {
-                                value = Math.Floor((double)(Convert.ToInt64(args[0]) / ticksPerHour));
+                                value = Convert.ToDouble(args[0]) / ticksPerHour;
                             }
                             else
                             {
@@ -3811,7 +3818,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.Number,
-                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Number)),
+                    expr => ValidateUnaryNumber(expr)),
                 new ExpressionEvaluator(
                     ExpressionType.TicksToMinutes,
                     (expr, state, options) =>
@@ -3825,7 +3832,7 @@ namespace AdaptiveExpressions
                         {
                             if (args[0].IsInteger())
                             {
-                                value = Math.Floor((double)(Convert.ToInt64(args[0]) / ticksPerMinute));
+                                value = Convert.ToDouble(args[0]) / ticksPerMinute;
                             }
                             else
                             {
@@ -3836,7 +3843,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.Number,
-                    expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Number)),
+                    expr => ValidateUnaryNumber(expr)),
                 new ExpressionEvaluator(
                     ExpressionType.IsDefinite,
                     (expr, state, options) =>
