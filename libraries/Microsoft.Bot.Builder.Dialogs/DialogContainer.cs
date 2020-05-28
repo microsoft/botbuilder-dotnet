@@ -66,11 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Give bot an opportunity to handle the change.
                 // - If bot handles it the changeHash will have been updated as to avoid triggering the 
                 //   change again.
-                var handled = await dc.EmitEventAsync(DialogEvents.VersionChanged, this.Id, true, false, cancellationToken).ConfigureAwait(false);
-                if (!handled)
-                {
-                    System.Diagnostics.Trace.TraceWarning($"Version change detected for '{this.Id}' dialog and wasn't handled. You should add event handler to restart dialogs when this happens.");
-                }
+                await dc.EmitEventAsync(DialogEvents.VersionChanged, this.Id, true, false, cancellationToken).ConfigureAwait(false);
             }
         }
     }
