@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 chatActivity.Text = result.AnswerSpan.Text;
 
-                // For content choice Precise only
+                // When the configuration is set to display precise answer
                 if (!displayPreciseAnswerOnly)
                 {
                     heroCardText = result.Answer;
