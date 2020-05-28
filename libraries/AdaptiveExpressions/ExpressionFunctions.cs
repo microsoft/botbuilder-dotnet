@@ -3350,6 +3350,20 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.Number,
                     expr => ValidateOrder(expr, null, ReturnType.Array | ReturnType.String, ReturnType.Object)),
+                StringTransform(
+                                ExpressionType.SentenceCase,
+                                args =>
+                                {
+                                    var inputStr = (string)args[0];
+                                    if (string.IsNullOrEmpty(inputStr))
+                                    {
+                                        return string.Empty;
+                                    }
+                                    else
+                                    {
+                                        return inputStr.Substring(0, 1).ToUpper() + inputStr.Substring(1);
+                                    }
+                                }),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),

@@ -95,6 +95,8 @@ namespace AdaptiveExpressions.Tests
             Test("lastIndexOf(hello, world, one)"), // should have two parameters
             Test("lastIndexOf(hello, one)"), // second parameter should be string
             Test("lastIndexOf(one, hello)"), // first parameter should be list or string
+            Test("sentenceCase(hello, hello)"), // should have one parameters
+            Test("sentenceCase(one)"), // first parameter should be string
             #endregion
 
             #region Logical comparison functions test
