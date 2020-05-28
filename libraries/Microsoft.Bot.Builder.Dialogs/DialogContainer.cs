@@ -69,8 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var handled = await dc.EmitEventAsync(DialogEvents.VersionChanged, this.Id, true, false, cancellationToken).ConfigureAwait(false);
                 if (!handled)
                 {
-                    // Throw an error for bot to catch
-                    throw new Exception($"Version change detected for '{this.Id}' dialog.");
+                    System.Diagnostics.Trace.TraceWarning($"Version change detected for '{this.Id}' dialog and wasn't handled. You should add event handler to restart dialogs when this happens.");
                 }
             }
         }
