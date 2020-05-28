@@ -40,7 +40,7 @@ The [Bot Framework Samples](https://github.com/microsoft/botbuilder-samples) inc
 | Microsoft.Bot.Connector               | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Connector?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Connector/)                             | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Connector?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Connector) |
 | Microsoft.Bot.Schema                  | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Schema?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Schema/)                                   | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Schema?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Schema) |
 
-[![Dependencies Graph](https://img.shields.io/badge/dependency-graph-blue.svg)](https://botbuildersdkblobstorage.blob.core.windows.net/sdk-dotnet-dependency-reports/4.9.1/InterdependencyGraph.html)
+[![Dependencies Graph](https://img.shields.io/badge/dependency-graph-blue.svg)](https://botbuildersdkblobstorage.blob.core.windows.net/sdk-dotnet-dependency-reports/4.9.2/InterdependencyGraph.html)
 
 To use the daily builds, which are published to MyGet, please follow the instructions [here](UsingMyGet.md).
 
