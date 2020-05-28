@@ -87,6 +87,7 @@ namespace AdaptiveExpressions.Tests
             Test("addOrdinal(one)"), // should have Integer param
             Test("addOrdinal(one, two)"), // should have one param
             Test("newGuid(one)"), // should have no parameters
+            Test("EOL(one)"), // should have no parameters
             Test("indexOf(hello)"), // should have two parameters
             Test("indexOf(hello, world, one)"), // should have two parameters
             Test("indexOf(hello, one)"), // second parameter should be string

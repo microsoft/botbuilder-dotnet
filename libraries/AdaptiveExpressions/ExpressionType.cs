@@ -52,6 +52,7 @@ namespace AdaptiveExpressions
         public const string NewGuid = "newGuid";
         public const string IndexOf = "indexOf";
         public const string LastIndexOf = "lastIndexOf";
+        public const string EOL = "EOL";
 
         // Collection
         public const string Count = "count";
