@@ -104,6 +104,7 @@ namespace AdaptiveExpressions
         public const string TicksToDays = "ticksToDays";
         public const string TicksToHours = "ticksToHours";
         public const string TicksToMinutes = "ticksToMinutes";
+        public const string DateTimeDiff = "dateTimeDiff";
 
         // Timex 
         public const string IsDefinite = "isDefinite";
