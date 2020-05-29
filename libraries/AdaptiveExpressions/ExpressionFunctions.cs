@@ -3170,7 +3170,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToString().ToLower(CultureInfo.InvariantCulture);
+                                        return args[0].ToString().ToLowerInvariant();
                                     }
                                 }),
                 StringTransform(
@@ -3183,7 +3183,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToString().ToUpper(CultureInfo.InvariantCulture);
+                                        return args[0].ToString().ToUpperInvariant();
                                     }
                                 }),
                 StringTransform(
@@ -3361,7 +3361,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return inputStr.Substring(0, 1).ToUpper(CultureInfo.InvariantCulture) + inputStr.Substring(1);
+                                        return inputStr.Substring(0, 1).ToUpperInvariant() + inputStr.Substring(1);
                                     }
                                 }),
                 StringTransform(
