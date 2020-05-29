@@ -771,7 +771,7 @@ namespace AdaptiveExpressions
                         }
                         else
                         {
-                            error = $"{expr} should contain an ISO format timestamp and and a time interval integer.";
+                            error = $"{expr} should contain an ISO format timestamp and a time interval integer.";
                         }
                     }
 
@@ -3577,7 +3577,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should contain an ISO format timestamp, a time interval integer, a string unit of time and an optional output format string.";
+                                error = $"{expr} should contain a time interval integer, a string unit of time and an optional output format string.";
                             }
                         }
 
@@ -3632,7 +3632,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should contain an ISO format timestamp, a string of destination time zone and an optional output format string.";
+                                error = $"{expr} should contain an ISO format timestamp, a destination time zone string and an optional output format string.";
                             }
                         }
 
@@ -3657,7 +3657,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should contain an ISO format timestamp, a string of origin time zone and an optional output format string.";
+                                error = $"{expr} should contain an ISO format timestamp, a origin time zone string and an optional output format string.";
                             }
                         }
 
