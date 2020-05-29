@@ -3606,7 +3606,7 @@ namespace AdaptiveExpressions
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1, false);
                                 if (error == null)
                                 {
-                                    value = timeConverter(DateTime.Now).ToString(format);
+                                    value = timeConverter(DateTime.UtcNow).ToString(format);
                                 }
                             }
                             else
@@ -3636,7 +3636,7 @@ namespace AdaptiveExpressions
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1);
                                 if (error == null)
                                 {
-                                    value = timeConverter(DateTime.Now).ToString(format);
+                                    value = timeConverter(DateTime.UtcNow).ToString(format);
                                 }
                             }
                             else
