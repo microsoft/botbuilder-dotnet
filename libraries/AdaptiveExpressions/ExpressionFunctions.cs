@@ -3361,7 +3361,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return inputStr.Substring(0, 1).ToUpperInvariant() + inputStr.Substring(1);
+                                        return inputStr.Substring(0, 1).ToUpperInvariant() + inputStr.Substring(1).ToLowerInvariant();
                                     }
                                 }),
                 StringTransform(
