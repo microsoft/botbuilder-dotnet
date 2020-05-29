@@ -491,6 +491,11 @@ namespace AdaptiveExpressions.Tests
             Test("addOrdinal(11 + 13)", "24th"),
             Test("addOrdinal(-1)", "-1"), // original string value
             Test("join(createArray('a','b', 'c', 'd'), '\n')", "a\nb\nc\nd"),
+            Test("sentenceCase('a')", "A"),
+            Test("sentenceCase('abc')", "Abc"),
+            Test("sentenceCase('aBC')", "Abc"),
+            Test("titleCase('a')", "A"),
+            Test("titleCase('abc dEF')", "Abc Def"),
             #endregion
 
             #region  Logical comparison functions test
@@ -771,6 +776,9 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth('2018-03-15T13:30:30.000Z')", "2018-03-01T00:00:00.000Z"),
             Test("startOfMonth(timestampObj)", "2018-03-01T00:00:00.000Z"),
             Test("ticks('2018-01-01T08:00:00.000Z')", 636503904000000000),
+            Test("dateTimeDiff('2019-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z')", 315360000000000),
+            Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z')", -315360000000000),
+            Test("dateTimeDiff(timestampObj,timestampObj2)", 62604000000000),
             Test("ticks(timestampObj3)", 636503904000000000),
             #endregion
 

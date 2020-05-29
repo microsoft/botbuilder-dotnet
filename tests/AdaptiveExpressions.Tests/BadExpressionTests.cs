@@ -96,6 +96,10 @@ namespace AdaptiveExpressions.Tests
             Test("lastIndexOf(hello, world, one)"), // should have two parameters
             Test("lastIndexOf(hello, one)"), // second parameter should be string
             Test("lastIndexOf(one, hello)"), // first parameter should be list or string
+            Test("sentenceCase(hello, hello)"), // should have one parameters
+            Test("sentenceCase(one)"), // first parameter should be string
+            Test("titleCase(hello, hello)"), // should have one parameters
+            Test("titleCase(one)"), // first parameter should be string
             #endregion
 
             #region Logical comparison functions test
@@ -284,6 +288,9 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth(notValidTimeStamp)"), // not valid timestamp
             Test("startOfMonth(timeStamp, 'A')"), // not valid format
             Test("ticks(notValidTimeStamp)"), // not valid timestamp
+            Test("dateTimeDiff(notValidTimeStamp,'2018-01-01T08:00:00.000Z')"), // the first parameter is not a valid timestamp
+            Test("dateTimeDiff('2017-01-01T08:00:00.000Z',notValidTimeStamp)"), // the second parameter is not a valid timestamp
+            Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z', 'years')"), // should only have 2 parameters
             #endregion
 
             #region uri parsing function test

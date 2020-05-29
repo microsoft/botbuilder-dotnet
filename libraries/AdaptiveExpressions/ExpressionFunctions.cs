@@ -9,7 +9,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -3170,7 +3169,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToString().ToLower();
+                                        return args[0].ToString().ToLowerInvariant();
                                     }
                                 }),
                 StringTransform(
@@ -3183,7 +3182,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToString().ToUpper();
+                                        return args[0].ToString().ToUpperInvariant();
                                     }
                                 }),
                 StringTransform(
@@ -3355,6 +3354,35 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.Number,
                     expr => ValidateOrder(expr, null, ReturnType.Array | ReturnType.String, ReturnType.Object)),
+                StringTransform(
+                                ExpressionType.SentenceCase,
+                                args =>
+                                {
+                                    var inputStr = (string)args[0];
+                                    if (string.IsNullOrEmpty(inputStr))
+                                    {
+                                        return string.Empty;
+                                    }
+                                    else
+                                    {
+                                        return inputStr.Substring(0, 1).ToUpperInvariant() + inputStr.Substring(1).ToLowerInvariant();
+                                    }
+                                }),
+                StringTransform(
+                                ExpressionType.TitleCase,
+                                args =>
+                                {
+                                    var inputStr = (string)args[0];
+                                    if (string.IsNullOrEmpty(inputStr))
+                                    {
+                                        return string.Empty;
+                                    }
+                                    else
+                                    {
+                                        var ti = CultureInfo.InvariantCulture.TextInfo;
+                                        return ti.ToTitleCase(inputStr);
+                                    }
+                                }),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),
@@ -3767,6 +3795,38 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.Number,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.DateTimeDiff,
+                    (expr, state, options) =>
+                    {
+                        object dateTimeStart = null;
+                        object dateTimeEnd = null;
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (dateTimeStart, error) = Ticks(args[0]);
+                            if (error == null)
+                            {
+                                (dateTimeEnd, error) = Ticks(args[1]);
+                            }
+                            else
+                            {
+                                error = $"{expr} must have two ISO timestamps.";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            value = (long)dateTimeStart - (long)dateTimeEnd;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    expr => ValidateArityAndAnyType(expr, 2, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.IsDefinite,
                     (expr, state, options) =>
