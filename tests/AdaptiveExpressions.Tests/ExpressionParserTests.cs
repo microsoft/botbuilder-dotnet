@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Threading;
 using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
@@ -849,6 +850,7 @@ namespace AdaptiveExpressions.Tests
             Test("subArray(createArray('H','e','l','l','o'),2,5)", new List<object> { "l", "l", "o" }),
             Test("count(newGuid())", 36),
             Test("indexOf(newGuid(), '-')", 8),
+            Test("EOL()", RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "\r\n" : "\n"),
             Test("indexOf(nullObj, '-')", -1),
             Test("indexOf(hello, nullObj)", 0),
             Test("indexOf(hello, '-')", -1),

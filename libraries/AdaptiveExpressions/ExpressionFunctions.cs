@@ -3284,6 +3284,11 @@ namespace AdaptiveExpressions
                     ReturnType.String,
                     (exprssion) => ValidateArityAndAnyType(exprssion, 0, 0)),
                 new ExpressionEvaluator(
+                    ExpressionType.EOL,
+                    Apply(args => Environment.NewLine),
+                    ReturnType.String,
+                    (exprssion) => ValidateArityAndAnyType(exprssion, 0, 0)),
+                new ExpressionEvaluator(
                     ExpressionType.IndexOf,
                     (expression, state, options) =>
                     {
