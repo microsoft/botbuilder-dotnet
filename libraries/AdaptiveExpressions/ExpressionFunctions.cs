@@ -53,6 +53,21 @@ namespace AdaptiveExpressions
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         /// <summary>
+        /// Ticks of one day.
+        /// </summary>
+        private const long TicksPerDay = 24 * 60 * 60 * 10000000L;
+
+        /// <summary>
+        /// Ticks of one Hour.
+        /// </summary>
+        private const long TicksPerHour = 60 * 60 * 10000000L;
+
+        /// <summary>
+        /// Ticks of one Minute.
+        /// </summary>
+        private const long TicksPerMinute = 60 * 10000000L;
+
+        /// <summary>
         /// Object used to lock Randomizer.
         /// </summary>
         private static readonly object _randomizerLock = new object();
@@ -3775,13 +3790,12 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        long ticksPerDay = 864000000000;
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0].IsInteger())
                             {
-                                value = Convert.ToDouble(args[0]) / ticksPerDay;
+                                value = Convert.ToDouble(args[0]) / TicksPerDay;
                             }
                             else
                             {
@@ -3800,13 +3814,12 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        long ticksPerHour = 36000000000;
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0].IsInteger())
                             {
-                                value = Convert.ToDouble(args[0]) / ticksPerHour;
+                                value = Convert.ToDouble(args[0]) / TicksPerHour;
                             }
                             else
                             {
@@ -3825,13 +3838,12 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        long ticksPerMinute = 600000000;
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
                             if (args[0].IsInteger())
                             {
-                                value = Convert.ToDouble(args[0]) / ticksPerMinute;
+                                value = Convert.ToDouble(args[0]) / TicksPerMinute;
                             }
                             else
                             {
