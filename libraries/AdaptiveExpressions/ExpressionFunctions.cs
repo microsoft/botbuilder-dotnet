@@ -3170,7 +3170,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToString().ToLower();
+                                        return args[0].ToString().ToLower(CultureInfo.InvariantCulture);
                                     }
                                 }),
                 StringTransform(
@@ -3183,7 +3183,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToString().ToUpper();
+                                        return args[0].ToString().ToUpper(CultureInfo.InvariantCulture);
                                     }
                                 }),
                 StringTransform(
@@ -3361,7 +3361,22 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return inputStr.Substring(0, 1).ToUpper() + inputStr.Substring(1);
+                                        return inputStr.Substring(0, 1).ToUpper(CultureInfo.InvariantCulture) + inputStr.Substring(1);
+                                    }
+                                }),
+                StringTransform(
+                                ExpressionType.TitleCase,
+                                args =>
+                                {
+                                    var inputStr = (string)args[0];
+                                    if (string.IsNullOrEmpty(inputStr))
+                                    {
+                                        return string.Empty;
+                                    }
+                                    else
+                                    {
+                                        var ti = CultureInfo.InvariantCulture.TextInfo;
+                                        return ti.ToTitleCase(inputStr);
                                     }
                                 }),
 

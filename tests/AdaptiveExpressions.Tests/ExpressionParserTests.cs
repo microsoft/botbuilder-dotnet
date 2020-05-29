@@ -492,6 +492,8 @@ namespace AdaptiveExpressions.Tests
             Test("join(createArray('a','b', 'c', 'd'), '\n')", "a\nb\nc\nd"),
             Test("sentenceCase('a')", "A"),
             Test("sentenceCase('abc')", "Abc"),
+            Test("titleCase('a')", "A"),
+            Test("titleCase('abc def')", "Abc Def"),
             #endregion
 
             #region  Logical comparison functions test
