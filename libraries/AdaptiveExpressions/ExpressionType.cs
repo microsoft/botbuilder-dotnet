@@ -52,6 +52,8 @@ namespace AdaptiveExpressions
         public const string NewGuid = "newGuid";
         public const string IndexOf = "indexOf";
         public const string LastIndexOf = "lastIndexOf";
+        public const string SentenceCase = "sentenceCase";
+        public const string TitleCase = "titleCase";
 
         // Collection
         public const string Count = "count";

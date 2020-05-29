@@ -3169,7 +3169,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToString().ToLower();
+                                        return args[0].ToString().ToLowerInvariant();
                                     }
                                 }),
                 StringTransform(
@@ -3182,7 +3182,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToString().ToUpper();
+                                        return args[0].ToString().ToUpperInvariant();
                                     }
                                 }),
                 StringTransform(
@@ -3349,6 +3349,35 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.Number,
                     expr => ValidateOrder(expr, null, ReturnType.Array | ReturnType.String, ReturnType.Object)),
+                StringTransform(
+                                ExpressionType.SentenceCase,
+                                args =>
+                                {
+                                    var inputStr = (string)args[0];
+                                    if (string.IsNullOrEmpty(inputStr))
+                                    {
+                                        return string.Empty;
+                                    }
+                                    else
+                                    {
+                                        return inputStr.Substring(0, 1).ToUpperInvariant() + inputStr.Substring(1).ToLowerInvariant();
+                                    }
+                                }),
+                StringTransform(
+                                ExpressionType.TitleCase,
+                                args =>
+                                {
+                                    var inputStr = (string)args[0];
+                                    if (string.IsNullOrEmpty(inputStr))
+                                    {
+                                        return string.Empty;
+                                    }
+                                    else
+                                    {
+                                        var ti = CultureInfo.InvariantCulture.TextInfo;
+                                        return ti.ToTitleCase(inputStr);
+                                    }
+                                }),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),

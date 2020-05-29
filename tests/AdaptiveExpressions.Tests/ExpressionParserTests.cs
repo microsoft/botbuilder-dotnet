@@ -490,6 +490,11 @@ namespace AdaptiveExpressions.Tests
             Test("addOrdinal(11 + 13)", "24th"),
             Test("addOrdinal(-1)", "-1"), // original string value
             Test("join(createArray('a','b', 'c', 'd'), '\n')", "a\nb\nc\nd"),
+            Test("sentenceCase('a')", "A"),
+            Test("sentenceCase('abc')", "Abc"),
+            Test("sentenceCase('aBC')", "Abc"),
+            Test("titleCase('a')", "A"),
+            Test("titleCase('abc dEF')", "Abc Def"),
             #endregion
 
             #region  Logical comparison functions test
