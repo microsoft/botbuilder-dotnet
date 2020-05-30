@@ -3607,7 +3607,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should a time interval integer, a string unit of time and an optional output format string.";
+                                error = $"{expr} should contain a time interval integer, a string unit of time and an optional output format string.";
                             }
                         }
 
