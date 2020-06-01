@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        [Trait("Platform", "WindowsOnly")]
+        [Trait("TestCategory", "WindowsOnly")]
         public async Task JwtTokenExtractor_WithExpiredCert_ShouldNotAllowCertSigningKey()
         {
             var now = DateTimeOffset.UtcNow;
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
-        [Trait("Platform", "WindowsOnly")]
+        [Trait("TestCategory", "WindowsOnly")]
         public async Task JwtTokenExtractor_WithValidCert_ShouldNotAllowCertSigningKey()
         {
             var now = DateTimeOffset.UtcNow;
