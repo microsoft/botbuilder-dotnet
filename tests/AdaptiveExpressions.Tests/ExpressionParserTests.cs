@@ -780,6 +780,9 @@ namespace AdaptiveExpressions.Tests
             Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z')", -315360000000000),
             Test("dateTimeDiff(timestampObj,timestampObj2)", 62604000000000),
             Test("ticks(timestampObj3)", 636503904000000000),
+            Test("ticksToDays(2193385800000000)", 2538.64097222),
+            Test("ticksToHours(2193385800000000)", 60927.383333333331),
+            Test("ticksToMinutes(2193385811100000)", 3655643.0185), 
             #endregion
 
             #region uri parsing function test

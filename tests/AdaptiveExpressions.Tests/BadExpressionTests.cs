@@ -288,6 +288,9 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth(notValidTimeStamp)"), // not valid timestamp
             Test("startOfMonth(timeStamp, 'A')"), // not valid format
             Test("ticks(notValidTimeStamp)"), // not valid timestamp
+            Test("ticksToDays(12.12)"), // not an integer
+            Test("ticksToHours(timestamp)"), // not an integer
+            Test("ticksToMinutes(timestamp)"), // not an integer
             Test("dateTimeDiff(notValidTimeStamp,'2018-01-01T08:00:00.000Z')"), // the first parameter is not a valid timestamp
             Test("dateTimeDiff('2017-01-01T08:00:00.000Z',notValidTimeStamp)"), // the second parameter is not a valid timestamp
             Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z', 'years')"), // should only have 2 parameters
