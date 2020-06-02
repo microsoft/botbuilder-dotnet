@@ -178,6 +178,13 @@ namespace AdaptiveExpressions.Tests
             Test("sum(items)"), //  should have number parameters
             Test("range(hello,one)"), // params should be integer
             Test("range(one,0)"), // the second param should be more than 0
+            Test("floor(hello)"), // should have a number parameter
+            Test("floor(1.2, 2.1)"), // should have one parameter
+            Test("ceiling(hello)"), // should have a number parameter
+            Test("ceiling(1.2, 2.1)"), // should have one parameter
+            Test("round(hello)"), // should have number parameters
+            Test("round(1.2, hello)"), // should have number parameters
+            Test("round(1.2, 2, 3)"), // should have one or two number parameters
             #endregion
             
             #region Date and time function test

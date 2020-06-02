@@ -2923,6 +2923,56 @@ namespace AdaptiveExpressions
                         VerifyInteger),
                     ReturnType.Array,
                     ValidateBinaryNumber),
+                new ExpressionEvaluator(
+                    ExpressionType.Floor,
+                    ApplyWithError(
+                        args =>
+                        {
+                            string error = null;
+                            object result = null;
+                            result = Math.Floor(Convert.ToDouble(args[0]));
+
+                            return (result, error);
+                        },
+                        VerifyNumber),
+                    ReturnType.Number,
+                    ValidateUnaryNumber),
+                new ExpressionEvaluator(
+                    ExpressionType.Ceiling,
+                    ApplyWithError(
+                        args =>
+                        {
+                            string error = null;
+                            object result = null;
+                            result = Math.Ceiling(Convert.ToDouble(args[0]));
+
+                            return (result, error);
+                        },
+                        VerifyNumber),
+                    ReturnType.Number,
+                    ValidateUnaryNumber),
+                new ExpressionEvaluator(
+                    ExpressionType.Round,
+                    ApplyWithError(
+                        args =>
+                        {
+                            string error = null;
+                            object result = null;
+                            var digits = args.Count == 2 ? Convert.ToInt32(args[1]) : 0;
+                            if (digits < 0)
+                            {
+                                error = $"The second parameter should be not less than zero";
+                            }
+                            else
+                            {
+                                result = Math.Round(Convert.ToDouble(args[0]), digits);
+                            }
+
+                            return (result, error);
+                        },
+                        VerifyNumber),
+                    ReturnType.Number,
+                    expr => ValidateOrder(expr, new[] { ReturnType.Number }, ReturnType.Number)),
 
                 // Collection Functions
                 new ExpressionEvaluator(
