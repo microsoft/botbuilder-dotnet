@@ -82,6 +82,17 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         /// <param name="result">Result to be displayed as prompts.</param>
         /// <param name="cardNoMatchText">No match text.</param>
+        /// <returns>IMessageActivity.</returns>
+        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
+        {
+            return GetQnADefaultResponse(result, true, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Get Card for MultiTurn scenario. (Can be deprecated from 4.10.0 release of sdk).
+        /// </summary>
+        /// <param name="result">Result to be displayed as prompts.</param>
+        /// <param name="cardNoMatchText">No match text.</param>
         /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>IMessageActivity.</returns>
         public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText, CancellationToken cancellationToken)
