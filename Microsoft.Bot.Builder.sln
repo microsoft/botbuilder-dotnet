@@ -176,8 +176,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parent", "tests\Skills\Pare
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Child", "tests\Skills\Child\Child.csproj", "{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QnABotAllFeatures", "..\..\BotBuilder-Samples\BotBuilder-Samples\samples\csharp_dotnetcore\49.qnamaker-all-features\QnABotAllFeatures.csproj", "{B03AF5FE-5E8F-4F1C-A24F-FAAFC4BCF7A8}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -738,14 +736,6 @@ Global
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{B03AF5FE-5E8F-4F1C-A24F-FAAFC4BCF7A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B03AF5FE-5E8F-4F1C-A24F-FAAFC4BCF7A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B03AF5FE-5E8F-4F1C-A24F-FAAFC4BCF7A8}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{B03AF5FE-5E8F-4F1C-A24F-FAAFC4BCF7A8}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{B03AF5FE-5E8F-4F1C-A24F-FAAFC4BCF7A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B03AF5FE-5E8F-4F1C-A24F-FAAFC4BCF7A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B03AF5FE-5E8F-4F1C-A24F-FAAFC4BCF7A8}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{B03AF5FE-5E8F-4F1C-A24F-FAAFC4BCF7A8}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
