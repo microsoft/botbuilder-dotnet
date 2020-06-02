@@ -8,10 +8,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class AnswerSpanRequest
     {
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets the enablet.
+        /// Gets or sets a value indicating whether to enable PreciseAnswer generation or not.
         /// </summary>
         /// <value>
-        /// The answer text.
+        /// Choice whether to generate precise answer or not.
         /// </value>
         [JsonProperty("enable")]
         public bool Enable { get; set; }

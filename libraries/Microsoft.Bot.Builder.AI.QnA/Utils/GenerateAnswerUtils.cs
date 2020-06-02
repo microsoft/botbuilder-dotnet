@@ -187,8 +187,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             AnswerSpanRequest answerSpanRequest = null;
             if (options.EnablePreciseAnswer)
             {
-                answerSpanRequest = new AnswerSpanRequest();
-                answerSpanRequest.Enable = options.EnablePreciseAnswer;
+                answerSpanRequest = new AnswerSpanRequest { Enable = options.EnablePreciseAnswer };
             }
 
             var jsonRequest = JsonConvert.SerializeObject(

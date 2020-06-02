@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
@@ -77,23 +78,25 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Get Card for MultiTurn scenario. (Can be deprected from 4.10.0 release of sdk).
+        /// Get Card for MultiTurn scenario. (Can be deprecated from 4.10.0 release of sdk).
         /// </summary>
-        /// <param name="result">Result to be dispalyed as prompts.</param>
-        /// <param name="cardNoMatchText">No match text.</param>       
+        /// <param name="result">Result to be displayed as prompts.</param>
+        /// <param name="cardNoMatchText">No match text.</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>IMessageActivity.</returns>
-        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
+        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText, CancellationToken cancellationToken)
         {
-            return GetQnADefaultResponse(result, true);
+            return GetQnADefaultResponse(result, true, cancellationToken);
         }
 
         /// <summary>
         /// Get Card for Default QnA Maker scenario.
         /// </summary>
-        /// <param name="result">Result to be dispalyed as prompts.</param>
+        /// <param name="result">Result to be displayed as prompts.</param>
         /// <param name="displayPreciseAnswerOnly">renderingchoice.</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>IMessageActivity.</returns>
-        public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly)
+        public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly, CancellationToken cancellationToken)
         {
             if (result == null)
             {

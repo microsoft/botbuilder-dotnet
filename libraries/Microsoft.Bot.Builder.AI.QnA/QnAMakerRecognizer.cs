@@ -140,6 +140,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         [JsonProperty("logPersonalInformation")]
         public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
 
+        public bool EnablePreciseAnswer { get; set; }
+
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             // Identify matched intents
@@ -180,7 +182,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     Top = this.Top.GetValue(dialogContext.State),
                     QnAId = this.QnAId.GetValue(dialogContext.State),
                     RankerType = this.RankerType.GetValue(dialogContext.State),
-                    IsTest = this.IsTest
+                    IsTest = this.IsTest,
+                    EnablePreciseAnswer = this.EnablePreciseAnswer
                 },
                 null).ConfigureAwait(false);
 
@@ -191,7 +194,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 {
                     if ((topAnswer == null) || (answer.Score > topAnswer.Score))
                     {
-                        topAnswer = answer;
+                        topAnswer = answer;                       
                     }
                 }
 

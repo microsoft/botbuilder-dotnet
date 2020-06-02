@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var rootDialog = QnAMakerAction_MultiTurnDialogBase();
 
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
-            var promptsActivity = QnACardBuilder.GetQnADefaultResponse(response.Answers[0], true);
+            var promptsActivity = QnACardBuilder.GetQnADefaultResponse(response.Answers[0], true, CancellationToken.None);
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
             await CreateFlow(rootDialog)
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var rootDialog = QnAMakerAction_MultiTurnDialogBase();
 
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
-            var promptsActivity = QnACardBuilder.GetQnADefaultResponse(response.Answers[0], true);
+            var promptsActivity = QnACardBuilder.GetQnADefaultResponse(response.Answers[0], true, CancellationToken.None);
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
             await CreateFlow(rootDialog)
