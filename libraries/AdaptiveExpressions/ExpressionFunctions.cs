@@ -771,7 +771,7 @@ namespace AdaptiveExpressions
                         }
                         else
                         {
-                            error = $"{expr} could not be evaluated";
+                            error = $"{expr} should contain an ISO format timestamp and a time interval integer.";
                         }
                     }
 
@@ -3516,7 +3516,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain an ISO format timestamp, a time interval integer, a string unit of time and an optional output format string.";
                             }
                         }
 
@@ -3611,7 +3611,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a time interval integer, a string unit of time and an optional output format string.";
                             }
                         }
 
@@ -3641,7 +3641,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a time interval integer, a string unit of time and an optional output format string.";
                             }
                         }
 
@@ -3666,7 +3666,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain an ISO format timestamp, a destination time zone string and an optional output format string.";
                             }
                         }
 
@@ -3691,7 +3691,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain an ISO format timestamp, a origin time zone string and an optional output format string.";
                             }
                         }
 
@@ -3716,7 +3716,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain an ISO format timestamp, a time interval integer, a string unit of time and an optional output format string.";
                             }
                         }
 
@@ -4010,7 +4010,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string.";
                             }
                         }
 
@@ -4034,7 +4034,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string.";
                             }
                         }
 
@@ -4058,7 +4058,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string.";
                             }
                         }
 
@@ -4082,7 +4082,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string.";
                             }
                         }
 
@@ -4106,7 +4106,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string .";
                             }
                         }
 
@@ -4130,7 +4130,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string.";
                             }
                         }
 
