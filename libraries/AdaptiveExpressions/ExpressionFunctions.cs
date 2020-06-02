@@ -53,6 +53,21 @@ namespace AdaptiveExpressions
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         /// <summary>
+        /// Ticks of one day.
+        /// </summary>
+        private const long TicksPerDay = 24 * 60 * 60 * 10000000L;
+
+        /// <summary>
+        /// Ticks of one Hour.
+        /// </summary>
+        private const long TicksPerHour = 60 * 60 * 10000000L;
+
+        /// <summary>
+        /// Ticks of one Minute.
+        /// </summary>
+        private const long TicksPerMinute = 60 * 10000000L;
+
+        /// <summary>
         /// Object used to lock Randomizer.
         /// </summary>
         private static readonly object _randomizerLock = new object();
@@ -214,6 +229,13 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression to validate.</param>
         public static void ValidateUnaryString(Expression expression)
             => ValidateArityAndAnyType(expression, 1, 1, ReturnType.String);
+
+        /// <summary>
+        /// Validate there is a single number argument.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateUnaryNumber(Expression expression)
+        => ValidateArityAndAnyType(expression, 1, 1, ReturnType.Number);
 
         /// <summary>
         /// Validate there is a single boolean argument.
@@ -3795,6 +3817,78 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.Number,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.TicksToDays,
+                    (expr, state, options) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (args[0].IsInteger())
+                            {
+                                value = Convert.ToDouble(args[0]) / TicksPerDay;
+                            }
+                            else
+                            {
+                                error = $"{expr} should contain an integer of ticks";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    ValidateUnaryNumber),
+                new ExpressionEvaluator(
+                    ExpressionType.TicksToHours,
+                    (expr, state, options) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (args[0].IsInteger())
+                            {
+                                value = Convert.ToDouble(args[0]) / TicksPerHour;
+                            }
+                            else
+                            {
+                                error = $"{expr} should contain an integer of ticks";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    ValidateUnaryNumber),
+                new ExpressionEvaluator(
+                    ExpressionType.TicksToMinutes,
+                    (expr, state, options) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (args[0].IsInteger())
+                            {
+                                value = Convert.ToDouble(args[0]) / TicksPerMinute;
+                            }
+                            else
+                            {
+                                error = $"{expr} should contain an integer of ticks";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    ValidateUnaryNumber),
                 new ExpressionEvaluator(
                     ExpressionType.DateTimeDiff,
                     (expr, state, options) =>
