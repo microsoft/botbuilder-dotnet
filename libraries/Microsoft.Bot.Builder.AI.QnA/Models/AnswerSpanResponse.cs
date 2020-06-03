@@ -4,7 +4,10 @@
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
-{
+{    
+    /// <summary>
+    /// Represents Precise Answer details, these are generated when Precise Answer generation choice is enabled.
+    /// </summary>
     public class AnswerSpanResponse
     {
         /// <summary>

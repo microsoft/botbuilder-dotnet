@@ -43,10 +43,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public Activity CardNoMatchResponse { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether DisplayPreciseAnswerOnly.
+        /// Gets or sets a value indicating whether the Precise Answer is to be displayed or the source text also
+        /// chosen to be displayed to the user.
         /// </summary>
         /// <value>
-        /// Get or set whether to display Precise Answer Only or Both.
+        /// Get or set whether to display Precise Answer Only or source text along with Precise Answer.
         /// </value>
         public bool DisplayPreciseAnswerOnly { get; set; }
     }
