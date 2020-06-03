@@ -17,7 +17,7 @@ COMMENT : WHITESPACE* '>' ~('\r'|'\n')* { !startTemplate }?;
 
 IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' WHITESPACE* { !startTemplate }?;
 
-TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { startTemplate = true; };
+TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { _tokenStartCharPositionInLine == 0}? { startTemplate = true; };
 
 MULTILINE_PREFIX: WHITESPACE* '-' WHITESPACE* '```' { startTemplate && _tokenStartCharPositionInLine == 0 }? -> pushMode(MULTILINE_MODE);
 
