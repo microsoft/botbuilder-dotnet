@@ -78,10 +78,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string inputTemplateName, object scope)
         {
-            if (!(scope is CustomizedMemory))
-            {
-                scope = new CustomizedMemory(scope);
-            }
+            var memory = scope is CustomizedMemory scopeMemory ? scopeMemory : new CustomizedMemory(scope);
 
             (var reExecute, var templateName) = ParseTemplateName(inputTemplateName);
 
@@ -90,7 +87,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
-            var templateTarget = new EvaluationTarget(templateName, scope);
+            var templateTarget = new EvaluationTarget(templateName, memory);
 
             var currentEvaluateId = templateTarget.GetId();
 

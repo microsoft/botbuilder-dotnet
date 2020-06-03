@@ -84,10 +84,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>All possiable results.</returns>
         public List<object> ExpandTemplate(string templateName, object scope)
         {
-            if (!(scope is CustomizedMemory))
-            {
-                scope = new CustomizedMemory(scope);
-            }
+            var memory = scope is CustomizedMemory scopeMemory ? scopeMemory : new CustomizedMemory(scope);
 
             if (!TemplateMap.ContainsKey(templateName))
             {
@@ -100,7 +97,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             // Using a stack to track the evaluation trace
-            evaluationTargetStack.Push(new EvaluationTarget(templateName, scope));
+            evaluationTargetStack.Push(new EvaluationTarget(templateName, memory));
             var expanderResult = Visit(TemplateMap[templateName].TemplateBodyParseTree);
             evaluationTargetStack.Pop();
 
