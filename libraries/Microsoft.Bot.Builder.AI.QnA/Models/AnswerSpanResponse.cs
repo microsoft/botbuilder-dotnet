@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class AnswerSpanResponse
     {
         /// <summary>
-        /// Gets or sets the answer text.
+        /// Gets or sets the Precise Answer text.
         /// </summary>
         /// <value>
         /// The answer text.
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the answer score.
+        /// Gets or sets the score of Precise Answer.
         /// </summary>
         /// <value>
         /// The answer score.
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public float Score { get; set; }
 
         /// <summary>
-        /// Gets or sets the answer startIndex.
+        /// Gets or sets the  startIndex of Precise Answer in Source Answer Text.
         /// </summary>
         /// <value>
         /// The answer startIndex.
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int StartIndex { get; set; }
 
         /// <summary>
-        /// Gets or sets the answer endIndex.
+        /// Gets or sets the  endIndex of PreciseAnswer in Source Answer Text.
         /// </summary>
         /// <value>
         /// The answer endIndex.
