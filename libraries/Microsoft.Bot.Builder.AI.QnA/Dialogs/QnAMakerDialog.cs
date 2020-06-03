@@ -632,7 +632,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                 var answer = response.First();
 
-                if (!(answer.Context == null || answer.Context.Prompts.Count() == 0))
+                if (answer.Context != null && answer.Context.Prompts.Count() > 0)
                 {
                     var previousContextData = ObjectPath.GetPathValue(stepContext.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
 
@@ -662,7 +662,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="stepContext">The <see cref="WaterfallStepContext"/> for the current turn of conversation.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        /// <remarks>If the task is successful, the result contains the response options to use.</remarks>
+        /// <remarks>If the task is successful, the result contains the response options to be used.</remarks>
         private async Task<DialogTurnResult> DisplayQnAResultAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);

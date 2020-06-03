@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -89,12 +88,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Get Card for Default QnA Maker scenario.
+        /// Get Message Activity Response when User Query is processed by QnAMaker Service.
         /// </summary>
-        /// <param name="result">Result to be displayed as prompts.</param>
-        /// <param name="displayPreciseAnswerOnly">renderingchoice.</param>
+        /// <param name="result">Result consisits of References to other answers, also called as Prompts.</param>
+        /// <param name="displayPreciseAnswerOnly">Configuration, used for message activity display for multiple options like with or without Precise Answer.</param>
         /// <param name="cancellationToken">cancellationToken.</param>
-        /// <returns>IMessageActivity.</returns>
+        /// <returns>Message Activity that shall be displayed .</returns>
         public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly, CancellationToken cancellationToken)
         {
             if (result == null)
