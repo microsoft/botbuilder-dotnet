@@ -732,14 +732,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestRecursiveTemplate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("RecursiveTemplate.lg"));
-            var evaled = templates.Evaluate("RecursiveAccumulate", new { number = 100 });
-            Assert.AreEqual(evaled, 5050L);
+            var evaled = templates.Evaluate("RecursiveAccumulate", new { number = 10 });
+            Assert.AreEqual(evaled, 55L);
 
             evaled = templates.Evaluate("RecursiveFactorial", new { number = 5 });
             Assert.AreEqual(evaled, 1 * 2 * 3 * 4 * 5L);
 
-            evaled = templates.Evaluate("RecursiveFibonacciSequence", new { number = 10 });
-            Assert.AreEqual(evaled, 55L);
+            evaled = templates.Evaluate("RecursiveFibonacciSequence", new { number = 5 });
+            Assert.AreEqual(evaled, 5L);
         }
 
         [TestMethod]
