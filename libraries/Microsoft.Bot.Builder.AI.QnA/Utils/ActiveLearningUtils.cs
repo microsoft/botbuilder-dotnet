@@ -24,16 +24,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Maximum Score For Low Variation.
         /// </summary>
-        private double maximumScoreForLowScoreVariation = 95.0;
+        private static double maximumScoreForLowScoreVariation = 95.0;
 
         /// <summary>
         /// Minimum Score For Low Variation.
         /// </summary>
-        private double minimumScoreForLowScoreVariation = 20.0;
+        private static double minimumScoreForLowScoreVariation = 20.0;
 
-        public  double MaximumScoreForLowScoreVariation { get => maximumScoreForLowScoreVariation; set => maximumScoreForLowScoreVariation = value; }
+        public  static double MaximumScoreForLowScoreVariation { get => maximumScoreForLowScoreVariation; set => maximumScoreForLowScoreVariation = value; }
         
-        public  double MinimumScoreForLowScoreVariation { get => minimumScoreForLowScoreVariation; set => minimumScoreForLowScoreVariation = value; }
+        public  static double MinimumScoreForLowScoreVariation { get => minimumScoreForLowScoreVariation; set => minimumScoreForLowScoreVariation = value; }
 
         /// <summary>
         /// Returns list of qnaSearch results which have low score variation.
