@@ -160,6 +160,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             await this.CheckForVersionChangeAsync(dc, cancellationToken).ConfigureAwait(false);
 
+            // replace initial activeDialog.State with clone of options
+            if (options != null)
+            {
+                dc.ActiveDialog.State = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(options));
+            }
+
             if (!dc.State.ContainsKey(DialogPath.EventCounter))
             {
                 dc.State.SetValue(DialogPath.EventCounter, 0u);
@@ -187,12 +193,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         }
                     }
                 }
-            }
-
-            // replace initial activeDialog.State with clone of options
-            if (options != null)
-            {
-                dc.ActiveDialog.State = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(options));
             }
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
