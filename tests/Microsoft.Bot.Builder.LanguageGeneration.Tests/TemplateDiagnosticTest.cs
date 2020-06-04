@@ -258,6 +258,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("wPhrase"));
             Assert.IsTrue(exception.Message.Contains(TemplateErrors.LoopDetected));
+
+            exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("shouldFail"));
+            Assert.IsTrue(exception.Message.Contains(TemplateErrors.LoopDetected));
         }
 
         [TestMethod]
