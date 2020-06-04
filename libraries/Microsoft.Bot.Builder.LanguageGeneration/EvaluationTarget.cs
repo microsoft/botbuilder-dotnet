@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Id.</returns>
         public string GetId()
         {
-            return TemplateName + Scope.Version();
+            return TemplateName + Scope?.Version();
         }
     }
 }
