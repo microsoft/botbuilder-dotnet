@@ -91,13 +91,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
-            if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
+            var templateTarget = new EvaluationTarget(templateName, memory);
+
+            var currentEvaluateId = templateTarget.GetId();
+
+            if (evaluationTargetStack.Any(e => e.GetId() == currentEvaluateId))
             {
                 throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evaluation trace
-            evaluationTargetStack.Push(new EvaluationTarget(templateName, memory));
+            evaluationTargetStack.Push(templateTarget);
             var expanderResult = Visit(TemplateMap[templateName].TemplateBodyParseTree);
             evaluationTargetStack.Pop();
 
