@@ -211,6 +211,10 @@ namespace AdaptiveExpressions.Tests
                                 }
                             }
                         }
+                    },
+                    activity = new
+                    {
+                        locale = "en-US"
                     }
                 }
             },
@@ -285,6 +289,10 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            Test("toLower(toUpper('lowercase'))", "lowercase"),
+            Test("toLower('I AM WHAT I AM', 'fr-FR')", "i am what i am"),
+            Test("string(user.income, 'fr-FR')", "100,1"),
+            Test("string(user.income)", "100.1"),
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
@@ -605,7 +613,7 @@ namespace AdaptiveExpressions.Tests
             Test("int('10')", 10),
             Test("int(12345678912345678 + 1)", 12345678912345679),
             Test("string('str')", "str"),
-            Test("string(one)", "1.0"),
+            Test("string(one)", "1"),
             Test("string(bool(1))", "true"),
             Test("string(bag.set)", "{\"four\":4.0}"),
             Test("bool(1)", true),
@@ -645,7 +653,7 @@ namespace AdaptiveExpressions.Tests
             Test("formatNumber(20.0000, 2)", "20.00"),
             Test("formatNumber(12.123, 2)", "12.12"),
             Test("formatNumber(1.551, 2)", "1.55"),
-            Test("formatNumber(12.123, 4)", "12.1230"),
+            Test("formatNumber(12.123, 4, 'de-DE')", "12,1230"),
             Test("formatNumber(12000.3, 4, 'fr-fr')", "12\x00a0000,3000"),
             #endregion
 

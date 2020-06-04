@@ -53,6 +53,11 @@ namespace AdaptiveExpressions
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         /// <summary>
+        /// The default time span format string, which is identical to [-][d:]h:mm:ss[.FFFFFFF].
+        /// </summary>
+        public static readonly string DefaultTimeSpanFormat = "c";
+
+        /// <summary>
         /// Ticks of one day.
         /// </summary>
         private const long TicksPerDay = 24 * 60 * 60 * 10000000L;
@@ -71,6 +76,16 @@ namespace AdaptiveExpressions
         /// Object used to lock Randomizer.
         /// </summary>
         private static readonly object _randomizerLock = new object();
+
+        /// <summary>
+        /// Culture Info of current thread.
+        /// </summary>
+        private static readonly CultureInfo Locale = CultureInfo.InvariantCulture;
+
+        /// <summary>
+        /// The Path stores the locale info in memory.
+        /// </summary>
+        private static readonly string LocaleMemoryPath = "turn.activity.locale";
 
         /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
@@ -548,6 +563,16 @@ namespace AdaptiveExpressions
 
         // Apply -- these are helpers for adding functions to the expression library.
 
+        public static string EvaluateLocale(IMemory state)
+        {
+            if (state.TryGetValue(LocaleMemoryPath, out var locale))
+            {
+                return locale as string;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Generate an expression delegate that applies function after verifying all children.
         /// </summary>
@@ -609,6 +634,32 @@ namespace AdaptiveExpressions
 
                 return (value, error);
             };
+
+        public static EvaluateExpressionDelegate ApplyWithErrorAndLocale(Func<IReadOnlyList<object>, CultureInfo, (object, string)> function, VerifyExpression verify = null)
+    =>
+    (expression, state, options) =>
+    {
+        object value = null;
+        string error = null;
+        IReadOnlyList<object> args;
+        (args, error) = EvaluateChildren(expression, state, options, verify);
+        var locale = DetermineLocaleInfo(state);
+        if (error == null)
+        {
+            try
+            {
+                (value, error) = function(args, locale);
+            }
+            catch (Exception e)
+            {
+                error = e.Message;
+            }
+        }
+
+        value = ResolveValue(value);
+
+        return (value, error);
+    };
 
         /// <summary>
         /// Generate an expression delegate that applies function on the accumulated value after verifying all children.
@@ -768,6 +819,9 @@ namespace AdaptiveExpressions
         /// <returns>Delegate for evaluating an expression.</returns>
         public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<object>, object> function)
             => new ExpressionEvaluator(type, Apply(function, VerifyStringOrNull), ReturnType.String, ValidateUnaryString);
+
+        public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<object>, CultureInfo, (object, string)> function)
+            => new ExpressionEvaluator(type, ApplyWithErrorAndLocale(function, VerifyStringOrNull), ReturnType.String, expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String));
 
         /// <summary>
         /// Transform a date-time to another date-time.
@@ -2729,6 +2783,25 @@ namespace AdaptiveExpressions
             return result;
         }
 
+        private static CultureInfo DetermineLocaleInfo(IMemory state)
+        {
+            string locale = EvaluateLocale(state);
+            CultureInfo result = Locale;
+            if (locale != null)
+            {
+                try
+                {
+                    result = new CultureInfo(locale);
+                }
+                catch
+                {
+                    // do nothing
+                }
+            }
+
+            return result;
+        }
+
         private static IDictionary<string, ExpressionEvaluator> GetStandardFunctions()
         {
             var functions = new List<ExpressionEvaluator>
@@ -3183,34 +3256,68 @@ namespace AdaptiveExpressions
                     (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.String, ReturnType.Number)),
                 StringTransform(
                                 ExpressionType.ToLower,
-                                args =>
+                                (args, defaultLocale) =>
                                 {
-                                    if (args[0] == null)
+                                    string result = null;
+                                    string error = null;
+                                    CultureInfo locale = null;
+                                    try
                                     {
-                                        return string.Empty;
+                                        locale = args.Count == 2 ? new CultureInfo(args[1] as string) : defaultLocale;
                                     }
-                                    else
+                                    catch
                                     {
-                                        return args[0].ToString().ToLowerInvariant();
+                                        error = $"the second argument {args[1]} should be should be a locale string.";
                                     }
+                                    
+                                    if (error == null)
+                                    {
+                                        if (args[0] == null)
+                                        {
+                                            result = string.Empty;
+                                        }
+                                        else
+                                        {
+                                            result = args[0].ToString().ToLower(locale);
+                                        }
+                                    }
+
+                                    return (result, error);
                                 }),
                 StringTransform(
                                 ExpressionType.ToUpper,
-                                args =>
+                                (args, defaultLocale) =>
                                 {
-                                    if (args[0] == null)
+                                    string result = null;
+                                    string error = null;
+                                    CultureInfo locale = null;
+                                    try
                                     {
-                                        return string.Empty;
+                                        locale = args.Count == 2 ? new CultureInfo(args[1] as string) : defaultLocale;
                                     }
-                                    else
+                                    catch
                                     {
-                                        return args[0].ToString().ToUpperInvariant();
+                                        error = $"the second argument {args[1]} should be should be a locale string.";
                                     }
+
+                                    if (error == null)
+                                    {
+                                        if (args[0] == null)
+                                        {
+                                            result = string.Empty;
+                                        }
+                                        else
+                                        {
+                                            result = args[0].ToString().ToUpper(locale);
+                                        }
+                                    }
+
+                                    return (result, error);
                                 }),
                 StringTransform(
                                 ExpressionType.Trim,
                                 args =>
-                                {
+                                {                                                                        
                                     if (args[0] == null)
                                     {
                                         return string.Empty;
@@ -3378,32 +3485,66 @@ namespace AdaptiveExpressions
                     expr => ValidateOrder(expr, null, ReturnType.Array | ReturnType.String, ReturnType.Object)),
                 StringTransform(
                                 ExpressionType.SentenceCase,
-                                args =>
+                                (args, defaultLocale) =>
                                 {
-                                    var inputStr = (string)args[0];
-                                    if (string.IsNullOrEmpty(inputStr))
+                                    string result = null;
+                                    string error = null;
+                                    CultureInfo locale = null;
+                                    try
                                     {
-                                        return string.Empty;
+                                        locale = args.Count == 2 ? new CultureInfo(args[1] as string) : defaultLocale;
                                     }
-                                    else
+                                    catch
                                     {
-                                        return inputStr.Substring(0, 1).ToUpperInvariant() + inputStr.Substring(1).ToLowerInvariant();
+                                        error = $"the second argument {args[1]} should be should be a locale string.";
                                     }
+
+                                    if (error == null)
+                                    {
+                                        var inputStr = (string)args[0];
+                                        if (string.IsNullOrEmpty(inputStr))
+                                        {
+                                            result = string.Empty;
+                                        }
+                                        else
+                                        {
+                                            result = inputStr.Substring(0, 1).ToUpper(locale) + inputStr.Substring(1).ToLower(locale);
+                                        }
+                                    }
+
+                                    return (result, error);
                                 }),
                 StringTransform(
                                 ExpressionType.TitleCase,
-                                args =>
+                                (args, defaultLocale) =>
                                 {
-                                    var inputStr = (string)args[0];
-                                    if (string.IsNullOrEmpty(inputStr))
+                                    string result = null;
+                                    string error = null;
+                                    CultureInfo locale = null;
+                                    try
                                     {
-                                        return string.Empty;
+                                        locale = args.Count == 2 ? new CultureInfo(args[1] as string) : defaultLocale;
                                     }
-                                    else
+                                    catch
                                     {
-                                        var ti = CultureInfo.InvariantCulture.TextInfo;
-                                        return ti.ToTitleCase(inputStr);
+                                        error = $"the second argument {args[1]} should be should be a locale string.";
                                     }
+
+                                    if (error == null)
+                                    {
+                                        var inputStr = (string)args[0];
+                                        if (string.IsNullOrEmpty(inputStr))
+                                        {
+                                            result = string.Empty;
+                                        }
+                                        else
+                                        {
+                                            var ti = locale.TextInfo;
+                                            result = ti.ToTitleCase(inputStr);
+                                        }
+                                    }
+
+                                    return (result, error);
                                 }),
 
                 // Date and time
@@ -4265,13 +4406,54 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.UriComponentToString, Apply(args => Uri.UnescapeDataString(args[0].ToString()), VerifyString), ReturnType.String, ValidateUnary),
 
                 // TODO: Is this really the best way?
-                new ExpressionEvaluator(ExpressionType.String, Apply(args => JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"')), ReturnType.String, ValidateUnary),
+                new ExpressionEvaluator(
+                    ExpressionType.String,
+                    (expression, state, options) =>
+                        {
+                            string result = null;
+                            var (args, error) = EvaluateChildren(expression, state, options);
+                            if (args.Count == 2 && !(args[1] is string))
+                            {
+                                error = $"the second argument {args[1]} should be a locale string.";
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    var locale = args.Count == 2 ? new CultureInfo(args[1] as string) : DetermineLocaleInfo(state);
+                                    if (args[0].IsNumber())
+                                    {
+                                        result = Convert.ToDouble(args[0]).ToString(locale);
+                                    }
+                                    else if (args[0] is DateTime dt)
+                                    {
+                                        result = dt.ToString(DefaultDateTimeFormat, locale);
+                                    }
+                                    else if (args[0] is TimeSpan ts)
+                                    {
+                                        result = ts.ToString(DefaultTimeSpanFormat, locale);
+                                    }
+                                    else
+                                    {
+                                        result = JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"');
+                                    }
+                                }
+                                catch
+                                {
+                                    error = $"{args[1]} is not a valid locale for string";
+                                }
+                            }
+
+                            return (result, error);
+                        }, 
+                    ReturnType.String,
+                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object)),
                 Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
                 new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ToXml(args[0])), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.FormatNumber,
-                    ApplyWithError(
-                        args =>
+                    ApplyWithErrorAndLocale(
+                        (args, defaultLocale) =>
                         {
                             string result = null;
                             string error = null;
@@ -4293,7 +4475,7 @@ namespace AdaptiveExpressions
                                 {
                                     var number = Convert.ToDouble(args[0]);
                                     var precision = Convert.ToInt32(args[1]);
-                                    var locale = args.Count == 3 ? new CultureInfo(args[2] as string) : CultureInfo.InvariantCulture;
+                                    var locale = args.Count == 3 ? new CultureInfo(args[2] as string) : defaultLocale;
                                     result = number.ToString("N" + precision.ToString(), locale);
                                 }
                                 catch
