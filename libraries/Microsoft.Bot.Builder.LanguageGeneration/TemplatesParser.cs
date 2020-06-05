@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var lineContent = context.INVALID_LINE().GetText();
                 if (!string.IsNullOrWhiteSpace(lineContent))
                 {
-                    this.templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError, context));
+                    this.templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError($"Unexpected content: '{lineContent}'"), context));
                 }
 
                 return null;
@@ -366,7 +366,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (!IdentifierRegex.IsMatch(parameter))
                     {
-                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName, context);
+                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidParameter(parameter), context);
                         this.templates.Diagnostics.Add(diagnostic);
                     }
                 }
@@ -379,8 +379,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (!TemplateNamePartRegex.IsMatch(id))
                     {
-                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName, context);
+                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName(templateName), context);
                         this.templates.Diagnostics.Add(diagnostic);
+                        break;
                     }
                 }
             }

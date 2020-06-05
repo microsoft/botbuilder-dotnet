@@ -551,7 +551,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
             {
-                throw new Exception(TemplateErrors.InvalidTemplateName);
+                throw new Exception(TemplateErrors.InvalidTemplateNameType);
             }
 
             // Validate more if the name is string constant
