@@ -838,12 +838,18 @@ namespace AdaptiveExpressions
                     string error = null;
                     IReadOnlyList<object> args;
                     (args, error) = EvaluateChildren(expr, state, options);
+                    var locale = DetermineLocaleInfo(state);
+                    var formatString = DefaultDateTimeFormat;
+                    if (error == null)
+                    {
+                        (formatString, locale, error) = DetermineFormatAndLocale(args, formatString, locale, 4);
+                    }
+
                     if (error == null)
                     {
                         if (args[1].IsInteger())
                         {
-                            var formatString = (args.Count() == 3 && args[2] is string string1) ? string1 : DefaultDateTimeFormat;
-                            (value, error) = NormalizeToDateTime(args[0], dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
+                            (value, error) = NormalizeToDateTime(args[0], dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString, locale));
                         }
                         else
                         {
@@ -854,7 +860,7 @@ namespace AdaptiveExpressions
                     return (value, error);
                 },
                 ReturnType.String,
-                expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number));
+                expr => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String }, ReturnType.String, ReturnType.Number));
 
         /// <summary>
         /// Lookup an index property of instance.
@@ -1879,13 +1885,13 @@ namespace AdaptiveExpressions
             return (convertedTimeZone, error);
         }
 
-        private static (string, string) ReturnFormatTimeStampStr(DateTime datetime, string format)
+        private static (string, string) ReturnFormatTimeStampStr(DateTime datetime, string format, CultureInfo locale)
         {
             string result = null;
             string error = null;
             try
             {
-                result = datetime.ToString(format, CultureInfo.InvariantCulture.DateTimeFormat);
+                result = datetime.ToString(format, locale);
             }
             catch
             {
@@ -1895,7 +1901,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, string) ConvertFromUTC(object utcTimestamp, string timezone, string format)
+        private static (string, string) ConvertFromUTC(object utcTimestamp, string timezone, string format, CultureInfo locale)
         {
             string error = null;
             string result = null;
@@ -1915,14 +1921,14 @@ namespace AdaptiveExpressions
                 if (error == null)
                 {
                     var convertedDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDt, (TimeZoneInfo)convertedTimeZone);
-                    (result, error) = ReturnFormatTimeStampStr(convertedDateTime, format);
+                    (result, error) = ReturnFormatTimeStampStr(convertedDateTime, format, locale);
                 }
             }
 
             return (result, error);
         }
 
-        private static (string, string) ConvertToUTC(object sourceTimestamp, string sourceTimezone, string format)
+        private static (string, string) ConvertToUTC(object sourceTimestamp, string sourceTimezone, string format, CultureInfo locale)
         {
             string error = null;
             string result = null;
@@ -1950,14 +1956,14 @@ namespace AdaptiveExpressions
                 if (error == null)
                 {
                     var convertedDateTime = TimeZoneInfo.ConvertTimeToUtc(srcDt, (TimeZoneInfo)convertedTimeZone);
-                    (result, error) = ReturnFormatTimeStampStr(convertedDateTime, format);
+                    (result, error) = ReturnFormatTimeStampStr(convertedDateTime, format, locale);
                 }
             }
 
             return (result, error);
         }
 
-        private static (string, string) AddToTime(object timestamp, long interval, string timeUnit, string format)
+        private static (string, string) AddToTime(object timestamp, long interval, string timeUnit, string format, CultureInfo locale)
         {
             string result = null;
             string error = null;
@@ -1971,14 +1977,14 @@ namespace AdaptiveExpressions
                 if (error == null)
                 {
                     var addedTimeStamp = converter(ts);
-                    (result, error) = ReturnFormatTimeStampStr(addedTimeStamp, format);
+                    (result, error) = ReturnFormatTimeStampStr(addedTimeStamp, format, locale);
                 }
             }
 
             return (result, error);
         }
 
-        private static (object, string) StartOfDay(object timestamp, string format)
+        private static (object, string) StartOfDay(object timestamp, string format, CultureInfo locale)
         {
             string result = null;
             string error = null;
@@ -1989,13 +1995,13 @@ namespace AdaptiveExpressions
             {
                 var ts = (DateTime)parsed;
                 var startOfDay = ts.Date;
-                (result, error) = ReturnFormatTimeStampStr(startOfDay, format);
+                (result, error) = ReturnFormatTimeStampStr(startOfDay, format, locale);
             }
 
             return (result, error);
         }
 
-        private static (object, string) StartOfHour(object timestamp, string format)
+        private static (object, string) StartOfHour(object timestamp, string format, CultureInfo locale)
         {
             string result = null;
             string error = null;
@@ -2008,13 +2014,13 @@ namespace AdaptiveExpressions
                 var startOfDay = ts.Date;
                 var hours = ts.Hour;
                 var startOfHour = startOfDay.AddHours(hours);
-                (result, error) = ReturnFormatTimeStampStr(startOfHour, format);
+                (result, error) = ReturnFormatTimeStampStr(startOfHour, format, locale);
             }
 
             return (result, error);
         }
 
-        private static (object, string) StartOfMonth(object timestamp, string format)
+        private static (object, string) StartOfMonth(object timestamp, string format, CultureInfo locale)
         {
             string result = null;
             object parsed = null;
@@ -2027,7 +2033,7 @@ namespace AdaptiveExpressions
                 var startOfDay = ts.Date;
                 var days = ts.Day;
                 var startOfMonth = startOfDay.AddDays(1 - days);
-                (result, error) = ReturnFormatTimeStampStr(startOfMonth, format);
+                (result, error) = ReturnFormatTimeStampStr(startOfMonth, format, locale);
             }
 
             return (result, error);
@@ -2220,6 +2226,38 @@ namespace AdaptiveExpressions
             }
 
             return (parsed, error);
+        }
+
+        private static (CultureInfo, string) TryParseLocale(string localeStr)
+        {
+            CultureInfo result = null;
+            string error = null;
+            try
+            {
+                result = new CultureInfo(localeStr);
+            }
+            catch
+            {
+                error = $"{localeStr} must be a locale";
+            }
+
+            return (result, error);
+        }
+
+        private static (string, CultureInfo, string) DetermineFormatAndLocale(IReadOnlyList<object> args, string format, CultureInfo locale, int maxArgsLength)
+        {
+            string error = null;
+            if (args.Count == maxArgsLength)
+            {
+                format = args[maxArgsLength - 2] as string;
+                (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
+            }
+            else if (args.Count == maxArgsLength - 1)
+            {
+                format = args[maxArgsLength - 2] as string;
+            }
+
+            return (format, locale, error);
         }
 
         private static string AddOrdinal(int num)
@@ -3588,75 +3626,91 @@ namespace AdaptiveExpressions
                     ReturnType.String),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
-                    ApplyWithError(
-                        args =>
+                    ApplyWithErrorAndLocale(
+                        (args, locale) =>
                         {
                             object result = null;
                             string error = null;
                             var timestamp = args[0];
-                            if (timestamp is string tsString)
+                            var format = DefaultDateTimeFormat;
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                            
+                            if (error == null)
                             {
-                                (result, error) = ParseTimestamp(tsString, dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture));
-                            }
-                            else if (timestamp is DateTime dt)
-                            {
-                                result = dt.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture);
-                            }
-                            else
-                            {
-                                error = $"formatDateTime has invalid first argument {timestamp}";
+                                if (timestamp is string tsString)
+                                {
+                                    (result, error) = ParseTimestamp(tsString, dt => dt.ToString(format, locale));
+                                }
+                                else if (timestamp is DateTime dt)
+                                {
+                                    result = dt.ToString(format, locale);
+                                }
+                                else
+                                {
+                                    error = $"formatDateTime has invalid first argument {timestamp}";
+                                }
                             }
 
                             return (result, error);
                         }),
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.FormatEpoch,
-                    ApplyWithError(
-                        args =>
+                    ApplyWithErrorAndLocale(
+                        (args, locale) =>
                         {
                             object result = null;
                             string error = null;
                             var timestamp = args[0];
-                            if (timestamp.IsNumber())
+                            var format = DefaultDateTimeFormat;
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                            if (error == null)
                             {
-                                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                                dateTime = dateTime.AddSeconds(Convert.ToDouble(timestamp));
-                                result = dateTime.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture);
-                            }
-                            else
-                            {
-                                error = $"formatEpoch first argument {timestamp} is not a number";
+                                if (timestamp.IsNumber())
+                                {
+                                    var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                                    dateTime = dateTime.AddSeconds(Convert.ToDouble(timestamp));
+                                    result = dateTime.ToString(format, locale);
+                                }
+                                else
+                                {
+                                    error = $"formatEpoch first argument {timestamp} is not a number";
+                                }
                             }
 
                             return (result, error);
                         }),
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String }, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.FormatTicks,
-                    ApplyWithError(
-                        args =>
+                    ApplyWithErrorAndLocale(
+                        (args, locale) =>
                         {
                             object result = null;
                             string error = null;
                             var timestamp = args[0];
-                            if (timestamp.IsInteger())
+                            var format = DefaultDateTimeFormat;
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                            if (error == null) 
                             {
-                                var ticks = Convert.ToInt64(timestamp);
-                                var dateTime = new DateTime(ticks);
-                                result = dateTime.ToString(args.Count() == 2 ? args[1].ToString() : DefaultDateTimeFormat, CultureInfo.InvariantCulture);
-                            }
-                            else
-                            {
-                                error = $"formatTicks first arugment {timestamp} must be an integer";
+                                if (timestamp.IsInteger())
+                                {
+                                    var ticks = Convert.ToInt64(timestamp);
+                                    var dateTime = new DateTime(ticks);
+                                    result = dateTime.ToString(format, locale);
+                                }
+                                else
+                                {
+                                    error = $"formatTicks first arugment {timestamp} must be an integer";
+                                }
                             }
 
                             return (result, error);
                         }),
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String }, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.SubtractFromTime,
                     (expr, state, options) =>
@@ -3665,16 +3719,22 @@ namespace AdaptiveExpressions
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
+                        var format = DefaultDateTimeFormat;
+                        var locale = DetermineLocaleInfo(state);
+                        if (error == null)
+                        {
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 5);
+                        }
+
                         if (error == null)
                         {
                             if (args[1].IsInteger() && args[2] is string string2)
                             {
-                                var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[1]), string2);
                                 if (error == null)
                                 {
-                                    (value, error) = NormalizeToDateTime(args[0], dt => timeConverter(dt).ToString(format));
+                                    (value, error) = NormalizeToDateTime(args[0], dt => timeConverter(dt).ToString(format, locale));
                                 }
                             }
                             else
@@ -3686,7 +3746,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.Number, ReturnType.String)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String }, ReturnType.Object, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.DateReadBack,
                     ApplyWithError(
@@ -3760,16 +3820,22 @@ namespace AdaptiveExpressions
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
+                        var locale = DetermineLocaleInfo(state);
+                        var format = DefaultDateTimeFormat;
+                        if (error == null)
+                        {
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
+                        }
+                        
                         if (error == null)
                         {
                             if (args[0].IsInteger() && args[1] is string string1)
-                            {
-                                var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
+                            {                              
                                 Func<DateTime, DateTime> timeConverter;
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1, false);
                                 if (error == null)
                                 {
-                                    value = timeConverter(DateTime.UtcNow).ToString(format);
+                                    value = timeConverter(DateTime.UtcNow).ToString(format, locale);
                                 }
                             }
                             else
@@ -3781,7 +3847,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number, ReturnType.String)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String }, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.GetPastTime,
                     (expr, state, options) =>
@@ -3790,16 +3856,22 @@ namespace AdaptiveExpressions
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
+                        var locale = DetermineLocaleInfo(state);
+                        var format = DefaultDateTimeFormat;
+                        if (error == null)
+                        {
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
+                        }
+
                         if (error == null)
                         {
                             if (args[0].IsInteger() && args[1] is string string1)
                             {
-                                var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1);
                                 if (error == null)
                                 {
-                                    value = timeConverter(DateTime.UtcNow).ToString(format);
+                                    value = timeConverter(DateTime.UtcNow).ToString(format, locale);
                                 }
                             }
                             else
@@ -3811,7 +3883,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Number, ReturnType.String)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String }, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.ConvertFromUtc,
                     (expr, state, options) =>
@@ -3820,12 +3892,18 @@ namespace AdaptiveExpressions
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
+                        var locale = DetermineLocaleInfo(state);
+                        var format = DefaultDateTimeFormat;
                         if (error == null)
                         {
-                            var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
+                        }
+
+                        if (error == null)
+                        {
                             if (args[1] is string targetTimeZone)
                             {
-                                (value, error) = ConvertFromUTC(args[0], targetTimeZone, format);
+                                (value, error) = ConvertFromUTC(args[0], targetTimeZone, format, locale);
                             }
                             else
                             {
@@ -3836,7 +3914,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.String,
-                    expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String)),
+                    expr => ValidateArityAndAnyType(expr, 2, 4, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.ConvertToUtc,
                     (expr, state, options) =>
@@ -3845,12 +3923,18 @@ namespace AdaptiveExpressions
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
+                        var locale = DetermineLocaleInfo(state);
+                        var format = DefaultDateTimeFormat;
                         if (error == null)
                         {
-                            var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
+                        }
+
+                        if (error == null)
+                        {
                             if (args[1] is string sourceTimeZone)
                             {
-                                (value, error) = ConvertToUTC(args[0], sourceTimeZone, format);
+                                (value, error) = ConvertToUTC(args[0], sourceTimeZone, format, locale);
                             }
                             else
                             {
@@ -3861,7 +3945,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.String,
-                    expr => ValidateArityAndAnyType(expr, 2, 3, ReturnType.String)),
+                    expr => ValidateArityAndAnyType(expr, 2, 4, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.AddToTime,
                     (expr, state, options) =>
@@ -3870,12 +3954,18 @@ namespace AdaptiveExpressions
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
+                        var locale = DetermineLocaleInfo(state);
+                        var format = DefaultDateTimeFormat;
                         if (error == null)
                         {
-                            var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 5);
+                        }
+
+                        if (error == null)
+                        {
                             if (args[1].IsInteger() && args[2] is string timeUnit)
                             {
-                                (value, error) = AddToTime(args[0], Convert.ToInt64(args[1]), timeUnit, format);
+                                (value, error) = AddToTime(args[0], Convert.ToInt64(args[1]), timeUnit, format, locale);
                             }
                             else
                             {
@@ -3886,7 +3976,7 @@ namespace AdaptiveExpressions
                         return (value, error);
                     },
                     ReturnType.String,
-                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.Number, ReturnType.String)),
+                    expr => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String }, ReturnType.Object, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.StartOfDay,
                     (expr, state, options) =>
@@ -3895,16 +3985,22 @@ namespace AdaptiveExpressions
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
+                        var locale = DetermineLocaleInfo(state);
+                        var format = DefaultDateTimeFormat;
                         if (error == null)
                         {
-                            var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
-                            (value, error) = StartOfDay(args[0], format);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                        }
+
+                        if (error == null)
+                        {
+                            (value, error) = StartOfDay(args[0], format, locale);
                         }
 
                         return (value, error);
                     },
                     ReturnType.String,
-                    expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
+                    expr => ValidateArityAndAnyType(expr, 1, 3, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.StartOfHour,
                     (expr, state, options) =>
@@ -3913,16 +4009,22 @@ namespace AdaptiveExpressions
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
+                        var locale = DetermineLocaleInfo(state);
+                        var format = DefaultDateTimeFormat;
                         if (error == null)
                         {
-                            var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
-                            (value, error) = StartOfHour(args[0], format);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                        }
+
+                        if (error == null)
+                        {
+                            (value, error) = StartOfHour(args[0], format, locale);
                         }
 
                         return (value, error);
                     },
                     ReturnType.String,
-                    expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
+                    expr => ValidateArityAndAnyType(expr, 1, 3, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.StartOfMonth,
                     (expr, state, options) =>
@@ -3931,16 +4033,22 @@ namespace AdaptiveExpressions
                         string error = null;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
+                        var locale = DetermineLocaleInfo(state);
+                        var format = DefaultDateTimeFormat;
                         if (error == null)
                         {
-                            var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
-                            (value, error) = StartOfMonth(args[0], format);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                        }
+
+                        if (error == null)
+                        {
+                            (value, error) = StartOfMonth(args[0], format, locale);
                         }
 
                         return (value, error);
                     },
                     ReturnType.String,
-                    expr => ValidateArityAndAnyType(expr, 1, 2, ReturnType.String)),
+                    expr => ValidateArityAndAnyType(expr, 1, 3, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.Ticks,
                     (expr, state, options) =>
