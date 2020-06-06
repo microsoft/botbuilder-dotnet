@@ -4474,7 +4474,7 @@ namespace AdaptiveExpressions
                 //Type Checking Functions
                 new ExpressionEvaluator(
                     ExpressionType.IsString,
-                    Apply(args => args[0].GetType() == typeof(string)),
+                    Apply(args => args[0] != null && args[0].GetType() == typeof(string)),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
@@ -4494,7 +4494,7 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsObject,
-                    Apply(args => !(args[0] is JValue) && args[0].GetType().IsValueType == false && args[0].GetType() != typeof(string)),
+                    Apply(args => args[0] != null && !(args[0] is JValue) && args[0].GetType().IsValueType == false && args[0].GetType() != typeof(string)),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
