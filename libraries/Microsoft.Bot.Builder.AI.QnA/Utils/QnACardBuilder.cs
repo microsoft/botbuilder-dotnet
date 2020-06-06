@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Get Message Activity Response when User Query is processed by QnAMaker Service.
         /// </summary>
-        /// <param name="result">Result consisits of References to other answers, also called as Prompts.</param>
+        /// <param name="result">Result consists of References to other answers, also called as Prompts.</param>
         /// <param name="displayPreciseAnswerOnly">Configuration, used for message activity display for multiple options like with or without Precise Answer.</param>
         /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>Message Activity that shall be displayed .</returns>
