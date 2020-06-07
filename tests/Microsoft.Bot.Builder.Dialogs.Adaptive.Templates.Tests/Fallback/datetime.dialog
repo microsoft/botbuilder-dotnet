@@ -13,6 +13,11 @@
         },
         {
           "$kind": "Microsoft.SetProperty",
+          "property": "turn.activity.locale",
+          "value": " "
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
           "property": "user.time",
           "value": "2018-01-01T08:00:00.000"
         },

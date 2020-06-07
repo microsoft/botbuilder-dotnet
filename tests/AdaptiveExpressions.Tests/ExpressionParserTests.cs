@@ -289,20 +289,20 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
-            //locale specific tests
-            Test("addToTime('2018-01-01T00:00:00.000Z', 1, 'Week', '', 'de-DE')", "08.01.2018 00:00:00"),
+            //locale specific tests, on Mac OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
+            Test("substring(addToTime('2018-01-01T00:00:00.000Z', 1, 'Week', '', 'de-DE'), 11)", "00:00:00"),
             Test("startOfDay('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "15/03/2018 00:00:00"),
             Test("startOfHour('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "15/03/2018 13:00:00"),
             Test("startOfMonth('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "01/03/2018 00:00:00"),
-            Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', '', 'de-DE')", "01.01.2018 08:00:00"),
-            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '', 'de-DE')", "01.01.2018 18:00:00"),
-            Test("substring(getPastTime(1,'Day', '', 'de-DE'), 0, 10)", DateTime.UtcNow.AddDays(-1).ToString(new CultureInfo("de-DE")).Substring(0, 10)),
-            Test("subtractFromTime(timestamp, 1, 'Hour', '', 'de-DE')", "15.03.2018 12:00:00"),
-            Test("formatEpoch(unixTimestamp, '', 'de-DE')", "15.03.2018 13:00:00"),
-            Test("formatTicks(ticks, '', 'de-DE')", "06.05.2020 11:47:00"),
-            Test("formatDateTime('2018-03-15', '', 'de-DE')", "15.03.2018 00:00:00"),
+            Test("substring(convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', '', 'de-DE'), 11)", "08:00:00"),
+            Test("substring(convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '', 'de-DE'), 11)", "18:00:00"),
+            Test("substring(getPastTime(1,'Day', '', 'de-DE'), 0, 6)", DateTime.UtcNow.AddDays(-1).ToString(new CultureInfo("de-DE")).Substring(0, 6)),
+            Test("substring(subtractFromTime(timestamp, 1, 'Hour', '', 'de-DE'), 11)", "12:00:00"),
+            Test("substring(formatEpoch(unixTimestamp, '', 'de-DE'), 11)", "13:00:00"),
+            Test("substring(formatTicks(ticks, '', 'de-DE'), 11)", "11:47:00"),
+            Test("replace(formatDateTime('2018-03-15', '', 'de-DE'), '20', '')", "15.03.18 00:00:00"),
             Test("substring(getFutureTime(1,'Year', '', 'de-DE'), 0, 10)", DateTime.UtcNow.AddYears(1).ToString(new CultureInfo("de-DE")).Substring(0, 10)),
-            Test("addDays(timestamp, 1, '', 'de-DE')", "16.03.2018 13:00:00"),
+            Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("toLower(toUpper('lowercase'))", "lowercase"),
             Test("toLower('I AM WHAT I AM', 'fr-FR')", "i am what i am"),
             Test("string(user.income, 'fr-FR')", "100,1"),
