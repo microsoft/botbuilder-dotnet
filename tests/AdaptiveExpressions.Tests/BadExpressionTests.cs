@@ -96,10 +96,12 @@ namespace AdaptiveExpressions.Tests
             Test("lastIndexOf(hello, world, one)"), // should have two parameters
             Test("lastIndexOf(hello, one)"), // second parameter should be string
             Test("lastIndexOf(one, hello)"), // first parameter should be list or string
-            Test("sentenceCase(hello, hello)"), // should have one parameters
+            Test("sentenceCase(hello, hello, hello)"), // should have 1 or 2 parameters
             Test("sentenceCase(one)"), // first parameter should be string
-            Test("titleCase(hello, hello)"), // should have one parameters
+            Test("titleCase(hello, hello, hello)"), // should have 1 or 2 parameters
             Test("titleCase(one)"), // first parameter should be string
+            
+            //Test("titleCase(hello, hello)"), // On Mac OS, a wrong locale string won't throw an error.
             #endregion
 
             #region Logical comparison functions test
@@ -267,7 +269,7 @@ namespace AdaptiveExpressions.Tests
             Test("convertFromUTC(notValidTimestamp, timezone)"), // not valid iso timestamp
             Test("convertFromUTC(timestamp, invalidTimezone,'D')"), // not valid timezone
             Test("convertFromUTC(timestamp, timezone, 'a')"),  // not valid format 
-            Test("convertFromUTC(timestamp, timezone, 'D', hello)"),  // should have 2 or 3 params
+            Test("convertFromUTC(timestamp, timezone, 'D', hello, hello)"),  // should have 2 or 3 or 4 params
             Test("convertToUTC(notValidTimestamp, timezone)"), // not valid timestamp
             Test("convertToUTC(timestamp, invalidTimezone, 'D')"), // not valid timezone
             Test("convertToUTC(timestamp, timezone, 'a')"),  // not valid format 
