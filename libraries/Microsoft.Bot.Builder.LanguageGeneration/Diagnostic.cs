@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override string ToString()
         {
-            return $"[{Severity}] {Range}: {Message}";
+            return $"[{Severity}] {Source} {Range}: {Message}";
         }
     }
 }
