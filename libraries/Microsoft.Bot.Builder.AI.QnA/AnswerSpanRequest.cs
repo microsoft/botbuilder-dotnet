@@ -11,11 +11,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class AnswerSpanRequest
     {
         /// <summary>
-        /// Gets or sets a value indicating whether user wants precise answer.
+        /// Gets or sets a value indicating whether to enable PreciseAnswer generation or not. User can choose to use this feature of QnAMaker 
+        /// Service using this configuration.
         /// </summary>
         /// <value>
         /// Choice whether to generate precise answer or not.
         /// </value>
+        /// <value>        
         [JsonProperty("enable")]
         public bool Enable { get; set; }
     }
