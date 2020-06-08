@@ -5,11 +5,13 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
+    /// <summary>
+    /// This class helps user to opt for precise answer.
+    /// </summary>
     public class AnswerSpanRequest
     {
         /// <summary>
-        /// Gets or sets a value indicating whether to enable PreciseAnswer generation or not. User can choose to use this feature of QnAMaker 
-        /// Service using this configuration.
+        /// Gets or sets a value indicating whether user wants precise answer.
         /// </summary>
         /// <value>
         /// Choice whether to generate precise answer or not.
