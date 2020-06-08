@@ -2247,15 +2247,18 @@ namespace AdaptiveExpressions
         private static (string, CultureInfo, string) DetermineFormatAndLocale(IReadOnlyList<object> args, string format, CultureInfo locale, int maxArgsLength)
         {
             string error = null;
-            if (args.Count == maxArgsLength)
+            if (maxArgsLength >= 2)
             {
-                format = args[maxArgsLength - 2] as string;
-                (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
-            }
-            else if (args.Count == maxArgsLength - 1)
-            {
-                format = args[maxArgsLength - 2] as string;
-            }
+                if (args.Count == maxArgsLength)
+                {
+                    format = args[maxArgsLength - 2] as string;
+                    (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
+                }
+                else if (args.Count == maxArgsLength - 1)
+                {
+                    format = args[maxArgsLength - 2] as string;
+                }
+            }            
 
             return (format, locale, error);
         }
@@ -3622,8 +3625,19 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.UtcNow,
-                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0].ToString() : DefaultDateTimeFormat)),
-                    ReturnType.String),
+                    ApplyWithErrorAndLocale(
+                        (args, locale) => 
+                        {
+                            string error = null;
+                            string format = DefaultDateTimeFormat;
+                            object result = null;
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 2);
+                            result = DateTime.UtcNow.ToString(format, locale);
+
+                            return (result, error);
+                        }),
+                    ReturnType.String,
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String })),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
                     ApplyWithErrorAndLocale(

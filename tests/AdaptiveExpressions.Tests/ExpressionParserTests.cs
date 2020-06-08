@@ -296,6 +296,7 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "01/03/2018 00:00:00"),
             Test("replace(convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', '', 'de-DE'), '20', '')", "01.01.18 08:00:00"),
             Test("replace(convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '', 'de-DE'), '20', '')", "01.01.18 18:00:00"),
+            Test("substring(utcNow('', 'de-DE'), 0, 6)", DateTime.UtcNow.ToString(new CultureInfo("de-DE")).Substring(0, 6)),
             Test("substring(getPastTime(1,'Day', '', 'de-DE'), 0, 6)", DateTime.UtcNow.AddDays(-1).ToString(new CultureInfo("de-DE")).Substring(0, 6)),
             Test("replace(subtractFromTime(timestamp, 1, 'Hour', '', 'de-DE'), '20', '')", "15.03.18 12:00:00"),
             Test("replace(formatEpoch(unixTimestamp, '', 'de-DE'), '20', '')", "15.03.18 13:00:00"),
