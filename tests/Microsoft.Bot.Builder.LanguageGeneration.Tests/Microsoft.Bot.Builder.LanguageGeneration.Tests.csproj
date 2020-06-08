@@ -237,7 +237,7 @@
     <Content Include="Examples\CustomFunctionSub.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Examples\PArseTreeTest.lg">
+    <Content Include="Examples\ParseTreeTest.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\ConditionFormatError.lg">

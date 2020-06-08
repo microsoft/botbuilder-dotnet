@@ -1,10 +1,10 @@
 ﻿# template1
-- hi
+- ${welcomeword} ${name}
 
 # template2
 - IF:${a > 0}
 - positve
-- ELSEIF: ${a = 0}
+- ELSEIF: ${a == 0}
 - equals to 0
 - ELSE:
 - negative
@@ -19,6 +19,6 @@
     -Work Hard!
 
 # template4
-[NyStruct
+[MyStruct
   body=${body}
 ]
