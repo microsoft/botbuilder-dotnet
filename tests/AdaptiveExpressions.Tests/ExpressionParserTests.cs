@@ -290,16 +290,16 @@ namespace AdaptiveExpressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             //locale specific tests, on Mac OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
-            Test("substring(addToTime('2018-01-01T00:00:00.000Z', 1, 'Week', '', 'de-DE'), 11)", "00:00:00"),
+            Test("replace(addToTime('2018-01-01T00:00:00.000Z', 1, 'Week', '', 'de-DE'), '20', '')", "08.01.18 00:00:00"),
             Test("startOfDay('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "15/03/2018 00:00:00"),
             Test("startOfHour('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "15/03/2018 13:00:00"),
             Test("startOfMonth('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "01/03/2018 00:00:00"),
-            Test("substring(convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', '', 'de-DE'), 11)", "08:00:00"),
-            Test("substring(convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '', 'de-DE'), 11)", "18:00:00"),
+            Test("replace(convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', '', 'de-DE'), '20', '')", "01.01.18 08:00:00"),
+            Test("replace(convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '', 'de-DE'), '20', '')", "01.01.18 18:00:00"),
             Test("substring(getPastTime(1,'Day', '', 'de-DE'), 0, 6)", DateTime.UtcNow.AddDays(-1).ToString(new CultureInfo("de-DE")).Substring(0, 6)),
-            Test("substring(subtractFromTime(timestamp, 1, 'Hour', '', 'de-DE'), 11)", "12:00:00"),
-            Test("substring(formatEpoch(unixTimestamp, '', 'de-DE'), 11)", "13:00:00"),
-            Test("substring(formatTicks(ticks, '', 'de-DE'), 11)", "11:47:00"),
+            Test("replace(subtractFromTime(timestamp, 1, 'Hour', '', 'de-DE'), '20', '')", "15.03.18 12:00:00"),
+            Test("replace(formatEpoch(unixTimestamp, '', 'de-DE'), '20', '')", "15.03.18 13:00:00"),
+            Test("replace(formatTicks(ticks, '', 'de-DE'), '2020', '20')", "06.05.20 11:47:00"),
             Test("replace(formatDateTime('2018-03-15', '', 'de-DE'), '20', '')", "15.03.18 00:00:00"),
             Test("substring(getFutureTime(1,'Year', '', 'de-DE'), 0, 10)", DateTime.UtcNow.AddYears(1).ToString(new CultureInfo("de-DE")).Substring(0, 10)),
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
