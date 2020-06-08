@@ -304,10 +304,15 @@ namespace AdaptiveExpressions.Tests
             Test("replace(formatDateTime('2018-03-15', '', 'de-DE'), '20', '')", "15.03.18 00:00:00"),
             Test("substring(getFutureTime(1,'Year', '', 'de-DE'), 0, 10)", DateTime.UtcNow.AddYears(1).ToString(new CultureInfo("de-DE")).Substring(0, 10)),
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
-            Test("toLower(toUpper('lowercase'))", "lowercase"),
+            Test("toUpper('lowercase')", "LOWERCASE"),
             Test("toLower('I AM WHAT I AM', 'fr-FR')", "i am what i am"),
             Test("string(user.income, 'fr-FR')", "100,1"),
             Test("string(user.income)", "100.1"),
+            Test("sentenceCase('a', 'fr-FR')", "A"),
+            Test("sentenceCase('abc')", "Abc"),
+            Test("sentenceCase('aBC', 'fr-FR')", "Abc"),
+            Test("titleCase('a')", "A"),
+            Test("titleCase('abc dEF')", "Abc Def"),
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
