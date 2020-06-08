@@ -91,8 +91,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Get Answer Card.
         /// </summary>
         /// <param name="result">Result consists of References to other answers, also called as Prompts.</param>
-        /// <param name="displayPreciseAnswerOnly">Parameter representing if user wants full text along with precise answer or not.</param>
-        /// <param name="cancellationToken">cancellationToken.</param>
+        /// <param name="displayPreciseAnswerOnly">Parameter to set either of the two choices: 1. Precise answer only 2.  Precise answer and corresponding text.</param>
+        /// <param name="cancellationToken">Cancellation Token.</param>
         /// <returns>IMessageActivity.</returns>
         public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly, CancellationToken cancellationToken)
         {
