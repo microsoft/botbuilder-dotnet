@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Get Card for MultiTurn scenario. (Can be deprecated from 4.10.0 release of sdk).
         /// </summary>
-        /// <param name="result">Result to be displayed as prompts.</param>
+        /// <param name="result">Result to be displayed.</param>
         /// <param name="cardNoMatchText">No match text.</param>
         /// <returns>IMessageActivity.</returns>
         public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
@@ -88,12 +88,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Get Message Activity Response when User Query is processed by QnAMaker Service.
+        /// Get Answer Card.
         /// </summary>
-        /// <param name="result">Result consisits of References to other answers, also called as Prompts.</param>
-        /// <param name="displayPreciseAnswerOnly">Configuration, used for message activity display for multiple options like with or without Precise Answer.</param>
-        /// <param name="cancellationToken">cancellationToken.</param>
-        /// <returns>Message Activity that shall be displayed .</returns>
+        /// <param name="result">Result consists of References to other answers, also called as Prompts.</param>
+        /// <param name="displayPreciseAnswerOnly">Parameter to set either of the two choices: 1. Precise answer only 2.  Precise answer and corresponding text.</param>
+        /// <param name="cancellationToken">Cancellation Token.</param>
+        /// <returns>IMessageActivity.</returns>
         public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly, CancellationToken cancellationToken)
         {
             if (result == null)
