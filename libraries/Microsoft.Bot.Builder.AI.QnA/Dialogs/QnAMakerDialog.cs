@@ -663,6 +663,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the <see cref="DialogTurnResult"/> as per user's choice.</remarks>
+
         private async Task<DialogTurnResult> DisplayQnAResultAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);

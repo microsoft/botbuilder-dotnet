@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
+    /// <summary>
+    /// This class helps user to opt for precise answer.
+    /// </summary>
     public class AnswerSpanRequest
     {
         /// <summary>
@@ -14,6 +17,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// Choice whether to generate precise answer or not.
         /// </value>
+        /// <value>        
         [JsonProperty("enable")]
         public bool Enable { get; set; }
     }
