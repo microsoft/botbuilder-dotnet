@@ -294,16 +294,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Gets or sets a value indicating whether to enable PreciseAnswer generation. 
         /// </summary>
         /// <value>
-        /// A value indicating whether to enable Precise Answer Feature of QnAMaker Dynamic Answer Generation or not. 
+        /// A value indicating user's choice between precise answer and full text in response to QnAMaker GenerateAnswer query.
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
         public bool EnablePreciseAnswer { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets displayPreciseAnswerOnly. 
+        /// Gets or sets a value indicating whether the user only wants to receive precise answer. 
         /// </summary>
         /// <value>
-        /// A value indicating whether to display Precise Answer Only or Both Precise Answer and Source Content from which answer is obtained. 
+        /// A value that indicates if user wants to receive full text along with the precise answer or not.
         /// </value>
         [JsonProperty("displayPreciseAnswerOnly")]
         public bool DisplayPreciseAnswerOnly { get; set; }
@@ -662,7 +662,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="stepContext">The <see cref="WaterfallStepContext"/> for the current turn of conversation.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        /// <remarks>If the task is successful, the result contains the response options to be used.</remarks>
+        /// <remarks>If the task is successful, the result contains the <see cref="DialogTurnResult"/> as per user's choice.</remarks>
         private async Task<DialogTurnResult> DisplayQnAResultAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);

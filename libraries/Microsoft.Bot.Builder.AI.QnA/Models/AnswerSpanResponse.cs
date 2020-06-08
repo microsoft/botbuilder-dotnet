@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA
 {    
     /// <summary>
-    /// Represents Precise Answer details, these are generated when Precise Answer generation choice is enabled.
+    /// This class helps in identifying the precise answer within complete answer text.
     /// </summary>
     public class AnswerSpanResponse
     {
@@ -14,34 +14,34 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Gets or sets the Precise Answer text.
         /// </summary>
         /// <value>
-        /// The answer text.
+        /// The precise answer text relevant to the user query.
         /// </value>
         [JsonProperty("text")]
         public string Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the score of Precise Answer.
+        /// Gets or sets the score of the Precise Answer.
         /// </summary>
         /// <value>
-        /// The answer score.
+        /// The answer score pertaining to the quality of precise answer text.
         /// </value>
         [JsonProperty("score")]
         public float Score { get; set; }
 
         /// <summary>
-        /// Gets or sets the  startIndex of Precise Answer in Source Answer Text.
+        /// Gets or sets the  startIndex of the Precise Answer within the full answer text.
         /// </summary>
         /// <value>
-        /// The answer startIndex.
+        /// The starting index for the precise answer generated.
         /// </value>
         [JsonProperty("startIndex")]
         public int StartIndex { get; set; }
 
         /// <summary>
-        /// Gets or sets the  endIndex of PreciseAnswer in Source Answer Text.
+        /// Gets or sets the  endIndex of PreciseAnswer within the full answer text.
         /// </summary>
         /// <value>
-        /// The answer endIndex.
+        /// The end index for the precise answer generated.
         /// </value>
         [JsonProperty("endIndex")]
         public int EndIndex { get; set; }
