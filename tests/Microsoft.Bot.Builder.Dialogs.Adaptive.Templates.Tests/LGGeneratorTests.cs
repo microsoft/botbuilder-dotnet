@@ -421,7 +421,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .AssertReply("2017-01-01T08:00:00.000Z")
                 .AssertReply("morning")
                 .AssertReply("tomorrow")
-                .AssertReply("Monday, 01 January 2018")
+                .AssertReply("01-01-2018")
                 .AssertReply("2018-01-01T16:00:00.000Z")
                 .AssertReply("2018-01-20T00:00:00.000Z")
                 .AssertReply("2018-01-20T08:00:00.000Z")
