@@ -16,8 +16,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         /// <value>
         /// Choice whether to generate precise answer or not.
-        /// </value>
-        /// <value>        
+        /// </value>       
         [JsonProperty("enable")]
         public bool Enable { get; set; }
     }
