@@ -20,13 +20,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
             var normalTemplateBody = templates[0].TemplateBodyParseTree as NormalBodyContext;
 
             // - ${welcomeword} ${name}
-            Assert.AreEqual("${welcomeword} ${name}", normalTemplateBody.GetText());
+            Assert.AreEqual("-${welcomeword} ${name}", normalTemplateBody.GetText());
             var templateStrings = normalTemplateBody.normalTemplateBody().templateString();
-            Assert.AreEqual(2, templateStrings.Length);
-            var expression1 = templateStrings[0].normalTemplateString().expression()[0].GetText();
-            Assert.AreEqual("${welcomeword}", expression1);
-            var expression2 = templateStrings[1].normalTemplateString().expression()[0].GetText();
-            Assert.AreEqual("${name}", expression2);
+            Assert.AreEqual(1, templateStrings.Length);
+            var expressions = templateStrings[0].normalTemplateString().expression();
+            Assert.AreEqual("${welcomeword}", expressions[0].GetText());
+            Assert.AreEqual("${name}", expressions[1].GetText());
 
             // Condition template body
             var conditionalBody = templates[1].TemplateBodyParseTree as IfElseBodyContext;
