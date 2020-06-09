@@ -1,0 +1,19 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "RemoveFromSauces",
+	"entity": "SaucesEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${removeArrayPropertyMessage('Sauces', @SaucesEntity)}"
+		},
+		{
+			"$kind": "Microsoft.EditArray",
+			"changeType": "remove",
+			"itemsProperty": "$Sauces",
+			"value": "=@SaucesEntity"
+		}
+	],
+	"$Generator": "4d56974ed3e7bc520fdfeb30d5bcacc5"
+}

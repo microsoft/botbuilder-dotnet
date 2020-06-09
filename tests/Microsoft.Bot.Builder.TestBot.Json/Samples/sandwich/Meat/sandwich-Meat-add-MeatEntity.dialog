@@ -1,0 +1,28 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "AddToMeat",
+	"entity": "MeatEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${setPropertyMessage('Meat', @MeatEntity)}"
+		},
+		{
+			"$kind": "Microsoft.SetProperty",
+			"property": "$Meat",
+			"value": "=@MeatEntity"
+		},
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$PropertyToChange == 'Meat'",
+			"actions": [
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "$PropertyToChange"
+				}
+			]
+		}
+	],
+	"$Generator": "fe27003546fb54ffe8f301fd4b3dc6d1"
+}

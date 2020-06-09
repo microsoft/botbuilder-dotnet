@@ -1,0 +1,16 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnEndOfActions",
+	"condition": "!$Quantity || $PropertyToChange == 'Quantity'",
+	"priority": "=indexOf(dialog.requiredProperties, 'Quantity')",
+	"actions": [
+		{
+			"$kind": "Microsoft.Ask",
+			"activity": "${AskQuantity()}",
+			"expectedProperties": [
+				"Quantity"
+			]
+		}
+	],
+	"$Generator": "2242219a015d9ee97ad127b427eb4282"
+}
