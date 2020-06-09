@@ -635,31 +635,31 @@ namespace AdaptiveExpressions
                 return (value, error);
             };
 
-        public static EvaluateExpressionDelegate ApplyWithErrorAndLocale(Func<IReadOnlyList<object>, CultureInfo, (object, string)> function, VerifyExpression verify = null)
-    =>
-    (expression, state, options) =>
-    {
-        object value = null;
-        string error = null;
-        IReadOnlyList<object> args;
-        (args, error) = EvaluateChildren(expression, state, options, verify);
-        var locale = DetermineLocaleInfo(state);
-        if (error == null)
-        {
-            try
+        public static EvaluateExpressionDelegate ApplyWithErrorAndState(Func<IReadOnlyList<object>, IMemory, (object, string)> function, VerifyExpression verify = null) 
+            =>
+            (expression, state, options) =>
             {
-                (value, error) = function(args, locale);
-            }
-            catch (Exception e)
-            {
-                error = e.Message;
-            }
-        }
+                object value = null;
+                string error = null;
+                IReadOnlyList<object> args;
+                (args, error) = EvaluateChildren(expression, state, options, verify);
 
-        value = ResolveValue(value);
+                if (error == null)
+                {
+                    try
+                    {
+                        (value, error) = function(args, state);
+                    }
+                    catch (Exception e)
+                    {
+                        error = e.Message;
+                    }
+                }
 
-        return (value, error);
-    };
+                value = ResolveValue(value);
+
+                return (value, error);
+            };
 
         /// <summary>
         /// Generate an expression delegate that applies function on the accumulated value after verifying all children.
@@ -820,8 +820,8 @@ namespace AdaptiveExpressions
         public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<object>, object> function)
             => new ExpressionEvaluator(type, Apply(function, VerifyStringOrNull), ReturnType.String, ValidateUnaryString);
 
-        public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<object>, CultureInfo, (object, string)> function)
-            => new ExpressionEvaluator(type, ApplyWithErrorAndLocale(function, VerifyStringOrNull), ReturnType.String, expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String));
+        public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<object>, IMemory, (object, string)> function)
+            => new ExpressionEvaluator(type, ApplyWithErrorAndState(function, VerifyStringOrNull), ReturnType.String, expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String));
 
         /// <summary>
         /// Transform a date-time to another date-time.
@@ -837,19 +837,20 @@ namespace AdaptiveExpressions
                     object value = null;
                     string error = null;
                     IReadOnlyList<object> args;
+                    CultureInfo locale = null;
+                    var format = DefaultDateTimeFormat;
                     (args, error) = EvaluateChildren(expr, state, options);
-                    var locale = DetermineLocaleInfo(state);
-                    var formatString = DefaultDateTimeFormat;
+                    
                     if (error == null)
                     {
-                        (formatString, locale, error) = DetermineFormatAndLocale(args, formatString, locale, 4);
+                        (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 4);
                     }
 
                     if (error == null)
                     {
                         if (args[1].IsInteger())
                         {
-                            (value, error) = NormalizeToDateTime(args[0], dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString, locale));
+                            (value, error) = NormalizeToDateTime(args[0], dt => function(dt, Convert.ToInt32(args[1])).ToString(format, locale));
                         }
                         else
                         {
@@ -2238,13 +2239,13 @@ namespace AdaptiveExpressions
             }
             catch
             {
-                error = $"{localeStr} must be a locale";
+                error = $"{localeStr} must be a locale string.";
             }
 
             return (result, error);
         }
 
-        private static (string, CultureInfo, string) DetermineFormatAndLocale(IReadOnlyList<object> args, string format, CultureInfo locale, int maxArgsLength)
+        private static (string, CultureInfo, string) DetermineFormatAndLocale(IMemory state, IReadOnlyList<object> args, string format, CultureInfo locale, int maxArgsLength)
         {
             string error = null;
             if (maxArgsLength >= 2)
@@ -2257,10 +2258,29 @@ namespace AdaptiveExpressions
                 else if (args.Count == maxArgsLength - 1)
                 {
                     format = args[maxArgsLength - 2] as string;
+                    (locale, error) = DetermineLocaleFromMemory(state);
                 }
             }            
 
             return (format, locale, error);
+        }
+
+        private static (CultureInfo, string) DetermineLocale(IMemory state, IReadOnlyList<object> args, CultureInfo locale, int maxArgsLength)
+        {
+            string error = null;
+            if (maxArgsLength >= 2)
+            {
+                if (args.Count == maxArgsLength)
+                {
+                    (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
+                }
+                else if (args.Count == maxArgsLength - 1)
+                {
+                    (locale, error) = DetermineLocaleFromMemory(state);
+                }
+            }
+
+            return (locale, error);
         }
 
         private static string AddOrdinal(int num)
@@ -2824,10 +2844,11 @@ namespace AdaptiveExpressions
             return result;
         }
 
-        private static CultureInfo DetermineLocaleInfo(IMemory state)
+        private static (CultureInfo, string) DetermineLocaleFromMemory(IMemory state)
         {
             string locale = EvaluateLocale(state);
-            CultureInfo result = Locale;
+            string error = null;
+            var result = Locale;
             if (locale != null)
             {
                 try
@@ -2836,11 +2857,11 @@ namespace AdaptiveExpressions
                 }
                 catch
                 {
-                    // do nothing
+                    error = $"{locale} is not a valid locale for string";
                 }
             }
 
-            return result;
+            return (result, error);
         }
 
         private static IDictionary<string, ExpressionEvaluator> GetStandardFunctions()
@@ -3297,19 +3318,12 @@ namespace AdaptiveExpressions
                     (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.String, ReturnType.Number)),
                 StringTransform(
                                 ExpressionType.ToLower,
-                                (args, defaultLocale) =>
+                                (args, state) =>
                                 {
                                     string result = null;
                                     string error = null;
                                     CultureInfo locale = null;
-                                    try
-                                    {
-                                        locale = args.Count == 2 ? new CultureInfo(args[1] as string) : defaultLocale;
-                                    }
-                                    catch
-                                    {
-                                        error = $"the second argument {args[1]} should be should be a locale string.";
-                                    }
+                                    (locale, error) = DetermineLocale(state, args, locale, 2);
                                     
                                     if (error == null)
                                     {
@@ -3327,19 +3341,12 @@ namespace AdaptiveExpressions
                                 }),
                 StringTransform(
                                 ExpressionType.ToUpper,
-                                (args, defaultLocale) =>
+                                (args, state) =>
                                 {
                                     string result = null;
                                     string error = null;
                                     CultureInfo locale = null;
-                                    try
-                                    {
-                                        locale = args.Count == 2 ? new CultureInfo(args[1] as string) : defaultLocale;
-                                    }
-                                    catch
-                                    {
-                                        error = $"the second argument {args[1]} should be should be a locale string.";
-                                    }
+                                    (locale, error) = DetermineLocale(state, args, locale, 2);
 
                                     if (error == null)
                                     {
@@ -3526,19 +3533,12 @@ namespace AdaptiveExpressions
                     expr => ValidateOrder(expr, null, ReturnType.Array | ReturnType.String, ReturnType.Object)),
                 StringTransform(
                                 ExpressionType.SentenceCase,
-                                (args, defaultLocale) =>
+                                (args, state) =>
                                 {
                                     string result = null;
                                     string error = null;
                                     CultureInfo locale = null;
-                                    try
-                                    {
-                                        locale = args.Count == 2 ? new CultureInfo(args[1] as string) : defaultLocale;
-                                    }
-                                    catch
-                                    {
-                                        error = $"the second argument {args[1]} should be should be a locale string.";
-                                    }
+                                    (locale, error) = DetermineLocale(state, args, locale, 2);
 
                                     if (error == null)
                                     {
@@ -3557,19 +3557,12 @@ namespace AdaptiveExpressions
                                 }),
                 StringTransform(
                                 ExpressionType.TitleCase,
-                                (args, defaultLocale) =>
+                                (args, state) =>
                                 {
                                     string result = null;
                                     string error = null;
                                     CultureInfo locale = null;
-                                    try
-                                    {
-                                        locale = args.Count == 2 ? new CultureInfo(args[1] as string) : defaultLocale;
-                                    }
-                                    catch
-                                    {
-                                        error = $"the second argument {args[1]} should be should be a locale string.";
-                                    }
+                                    (locale, error) = DetermineLocale(state, args, locale, 2);
 
                                     if (error == null)
                                     {
@@ -3625,13 +3618,14 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.UtcNow,
-                    ApplyWithErrorAndLocale(
-                        (args, locale) => 
+                    ApplyWithErrorAndState(
+                        (args, state) => 
                         {
                             string error = null;
                             string format = DefaultDateTimeFormat;
                             object result = null;
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 2);
+                            CultureInfo locale = null;
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 2);
                             result = DateTime.UtcNow.ToString(format, locale);
 
                             return (result, error);
@@ -3640,14 +3634,15 @@ namespace AdaptiveExpressions
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String })),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
-                    ApplyWithErrorAndLocale(
-                        (args, locale) =>
+                    ApplyWithErrorAndState(
+                        (args, state) =>
                         {
                             object result = null;
                             string error = null;
                             var timestamp = args[0];
                             var format = DefaultDateTimeFormat;
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                            CultureInfo locale = null;
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
                             
                             if (error == null)
                             {
@@ -3671,14 +3666,15 @@ namespace AdaptiveExpressions
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(
                     ExpressionType.FormatEpoch,
-                    ApplyWithErrorAndLocale(
-                        (args, locale) =>
+                    ApplyWithErrorAndState(
+                        (args, state) =>
                         {
                             object result = null;
                             string error = null;
                             var timestamp = args[0];
                             var format = DefaultDateTimeFormat;
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                            CultureInfo locale = null;
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
                             if (error == null)
                             {
                                 if (timestamp.IsNumber())
@@ -3699,14 +3695,15 @@ namespace AdaptiveExpressions
                     (expr) => ValidateOrder(expr, new[] { ReturnType.String, ReturnType.String }, ReturnType.Number)),
                 new ExpressionEvaluator(
                     ExpressionType.FormatTicks,
-                    ApplyWithErrorAndLocale(
-                        (args, locale) =>
+                    ApplyWithErrorAndState(
+                        (args, state) =>
                         {
                             object result = null;
                             string error = null;
                             var timestamp = args[0];
                             var format = DefaultDateTimeFormat;
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                            CultureInfo locale = null;
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
                             if (error == null) 
                             {
                                 if (timestamp.IsInteger())
@@ -3732,12 +3729,13 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, options);
+                        CultureInfo locale = null;
                         var format = DefaultDateTimeFormat;
-                        var locale = DetermineLocaleInfo(state);
+                        (args, error) = EvaluateChildren(expr, state, options);
+
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 5);
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 5);
                         }
 
                         if (error == null)
@@ -3753,7 +3751,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should contain an ISO format timestamp, a time interval integer, a string unit of time and an optional output format string.";
+                                error = $"{expr} should contain an ISO format timestamp, a time interval integer, a string unit of time, an optional output format string and an optional locale string .";
                             }
                         }
 
@@ -3833,12 +3831,13 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        var locale = DetermineLocaleInfo(state);
+                        CultureInfo locale = null;
                         var format = DefaultDateTimeFormat;
+                        (args, error) = EvaluateChildren(expr, state, options);
+
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 4);
                         }
                         
                         if (error == null)
@@ -3854,7 +3853,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should contain a time interval integer, a string unit of time and an optional output format string.";
+                                error = $"{expr} should contain a time interval integer, a string unit of time, an optional output format string and an optional locale string.";
                             }
                         }
 
@@ -3869,12 +3868,12 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        var locale = DetermineLocaleInfo(state);
+                        CultureInfo locale = null;
                         var format = DefaultDateTimeFormat;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 4);
                         }
 
                         if (error == null)
@@ -3890,7 +3889,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should contain a time interval integer, a string unit of time and an optional output format string.";
+                                error = $"{expr} should contain a time interval integer, a string unit of time, an optional output format string and an optional locale string.";
                             }
                         }
 
@@ -3905,12 +3904,13 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        var locale = DetermineLocaleInfo(state);
+                        CultureInfo locale = null;
                         var format = DefaultDateTimeFormat;
+                        (args, error) = EvaluateChildren(expr, state, options);
+
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 4);
                         }
 
                         if (error == null)
@@ -3921,7 +3921,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should contain an ISO format timestamp, a destination time zone string and an optional output format string.";
+                                error = $"{expr} should contain an ISO format timestamp, a destination time zone string, an optional output format string and an optional locale string.";
                             }
                         }
 
@@ -3936,12 +3936,17 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        var locale = DetermineLocaleInfo(state);
+                        CultureInfo locale = null;
                         var format = DefaultDateTimeFormat;
+                        (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
+                            (locale, error) = DetermineLocaleFromMemory(state);
+                        }
+
+                        if (error == null)
+                        {
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 4);
                         }
 
                         if (error == null)
@@ -3952,7 +3957,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should contain an ISO format timestamp, a origin time zone string and an optional output format string.";
+                                error = $"{expr} should contain an ISO format timestamp, a origin time zone string, an optional output format string and an optional locale string.";
                             }
                         }
 
@@ -3967,12 +3972,13 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        var locale = DetermineLocaleInfo(state);
+                        CultureInfo locale = null;
                         var format = DefaultDateTimeFormat;
+                        (args, error) = EvaluateChildren(expr, state, options);
+
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 5);
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 5);
                         }
 
                         if (error == null)
@@ -3983,7 +3989,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} should contain an ISO format timestamp, a time interval integer, a string unit of time and an optional output format string.";
+                                error = $"{expr} should contain an ISO format timestamp, a time interval integer, a string unit of time, an optional output format string and an optional locale string.";
                             }
                         }
 
@@ -3998,12 +4004,13 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        var locale = DetermineLocaleInfo(state);
+                        CultureInfo locale = null;
                         var format = DefaultDateTimeFormat;
+                        (args, error) = EvaluateChildren(expr, state, options);
+
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
                         }
 
                         if (error == null)
@@ -4022,12 +4029,13 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        var locale = DetermineLocaleInfo(state);
+                        CultureInfo locale = null;
                         var format = DefaultDateTimeFormat;
+                        (args, error) = EvaluateChildren(expr, state, options);
+
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
                         }
 
                         if (error == null)
@@ -4046,12 +4054,13 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        (args, error) = EvaluateChildren(expr, state, options);
-                        var locale = DetermineLocaleInfo(state);
+                        CultureInfo locale = null;
                         var format = DefaultDateTimeFormat;
+                        (args, error) = EvaluateChildren(expr, state, options);
+
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
+                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
                         }
 
                         if (error == null)
@@ -4542,22 +4551,34 @@ namespace AdaptiveExpressions
                             {
                                 try
                                 {
-                                    var locale = args.Count == 2 ? new CultureInfo(args[1] as string) : DetermineLocaleInfo(state);
-                                    if (args[0].IsNumber())
+                                    CultureInfo locale = null;
+                                    if (args.Count == 2)
                                     {
-                                        result = Convert.ToDouble(args[0]).ToString(locale);
-                                    }
-                                    else if (args[0] is DateTime dt)
-                                    {
-                                        result = dt.ToString(DefaultDateTimeFormat, locale);
-                                    }
-                                    else if (args[0] is TimeSpan ts)
-                                    {
-                                        result = ts.ToString(DefaultTimeSpanFormat, locale);
+                                        locale = new CultureInfo(args[1] as string);
                                     }
                                     else
                                     {
-                                        result = JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"');
+                                        (locale, error) = DetermineLocaleFromMemory(state);
+                                    }
+
+                                    if (error == null)
+                                    {
+                                        if (args[0].IsNumber())
+                                        {
+                                            result = Convert.ToDouble(args[0]).ToString(locale);
+                                        }
+                                        else if (args[0] is DateTime dt)
+                                        {
+                                            result = dt.ToString(DefaultDateTimeFormat, locale);
+                                        }
+                                        else if (args[0] is TimeSpan ts)
+                                        {
+                                            result = ts.ToString(DefaultTimeSpanFormat, locale);
+                                        }
+                                        else
+                                        {
+                                            result = JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"');
+                                        }
                                     }
                                 }
                                 catch
@@ -4574,11 +4595,12 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.Xml, ApplyWithError(args => ToXml(args[0])), ReturnType.String, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.FormatNumber,
-                    ApplyWithErrorAndLocale(
-                        (args, defaultLocale) =>
+                    ApplyWithErrorAndState(
+                        (args, state) =>
                         {
                             string result = null;
                             string error = null;
+                            CultureInfo locale = null;
                             if (!args[0].IsNumber())
                             {
                                 error = $"formatNumber first argument ${args[0]} must be number";
@@ -4591,20 +4613,14 @@ namespace AdaptiveExpressions
                             {
                                 error = $"formatNumber third agument ${args[2]} must be a locale";
                             }
-                            else
+                            
+                            (locale, error) = DetermineLocale(state, args, locale, 3);
+                            if (error == null)
                             {
-                                try
-                                {
-                                    var number = Convert.ToDouble(args[0]);
-                                    var precision = Convert.ToInt32(args[1]);
-                                    var locale = args.Count == 3 ? new CultureInfo(args[2] as string) : defaultLocale;
-                                    result = number.ToString("N" + precision.ToString(), locale);
-                                }
-                                catch
-                                {
-                                    error = $"{args[3]} is not a valid locale for formatNumber";
-                                }
-                            }
+                                var number = Convert.ToDouble(args[0]);
+                                var precision = Convert.ToInt32(args[1]);
+                                result = number.ToString("N" + precision.ToString(), locale);
+                            }                           
 
                             return (result, error);
                         }),
