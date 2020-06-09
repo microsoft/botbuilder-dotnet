@@ -22,7 +22,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </remarks>
     public class Templates : List<Template>
     {
-        public const string FakeTemplateId = "__temp__";
+        /// <summary>
+        /// Temp Template ID for inline content.
+        /// </summary>
+        public const string InlineTemplateId = "__temp__";
         private readonly string newLine = Environment.NewLine;
         private readonly Regex newLineRegex = new Regex("(\r?\n)");
         private readonly string namespaceKey = "@namespace";
@@ -228,11 +231,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             text = !text.Trim().StartsWith(multiLineMark) && text.Contains('\n')
                    ? $"{multiLineMark}{text}{multiLineMark}" : text;
 
-            var newContent = $"# {FakeTemplateId} {newLine} - {text}";
+            var newContent = $"# {InlineTemplateId} {newLine} - {text}";
 
             var newLG = TemplatesParser.ParseTextWithRef(newContent, this);
 
-            return newLG.Evaluate(FakeTemplateId, scope, evalOpt);
+            return newLG.Evaluate(InlineTemplateId, scope, evalOpt);
         }
 
         /// <summary>
