@@ -1,0 +1,289 @@
+
+@ list CheeseEntity =
+	- american:
+		- american
+	- cheddar:
+		- cheddar
+	- feta:
+		- feta
+	- gouda:
+		- gouda
+	- pepper jack:
+		- pepper
+		- jack
+		- pepper jack
+	- provolone:
+		- provolone
+	- swiss:
+		- swiss
+	- none:
+		- none
+
+> Define how Cheese is recognized as a property name
+@ list PROPERTYName
+    - Cheese:
+		- cheese
+
+
+> Define operations for property
+@ml AddToCheese = 
+    - @CheeseEntity CheeseEntity
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromCheese = 
+    - @CheeseEntity CheeseEntity
+    - @PROPERTYName PROPERTYName
+@ml ClearCheese =
+    - @PROPERTYName PROPERTYName
+@ml ShowCheese =
+    - @PROPERTYName PROPERTYName
+# sandwich
+> Add only
+- {@AddToCheese=add {@CheeseEntity=jack}}
+- {@AddToCheese=add {@CheeseEntity=american}}
+- {@AddToCheese=add {@CheeseEntity=cheddar}}
+- {@AddToCheese=with {@CheeseEntity=pepper jack}}
+- {@AddToCheese=with {@CheeseEntity=jack}}
+- {@AddToCheese=with {@CheeseEntity=pepper}}
+- {@AddToCheese=add {@CheeseEntity=provolone} and {@CheeseEntity=feta}}
+- {@AddToCheese=add {@CheeseEntity=feta} and {@CheeseEntity=gouda}}
+- {@AddToCheese=add {@CheeseEntity=gouda} and {@CheeseEntity=pepper jack}}
+- {@AddToCheese=with {@CheeseEntity=gouda} and {@CheeseEntity=feta}}
+- {@AddToCheese=with {@CheeseEntity=cheddar} and {@CheeseEntity=pepper}}
+- {@AddToCheese=with {@CheeseEntity=provolone} and {@CheeseEntity=jack}}
+- {@AddToCheese=add {@CheeseEntity=feta}, {@CheeseEntity=gouda} and {@CheeseEntity=swiss}}
+- {@AddToCheese=add {@CheeseEntity=gouda}, {@CheeseEntity=provolone} and {@CheeseEntity=american}}
+- {@AddToCheese=add {@CheeseEntity=swiss}, {@CheeseEntity=provolone} and {@CheeseEntity=none}}
+- {@AddToCheese=with {@CheeseEntity=swiss}, {@CheeseEntity=american} and {@CheeseEntity=american}}
+- {@AddToCheese=with {@CheeseEntity=feta}, {@CheeseEntity=feta} and {@CheeseEntity=provolone}}
+- {@AddToCheese=with {@CheeseEntity=pepper jack}, {@CheeseEntity=feta} and {@CheeseEntity=american}}
+- {@AddToCheese={@PROPERTYName=cheese} is {@CheeseEntity=swiss}}
+- {@AddToCheese={@PROPERTYName=cheese} is {@CheeseEntity=pepper}}
+- {@AddToCheese={@PROPERTYName=cheese} is {@CheeseEntity=american}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=none} and {@CheeseEntity=jack}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=jack} and {@CheeseEntity=jack}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=cheddar} and {@CheeseEntity=pepper}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=jack}, {@CheeseEntity=american} and {@CheeseEntity=pepper jack}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=pepper jack}, {@CheeseEntity=cheddar} and {@CheeseEntity=feta}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=pepper jack}, {@CheeseEntity=provolone} and {@CheeseEntity=pepper jack}}
+- {@AddToCheese=add {@CheeseEntity=swiss} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=with {@CheeseEntity=jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=with {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+- {@AddToCheese=with {@CheeseEntity=american} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=cheddar} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=cheddar} and {@CheeseEntity=pepper} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=american} and {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@AddToCheese=with {@CheeseEntity=gouda} and {@CheeseEntity=pepper} {@PROPERTYName=cheese}}
+- {@AddToCheese=with {@CheeseEntity=none} and {@CheeseEntity=feta} {@PROPERTYName=cheese}}
+- {@AddToCheese=with {@CheeseEntity=swiss} and {@CheeseEntity=swiss} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=gouda}, {@CheeseEntity=cheddar} and {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=feta}, {@CheeseEntity=american} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=cheddar}, {@CheeseEntity=pepper} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=with {@CheeseEntity=american}, {@CheeseEntity=none} and {@CheeseEntity=pepper} {@PROPERTYName=cheese}}
+- {@AddToCheese=with {@CheeseEntity=pepper jack}, {@CheeseEntity=pepper} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=with {@CheeseEntity=american}, {@CheeseEntity=feta} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@AddToCheese={@PROPERTYName=cheese} is {@CheeseEntity=swiss}}
+- {@AddToCheese={@PROPERTYName=cheese} is {@CheeseEntity=feta}}
+- {@AddToCheese={@PROPERTYName=cheese} is {@CheeseEntity=cheddar}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=feta} and {@CheeseEntity=feta}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=none} and {@CheeseEntity=swiss}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=gouda} and {@CheeseEntity=feta}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=swiss}, {@CheeseEntity=feta} and {@CheeseEntity=none}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=swiss}, {@CheeseEntity=feta} and {@CheeseEntity=provolone}}
+- {@AddToCheese={@PROPERTYName=cheese} are {@CheeseEntity=gouda}, {@CheeseEntity=feta} and {@CheeseEntity=jack}}
+> Remove only
+- {@RemoveFromCheese=remove {@CheeseEntity=cheddar}}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper}}
+- {@RemoveFromCheese=remove {@CheeseEntity=feta}}
+- {@RemoveFromCheese=remove {@CheeseEntity=provolone} and {@CheeseEntity=provolone}}
+- {@RemoveFromCheese=remove {@CheeseEntity=none} and {@CheeseEntity=pepper}}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper jack} and {@CheeseEntity=swiss}}
+- {@RemoveFromCheese=remove {@CheeseEntity=american}, {@CheeseEntity=provolone} and {@CheeseEntity=swiss}}
+- {@RemoveFromCheese=remove {@CheeseEntity=american}, {@CheeseEntity=provolone} and {@CheeseEntity=pepper}}
+- {@RemoveFromCheese=remove {@CheeseEntity=gouda}, {@CheeseEntity=pepper jack} and {@CheeseEntity=gouda}}
+- {@RemoveFromCheese=delete {@CheeseEntity=provolone}}
+- {@RemoveFromCheese=delete {@CheeseEntity=pepper jack}}
+- {@RemoveFromCheese=delete {@CheeseEntity=american}}
+- {@RemoveFromCheese=delete {@CheeseEntity=jack} and {@CheeseEntity=jack}}
+- {@RemoveFromCheese=delete {@CheeseEntity=swiss} and {@CheeseEntity=cheddar}}
+- {@RemoveFromCheese=delete {@CheeseEntity=pepper} and {@CheeseEntity=none}}
+- {@RemoveFromCheese=delete {@CheeseEntity=feta}, {@CheeseEntity=none} and {@CheeseEntity=gouda}}
+- {@RemoveFromCheese=delete {@CheeseEntity=pepper jack}, {@CheeseEntity=none} and {@CheeseEntity=jack}}
+- {@RemoveFromCheese=delete {@CheeseEntity=pepper}, {@CheeseEntity=none} and {@CheeseEntity=swiss}}
+- {@RemoveFromCheese=without {@CheeseEntity=swiss}}
+- {@RemoveFromCheese=without {@CheeseEntity=provolone}}
+- {@RemoveFromCheese=without {@CheeseEntity=american}}
+- {@RemoveFromCheese=without {@CheeseEntity=american} and {@CheeseEntity=none}}
+- {@RemoveFromCheese=without {@CheeseEntity=pepper} and {@CheeseEntity=swiss}}
+- {@RemoveFromCheese=without {@CheeseEntity=none} and {@CheeseEntity=gouda}}
+- {@RemoveFromCheese=without {@CheeseEntity=none}, {@CheeseEntity=cheddar} and {@CheeseEntity=american}}
+- {@RemoveFromCheese=without {@CheeseEntity=american}, {@CheeseEntity=provolone} and {@CheeseEntity=cheddar}}
+- {@RemoveFromCheese=without {@CheeseEntity=gouda}, {@CheeseEntity=swiss} and {@CheeseEntity=jack}}
+- {@RemoveFromCheese=with no {@CheeseEntity=feta}}
+- {@RemoveFromCheese=with no {@CheeseEntity=american}}
+- {@RemoveFromCheese=with no {@CheeseEntity=none}}
+- {@RemoveFromCheese=with no {@CheeseEntity=none} and {@CheeseEntity=pepper jack}}
+- {@RemoveFromCheese=with no {@CheeseEntity=gouda} and {@CheeseEntity=pepper jack}}
+- {@RemoveFromCheese=with no {@CheeseEntity=american} and {@CheeseEntity=american}}
+- {@RemoveFromCheese=with no {@CheeseEntity=jack}, {@CheeseEntity=gouda} and {@CheeseEntity=provolone}}
+- {@RemoveFromCheese=with no {@CheeseEntity=none}, {@CheeseEntity=provolone} and {@CheeseEntity=pepper}}
+- {@RemoveFromCheese=with no {@CheeseEntity=gouda}, {@CheeseEntity=swiss} and {@CheeseEntity=american}}
+- {@RemoveFromCheese=remove {@CheeseEntity=american} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=jack} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper} and {@CheeseEntity=swiss} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper jack} and {@CheeseEntity=jack} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=none} and {@CheeseEntity=american} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=american}, {@CheeseEntity=pepper jack} and {@CheeseEntity=feta} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=provolone}, {@CheeseEntity=american} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper jack}, {@CheeseEntity=jack} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=delete {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=delete {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=delete {@CheeseEntity=swiss} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=delete {@CheeseEntity=gouda} and {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=delete {@CheeseEntity=gouda} and {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=delete {@CheeseEntity=swiss} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=delete {@CheeseEntity=cheddar}, {@CheeseEntity=pepper} and {@CheeseEntity=none} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=delete {@CheeseEntity=cheddar}, {@CheeseEntity=jack} and {@CheeseEntity=provolone} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=delete {@CheeseEntity=pepper jack}, {@CheeseEntity=pepper} and {@CheeseEntity=swiss} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=without {@CheeseEntity=jack}}
+- {@RemoveFromCheese=without {@CheeseEntity=american}}
+- {@RemoveFromCheese=without {@CheeseEntity=feta}}
+- {@RemoveFromCheese=without {@CheeseEntity=none} and {@CheeseEntity=jack} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=without {@CheeseEntity=swiss} and {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=without {@CheeseEntity=gouda} and {@CheeseEntity=swiss} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=without {@CheeseEntity=none}, {@CheeseEntity=cheddar} and {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=without {@CheeseEntity=pepper}, {@CheeseEntity=gouda} and {@CheeseEntity=feta} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=without {@CheeseEntity=none}, {@CheeseEntity=pepper jack} and {@CheeseEntity=none} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=with no {@CheeseEntity=none} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=with no {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=with no {@CheeseEntity=pepper} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=with no {@CheeseEntity=gouda} and {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=with no {@CheeseEntity=feta} and {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=with no {@CheeseEntity=gouda} and {@CheeseEntity=none} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=with no {@CheeseEntity=pepper}, {@CheeseEntity=gouda} and {@CheeseEntity=american} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=with no {@CheeseEntity=cheddar}, {@CheeseEntity=pepper jack} and {@CheeseEntity=none} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=with no {@CheeseEntity=pepper}, {@CheeseEntity=swiss} and {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+> Clear only
+- {@ClearCheese=clear {@PROPERTYName=cheese}}
+- {@ClearCheese=remove {@PROPERTYName=cheese}}
+- {@ClearCheese=empty {@PROPERTYName=cheese}}
+- {@ClearCheese=please clear {@PROPERTYName=cheese}}
+- {@ClearCheese=please remove {@PROPERTYName=cheese}}
+- {@ClearCheese=please empty {@PROPERTYName=cheese}}
+- {@ClearCheese=can you clear {@PROPERTYName=cheese}}
+- {@ClearCheese=can you remove {@PROPERTYName=cheese}}
+- {@ClearCheese=can you empty {@PROPERTYName=cheese}}
+> Show only
+- {@ShowCheese=value of {@PROPERTYName=cheese}}
+- {@ShowCheese=value for {@PROPERTYName=cheese}}
+- {@ShowCheese=selection of {@PROPERTYName=cheese}}
+- {@ShowCheese=selection for {@PROPERTYName=cheese}}
+- {@ShowCheese=display {@PROPERTYName=cheese}}
+- {@ShowCheese=show {@PROPERTYName=cheese}}
+- {@ShowCheese=value of {@PROPERTYName=cheese}}
+- {@ShowCheese=value for {@PROPERTYName=cheese}}
+- {@ShowCheese={@PROPERTYName=cheese} value}
+- {@ShowCheese={@PROPERTYName=cheese} values}
+- {@ShowCheese={@PROPERTYName=cheese} selection}
+> Combinations
+- {@AddToCheese=add {@CheeseEntity=swiss}} {@RemoveFromCheese=and remove {@CheeseEntity=gouda}}
+- {@AddToCheese=add {@CheeseEntity=cheddar}} {@RemoveFromCheese=and remove {@CheeseEntity=cheddar}}
+- {@AddToCheese=add {@CheeseEntity=swiss}} {@RemoveFromCheese=and remove {@CheeseEntity=pepper}}
+- {@AddToCheese=add {@CheeseEntity=gouda}} {@RemoveFromCheese=remove {@CheeseEntity=pepper jack}}
+- {@AddToCheese=add {@CheeseEntity=american}} {@RemoveFromCheese=remove {@CheeseEntity=swiss}}
+- {@AddToCheese=add {@CheeseEntity=gouda}} {@RemoveFromCheese=remove {@CheeseEntity=gouda}}
+- {@AddToCheese=add {@CheeseEntity=pepper}}, {@RemoveFromCheese=remove {@CheeseEntity=pepper}}
+- {@AddToCheese=add {@CheeseEntity=swiss}}, {@RemoveFromCheese=remove {@CheeseEntity=none}}
+- {@AddToCheese=add {@CheeseEntity=feta}}, {@RemoveFromCheese=remove {@CheeseEntity=feta}}
+- {@AddToCheese=add {@CheeseEntity=gouda} and {@CheeseEntity=feta}} {@RemoveFromCheese=and remove {@CheeseEntity=provolone}}
+- {@AddToCheese=add {@CheeseEntity=provolone} and {@CheeseEntity=american}} {@RemoveFromCheese=and remove {@CheeseEntity=provolone}}
+- {@AddToCheese=add {@CheeseEntity=pepper jack} and {@CheeseEntity=feta}} {@RemoveFromCheese=and remove {@CheeseEntity=cheddar}}
+- {@AddToCheese=add {@CheeseEntity=feta}, {@CheeseEntity=feta} and {@CheeseEntity=american}} {@RemoveFromCheese=and remove {@CheeseEntity=provolone} and {@CheeseEntity=gouda}}
+- {@AddToCheese=add {@CheeseEntity=pepper}, {@CheeseEntity=none} and {@CheeseEntity=american}} {@RemoveFromCheese=and remove {@CheeseEntity=pepper jack} and {@CheeseEntity=american}}
+- {@AddToCheese=add {@CheeseEntity=gouda}, {@CheeseEntity=pepper jack} and {@CheeseEntity=american}} {@RemoveFromCheese=and remove {@CheeseEntity=none} and {@CheeseEntity=feta}}
+- {@AddToCheese=add {@CheeseEntity=pepper jack}, {@CheeseEntity=american} and {@CheeseEntity=none}} {@RemoveFromCheese=remove {@CheeseEntity=jack} and {@CheeseEntity=pepper jack}}
+- {@AddToCheese=add {@CheeseEntity=swiss}, {@CheeseEntity=cheddar} and {@CheeseEntity=provolone}} {@RemoveFromCheese=remove {@CheeseEntity=swiss} and {@CheeseEntity=swiss}}
+- {@AddToCheese=add {@CheeseEntity=none}, {@CheeseEntity=provolone} and {@CheeseEntity=feta}} {@RemoveFromCheese=remove {@CheeseEntity=cheddar} and {@CheeseEntity=pepper}}
+- {@AddToCheese=add {@CheeseEntity=gouda}}{@RemoveFromCheese=, remove {@CheeseEntity=swiss}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=cheddar}}{@RemoveFromCheese=, remove {@CheeseEntity=jack}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=american}}{@RemoveFromCheese=, remove {@CheeseEntity=none}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper jack}} {@AddToCheese=and add {@CheeseEntity=pepper}}
+- {@RemoveFromCheese=remove {@CheeseEntity=provolone}} {@AddToCheese=and add {@CheeseEntity=none}}
+- {@RemoveFromCheese=remove {@CheeseEntity=provolone}} {@AddToCheese=and add {@CheeseEntity=provolone}}
+- {@RemoveFromCheese=remove {@CheeseEntity=swiss} and {@CheeseEntity=swiss}} {@AddToCheese=and add {@CheeseEntity=swiss}}
+- {@RemoveFromCheese=remove {@CheeseEntity=american} and {@CheeseEntity=jack}} {@AddToCheese=and add {@CheeseEntity=swiss}}
+- {@RemoveFromCheese=remove {@CheeseEntity=swiss} and {@CheeseEntity=none}} {@AddToCheese=and add {@CheeseEntity=cheddar}}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper}, {@CheeseEntity=swiss} and {@CheeseEntity=feta}} {@AddToCheese=and add {@CheeseEntity=pepper jack} and {@CheeseEntity=feta}}
+- {@RemoveFromCheese=remove {@CheeseEntity=gouda}, {@CheeseEntity=cheddar} and {@CheeseEntity=jack}} {@AddToCheese=and add {@CheeseEntity=provolone} and {@CheeseEntity=feta}}
+- {@RemoveFromCheese=remove {@CheeseEntity=cheddar}, {@CheeseEntity=pepper jack} and {@CheeseEntity=pepper}} {@AddToCheese=and add {@CheeseEntity=american} and {@CheeseEntity=pepper jack}}
+- {@RemoveFromCheese=remove {@CheeseEntity=cheddar}}{@AddToCheese=, add {@CheeseEntity=none}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=provolone}}{@AddToCheese=, add {@CheeseEntity=american}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=swiss}}{@AddToCheese=, add {@CheeseEntity=pepper}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper}} {@AddToCheese=and add {@CheeseEntity=gouda}}
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=cheddar}} {@AddToCheese=and add {@CheeseEntity=gouda}}
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=none}} {@AddToCheese=and add {@CheeseEntity=none}}
+- {@ShowCheese=show {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=american}} {@ShowCheese=and display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper}} {@AddToCheese=and add {@CheeseEntity=pepper}}
+- {@ShowCheese=show {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=none}} {@ShowCheese=and display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=cheddar}} {@AddToCheese=and add {@CheeseEntity=jack}}
+- {@ShowCheese=show {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=american}} {@ShowCheese=and display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=gouda}} {@AddToCheese=and add {@CheeseEntity=american}}
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper}} {@AddToCheese=add {@CheeseEntity=gouda}} 
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=jack}} {@AddToCheese=add {@CheeseEntity=cheddar}} 
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper jack}} {@AddToCheese=add {@CheeseEntity=none}} 
+- {@AddToCheese=add {@CheeseEntity=pepper} {@PROPERTYName=cheese}} {@RemoveFromCheese=and remove {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=pepper} {@PROPERTYName=cheese}} {@RemoveFromCheese=and remove {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=cheddar} {@PROPERTYName=cheese}} {@RemoveFromCheese=and remove {@CheeseEntity=feta} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=provolone} {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=swiss} {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=jack} {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=provolone} {@PROPERTYName=cheese}}, {@RemoveFromCheese=remove {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=american} {@PROPERTYName=cheese}}, {@RemoveFromCheese=remove {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=american} {@PROPERTYName=cheese}}, {@RemoveFromCheese=remove {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=none} and {@CheeseEntity=feta} {@PROPERTYName=cheese}} {@RemoveFromCheese=and remove {@CheeseEntity=swiss} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=jack} and {@CheeseEntity=provolone} {@PROPERTYName=cheese}} {@RemoveFromCheese=and remove {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=pepper jack} and {@CheeseEntity=gouda} {@PROPERTYName=cheese}} {@RemoveFromCheese=and remove {@CheeseEntity=pepper} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=pepper jack}, {@CheeseEntity=swiss} and {@CheeseEntity=feta} {@PROPERTYName=cheese}} {@RemoveFromCheese=and remove {@CheeseEntity=feta} and {@CheeseEntity=pepper} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=american}, {@CheeseEntity=gouda} and {@CheeseEntity=swiss} {@PROPERTYName=cheese}} {@RemoveFromCheese=and remove {@CheeseEntity=american} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=jack}, {@CheeseEntity=swiss} and {@CheeseEntity=jack} {@PROPERTYName=cheese}} {@RemoveFromCheese=and remove {@CheeseEntity=swiss} and {@CheeseEntity=pepper} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=feta}, {@CheeseEntity=pepper jack} and {@CheeseEntity=feta} {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper} and {@CheeseEntity=pepper} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=feta}, {@CheeseEntity=pepper} and {@CheeseEntity=jack} {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper} and {@CheeseEntity=none} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=pepper jack}, {@CheeseEntity=swiss} and {@CheeseEntity=feta} {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper jack} and {@CheeseEntity=american} {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}{@RemoveFromCheese=, remove {@CheeseEntity=american} {@PROPERTYName=cheese}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=feta} {@PROPERTYName=cheese}}{@RemoveFromCheese=, remove {@CheeseEntity=american} {@PROPERTYName=cheese}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@AddToCheese=add {@CheeseEntity=jack} {@PROPERTYName=cheese}}{@RemoveFromCheese=, remove {@CheeseEntity=jack} {@PROPERTYName=cheese}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=none} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=none} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=provolone} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=jack} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=cheddar} and {@CheeseEntity=provolone} {@PROPERTYName=cheese}} {@AddToCheese=and add **MISSING**}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}} {@AddToCheese=and add **MISSING**}
+- {@RemoveFromCheese=remove {@CheeseEntity=provolone} and {@CheeseEntity=feta} {@PROPERTYName=cheese}} {@AddToCheese=and add **MISSING**}
+- {@RemoveFromCheese=remove {@CheeseEntity=gouda}, {@CheeseEntity=provolone} and {@CheeseEntity=jack} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=pepper} and {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper jack}, {@CheeseEntity=provolone} and {@CheeseEntity=feta} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=american} and {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=none}, {@CheeseEntity=jack} and {@CheeseEntity=pepper} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=none} and {@CheeseEntity=feta} {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=provolone} {@PROPERTYName=cheese}}{@AddToCheese=, add {@CheeseEntity=jack} {@PROPERTYName=cheese}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=gouda} {@PROPERTYName=cheese}}{@AddToCheese=, add {@CheeseEntity=gouda} {@PROPERTYName=cheese}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@RemoveFromCheese=remove {@CheeseEntity=pepper} {@PROPERTYName=cheese}}{@AddToCheese=, add {@CheeseEntity=pepper} {@PROPERTYName=cheese}} {@ShowCheese=and show {@PROPERTYName=cheese}}
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=swiss} {@PROPERTYName=cheese}}
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=gouda} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=gouda} {@PROPERTYName=cheese}}
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=swiss} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=american} {@PROPERTYName=cheese}}
+- {@ShowCheese=show {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper} {@PROPERTYName=cheese}} {@ShowCheese=and display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=none} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=cheddar} {@PROPERTYName=cheese}}
+- {@ShowCheese=show {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=swiss} {@PROPERTYName=cheese}} {@ShowCheese=and display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=none} {@PROPERTYName=cheese}}
+- {@ShowCheese=show {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}} {@ShowCheese=and display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper} {@PROPERTYName=cheese}} {@AddToCheese=and add {@CheeseEntity=provolone} {@PROPERTYName=cheese}}
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=feta} {@PROPERTYName=cheese}} {@AddToCheese=add {@CheeseEntity=swiss} {@PROPERTYName=cheese}} 
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=provolone} {@PROPERTYName=cheese}} {@AddToCheese=add {@CheeseEntity=provolone} {@PROPERTYName=cheese}} 
+- {@ShowCheese=display {@PROPERTYName=cheese}} {@RemoveFromCheese=remove {@CheeseEntity=pepper jack} {@PROPERTYName=cheese}} {@AddToCheese=add {@CheeseEntity=cheddar} {@PROPERTYName=cheese}} 
+- american
+- cheddar
+- feta
+- gouda
+- pepper
+- jack
+- pepper jack
+- provolone
+- swiss
+- none
+
+- Cheese
+
+
+> Generator: e1af05acd23086719d976e274fef964e

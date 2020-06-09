@@ -26,7 +26,7 @@ namespace Microsoft.BotBuilderSamples.AdaptiveRootBot
         private readonly SkillHttpClient _skillClient;
         private readonly SkillsConfiguration _skillsConfig;
 
-        public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger, IStorage storage, UserState userState, ConversationState conversationState, SkillHttpClient skillClient = null, SkillsConfiguration skillsConfig = null)
+        public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger, IStorage storage, ConversationState conversationState, SkillHttpClient skillClient = null, SkillsConfiguration skillsConfig = null)
             : base(configuration, logger)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -36,7 +36,7 @@ namespace Microsoft.BotBuilderSamples.AdaptiveRootBot
             _skillsConfig = skillsConfig;
 
             this.UseStorage(storage);
-            this.UseState(userState, conversationState);
+            this.UseBotState(conversationState);
 
             OnTurnError = HandleTurnError;
             Use(new LoggerMiddleware(logger));

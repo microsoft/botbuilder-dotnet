@@ -1,0 +1,18 @@
+
+[sandwichTest-BreadEntity.en-us.lg](sandwichTest-BreadEntity.en-us.lg)
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
+[sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
+
+# AskBread
+- ${askEnum('Bread')}
+
+
+> How to display the name of Bread
+# BreadName
+- bread
+
+# Bread(val)
+- ${BreadEntity(val)}
+
+
+> Generator: 52089fa1651771003285760fc587c89f

@@ -11,19 +11,19 @@
             "description": "Optional unique id using with RecognizerSet."
         },
         "knowledgeBaseId": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "KnowledgeBase Id",
             "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
             "default": "settings.qna.knowledgebaseid"
         },
         "endpointKey": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Endpoint Key",
             "description": "Endpoint key for the QnA Maker KB.",
             "default": "settings.qna.endpointkey"
         },
         "hostname": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Hostname",
             "description": "Hostname for your QnA Maker service.",
             "default": "settings.qna.hostname",
@@ -32,39 +32,43 @@
             ]
         },
         "threshold": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
+            "$ref": "schema:#/definitions/numberExpression",
             "title": "Threshold",
             "description": "Threshold score to filter results.",
             "default": 0.3
         },
         "strictFilters": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
+            "$ref": "schema:#/definitions/arrayExpression",
             "title": "Strict Filters",
             "description": "Metadata filters to use when calling the QnA Maker KB.",
             "items": {
                 "type": "object",
+                "title": "Metadata filters",
+                "description": "Metadata filters to use when querying QnA Maker KB.",
                 "properties": {
                     "name": {
                         "type": "string",
                         "title": "Name",
+                        "description": "Name to filter on.",
                         "maximum": 100
                     },
                     "value": {
                         "type": "string",
                         "title": "Value",
+                        "description": "Value to restrict filter.",
                         "maximum": 100
                     }
                 }
             }
         },
         "top": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
+            "$ref": "schema:#/definitions/numberExpression",
             "title": "Top",
             "description": "The number of answers you want to retrieve.",
             "default": 3
         },
         "isTest": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "IsTest",
             "description": "True, if pointing to Test environment, else false.",
             "examples": [
@@ -78,7 +82,8 @@
             "oneOf": [
                 {
                     "type": "string",
-                    "title": "Enum",
+                    "title": "Ranker type",
+                    "description": "Type of Ranker.",
                     "enum": [
                         "default",
                         "questionOnly",
@@ -87,12 +92,12 @@
                     "default": "default"
                 },
                 {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
             ]
         },
         "includeDialogNameInMetadata": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Include Dialog Name",
             "description": "When set to false, the dialog name will not be passed to QnAMaker. (default) is true",
             "default": true,
@@ -102,29 +107,34 @@
             ]
         },
         "metadata": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
-            "title": "value to ",
+            "$ref": "schema:#/definitions/arrayExpression",
+            "title": "Metadata filters",
             "description": "Metadata filters to use when calling the QnA Maker KB.",
             "items": {
                 "type": "object",
+                "title": "Metadata filter",
+                "description": "Metadata filter to use when calling the QnA Maker KB.",
                 "properties": {
                     "name": {
                         "type": "string",
-                        "title": "Name"
+                        "title": "Name",
+                        "description": "Name of value to test."
                     },
                     "value": {
                         "type": "string",
-                        "title": "Value"
+                        "title": "Value",
+                        "description": "Value to filter against."
                     }
                 }
             }
         },
         "context": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/objectExpression",
-            "title": "QnARequestContext"
+            "$ref": "schema:#/definitions/objectExpression",
+            "title": "QnARequestContext",
+            "description": "Context to use for ranking."
         },
         "qnaId": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
+            "$ref": "schema:#/definitions/integerExpression",
             "title": "QnAId",
             "description": "A number or expression which is the QnAId to paass to QnAMaker API."
         }

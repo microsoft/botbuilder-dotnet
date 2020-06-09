@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public override Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel = default)
+        public override Task<IReadOnlyList<OnCondition>> SelectAsync(ActionContext context, CancellationToken cancellationToken = default)
         {
             var candidates = _conditionals;
             if (_evaluate)

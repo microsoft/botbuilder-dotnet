@@ -1,62 +1,56 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.IDialog)",
+    "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.InputDialog)" ],
     "title": "Attachment input dialog",
     "description": "Collect information - Ask for a file or image.",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.InputDialog.json#"
-        },
-        {
-            "properties": {
-                "defaultValue": {
-                    "$role": "expression",
-                    "title": "Default value",
-                    "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded.",
-                    "oneOf": [
-                        {
-                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment",
-                            "title": "Object"
-                        },
-                        {
-                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
-                        }
-                    ]
+    "properties": {
+        "defaultValue": {
+            "$role": "expression",
+            "title": "Default value",
+            "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded.",
+            "oneOf": [
+                {
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment",
+                    "title": "Object"
                 },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null.",
-                    "oneOf": [
-                        {
-                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment",
-                            "title": "Object"
-                        },
-                        {
-                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
-                        }
-                    ]
-                },
-                "outputFormat": {
-                    "$role": "expression",
-                    "title": "Output format",
-                    "description": "Attachment output format.",
-                    "oneOf": [
-                        {
-                            "type": "string",
-                            "title": "Enum",
-                            "enum": [
-                                "all",
-                                "first"
-                            ],
-                            "default": "first"
-                        },
-                        {
-                            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
-                        }
-                    ]
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
-            }
+            ]
+        },
+        "value": {
+            "$role": "expression",
+            "title": "Value",
+            "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null.",
+            "oneOf": [
+                {
+                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment",
+                    "title": "Object"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "outputFormat": {
+            "$role": "expression",
+            "title": "Output format",
+            "description": "Attachment output format.",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "Standard format",
+                    "description": "Standard output formats.",
+                    "enum": [
+                        "all",
+                        "first"
+                    ],
+                    "default": "first"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
         }
-    ]
+    }
 }

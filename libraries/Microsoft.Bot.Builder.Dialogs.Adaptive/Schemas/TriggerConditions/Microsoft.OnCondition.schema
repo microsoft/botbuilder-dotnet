@@ -6,7 +6,7 @@
     "type": "object",
     "properties": {
         "condition": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/condition",
+            "$ref": "schema:#/definitions/condition",
             "title": "Condition",
             "description": "Condition (expression).",
             "examples": [
@@ -15,17 +15,19 @@
         },
         "actions": {
             "type": "array",
+            "title": "Actions",
             "description": "Sequence of actions to execute.",
             "items": {
                 "$kind": "Microsoft.IDialog"
             }
         },
         "priority": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
-            "title": "priority",
+            "$ref": "schema:#/definitions/integerExpression",
+            "title": "Priority",
+            "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
         "runOnce": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Run Once",
             "description": "True if rule should run once per unique conditions",
             "examples": [

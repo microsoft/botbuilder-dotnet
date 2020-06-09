@@ -48,6 +48,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 User = new ChannelAccount("user1", "User1"),
                 Bot = new ChannelAccount("bot", "Bot"),
                 Conversation = new ConversationAccount(false, "convo1", "Conversation1"),
+                Locale = this.Locale,
             };
         }
 
@@ -73,6 +74,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     User = new ChannelAccount("user1", "User1"),
                     Bot = new ChannelAccount("bot", "Bot"),
                     Conversation = new ConversationAccount(false, "convo1", "Conversation1"),
+                    Locale = this.Locale,
                 };
             }
         }
@@ -125,6 +127,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 Conversation = new ConversationAccount(false, name, name),
                 User = new ChannelAccount(id: user.ToLower(), name: user),
                 Bot = new ChannelAccount(id: bot.ToLower(), name: bot),
+                Locale = "en-us"
             };
         }
 
@@ -427,7 +430,7 @@ namespace Microsoft.Bot.Builder.Adapters
             Activity activity = new Activity
             {
                 Type = ActivityTypes.Message,
-                Locale = this.Locale,
+                Locale = this.Locale ?? "en-us",
                 From = Conversation.User,
                 Recipient = Conversation.Bot,
                 Conversation = Conversation.Conversation,

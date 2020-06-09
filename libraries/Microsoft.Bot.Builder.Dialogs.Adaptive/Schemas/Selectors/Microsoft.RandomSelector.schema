@@ -2,11 +2,13 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.ITriggerSelector)",
     "title": "Random rule selector",
-    "description": "Select most specific true rule",
+    "description": "Select most specific true rule.",
     "type": "object",
     "properties": {
         "seed": {
-            "type": "integer"
+            "type": "integer",
+            "title": "Random seed",
+            "description": "Random seed to start random number generation."
         }
     }
 }

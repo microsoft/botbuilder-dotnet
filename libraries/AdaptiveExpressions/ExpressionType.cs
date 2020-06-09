@@ -52,6 +52,9 @@ namespace AdaptiveExpressions
         public const string NewGuid = "newGuid";
         public const string IndexOf = "indexOf";
         public const string LastIndexOf = "lastIndexOf";
+        public const string EOL = "EOL";
+        public const string SentenceCase = "sentenceCase";
+        public const string TitleCase = "titleCase";
 
         // Collection
         public const string Count = "count";
@@ -87,6 +90,8 @@ namespace AdaptiveExpressions
         public const string Year = "year";
         public const string UtcNow = "utcNow";
         public const string FormatDateTime = "formatDateTime";
+        public const string FormatEpoch = "formatEpoch";
+        public const string FormatTicks = "formatTicks";
         public const string SubtractFromTime = "subtractFromTime";
         public const string DateReadBack = "dateReadBack";
         public const string GetTimeOfDay = "getTimeOfDay";
@@ -99,6 +104,19 @@ namespace AdaptiveExpressions
         public const string StartOfHour = "startOfHour";
         public const string StartOfMonth = "startOfMonth";
         public const string Ticks = "ticks";
+        public const string TicksToDays = "ticksToDays";
+        public const string TicksToHours = "ticksToHours";
+        public const string TicksToMinutes = "ticksToMinutes";
+        public const string DateTimeDiff = "dateTimeDiff";
+
+        // Timex 
+        public const string IsDefinite = "isDefinite";
+        public const string IsTime = "isTime";
+        public const string IsDuration = "isDuration";
+        public const string IsDate = "isDate";
+        public const string IsTimeRange = "isTimeRange";
+        public const string IsDateRange = "isDateRange";
+        public const string IsPresent = "isPresent";
 
         // Conversions
         public const string Float = "float";
@@ -115,6 +133,7 @@ namespace AdaptiveExpressions
         public const string UriComponent = "uriComponent";
         public const string UriComponentToString = "uriComponentToString";
         public const string Xml = "xml";
+        public const string FormatNumber = "formatNumber";
 
         // URI Parsing Functions
         public const string UriHost = "uriHost";

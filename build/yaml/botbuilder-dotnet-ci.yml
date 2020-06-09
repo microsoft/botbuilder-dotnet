@@ -11,35 +11,16 @@ pool:
   - msbuild
   - visualstudio
 
+# No "paths exclude" here: not supported by github required status checks.
 trigger: # ci trigger
   branches:
     include:
      - master
-  paths:
-    include:
-      - '*'
-    exclude:
-      - doc/
-      - specs/
-      - Changes.md
-      - LICENSE
-      - README.md
-      - UsingMyGet.md
 
 pr: # pr trigger
   branches:
     include:
      - master
-  paths:
-    include:
-      - '*'
-    exclude:
-      - doc/
-      - specs/
-      - Changes.md
-      - LICENSE
-      - README.md
-      - UsingMyGet.md
 
 variables:
   ApiCompatVersion: 4.6.3

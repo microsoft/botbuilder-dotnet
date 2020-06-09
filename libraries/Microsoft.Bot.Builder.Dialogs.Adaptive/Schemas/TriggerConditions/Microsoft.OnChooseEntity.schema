@@ -1,26 +1,19 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.ITrigger)",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On choose entity",
     "description": "Actions to be performed when an entity value needs to be resolved.",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.OnCondition.schema#"
+    "type": "object",
+    "properties": {
+        "property": {
+            "type": "string",
+            "title": "Property to be set",
+            "description": "Property that will be set after entity is selected."
         },
-        {
-            "type": "object",
-            "properties": {
-                "property": {
-                    "type": "string",
-                    "title": "Property to be set",
-                    "description": "Property that will be set after entity is selected."
-                },
-                "entity": {
-                    "type": "string",
-                    "title": "Ambiguous entity",
-                    "description": "Ambiguous entity"
-                }
-            }
+        "entity": {
+            "type": "string",
+            "title": "Ambiguous entity",
+            "description": "Ambiguous entity"
         }
-    ]
+    }
 }

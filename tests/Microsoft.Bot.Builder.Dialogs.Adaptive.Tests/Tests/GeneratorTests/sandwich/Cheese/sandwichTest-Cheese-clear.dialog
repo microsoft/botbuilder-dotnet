@@ -1,0 +1,17 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "ClearCheese",
+	"property": "Cheese",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${clearPropertyMessage('Cheese')}"
+		},
+		{
+			"$kind": "Microsoft.DeleteProperty",
+			"property": "$Cheese"
+		}
+	],
+	"$Generator": "99275bde03f2ad1865c6e24b9101e6ec"
+}

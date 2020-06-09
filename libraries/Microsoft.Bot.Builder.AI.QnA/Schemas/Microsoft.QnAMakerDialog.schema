@@ -7,19 +7,19 @@
     "additionalProperties": false,
     "properties": {
         "knowledgeBaseId": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "KnowledgeBase Id",
             "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
             "default": "=settings.qna.knowledgebaseid"
         },
         "endpointKey": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Endpoint Key",
             "description": "Endpoint key for the QnA Maker KB.",
             "default": "=settings.qna.endpointkey"
         },
         "hostname": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Hostname",
             "description": "Hostname for your QnA Maker service.",
             "default": "=settings.qna.hostname",
@@ -34,19 +34,19 @@
             "default": "Sorry, I did not find an answer."
         },
         "threshold": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
+            "$ref": "schema:#/definitions/numberExpression",
             "title": "Threshold",
             "description": "Threshold score to filter results.",
             "default": 0.3
         },
         "activeLearningCardTitle": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Active learning card title",
             "description": "Title for active learning suggestions card.",
             "default": "Did you mean:"
         },
         "cardNoMatchText": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Card no match text",
             "description": "Text for no match option.",
             "default": "None of the above."
@@ -58,27 +58,31 @@
             "default": "Thanks for the feedback."
         },
         "strictFilters": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/arrayExpression",
+            "$ref": "schema:#/definitions/arrayExpression",
             "title": "Strict Filters",
             "description": "Metadata filters to use when calling the QnA Maker KB.",
             "items": {
                 "type": "object",
+                "title": "Metadata filter",
+                "description": "Metadata filter.",
                 "properties": {
                     "name": {
                         "type": "string",
                         "title": "Name",
+                        "description": "Name of filter property.",
                         "maximum": 100
                     },
                     "value": {
                         "type": "string",
                         "title": "Value",
+                        "description": "Value to filter on.",
                         "maximum": 100
                     }
                 }
             }
         },
         "top": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
+            "$ref": "schema:#/definitions/numberExpression",
             "title": "Top",
             "description": "The number of answers you want to retrieve.",
             "default": 3
@@ -90,13 +94,13 @@
             "default": false
         },
         "rankerType": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Ranker Type",
             "description": "Type of Ranker.",
             "oneOf": [
                 {
-                    "type": "string",
-                    "title": "Enum",
+                    "title": "Standard ranker",
+                    "description": "Standard ranker types.",
                     "enum": [
                         "default",
                         "questionOnly",
@@ -105,7 +109,7 @@
                     "default": "default"
                 },
                 {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
             ]
         }

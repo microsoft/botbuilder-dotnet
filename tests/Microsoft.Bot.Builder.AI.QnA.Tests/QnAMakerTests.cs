@@ -40,11 +40,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
         public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
                 .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -106,9 +106,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
         public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -905,11 +905,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var options = new QnAMakerOptions
             {
-                MetadataBoost = new Metadata[]
-                {
-                    new Metadata() { Name = "artist", Value = "drake" },
-                },
-                Top = 1,
+               Top = 1,
             };
 
             var results = await qna.GetAnswersAsync(GetContext("who loves me?"), options);
@@ -1592,7 +1588,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(storage)
-                .UseState(userState, conversationState)
+                .UseBotState(userState, conversationState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(rootDialog);

@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("ErrorTemplateName.lg");
 
-            Assert.AreEqual(6, diagnostics.Count);
+            Assert.AreEqual(7, diagnostics.Count);
             foreach (var diagnostic in diagnostics)
             {
                 Assert.AreEqual(DiagnosticSeverity.Error, diagnostic.Severity);
@@ -257,6 +257,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(exception.Message.Contains(TemplateErrors.LoopDetected));
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("wPhrase"));
+            Assert.IsTrue(exception.Message.Contains(TemplateErrors.LoopDetected));
+
+            exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("shouldFail"));
             Assert.IsTrue(exception.Message.Contains(TemplateErrors.LoopDetected));
         }
 

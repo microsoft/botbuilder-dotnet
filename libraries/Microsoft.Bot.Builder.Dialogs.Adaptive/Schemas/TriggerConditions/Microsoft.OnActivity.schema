@@ -1,23 +1,16 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.ITrigger)",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On activity",
     "description": "Actions to perform on receipt of a generic activity.",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.OnCondition.schema#"
-        },
-        {
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "title": "Activity type",
-                    "description": "The Activity.Type to match"
-                }
-            }
+    "properties": {
+        "type": {
+            "type": "string",
+            "title": "Activity type",
+            "description": "The Activity.Type to match"
         }
-    ],
+    },
     "required": [
         "type",
         "actions"
