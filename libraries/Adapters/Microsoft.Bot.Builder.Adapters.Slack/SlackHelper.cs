@@ -10,9 +10,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
+using Microsoft.Bot.Builder.Adapters.Slack.Model.Request;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using SlackAPI;
 
 #if SIGNASSEMBLY
@@ -165,6 +168,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 ChannelData = slackPayload,
                 Text = null,
                 Type = ActivityTypes.Event,
+                Value = slackPayload
             };
 
             if (slackPayload.ThreadTs != null)
@@ -184,66 +188,57 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Creates an activity based on the slack event data.
         /// </summary>
-        /// <param name="slackEvent">The data of the slack event.</param>
+        /// <param name="eventRequest">The data of the slack event.</param>
         /// <param name="client">The Slack client.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>An activity containing the event data.</returns>
-        public static async Task<Activity> EventToActivityAsync(SlackEvent slackEvent, SlackClientWrapper client, CancellationToken cancellationToken)
+        public static async Task<Activity> EventToActivityAsync(EventRequest eventRequest, SlackClientWrapper client, CancellationToken cancellationToken)
         {
-            if (slackEvent == null)
+            if (eventRequest == null)
             {
-                throw new ArgumentNullException(nameof(slackEvent));
+                throw new ArgumentNullException(nameof(eventRequest));
             }
+
+            var innerEvent = eventRequest.Event;
 
             var activity = new Activity()
             {
-                Id = slackEvent.EventTs,
+                Id = innerEvent.EventTs,
                 Timestamp = default,
                 ChannelId = "slack",
                 Conversation = new ConversationAccount()
                 {
-                    Id = slackEvent.Channel ?? slackEvent.ChannelId,
+                    Id = innerEvent.Channel ?? innerEvent.ChannelId ?? eventRequest.TeamId
                 },
                 From = new ChannelAccount()
                 {
-                    Id = slackEvent.BotId ?? slackEvent.UserId,
+                    Id = innerEvent.User ?? innerEvent.BotId ?? eventRequest.TeamId
                 },
-                Recipient = new ChannelAccount()
-                {
-                    Id = null,
-                },
-                ChannelData = slackEvent,
-                Text = null,
-                Type = ActivityTypes.Event,
+                ChannelData = eventRequest
             };
 
-            if (slackEvent.ThreadTs != null)
+            activity.Recipient = new ChannelAccount()
             {
-                activity.Conversation.Properties["thread_ts"] = slackEvent.ThreadTs;
+                Id = await client.GetBotUserByTeamAsync(activity, cancellationToken).ConfigureAwait(false)
+            };
+
+            if (!string.IsNullOrEmpty(innerEvent.ThreadTs))
+            {
+                activity.Conversation.Properties["thread_ts"] = innerEvent.ThreadTs;
             }
 
-            if (activity.Conversation.Id == null)
+            if (innerEvent.Type == "message" && innerEvent.BotId == null)
             {
-                if (slackEvent.Item != null && slackEvent.ItemChannel != null)
-                {
-                    activity.Conversation.Id = slackEvent.ItemChannel;
-                }
-                else
-                {
-                    activity.Conversation.Id = slackEvent.Team;
-                }
+                var message = JObject.FromObject(innerEvent).ToObject<MessageEvent>();
+                activity.Type = ActivityTypes.Message;
+                activity.Text = message.Text;
+                activity.Conversation.Properties["channel_type"] = message.ChannelType;
             }
-
-            activity.Recipient.Id = await client.GetBotUserByTeamAsync(activity, cancellationToken).ConfigureAwait(false);
-
-            // If this is conclusively a message originating from a user, we'll mark it as such
-            if (slackEvent.Type == "message" && slackEvent.BotId == null)
+            else
             {
-                if (slackEvent.SubType == null)
-                {
-                    activity.Type = ActivityTypes.Message;
-                    activity.Text = slackEvent.Text;
-                }
+                activity.Type = ActivityTypes.Event;
+                activity.Name = innerEvent.Type;
+                activity.Value = innerEvent;
             }
 
             return activity;
@@ -252,42 +247,43 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Creates an activity based on a slack event related to a slash command.
         /// </summary>
-        /// <param name="slackBody">The data of the slack event.</param>
+        /// <param name="commandRequest">The data of the slack command request.</param>
         /// <param name="client">The Slack client.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>An activity containing the event data.</returns>
-        public static async Task<Activity> CommandToActivityAsync(SlackRequestBody slackBody, SlackClientWrapper client, CancellationToken cancellationToken)
+        public static async Task<Activity> CommandToActivityAsync(CommandRequest commandRequest, SlackClientWrapper client, CancellationToken cancellationToken)
         {
-            if (slackBody == null)
+            if (commandRequest == null)
             {
-                throw new ArgumentNullException(nameof(slackBody));
+                throw new ArgumentNullException(nameof(commandRequest));
             }
 
             var activity = new Activity()
             {
-                Id = slackBody.TriggerId,
+                Id = commandRequest.TriggerId,
                 Timestamp = default,
                 ChannelId = "slack",
                 Conversation = new ConversationAccount()
                 {
-                    Id = slackBody.ChannelId,
+                    Id = commandRequest.ChannelId,
                 },
                 From = new ChannelAccount()
                 {
-                    Id = slackBody.UserId,
+                    Id = commandRequest.UserId,
                 },
                 Recipient = new ChannelAccount()
                 {
                     Id = null,
                 },
-                ChannelData = slackBody,
-                Text = slackBody.Text,
+                ChannelData = commandRequest,
                 Type = ActivityTypes.Event,
+                Name = "Command",
+                Value = commandRequest.Command
             };
 
             activity.Recipient.Id = await client.GetBotUserByTeamAsync(activity, cancellationToken).ConfigureAwait(false);
 
-            activity.Conversation.Properties["team"] = slackBody.TeamId;
+            activity.Conversation.Properties["team"] = commandRequest.TeamId;
 
             return activity;
         }
@@ -345,7 +341,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 // Decode and remove "payload=" from the body
                 var decodedBody = Uri.UnescapeDataString(requestBody).Remove(0, 8);
 
-                var payload = JsonConvert.DeserializeObject<SlackPayload>(decodedBody);
+                var payload = JsonConvert.DeserializeObject<BlockActionsPayload>(decodedBody);
 
                 return new SlackRequestBody
                 {

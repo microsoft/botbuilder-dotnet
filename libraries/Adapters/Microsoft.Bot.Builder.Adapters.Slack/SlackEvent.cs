@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SlackAPI;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
@@ -65,5 +66,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
         [JsonProperty(PropertyName = "message")]
         public NewSlackMessage Message { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> Properties { get; set; }
     }
 }
