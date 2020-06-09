@@ -140,14 +140,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         [JsonProperty("logPersonalInformation")]
         public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
 
-        /// <summary>
-        /// Gets or sets a value indicating whether Precise Answer needs to be provided from source text or not.
-        /// </summary>
-        /// <value>
-        /// To enable Precise Answer or not.
-        /// </value>
-        public bool EnablePreciseAnswer { get; set; } = true;
-
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             // Identify matched intents
@@ -188,8 +180,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     Top = this.Top.GetValue(dialogContext.State),
                     QnAId = this.QnAId.GetValue(dialogContext.State),
                     RankerType = this.RankerType.GetValue(dialogContext.State),
-                    IsTest = this.IsTest,
-                    EnablePreciseAnswer = this.EnablePreciseAnswer
+                    IsTest = this.IsTest
                 },
                 null).ConfigureAwait(false);
 
@@ -216,15 +207,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 var answerArray = new JArray();
                 answerArray.Add(topAnswer.Answer);
                 ObjectPath.SetPathValue(recognizerResult, "entities.answer", answerArray);
-
-                // if answerSpan in topAnswer.answerSpan
-                var preciseAnswer = topAnswer.AnswerSpan;
-                if ((preciseAnswer != null) && !string.IsNullOrEmpty(preciseAnswer.Text))
-                {
-                    var answerSpanArray = new JArray();
-                    answerArray.Add(topAnswer.Answer);
-                    ObjectPath.SetPathValue(recognizerResult, "entities.preciseAnswer", answerSpanArray);
-                }                
 
                 var instance = new JArray();
                 instance.Add(JObject.FromObject(topAnswer));
