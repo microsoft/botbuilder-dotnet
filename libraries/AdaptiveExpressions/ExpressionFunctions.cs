@@ -2239,7 +2239,7 @@ namespace AdaptiveExpressions
             }
             catch
             {
-                error = $"{localeStr} must be a locale string.";
+                error = $"{localeStr} is not a valid locale string.";
             }
 
             return (result, error);
@@ -2857,7 +2857,7 @@ namespace AdaptiveExpressions
                 }
                 catch
                 {
-                    error = $"{locale} is not a valid locale for string";
+                    error = $"{locale} stored in turn.activity.locale is not a valid locale string";
                 }
             }
 
