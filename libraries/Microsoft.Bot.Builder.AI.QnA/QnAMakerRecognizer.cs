@@ -146,7 +146,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// <value>
         /// To enable Precise Answer or not.
         /// </value>
-        [JsonProperty("enablePreciseAnswer")]
         public bool EnablePreciseAnswer { get; set; } = true;
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
