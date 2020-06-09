@@ -14,7 +14,7 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "turn.activity.locale",
-          "value": " "
+          "value": "en-US"
         },
         {
           "$kind": "Microsoft.SetProperty",
