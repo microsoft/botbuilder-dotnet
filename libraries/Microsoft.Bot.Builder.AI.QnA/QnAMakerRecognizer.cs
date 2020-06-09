@@ -158,7 +158,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             List<Metadata> filters = new List<Metadata>();
             if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
             {
-                filters.Add(new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id });
+                string diaName = dialogContext.ActiveDialog.Id.Replace(".main.dialog", string.Empty);
+                filters.Add(new Metadata() { Name = "dialogName", Value = diaName });
             }
 
             // if there is $qna.metadata set add to filters
