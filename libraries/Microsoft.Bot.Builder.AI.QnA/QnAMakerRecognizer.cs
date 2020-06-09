@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// To enable Precise Answer or not.
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
-        public BoolExpression EnablePreciseAnswer { get; set; } = true;
+        public bool EnablePreciseAnswer { get; set; } = true;
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     QnAId = this.QnAId.GetValue(dialogContext.State),
                     RankerType = this.RankerType.GetValue(dialogContext.State),
                     IsTest = this.IsTest,
-                    EnablePreciseAnswer = this.EnablePreciseAnswer.GetValue(dialogContext.State)
+                    EnablePreciseAnswer = this.EnablePreciseAnswer
                 },
                 null).ConfigureAwait(false);
 
@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 {
                     if ((topAnswer == null) || (answer.Score > topAnswer.Score))
                     {
-                        topAnswer = answer;                       
+                        topAnswer = answer;
                     }
                 }
 
