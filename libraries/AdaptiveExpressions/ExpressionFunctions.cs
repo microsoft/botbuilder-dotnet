@@ -4614,7 +4614,11 @@ namespace AdaptiveExpressions
                                 error = $"formatNumber third agument ${args[2]} must be a locale";
                             }
                             
-                            (locale, error) = DetermineLocale(state, args, locale, 3);
+                            if (error == null)
+                            {
+                                (locale, error) = DetermineLocale(state, args, locale, 3);
+                            }
+                            
                             if (error == null)
                             {
                                 var number = Convert.ToDouble(args[0]);
