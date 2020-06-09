@@ -1,21 +1,9 @@
 {
-	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/generation/runbot/runbot.schema",
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
 	"$kind": "Microsoft.AdaptiveDialog",
-	"recognizer": {
-		"$kind": "Microsoft.MultiLanguageRecognizer",
-		"recognizers": {
-			"en-us": {
-				"$kind": "Microsoft.CrossTrainedRecognizerSet",
-				"recognizers": [
-					"sandwich.lu",
-					"sandwich.qna"
-				]
-			}
-		}
-	},
-	"autoEndDialog": false,
+	"recognizer": "sandwich.lu",
 	"generator": "sandwich.lg",
-	"schema": "sandwich.schema",
+	"schema": "sandwich.json",
 	"triggers": [
 		"sandwich-Quantity-missing",
 		"sandwich-Quantity-clear",
@@ -80,10 +68,8 @@
 		"sandwich-library-ChooseProperty",
 		"sandwich-library-HelpIntent",
 		"sandwich-library-NotUnderstood",
-		"sandwich-library-trigger",
-		"sandwich-library-ShowFormIntent",
-		"sandwich-library-QnAIntent.dialog",
-		"sandwich-library-ChooseIntent.dialog"
+		"sandwich-trigger",
+		"sandwich-library-ShowFormIntent"
 	],
-	"$Generator": "adb88807dfe5be3f95b0a47c5b21e022"
+	"$Generator": "bf3871646c67b6e07e60d7758c54dc0e"
 }
