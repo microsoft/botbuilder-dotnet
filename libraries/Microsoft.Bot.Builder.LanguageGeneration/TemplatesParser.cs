@@ -27,6 +27,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public static class TemplatesParser
     {
         /// <summary>
+        /// Inline text id.
+        /// </summary>
+        public const string InlineContentId = "inline content";
+
+        /// <summary>
         /// option regex.
         /// </summary>
         public static readonly Regex OptionRegex = new Regex(@">\s*!#(.*)");
@@ -84,11 +89,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new ArgumentNullException(nameof(lg));
             }
 
-            var id = "inline content";
-            var newLG = new Templates(content: content, id: id, importResolver: lg.ImportResolver, options: lg.Options);
+            var newLG = new Templates(content: content, id: InlineContentId, importResolver: lg.ImportResolver, options: lg.Options);
             try
             {
-                newLG = new TemplatesTransformer(newLG).Transform(AntlrParseTemplates(content, id));
+                newLG = new TemplatesTransformer(newLG).Transform(AntlrParseTemplates(content, InlineContentId));
                 newLG.References = GetReferences(newLG)
                         .Union(lg.References)
                         .Union(new List<Templates> { lg })
