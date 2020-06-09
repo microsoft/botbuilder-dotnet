@@ -70,9 +70,12 @@ namespace AdaptiveExpressions.Tests
             Test("substring(hello, 0, 10)"), // the length of substring is out of the range of the original string
             Test("substring(hello, 0, 'hello')"), // length is not integer
             Test("toLower(one)"), // the parameter of toLower must be string
+            Test("toLower('hi', 1)"), // the second argument must be a locale string
             Test("toLower('hi', 1)"), // should have 1 param
+            Test("toLower('hi', locale, 1)"), // should have 1 or 2 params
             Test("toUpper(one)"), // the parameter of toUpper must be string
-            Test("toUpper('hi', 1)"), // should have 1 param
+            Test("toUpper('hi', 1)"), // the second argument must be a locale string
+            Test("toUpper('hi', locale, 1)"), // should have 1 or 2 params
             Test("trim(one)"), // the parameter of trim must be string
             Test("trim('hi', 1)"), // should have 1 param
             Test("endsWith(hello, one)"), // should have string params
@@ -96,10 +99,12 @@ namespace AdaptiveExpressions.Tests
             Test("lastIndexOf(hello, world, one)"), // should have two parameters
             Test("lastIndexOf(hello, one)"), // second parameter should be string
             Test("lastIndexOf(one, hello)"), // first parameter should be list or string
-            Test("sentenceCase(hello, hello, hello)"), // should have 1 or 2 parameters
+            Test("sentenceCase(hello, locale, hello)"), // should have 1 or 2 parameters
             Test("sentenceCase(one)"), // first parameter should be string
-            Test("titleCase(hello, hello, hello)"), // should have 1 or 2 parameters
+            Test("sentenceCase(hello, one)"), // the second parameter should be locale string
+            Test("titleCase(hello, locale, hello)"), // should have 1 or 2 parameters
             Test("titleCase(one)"), // first parameter should be string
+            Test("titleCase(hello, one)"), // the second parameter should be locale string
             
             //Test("titleCase(hello, hello)"), // On Mac OS, a wrong locale string won't throw an error.
             #endregion
@@ -262,7 +267,7 @@ namespace AdaptiveExpressions.Tests
             Test("getPastTime(1, 'W')"), // error time unit
             Test("getPastTime(timestamp, 'W')"), // error parameters format
             Test("getPastTime('yyyy', '1')"), // second param should be integer
-            Test("getPastTime('yyyy')"), // should have 2 or 3 or 4params
+            Test("getPastTime('yyyy')"), // should have 2 or 3 or 4 params
             Test("getFutureTime(1, 'W')"), // error time unit
             Test("getFutureTime(timestamp, 'W')"), // error parameters format
             Test("getFutureTime('yyyy', '1')"), // second param should be integer
@@ -491,6 +496,7 @@ namespace AdaptiveExpressions.Tests
                 notValidTimestamp2 = "1521118800",
                 notValidTimestamp3 = "20181115",
                 relativeUri = "../catalog/shownew.htm?date=today",
+                locale = "en-US",
                 turn = new
                 {
                     recognized = new
