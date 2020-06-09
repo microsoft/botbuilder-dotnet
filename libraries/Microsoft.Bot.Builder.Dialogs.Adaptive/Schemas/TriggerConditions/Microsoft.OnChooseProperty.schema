@@ -1,39 +1,34 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.ITrigger)",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On choose property",
     "description": "Actions to take when there are multiple possible mappings of entities to properties.",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.OnCondition.schema#"
+    "type": "object",
+    "properties": {
+        "entity": {
+            "type": "string",
+            "title": "Entity being assigned",
+            "description": "Entity being assigned to property choice"
         },
-        {
-            "type": "object",
-            "properties": {
-                "entity": {
-                    "type": "string",
-                    "title": "Entity being assigned",
-                    "description": "Entity being assigned to property choice"
-                },
-                "properties": {
-                    "type": "array",
-                    "title": "Possible properties",
-                    "description": "Properties to be chosen between",
-                    "items": {
-                        "type": "string",
-                        "title": "Property name"
-                    }
-                },
-                "entities": {
-                    "type": "array",
-                    "title": "Possible properties",
-                    "description": "Entities being assigned",
-                    "items": {
-                        "type": "string",
-                        "title": "Entity name"
-                    }
-                }
+        "properties": {
+            "type": "array",
+            "title": "Possible properties",
+            "description": "Properties to be chosen between.",
+            "items": {
+                "type": "string",
+                "title": "Property name",
+                "description": "Possible property to choose."
+            }
+        },
+        "entities": {
+            "type": "array",
+            "title": "Entities",
+            "description": "Ambiguous entity names.",
+            "items": {
+                "type": "string",
+                "title": "Entity name",
+                "description": "Entity name being chosen between."
             }
         }
-    ]
+    }
 }

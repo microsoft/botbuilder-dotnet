@@ -448,7 +448,14 @@ namespace Microsoft.Bot.Builder
 
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
 
-                // Handle Invoke scenarios, which deviate from the request/response model in that
+                // Handle ExpectedReplies scenarios where the all the activities have been buffered and sent back at once 
+                // in an invoke response.
+                if (context.Activity.DeliveryMode == DeliveryModes.ExpectReplies)
+                {
+                    return new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = new ExpectedReplies(context.BufferedReplyActivities) };
+                }
+
+                // Handle Invoke scenarios, which deviate from the request/request model in that
                 // the Bot will return a specific body and return code.
                 if (activity.Type == ActivityTypes.Invoke)
                 {
@@ -459,10 +466,6 @@ namespace Microsoft.Bot.Builder
                     }
 
                     return (InvokeResponse)activityInvokeResponse.Value;
-                }
-                else if (context.Activity.DeliveryMode == DeliveryModes.ExpectReplies)
-                {
-                    return new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = new ExpectedReplies(context.BufferedReplyActivities) };
                 }
 
                 // For all non-invoke scenarios, the HTTP layers above don't have to mess

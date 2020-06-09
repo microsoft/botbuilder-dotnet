@@ -249,9 +249,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override DialogContext CreateChildContext(DialogContext dc)
         {
-            var childDc = this.CreateInnerDc(dc.Context, dc.ActiveDialog);
-            childDc.Parent = dc;
-            return childDc;
+            return this.CreateInnerDc(dc, dc.ActiveDialog);
         }
 
         protected async Task EnsureInitializedAsync(DialogContext outerDc)
@@ -380,7 +378,22 @@ namespace Microsoft.Bot.Builder.Dialogs
             return outerDc.EndDialogAsync(result, cancellationToken);
         }
 
-        private DialogContext CreateInnerDc(ITurnContext context, DialogInstance instance)
+        private DialogContext CreateInnerDc(DialogContext outerDc, DialogInstance instance)
+        {
+            var state = BuildDialogState(instance);
+
+            return new DialogContext(this.Dialogs, outerDc, state);
+        }
+
+        // NOTE: You should only call this if you don't have a dc to work with (such as OnResume()) 
+        private DialogContext CreateInnerDc(ITurnContext turnContext, DialogInstance instance)
+        {
+            var state = BuildDialogState(instance);
+
+            return new DialogContext(this.Dialogs, turnContext, state);
+        }
+
+        private DialogState BuildDialogState(DialogInstance instance)
         {
             DialogState state;
 
@@ -399,7 +412,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 state.DialogStack = new List<DialogInstance>();
             }
 
-            return new DialogContext(this.Dialogs, context, state);
+            return state;
         }
     }
 }

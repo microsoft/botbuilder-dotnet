@@ -16,6 +16,8 @@
             "description": "Collection of patterns to match for an intent.",
             "items": {
                 "type": "object",
+                "title": "Pattern",
+                "description": "Intent and regex pattern.",
                 "properties": {
                     "intent": {
                         "type": "string",

@@ -26,6 +26,44 @@ namespace Microsoft.Bot.Builder.Teams.Tests
     public class TeamsActivityHandlerTests
     {
         [TestMethod]
+        public async Task TestConversationUpdateBotTeamsMemberAdded()
+        {
+            // Arrange
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty));
+
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                MembersAdded = new List<ChannelAccount>
+                {
+                    new ChannelAccount { Id = "bot" },
+                },
+                Recipient = new ChannelAccount { Id = "bot" },
+                ChannelData = new TeamsChannelData
+                {
+                    EventType = "teamMemberAdded",
+                    Team = new TeamInfo
+                    {
+                        Id = "team-id",
+                    },
+                },
+                ChannelId = Channels.Msteams,
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMembersAddedAsync", bot.Record[1]);
+        }
+
+        [TestMethod]
         public async Task TestConversationUpdateTeamsMemberAdded()
         {
             // Arrange

@@ -234,6 +234,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private class TemplatesTransformer : LGFileParserBaseVisitor<object>
         {
             private static readonly Regex IdentifierRegex = new Regex(@"^[0-9a-zA-Z_]+$");
+            private static readonly Regex TemplateNamePartRegex = new Regex(@"^[a-zA-Z_][0-9a-zA-Z_]*$");
             private readonly Templates templates;
 
             public TemplatesTransformer(Templates templates)
@@ -376,7 +377,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var functionNameSplitDot = templateName.Split('.');
                 foreach (var id in functionNameSplitDot)
                 {
-                    if (!IdentifierRegex.IsMatch(id))
+                    if (!TemplateNamePartRegex.IsMatch(id))
                     {
                         var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName, context);
                         this.templates.Diagnostics.Add(diagnostic);

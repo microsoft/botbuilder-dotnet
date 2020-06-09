@@ -1,9 +1,0 @@
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Missing.lg](unittests-library-Missing.lg)
-
-# AskAge
-- ${askString('Age')}
-
-
-# AgeName
-- age

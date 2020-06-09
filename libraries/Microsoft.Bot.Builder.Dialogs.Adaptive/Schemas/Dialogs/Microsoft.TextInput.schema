@@ -1,45 +1,38 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.IDialog)",
+    "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.InputDialog)" ],
     "type": "object",
     "title": "Text input dialog",
     "description": "Collection information - Ask for a word or sentence.",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.InputDialog.json#"
+    "properties": {
+        "defaultValue": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Default value",
+            "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
+            "examples": [
+                "hello world",
+                "Hello ${user.name}",
+                "=concat(user.firstname, user.lastName)"
+            ]
         },
-        {
-            "properties": {
-                "defaultValue": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
-                    "title": "Default value",
-                    "description": "'Property' will be set to the value of this expression when max turn count is exceeded.",
-                    "examples": [
-                        "hello world",
-                        "Hello ${user.name}",
-                        "=concat(user.firstname, user.lastName)"
-                    ]
-                },
-                "value": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
-                    "title": "Value",
-                    "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
-                    "examples": [
-                        "hello world",
-                        "Hello ${user.name}",
-                        "=concat(user.firstname, user.lastName)"
-                    ]
-                },
-                "outputFormat": {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
-                    "title": "Output format",
-                    "description": "Expression to format the output.",
-                    "examples": [
-                        "=toUpper(this.value)",
-                        "${toUpper(this.value)}"
-                    ]
-                }
-            }
+        "value": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Value",
+            "description": "'Property' will be set to the value of this expression unless it evaluates to null.",
+            "examples": [
+                "hello world",
+                "Hello ${user.name}",
+                "=concat(user.firstname, user.lastName)"
+            ]
+        },
+        "outputFormat": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Output format",
+            "description": "Expression to format the output.",
+            "examples": [
+                "=toUpper(this.value)",
+                "${toUpper(this.value)}"
+            ]
         }
-    ]
+    }
 }

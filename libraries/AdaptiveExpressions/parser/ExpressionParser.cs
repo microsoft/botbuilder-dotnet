@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -20,6 +21,8 @@ namespace AdaptiveExpressions
     /// </summary>
     public class ExpressionParser : IExpressionParser
     {
+        private static ConcurrentDictionary<string, IParseTree> expressionDict = new ConcurrentDictionary<string, IParseTree>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionParser"/> class.
         /// Constructor.
@@ -57,6 +60,11 @@ namespace AdaptiveExpressions
 
         protected static IParseTree AntlrParse(string expression)
         {
+            if (expressionDict.TryGetValue(expression, out var expressionParseTree))
+            {
+                return expressionParseTree;
+            }
+
             var inputStream = new AntlrInputStream(expression);
             var lexer = new ExpressionAntlrLexer(inputStream);
             lexer.RemoveErrorListeners();
@@ -65,7 +73,9 @@ namespace AdaptiveExpressions
             parser.RemoveErrorListeners();
             parser.AddErrorListener(ParserErrorListener.Instance);
             parser.BuildParseTree = true;
-            return parser.file()?.expression();
+            var expressionContext = parser.file()?.expression();
+            expressionDict.TryAdd(expression, expressionContext);
+            return expressionContext;
         }
 
         private class ExpressionTransformer : ExpressionAntlrParserBaseVisitor<Expression>
@@ -162,6 +172,11 @@ namespace AdaptiveExpressions
                 if (int.TryParse(context.GetText(), out var intValue))
                 {
                     return Expression.ConstantExpression(intValue);
+                }
+
+                if (long.TryParse(context.GetText(), out var longValue))
+                {
+                    return Expression.ConstantExpression(longValue);
                 }
 
                 if (double.TryParse(context.GetText(), NumberStyles.Any, CultureInfo.InvariantCulture, out var doubleValue))

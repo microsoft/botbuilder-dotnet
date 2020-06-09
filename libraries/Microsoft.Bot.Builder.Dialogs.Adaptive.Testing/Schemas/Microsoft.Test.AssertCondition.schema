@@ -9,7 +9,7 @@
     ],
     "properties": {
         "condition": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/condition",
+            "$ref": "schema:#/definitions/condition",
             "title": "Condition",
             "description": "Expression to evalute",
             "examples": [

@@ -66,12 +66,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 ProcessStartInfo startInfo;
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bf.cmd dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath} -b \"\"");
+                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bf.cmd dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath}");
                     startInfo.WorkingDirectory = projectPath;
                 }
                 else
                 {
-                    startInfo = new ProcessStartInfo("bf", $"dialog:merge **/*.schema -o {schemaPath} -b \"\"");
+                    startInfo = new ProcessStartInfo("bf", $"dialog:merge **/*.schema -o {schemaPath}");
                     startInfo.WorkingDirectory = solutionPath;
                 }
 
@@ -127,9 +127,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 Assert.IsNotNull(schema, "Missing $schema");
 
                 var folder = Path.GetDirectoryName(fileResource.FullName);
-                Assert.IsTrue(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
 
-                jtoken.Validate(Schema);
+                // NOTE: Some schemas are not local.  We don't validate against those because they often depend on the SDK itself
+                if (!schema.StartsWith("http"))
+                {
+                    Assert.IsTrue(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
+                    jtoken.Validate(Schema);
+                }
             }
             catch (JSchemaValidationException err)
             {

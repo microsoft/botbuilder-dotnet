@@ -170,9 +170,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
                 // Recognize utterance
-                var message = turnContext.Activity.AsMessageActivity();
+                var utterance = turnContext.Activity.AsMessageActivity().Text;
+                if (string.IsNullOrEmpty(utterance))
+                {
+                    return Task.FromResult(result);
+                }
+
                 var culture = DetermineCulture(turnContext.Activity);
-                var results = ChoiceRecognizer.RecognizeBoolean(message.Text, culture);
+                var results = ChoiceRecognizer.RecognizeBoolean(utterance, culture);
                 if (results.Count > 0)
                 {
                     var first = results[0];
@@ -194,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         // The text may be a number in which case we will interpret that as a choice.
                         var confirmChoices = ConfirmChoices ?? Tuple.Create(defaults.Item1, defaults.Item2);
                         var choices = new List<Choice> { confirmChoices.Item1, confirmChoices.Item2 };
-                        var secondAttemptResults = ChoiceRecognizers.RecognizeChoices(message.Text, choices);
+                        var secondAttemptResults = ChoiceRecognizers.RecognizeChoices(utterance, choices);
                         if (secondAttemptResults.Count > 0)
                         {
                             result.Succeeded = true;

@@ -104,8 +104,6 @@ namespace AdaptiveExpressions.Properties
                 this.ExpressionText = $"=`{stringOrExpression}`";
                 return;
             }
-
-            throw new ArgumentNullException("Value is not a string");
         }
     }
 }

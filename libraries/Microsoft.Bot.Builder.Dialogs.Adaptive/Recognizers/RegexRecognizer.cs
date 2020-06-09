@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +25,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public const string Kind = "Microsoft.RegexRecognizer";
 
         [JsonConstructor]
-        public RegexRecognizer()
+        public RegexRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(callerPath, callerLine)
         {
         }
 
@@ -113,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             {
                 // process entities using EntityRecognizerSet
                 var entitySet = new EntityRecognizerSet(this.Entities);
-                var newEntities = await entitySet.RecognizeEntities(dialogContext, text, locale, entityPool).ConfigureAwait(false);
+                var newEntities = await entitySet.RecognizeEntitiesAsync(dialogContext, text, locale, entityPool).ConfigureAwait(false);
                 if (newEntities.Any())
                 {
                     entityPool.AddRange(newEntities);

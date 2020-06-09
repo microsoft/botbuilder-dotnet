@@ -1,30 +1,24 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.ITrigger)",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On entity assignment",
     "description": "Actions to take when an entity should be assigned to a property.",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.OnCondition.schema#"
+    "type": "object",
+    "properties": {
+        "property": {
+            "type": "string",
+            "title": "Property",
+            "description": "Property that will be set after entity is selected."
         },
-        {
-            "type": "object",
-            "properties": {
-                "property": {
-                    "type": "string",
-                    "title": "Property",
-                    "description": "Property that will be set after entity is selected."
-                },
-                "entity": {
-                    "type": "string",
-                    "title": "Entity",
-                    "description": "Entity being put into property"
-                },
-                "operation": {
-                    "type": "string",
-                    "title": "Operation to use for assigning entity"
-                }
-            }
+        "entity": {
+            "type": "string",
+            "title": "Entity",
+            "description": "Entity being put into property"
+        },
+        "operation": {
+            "type": "string",
+            "title": "Operation",
+            "description": "Operation for assigning entity."
         }
-    ]
+    }
 }

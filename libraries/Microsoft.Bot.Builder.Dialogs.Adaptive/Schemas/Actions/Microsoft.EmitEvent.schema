@@ -14,7 +14,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -29,6 +29,7 @@
                 {
                     "type": "string",
                     "title": "Built-in event",
+                    "description": "Standard event type.",
                     "enum": [
                         "beginDialog",
                         "resumeDialog",
@@ -45,21 +46,23 @@
                     ]
                 },
                 {
+                    "type": "string",
                     "title": "Custom event",
+                    "description": "Custom event type",
                     "pattern": "^(?!(beginDialog$|resumeDialog$|repromptDialog$|cancelDialog$|endDialog$|activityReceived$|recognizedIntent$|unknownIntent$|actionsStarted$|actionsSaved$|actionsEnded$|actionsResumed))(\\S){1}.*"
                 },
                 {
-                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/equalsExpression"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
             ]
         },
         "eventValue": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/valueExpression",
+            "$ref": "schema:#/definitions/valueExpression",
             "title": "Event value",
             "description": "Value to emit with the event (optional)."
         },
         "bubbleEvent": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Bubble event",
             "description": "If true this event is passed on to parent dialogs."
         }
