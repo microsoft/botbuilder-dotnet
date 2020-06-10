@@ -115,9 +115,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new List<Diagnostic>();
 
-            if (context.structuredBodyNameLine().errorStructuredName() != null)
+            var errorName = context.structuredBodyNameLine().errorStructuredName();
+            if (errorName != null)
             {
-                result.Add(BuildLGDiagnostic(TemplateErrors.InvalidStrucName, context: context.structuredBodyNameLine()));
+                result.Add(BuildLGDiagnostic(TemplateErrors.InvalidStrucName(errorName.GetText()), context: context.structuredBodyNameLine()));
             }
 
             if (context.structuredBodyEndLine() == null)
@@ -130,7 +131,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 foreach (var error in errors)
                 {
-                    result.Add(BuildLGDiagnostic(TemplateErrors.InvalidStrucBody, context: error));
+                    result.Add(BuildLGDiagnostic(TemplateErrors.InvalidStrucBody(error.GetText()), context: error));
                 }
             }
             else
@@ -386,9 +387,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ParserRuleContext context = null)
         {
             var lineOffset = this.currentTemplate != null ? this.currentTemplate.SourceRange.Range.Start.Line : 0;
-            message = this.currentTemplate != null ? $"[{this.currentTemplate.Name}]" + message : message;
+            var templateNameInfo = string.Empty;
+            if (this.currentTemplate != null && this.currentTemplate.Name != Templates.InlineTemplateId)
+            {
+                templateNameInfo = $"[{this.currentTemplate.Name}]";
+            }
+
             var range = context == null ? new Range(1 + lineOffset, 0, 1 + lineOffset, 0) : context.ConvertToRange(lineOffset);
-            return new Diagnostic(range, message, severity, templates.Id);
+            return new Diagnostic(range, templateNameInfo + message, severity, templates.Id);
         }
     }
 }
