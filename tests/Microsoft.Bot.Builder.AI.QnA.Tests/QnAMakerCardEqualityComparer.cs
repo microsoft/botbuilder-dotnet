@@ -45,7 +45,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 }
             }
 
-            return string.Equals(activity1.Text, activity2.Text);
+            if (!string.Equals(activity1.Text, activity2.Text))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public int GetHashCode(IActivity obj)
