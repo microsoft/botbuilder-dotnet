@@ -62,7 +62,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Gets or sets the blocks that could come with the message.
         /// </summary>
         /// <value>The blocks that could come with the message.</value>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToSlack method")]
         public object Blocks { get; set; }
 
         /// <summary>
