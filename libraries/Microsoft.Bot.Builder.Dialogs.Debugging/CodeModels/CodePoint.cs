@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
@@ -44,6 +45,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public override string ToString() => Name;
 
-        object ICodePoint.Evaluate(string expression) => DialogContext.State.GetValue<object>(expression);
+        object ICodePoint.Evaluate(string expression)
+        {
+            var exp = Expression.Parse(expression);
+            var result = exp.TryEvaluate(DialogContext.State);
+            if (!string.IsNullOrEmpty(result.error))
+            {
+                throw new Exception(result.error);
+            }
+
+            return result.value;
+        }
     }
 }
