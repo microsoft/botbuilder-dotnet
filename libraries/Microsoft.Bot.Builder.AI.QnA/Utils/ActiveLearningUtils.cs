@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return filteredQnaSearchResult;
         }
 
-        private static BooleanExpression IncludeForClustering(double prevScore, double currentScore, double multiplier)
+        private static bool IncludeForClustering(double prevScore, double currentScore, double multiplier)
         {
             return (prevScore - currentScore) < (multiplier * Math.Sqrt(prevScore));
         }
