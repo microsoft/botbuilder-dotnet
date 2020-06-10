@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Builder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 {
     /// <summary>
     /// Message to send to Slack.

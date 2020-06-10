@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 {
     public class ModelViewState
     {

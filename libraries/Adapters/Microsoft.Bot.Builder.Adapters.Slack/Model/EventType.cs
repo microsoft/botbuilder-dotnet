@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Adapters.Slack.Model.Request
+namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 {
     /// <summary>
     /// Represents a Slack Event Type object https://api.slack.com/events-api#receiving_events.

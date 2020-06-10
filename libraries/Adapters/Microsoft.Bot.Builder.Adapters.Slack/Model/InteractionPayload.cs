@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SlackAPI;
 
-namespace Microsoft.Bot.Builder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 {
     /// <summary>
     /// Union class to represent various user interaction payloads https://api.slack.com/interactivity/handling#payloads.

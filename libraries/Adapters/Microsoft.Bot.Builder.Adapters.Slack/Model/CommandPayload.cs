@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 {
     /// <summary>
     /// Represents a Slack Command request https://api.slack.com/interactivity/slash-commands.

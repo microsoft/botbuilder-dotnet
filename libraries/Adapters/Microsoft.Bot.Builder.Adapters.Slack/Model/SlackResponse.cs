@@ -3,7 +3,7 @@
 
 using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
 
-namespace Microsoft.Bot.Builder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 {
     /// <summary>
     /// SlackResponse class.

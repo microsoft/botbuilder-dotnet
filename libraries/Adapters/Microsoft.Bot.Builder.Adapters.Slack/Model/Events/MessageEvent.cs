@@ -2,14 +2,13 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Adapters.Slack.Model.Request;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack.Model.Events
 {
     /// <summary>
-    /// Represents a Slack Message event https://api.slack.com/events/message
+    /// Represents a Slack Message event https://api.slack.com/events/message.
     /// </summary>
     public class MessageEvent : EventType
     {
