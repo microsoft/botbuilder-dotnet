@@ -52,6 +52,9 @@ namespace AdaptiveExpressions
         public const string NewGuid = "newGuid";
         public const string IndexOf = "indexOf";
         public const string LastIndexOf = "lastIndexOf";
+        public const string EOL = "EOL";
+        public const string SentenceCase = "sentenceCase";
+        public const string TitleCase = "titleCase";
 
         // Collection
         public const string Count = "count";
@@ -101,6 +104,10 @@ namespace AdaptiveExpressions
         public const string StartOfHour = "startOfHour";
         public const string StartOfMonth = "startOfMonth";
         public const string Ticks = "ticks";
+        public const string TicksToDays = "ticksToDays";
+        public const string TicksToHours = "ticksToHours";
+        public const string TicksToMinutes = "ticksToMinutes";
+        public const string DateTimeDiff = "dateTimeDiff";
 
         // Timex 
         public const string IsDefinite = "isDefinite";

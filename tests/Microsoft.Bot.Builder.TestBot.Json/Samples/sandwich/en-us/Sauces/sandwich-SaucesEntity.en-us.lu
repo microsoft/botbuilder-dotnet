@@ -1,0 +1,286 @@
+
+@ list SaucesEntity =
+  - pepper :
+		- pepper
+  - salt :
+		- salt
+  - yellowMustard :
+		- yellow
+		- mustard
+		- yellow mustard
+  - dijonMustard :
+		- dijon
+		- mustard
+		- dijon mustard
+  - mayo :
+		- mayo
+  - vinegar :
+		- vinegar
+
+> Define how Sauces is recognized as a property name
+@ list PROPERTYName
+    - Sauces:
+		- sauces
+
+
+> Define operations for property
+@ml AddToSauces = 
+    - @SaucesEntity SaucesEntity
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromSauces = 
+    - @SaucesEntity SaucesEntity
+    - @PROPERTYName PROPERTYName
+@ml ClearSauces =
+    - @PROPERTYName PROPERTYName
+@ml ShowSauces =
+    - @PROPERTYName PROPERTYName
+# sandwich
+> Add only
+- {@AddToSauces=add {@SaucesEntity=dijon}}
+- {@AddToSauces=add {@SaucesEntity=pepper}}
+- {@AddToSauces=add {@SaucesEntity=salt}}
+- {@AddToSauces=with {@SaucesEntity=mustard}}
+- {@AddToSauces=with {@SaucesEntity=dijon}}
+- {@AddToSauces=with {@SaucesEntity=yellow mustard}}
+- {@AddToSauces=add {@SaucesEntity=dijon mustard} and {@SaucesEntity=yellow}}
+- {@AddToSauces=add {@SaucesEntity=yellow} and {@SaucesEntity=mustard}}
+- {@AddToSauces=add {@SaucesEntity=mustard} and {@SaucesEntity=mustard}}
+- {@AddToSauces=with {@SaucesEntity=mustard} and {@SaucesEntity=yellow}}
+- {@AddToSauces=with {@SaucesEntity=salt} and {@SaucesEntity=yellow mustard}}
+- {@AddToSauces=with {@SaucesEntity=dijon mustard} and {@SaucesEntity=dijon}}
+- {@AddToSauces=add {@SaucesEntity=yellow}, {@SaucesEntity=mustard} and {@SaucesEntity=mayo}}
+- {@AddToSauces=add {@SaucesEntity=mustard}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=pepper}}
+- {@AddToSauces=add {@SaucesEntity=mayo}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=vinegar}}
+- {@AddToSauces=with {@SaucesEntity=mayo}, {@SaucesEntity=pepper} and {@SaucesEntity=pepper}}
+- {@AddToSauces=with {@SaucesEntity=yellow}, {@SaucesEntity=yellow} and {@SaucesEntity=dijon mustard}}
+- {@AddToSauces=with {@SaucesEntity=mustard}, {@SaucesEntity=yellow} and {@SaucesEntity=pepper}}
+- {@AddToSauces={@PROPERTYName=sauces} is {@SaucesEntity=mayo}}
+- {@AddToSauces={@PROPERTYName=sauces} is {@SaucesEntity=yellow mustard}}
+- {@AddToSauces={@PROPERTYName=sauces} is {@SaucesEntity=pepper}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=vinegar} and {@SaucesEntity=dijon}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=dijon} and {@SaucesEntity=dijon}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=salt} and {@SaucesEntity=yellow mustard}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=dijon}, {@SaucesEntity=pepper} and {@SaucesEntity=mustard}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=mustard}, {@SaucesEntity=salt} and {@SaucesEntity=yellow}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=mustard}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=mustard}}
+- {@AddToSauces=add {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=dijon} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=with {@SaucesEntity=dijon} {@PROPERTYName=sauces}}
+- {@AddToSauces=with {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+- {@AddToSauces=with {@SaucesEntity=pepper} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=salt} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=salt} and {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=pepper} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=with {@SaucesEntity=mustard} and {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=with {@SaucesEntity=vinegar} and {@SaucesEntity=yellow} {@PROPERTYName=sauces}}
+- {@AddToSauces=with {@SaucesEntity=mayo} and {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=mustard}, {@SaucesEntity=salt} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=yellow}, {@SaucesEntity=pepper} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=salt}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=with {@SaucesEntity=pepper}, {@SaucesEntity=vinegar} and {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=with {@SaucesEntity=mustard}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=with {@SaucesEntity=pepper}, {@SaucesEntity=yellow} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces={@PROPERTYName=sauces} is {@SaucesEntity=mayo}}
+- {@AddToSauces={@PROPERTYName=sauces} is {@SaucesEntity=yellow}}
+- {@AddToSauces={@PROPERTYName=sauces} is {@SaucesEntity=salt}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=yellow} and {@SaucesEntity=yellow}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=vinegar} and {@SaucesEntity=mayo}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=mustard} and {@SaucesEntity=yellow}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=mayo}, {@SaucesEntity=yellow} and {@SaucesEntity=vinegar}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=mayo}, {@SaucesEntity=yellow} and {@SaucesEntity=dijon mustard}}
+- {@AddToSauces={@PROPERTYName=sauces} are {@SaucesEntity=mustard}, {@SaucesEntity=yellow} and {@SaucesEntity=dijon}}
+> Remove only
+- {@RemoveFromSauces=remove {@SaucesEntity=salt}}
+- {@RemoveFromSauces=remove {@SaucesEntity=yellow mustard}}
+- {@RemoveFromSauces=remove {@SaucesEntity=yellow}}
+- {@RemoveFromSauces=remove {@SaucesEntity=dijon mustard} and {@SaucesEntity=dijon mustard}}
+- {@RemoveFromSauces=remove {@SaucesEntity=vinegar} and {@SaucesEntity=yellow mustard}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mustard} and {@SaucesEntity=mayo}}
+- {@RemoveFromSauces=remove {@SaucesEntity=pepper}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=mayo}}
+- {@RemoveFromSauces=remove {@SaucesEntity=pepper}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=yellow mustard}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mustard}, {@SaucesEntity=mustard} and {@SaucesEntity=mustard}}
+- {@RemoveFromSauces=delete {@SaucesEntity=dijon mustard}}
+- {@RemoveFromSauces=delete {@SaucesEntity=mustard}}
+- {@RemoveFromSauces=delete {@SaucesEntity=pepper}}
+- {@RemoveFromSauces=delete {@SaucesEntity=dijon} and {@SaucesEntity=dijon}}
+- {@RemoveFromSauces=delete {@SaucesEntity=mayo} and {@SaucesEntity=salt}}
+- {@RemoveFromSauces=delete {@SaucesEntity=yellow mustard} and {@SaucesEntity=vinegar}}
+- {@RemoveFromSauces=delete {@SaucesEntity=yellow}, {@SaucesEntity=vinegar} and {@SaucesEntity=mustard}}
+- {@RemoveFromSauces=delete {@SaucesEntity=mustard}, {@SaucesEntity=vinegar} and {@SaucesEntity=dijon}}
+- {@RemoveFromSauces=delete {@SaucesEntity=yellow mustard}, {@SaucesEntity=vinegar} and {@SaucesEntity=mayo}}
+- {@RemoveFromSauces=without {@SaucesEntity=mayo}}
+- {@RemoveFromSauces=without {@SaucesEntity=dijon mustard}}
+- {@RemoveFromSauces=without {@SaucesEntity=pepper}}
+- {@RemoveFromSauces=without {@SaucesEntity=pepper} and {@SaucesEntity=vinegar}}
+- {@RemoveFromSauces=without {@SaucesEntity=yellow mustard} and {@SaucesEntity=mayo}}
+- {@RemoveFromSauces=without {@SaucesEntity=vinegar} and {@SaucesEntity=mustard}}
+- {@RemoveFromSauces=without {@SaucesEntity=vinegar}, {@SaucesEntity=salt} and {@SaucesEntity=pepper}}
+- {@RemoveFromSauces=without {@SaucesEntity=pepper}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=salt}}
+- {@RemoveFromSauces=without {@SaucesEntity=mustard}, {@SaucesEntity=mayo} and {@SaucesEntity=dijon}}
+- {@RemoveFromSauces=with no {@SaucesEntity=yellow}}
+- {@RemoveFromSauces=with no {@SaucesEntity=pepper}}
+- {@RemoveFromSauces=with no {@SaucesEntity=vinegar}}
+- {@RemoveFromSauces=with no {@SaucesEntity=vinegar} and {@SaucesEntity=mustard}}
+- {@RemoveFromSauces=with no {@SaucesEntity=mustard} and {@SaucesEntity=mustard}}
+- {@RemoveFromSauces=with no {@SaucesEntity=pepper} and {@SaucesEntity=pepper}}
+- {@RemoveFromSauces=with no {@SaucesEntity=dijon}, {@SaucesEntity=mustard} and {@SaucesEntity=dijon mustard}}
+- {@RemoveFromSauces=with no {@SaucesEntity=vinegar}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=yellow mustard}}
+- {@RemoveFromSauces=with no {@SaucesEntity=mustard}, {@SaucesEntity=mayo} and {@SaucesEntity=pepper}}
+- {@RemoveFromSauces=remove {@SaucesEntity=pepper} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=dijon} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=yellow mustard} and {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mustard} and {@SaucesEntity=dijon} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=vinegar} and {@SaucesEntity=pepper} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=pepper}, {@SaucesEntity=mustard} and {@SaucesEntity=yellow} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=dijon mustard}, {@SaucesEntity=pepper} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mustard}, {@SaucesEntity=dijon} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=delete {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=delete {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=delete {@SaucesEntity=dijon} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=delete {@SaucesEntity=mayo} and {@SaucesEntity=dijon mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=delete {@SaucesEntity=yellow} and {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=delete {@SaucesEntity=vinegar} and {@SaucesEntity=vinegar} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=delete {@SaucesEntity=dijon}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=delete {@SaucesEntity=yellow mustard}, {@SaucesEntity=mayo} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=delete {@SaucesEntity=salt}, {@SaucesEntity=pepper} and {@SaucesEntity=dijon} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=without {@SaucesEntity=yellow}}
+- {@RemoveFromSauces=without {@SaucesEntity=vinegar}}
+- {@RemoveFromSauces=without {@SaucesEntity=dijon}}
+- {@RemoveFromSauces=without {@SaucesEntity=mayo} and {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=without {@SaucesEntity=mustard} and {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=without {@SaucesEntity=vinegar} and {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=without {@SaucesEntity=dijon}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=without {@SaucesEntity=mustard}, {@SaucesEntity=vinegar} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=without {@SaucesEntity=salt}, {@SaucesEntity=vinegar} and {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=with no {@SaucesEntity=vinegar} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=with no {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=with no {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=with no {@SaucesEntity=mustard} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=with no {@SaucesEntity=yellow} and {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=with no {@SaucesEntity=mustard} and {@SaucesEntity=vinegar} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=with no {@SaucesEntity=yellow mustard}, {@SaucesEntity=mustard} and {@SaucesEntity=pepper} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=with no {@SaucesEntity=salt}, {@SaucesEntity=mustard} and {@SaucesEntity=vinegar} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=with no {@SaucesEntity=yellow mustard}, {@SaucesEntity=mayo} and {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+> Clear only
+- {@ClearSauces=clear {@PROPERTYName=sauces}}
+- {@ClearSauces=remove {@PROPERTYName=sauces}}
+- {@ClearSauces=empty {@PROPERTYName=sauces}}
+- {@ClearSauces=please clear {@PROPERTYName=sauces}}
+- {@ClearSauces=please remove {@PROPERTYName=sauces}}
+- {@ClearSauces=please empty {@PROPERTYName=sauces}}
+- {@ClearSauces=can you clear {@PROPERTYName=sauces}}
+- {@ClearSauces=can you remove {@PROPERTYName=sauces}}
+- {@ClearSauces=can you empty {@PROPERTYName=sauces}}
+> Show only
+- {@ShowSauces=value of {@PROPERTYName=sauces}}
+- {@ShowSauces=value for {@PROPERTYName=sauces}}
+- {@ShowSauces=selection of {@PROPERTYName=sauces}}
+- {@ShowSauces=selection for {@PROPERTYName=sauces}}
+- {@ShowSauces=display {@PROPERTYName=sauces}}
+- {@ShowSauces=show {@PROPERTYName=sauces}}
+- {@ShowSauces=value of {@PROPERTYName=sauces}}
+- {@ShowSauces=value for {@PROPERTYName=sauces}}
+- {@ShowSauces={@PROPERTYName=sauces} value}
+- {@ShowSauces={@PROPERTYName=sauces} values}
+- {@ShowSauces={@PROPERTYName=sauces} selection}
+> Combinations
+- {@AddToSauces=add {@SaucesEntity=mayo}} {@RemoveFromSauces=and remove {@SaucesEntity=mustard}}
+- {@AddToSauces=add {@SaucesEntity=salt}} {@RemoveFromSauces=and remove {@SaucesEntity=salt}}
+- {@AddToSauces=add {@SaucesEntity=mayo}} {@RemoveFromSauces=and remove {@SaucesEntity=yellow mustard}}
+- {@AddToSauces=add {@SaucesEntity=mustard}} {@RemoveFromSauces=remove {@SaucesEntity=mustard}}
+- {@AddToSauces=add {@SaucesEntity=pepper}} {@RemoveFromSauces=remove {@SaucesEntity=mayo}}
+- {@AddToSauces=add {@SaucesEntity=yellow mustard}} {@RemoveFromSauces=remove {@SaucesEntity=yellow mustard}}
+- {@AddToSauces=add {@SaucesEntity=mayo}}, {@RemoveFromSauces=remove {@SaucesEntity=vinegar}}
+- {@AddToSauces=add {@SaucesEntity=yellow}}, {@RemoveFromSauces=remove {@SaucesEntity=yellow}}
+- {@AddToSauces=add {@SaucesEntity=mustard}}, {@RemoveFromSauces=remove {@SaucesEntity=mustard}}
+- {@AddToSauces=add {@SaucesEntity=vinegar} and {@SaucesEntity=dijon mustard}} {@RemoveFromSauces=and remove {@SaucesEntity=mayo}}
+- {@AddToSauces=add {@SaucesEntity=mustard} and {@SaucesEntity=mustard}} {@RemoveFromSauces=and remove {@SaucesEntity=dijon mustard}}
+- {@AddToSauces=add {@SaucesEntity=yellow} and {@SaucesEntity=yellow}} {@RemoveFromSauces=and remove {@SaucesEntity=pepper}}
+- {@AddToSauces=add {@SaucesEntity=dijon mustard}, {@SaucesEntity=mustard} and {@SaucesEntity=mayo}} {@RemoveFromSauces=and remove {@SaucesEntity=vinegar} and {@SaucesEntity=pepper}}
+- {@AddToSauces=add {@SaucesEntity=mustard}, {@SaucesEntity=pepper} and {@SaucesEntity=mustard}} {@RemoveFromSauces=and remove {@SaucesEntity=mustard} and {@SaucesEntity=pepper}}
+- {@AddToSauces=add {@SaucesEntity=vinegar}, {@SaucesEntity=yellow} and {@SaucesEntity=mayo}} {@RemoveFromSauces=and remove {@SaucesEntity=pepper} and {@SaucesEntity=vinegar}}
+- {@AddToSauces=add {@SaucesEntity=dijon}, {@SaucesEntity=mustard} and {@SaucesEntity=yellow mustard}} {@RemoveFromSauces=remove {@SaucesEntity=salt} and {@SaucesEntity=dijon mustard}}
+- {@AddToSauces=add {@SaucesEntity=mayo}, {@SaucesEntity=mayo} and {@SaucesEntity=yellow mustard}} {@RemoveFromSauces=remove {@SaucesEntity=dijon mustard} and {@SaucesEntity=yellow}}
+- {@AddToSauces=add {@SaucesEntity=salt}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=salt}} {@RemoveFromSauces=remove {@SaucesEntity=yellow} and {@SaucesEntity=mayo}}
+- {@AddToSauces=add {@SaucesEntity=mustard}}{@RemoveFromSauces=, remove {@SaucesEntity=salt}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=yellow mustard}}{@RemoveFromSauces=, remove {@SaucesEntity=pepper}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=salt}}{@RemoveFromSauces=, remove {@SaucesEntity=mustard}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=dijon mustard}} {@AddToSauces=and add {@SaucesEntity=vinegar}}
+- {@RemoveFromSauces=remove {@SaucesEntity=dijon mustard}} {@AddToSauces=and add {@SaucesEntity=dijon mustard}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mayo}} {@AddToSauces=and add {@SaucesEntity=dijon mustard}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mustard} and {@SaucesEntity=pepper}} {@AddToSauces=and add {@SaucesEntity=vinegar}}
+- {@RemoveFromSauces=remove {@SaucesEntity=yellow} and {@SaucesEntity=mayo}} {@AddToSauces=and add {@SaucesEntity=dijon}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mustard} and {@SaucesEntity=yellow mustard}} {@AddToSauces=and add {@SaucesEntity=yellow}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mustard}, {@SaucesEntity=yellow} and {@SaucesEntity=mustard}} {@AddToSauces=and add {@SaucesEntity=salt} and {@SaucesEntity=dijon}}
+- {@RemoveFromSauces=remove {@SaucesEntity=dijon mustard}, {@SaucesEntity=yellow} and {@SaucesEntity=mustard}} {@AddToSauces=and add {@SaucesEntity=mustard} and {@SaucesEntity=yellow mustard}}
+- {@RemoveFromSauces=remove {@SaucesEntity=pepper}, {@SaucesEntity=mustard} and {@SaucesEntity=yellow mustard}} {@AddToSauces=and add {@SaucesEntity=pepper} and {@SaucesEntity=vinegar}}
+- {@RemoveFromSauces=remove {@SaucesEntity=vinegar}}{@AddToSauces=, add {@SaucesEntity=dijon mustard}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=yellow mustard}}{@AddToSauces=, add {@SaucesEntity=mayo}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=dijon}}{@AddToSauces=, add {@SaucesEntity=vinegar}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=yellow}} {@AddToSauces=and add {@SaucesEntity=salt}}
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=dijon}} {@AddToSauces=and add {@SaucesEntity=vinegar}}
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=dijon mustard}} {@AddToSauces=and add {@SaucesEntity=pepper}}
+- {@ShowSauces=show {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=yellow mustard}} {@ShowSauces=and display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=mustard}} {@AddToSauces=and add {@SaucesEntity=vinegar}}
+- {@ShowSauces=show {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=salt}} {@ShowSauces=and display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=dijon}} {@AddToSauces=and add {@SaucesEntity=pepper}}
+- {@ShowSauces=show {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=mustard}} {@ShowSauces=and display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=mayo}} {@AddToSauces=and add {@SaucesEntity=yellow mustard}}
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=pepper}} {@AddToSauces=add {@SaucesEntity=dijon}} 
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=yellow mustard}} {@AddToSauces=add {@SaucesEntity=mustard}} 
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=yellow mustard}} {@AddToSauces=add {@SaucesEntity=dijon}} 
+- {@AddToSauces=add {@SaucesEntity=salt} {@PROPERTYName=sauces}} {@RemoveFromSauces=and remove {@SaucesEntity=dijon} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=vinegar} {@PROPERTYName=sauces}} {@RemoveFromSauces=and remove {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@RemoveFromSauces=and remove {@SaucesEntity=dijon mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=mayo} {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=dijon mustard} {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=dijon mustard} {@PROPERTYName=sauces}}, {@RemoveFromSauces=remove {@SaucesEntity=dijon mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}}, {@RemoveFromSauces=remove {@SaucesEntity=salt} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=salt} {@PROPERTYName=sauces}}, {@RemoveFromSauces=remove {@SaucesEntity=yellow} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=mayo} and {@SaucesEntity=yellow} {@PROPERTYName=sauces}} {@RemoveFromSauces=and remove {@SaucesEntity=dijon mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=mustard} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@RemoveFromSauces=and remove {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=yellow mustard} and {@SaucesEntity=pepper} {@PROPERTYName=sauces}} {@RemoveFromSauces=and remove {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=salt}, {@SaucesEntity=yellow} and {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}} {@RemoveFromSauces=and remove {@SaucesEntity=pepper} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=salt}, {@SaucesEntity=pepper} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@RemoveFromSauces=and remove {@SaucesEntity=dijon} and {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=dijon}, {@SaucesEntity=mayo} and {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}} {@RemoveFromSauces=and remove {@SaucesEntity=yellow} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=yellow}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=yellow} and {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=mayo}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=vinegar} {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=mustard} and {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=vinegar}, {@SaucesEntity=mustard} and {@SaucesEntity=pepper} {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=mustard} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=salt} {@PROPERTYName=sauces}}{@RemoveFromSauces=, remove {@SaucesEntity=mayo} {@PROPERTYName=sauces}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=salt} {@PROPERTYName=sauces}}{@RemoveFromSauces=, remove {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@AddToSauces=add {@SaucesEntity=dijon} {@PROPERTYName=sauces}}{@RemoveFromSauces=, remove {@SaucesEntity=yellow} {@PROPERTYName=sauces}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=vinegar} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=mayo} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=pepper} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=dijon} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=dijon} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=dijon mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=yellow} and {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}} {@AddToSauces=and add **MISSING**}
+- {@RemoveFromSauces=remove {@SaucesEntity=mustard} and {@SaucesEntity=dijon mustard} {@PROPERTYName=sauces}} {@AddToSauces=and add **MISSING**}
+- {@RemoveFromSauces=remove {@SaucesEntity=yellow mustard} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@AddToSauces=and add **MISSING**}
+- {@RemoveFromSauces=remove {@SaucesEntity=yellow}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=mustard} and {@SaucesEntity=dijon mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mustard}, {@SaucesEntity=pepper} and {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=vinegar} and {@SaucesEntity=dijon} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mayo}, {@SaucesEntity=vinegar} and {@SaucesEntity=yellow} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=dijon mustard} and {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=yellow} {@PROPERTYName=sauces}}{@AddToSauces=, add {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=pepper} {@PROPERTYName=sauces}}{@AddToSauces=, add {@SaucesEntity=pepper} {@PROPERTYName=sauces}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@RemoveFromSauces=remove {@SaucesEntity=mustard} {@PROPERTYName=sauces}}{@AddToSauces=, add {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@ShowSauces=and show {@PROPERTYName=sauces}}
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=vinegar} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=yellow} {@PROPERTYName=sauces}}
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=dijon} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=yellow mustard} {@PROPERTYName=sauces}}
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=yellow} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=mustard} {@PROPERTYName=sauces}}
+- {@ShowSauces=show {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=pepper} {@PROPERTYName=sauces}} {@ShowSauces=and display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=pepper} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=pepper} {@PROPERTYName=sauces}}
+- {@ShowSauces=show {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@ShowSauces=and display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=salt} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=dijon} {@PROPERTYName=sauces}}
+- {@ShowSauces=show {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=yellow} {@PROPERTYName=sauces}} {@ShowSauces=and display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=dijon} {@PROPERTYName=sauces}} {@AddToSauces=and add {@SaucesEntity=yellow} {@PROPERTYName=sauces}}
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=yellow} {@PROPERTYName=sauces}} {@AddToSauces=add {@SaucesEntity=dijon mustard} {@PROPERTYName=sauces}} 
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=mayo} {@PROPERTYName=sauces}} {@AddToSauces=add {@SaucesEntity=yellow} {@PROPERTYName=sauces}} 
+- {@ShowSauces=display {@PROPERTYName=sauces}} {@RemoveFromSauces=remove {@SaucesEntity=mustard} {@PROPERTYName=sauces}} {@AddToSauces=add {@SaucesEntity=vinegar} {@PROPERTYName=sauces}} 
+- pepper
+- salt
+- yellow
+- mustard
+- yellow mustard
+- dijon
+- dijon mustard
+- mayo
+- vinegar
+
+- Sauces
+
+
+> Generator: bccfdeffb8202b5fd63131390a0d432a

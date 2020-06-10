@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </summary>
         /// <param name="actionContext">Context.</param>
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
-        public virtual async Task<List<ActionChangeList>> ExecuteAsync(ActionContext actionContext)
+        public virtual Task<List<ActionChangeList>> ExecuteAsync(ActionContext actionContext)
         {
             if (RunOnce)
             {
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 actionContext.State.SetValue($"{AdaptiveDialog.ConditionTracker}.{Id}.lastRun", count);
             }
 
-            return await Task.FromResult(new List<ActionChangeList>()
+            return Task.FromResult(new List<ActionChangeList>()
             {
                 this.OnCreateChangeList(actionContext)
             });

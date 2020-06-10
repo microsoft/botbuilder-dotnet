@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling
                     Console.WriteLine($" loading took {loading} ms");
 
                     var iterationTime = 0L;
-                    var firstTime = 0l;
+                    var firstTime = 0L;
                     for (var iter = 0; iter < iterations; ++iter)
                     {
                         timer.Restart();

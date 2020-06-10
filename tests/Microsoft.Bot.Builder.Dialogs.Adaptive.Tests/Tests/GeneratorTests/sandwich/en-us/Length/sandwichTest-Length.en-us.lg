@@ -1,0 +1,20 @@
+
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
+[sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
+
+# AskLength
+- ${askString('Length')}
+
+
+> How to display the name of Length
+# LengthName
+- length
+
+# Length(val)
+- IF: ${val}
+- ${join(foreach(indicesAndValues(val), entry, entry.value), ' ')}
+- ELSE:
+- no value
+
+
+> Generator: f254caf93c669cbf36a9647d0d4ae384

@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return base.OnInitializeOptions(dc, op);
         }
 
-        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
+        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             var input = dc.State.GetValue<object>(VALUE_PROPERTY);
             var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
@@ -174,10 +174,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return Task.FromResult(InputState.Valid);
         }
 
-        protected override async Task<IActivity> OnRenderPrompt(DialogContext dc, InputState state)
+        protected override async Task<IActivity> OnRenderPromptAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))
         {
             var locale = GetCulture(dc);
-            var prompt = await base.OnRenderPrompt(dc, state);
+            var prompt = await base.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
             var channelId = dc.Context.Activity.ChannelId;
             var choicePrompt = new ChoicePrompt(this.Id);
             var choiceOptions = this.ChoiceOptions?.GetValue(dc.State) ?? ChoiceInput.DefaultChoiceOptions[locale];

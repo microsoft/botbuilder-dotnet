@@ -41,7 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             {
                 if (this.Exact)
                 {
-                    if (activity.AsMessageActivity()?.Text != this.Text)
+                    // Normalize line endings to work on windows and mac
+                    if (activity.AsMessageActivity()?.Text.Replace("\r", string.Empty) != this.Text.Replace("\r", string.Empty))
                     {
                         throw new Exception(this.Description ?? $"Text '{activity.Text}' didn't match expected text: {this.Text}'");
                     }

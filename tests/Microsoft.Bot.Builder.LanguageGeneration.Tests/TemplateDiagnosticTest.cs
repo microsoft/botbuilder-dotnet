@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.AreEqual(8, diagnostics.Count);
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.InvalidStrucBody));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.InvalidStrucBody("abc")));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
             Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.EmptyStrucContent));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
@@ -110,13 +110,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[3].Severity);
             Assert.IsTrue(diagnostics[3].Message.Contains("Error occurred when parsing expression 'NOTemplate()'. NOTemplate does not have an evaluator"));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[4].Severity);
-            Assert.IsTrue(diagnostics[4].Message.Contains(TemplateErrors.InvalidStrucName));
+            Assert.IsTrue(diagnostics[4].Message.Contains(TemplateErrors.InvalidStrucName("Activity%")));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[5].Severity);
-            Assert.IsTrue(diagnostics[5].Message.Contains(TemplateErrors.InvalidStrucName));
+            Assert.IsTrue(diagnostics[5].Message.Contains(TemplateErrors.InvalidStrucName("Activity]")));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[6].Severity); 
             Assert.IsTrue(diagnostics[6].Message.Contains(TemplateErrors.MissingStrucEnd));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[7].Severity);
-            Assert.IsTrue(diagnostics[7].Message.Contains(TemplateErrors.InvalidStrucBody));
+            Assert.IsTrue(diagnostics[7].Message.Contains(TemplateErrors.InvalidStrucBody("- hi")));
         }
 
         [TestMethod]
@@ -144,12 +144,27 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var diagnostics = GetDiagnostics("ErrorTemplateName.lg");
 
-            Assert.AreEqual(6, diagnostics.Count);
-            foreach (var diagnostic in diagnostics)
-            {
-                Assert.AreEqual(DiagnosticSeverity.Error, diagnostic.Severity);
-                Assert.IsTrue(diagnostic.Message.Contains(TemplateErrors.InvalidTemplateName));
-            }
+            Assert.AreEqual(7, diagnostics.Count);
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.InvalidParameter("param1; param2")));
+
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
+            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.InvalidParameter("param1 param2")));
+
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
+            Assert.IsTrue(diagnostics[2].Message.Contains(TemplateErrors.InvalidTemplateName("template3(errorparams")));
+
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[3].Severity);
+            Assert.IsTrue(diagnostics[3].Message.Contains(TemplateErrors.InvalidParameter("a)test(param1")));
+
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[4].Severity);
+            Assert.IsTrue(diagnostics[4].Message.Contains(TemplateErrors.InvalidParameter("$%^")));
+
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[5].Severity);
+            Assert.IsTrue(diagnostics[5].Message.Contains(TemplateErrors.InvalidTemplateName("the-name-of-template")));
+
+            Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[6].Severity);
+            Assert.IsTrue(diagnostics[6].Message.Contains(TemplateErrors.InvalidTemplateName("t1.1")));
         }
 
         [TestMethod]
@@ -258,6 +273,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("wPhrase"));
             Assert.IsTrue(exception.Message.Contains(TemplateErrors.LoopDetected));
+
+            exception = Assert.ThrowsException<Exception>(() => lgFile.AnalyzeTemplate("shouldFail"));
+            Assert.IsTrue(exception.Message.Contains(TemplateErrors.LoopDetected));
         }
 
         [TestMethod]
@@ -320,13 +338,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(4, diagnostics.Count);
 
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.SyntaxError));
+            Assert.IsTrue(diagnostics[0].Message.Contains(TemplateErrors.SyntaxError("mismatched input '-' expecting <EOF>")));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[1].Severity);
-            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.InvalidStrucName));
+            Assert.IsTrue(diagnostics[1].Message.Contains(TemplateErrors.InvalidStrucName("]")));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[2].Severity);
             Assert.IsTrue(diagnostics[2].Message.Contains(TemplateErrors.MissingStrucEnd));
             Assert.AreEqual(DiagnosticSeverity.Error, diagnostics[3].Severity);
-            Assert.IsTrue(diagnostics[3].Message.Contains(TemplateErrors.InvalidStrucBody));
+            Assert.IsTrue(diagnostics[3].Message.Contains(TemplateErrors.InvalidStrucBody("- hi")));
         }
 
         [TestMethod]

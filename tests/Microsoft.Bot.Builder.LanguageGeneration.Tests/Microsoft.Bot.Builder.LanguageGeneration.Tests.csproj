@@ -62,6 +62,8 @@
     <None Remove="Examples\CustomFunction.lg" />
     <None Remove="Examples\CustomFunctionSub.lg" />
     <None Remove="Examples\ParseTreeTest.lg" />
+    <None Remove="Examples\Multiline.lg" />
+    <None Remove="Examples\RecursiveTemplate.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
@@ -238,6 +240,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\ParseTreeTest.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    
+    <Content Include="Examples\Multiline.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\RecursiveTemplate.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\ConditionFormatError.lg">
