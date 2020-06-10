@@ -1,6 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-#pragma warning disable SA1412
 
 using System;
 using System.Collections.Generic;
@@ -68,7 +67,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return filteredQnaSearchResult;
         }
 
-        private static bool IncludeForClustering(double prevScore, double currentScore, double multiplier)
+        private static BooleanExpression IncludeForClustering(double prevScore, double currentScore, double multiplier)
         {
             return (prevScore - currentScore) < (multiplier * Math.Sqrt(prevScore));
         }
