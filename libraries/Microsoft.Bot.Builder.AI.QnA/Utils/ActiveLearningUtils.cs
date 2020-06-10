@@ -10,7 +10,27 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// Active learning helper class.
     /// </summary>
     public static class ActiveLearningUtils
-    {       
+    {
+        /// <summary>
+        /// Minimum Score For Low Score Variation.
+        /// </summary>
+        private const double MinimumScoreForLowScoreVariation = 20.0;
+
+        /// <summary>
+        /// Previous Low Score Variation Multiplier.
+        /// </summary>
+        private const double PreviousLowScoreVariationMultiplier = 0.7;
+
+        /// <summary>
+        /// Max Low Score Variation Multiplier.
+        /// </summary>
+        private const double MaxLowScoreVariationMultiplier = 1.0;
+
+        /// <summary>
+        /// Maximum Score For Low Score Variation.
+        /// </summary>
+        private const double MaximumScoreForLowScoreVariation = 95.0;
+
         /// <summary>
         /// Returns list of qnaSearch results which have low score variation.
         /// </summary>
@@ -32,10 +52,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>List of filtered qnaSearch results.</returns>
         public static List<QueryResult> GetLowScoreVariation(
             List<QueryResult> qnaSearchResults,
-            double maximumScoreForLowScoreVariation = 95.0,
-            double minimumScoreForLowScoreVariation = 20.0,
-            double previousLowScoreVariationMultiplier = 0.7,
-            double maxLowScoreVariationMultiplier = 95.0)
+            double maximumScoreForLowScoreVariation = MaximumScoreForLowScoreVariation,
+            double minimumScoreForLowScoreVariation = MinimumScoreForLowScoreVariation,
+            double previousLowScoreVariationMultiplier = PreviousLowScoreVariationMultiplier,
+            double maxLowScoreVariationMultiplier = MaxLowScoreVariationMultiplier)
         {
             if (qnaSearchResults is null)
             {
