@@ -53,11 +53,6 @@ namespace AdaptiveExpressions
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         /// <summary>
-        /// The default time span format string, which is identical to [-][d:]h:mm:ss[.FFFFFFF].
-        /// </summary>
-        public static readonly string DefaultTimeSpanFormat = "c";
-
-        /// <summary>
         /// Ticks of one day.
         /// </summary>
         private const long TicksPerDay = 24 * 60 * 60 * 10000000L;
@@ -4542,50 +4537,35 @@ namespace AdaptiveExpressions
                     (expression, state, options) =>
                         {
                             string result = null;
+                            CultureInfo locale = null;
                             var (args, error) = EvaluateChildren(expression, state, options);
-                            if (args.Count == 2 && !(args[1] is string))
+                            if (error == null)
                             {
-                                error = $"the second argument {args[1]} should be a locale string.";
-                            }
-                            else
-                            {
-                                try
+                                if (args.Count == 2 && !(args[1] is string))
                                 {
-                                    CultureInfo locale = null;
-                                    if (args.Count == 2)
+                                    error = $"the second argument {args[1]} should be a locale string.";
+                                }
+                                else
+                                {                                    
+                                    (locale, error) = DetermineLocale(state, args, locale, 2);
+                                }
+                            }
+
+                            if (error == null)
+                                {
+                                    if (args[0].IsNumber())
                                     {
-                                        locale = new CultureInfo(args[1] as string);
+                                        result = Convert.ToDouble(args[0]).ToString(locale);
+                                    }
+                                    else if (args[0] is DateTime dt)
+                                    {
+                                        result = dt.ToString(DefaultDateTimeFormat, locale);
                                     }
                                     else
                                     {
-                                        (locale, error) = DetermineLocaleFromMemory(state);
-                                    }
-
-                                    if (error == null)
-                                    {
-                                        if (args[0].IsNumber())
-                                        {
-                                            result = Convert.ToDouble(args[0]).ToString(locale);
-                                        }
-                                        else if (args[0] is DateTime dt)
-                                        {
-                                            result = dt.ToString(DefaultDateTimeFormat, locale);
-                                        }
-                                        else if (args[0] is TimeSpan ts)
-                                        {
-                                            result = ts.ToString(DefaultTimeSpanFormat, locale);
-                                        }
-                                        else
-                                        {
-                                            result = JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"');
-                                        }
+                                        result = JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"');
                                     }
                                 }
-                                catch
-                                {
-                                    error = $"{args[1]} is not a valid locale for string";
-                                }
-                            }
 
                             return (result, error);
                         }, 
