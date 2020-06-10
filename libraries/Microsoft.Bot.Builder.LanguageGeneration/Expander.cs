@@ -210,8 +210,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         foreach (var item in value)
                         {
                             var id = Guid.NewGuid().ToString();
-                            valueList.Add(id);
-                            templateRefValues.Add(id, item);
+                            if (item.Count > 0)
+                            {
+                                valueList.Add(id);
+                                templateRefValues.Add(id, item);
+                            }
+                            else
+                            {
+                                valueList.Add(new JArray());
+                            }
                         }
 
                         expandedResult.ForEach(x => x[property] = valueList);
@@ -219,8 +226,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     else
                     {
                         var id = Guid.NewGuid().ToString();
-                        expandedResult.ForEach(x => x[property] = id);
-                        templateRefValues.Add(id, value[0]);
+                        if (value[0].Count > 0)
+                        {
+                            expandedResult.ForEach(x => x[property] = id);
+                            templateRefValues.Add(id, value[0]);
+                        }
+                        else
+                        {
+                            expandedResult.ForEach(x => x[property] = new JArray());
+                        }
                     }
                 }
                 else
