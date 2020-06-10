@@ -8,7 +8,7 @@
         /// </summary>
         /// <param name="qnaSearchResults">List of QnaSearch results.</param>
         /// <returns>List of filtered qnaSearch results.</returns>
-        public static List<QueryResult> GetLowScoreVariation(List<QueryResult> qnaSearchResultsList<QueryResult> qnaSearchResults, 
+        public static List<QueryResult> GetLowScoreVariation(List<QueryResult> qnaSearchResults, List<QueryResult> qnaSearchResults, 
             double maximumScoreForLowScoreVariation= 95.0, 
             double minimumScoreForLowScoreVariation = 20.0, 
             double previousLowScoreVariationMultiplier= 0.7,
