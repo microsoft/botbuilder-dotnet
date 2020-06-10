@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,20 +22,20 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model.Request
         public string Item { get; set; }
 
         [JsonProperty(PropertyName = "event_ts")]
-        public string EventTs { get; internal set; }
+        public string EventTs { get; set; }
 
-        public string Channel { get; internal set; }
+        public string Channel { get; set; }
 
         [JsonProperty(PropertyName = "channel_id")]
-        public string ChannelId { get; internal set; }
+        public string ChannelId { get; set; }
 
         [JsonProperty(PropertyName = "bot_id")]
-        public string BotId { get; internal set; }
+        public string BotId { get; set; }
 
         [JsonProperty(PropertyName = "thread_ts")]
-        public string ThreadTs { get; internal set; }
+        public string ThreadTs { get; set; }
 
         [JsonExtensionData(ReadData = true, WriteData = true)]
-        public IDictionary<string, JToken> Properties { get; set; }
+        public IDictionary<string, JToken> AdditionalProperties { get; set; }
     }
 }

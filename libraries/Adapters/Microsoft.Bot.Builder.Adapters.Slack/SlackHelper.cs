@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -13,10 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
 using Microsoft.Bot.Builder.Adapters.Slack.Model.Request;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using SlackAPI;
 
 #if SIGNASSEMBLY
 [assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Slack.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
@@ -51,20 +49,20 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (activity.Attachments != null)
             {
-                var attachments = new List<SlackAPI.Attachment>();
+                var attachments = new List<SlackAttachment>();
 
                 foreach (var att in activity.Attachments)
                 {
                     if (att.Name == "blocks")
                     {
-                        message.Blocks = (List<Block>)att.Content;
+                        message.Blocks = att.Content;
                     }
                     else
                     {
-                        var newAttachment = new SlackAPI.Attachment()
+                        var newAttachment = new SlackAttachment()
                         {
-                            author_name = att.Name,
-                            thumb_url = att.ThumbnailUrl,
+                            AuthorName = att.Name,
+                            ThumbUrl = att.ThumbnailUrl,
                         };
                         attachments.Add(newAttachment);
                     }
@@ -95,11 +93,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 message.User = activity.Recipient.Id;
             }
 
-            if (message.IconUrl != null || !string.IsNullOrWhiteSpace(message.Icons?.status_emoji) || !string.IsNullOrWhiteSpace(message.Username))
-            {
-                message.AsUser = false;
-            }
-
             return message;
         }
 
@@ -126,7 +119,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (encoding == null)
             {
-                throw new ArgumentNullException(nameof(encoding)); 
+                throw new ArgumentNullException(nameof(encoding));
             }
 
             response.ContentType = "text/plain";
@@ -142,7 +135,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="slackPayload">The payload of the slack event.</param>
         /// <returns>An activity containing the event data.</returns>
-        public static Activity PayloadToActivity(SlackPayload slackPayload)
+        public static Activity PayloadToActivity(InteractionPayload slackPayload)
         {
             if (slackPayload == null)
             {
@@ -176,10 +169,29 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 activity.Conversation.Properties["thread_ts"] = slackPayload.ThreadTs;
             }
 
-            if (slackPayload.Actions != null && (slackPayload.Type == "block_actions" || slackPayload.Type == "interactive_message"))
+            if (slackPayload.Actions != null && slackPayload.Actions.Any())
             {
-                activity.Type = ActivityTypes.Message;
-                activity.Text = slackPayload.Actions[0].Value;
+                var action = slackPayload.Actions[0];
+
+                switch (action.Type)
+                {
+                    case "button":
+                        activity.Text = action.Value;
+                        break;
+                    case "select":
+                        activity.Text = slackPayload.Actions[0].SelectedOptions[0]?.Value ?? slackPayload.Actions[0].SelectedOption?.Value;
+                        break;
+                    case "static_select":
+                        activity.Text = slackPayload.Actions[0].SelectedOption.Value;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (!string.IsNullOrEmpty(activity.Text))
+                {
+                    activity.Type = ActivityTypes.Message;
+                }
             }
 
             return activity;
@@ -214,7 +226,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 {
                     Id = innerEvent.User ?? innerEvent.BotId ?? eventRequest.TeamId
                 },
-                ChannelData = eventRequest
+                ChannelData = eventRequest,
+                Type = ActivityTypes.Event
             };
 
             activity.Recipient = new ChannelAccount()
@@ -230,13 +243,18 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             if (innerEvent.Type == "message" && innerEvent.BotId == null)
             {
                 var message = JObject.FromObject(innerEvent).ToObject<MessageEvent>();
-                activity.Type = ActivityTypes.Message;
-                activity.Text = message.Text;
+
+                if (message.SubType == null)
+                {
+                    activity.Type = ActivityTypes.Message;
+                    activity.Text = message.Text;
+                }
+
                 activity.Conversation.Properties["channel_type"] = message.ChannelType;
+                activity.Value = innerEvent;
             }
             else
             {
-                activity.Type = ActivityTypes.Event;
                 activity.Name = innerEvent.Type;
                 activity.Value = innerEvent;
             }
@@ -251,7 +269,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="client">The Slack client.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>An activity containing the event data.</returns>
-        public static async Task<Activity> CommandToActivityAsync(CommandRequest commandRequest, SlackClientWrapper client, CancellationToken cancellationToken)
+        public static async Task<Activity> CommandToActivityAsync(CommandPayload commandRequest, SlackClientWrapper client, CancellationToken cancellationToken)
         {
             if (commandRequest == null)
             {
@@ -314,43 +332,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             return values;
-        }
-
-        /// <summary>
-        /// Deserializes the request's body as a <see cref="SlackRequestBody"/> object.
-        /// </summary>
-        /// <param name="requestBody">The query string to convert.</param>
-        /// <returns>A dictionary with the query values.</returns>
-        public static SlackRequestBody DeserializeBody(string requestBody)
-        {
-            if (string.IsNullOrWhiteSpace(requestBody))
-            {
-                return null;
-            }
-
-            // Check if it's a command event
-            if (requestBody.Contains("command=%2F"))
-            {
-                var commandBody = QueryStringToDictionary(requestBody);
-
-                return JsonConvert.DeserializeObject<SlackRequestBody>(JsonConvert.SerializeObject(commandBody));
-            }
-
-            if (requestBody.Contains("payload="))
-            {
-                // Decode and remove "payload=" from the body
-                var decodedBody = Uri.UnescapeDataString(requestBody).Remove(0, 8);
-
-                var payload = JsonConvert.DeserializeObject<BlockActionsPayload>(decodedBody);
-
-                return new SlackRequestBody
-                {
-                    Payload = payload,
-                    Token = payload.Token,
-                };
-            }
-
-            return JsonConvert.DeserializeObject<SlackRequestBody>(requestBody, new UnixDateTimeConverter());
         }
     }
 }

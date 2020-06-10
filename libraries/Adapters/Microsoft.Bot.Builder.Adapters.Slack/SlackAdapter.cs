@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Mime;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
@@ -21,7 +20,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SlackAPI;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
@@ -288,13 +286,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
                 if (postValues.ContainsKey("payload"))
                 {
-                    var payload = JsonConvert.SerializeObject(postValues).Deserialize<SlackPayload>();
+                    var payload = JsonConvert.DeserializeObject<InteractionPayload>(postValues["payload"]);
                     activity = SlackHelper.PayloadToActivity(payload);
                 }
                 else if (postValues.ContainsKey("command"))
                 {
-                    var commandRequest = JsonConvert.SerializeObject(postValues).Deserialize<CommandRequest>();
-                    activity = await SlackHelper.CommandToActivityAsync(commandRequest, _slackClient, cancellationToken).ConfigureAwait(false);
+                    var serializedPayload = JsonConvert.SerializeObject(postValues);
+                    var payload = JsonConvert.DeserializeObject<CommandPayload>(serializedPayload);
+                    activity = await SlackHelper.CommandToActivityAsync(payload, _slackClient, cancellationToken).ConfigureAwait(false);
                 }
             }
             else if (requestContentType == "application/json")
@@ -323,17 +322,27 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 }
             }
 
-            using (var context = new TurnContext(this, activity))
+            // As per official Slack API docs, some additional request types may be receieved that can be ignored
+            // but we should respond with a 200 status code
+            // https://api.slack.com/interactivity/slash-commands
+            if (activity == null)
             {
-                context.TurnState.Add("httpStatus", ((int)HttpStatusCode.OK).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                await SlackHelper.WriteAsync(response, HttpStatusCode.OK, "Unable to transform request / payload into Activity. Possible unrecognized request type", Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                using (var context = new TurnContext(this, activity))
+                {
+                    context.TurnState.Add("httpStatus", ((int)HttpStatusCode.OK).ToString(System.Globalization.CultureInfo.InvariantCulture));
 
-                await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                    await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                var code = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
-                var statusCode = (HttpStatusCode)code;
-                var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
+                    var code = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
+                    var statusCode = (HttpStatusCode)code;
+                    var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
 
-                await SlackHelper.WriteAsync(response, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                    await SlackHelper.WriteAsync(response, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
     }

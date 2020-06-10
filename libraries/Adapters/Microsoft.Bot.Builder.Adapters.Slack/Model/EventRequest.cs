@@ -1,7 +1,9 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack.Model.Request
 {
@@ -10,6 +12,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model.Request
     /// </summary>
     public class EventRequest
     {
+        [JsonProperty(PropertyName = "token")]
         public string Token { get; set; }
 
         [JsonProperty(PropertyName = "team_id")]
@@ -18,8 +21,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model.Request
         [JsonProperty(PropertyName = "api_app_id")]
         public string ApiAppId { get; set; }
 
+        [JsonProperty(PropertyName = "event")]
         public EventType Event { get; set; }
 
+        [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
 
         [JsonProperty(PropertyName = "authed_users")]
@@ -30,5 +35,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model.Request
 
         [JsonProperty(PropertyName = "event_time")]
         public string EventTime { get; set; }
+
+        [JsonExtensionData(ReadData = true, WriteData = true)]
+        public IDictionary<string, JToken> AdditionalProperties { get; set; }
     }
 }

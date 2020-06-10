@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
+
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     /// <summary>
@@ -30,6 +32,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Gets or sets the Message property.
         /// </summary>
         /// <value>The message.</value>
-        public SlackMessage Message { get; set; }
+        public MessageEvent Message { get; set; }
     }
 }

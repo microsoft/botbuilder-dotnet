@@ -176,8 +176,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parent", "tests\Skills\Pare
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Child", "tests\Skills\Child\Child.csproj", "{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlackAdapterBot", "..\BotBuilder-Samples\samples\csharp_dotnetcore\60.slack-adapter\SlackAdapterBot.csproj", "{49866C78-76CA-46A7-868C-167FB566D560}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -738,14 +736,6 @@ Global
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{49866C78-76CA-46A7-868C-167FB566D560}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49866C78-76CA-46A7-868C-167FB566D560}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49866C78-76CA-46A7-868C-167FB566D560}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{49866C78-76CA-46A7-868C-167FB566D560}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{49866C78-76CA-46A7-868C-167FB566D560}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49866C78-76CA-46A7-868C-167FB566D560}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49866C78-76CA-46A7-868C-167FB566D560}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{49866C78-76CA-46A7-868C-167FB566D560}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

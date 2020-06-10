@@ -3,34 +3,20 @@
 
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
-    public class SlackRequestBody
+    /// <summary>
+    /// Represents a Slack Command request https://api.slack.com/interactivity/slash-commands.
+    /// </summary>
+    public class CommandPayload
     {
-        [JsonProperty(PropertyName = "challenge")]
-        public string Challenge { get; set; }
-
         [JsonProperty(PropertyName = "token")]
         public string Token { get; set; }
 
         [JsonProperty(PropertyName = "team_id")]
         public string TeamId { get; set; }
-
-        [JsonProperty(PropertyName = "api_app_id")]
-        public string ApiAppId { get; set; }
-
-        [JsonProperty(PropertyName = "type")]
-        public string Type { get; set; }
-
-        [JsonProperty(PropertyName = "event_id")]
-        public string EventId { get; set; }
-
-        [JsonProperty(PropertyName = "event_time")]
-        public string EventTime { get; set; }
-
-        [JsonProperty(PropertyName = "authed_users")]
-        public List<string> AuthedUsers { get; } = new List<string>();
 
         [JsonProperty(PropertyName = "trigger_id")]
         public string TriggerId { get; set; }
@@ -47,10 +33,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         [JsonProperty(PropertyName = "command")]
         public string Command { get; set; }
 
-        [JsonProperty(PropertyName = "payload")]
-        public BlockActionsPayload Payload { get; set; }
+        [JsonProperty(PropertyName = "response_url")]
+        public string ResponseUrl { get; set; }
 
-        [JsonProperty(PropertyName = "event")]
-        public SlackEvent Event { get; set; }
+        [JsonExtensionData(ReadData = true, WriteData = true)]
+        public IDictionary<string, JToken> AdditionalProperties { get; set; }
     }
 }

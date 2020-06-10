@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Creates a Slack client by supplying the access token.
         /// </summary>
         /// <param name="options">An object containing API credentials, a webhook verification token and other options.</param>
+        /// <param name="login">Should LoginWithSlackAsync be called immediately.</param>
         public SlackClientWrapper(SlackAdapterOptions options)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
