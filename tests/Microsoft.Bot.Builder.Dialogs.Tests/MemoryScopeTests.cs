@@ -221,6 +221,59 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task DialogContextMemoryScopeTest()
+        {
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(new MemoryStorage())
+                .UseBotState(new UserState(new MemoryStorage()))
+                .UseBotState(new ConversationState(new MemoryStorage()));
+            DialogManager dm = new DialogManager(new AdaptiveDialog("adaptiveDialog")
+            {
+                Triggers = new List<Adaptive.Conditions.OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new AdaptiveDialog("adaptiveDialog2")
+                            {
+                                Triggers = new List<Adaptive.Conditions.OnCondition>()
+                                {
+                                    new OnBeginDialog()
+                                    {
+                                        Actions = new List<Dialog>()
+                                        {
+                                            new SendActivity(@"${dialogcontext.activeDialog}") { Id = "action1" },
+                                            new SendActivity(@"${dialogcontext.parent}"),
+                                            new SendActivity(@"${contains(dialogcontext.stack, 'foo')}"),
+                                            new SendActivity(@"${contains(dialogcontext.stack, 'adaptiveDialog')}"),
+                                            new SendActivity(@"${contains(dialogcontext.stack, 'adaptiveDialog2')}"),
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+            .UseResourceExplorer(new ResourceExplorer())
+            .UseLanguageGeneration();
+
+            await new TestFlow(adapter, (context, ct) =>
+                {
+                    return dm.OnTurnAsync(context, ct);
+                })
+                .SendConversationUpdate()
+                    .AssertReply("action1")
+                    .AssertReply("adaptiveDialog2")
+                    .AssertReply("False")
+                    .AssertReply("True")
+                    .AssertReply("True")
+                .StartTestAsync();
+        }
+
         internal class BotStateTestDialog : Dialog
         {
             public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
