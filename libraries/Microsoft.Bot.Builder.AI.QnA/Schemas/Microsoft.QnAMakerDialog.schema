@@ -93,6 +93,12 @@
       "description": "True, if pointing to Test environment, else false.",
       "default": false
     },
+    "displayPreciseAnswerOnly": {
+      "type": "boolean",
+      "title": "DisplayPreciseAnswerOnly",
+      "description": "True, if only precise answer needs to be displayed, else false.",
+      "default": false
+    }, 
     "enablePreciseAnswer": {
       "$ref": "schema:#/definitions/booleanExpression",
       "title": "EnablePreciseAnswer",
