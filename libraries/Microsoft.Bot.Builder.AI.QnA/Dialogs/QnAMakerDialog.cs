@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// A value indicating user's choice between precise answer and full text in response to QnAMaker GenerateAnswer query.
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
-        public bool EnablePreciseAnswer { get; set; }
+        public BoolExpression EnablePreciseAnswer { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user only wants to receive precise answer. 
@@ -446,7 +446,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 QnAId = 0,
                 RankerType = this.RankerType?.GetValue(dc.State),
                 IsTest = this.IsTest,
-                EnablePreciseAnswer = this.EnablePreciseAnswer
+                EnablePreciseAnswer = this.EnablePreciseAnswer.GetValue(dc.State)
             }); 
         }
 
