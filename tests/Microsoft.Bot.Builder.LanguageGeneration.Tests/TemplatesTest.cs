@@ -686,6 +686,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestExpandTemplateWithEmptyListInStructuredLG()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Expand.lg"));
+
+            var data = new Dictionary<string, object>()
+            {
+                { "Name", "NAME" },
+                { "Address", "ADDRESS" },
+            };
+
+            var input = new
+            {
+                Data = data
+            };
+
+            var name = "PointOfInterestSuggestedActionName";
+            var evaled = templates.ExpandTemplate(name, input).ToList();
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["text"].ToString(), "NAME at ADDRESS");
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["speak"].ToString(), "NAME at ADDRESS");
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["attachments"].Count(), 0);
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["attachmentlayout"].ToString(), "list");
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["inputhint"].ToString(), "ignoringInput");
+        }
+
+        [TestMethod]
         public void TestEvalExpression()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("EvalExpression.lg"));
