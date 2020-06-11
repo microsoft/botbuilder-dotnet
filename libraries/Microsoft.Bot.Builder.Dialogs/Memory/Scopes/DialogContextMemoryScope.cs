@@ -34,8 +34,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             var memory = new JObject();
             JArray stack = new JArray();
             var currentDc = dc;
+            
+            // go to leaf node
+            while (currentDc.Child != null)
+            {
+                currentDc = currentDc.Child;
+            }
+
             while (currentDc != null)
             {
+                // (PORTERS NOTE: javascript stack is reversed with top of stack on end)
                 foreach (var item in currentDc.Stack)
                 {
                     // filter out ActionScope items because they are internal bookkeeping.
@@ -48,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 currentDc = currentDc.Parent;
             }
 
-            // top of stack is stack[0].
+            // top of stack is stack[0]. 
             memory["stack"] = stack;
             memory["activeDialog"] = dc.ActiveDialog?.Id;
             memory["parent"] = dc.Parent?.ActiveDialog?.Id;

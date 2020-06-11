@@ -15,6 +15,10 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
@@ -50,7 +54,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateDialogContext(async (dc, ct) =>
             {
                 var dsm = dc.State as DialogStateManager;
-                foreach (var memoryScope in dsm.Configuration.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope || ms is ClassMemoryScope || ms is DialogClassMemoryScope)))
+                foreach (var memoryScope in dsm.Configuration.MemoryScopes.Where(ms => !(ms is ThisMemoryScope ||
+                    ms is DialogMemoryScope ||
+                    ms is ClassMemoryScope ||
+                    ms is DialogClassMemoryScope ||
+                    ms is DialogContextMemoryScope)))
                 {
                     var memory = memoryScope.GetMemory(dc);
                     Assert.IsNotNull(memory, "should get memory without any set");
@@ -272,6 +280,85 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     .AssertReply("True")
                     .AssertReply("True")
                 .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task DialogContextMemoryScopeTest_Interruption()
+        {
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(new MemoryStorage())
+                .UseBotState(new UserState(new MemoryStorage()))
+                .UseBotState(new ConversationState(new MemoryStorage()));
+            DialogManager dm = new DialogManager(new AdaptiveDialog("rootDialog")
+            {
+                AutoEndDialog = false,
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern()
+                        {
+                            Intent = "why",
+                            Pattern = "why"
+                        }
+                    }
+                },
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("Hello"),
+                            new TextInput()
+                            {
+                                Id = "askForName",
+                                AlwaysPrompt = true,
+                                Prompt = new ActivityTemplate("What is your name?"),
+                                Property = "user.name"
+                            },
+                            new SendActivity("I have ${user.name}")
+                        }
+                    },
+                    new OnIntent()
+                    {
+                        Intent = "why",
+                        Condition = "contains(dialogcontext.stack, 'askForName')",
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("I need your name to complete the sample")
+                        }
+                    },
+                    new OnIntent()
+                    {
+                        Intent = "why",
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("why what?")
+                        }
+                    }
+                }
+            })
+            .UseResourceExplorer(new ResourceExplorer())
+            .UseLanguageGeneration();
+
+            await new TestFlow(adapter, (context, ct) =>
+                {
+                    return dm.OnTurnAsync(context, ct);
+                })
+            .Send("hello")
+                .AssertReply("Hello")
+                .AssertReply("What is your name?")
+            .Send("why")
+                .AssertReply("I need your name to complete the sample")
+                .AssertReply("What is your name?")
+            .Send("tom")
+                .AssertReply("I have tom")
+            .Send("why")
+                .AssertReply("why what?")
+            .StartTestAsync();
         }
 
         internal class BotStateTestDialog : Dialog
