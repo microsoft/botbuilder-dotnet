@@ -285,6 +285,8 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            //Test("getPreviousViableDate('XXXX-02-02')", "2021-02-02"),
+            Test("getNextViableDate('XXXX-02-29')", "2021-02-02"),
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
