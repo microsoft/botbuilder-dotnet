@@ -4093,9 +4093,11 @@ namespace AdaptiveExpressions
                         TimexProperty parsed = null;
                         string result = null;
                         string error = null;
+                        var validYear = 0;
+                        var validMonth = 0;
+                        var validDay = 0;
                         var inputRegex = new Regex("XXXX-[0-9]{2}-[0-9]{2}");
-                        var candidates = new[] { "XXXX-02-29" };
-                        var constraints = new[] { "2020" };
+                        var format = "yyyy-MM-dd";
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
@@ -4111,7 +4113,41 @@ namespace AdaptiveExpressions
                             (parsed, error) = ParseTimexProperty(args[0]);
                         }
 
-                        var resolution = TimexRangeResolver.Evaluate(candidates, constraints);
+                        if (error == null)
+                        {
+                            if (parsed.Year != null || parsed.Month == null || parsed.DayOfMonth == null)
+                            {
+                                error = $"The paramter {args[0]} must only contains month and day-of-month.";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            var (year, month, day) = (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+                            if (parsed.Month > month || (parsed.Month == month && parsed.DayOfMonth >= day))
+                            {
+                                validYear = year;
+                            }
+                            else
+                            {
+                                validYear = year + 1;
+                            }
+
+                            validMonth = parsed.Month ?? 1;
+                            validDay = parsed.DayOfMonth ?? 1;
+                            while (true)
+                            {
+                                try
+                                {
+                                    result = new DateTime(validYear, validMonth, validDay).ToString(format);
+                                    break;
+                                }
+                                catch
+                                {
+                                    validYear = validYear + 1;
+                                }
+                            }                         
+                        }
 
                         return (result, error);
                     },
