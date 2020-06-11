@@ -306,7 +306,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// A value that indicates if user wants to receive full text along with the precise answer or not.
         /// </value>
         [JsonProperty("displayPreciseAnswerOnly")]
-        public bool DisplayPreciseAnswerOnly { get; set; }
+        public BoolExpression DisplayPreciseAnswerOnly { get; set; } = true;
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -464,7 +464,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 ActiveLearningCardTitle = this.ActiveLearningCardTitle?.GetValue(dc.State) ?? DefaultCardTitle,
                 CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
                 CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false),
-                DisplayPreciseAnswerOnly = this.DisplayPreciseAnswerOnly
+                DisplayPreciseAnswerOnly = this.DisplayPreciseAnswerOnly.GetValue(dc.State)
             };
         }
 

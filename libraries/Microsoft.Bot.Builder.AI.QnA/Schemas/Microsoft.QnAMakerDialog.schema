@@ -98,6 +98,11 @@
       "title": "EnablePreciseAnswer",
       "description": "True, if precise answer is opted, else false."
     },
+    "displayPreciseAnswerOnly": {
+      "$ref": "schema:#/definitions/booleanExpression",
+      "title": "DisplayPreciseAnswerOnly",
+      "description": "True, if precise answer is opted, else false."
+    },
     "rankerType": {
       "$ref": "schema:#/definitions/stringExpression",
       "title": "Ranker Type",
