@@ -4086,6 +4086,104 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.Boolean,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.Object)),
+                new ExpressionEvaluator(
+                    ExpressionType.GetNextViableDate,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        string result = null;
+                        string error = null;
+                        var inputRegex = new Regex("XXXX-[0-9]{2}-[0-9]{2}");
+                        var candidates = new[] { "XXXX-02-29" };
+                        var constraints = new[] { "2020" };
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (!inputRegex.IsMatch(args[0] as string))
+                            {
+                                error = $"The paramter {args[0]} must be in 'XXXX-MM-DD' format, such as 'XXXX-02-28'.";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        var resolution = TimexRangeResolver.Evaluate(candidates, constraints);
+
+                        return (result, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnaryString),
+                new ExpressionEvaluator(
+                    ExpressionType.GetPreviousViableDate,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        string result = null;
+                        string error = null;
+                        var validYear = 0;
+                        var validMonth = 0;
+                        var validDay = 0;
+                        var format = "yyyy-MM-dd";
+                        var inputRegex = new Regex("XXXX-[0-9]{2}-[0-9]{2}");
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (!inputRegex.IsMatch(args[0] as string))
+                            {
+                                error = $"The paramter {args[0]} must be in 'XXXX-MM-DD' format, such as 'XXXX-02-28'.";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty(args[0]);
+                        }
+
+                        if (error == null)
+                        {
+                            if (parsed.Year != null || parsed.Month == null || parsed.DayOfMonth == null)
+                            {
+                                error = "to be done.";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            var (year, month, day) = (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+                            if (parsed.Month <= month || (parsed.Month == month && parsed.DayOfMonth < day))
+                            {
+                                validYear = year;
+                            }
+                            else
+                            {
+                                validYear = year - 1;
+                            }
+
+                            validMonth = parsed.Month ?? 0;
+                            validDay = parsed.DayOfMonth ?? 0;
+                            while (true)
+                            {
+                                try
+                                {
+                                    result = new DateTime(validYear, validMonth, validDay).ToString(format);
+                                    break;
+                                }
+                                catch
+                                {
+                                    validYear = validYear - 1;
+                                }
+                            }
+                        }
+
+                        return (result, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnaryString),
 
                 // URI Parsing
                 new ExpressionEvaluator(
