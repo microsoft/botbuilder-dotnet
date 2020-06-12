@@ -17,7 +17,9 @@ namespace Microsoft.Bot.Schema
         public string UserAgent { get; set; }
 
         [JsonProperty(PropertyName = "messages")]
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat).
         public string[] Messages { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         [JsonProperty(PropertyName = "diagnostics")]
         public object Diagnostics { get; set; }
