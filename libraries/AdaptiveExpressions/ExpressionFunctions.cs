@@ -4096,18 +4096,8 @@ namespace AdaptiveExpressions
                         var validYear = 0;
                         var validMonth = 0;
                         var validDay = 0;
-                        var inputRegex = new Regex("XXXX-[0-9]{2}-[0-9]{2}");
-                        var format = "yyyy-MM-dd";
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
-                        if (error == null)
-                        {
-                            if (!inputRegex.IsMatch(args[0] as string))
-                            {
-                                error = $"The paramter {args[0]} must be in 'XXXX-MM-DD' format, such as 'XXXX-02-28'.";
-                            }
-                        }
-
                         if (error == null)
                         {
                             (parsed, error) = ParseTimexProperty(args[0]);
@@ -4117,7 +4107,7 @@ namespace AdaptiveExpressions
                         {
                             if (parsed.Year != null || parsed.Month == null || parsed.DayOfMonth == null)
                             {
-                                error = $"The paramter {args[0]} must only contains month and day-of-month.";
+                                error = $"The paramter {args[0]} must be a timex expression only month and day-of-month, for example: XXXX-10-31.";
                             }
                         }
 
@@ -4133,20 +4123,18 @@ namespace AdaptiveExpressions
                                 validYear = year + 1;
                             }
 
-                            validMonth = parsed.Month ?? 1;
-                            validDay = parsed.DayOfMonth ?? 1;
-                            while (true)
+                            validMonth = parsed.Month ?? 0;
+                            validDay = parsed.DayOfMonth ?? 0;
+
+                            if (validMonth == 2 && validDay == 29)
                             {
-                                try
+                                while (!DateTime.IsLeapYear(validYear))
                                 {
-                                    result = new DateTime(validYear, validMonth, validDay).ToString(format);
-                                    break;
+                                    validYear += 1;
                                 }
-                                catch
-                                {
-                                    validYear = validYear + 1;
-                                }
-                            }                         
+                            }
+
+                            result = TimexProperty.FromDate(new DateTime(validYear, validMonth, validDay)).TimexValue;
                         }
 
                         return (result, error);
@@ -4163,18 +4151,8 @@ namespace AdaptiveExpressions
                         var validYear = 0;
                         var validMonth = 0;
                         var validDay = 0;
-                        var format = "yyyy-MM-dd";
-                        var inputRegex = new Regex("XXXX-[0-9]{2}-[0-9]{2}");
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
-                        if (error == null)
-                        {
-                            if (!inputRegex.IsMatch(args[0] as string))
-                            {
-                                error = $"The paramter {args[0]} must be in 'XXXX-MM-DD' format, such as 'XXXX-02-28'.";
-                            }
-                        }
-
                         if (error == null)
                         {
                             (parsed, error) = ParseTimexProperty(args[0]);
@@ -4184,7 +4162,7 @@ namespace AdaptiveExpressions
                         {
                             if (parsed.Year != null || parsed.Month == null || parsed.DayOfMonth == null)
                             {
-                                error = "to be done.";
+                                error = $"The paramter {args[0]} must be a timex expression only contains month and day-of-month, for example: XXXX-10-31.";
                             }
                         }
 
@@ -4202,18 +4180,109 @@ namespace AdaptiveExpressions
 
                             validMonth = parsed.Month ?? 0;
                             validDay = parsed.DayOfMonth ?? 0;
-                            while (true)
+                            if (validMonth == 2 && validDay == 29)
                             {
-                                try
+                                while (!DateTime.IsLeapYear(validYear))
                                 {
-                                    result = new DateTime(validYear, validMonth, validDay).ToString(format);
-                                    break;
-                                }
-                                catch
-                                {
-                                    validYear = validYear - 1;
+                                    validYear -= 1;
                                 }
                             }
+
+                            result = TimexProperty.FromDate(new DateTime(validYear, validMonth, validDay)).TimexValue;
+                        }
+
+                        return (result, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnaryString),
+                new ExpressionEvaluator(
+                    ExpressionType.GetNextViableTime,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        string result = null;
+                        string error = null;
+                        var validHour = 0;
+                        var validMinute = 0;
+                        var validSecond = 0;
+                        IReadOnlyList<object> args;
+                        var formatRegex = new Regex("TXX:[0-5][0-9]:[0-5][0-9]");
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (!formatRegex.IsMatch(args[0] as string))
+                            {
+                                error = $"The format of input {args[0]} must be 'TXX-mm-ss', for example: 'TXX:15:28'";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty((args[0] as string).Replace("XX", "00"));
+                        }
+
+                        if (error == null)
+                        {
+                            var (hour, minute, second) = (DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+                            if (parsed.Minute > minute || (parsed.Minute == minute && parsed.Second >= second))
+                            {
+                                validHour = hour;
+                            }
+                            else
+                            {
+                                validHour = hour + 1;
+                            }
+
+                            validMinute = parsed.Minute ?? 0;
+                            validSecond = parsed.Second ?? 0;
+                            result = TimexProperty.FromTime(new Time(validHour, validMinute, validSecond)).TimexValue;
+                        }
+
+                        return (result, error);
+                    },
+                    ReturnType.String,
+                    ValidateUnaryString),
+                new ExpressionEvaluator(
+                    ExpressionType.GetPreviousViableTime,
+                    (expr, state, options) =>
+                    {
+                        TimexProperty parsed = null;
+                        string result = null;
+                        string error = null;
+                        var validHour = 0;
+                        var validMinute = 0;
+                        var validSecond = 0;
+                        IReadOnlyList<object> args;
+                        var formatRegex = new Regex("TXX:[0-5][0-9]:[0-5][0-9]");
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (!formatRegex.IsMatch(args[0] as string))
+                            {
+                                error = $"The format of input {args[0]} must be 'TXX-mm-ss', for example: 'TXX:15:28'";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            (parsed, error) = ParseTimexProperty((args[0] as string).Replace("XX", "00"));
+                        }
+
+                        if (error == null)
+                        {
+                            var (hour, minute, second) = (DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+                            if (parsed.Minute < minute || (parsed.Minute == minute && parsed.Second < second))
+                            {
+                                validHour = hour;
+                            }
+                            else
+                            {
+                                validHour = hour - 1;
+                            }
+
+                            validMinute = parsed.Minute ?? 0;
+                            validSecond = parsed.Second ?? 0;
+                            result = TimexProperty.FromTime(new Time(validHour, validMinute, validSecond)).TimexValue;
                         }
 
                         return (result, error);

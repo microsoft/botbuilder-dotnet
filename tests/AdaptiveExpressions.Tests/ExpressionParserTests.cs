@@ -285,8 +285,6 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
-            //Test("getPreviousViableDate('XXXX-02-02')", "2021-02-02"),
-            Test("getNextViableDate('XXXX-02-29')", "2021-02-02"),
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
@@ -689,7 +687,7 @@ namespace AdaptiveExpressions.Tests
             // init dateTime: 2018-03-15T13:00:00Z
             Test("isDefinite('helloworld')", false),
             Test("isDefinite('2012-12-21')", true),
-            Test("isDefinite('xxxx-12-21')", false),
+            Test("isDefinite('XXXX-12-21')", false),
             Test("isDefinite(validFullDateTimex)", true),
             Test("isDefinite(invalidFullDateTimex)", false),
             Test("isTime(validHourTimex)", true),
@@ -784,7 +782,15 @@ namespace AdaptiveExpressions.Tests
             Test("ticks(timestampObj3)", 636503904000000000),
             Test("ticksToDays(2193385800000000)", 2538.64097222),
             Test("ticksToHours(2193385800000000)", 60927.383333333331),
-            Test("ticksToMinutes(2193385811100000)", 3655643.0185), 
+            Test("ticksToMinutes(2193385811100000)", 3655643.0185),
+            Test("isMatch(getPreviousViableDate('XXXX-07-10'), '20[0-9]{2}-07-10')", true),
+            Test("getPreviousViableDate('XXXX-02-29')", "2020-02-29"),
+            Test("isMatch(getNextViableDate('XXXX-07-10'), '202[0-9]-07-10')", true),
+            Test("getNextViableDate('XXXX-02-29')", "2024-02-29"),
+            Test("isMatch(getNextViableTime('TXX:40:20'), 'T[0-2][0-9]:40:20')", true),
+            Test("isMatch(getNextViableTime('TXX:05:10'), 'T[0-2][0-9]:05:10')", true),
+            Test("isMatch(getPreviousViableTime('TXX:40:20'), 'T[0-2][0-9]:40:20')", true),
+            Test("isMatch(getPreviousViableTime('TXX:05:10'), 'T[0-2][0-9]:05:10')", true),
             #endregion
 
             #region uri parsing function test
