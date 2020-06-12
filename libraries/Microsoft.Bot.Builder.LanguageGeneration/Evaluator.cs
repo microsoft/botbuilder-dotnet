@@ -431,7 +431,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 CheckExpressionResult(exp, error, result, templateName, lineContent, errorPrefix);
             }
-            else if (result == null && lgOptions.StrictMode != false)
+            else if (result == null && lgOptions.StrictMode != true)
             {
                 result = "null";
             }
