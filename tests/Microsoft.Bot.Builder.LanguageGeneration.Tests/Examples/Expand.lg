@@ -101,3 +101,15 @@ They are ${ShowAlarm(alarms[1])}
     Speak = ${GetAge()}
     Text = zoo
 ]
+
+# PointOfInterestSuggestedActionNameText(Data)
+- ${if(Data.Name == null, '', Data.Name)} at ${if(Data.Address == null, '', Data.Address)}
+
+# PointOfInterestSuggestedActionName(Data, Cards, Layout)
+[Activity
+    Text = ${PointOfInterestSuggestedActionNameText(Data)}
+    Speak = ${PointOfInterestSuggestedActionNameText(Data)}
+    Attachments = ${if(Cards == null, [], [])}
+    AttachmentLayout = ${if(Layout == null, 'list', Layout)}
+    InputHint = ignoringInput
+]
