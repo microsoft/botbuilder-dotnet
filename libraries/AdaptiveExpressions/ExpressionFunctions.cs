@@ -203,6 +203,13 @@ namespace AdaptiveExpressions
             => ValidateArityAndAnyType(expression, 2, 2, ReturnType.Number);
 
         /// <summary>
+        /// Validate 1 or 2 numeric arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateUnaryOrBinaryNumber(Expression expression)
+            => ValidateArityAndAnyType(expression, 1, 2, ReturnType.Number);
+
+        /// <summary>
         /// Validate 2 or more than 2 numeric arguments.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
@@ -768,6 +775,15 @@ namespace AdaptiveExpressions
         /// <returns>Delegate for evaluating an expression.</returns>
         public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<object>, object> function)
             => new ExpressionEvaluator(type, Apply(function, VerifyStringOrNull), ReturnType.String, ValidateUnaryString);
+
+        /// <summary>
+        /// Transform a number into another number.
+        /// </summary>
+        /// <param name="type">Expression type.</param>
+        /// <param name="function">Function to apply.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static ExpressionEvaluator NumberTransform(string type, Func<IReadOnlyList<object>, object> function)
+            => new ExpressionEvaluator(type, Apply(function, VerifyNumber), ReturnType.Number, ValidateUnaryNumber);
 
         /// <summary>
         /// Transform a date-time to another date-time.
@@ -2923,6 +2939,41 @@ namespace AdaptiveExpressions
                         VerifyInteger),
                     ReturnType.Array,
                     ValidateBinaryNumber),
+                NumberTransform(
+                    ExpressionType.Floor,
+                    args => Math.Floor(Convert.ToDouble(args[0]))),
+                NumberTransform(
+                    ExpressionType.Ceiling,
+                    args => Math.Ceiling(Convert.ToDouble(args[0]))),
+                new ExpressionEvaluator(
+                    ExpressionType.Round,
+                    ApplyWithError(
+                        args =>
+                        {
+                        string error = null;
+                        object result = null;
+                        if (args.Count == 2 && !args[1].IsInteger())
+                        {
+                            error = $"The second {args[1]} parameter must be an integer.";
+                        }
+
+                        if (error == null)
+                        {
+                            var digits = args.Count == 2 ? Convert.ToInt32(args[1]) : 0;
+                            if (digits < 0 || digits > 15)
+                            {
+                                error = $"The second parameter {args[1]} must be an integer between 0 and 15;";
+                            }
+                            else
+                            {
+                                result = Math.Round(Convert.ToDouble(args[0]), digits);
+                            }
+                        }
+
+                        return (result, error);
+                    }, VerifyNumber),
+                    ReturnType.Number,
+                    ValidateUnaryOrBinaryNumber),
 
                 // Collection Functions
                 new ExpressionEvaluator(
