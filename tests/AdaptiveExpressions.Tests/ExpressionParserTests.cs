@@ -680,6 +680,13 @@ namespace AdaptiveExpressions.Tests
             Test("rand(2, 3)", 2),
             Test("range(1,4)", new[] { 1, 2, 3, 4 }),
             Test("range(-1,6)", new[] { -1, 0, 1, 2, 3, 4 }),
+            Test("floor(3.51)", 3),
+            Test("floor(4.00)", 4),
+            Test("ceiling(3.51)", 4),
+            Test("ceiling(4.00)", 4),
+            Test("round(3.51)", 4),
+            Test("round(3.55, 1)", 3.6),
+            Test("round(3.12134, 3)", 3.121),
             #endregion
 
             #region  Date and time function test
