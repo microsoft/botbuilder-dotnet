@@ -119,6 +119,8 @@ namespace AdaptiveExpressions
         public const string IsPresent = "isPresent";
         public const string GetNextViableDate = "getNextViableDate";
         public const string GetPreviousViableDate = "getPreviousViableDate";
+        public const string GetNextViableTime = "getNextViableTime";
+        public const string GetPreviousViableTime = "getPreviousViableTime";
 
         // Conversions
         public const string Float = "float";
