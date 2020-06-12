@@ -33,7 +33,9 @@ namespace Microsoft.Bot.Schema
         /// <value>
         /// Service URL where responses to this activity should be sent.
         /// </value>
+#pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking binary compat)
         string ServiceUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets timestamp when this message was sent (UTC).
@@ -100,7 +102,9 @@ namespace Microsoft.Bot.Schema
         /// <value>
         /// Collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         IList<Entity> Entities { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets channel-specific payload.
@@ -121,22 +125,24 @@ namespace Microsoft.Bot.Schema
         /// <value>
         /// Channel-specific payload.
         /// </value>
+#pragma warning disable CA1721 // Property names should not match get methods (we can't change this without breaking binary compat)
         dynamic ChannelData { get; set; }
+#pragma warning restore CA1721 // Property names should not match get methods
 
         /// <summary>
         /// Gets the channel data as strongly typed object.
         /// </summary>
-        /// <typeparam name="TypeT">The expected type of the object.</typeparam>
+        /// <typeparam name="T">The expected type of the object.</typeparam>
         /// <returns>The strongly typed channel data.</returns>
-        TypeT GetChannelData<TypeT>();
+        T GetChannelData<T>();
 
         /// <summary>
         /// Try to get the channeldata as a strongly typed object.
         /// </summary>
-        /// <typeparam name="TypeT">Type T.</typeparam>
+        /// <typeparam name="T">Type T.</typeparam>
         /// <param name="instance">instance.</param>
         /// <returns>false if there is no valid channeldata available.</returns>
-        bool TryGetChannelData<TypeT>(out TypeT instance);
+        bool TryGetChannelData<T>(out T instance);
 
         /// <summary>
         /// Return IMessageActivity if this is a message activity, null otherwise.

@@ -51,7 +51,9 @@ namespace Microsoft.Bot.Schema
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
         [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public JObject Properties { get; set; } = new JObject();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Creates an instance of the <see cref="Activity"/> class as an <see cref="IMessageActivity"/> object.
@@ -378,37 +380,37 @@ namespace Microsoft.Bot.Schema
         /// <seealso cref="Mention"/>
         public Mention[] GetMentions()
         {
-            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", ignoreCase: true) == 0)
-                .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? new Mention[0];
+            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", StringComparison.OrdinalIgnoreCase) == 0)
+                .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? Array.Empty<Mention>();
         }
 
         /// <summary>
         /// Gets the channel data for this activity as a strongly-typed object.
         /// </summary>
-        /// <typeparam name="TypeT">The type of the object to return.</typeparam>
+        /// <typeparam name="T">The type of the object to return.</typeparam>
         /// <returns>The strongly-typed object; or the type's default value, if the <see cref="ChannelData"/> is null.</returns>
         /// <seealso cref="ChannelData"/>
         /// <seealso cref="TryGetChannelData{TypeT}(out TypeT)"/>
-        public TypeT GetChannelData<TypeT>()
+        public T GetChannelData<T>()
         {
             if (this.ChannelData == null)
             {
-                return default(TypeT);
+                return default(T);
             }
 
-            if (this.ChannelData.GetType() == typeof(TypeT))
+            if (this.ChannelData.GetType() == typeof(T))
             {
-                return (TypeT)this.ChannelData;
+                return (T)this.ChannelData;
             }
 
-            return ((JObject)this.ChannelData).ToObject<TypeT>();
+            return ((JObject)this.ChannelData).ToObject<T>();
         }
 
         /// <summary>
         /// Gets the channel data for this activity as a strongly-typed object.
         /// A return value idicates whether the operation succeeded.
         /// </summary>
-        /// <typeparam name="TypeT">The type of the object to return.</typeparam>
+        /// <typeparam name="T">The type of the object to return.</typeparam>
         /// <param name="instance">When this method returns, contains the strongly-typed object if the operation succeeded,
         /// or the type's default value if the operation failed.</param>
         /// <returns>
@@ -416,9 +418,9 @@ namespace Microsoft.Bot.Schema
         /// </returns>
         /// <seealso cref="ChannelData"/>
         /// <seealso cref="GetChannelData{TypeT}"/>
-        public bool TryGetChannelData<TypeT>(out TypeT instance)
+        public bool TryGetChannelData<T>(out T instance)
         {
-            instance = default(TypeT);
+            instance = default(T);
 
             try
             {
@@ -427,10 +429,12 @@ namespace Microsoft.Bot.Schema
                     return false;
                 }
 
-                instance = this.GetChannelData<TypeT>();
+                instance = this.GetChannelData<T>();
                 return true;
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we just return false here if the conversion fails for any reason)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 return false;
             }
@@ -442,7 +446,7 @@ namespace Microsoft.Bot.Schema
         /// <returns>A conversation reference for the conversation that contains this activity.</returns>
         public ConversationReference GetConversationReference()
         {
-            ConversationReference reference = new ConversationReference
+            var reference = new ConversationReference
             {
                 ActivityId = this.Id,
                 User = this.From,
@@ -567,10 +571,6 @@ namespace Microsoft.Bot.Schema
             }
 
             return result;
-        }
-
-        partial void CustomInit()
-        {
         }
     }
 }

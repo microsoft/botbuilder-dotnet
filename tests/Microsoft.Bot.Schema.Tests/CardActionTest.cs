@@ -12,7 +12,12 @@ namespace Microsoft.Bot.Schema.Tests
         [TestMethod]
         public void TestImplicitConversation()
         {
-            SuggestedActions(new CardAction[] { "x", "y", "z" });
+            SuggestedActions(new CardAction[]
+            {
+                "x",
+                "y",
+                "z"
+            });
 
             void SuggestedActions(IList<CardAction> actions)
             {
@@ -23,6 +28,14 @@ namespace Microsoft.Bot.Schema.Tests
                 Assert.AreEqual("z", actions[2].Title);
                 Assert.AreEqual("z", actions[2].Value);
             }
+        }
+
+        [TestMethod]
+        public void FromString()
+        {
+            var sut = CardAction.FromString("my action");
+            Assert.AreEqual("my action", sut.Title);
+            Assert.AreEqual("my action", sut.Value);
         }
     }
 }

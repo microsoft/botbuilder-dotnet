@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Schema
 {
-#pragma warning disable SA1609 // PropertyDocumentationMustHaveValue, temporary ignore, needs to be fixed later
     /// <summary>
     /// An Activity is the basic communication type for the Bot Framework 3.0
     /// protocol.
@@ -176,6 +175,9 @@ namespace Microsoft.Bot.Schema
         /// 'messageUpdate', 'messageDelete', 'installationUpdate',
         /// 'messageReaction', 'suggestion', 'trace', 'handoff'.
         /// </summary>
+        /// <value>
+        /// The activity type (see <see cref="ActivityTypes"/>). 
+        /// </value>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
 
@@ -183,6 +185,9 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets an ID that uniquely identifies the activity on the
         /// channel.
         /// </summary>
+        /// <value>
+        /// An ID that uniquely identifies the activity on the channel.
+        /// </value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
@@ -190,6 +195,9 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the date and time when the message was sent, in UTC,
         /// expressed in ISO-8601 format.
         /// </summary>
+        /// <value>
+        /// The date and time when the message was sent, in UTC, expressed in ISO-8601 format.
+        /// </value>
         [JsonProperty(PropertyName = "timestamp")]
         public System.DateTimeOffset? Timestamp { get; set; }
 
@@ -198,6 +206,9 @@ namespace Microsoft.Bot.Schema
         /// time, expressed in ISO-8601 format.
         /// For example, 2016-09-23T13:07:49.4714686-07:00.
         /// </summary>
+        /// <value>
+        /// The date and time when the message was sent, in local time, expressed in ISO-8601 format.
+        /// </value>
         [JsonProperty(PropertyName = "localTimestamp")]
         public System.DateTimeOffset? LocalTimestamp { get; set; }
 
@@ -206,6 +217,10 @@ namespace Microsoft.Bot.Schema
         /// the message, expressed in IANA Time Zone database format.
         /// For example, America/Los_Angeles.
         /// </summary>
+        /// <value>
+        /// The name of the timezone used to define local time for
+        /// the message, expressed in IANA Time Zone database format.
+        /// </value>
         [JsonProperty(PropertyName = "localTimezone")]
         public string LocalTimezone { get; set; }
 
@@ -213,6 +228,9 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the URL that specifies the channel's service endpoint.
         /// Set by the channel.
         /// </summary>
+        /// <value>
+        /// The URL that specifies the channel's service endpoint.
+        /// </value>
         [JsonProperty(PropertyName = "serviceUrl")]
         public string ServiceUrl { get; set; }
 
@@ -220,70 +238,111 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets an ID that uniquely identifies the channel.
         /// Set by the channel.
         /// </summary>
+        /// <value>
+        /// An ID that uniquely identifies the channel.
+        /// </value>
         [JsonProperty(PropertyName = "channelId")]
         public string ChannelId { get; set; }
 
         /// <summary>
         /// Gets or sets the sender of the message.
         /// </summary>
+        /// <value>
+        /// The <see cref="ChannelAccount"/> for the sender of the message.
+        /// </value>
         [JsonProperty(PropertyName = "from")]
         public ChannelAccount From { get; set; }
 
         /// <summary>
         /// Gets or sets the conversation to which the activity belongs.
         /// </summary>
+        /// <value>
+        /// The <see cref="ConversationAccount"/> to which the activity belongs.
+        /// </value>
         [JsonProperty(PropertyName = "conversation")]
         public ConversationAccount Conversation { get; set; }
 
         /// <summary>
         /// Gets or sets the recipient of the message.
         /// </summary>
+        /// <value>
+        /// The <see cref="ChannelAccount"/> for the recipient of the message.
+        /// </value>
         [JsonProperty(PropertyName = "recipient")]
         public ChannelAccount Recipient { get; set; }
 
         /// <summary>
         /// Gets or sets the format of text fields. Default: markdown. Possible
-        /// values include: 'markdown', 'plain', 'xml'.
+        /// values are defined by <see cref="TextFormatTypes"/>.
         /// </summary>
+        /// <value>
+        /// The format of text fields (see <see cref="TextFormatTypes"/>).
+        /// </value>
         [JsonProperty(PropertyName = "textFormat")]
         public string TextFormat { get; set; }
 
         /// <summary>
         /// Gets or sets the layout hint for multiple attachments. Default:
-        /// list. Possible values include: 'list', 'carousel'.
+        /// list. Possible values are defined by <see cref="AttachmentLayoutTypes"/>.
         /// </summary>
+        /// <value>
+        /// The layout hint for multiple attachments.
+        /// </value>
         [JsonProperty(PropertyName = "attachmentLayout")]
         public string AttachmentLayout { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of members added to the conversation.
         /// </summary>
+        /// <value>
+        /// The collection of members added to the conversation.
+        /// </value>
         [JsonProperty(PropertyName = "membersAdded")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<ChannelAccount> MembersAdded { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the collection of members removed from the
         /// conversation.
         /// </summary>
+        /// <value>
+        /// The collection of members removed from the conversation.
+        /// </value>
         [JsonProperty(PropertyName = "membersRemoved")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<ChannelAccount> MembersRemoved { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the collection of reactions added to the conversation.
         /// </summary>
+        /// <value>
+        /// The collection of reactions added to the conversation.
+        /// </value>
         [JsonProperty(PropertyName = "reactionsAdded")]
+#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public IList<MessageReaction> ReactionsAdded { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the collection of reactions removed from the
         /// conversation.
         /// </summary>
+        /// <value>
+        /// The collection of reactions removed from the conversation.
+        /// </value>
         [JsonProperty(PropertyName = "reactionsRemoved")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<MessageReaction> ReactionsRemoved { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the updated topic name of the conversation.
         /// </summary>
+        /// <value>
+        /// The updated topic name of the conversation.
+        /// </value>
         [JsonProperty(PropertyName = "topicName")]
         public string TopicName { get; set; }
 
@@ -291,6 +350,9 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets a value indicating whether the prior history of the
         /// channel is disclosed.
         /// </summary>
+        /// <value>
+        /// A value indicating whether the prior history of the channel is disclosed.
+        /// </value>
         [JsonProperty(PropertyName = "historyDisclosed")]
         public bool? HistoryDisclosed { get; set; }
 
@@ -302,27 +364,40 @@ namespace Microsoft.Bot.Schema
         /// country or region.
         /// The locale name can also correspond to a valid BCP-47 language tag.
         /// </summary>
+        /// <value>
+        /// A locale for the activity.
+        /// </value>
         [JsonProperty(PropertyName = "locale")]
         public string Locale { get; set; }
 
         /// <summary>
         /// Gets or sets the text content of the message.
         /// </summary>
+        /// <value>
+        /// The text content of the message.
+        /// </value>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets the text to speak.
         /// </summary>
+        /// <value>
+        /// The text to speak.
+        /// </value>
         [JsonProperty(PropertyName = "speak")]
         public string Speak { get; set; }
 
         /// <summary>
         /// Gets or sets a string indicating whether your bot is accepting,
         /// expecting, or ignoring user input after the message is delivered to
-        /// the client. Possible values include: 'acceptingInput',
-        /// 'ignoringInput', 'expectingInput'.
+        /// the client (see <see cref="InputHints"/>.
         /// </summary>
+        /// <value>
+        /// A string indicating whether your bot is accepting,
+        /// expecting, or ignoring user input after the message is delivered to
+        /// the client.
+        /// </value>
         [JsonProperty(PropertyName = "inputHint")]
         public string InputHint { get; set; }
 
@@ -330,38 +405,64 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the text to display if the channel cannot render
         /// cards.
         /// </summary>
+        /// <value>
+        /// The text to display if the channel cannot render cards.
+        /// </value>
         [JsonProperty(PropertyName = "summary")]
         public string Summary { get; set; }
 
         /// <summary>
         /// Gets or sets the suggested actions for the activity.
         /// </summary>
+        /// <value>
+        /// The suggested actions for the activity.
+        /// </value>
         [JsonProperty(PropertyName = "suggestedActions")]
         public SuggestedActions SuggestedActions { get; set; }
 
         /// <summary>
         /// Gets or sets the attachments for the activity.
         /// </summary>
+        /// <value>
+        /// The attachments for the activity.
+        /// </value>
         [JsonProperty(PropertyName = "attachments")]
+#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public IList<Attachment> Attachments { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the entities that were mentioned in the message.
         /// </summary>
+        /// <value>
+        /// The entities that were mentioned in the message.
+        /// </value>
         [JsonProperty(PropertyName = "entities")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<Entity> Entities { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets channel-specific content.
         /// </summary>
+        /// <value>
+        /// Channel-specific content.
+        /// </value>
         [JsonProperty(PropertyName = "channelData")]
+#pragma warning disable CA1721 // Property names should not match get methods (we can't change this without changing binary compat).
         public object ChannelData { get; set; }
+#pragma warning restore CA1721 // Property names should not match get methods
 
         /// <summary>
         /// Gets or sets a string indicating whether the recipient of a
         /// contactRelationUpdate was added to or removed from the sender's
         /// contact list.
         /// </summary>
+        /// <value>
+        /// A string indicating whether the recipient of a
+        /// contactRelationUpdate was added to or removed from the sender's
+        /// contact list.
+        /// </value>
         [JsonProperty(PropertyName = "action")]
         public string Action { get; set; }
 
@@ -369,24 +470,36 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the ID of the message to which this message is a
         /// reply.
         /// </summary>
+        /// <value>
+        /// The ID of the message to which this message is a reply.
+        /// </value>
         [JsonProperty(PropertyName = "replyToId")]
         public string ReplyToId { get; set; }
 
         /// <summary>
         /// Gets or sets a descriptive label for the activity.
         /// </summary>
+        /// <value>
+        /// A descriptive label for the activity.
+        /// </value>
         [JsonProperty(PropertyName = "label")]
         public string Label { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the activity's value object.
         /// </summary>
+        /// <value>
+        /// The type of the activity's value object.
+        /// </value>
         [JsonProperty(PropertyName = "valueType")]
         public string ValueType { get; set; }
 
         /// <summary>
         /// Gets or sets a value that is associated with the activity.
         /// </summary>
+        /// <value>
+        /// A value that is associated with the activity.
+        /// </value>
         [JsonProperty(PropertyName = "value")]
         public object Value { get; set; }
 
@@ -394,21 +507,29 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the name of the operation associated with an invoke or
         /// event activity.
         /// </summary>
+        /// <value>
+        /// The name of the operation associated with an invoke or event activity.
+        /// </value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets a reference to another conversation or activity.
+        /// Gets or sets a <see cref="ConversationReference"/> to another conversation or activity.
         /// </summary>
+        /// <value>
+        /// A reference to another conversation or activity.
+        /// </value>
         [JsonProperty(PropertyName = "relatesTo")]
         public ConversationReference RelatesTo { get; set; }
 
         /// <summary>
         /// Gets or sets a code for endOfConversation activities that indicates
-        /// why the conversation ended. Possible values include:
-        /// 'unknown', 'completedSuccessfully', 'userCancelled', 'botTimedOut',
-        /// 'botIssuedInvalidMessage', 'channelFailed'.
+        /// why the conversation ended. Possible values are defined in <see cref="EndOfConversationCodes"/>.
         /// </summary>
+        /// <value>
+        /// A code for endOfConversation activities that indicates
+        /// why the conversation ended.
+        /// </value>
         [JsonProperty(PropertyName = "code")]
         public string Code { get; set; }
 
@@ -416,22 +537,32 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the time at which the activity should be considered to
         /// be "expired" and should not be presented to the recipient.
         /// </summary>
+        /// <value>
+        /// The time at which the activity should be considered to
+        /// be "expired" and should not be presented to the recipient.
+        /// </value>
         [JsonProperty(PropertyName = "expiration")]
         public System.DateTimeOffset? Expiration { get; set; }
 
         /// <summary>
         /// Gets or sets the importance of the activity. Possible values
-        /// include: 'low', 'normal', 'high'.
+        /// are defined in <see cref="ActivityImportance"/>.
         /// </summary>
+        /// <value>
+        /// The importance of the activity.
+        /// </value>
         [JsonProperty(PropertyName = "importance")]
         public string Importance { get; set; }
 
         /// <summary>
         /// Gets or sets a delivery hint to signal to the recipient alternate
         /// delivery paths for the activity.
-        /// The default delivery mode is "default". Possible values include:
-        /// 'normal', 'notification', 'expectReplies', 'ephemeral'.
+        /// The default delivery mode is "default". Possible values are defined in <see cref="DeliveryModes"/>.
         /// </summary>
+        /// <value>
+        /// A delivery hint to signal to the recipient alternate
+        /// delivery paths for the activity.
+        /// </value>
         [JsonProperty(PropertyName = "deliveryMode")]
         public string DeliveryMode { get; set; }
 
@@ -439,20 +570,35 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets list of phrases and references that speech and
         /// language-priming systems should listen for.
         /// </summary>
+        /// <value>
+        /// List of phrases and references that speech and language-priming systems should listen for.
+        /// </value>
         [JsonProperty(PropertyName = "listenFor")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<string> ListenFor { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the collection of text fragments to highlight when the
         /// activity contains a ReplyToId value.
         /// </summary>
+        /// <value>
+        /// The collection of text fragments to highlight when the
+        /// activity contains a ReplyToId value.
+        /// </value>
         [JsonProperty(PropertyName = "textHighlights")]
+#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public IList<TextHighlight> TextHighlights { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets an optional programmatic action accompanying this
         /// request.
         /// </summary>
+        /// <value>
+        /// An optional programmatic action accompanying this
+        /// request.
+        /// </value>
         [JsonProperty(PropertyName = "semanticAction")]
         public SemanticAction SemanticAction { get; set; }
 
@@ -462,6 +608,12 @@ namespace Microsoft.Bot.Schema
         /// instead populated by bots and clients based on cryptographically
         /// verifiable data that asserts the identity of the callers (e.g. tokens).
         /// </summary>
+        /// <value>
+        /// A string containing an IRI identifying the caller of a bot.
+        /// This field is not intended to be transmitted over the wire, but is
+        /// instead populated by bots and clients based on cryptographically
+        /// verifiable data that asserts the identity of the callers (e.g. tokens).
+        /// </value>
         [JsonProperty(PropertyName = "callerId")]
         public string CallerId { get; set; }
 
@@ -470,5 +622,4 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         partial void CustomInit();
     }
-#pragma warning restore SA1609 // PropertyDocumentationMustHaveValue
 }
