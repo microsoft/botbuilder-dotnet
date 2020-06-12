@@ -1,4 +1,4 @@
 > !# @strict = false
 
 # StrictFalse
-- ${template_not_defined}
+- ${variable_not_defined}
