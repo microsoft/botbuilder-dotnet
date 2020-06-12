@@ -507,8 +507,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(isTemplate, ExpressionFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
             }
 
+            const string expandText = "expandText";
+
+            if (name.Equals(expandText))
+            {
+                return new ExpressionEvaluator(expandText, ExpressionFunctions.Apply(this.ExpandText()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
+            }
+
             return null;
         };
+
+        private Func<IReadOnlyList<object>, object> ExpandText()
+       => (IReadOnlyList<object> args) =>
+       {
+           var stringContent = args[0].ToString();
+           var evaluator = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
+           var result = ExpressionRecognizeRegex.Replace(stringContent, evaluator);
+           return result.Escape();
+       };
 
         private Func<IReadOnlyList<object>, object> IsTemplate()
        => (IReadOnlyList<object> args) =>

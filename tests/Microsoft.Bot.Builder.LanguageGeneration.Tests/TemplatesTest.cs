@@ -111,6 +111,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestExpandText()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("ExpandText.lg"));
+
+            var scope = new JObject
+            {
+                ["@answer"] = "hello ${user.name}",
+                ["user"] = new JObject
+                {
+                    ["name"] = "vivian"
+                }
+            };
+
+            // - ${expandText(@answer)}
+            var evaled = templates.Evaluate("template", scope);
+            Assert.AreEqual("hello vivian", evaled);
+        }
+
+        [TestMethod]
         public void TestBasicSwitchCaseTemplate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("switchcase.lg"));
