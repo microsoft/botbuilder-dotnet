@@ -23,9 +23,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string LGType = "lgType";
 
-        // PCRE: (?<!\\)\${(('(\\('|\\)|[^'])*?')|("(\\("|\\)|[^"])*?")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'"`])|({\s*}))+}?
-        public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
-        public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions lgOptions;
@@ -521,9 +518,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
        => (IReadOnlyList<object> args) =>
        {
            var stringContent = args[0].ToString();
-           var evaluator = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-           var result = ExpressionRecognizeRegex.Replace(stringContent, evaluator);
-           return result.Escape();
+           var newScope = CurrentTarget().Scope;
+           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+           return newTemplates.EvaluateText(stringContent, newScope, lgOptions);
        };
 
         private Func<IReadOnlyList<object>, object> IsTemplate()
@@ -552,9 +549,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
 
-           var evaluator = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-           var result = ExpressionRecognizeRegex.Replace(stringContent, evaluator);
-           return result.Escape();
+           var newScope = CurrentTarget().Scope;
+           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+           return newTemplates.EvaluateText(stringContent, newScope, lgOptions);
        };
 
         private string GetResourcePath(string filePath)
