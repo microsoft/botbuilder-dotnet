@@ -22,10 +22,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Expander : LGTemplateParserBaseVisitor<List<object>>
     {
         public const string LGType = "lgType";
-        public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
-        public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions lgOptions;
+        private readonly ExpressionParser expressionParser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Expander"/> class.
@@ -38,6 +37,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
             this.lgOptions = opt;
+
+            this.expressionParser = expressionParser;
 
             // generate a new customized expression parser by injecting the template as functions
             ExpanderExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, true));
@@ -536,8 +537,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(isTemplate, ExpressionFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
             }
 
+            const string expandText = "expandText";
+
+            if (name.Equals(expandText))
+            {
+                return new ExpressionEvaluator(expandText, ExpressionFunctions.Apply(this.ExpandText()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
+            }
+
             return null;
         };
+
+        private Func<IReadOnlyList<object>, object> ExpandText()
+       => (IReadOnlyList<object> args) =>
+       {
+           var stringContent = args[0].ToString();
+           var newScope = CurrentTarget().Scope;
+           var newTemplates = new Templates(templates: Templates, expressionParser: expressionParser);
+           return newTemplates.EvaluateText(stringContent, newScope, lgOptions);
+       };
 
         private Func<IReadOnlyList<object>, object> TemplateExpander(string templateName) =>
             (IReadOnlyList<object> args) =>
@@ -661,9 +678,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
 
-           var evaluator = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-           var result = ExpressionRecognizeRegex.Replace(stringContent, evaluator);
-           return result.Escape();
+           var newScope = CurrentTarget().Scope;
+           var newTemplates = new Templates(templates: Templates, expressionParser: expressionParser);
+           return newTemplates.EvaluateText(stringContent, newScope, lgOptions);
        };
 
         private string GetResourcePath(string filePath)
