@@ -132,17 +132,21 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets the channel data as strongly typed object.
         /// </summary>
-        /// <typeparam name="T">The expected type of the object.</typeparam>
+        /// <typeparam name="TypeT">The expected type of the object.</typeparam>
         /// <returns>The strongly typed channel data.</returns>
-        T GetChannelData<T>();
+#pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change this without breaking binary compat)
+        TypeT GetChannelData<TypeT>();
+#pragma warning restore CA1715 // Identifiers should have correct prefix
 
         /// <summary>
         /// Try to get the channeldata as a strongly typed object.
         /// </summary>
-        /// <typeparam name="T">Type T.</typeparam>
+        /// <typeparam name="TypeT">Type T.</typeparam>
         /// <param name="instance">instance.</param>
         /// <returns>false if there is no valid channeldata available.</returns>
-        bool TryGetChannelData<T>(out T instance);
+#pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change this without breaking binary compat)
+        bool TryGetChannelData<TypeT>(out TypeT instance);
+#pragma warning restore CA1715 // Identifiers should have correct prefix
 
         /// <summary>
         /// Return IMessageActivity if this is a message activity, null otherwise.
