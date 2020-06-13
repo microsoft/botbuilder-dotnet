@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnContinueConversation : OnEventActivity
     {
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.OnContinueConversation";
+        public new const string Kind = "Microsoft.OnContinueConversation";
 
         [JsonConstructor]
         public OnContinueConversation(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
