@@ -53,6 +53,9 @@
 			"$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
 		},
 		{
+			"$ref": "#/definitions/Microsoft.ContinueConversationLater"
+		},
+		{
 			"$ref": "#/definitions/Microsoft.ContinueLoop"
 		},
 		{
@@ -183,6 +186,9 @@
 		},
 		{
 			"$ref": "#/definitions/Microsoft.OnCondition"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnContinueConversation"
 		},
 		{
 			"$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
@@ -2164,6 +2170,81 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.ConfirmationEntityRecognizer"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.ContinueConversationLater": {
+			"$role": "implements(Microsoft.IDialog)",
+			"title": "Continue Conversation Later",
+			"description": "Continue conversation at later time (via Azure Storage Queue).",
+			"type": "object",
+			"required": [
+				"date",
+				"connectionString",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"id": {
+					"type": "string",
+					"title": "Id",
+					"description": "Optional id for the dialog"
+				},
+				"disabled": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Disabled",
+					"description": "Optional condition which if true will disable this action.",
+					"examples": [
+						"user.age > 3"
+					]
+				},
+				"date": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Date",
+					"description": "Date in the future as a ISO string when the conversation should continue.",
+					"examples": [
+						"=addHours(utcNow(), 1)"
+					]
+				},
+				"connectionString": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Connection String",
+					"description": "Connection string for connecting to an Azure Storage account.",
+					"examples": [
+						"=settings.connectionString"
+					]
+				},
+				"queueName": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Queue Name",
+					"description": "Name of the queue that your azure function is bound to.",
+					"examples": [
+						"activities"
+					],
+					"default": "activities"
+				},
+				"value": {
+					"$ref": "#/definitions/valueExpression",
+					"title": "Value",
+					"description": "Value to send in the activity.value."
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.ContinueConversationLater"
 				},
 				"$designer": {
 					"title": "Designer information",
@@ -4154,6 +4235,9 @@
 					"$ref": "#/definitions/Microsoft.QnAMakerDialog"
 				},
 				{
+					"$ref": "#/definitions/Microsoft.ContinueConversationLater"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.AdaptiveDialog"
 				},
 				{
@@ -4450,6 +4534,9 @@
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnCondition"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnContinueConversation"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
@@ -6023,6 +6110,71 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.OnCondition"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnContinueConversation": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "On Continue Conversation",
+			"description": "Actions to perform when a conversation is started up again from a ContinueConversationLater action.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnContinueConversation"
 				},
 				"$designer": {
 					"title": "Designer information",
