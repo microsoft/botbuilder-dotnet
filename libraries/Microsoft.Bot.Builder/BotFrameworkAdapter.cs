@@ -432,6 +432,28 @@ namespace Microsoft.Bot.Builder
 
             Logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
 
+            // ContinueConversation as external EventActivity support
+            //
+            // If we receive an EventActivity with name=="ContinueConversation" then we go through ContinueConversation pipeline 
+            // using the activity.RelatesTo as the conversationreference.  
+            // This enables durable external webjobs to submit a delayed ContinueConversation request via an Activity.
+            if (activity.Type == ActivityTypes.Event && activity.Name == "ContinueConversation")
+            {
+                await this.ContinueConversationAsync(
+                    claimsIdentity,
+                    activity.RelatesTo,
+                    (tc, ct) =>
+                    {
+                        // stitch value back into the real ContinueConversation event activity...
+                        tc.Activity.RelatesTo = activity.GetConversationReference();
+                        tc.Activity.Value = activity.Value;
+                        return callback(tc, ct);
+                    },
+                    cancellationToken).ConfigureAwait(false);
+                
+                return new InvokeResponse() { Status = (int)HttpStatusCode.OK, Body = default };
+            }
+
             using (var context = new TurnContext(this, activity))
             {
                 activity.CallerId = await GenerateCallerIdAsync(claimsIdentity).ConfigureAwait(false);
