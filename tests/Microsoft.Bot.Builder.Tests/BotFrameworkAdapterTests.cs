@@ -17,6 +17,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -148,7 +149,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var reply = MessageFactory.Text("test");
             reply.Id = "TestReplyId";
-            
+
             // Act
             using (var turnContext = new TurnContext(adapter, incomingActivity))
             {
@@ -160,7 +161,7 @@ namespace Microsoft.Bot.Builder.Tests
             var sentActivity = mockConnector.MemoryConversations.SentActivities.FirstOrDefault(f => f.Type == ActivityTypes.Message);
 
             // Assert - assert the reply's id is not sent
-            Assert.IsNull(sentActivity.Id); 
+            Assert.IsNull(sentActivity.Id);
         }
 
         [TestMethod]
@@ -360,6 +361,73 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task ProcessContinueConversationEvent()
+        {
+            var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+
+            ConversationReference cr = new ConversationReference
+            {
+                ActivityId = "activityId",
+                Bot = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+                ChannelId = "testChannel",
+                ServiceUrl = "https://fake.service.url",
+                Conversation = new ConversationAccount
+                {
+                    ConversationType = string.Empty,
+                    Id = "testConversationId",
+                    IsGroup = false,
+                    Name = "testConversationName",
+                    Role = "user",
+                },
+                User = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+            };
+
+            var activity = Activity.CreateEventActivity();
+            activity.RelatesTo = cr;
+            activity.ChannelId = "unknown";
+            activity.From = new ChannelAccount() { Id = "xxxx" };
+            activity.Recipient = new ChannelAccount() { Id = "yyy" };
+            activity.Name = "ContinueConversation";
+            activity.Value = "test";
+
+            // Create ClaimsIdentity that represents Skill1-to-Skill1 communication
+            var appId = "00000000-0000-0000-0000-000000skill1";
+
+            var claims = new List<Claim>
+            {
+                new Claim(AuthenticationConstants.AudienceClaim, appId),
+                new Claim(AuthenticationConstants.AppIdClaim, appId),
+                new Claim(AuthenticationConstants.VersionClaim, "1.0")
+            };
+            var identity = new ClaimsIdentity(claims);
+
+            var callback = new BotCallbackHandler(async (turnContext, ct) =>
+            {
+                var cr2 = turnContext.Activity.GetConversationReference();
+                cr.ActivityId = null; // activityids will be different...
+                cr2.ActivityId = null;
+                Assert.AreEqual(JsonConvert.SerializeObject(cr), JsonConvert.SerializeObject(cr2), "cr should match");
+                Assert.AreEqual(JsonConvert.SerializeObject(activity.GetConversationReference()), JsonConvert.SerializeObject(turnContext.Activity.RelatesTo), "relatesTo should match");
+                Assert.AreEqual("test", turnContext.Activity.Value, "value payload should come through");
+            });
+
+            await adapter.ProcessActivityAsync(identity, (Activity)activity, callback, default);
+        }
+
+        [TestMethod]
         public async Task DeliveryModeExpectReplies()
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
@@ -456,7 +524,7 @@ namespace Microsoft.Bot.Builder.Tests
                     ServiceUrl = "https://smba.trafficmanager.net/amer/",
                     ChannelData = channelData,
                     Conversation = new ConversationAccount
-                        { TenantId = conversationTenantId },
+                    { TenantId = conversationTenantId },
                 },
                 (context, token) =>
                 {
@@ -472,7 +540,7 @@ namespace Microsoft.Bot.Builder.Tests
             var channelData = new JObject
             {
                 ["tenant"] = new JObject
-                    { ["id"] = channelDataTenantId },
+                { ["id"] = channelDataTenantId },
             };
 
             return await ProcessActivity(channelId, channelData, conversationTenantId);
