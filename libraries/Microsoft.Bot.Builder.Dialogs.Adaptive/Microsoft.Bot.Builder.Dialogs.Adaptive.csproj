@@ -35,11 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Actions\Microsoft.ContinueConversationLater.schema" />
-    <None Remove="Schemas\TriggerConditions\Microsoft.OnContinueConversation.schema" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
