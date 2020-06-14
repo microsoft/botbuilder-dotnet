@@ -116,10 +116,8 @@ namespace Microsoft.Bot.Builder.Azure
             var connectionString = ConnectionString.GetValue(dc.State);
             var value = Value.GetValue(dc.State);
 
-            // create Event => ConversationUpdate
-            var conversationReference = dc.Context.Activity.GetConversationReference();
-            var activity = conversationReference.GetContinuationActivity();
-            activity.RelatesTo = conversationReference;
+            // create ContinuationActivity from the conversation reference.
+            var activity = dc.Context.Activity.GetConversationReference().GetContinuationActivity();
             activity.Value = value;
 
             var message = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, jsonSettings)));
