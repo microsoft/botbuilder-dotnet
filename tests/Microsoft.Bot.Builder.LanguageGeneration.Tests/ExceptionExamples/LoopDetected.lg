@@ -8,3 +8,6 @@
 # welcome_user
 - ${wPhrase()}
 
+> self loop
+# shouldFail(x)
+- ${shouldFail(x)}

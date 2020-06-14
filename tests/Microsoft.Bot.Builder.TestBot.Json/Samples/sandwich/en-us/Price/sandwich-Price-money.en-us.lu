@@ -1,0 +1,258 @@
+
+@ prebuilt money 
+
+> Define how Price is recognized as a property name
+@ list PROPERTYName
+    - Price:
+		- price
+
+
+> Define operations for property
+@ml AddToPrice = 
+    - @money money
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromPrice = 
+    - @money money
+    - @PROPERTYName PROPERTYName
+@ml ClearPrice =
+    - @PROPERTYName PROPERTYName
+@ml ShowPrice =
+    - @PROPERTYName PROPERTYName
+# sandwich
+> Add only
+- {@AddToPrice=add {@money=12 euros}}
+- {@AddToPrice=add {@money=$3.50}}
+- {@AddToPrice=with {@money=8 dollars and 25 cents}}
+- {@AddToPrice=with {@money=12 euros}}
+- {@AddToPrice=with {@money=$3.50}}
+- {@AddToPrice=add {@money=12 euros} and {@money=$3.50}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice=add {@money=$3.50} and {@money=$3.50}}
+- {@AddToPrice=with {@money=$3.50} and {@money=12 euros}}
+- {@AddToPrice=with {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice=with {@money=8 dollars and 25 cents} and {@money=12 euros}}
+- {@AddToPrice=add {@money=12 euros}, {@money=$3.50} and {@money=$3.50}}
+- {@AddToPrice=add {@money=$3.50}, {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice=add {@money=$3.50}, {@money=12 euros} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice=with {@money=8 dollars and 25 cents}, {@money=8 dollars and 25 cents} and {@money=12 euros}}
+- {@AddToPrice=with {@money=12 euros}, {@money=12 euros} and {@money=12 euros}}
+- {@AddToPrice=with {@money=12 euros}, {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice={@PROPERTYName=price} is {@money=12 euros}}
+- {@AddToPrice={@PROPERTYName=price} is {@money=$3.50}}
+- {@AddToPrice={@PROPERTYName=price} is {@money=8 dollars and 25 cents}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=$3.50} and {@money=12 euros}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=8 dollars and 25 cents} and {@money=$3.50}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=$3.50} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=12 euros}, {@money=$3.50} and {@money=$3.50}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=8 dollars and 25 cents}, {@money=12 euros} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=8 dollars and 25 cents}, {@money=12 euros} and {@money=12 euros}}
+- {@AddToPrice=add {@money=12 euros} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=with {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=with {@money=12 euros} {@PROPERTYName=price}}
+- {@AddToPrice=with {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents} and {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=with {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=with {@money=$3.50} and {@money=12 euros} {@PROPERTYName=price}}
+- {@AddToPrice=with {@money=12 euros} and {@money=12 euros} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros}, {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents}, {@money=12 euros} and {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents}, {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=with {@money=$3.50}, {@money=$3.50} and {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=with {@money=8 dollars and 25 cents}, {@money=$3.50} and {@money=12 euros} {@PROPERTYName=price}}
+- {@AddToPrice=with {@money=8 dollars and 25 cents}, {@money=8 dollars and 25 cents} and {@money=12 euros} {@PROPERTYName=price}}
+- {@AddToPrice={@PROPERTYName=price} is {@money=8 dollars and 25 cents}}
+- {@AddToPrice={@PROPERTYName=price} is {@money=12 euros}}
+- {@AddToPrice={@PROPERTYName=price} is {@money=$3.50}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=$3.50} and {@money=12 euros}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=12 euros} and {@money=12 euros}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=8 dollars and 25 cents} and {@money=$3.50}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=8 dollars and 25 cents}, {@money=8 dollars and 25 cents} and {@money=$3.50}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=8 dollars and 25 cents}, {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice={@PROPERTYName=price} are {@money=12 euros}, {@money=12 euros} and {@money=8 dollars and 25 cents}}
+> Remove only
+- {@RemoveFromPrice=remove {@money=$3.50}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=remove {@money=$3.50} and {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=remove {@money=$3.50} and {@money=$3.50}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}, {@money=12 euros} and {@money=$3.50}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}, {@money=$3.50} and {@money=12 euros}}
+- {@RemoveFromPrice=remove {@money=12 euros}, {@money=$3.50} and {@money=12 euros}}
+- {@RemoveFromPrice=delete {@money=$3.50}}
+- {@RemoveFromPrice=delete {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=delete {@money=$3.50} and {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=delete {@money=$3.50} and {@money=$3.50}}
+- {@RemoveFromPrice=delete {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=delete {@money=$3.50}, {@money=12 euros} and {@money=12 euros}}
+- {@RemoveFromPrice=delete {@money=12 euros}, {@money=$3.50} and {@money=$3.50}}
+- {@RemoveFromPrice=delete {@money=8 dollars and 25 cents}, {@money=8 dollars and 25 cents} and {@money=$3.50}}
+- {@RemoveFromPrice=without {@money=$3.50}}
+- {@RemoveFromPrice=without {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=without {@money=12 euros}}
+- {@RemoveFromPrice=without {@money=8 dollars and 25 cents} and {@money=$3.50}}
+- {@RemoveFromPrice=without {@money=12 euros} and {@money=$3.50}}
+- {@RemoveFromPrice=without {@money=12 euros} and {@money=12 euros}}
+- {@RemoveFromPrice=without {@money=8 dollars and 25 cents}, {@money=$3.50} and {@money=12 euros}}
+- {@RemoveFromPrice=without {@money=8 dollars and 25 cents}, {@money=8 dollars and 25 cents} and {@money=$3.50}}
+- {@RemoveFromPrice=without {@money=12 euros}, {@money=8 dollars and 25 cents} and {@money=12 euros}}
+- {@RemoveFromPrice=with no {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=with no {@money=$3.50}}
+- {@RemoveFromPrice=with no {@money=12 euros} and {@money=12 euros}}
+- {@RemoveFromPrice=with no {@money=$3.50} and {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=with no {@money=12 euros} and {@money=$3.50}}
+- {@RemoveFromPrice=with no {@money=12 euros}, {@money=12 euros} and {@money=12 euros}}
+- {@RemoveFromPrice=with no {@money=$3.50}, {@money=$3.50} and {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=with no {@money=8 dollars and 25 cents}, {@money=8 dollars and 25 cents} and {@money=12 euros}}
+- {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=12 euros} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=12 euros} and {@money=12 euros} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=12 euros} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}, {@money=12 euros} and {@money=12 euros} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=12 euros}, {@money=12 euros} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=$3.50}, {@money=12 euros} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=delete {@money=12 euros} {@PROPERTYName=price}}
+- {@RemoveFromPrice=delete {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=delete {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=delete {@money=12 euros} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=delete {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=delete {@money=12 euros} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=delete {@money=$3.50}, {@money=8 dollars and 25 cents} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=delete {@money=8 dollars and 25 cents}, {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=delete {@money=8 dollars and 25 cents}, {@money=12 euros} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=without {@money=$3.50}}
+- {@RemoveFromPrice=without {@money=12 euros}}
+- {@RemoveFromPrice=without {@money=$3.50} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=without {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=without {@money=8 dollars and 25 cents} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=without {@money=$3.50}, {@money=12 euros} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=without {@money=$3.50}, {@money=12 euros} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=without {@money=8 dollars and 25 cents}, {@money=12 euros} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=with no {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=with no {@money=12 euros} {@PROPERTYName=price}}
+- {@RemoveFromPrice=with no {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=with no {@money=12 euros} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=with no {@money=8 dollars and 25 cents} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=with no {@money=12 euros}, {@money=12 euros} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=with no {@money=$3.50}, {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=with no {@money=12 euros}, {@money=8 dollars and 25 cents} and {@money=$3.50} {@PROPERTYName=price}}
+> Clear only
+- {@ClearPrice=clear {@PROPERTYName=price}}
+- {@ClearPrice=remove {@PROPERTYName=price}}
+- {@ClearPrice=empty {@PROPERTYName=price}}
+- {@ClearPrice=please clear {@PROPERTYName=price}}
+- {@ClearPrice=please remove {@PROPERTYName=price}}
+- {@ClearPrice=please empty {@PROPERTYName=price}}
+- {@ClearPrice=can you clear {@PROPERTYName=price}}
+- {@ClearPrice=can you remove {@PROPERTYName=price}}
+- {@ClearPrice=can you empty {@PROPERTYName=price}}
+> Show only
+- {@ShowPrice=value of {@PROPERTYName=price}}
+- {@ShowPrice=value for {@PROPERTYName=price}}
+- {@ShowPrice=selection of {@PROPERTYName=price}}
+- {@ShowPrice=selection for {@PROPERTYName=price}}
+- {@ShowPrice=display {@PROPERTYName=price}}
+- {@ShowPrice=show {@PROPERTYName=price}}
+- {@ShowPrice=value of {@PROPERTYName=price}}
+- {@ShowPrice=value for {@PROPERTYName=price}}
+- {@ShowPrice={@PROPERTYName=price} value}
+- {@ShowPrice={@PROPERTYName=price} values}
+- {@ShowPrice={@PROPERTYName=price} selection}
+> Combinations
+- {@AddToPrice=add {@money=12 euros}} {@RemoveFromPrice=and remove {@money=12 euros}}
+- {@AddToPrice=add {@money=12 euros}} {@RemoveFromPrice=and remove {@money=$3.50}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents}} {@RemoveFromPrice=and remove {@money=$3.50}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents}} {@RemoveFromPrice=remove {@money=12 euros}}
+- {@AddToPrice=add {@money=12 euros}} {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}}
+- {@AddToPrice=add {@money=12 euros}} {@RemoveFromPrice=remove {@money=$3.50}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents}}, {@RemoveFromPrice=remove {@money=$3.50}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents}}, {@RemoveFromPrice=remove {@money=12 euros}}
+- {@AddToPrice=add {@money=12 euros}}, {@RemoveFromPrice=remove {@money=$3.50}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}} {@RemoveFromPrice=and remove {@money=12 euros}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents} and {@money=12 euros}} {@RemoveFromPrice=and remove {@money=12 euros}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents} and {@money=$3.50}} {@RemoveFromPrice=and remove {@money=8 dollars and 25 cents}}
+- {@AddToPrice=add {@money=$3.50}, {@money=8 dollars and 25 cents} and {@money=$3.50}} {@RemoveFromPrice=and remove {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice=add {@money=$3.50}, {@money=$3.50} and {@money=8 dollars and 25 cents}} {@RemoveFromPrice=and remove {@money=12 euros} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice=add {@money=12 euros}, {@money=8 dollars and 25 cents} and {@money=$3.50}} {@RemoveFromPrice=and remove {@money=8 dollars and 25 cents} and {@money=12 euros}}
+- {@AddToPrice=add {@money=$3.50}, {@money=12 euros} and {@money=8 dollars and 25 cents}} {@RemoveFromPrice=remove {@money=12 euros} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice=add {@money=12 euros}, {@money=12 euros} and {@money=8 dollars and 25 cents}} {@RemoveFromPrice=remove {@money=12 euros} and {@money=12 euros}}
+- {@AddToPrice=add {@money=$3.50}, {@money=8 dollars and 25 cents} and {@money=$3.50}} {@RemoveFromPrice=remove {@money=12 euros} and {@money=8 dollars and 25 cents}}
+- {@AddToPrice=add {@money=$3.50}}{@RemoveFromPrice=, remove {@money=8 dollars and 25 cents}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros}}{@RemoveFromPrice=, remove {@money=8 dollars and 25 cents}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros}}{@RemoveFromPrice=, remove {@money=12 euros}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}} {@AddToPrice=and add {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=remove {@money=12 euros}} {@AddToPrice=and add {@money=$3.50}}
+- {@RemoveFromPrice=remove {@money=$3.50}} {@AddToPrice=and add {@money=$3.50}}
+- {@RemoveFromPrice=remove {@money=12 euros} and {@money=12 euros}} {@AddToPrice=and add {@money=12 euros}}
+- {@RemoveFromPrice=remove {@money=$3.50} and {@money=$3.50}} {@AddToPrice=and add {@money=12 euros}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}} {@AddToPrice=and add {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}, {@money=12 euros} and {@money=8 dollars and 25 cents}} {@AddToPrice=and add {@money=$3.50} and {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}, {@money=$3.50} and {@money=$3.50}} {@AddToPrice=and add {@money=8 dollars and 25 cents} and {@money=8 dollars and 25 cents}}
+- {@RemoveFromPrice=remove {@money=$3.50}, {@money=12 euros} and {@money=12 euros}} {@AddToPrice=and add {@money=8 dollars and 25 cents} and {@money=$3.50}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}}{@AddToPrice=, add {@money=12 euros}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=$3.50}}{@AddToPrice=, add {@money=12 euros}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}}{@AddToPrice=, add {@money=8 dollars and 25 cents}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}} {@AddToPrice=and add {@money=8 dollars and 25 cents}}
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=12 euros}} {@AddToPrice=and add {@money=$3.50}}
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50}} {@AddToPrice=and add {@money=8 dollars and 25 cents}}
+- {@ShowPrice=show {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50}} {@ShowPrice=and display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}} {@AddToPrice=and add {@money=8 dollars and 25 cents}}
+- {@ShowPrice=show {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=12 euros}} {@ShowPrice=and display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=12 euros}} {@AddToPrice=and add {@money=$3.50}}
+- {@ShowPrice=show {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}} {@ShowPrice=and display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50}} {@AddToPrice=and add {@money=12 euros}}
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}} {@AddToPrice=add {@money=$3.50}} 
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=12 euros}} {@AddToPrice=add {@money=$3.50}} 
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50}} {@AddToPrice=add {@money=12 euros}} 
+- {@AddToPrice=add {@money=12 euros} {@PROPERTYName=price}} {@RemoveFromPrice=and remove {@money=12 euros} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros} {@PROPERTYName=price}} {@RemoveFromPrice=and remove {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents} {@PROPERTYName=price}} {@RemoveFromPrice=and remove {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents} {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros} {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros} {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros} {@PROPERTYName=price}}, {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=$3.50} {@PROPERTYName=price}}, {@RemoveFromPrice=remove {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=$3.50} {@PROPERTYName=price}}, {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents} and {@money=12 euros} {@PROPERTYName=price}} {@RemoveFromPrice=and remove {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}} {@RemoveFromPrice=and remove {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}} {@RemoveFromPrice=and remove {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros}, {@money=8 dollars and 25 cents} and {@money=$3.50} {@PROPERTYName=price}} {@RemoveFromPrice=and remove {@money=$3.50} and {@money=12 euros} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros}, {@money=$3.50} and {@money=$3.50} {@PROPERTYName=price}} {@RemoveFromPrice=and remove {@money=12 euros} and {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents}, {@money=$3.50} and {@money=$3.50} {@PROPERTYName=price}} {@RemoveFromPrice=and remove {@money=12 euros} and {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=$3.50}, {@money=$3.50} and {@money=12 euros} {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents}, {@money=$3.50} and {@money=12 euros} {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50} and {@money=$3.50} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=$3.50}, {@money=8 dollars and 25 cents} and {@money=$3.50} {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=8 dollars and 25 cents} {@PROPERTYName=price}}{@RemoveFromPrice=, remove {@money=$3.50} {@PROPERTYName=price}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=$3.50} {@PROPERTYName=price}}{@RemoveFromPrice=, remove {@money=$3.50} {@PROPERTYName=price}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@AddToPrice=add {@money=12 euros} {@PROPERTYName=price}}{@RemoveFromPrice=, remove {@money=12 euros} {@PROPERTYName=price}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents} {@PROPERTYName=price}} {@AddToPrice=and add {@money=12 euros} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=$3.50} {@PROPERTYName=price}} {@AddToPrice=and add {@money=12 euros} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}} {@AddToPrice=and add {@money=12 euros} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=12 euros} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}} {@AddToPrice=and add **MISSING**}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents} and {@money=12 euros} {@PROPERTYName=price}} {@AddToPrice=and add **MISSING**}
+- {@RemoveFromPrice=remove {@money=12 euros} and {@money=12 euros} {@PROPERTYName=price}} {@AddToPrice=and add **MISSING**}
+- {@RemoveFromPrice=remove {@money=$3.50}, {@money=$3.50} and {@money=12 euros} {@PROPERTYName=price}} {@AddToPrice=and add {@money=8 dollars and 25 cents} and {@money=$3.50} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=8 dollars and 25 cents}, {@money=8 dollars and 25 cents} and {@money=$3.50} {@PROPERTYName=price}} {@AddToPrice=and add {@money=8 dollars and 25 cents} and {@money=12 euros} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=12 euros}, {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}} {@AddToPrice=and add {@money=$3.50} and {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}}{@AddToPrice=, add {@money=8 dollars and 25 cents} {@PROPERTYName=price}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=$3.50} {@PROPERTYName=price}}{@AddToPrice=, add {@money=12 euros} {@PROPERTYName=price}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@RemoveFromPrice=remove {@money=$3.50} {@PROPERTYName=price}}{@AddToPrice=, add {@money=$3.50} {@PROPERTYName=price}} {@ShowPrice=and show {@PROPERTYName=price}}
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}} {@AddToPrice=and add {@money=12 euros} {@PROPERTYName=price}}
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50} {@PROPERTYName=price}} {@AddToPrice=and add {@money=$3.50} {@PROPERTYName=price}}
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=8 dollars and 25 cents} {@PROPERTYName=price}} {@AddToPrice=and add {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@ShowPrice=show {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50} {@PROPERTYName=price}} {@ShowPrice=and display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}} {@AddToPrice=and add {@money=12 euros} {@PROPERTYName=price}}
+- {@ShowPrice=show {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50} {@PROPERTYName=price}} {@ShowPrice=and display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=8 dollars and 25 cents} {@PROPERTYName=price}} {@AddToPrice=and add {@money=8 dollars and 25 cents} {@PROPERTYName=price}}
+- {@ShowPrice=show {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}} {@ShowPrice=and display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}} {@AddToPrice=and add {@money=$3.50} {@PROPERTYName=price}}
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}} {@AddToPrice=add {@money=8 dollars and 25 cents} {@PROPERTYName=price}} 
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=$3.50} {@PROPERTYName=price}} {@AddToPrice=add {@money=12 euros} {@PROPERTYName=price}} 
+- {@ShowPrice=display {@PROPERTYName=price}} {@RemoveFromPrice=remove {@money=12 euros} {@PROPERTYName=price}} {@AddToPrice=add {@money=$3.50} {@PROPERTYName=price}} 
+- $3.50
+- 12 euros
+- 8 dollars and 25 cents
+
+- Price
+
+
+> Generator: 0c6e581a1c76f588eb1651003607b467

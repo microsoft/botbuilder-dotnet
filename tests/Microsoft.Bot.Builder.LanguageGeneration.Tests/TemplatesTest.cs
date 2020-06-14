@@ -66,6 +66,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestMultiline()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Multiline.lg"));
+            string evaled = templates.Evaluate("template1").ToString();
+            var generatedTemplates = Templates.ParseText(evaled);
+            var result = generatedTemplates.Evaluate("generated1");
+            Assert.AreEqual("hi", result);
+
+            evaled = templates.Evaluate("template2", new { evaluateNow = "please input" }).ToString();
+            generatedTemplates = Templates.ParseText(evaled);
+            result = generatedTemplates.Evaluate("generated2", new { name = "jack" });
+            Assert.AreEqual("please input jack", result.ToString().Trim());
+        }
+
+        [TestMethod]
         public void TestBasicConditionalTemplateWithoutDefault()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("5.lg"));
@@ -671,6 +686,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestExpandTemplateWithEmptyListInStructuredLG()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Expand.lg"));
+
+            var data = new Dictionary<string, object>()
+            {
+                { "Name", "NAME" },
+                { "Address", "ADDRESS" },
+            };
+
+            var input = new
+            {
+                Data = data
+            };
+
+            var name = "PointOfInterestSuggestedActionName";
+            var evaled = templates.ExpandTemplate(name, input).ToList();
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["text"].ToString(), "NAME at ADDRESS");
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["speak"].ToString(), "NAME at ADDRESS");
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["attachments"].Count(), 0);
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["attachmentlayout"].ToString(), "list");
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["inputhint"].ToString(), "ignoringInput");
+        }
+
+        [TestMethod]
         public void TestEvalExpression()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("EvalExpression.lg"));
@@ -711,6 +751,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("template11");
             Assert.AreEqual(evaled, 18L);
+        }
+
+        [TestMethod]
+        public void TestRecursiveTemplate()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("RecursiveTemplate.lg"));
+            var evaled = templates.Evaluate("RecursiveAccumulate", new { number = 10 });
+            Assert.AreEqual(evaled, 55L);
+
+            evaled = templates.Evaluate("RecursiveFactorial", new { number = 5 });
+            Assert.AreEqual(evaled, 1 * 2 * 3 * 4 * 5L);
+
+            evaled = templates.Evaluate("RecursiveFibonacciSequence", new { number = 5 });
+            Assert.AreEqual(evaled, 5L);
         }
 
         [TestMethod]

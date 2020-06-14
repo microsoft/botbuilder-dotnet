@@ -1,0 +1,258 @@
+
+@ prebuilt personName 
+
+> Define how Name is recognized as a property name
+@ list PROPERTYName
+    - Name:
+		- name
+
+
+> Define operations for property
+@ml AddToName = 
+    - @personName personName
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromName = 
+    - @personName personName
+    - @PROPERTYName PROPERTYName
+@ml ClearName =
+    - @PROPERTYName PROPERTYName
+@ml ShowName =
+    - @PROPERTYName PROPERTYName
+# sandwich
+> Add only
+- {@AddToName=add {@personName=John}}
+- {@AddToName=add {@personName=Mike Smith}}
+- {@AddToName=with {@personName=tom}}
+- {@AddToName=with {@personName=John}}
+- {@AddToName=with {@personName=Mike Smith}}
+- {@AddToName=add {@personName=John} and {@personName=Mike Smith}}
+- {@AddToName=add {@personName=tom} and {@personName=tom}}
+- {@AddToName=add {@personName=Mike Smith} and {@personName=Mike Smith}}
+- {@AddToName=with {@personName=Mike Smith} and {@personName=John}}
+- {@AddToName=with {@personName=tom} and {@personName=tom}}
+- {@AddToName=with {@personName=tom} and {@personName=John}}
+- {@AddToName=add {@personName=John}, {@personName=Mike Smith} and {@personName=Mike Smith}}
+- {@AddToName=add {@personName=Mike Smith}, {@personName=tom} and {@personName=tom}}
+- {@AddToName=add {@personName=Mike Smith}, {@personName=John} and {@personName=tom}}
+- {@AddToName=with {@personName=tom}, {@personName=tom} and {@personName=John}}
+- {@AddToName=with {@personName=John}, {@personName=John} and {@personName=John}}
+- {@AddToName=with {@personName=John}, {@personName=tom} and {@personName=tom}}
+- {@AddToName={@PROPERTYName=name} is {@personName=John}}
+- {@AddToName={@PROPERTYName=name} is {@personName=Mike Smith}}
+- {@AddToName={@PROPERTYName=name} is {@personName=tom}}
+- {@AddToName={@PROPERTYName=name} are {@personName=Mike Smith} and {@personName=John}}
+- {@AddToName={@PROPERTYName=name} are {@personName=tom} and {@personName=Mike Smith}}
+- {@AddToName={@PROPERTYName=name} are {@personName=Mike Smith} and {@personName=tom}}
+- {@AddToName={@PROPERTYName=name} are {@personName=John}, {@personName=Mike Smith} and {@personName=Mike Smith}}
+- {@AddToName={@PROPERTYName=name} are {@personName=tom}, {@personName=John} and {@personName=tom}}
+- {@AddToName={@PROPERTYName=name} are {@personName=tom}, {@personName=John} and {@personName=John}}
+- {@AddToName=add {@personName=John} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=with {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=with {@personName=John} {@PROPERTYName=name}}
+- {@AddToName=with {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John} and {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=tom} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=with {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=with {@personName=Mike Smith} and {@personName=John} {@PROPERTYName=name}}
+- {@AddToName=with {@personName=John} and {@personName=John} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John}, {@personName=tom} and {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=tom}, {@personName=John} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=tom}, {@personName=tom} and {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=with {@personName=Mike Smith}, {@personName=Mike Smith} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=with {@personName=tom}, {@personName=Mike Smith} and {@personName=John} {@PROPERTYName=name}}
+- {@AddToName=with {@personName=tom}, {@personName=tom} and {@personName=John} {@PROPERTYName=name}}
+- {@AddToName={@PROPERTYName=name} is {@personName=tom}}
+- {@AddToName={@PROPERTYName=name} is {@personName=John}}
+- {@AddToName={@PROPERTYName=name} is {@personName=Mike Smith}}
+- {@AddToName={@PROPERTYName=name} are {@personName=Mike Smith} and {@personName=John}}
+- {@AddToName={@PROPERTYName=name} are {@personName=John} and {@personName=John}}
+- {@AddToName={@PROPERTYName=name} are {@personName=tom} and {@personName=Mike Smith}}
+- {@AddToName={@PROPERTYName=name} are {@personName=tom}, {@personName=tom} and {@personName=Mike Smith}}
+- {@AddToName={@PROPERTYName=name} are {@personName=tom}, {@personName=tom} and {@personName=tom}}
+- {@AddToName={@PROPERTYName=name} are {@personName=John}, {@personName=John} and {@personName=tom}}
+> Remove only
+- {@RemoveFromName=remove {@personName=Mike Smith}}
+- {@RemoveFromName=remove {@personName=tom}}
+- {@RemoveFromName=remove {@personName=Mike Smith} and {@personName=tom}}
+- {@RemoveFromName=remove {@personName=tom} and {@personName=tom}}
+- {@RemoveFromName=remove {@personName=Mike Smith} and {@personName=Mike Smith}}
+- {@RemoveFromName=remove {@personName=tom}, {@personName=John} and {@personName=Mike Smith}}
+- {@RemoveFromName=remove {@personName=tom}, {@personName=Mike Smith} and {@personName=John}}
+- {@RemoveFromName=remove {@personName=John}, {@personName=Mike Smith} and {@personName=John}}
+- {@RemoveFromName=delete {@personName=Mike Smith}}
+- {@RemoveFromName=delete {@personName=tom}}
+- {@RemoveFromName=delete {@personName=Mike Smith} and {@personName=tom}}
+- {@RemoveFromName=delete {@personName=Mike Smith} and {@personName=Mike Smith}}
+- {@RemoveFromName=delete {@personName=tom} and {@personName=tom}}
+- {@RemoveFromName=delete {@personName=Mike Smith}, {@personName=John} and {@personName=John}}
+- {@RemoveFromName=delete {@personName=John}, {@personName=Mike Smith} and {@personName=Mike Smith}}
+- {@RemoveFromName=delete {@personName=tom}, {@personName=tom} and {@personName=Mike Smith}}
+- {@RemoveFromName=without {@personName=Mike Smith}}
+- {@RemoveFromName=without {@personName=tom}}
+- {@RemoveFromName=without {@personName=John}}
+- {@RemoveFromName=without {@personName=tom} and {@personName=Mike Smith}}
+- {@RemoveFromName=without {@personName=John} and {@personName=Mike Smith}}
+- {@RemoveFromName=without {@personName=John} and {@personName=John}}
+- {@RemoveFromName=without {@personName=tom}, {@personName=Mike Smith} and {@personName=John}}
+- {@RemoveFromName=without {@personName=tom}, {@personName=tom} and {@personName=Mike Smith}}
+- {@RemoveFromName=without {@personName=John}, {@personName=tom} and {@personName=John}}
+- {@RemoveFromName=with no {@personName=tom}}
+- {@RemoveFromName=with no {@personName=Mike Smith}}
+- {@RemoveFromName=with no {@personName=John} and {@personName=John}}
+- {@RemoveFromName=with no {@personName=Mike Smith} and {@personName=tom}}
+- {@RemoveFromName=with no {@personName=John} and {@personName=Mike Smith}}
+- {@RemoveFromName=with no {@personName=John}, {@personName=John} and {@personName=John}}
+- {@RemoveFromName=with no {@personName=Mike Smith}, {@personName=Mike Smith} and {@personName=tom}}
+- {@RemoveFromName=with no {@personName=tom}, {@personName=tom} and {@personName=John}}
+- {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=John} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=John} and {@personName=John} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=John} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=tom}, {@personName=John} and {@personName=John} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=John}, {@personName=John} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=Mike Smith}, {@personName=John} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@personName=John} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@personName=John} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@personName=John} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@personName=Mike Smith}, {@personName=tom} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@personName=tom}, {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@personName=tom}, {@personName=John} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=without {@personName=Mike Smith}}
+- {@RemoveFromName=without {@personName=John}}
+- {@RemoveFromName=without {@personName=Mike Smith} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=without {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=without {@personName=tom} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=without {@personName=Mike Smith}, {@personName=John} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=without {@personName=Mike Smith}, {@personName=John} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=without {@personName=tom}, {@personName=John} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@personName=John} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@personName=John} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@personName=tom} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@personName=John}, {@personName=John} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@personName=Mike Smith}, {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@personName=John}, {@personName=tom} and {@personName=Mike Smith} {@PROPERTYName=name}}
+> Clear only
+- {@ClearName=clear {@PROPERTYName=name}}
+- {@ClearName=remove {@PROPERTYName=name}}
+- {@ClearName=empty {@PROPERTYName=name}}
+- {@ClearName=please clear {@PROPERTYName=name}}
+- {@ClearName=please remove {@PROPERTYName=name}}
+- {@ClearName=please empty {@PROPERTYName=name}}
+- {@ClearName=can you clear {@PROPERTYName=name}}
+- {@ClearName=can you remove {@PROPERTYName=name}}
+- {@ClearName=can you empty {@PROPERTYName=name}}
+> Show only
+- {@ShowName=value of {@PROPERTYName=name}}
+- {@ShowName=value for {@PROPERTYName=name}}
+- {@ShowName=selection of {@PROPERTYName=name}}
+- {@ShowName=selection for {@PROPERTYName=name}}
+- {@ShowName=display {@PROPERTYName=name}}
+- {@ShowName=show {@PROPERTYName=name}}
+- {@ShowName=value of {@PROPERTYName=name}}
+- {@ShowName=value for {@PROPERTYName=name}}
+- {@ShowName={@PROPERTYName=name} value}
+- {@ShowName={@PROPERTYName=name} values}
+- {@ShowName={@PROPERTYName=name} selection}
+> Combinations
+- {@AddToName=add {@personName=John}} {@RemoveFromName=and remove {@personName=John}}
+- {@AddToName=add {@personName=John}} {@RemoveFromName=and remove {@personName=Mike Smith}}
+- {@AddToName=add {@personName=tom}} {@RemoveFromName=and remove {@personName=Mike Smith}}
+- {@AddToName=add {@personName=tom}} {@RemoveFromName=remove {@personName=John}}
+- {@AddToName=add {@personName=John}} {@RemoveFromName=remove {@personName=tom}}
+- {@AddToName=add {@personName=John}} {@RemoveFromName=remove {@personName=Mike Smith}}
+- {@AddToName=add {@personName=tom}}, {@RemoveFromName=remove {@personName=Mike Smith}}
+- {@AddToName=add {@personName=tom}}, {@RemoveFromName=remove {@personName=John}}
+- {@AddToName=add {@personName=John}}, {@RemoveFromName=remove {@personName=Mike Smith}}
+- {@AddToName=add {@personName=tom} and {@personName=tom}} {@RemoveFromName=and remove {@personName=John}}
+- {@AddToName=add {@personName=tom} and {@personName=John}} {@RemoveFromName=and remove {@personName=John}}
+- {@AddToName=add {@personName=tom} and {@personName=Mike Smith}} {@RemoveFromName=and remove {@personName=tom}}
+- {@AddToName=add {@personName=Mike Smith}, {@personName=tom} and {@personName=Mike Smith}} {@RemoveFromName=and remove {@personName=tom} and {@personName=tom}}
+- {@AddToName=add {@personName=Mike Smith}, {@personName=Mike Smith} and {@personName=tom}} {@RemoveFromName=and remove {@personName=John} and {@personName=tom}}
+- {@AddToName=add {@personName=John}, {@personName=tom} and {@personName=Mike Smith}} {@RemoveFromName=and remove {@personName=tom} and {@personName=John}}
+- {@AddToName=add {@personName=Mike Smith}, {@personName=John} and {@personName=tom}} {@RemoveFromName=remove {@personName=John} and {@personName=tom}}
+- {@AddToName=add {@personName=John}, {@personName=John} and {@personName=tom}} {@RemoveFromName=remove {@personName=John} and {@personName=John}}
+- {@AddToName=add {@personName=Mike Smith}, {@personName=tom} and {@personName=Mike Smith}} {@RemoveFromName=remove {@personName=John} and {@personName=tom}}
+- {@AddToName=add {@personName=Mike Smith}}{@RemoveFromName=, remove {@personName=tom}} {@ShowName=and show {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John}}{@RemoveFromName=, remove {@personName=tom}} {@ShowName=and show {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John}}{@RemoveFromName=, remove {@personName=John}} {@ShowName=and show {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=tom}} {@AddToName=and add {@personName=tom}}
+- {@RemoveFromName=remove {@personName=John}} {@AddToName=and add {@personName=Mike Smith}}
+- {@RemoveFromName=remove {@personName=Mike Smith}} {@AddToName=and add {@personName=Mike Smith}}
+- {@RemoveFromName=remove {@personName=John} and {@personName=John}} {@AddToName=and add {@personName=John}}
+- {@RemoveFromName=remove {@personName=Mike Smith} and {@personName=Mike Smith}} {@AddToName=and add {@personName=John}}
+- {@RemoveFromName=remove {@personName=tom} and {@personName=tom}} {@AddToName=and add {@personName=tom}}
+- {@RemoveFromName=remove {@personName=tom}, {@personName=John} and {@personName=tom}} {@AddToName=and add {@personName=Mike Smith} and {@personName=tom}}
+- {@RemoveFromName=remove {@personName=tom}, {@personName=Mike Smith} and {@personName=Mike Smith}} {@AddToName=and add {@personName=tom} and {@personName=tom}}
+- {@RemoveFromName=remove {@personName=Mike Smith}, {@personName=John} and {@personName=John}} {@AddToName=and add {@personName=tom} and {@personName=Mike Smith}}
+- {@RemoveFromName=remove {@personName=tom}}{@AddToName=, add {@personName=John}} {@ShowName=and show {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=Mike Smith}}{@AddToName=, add {@personName=John}} {@ShowName=and show {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=tom}}{@AddToName=, add {@personName=tom}} {@ShowName=and show {@PROPERTYName=name}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=tom}} {@AddToName=and add {@personName=tom}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=John}} {@AddToName=and add {@personName=Mike Smith}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith}} {@AddToName=and add {@personName=tom}}
+- {@ShowName=show {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith}} {@ShowName=and display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=tom}} {@AddToName=and add {@personName=tom}}
+- {@ShowName=show {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=John}} {@ShowName=and display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=John}} {@AddToName=and add {@personName=Mike Smith}}
+- {@ShowName=show {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=tom}} {@ShowName=and display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith}} {@AddToName=and add {@personName=John}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=tom}} {@AddToName=add {@personName=Mike Smith}} 
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=John}} {@AddToName=add {@personName=Mike Smith}} 
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith}} {@AddToName=add {@personName=John}} 
+- {@AddToName=add {@personName=John} {@PROPERTYName=name}} {@RemoveFromName=and remove {@personName=John} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John} {@PROPERTYName=name}} {@RemoveFromName=and remove {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=tom} {@PROPERTYName=name}} {@RemoveFromName=and remove {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=tom} {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John} {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John} {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John} {@PROPERTYName=name}}, {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=Mike Smith} {@PROPERTYName=name}}, {@RemoveFromName=remove {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=Mike Smith} {@PROPERTYName=name}}, {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=tom} and {@personName=John} {@PROPERTYName=name}} {@RemoveFromName=and remove {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}} {@RemoveFromName=and remove {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}} {@RemoveFromName=and remove {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John}, {@personName=tom} and {@personName=Mike Smith} {@PROPERTYName=name}} {@RemoveFromName=and remove {@personName=Mike Smith} and {@personName=John} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John}, {@personName=Mike Smith} and {@personName=Mike Smith} {@PROPERTYName=name}} {@RemoveFromName=and remove {@personName=John} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=tom}, {@personName=Mike Smith} and {@personName=Mike Smith} {@PROPERTYName=name}} {@RemoveFromName=and remove {@personName=John} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=Mike Smith}, {@personName=Mike Smith} and {@personName=John} {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=tom}, {@personName=Mike Smith} and {@personName=John} {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=Mike Smith}, {@personName=tom} and {@personName=Mike Smith} {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}}
+- {@AddToName=add {@personName=tom} {@PROPERTYName=name}}{@RemoveFromName=, remove {@personName=Mike Smith} {@PROPERTYName=name}} {@ShowName=and show {@PROPERTYName=name}}
+- {@AddToName=add {@personName=Mike Smith} {@PROPERTYName=name}}{@RemoveFromName=, remove {@personName=Mike Smith} {@PROPERTYName=name}} {@ShowName=and show {@PROPERTYName=name}}
+- {@AddToName=add {@personName=John} {@PROPERTYName=name}}{@RemoveFromName=, remove {@personName=John} {@PROPERTYName=name}} {@ShowName=and show {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=tom} {@PROPERTYName=name}} {@AddToName=and add {@personName=John} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=Mike Smith} {@PROPERTYName=name}} {@AddToName=and add {@personName=John} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}} {@AddToName=and add {@personName=John} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=John} and {@personName=tom} {@PROPERTYName=name}} {@AddToName=and add **MISSING**}
+- {@RemoveFromName=remove {@personName=tom} and {@personName=John} {@PROPERTYName=name}} {@AddToName=and add **MISSING**}
+- {@RemoveFromName=remove {@personName=John} and {@personName=John} {@PROPERTYName=name}} {@AddToName=and add **MISSING**}
+- {@RemoveFromName=remove {@personName=Mike Smith}, {@personName=Mike Smith} and {@personName=John} {@PROPERTYName=name}} {@AddToName=and add {@personName=tom} and {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=tom}, {@personName=tom} and {@personName=Mike Smith} {@PROPERTYName=name}} {@AddToName=and add {@personName=tom} and {@personName=John} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=John}, {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}} {@AddToName=and add {@personName=Mike Smith} and {@personName=tom} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}}{@AddToName=, add {@personName=tom} {@PROPERTYName=name}} {@ShowName=and show {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=Mike Smith} {@PROPERTYName=name}}{@AddToName=, add {@personName=John} {@PROPERTYName=name}} {@ShowName=and show {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@personName=Mike Smith} {@PROPERTYName=name}}{@AddToName=, add {@personName=Mike Smith} {@PROPERTYName=name}} {@ShowName=and show {@PROPERTYName=name}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}} {@AddToName=and add {@personName=John} {@PROPERTYName=name}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith} {@PROPERTYName=name}} {@AddToName=and add {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=tom} {@PROPERTYName=name}} {@AddToName=and add {@personName=tom} {@PROPERTYName=name}}
+- {@ShowName=show {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith} {@PROPERTYName=name}} {@ShowName=and display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}} {@AddToName=and add {@personName=John} {@PROPERTYName=name}}
+- {@ShowName=show {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith} {@PROPERTYName=name}} {@ShowName=and display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=tom} {@PROPERTYName=name}} {@AddToName=and add {@personName=tom} {@PROPERTYName=name}}
+- {@ShowName=show {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}} {@ShowName=and display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}} {@AddToName=and add {@personName=Mike Smith} {@PROPERTYName=name}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}} {@AddToName=add {@personName=tom} {@PROPERTYName=name}} 
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=Mike Smith} {@PROPERTYName=name}} {@AddToName=add {@personName=John} {@PROPERTYName=name}} 
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@personName=John} {@PROPERTYName=name}} {@AddToName=add {@personName=Mike Smith} {@PROPERTYName=name}} 
+- Mike Smith
+- John
+- tom
+
+- Name
+
+
+> Generator: d8657684694bedf9e09951801d35cc5c

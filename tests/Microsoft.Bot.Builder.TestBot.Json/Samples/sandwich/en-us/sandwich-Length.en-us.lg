@@ -1,9 +1,0 @@
-[sandwich-library.lg](sandwich-library.lg)
-[sandwich-library-Missing.lg](sandwich-library-Missing.lg)
-
-# AskLength
-- ${askString('Length')}
-
-
-# LengthName
-- length

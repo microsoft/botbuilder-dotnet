@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using AdaptiveExpressions.Memory;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -15,7 +16,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">Template name.</param>
         /// <param name="scope">Template scope.</param>
-        public EvaluationTarget(string templateName, object scope)
+        public EvaluationTarget(string templateName, IMemory scope)
         {
             TemplateName = templateName;
             Scope = scope;
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Scope.
         /// </value>
-        public object Scope { get; set; }
+        public IMemory Scope { get; set; }
 
         /// <summary>
         /// Get current instance id. If two target has the same Id,
@@ -52,10 +53,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Id.</returns>
         public string GetId()
         {
-            var memory = (CustomizedMemory)Scope;
-            var globalMemoryId = memory.GlobalMemory?.Version() ?? string.Empty;
-            var localMemoryId = memory.LocalMemory?.ToString() ?? string.Empty;
-            return TemplateName + globalMemoryId + localMemoryId;
+            return TemplateName + Scope?.Version();
         }
     }
 }

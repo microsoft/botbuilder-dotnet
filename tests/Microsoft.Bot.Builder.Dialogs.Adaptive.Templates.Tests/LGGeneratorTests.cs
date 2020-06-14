@@ -393,6 +393,45 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public async Task TestDateTimeFunctions()
+        {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+            DialogManager dm = new DialogManager()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration("test.lg");
+            dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("datetime.dialog");
+
+            await CreateFlow(async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+            .Send("hello")
+                .AssertReply("2018-01-01T08:02:00.000Z")
+                .AssertReply("2018-01-01T08:03:00.000Z")
+                .AssertReply("2018-01-06T08:00:00.000Z")
+                .AssertReply("2018-01-01T15:00:00.000Z")
+                .AssertReply("2018-01-01T08:33:00.000Z")
+                .AssertReply("1")
+                .AssertReply("1")
+                .AssertReply("1")
+                .AssertReply("1")
+                .AssertReply("1/01/2018")
+                .AssertReply("2018")
+                .AssertReply("2018-01-01T08:00:00.000Z")
+                .AssertReply("2017-01-01T08:00:00.000Z")
+                .AssertReply("morning")
+                .AssertReply("tomorrow")
+                .AssertReply("Monday, 01 January 2018")
+                .AssertReply("2018-01-01T16:00:00.000Z")
+                .AssertReply("2018-01-20T00:00:00.000Z")
+                .AssertReply("2018-01-20T08:00:00.000Z")
+                .AssertReply("2018-01-01T00:00:00.000Z")
+                .AssertReply("636503904000000000")
+                .AssertReply("True")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task TestNoResourceExplorerLanguageGeneration()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
