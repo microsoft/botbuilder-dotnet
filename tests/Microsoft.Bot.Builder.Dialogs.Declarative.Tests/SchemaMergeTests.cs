@@ -66,12 +66,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 ProcessStartInfo startInfo;
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bf.cmd dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath}");
-                    startInfo.WorkingDirectory = projectPath;
+                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bf.cmd dialog:merge libraries/**/*.schema tests/**/*.schema -o {schemaPath}");
+                    startInfo.WorkingDirectory = solutionPath;
                 }
                 else
                 {
-                    startInfo = new ProcessStartInfo("bf", $"dialog:merge **/*.schema -o {schemaPath}");
+                    startInfo = new ProcessStartInfo("bf", $"dialog:merge libraries/**/*.schema tests/**/*.schema -o {schemaPath}");
                     startInfo.WorkingDirectory = solutionPath;
                 }
 
