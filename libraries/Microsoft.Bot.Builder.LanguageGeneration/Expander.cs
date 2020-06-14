@@ -430,7 +430,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 Evaluator.CheckExpressionResult(exp, error, result, templateName, lineContent, errorPrefix);
             }
-            else if (result == null && lgOptions.StrictMode == false)
+            else if (result == null && lgOptions.StrictMode != true)
             {
                 result = "null";
             }
