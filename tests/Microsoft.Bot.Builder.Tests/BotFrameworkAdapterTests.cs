@@ -395,12 +395,7 @@ namespace Microsoft.Bot.Builder.Tests
                 },
             };
 
-            var activity = Activity.CreateEventActivity();
-            activity.RelatesTo = cr;
-            activity.ChannelId = "unknown";
-            activity.From = new ChannelAccount() { Id = "xxxx" };
-            activity.Recipient = new ChannelAccount() { Id = "yyy" };
-            activity.Name = "ContinueConversation";
+            var activity = cr.GetContinuationActivity();
             activity.Value = "test";
 
             // Create ClaimsIdentity that represents Skill1-to-Skill1 communication
@@ -420,7 +415,6 @@ namespace Microsoft.Bot.Builder.Tests
                 cr.ActivityId = null; // activityids will be different...
                 cr2.ActivityId = null;
                 Assert.AreEqual(JsonConvert.SerializeObject(cr), JsonConvert.SerializeObject(cr2), "cr should match");
-                Assert.AreEqual(JsonConvert.SerializeObject(activity.GetConversationReference()), JsonConvert.SerializeObject(turnContext.Activity.RelatesTo), "relatesTo should match");
                 Assert.AreEqual("test", turnContext.Activity.Value, "value payload should come through");
             });
 
