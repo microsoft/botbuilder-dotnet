@@ -1,5 +1,6 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
+using System;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
@@ -8,7 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// Extended information about an entity including $instance data.
     /// </summary>
     /// <remarks>This is surfaced as part of the entity ambiguity events.</remarks>
-    public class EntityInfo
+    public class EntityInfo : ICloneable
     {
         /// <summary>
         /// Gets or sets name of entity.
@@ -23,6 +24,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>Value of entity.</value>
         [JsonProperty("value")]
         public object Value { get; set; }
+
+        /// <summary>
+        /// Gets or sets recognized property for entity.
+        /// </summary>
+        /// <value>Value of property if any.</value>
+        [JsonProperty("property")]
+        public string Property { get; set; }
 
         /// <summary>
         /// Gets or sets operation for entity.
@@ -119,6 +127,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             => Start <= entity.Start && End >= entity.End && End - Start > entity.End - entity.Start;
 
         public override string ToString()
-            => $"{Name}:{Value} P{Priority} {Score} {Coverage}";
+            => $"{Operation}({Name}:{Value}) P{Priority} {Score} {Coverage}";
+
+        /// <summary>
+        /// Returns a clone of this EntityInfo.
+        /// </summary>
+        /// <returns>Shallow clone.</returns>
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 }

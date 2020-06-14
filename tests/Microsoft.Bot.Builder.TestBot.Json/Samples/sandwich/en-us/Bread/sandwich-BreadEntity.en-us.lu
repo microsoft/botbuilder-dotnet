@@ -1,0 +1,286 @@
+
+@ list BreadEntity =
+	- multiGrainWheat:
+		- multi
+		- grain
+		- wheat
+		- multi grain
+		- grain wheat
+		- multi grain wheat
+	- rye:
+		- rye
+	- white:
+		- white
+	- wholeWheat:
+		- whole
+		- wheat
+		- whole wheat
+
+> Define how Bread is recognized as a property name
+@ list PROPERTYName
+    - Bread:
+		- bread
+
+
+> Define operations for property
+@ml AddToBread = 
+    - @BreadEntity BreadEntity
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromBread = 
+    - @BreadEntity BreadEntity
+    - @PROPERTYName PROPERTYName
+@ml ClearBread =
+    - @PROPERTYName PROPERTYName
+@ml ShowBread =
+    - @PROPERTYName PROPERTYName
+# sandwich
+> Add only
+- {@AddToBread=add {@BreadEntity=rye}}
+- {@AddToBread=add {@BreadEntity=multi}}
+- {@AddToBread=add {@BreadEntity=wheat}}
+- {@AddToBread=with {@BreadEntity=wheat}}
+- {@AddToBread=with {@BreadEntity=rye}}
+- {@AddToBread=with {@BreadEntity=white}}
+- {@AddToBread=add {@BreadEntity=multi grain} and {@BreadEntity=whole}}
+- {@AddToBread=add {@BreadEntity=grain} and {@BreadEntity=wheat}}
+- {@AddToBread=add {@BreadEntity=wheat} and {@BreadEntity=wheat}}
+- {@AddToBread=with {@BreadEntity=rye} and {@BreadEntity=wheat}}
+- {@AddToBread=with {@BreadEntity=grain wheat} and {@BreadEntity=grain wheat}}
+- {@AddToBread=with {@BreadEntity=wheat} and {@BreadEntity=rye}}
+- {@AddToBread=add {@BreadEntity=rye}, {@BreadEntity=multi} and {@BreadEntity=grain}}
+- {@AddToBread=add {@BreadEntity=grain}, {@BreadEntity=multi grain} and {@BreadEntity=multi}}
+- {@AddToBread=add {@BreadEntity=grain wheat}, {@BreadEntity=wheat} and {@BreadEntity=multi grain}}
+- {@AddToBread=with {@BreadEntity=multi}, {@BreadEntity=wheat} and {@BreadEntity=multi grain wheat}}
+- {@AddToBread=with {@BreadEntity=whole}, {@BreadEntity=wheat} and {@BreadEntity=white}}
+- {@AddToBread=with {@BreadEntity=grain wheat}, {@BreadEntity=white} and {@BreadEntity=whole wheat}}
+- {@AddToBread={@PROPERTYName=bread} is {@BreadEntity=wheat}}
+- {@AddToBread={@PROPERTYName=bread} is {@BreadEntity=grain wheat}}
+- {@AddToBread={@PROPERTYName=bread} is {@BreadEntity=whole wheat}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=multi grain wheat} and {@BreadEntity=whole wheat}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=rye} and {@BreadEntity=multi}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=whole wheat} and {@BreadEntity=multi}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=whole wheat}, {@BreadEntity=wheat} and {@BreadEntity=wheat}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=whole}, {@BreadEntity=wheat} and {@BreadEntity=multi grain}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=multi grain}, {@BreadEntity=wheat} and {@BreadEntity=wheat}}
+- {@AddToBread=add {@BreadEntity=whole wheat} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=white} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=multi grain wheat} {@PROPERTYName=bread}}
+- {@AddToBread=with {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@AddToBread=with {@BreadEntity=multi} {@PROPERTYName=bread}}
+- {@AddToBread=with {@BreadEntity=white} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=grain} and {@BreadEntity=grain} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=white} and {@BreadEntity=whole} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=grain wheat} and {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@AddToBread=with {@BreadEntity=whole} and {@BreadEntity=rye} {@PROPERTYName=bread}}
+- {@AddToBread=with {@BreadEntity=wheat} and {@BreadEntity=rye} {@PROPERTYName=bread}}
+- {@AddToBread=with {@BreadEntity=whole wheat} and {@BreadEntity=multi grain wheat} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=white}, {@BreadEntity=whole wheat} and {@BreadEntity=grain wheat} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=rye}, {@BreadEntity=multi} and {@BreadEntity=white} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=grain}, {@BreadEntity=multi grain wheat} and {@BreadEntity=whole wheat} {@PROPERTYName=bread}}
+- {@AddToBread=with {@BreadEntity=wheat}, {@BreadEntity=grain wheat} and {@BreadEntity=multi grain wheat} {@PROPERTYName=bread}}
+- {@AddToBread=with {@BreadEntity=whole}, {@BreadEntity=multi} and {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@AddToBread=with {@BreadEntity=wheat}, {@BreadEntity=grain} and {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@AddToBread={@PROPERTYName=bread} is {@BreadEntity=whole wheat}}
+- {@AddToBread={@PROPERTYName=bread} is {@BreadEntity=multi}}
+- {@AddToBread={@PROPERTYName=bread} is {@BreadEntity=grain wheat}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=wheat} and {@BreadEntity=multi}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=wheat} and {@BreadEntity=whole wheat}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=wheat} and {@BreadEntity=rye}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=multi}, {@BreadEntity=grain} and {@BreadEntity=whole}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=whole wheat}, {@BreadEntity=rye} and {@BreadEntity=white}}
+- {@AddToBread={@PROPERTYName=bread} are {@BreadEntity=wheat}, {@BreadEntity=white} and {@BreadEntity=grain wheat}}
+> Remove only
+- {@RemoveFromBread=remove {@BreadEntity=grain}}
+- {@RemoveFromBread=remove {@BreadEntity=multi grain wheat}}
+- {@RemoveFromBread=remove {@BreadEntity=grain wheat}}
+- {@RemoveFromBread=remove {@BreadEntity=multi} and {@BreadEntity=wheat}}
+- {@RemoveFromBread=remove {@BreadEntity=white} and {@BreadEntity=white}}
+- {@RemoveFromBread=remove {@BreadEntity=whole} and {@BreadEntity=white}}
+- {@RemoveFromBread=remove {@BreadEntity=grain wheat}, {@BreadEntity=grain} and {@BreadEntity=multi grain}}
+- {@RemoveFromBread=remove {@BreadEntity=wheat}, {@BreadEntity=multi} and {@BreadEntity=white}}
+- {@RemoveFromBread=remove {@BreadEntity=wheat}, {@BreadEntity=multi} and {@BreadEntity=wheat}}
+- {@RemoveFromBread=delete {@BreadEntity=whole}}
+- {@RemoveFromBread=delete {@BreadEntity=multi grain}}
+- {@RemoveFromBread=delete {@BreadEntity=rye}}
+- {@RemoveFromBread=delete {@BreadEntity=white} and {@BreadEntity=wheat}}
+- {@RemoveFromBread=delete {@BreadEntity=multi grain wheat} and {@BreadEntity=multi}}
+- {@RemoveFromBread=delete {@BreadEntity=whole wheat} and {@BreadEntity=whole wheat}}
+- {@RemoveFromBread=delete {@BreadEntity=white}, {@BreadEntity=white} and {@BreadEntity=wheat}}
+- {@RemoveFromBread=delete {@BreadEntity=wheat}, {@BreadEntity=white} and {@BreadEntity=multi grain}}
+- {@RemoveFromBread=delete {@BreadEntity=rye}, {@BreadEntity=grain wheat} and {@BreadEntity=wheat}}
+- {@RemoveFromBread=without {@BreadEntity=whole}}
+- {@RemoveFromBread=without {@BreadEntity=grain}}
+- {@RemoveFromBread=without {@BreadEntity=multi grain}}
+- {@RemoveFromBread=without {@BreadEntity=grain wheat} and {@BreadEntity=multi grain}}
+- {@RemoveFromBread=without {@BreadEntity=grain} and {@BreadEntity=wheat}}
+- {@RemoveFromBread=without {@BreadEntity=white} and {@BreadEntity=white}}
+- {@RemoveFromBread=without {@BreadEntity=multi grain wheat}, {@BreadEntity=multi grain wheat} and {@BreadEntity=multi grain wheat}}
+- {@RemoveFromBread=without {@BreadEntity=whole}, {@BreadEntity=whole} and {@BreadEntity=whole}}
+- {@RemoveFromBread=without {@BreadEntity=grain wheat}, {@BreadEntity=multi} and {@BreadEntity=wheat}}
+- {@RemoveFromBread=with no {@BreadEntity=wheat}}
+- {@RemoveFromBread=with no {@BreadEntity=grain wheat}}
+- {@RemoveFromBread=with no {@BreadEntity=white}}
+- {@RemoveFromBread=with no {@BreadEntity=wheat} and {@BreadEntity=whole wheat}}
+- {@RemoveFromBread=with no {@BreadEntity=white} and {@BreadEntity=white}}
+- {@RemoveFromBread=with no {@BreadEntity=wheat} and {@BreadEntity=grain wheat}}
+- {@RemoveFromBread=with no {@BreadEntity=grain wheat}, {@BreadEntity=wheat} and {@BreadEntity=grain wheat}}
+- {@RemoveFromBread=with no {@BreadEntity=grain wheat}, {@BreadEntity=multi grain} and {@BreadEntity=grain}}
+- {@RemoveFromBread=with no {@BreadEntity=whole}, {@BreadEntity=wheat} and {@BreadEntity=wheat}}
+- {@RemoveFromBread=remove {@BreadEntity=grain wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=rye} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=whole wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=wheat} and {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=grain} and {@BreadEntity=whole} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=whole} and {@BreadEntity=multi grain} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=multi grain wheat}, {@BreadEntity=grain wheat} and {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=multi grain wheat}, {@BreadEntity=whole wheat} and {@BreadEntity=whole} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=wheat}, {@BreadEntity=whole} and {@BreadEntity=white} {@PROPERTYName=bread}}
+- {@RemoveFromBread=delete {@BreadEntity=multi grain wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=delete {@BreadEntity=multi} {@PROPERTYName=bread}}
+- {@RemoveFromBread=delete {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=delete {@BreadEntity=whole wheat} and {@BreadEntity=rye} {@PROPERTYName=bread}}
+- {@RemoveFromBread=delete {@BreadEntity=white} and {@BreadEntity=white} {@PROPERTYName=bread}}
+- {@RemoveFromBread=delete {@BreadEntity=grain wheat} and {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=delete {@BreadEntity=wheat}, {@BreadEntity=multi grain wheat} and {@BreadEntity=grain wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=delete {@BreadEntity=grain wheat}, {@BreadEntity=multi} and {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=delete {@BreadEntity=multi}, {@BreadEntity=wheat} and {@BreadEntity=whole wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=without {@BreadEntity=white}}
+- {@RemoveFromBread=without {@BreadEntity=multi grain wheat}}
+- {@RemoveFromBread=without {@BreadEntity=grain wheat}}
+- {@RemoveFromBread=without {@BreadEntity=wheat} and {@BreadEntity=multi grain wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=without {@BreadEntity=whole} and {@BreadEntity=grain wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=without {@BreadEntity=rye} and {@BreadEntity=multi grain} {@PROPERTYName=bread}}
+- {@RemoveFromBread=without {@BreadEntity=multi grain}, {@BreadEntity=wheat} and {@BreadEntity=white} {@PROPERTYName=bread}}
+- {@RemoveFromBread=without {@BreadEntity=whole}, {@BreadEntity=multi grain} and {@BreadEntity=multi grain wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=without {@BreadEntity=whole}, {@BreadEntity=grain wheat} and {@BreadEntity=grain} {@PROPERTYName=bread}}
+- {@RemoveFromBread=with no {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=with no {@BreadEntity=multi grain} {@PROPERTYName=bread}}
+- {@RemoveFromBread=with no {@BreadEntity=whole wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=with no {@BreadEntity=wheat} and {@BreadEntity=grain wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=with no {@BreadEntity=wheat} and {@BreadEntity=whole wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=with no {@BreadEntity=rye} and {@BreadEntity=multi} {@PROPERTYName=bread}}
+- {@RemoveFromBread=with no {@BreadEntity=white}, {@BreadEntity=multi grain} and {@BreadEntity=multi} {@PROPERTYName=bread}}
+- {@RemoveFromBread=with no {@BreadEntity=multi}, {@BreadEntity=rye} and {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@RemoveFromBread=with no {@BreadEntity=wheat}, {@BreadEntity=whole} and {@BreadEntity=wheat} {@PROPERTYName=bread}}
+> Clear only
+- {@ClearBread=clear {@PROPERTYName=bread}}
+- {@ClearBread=remove {@PROPERTYName=bread}}
+- {@ClearBread=empty {@PROPERTYName=bread}}
+- {@ClearBread=please clear {@PROPERTYName=bread}}
+- {@ClearBread=please remove {@PROPERTYName=bread}}
+- {@ClearBread=please empty {@PROPERTYName=bread}}
+- {@ClearBread=can you clear {@PROPERTYName=bread}}
+- {@ClearBread=can you remove {@PROPERTYName=bread}}
+- {@ClearBread=can you empty {@PROPERTYName=bread}}
+> Show only
+- {@ShowBread=value of {@PROPERTYName=bread}}
+- {@ShowBread=value for {@PROPERTYName=bread}}
+- {@ShowBread=selection of {@PROPERTYName=bread}}
+- {@ShowBread=selection for {@PROPERTYName=bread}}
+- {@ShowBread=display {@PROPERTYName=bread}}
+- {@ShowBread=show {@PROPERTYName=bread}}
+- {@ShowBread=value of {@PROPERTYName=bread}}
+- {@ShowBread=value for {@PROPERTYName=bread}}
+- {@ShowBread={@PROPERTYName=bread} value}
+- {@ShowBread={@PROPERTYName=bread} values}
+- {@ShowBread={@PROPERTYName=bread} selection}
+> Combinations
+- {@AddToBread=add {@BreadEntity=wheat}} {@RemoveFromBread=and remove {@BreadEntity=grain wheat}}
+- {@AddToBread=add {@BreadEntity=grain wheat}} {@RemoveFromBread=and remove {@BreadEntity=whole}}
+- {@AddToBread=add {@BreadEntity=grain wheat}} {@RemoveFromBread=and remove {@BreadEntity=white}}
+- {@AddToBread=add {@BreadEntity=grain}} {@RemoveFromBread=remove {@BreadEntity=whole}}
+- {@AddToBread=add {@BreadEntity=whole wheat}} {@RemoveFromBread=remove {@BreadEntity=wheat}}
+- {@AddToBread=add {@BreadEntity=multi grain}} {@RemoveFromBread=remove {@BreadEntity=wheat}}
+- {@AddToBread=add {@BreadEntity=rye}}, {@RemoveFromBread=remove {@BreadEntity=grain wheat}}
+- {@AddToBread=add {@BreadEntity=wheat}}, {@RemoveFromBread=remove {@BreadEntity=whole}}
+- {@AddToBread=add {@BreadEntity=multi grain}}, {@RemoveFromBread=remove {@BreadEntity=multi}}
+- {@AddToBread=add {@BreadEntity=grain wheat} and {@BreadEntity=multi}} {@RemoveFromBread=and remove {@BreadEntity=multi grain}}
+- {@AddToBread=add {@BreadEntity=multi grain wheat} and {@BreadEntity=wheat}} {@RemoveFromBread=and remove {@BreadEntity=whole wheat}}
+- {@AddToBread=add {@BreadEntity=grain} and {@BreadEntity=grain wheat}} {@RemoveFromBread=and remove {@BreadEntity=white}}
+- {@AddToBread=add {@BreadEntity=grain wheat}, {@BreadEntity=white} and {@BreadEntity=multi}} {@RemoveFromBread=and remove {@BreadEntity=grain} and {@BreadEntity=multi grain}}
+- {@AddToBread=add {@BreadEntity=rye}, {@BreadEntity=multi grain wheat} and {@BreadEntity=rye}} {@RemoveFromBread=and remove {@BreadEntity=multi grain} and {@BreadEntity=rye}}
+- {@AddToBread=add {@BreadEntity=multi grain}, {@BreadEntity=whole} and {@BreadEntity=rye}} {@RemoveFromBread=and remove {@BreadEntity=multi grain} and {@BreadEntity=whole wheat}}
+- {@AddToBread=add {@BreadEntity=multi}, {@BreadEntity=multi grain wheat} and {@BreadEntity=grain}} {@RemoveFromBread=remove {@BreadEntity=multi grain wheat} and {@BreadEntity=grain wheat}}
+- {@AddToBread=add {@BreadEntity=wheat}, {@BreadEntity=whole} and {@BreadEntity=multi grain}} {@RemoveFromBread=remove {@BreadEntity=grain} and {@BreadEntity=multi grain}}
+- {@AddToBread=add {@BreadEntity=multi grain}, {@BreadEntity=whole} and {@BreadEntity=grain}} {@RemoveFromBread=remove {@BreadEntity=multi grain wheat} and {@BreadEntity=multi grain wheat}}
+- {@AddToBread=add {@BreadEntity=multi}}{@RemoveFromBread=, remove {@BreadEntity=multi grain}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=grain wheat}}{@RemoveFromBread=, remove {@BreadEntity=whole wheat}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=white}}{@RemoveFromBread=, remove {@BreadEntity=grain}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=grain wheat}} {@AddToBread=and add {@BreadEntity=whole wheat}}
+- {@RemoveFromBread=remove {@BreadEntity=multi}} {@AddToBread=and add {@BreadEntity=grain wheat}}
+- {@RemoveFromBread=remove {@BreadEntity=grain wheat}} {@AddToBread=and add {@BreadEntity=wheat}}
+- {@RemoveFromBread=remove {@BreadEntity=multi grain} and {@BreadEntity=wheat}} {@AddToBread=and add {@BreadEntity=multi grain}}
+- {@RemoveFromBread=remove {@BreadEntity=whole} and {@BreadEntity=whole}} {@AddToBread=and add {@BreadEntity=whole wheat}}
+- {@RemoveFromBread=remove {@BreadEntity=wheat} and {@BreadEntity=multi grain wheat}} {@AddToBread=and add {@BreadEntity=whole}}
+- {@RemoveFromBread=remove {@BreadEntity=multi grain}, {@BreadEntity=grain wheat} and {@BreadEntity=wheat}} {@AddToBread=and add {@BreadEntity=white} and {@BreadEntity=grain wheat}}
+- {@RemoveFromBread=remove {@BreadEntity=grain}, {@BreadEntity=wheat} and {@BreadEntity=wheat}} {@AddToBread=and add {@BreadEntity=whole} and {@BreadEntity=multi grain wheat}}
+- {@RemoveFromBread=remove {@BreadEntity=whole wheat}, {@BreadEntity=rye} and {@BreadEntity=multi}} {@AddToBread=and add {@BreadEntity=multi grain wheat} and {@BreadEntity=multi}}
+- {@RemoveFromBread=remove {@BreadEntity=wheat}}{@AddToBread=, add {@BreadEntity=whole wheat}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=grain}}{@AddToBread=, add {@BreadEntity=wheat}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=grain}}{@AddToBread=, add {@BreadEntity=whole}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=multi}} {@AddToBread=and add {@BreadEntity=wheat}}
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=rye}} {@AddToBread=and add {@BreadEntity=multi grain}}
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=multi grain}} {@AddToBread=and add {@BreadEntity=multi grain wheat}}
+- {@ShowBread=show {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=rye}} {@ShowBread=and display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=multi}} {@AddToBread=and add {@BreadEntity=grain}}
+- {@ShowBread=show {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=grain}} {@ShowBread=and display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=multi}} {@AddToBread=and add {@BreadEntity=rye}}
+- {@ShowBread=show {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=white}} {@ShowBread=and display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=white}} {@AddToBread=and add {@BreadEntity=wheat}}
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=multi grain wheat}} {@AddToBread=add {@BreadEntity=rye}} 
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=white}} {@AddToBread=add {@BreadEntity=multi grain}} 
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=grain wheat}} {@AddToBread=add {@BreadEntity=grain}} 
+- {@AddToBread=add {@BreadEntity=multi grain wheat} {@PROPERTYName=bread}} {@RemoveFromBread=and remove {@BreadEntity=whole wheat} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=grain wheat} {@PROPERTYName=bread}} {@RemoveFromBread=and remove {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=multi grain} {@PROPERTYName=bread}} {@RemoveFromBread=and remove {@BreadEntity=multi grain} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=whole wheat} {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=rye} {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=multi grain wheat} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=whole} {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=rye} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=wheat} {@PROPERTYName=bread}}, {@RemoveFromBread=remove {@BreadEntity=grain} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=multi} {@PROPERTYName=bread}}, {@RemoveFromBread=remove {@BreadEntity=multi grain} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=whole} {@PROPERTYName=bread}}, {@RemoveFromBread=remove {@BreadEntity=multi grain} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=wheat} and {@BreadEntity=multi grain} {@PROPERTYName=bread}} {@RemoveFromBread=and remove {@BreadEntity=multi} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=white} and {@BreadEntity=multi} {@PROPERTYName=bread}} {@RemoveFromBread=and remove {@BreadEntity=grain wheat} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=whole wheat} and {@BreadEntity=multi} {@PROPERTYName=bread}} {@RemoveFromBread=and remove {@BreadEntity=whole} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=whole}, {@BreadEntity=wheat} and {@BreadEntity=white} {@PROPERTYName=bread}} {@RemoveFromBread=and remove {@BreadEntity=wheat} and {@BreadEntity=multi} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=multi grain wheat}, {@BreadEntity=white} and {@BreadEntity=grain} {@PROPERTYName=bread}} {@RemoveFromBread=and remove {@BreadEntity=grain wheat} and {@BreadEntity=multi} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=grain}, {@BreadEntity=whole wheat} and {@BreadEntity=rye} {@PROPERTYName=bread}} {@RemoveFromBread=and remove {@BreadEntity=grain wheat} and {@BreadEntity=whole} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=multi grain wheat}, {@BreadEntity=whole wheat} and {@BreadEntity=grain} {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=whole wheat} and {@BreadEntity=grain} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=multi grain wheat}, {@BreadEntity=multi grain wheat} and {@BreadEntity=rye} {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=multi grain} and {@BreadEntity=whole} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=multi grain wheat}, {@BreadEntity=white} and {@BreadEntity=grain wheat} {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=rye} and {@BreadEntity=whole} {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=whole wheat} {@PROPERTYName=bread}}{@RemoveFromBread=, remove {@BreadEntity=wheat} {@PROPERTYName=bread}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=wheat} {@PROPERTYName=bread}}{@RemoveFromBread=, remove {@BreadEntity=grain wheat} {@PROPERTYName=bread}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@AddToBread=add {@BreadEntity=whole} {@PROPERTYName=bread}}{@RemoveFromBread=, remove {@BreadEntity=whole} {@PROPERTYName=bread}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=grain wheat} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=grain} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=multi} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=rye} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=rye} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=rye} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=rye} and {@BreadEntity=whole} {@PROPERTYName=bread}} {@AddToBread=and add **MISSING**}
+- {@RemoveFromBread=remove {@BreadEntity=rye} and {@BreadEntity=rye} {@PROPERTYName=bread}} {@AddToBread=and add **MISSING**}
+- {@RemoveFromBread=remove {@BreadEntity=grain wheat} and {@BreadEntity=wheat} {@PROPERTYName=bread}} {@AddToBread=and add **MISSING**}
+- {@RemoveFromBread=remove {@BreadEntity=multi grain wheat}, {@BreadEntity=grain wheat} and {@BreadEntity=rye} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=multi} and {@BreadEntity=multi grain} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=multi}, {@BreadEntity=multi} and {@BreadEntity=white} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=rye} and {@BreadEntity=multi} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=grain}, {@BreadEntity=white} and {@BreadEntity=whole} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=whole} and {@BreadEntity=grain} {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=multi grain} {@PROPERTYName=bread}}{@AddToBread=, add {@BreadEntity=white} {@PROPERTYName=bread}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=whole wheat} {@PROPERTYName=bread}}{@AddToBread=, add {@BreadEntity=whole} {@PROPERTYName=bread}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@RemoveFromBread=remove {@BreadEntity=white} {@PROPERTYName=bread}}{@AddToBread=, add {@BreadEntity=whole} {@PROPERTYName=bread}} {@ShowBread=and show {@PROPERTYName=bread}}
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=whole} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=multi} {@PROPERTYName=bread}}
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=whole} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=whole wheat} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=whole wheat} {@PROPERTYName=bread}}
+- {@ShowBread=show {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=multi} {@PROPERTYName=bread}} {@ShowBread=and display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=multi} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=multi grain wheat} {@PROPERTYName=bread}}
+- {@ShowBread=show {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=wheat} {@PROPERTYName=bread}} {@ShowBread=and display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=wheat} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=wheat} {@PROPERTYName=bread}}
+- {@ShowBread=show {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=grain} {@PROPERTYName=bread}} {@ShowBread=and display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=wheat} {@PROPERTYName=bread}} {@AddToBread=and add {@BreadEntity=rye} {@PROPERTYName=bread}}
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=white} {@PROPERTYName=bread}} {@AddToBread=add {@BreadEntity=wheat} {@PROPERTYName=bread}} 
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=grain wheat} {@PROPERTYName=bread}} {@AddToBread=add {@BreadEntity=white} {@PROPERTYName=bread}} 
+- {@ShowBread=display {@PROPERTYName=bread}} {@RemoveFromBread=remove {@BreadEntity=wheat} {@PROPERTYName=bread}} {@AddToBread=add {@BreadEntity=wheat} {@PROPERTYName=bread}} 
+- multi
+- grain
+- wheat
+- multi grain
+- grain wheat
+- multi grain wheat
+- rye
+- white
+- whole
+- whole wheat
+
+- Bread
+
+
+> Generator: 2d7f971683e7a6f7ebaf110a210cd595

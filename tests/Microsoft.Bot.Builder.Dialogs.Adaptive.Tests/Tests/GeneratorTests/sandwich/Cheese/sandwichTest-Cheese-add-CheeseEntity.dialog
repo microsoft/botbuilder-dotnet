@@ -1,0 +1,28 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "AddToCheese",
+	"entity": "CheeseEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${setPropertyMessage('Cheese', @CheeseEntity)}"
+		},
+		{
+			"$kind": "Microsoft.SetProperty",
+			"property": "$Cheese",
+			"value": "=@CheeseEntity"
+		},
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$PropertyToChange == 'Cheese'",
+			"actions": [
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "$PropertyToChange"
+				}
+			]
+		}
+	],
+	"$Generator": "0d82c5ddb86a9faa794f6c4357829733"
+}

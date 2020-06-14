@@ -865,25 +865,21 @@
 					"$ref": "#/definitions/arrayExpression",
 					"title": "Expected Properties",
 					"description": "Properties expected from the user.",
-					"type": "array",
 					"examples": [
 						[
 							"age",
 							"name"
 						]
-					],
-					"items": {
-						"type": "string",
-						"title": "Name",
-						"description": "Name of the property"
-					}
+					]
 				},
 				"defaultOperation": {
-					"$ref": "#/definitions/stringExpression",
+					"$ref": "#/definitions/objectExpression",
 					"title": "Default Operation",
-					"description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
+					"description": "Sets the default operation for each property and entity that will be used when no operation is recognized in the response to this Ask.",
 					"examples": [
-						"add"
+						{
+							"number": "add"
+						}
 					]
 				},
 				"id": {
@@ -1197,8 +1193,8 @@
 		},
 		"Microsoft.BeginSkill": {
 			"$role": "implements(Microsoft.IDialog)",
-			"title": "Begin a skill dialog",
-			"description": "Begin a remote skill dialog.",
+			"title": "Begin a skill",
+			"description": "Begin a remote skill.",
 			"type": "object",
 			"required": [
 				"$kind"
@@ -3563,7 +3559,7 @@
 				"resultProperty": {
 					"$ref": "#/definitions/stringExpression",
 					"title": "Result property",
-					"description": "Property to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
+					"description": "A property to store the result of this action. The result can include any of the 4 properties from the HTTP response: statusCode, reasonPhrase, content, and headers. If the content is JSON it will be a deserialized object. The values can be accessed via .content for example.",
 					"examples": [
 						"dialog.contosodata"
 					]

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Fallback\datetime.dialog" />
     <None Remove="Fallback\inject.dialog" />
     <None Remove="Fallback\test.dialog" />
     <None Remove="lg\inject.lg" />
@@ -46,6 +47,9 @@
   </ItemGroup>
     
   <ItemGroup>
+    <Page Include="Fallback\datetime.dialog">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
     <Page Include="Fallback\inject.dialog">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
