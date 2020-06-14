@@ -37,8 +37,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             {
                 var queueName = nameof(ContinueConversationLaterTests).ToLower();
                 var queue = await ContainerInit(queueName);
-
-                var adapter = new TestAdapter()
+                var cr = TestAdapter.CreateConversation(nameof(ContinueConversationLaterTests));
+                var adapter = new TestAdapter(cr)
                        .UseStorage(new MemoryStorage())
                        .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
 
@@ -61,6 +61,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 Assert.AreEqual("ContinueConversation", activity.Name);
                 Assert.AreEqual("foo", activity.Value);
                 Assert.IsNotNull(activity.RelatesTo);
+                var cr2 = activity.GetConversationReference();
+                cr.ActivityId = null;
+                cr2.ActivityId = null;
+                Assert.AreEqual(JsonConvert.SerializeObject(cr), JsonConvert.SerializeObject(cr2));
             }
         }
     }
