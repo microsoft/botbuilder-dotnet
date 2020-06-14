@@ -317,8 +317,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 turnResult = await dc.BeginDialogAsync(_rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            await SendStateSnapshotTraceAsync(dc, "Skill State", cancellationToken).ConfigureAwait(false);
-
             if (ShouldSendEndOfConversationToParent(turnContext, turnResult))
             {
                 var endMessageText = $"Dialog {_rootDialogId} has **completed**. Sending EndOfConversation.";

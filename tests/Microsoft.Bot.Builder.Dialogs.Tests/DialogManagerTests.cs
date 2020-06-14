@@ -28,9 +28,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         // An App ID for a skill bot.
         private readonly string _skillBotId = Guid.NewGuid().ToString();
 
-        // Captures an EndOfConversation if it was sent to help with assertions.
-        private Activity _eocSent;
-
         // Property to capture the DialogManager turn results and do assertions.
         private DialogManagerResult _dmTurnResult;
 
@@ -250,25 +247,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var storage = new MemoryStorage();
 
             var adaptiveDialog = CreateTestDialog(property: "conversation.name");
-            await CreateFlow(adaptiveDialog, storage, firstConversationId, testCase: testCase, locale: "en-GB").Send("Hi")
+            var flow = CreateFlow(adaptiveDialog, storage, firstConversationId, testCase: testCase, locale: "en-GB")
+                .Send("Hi")
                 .AssertReply("Hello, what is your name?")
                 .Send("SomeName")
-                .AssertReply("Hello SomeName, nice to meet you!")
-                .StartTestAsync();
-            
-            Assert.AreEqual(DialogTurnStatus.Complete, _dmTurnResult.TurnResult.Status);
+                .AssertReply("Hello SomeName, nice to meet you!");
 
             if (shouldSendEoc)
             {
-                Assert.IsNotNull(_eocSent, "Skills should send EndConversation to channel");
-                Assert.AreEqual(ActivityTypes.EndOfConversation, _eocSent.Type);
-                Assert.AreEqual("SomeName", _eocSent.Value);
-                Assert.AreEqual("en-GB", _eocSent.Locale);
+                // Assert EndOfConversation activity
+                flow = flow.AssertReply((activity) =>
+                {
+                    Assert.AreEqual(ActivityTypes.EndOfConversation, activity.Type);
+                    Assert.AreEqual("SomeName", ((Activity)activity).Value);
+                    Assert.AreEqual("en-GB", ((Activity)activity).Locale);
+                });
             }
-            else
-            {
-                Assert.IsNull(_eocSent, "Root bot should not send EndConversation to channel");
-            }
+
+            // start the test.
+            await flow.StartTestAsync();
+
+            Assert.AreEqual(DialogTurnStatus.Complete, _dmTurnResult.TurnResult.Status);
         }
 
         [TestMethod]
@@ -340,8 +339,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(conversationId));
             adapter
                 .UseStorage(storage)
-                .UseBotState(userState, convoState)
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+                .UseBotState(userState, convoState);
 
             if (!string.IsNullOrEmpty(locale))
             {
@@ -374,13 +372,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         turnContext.TurnState.Add(SkillHandler.SkillConversationReferenceKey, new SkillConversationReference { OAuthScope = _parentBotId });
                     }
                 }
-
-                // Interceptor to capture the EoC activity if it was sent so we can assert it in the tests.
-                turnContext.OnSendActivities(async (tc, activities, next) =>
-                {
-                    _eocSent = activities.FirstOrDefault(activity => activity.Type == ActivityTypes.EndOfConversation);
-                    return await next().ConfigureAwait(false);
-                });
 
                 // Capture the last DialogManager turn result for assertions.
                 _dmTurnResult = await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
