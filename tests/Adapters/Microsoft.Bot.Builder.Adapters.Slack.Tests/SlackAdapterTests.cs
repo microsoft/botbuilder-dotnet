@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Adapters.Slack.Model;
 using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
 using Microsoft.Bot.Schema;
 using Moq;
