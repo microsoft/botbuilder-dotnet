@@ -225,8 +225,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 foreach (var unit in instanceHeaders)
                 {
-                    var (result, error) = new StringExpression(unit.Value).TryGetValue(dc.State);
-                    client.DefaultRequestHeaders.TryAddWithoutValidation(unit.Key, result);
+                    client.DefaultRequestHeaders.TryAddWithoutValidation(unit.Key, unit.Value);
                 }
             }
 
