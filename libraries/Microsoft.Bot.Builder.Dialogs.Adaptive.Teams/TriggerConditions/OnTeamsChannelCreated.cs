@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsChannelCreated : OnConversationUpdateActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.OnTeamsChannelCreated";
+        public new const string Kind = "Teams.OnChannelCreated";
 
         [JsonConstructor]
         public OnTeamsChannelCreated(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

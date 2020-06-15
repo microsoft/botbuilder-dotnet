@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsMessagingExtensionConfigurationSetting : OnInvokeActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.OnTeamsMessagingExtensionConfigurationSetting";
+        public new const string Kind = "Teams.OnMessagingExtensionConfigurationSetting";
 
         [JsonConstructor]
         public OnTeamsMessagingExtensionConfigurationSetting(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

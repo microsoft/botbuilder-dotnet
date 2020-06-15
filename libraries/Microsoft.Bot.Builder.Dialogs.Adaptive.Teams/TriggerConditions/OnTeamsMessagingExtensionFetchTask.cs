@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsMessagingExtensionFetchTask : OnInvokeActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.OnTeamsMessagingExtensionFetchTask";
+        public new const string Kind = "Teams.OnMessagingExtensionFetchTask";
 
         [JsonConstructor]
         public OnTeamsMessagingExtensionFetchTask(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsTeamRenamed : OnConversationUpdateActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.OnTeamsTeamRenamed";
+        public new const string Kind = "Teams.OnTeamRenamed";
 
         [JsonConstructor]
         public OnTeamsTeamRenamed(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsMessagingExtensionSelectItem : OnInvokeActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.OnTeamsMessagingExtensionSelectItem";
+        public new const string Kind = "Teams.OnMessagingExtensionSelectItem";
 
         [JsonConstructor]
         public OnTeamsMessagingExtensionSelectItem(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

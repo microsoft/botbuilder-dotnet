@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsMessagingExtensionSubmitAction : OnInvokeActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.OnTeamsMessagingExtensionSubmitAction";
+        public new const string Kind = "Teams.OnMessagingExtensionSubmitAction";
 
         [JsonConstructor]
         public OnTeamsMessagingExtensionSubmitAction(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
