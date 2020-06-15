@@ -196,21 +196,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             object instanceBody = null;
             string instanceBodyErr = null;
-            
-            if (this.Body.Value is JObject)
+
+            if (this.Body != null)
             {
-                // For raw JSON Object, replace the jtoken recursively 
-                var jObjectBody = (JToken)JToken.FromObject(this.Body.Value).DeepClone();
-                await ReplaceJTokenRecursivelyAsync(dc, jObjectBody, cancellationToken).ConfigureAwait(false);
-                instanceBody = jObjectBody;
-            }
-            else
-            {
-                // If the body is string type , considered as expression
-                (instanceBody, instanceBodyErr) = this.Body.TryGetValue(dc.State);
-                if (instanceBodyErr != null)
+                if (this.Body.Value is JObject)
                 {
-                    throw new ArgumentException(instanceBodyErr);
+                    // For raw JSON Object, replace the jtoken recursively 
+                    var jObjectBody = (JToken)JToken.FromObject(this.Body.Value).DeepClone();
+                    await ReplaceJTokenRecursivelyAsync(dc, jObjectBody, cancellationToken).ConfigureAwait(false);
+                    instanceBody = jObjectBody;
+                }
+                else
+                {
+                    // If the body is string type , considered as expression
+                    (instanceBody, instanceBodyErr) = this.Body.TryGetValue(dc.State);
+                    if (instanceBodyErr != null)
+                    {
+                        throw new ArgumentException(instanceBodyErr);
+                    }
                 }
             }
 
