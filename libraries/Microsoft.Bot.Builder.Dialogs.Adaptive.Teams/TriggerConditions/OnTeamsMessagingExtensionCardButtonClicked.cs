@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsMessagingExtensionCardButtonClicked : OnInvokeActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.Teams.OnCardButtonClicked";
+        public new const string Kind = "Microsoft.OnTeamsMessagingExtensionCardButtonClicked";
 
         [JsonConstructor]
         public OnTeamsMessagingExtensionCardButtonClicked(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

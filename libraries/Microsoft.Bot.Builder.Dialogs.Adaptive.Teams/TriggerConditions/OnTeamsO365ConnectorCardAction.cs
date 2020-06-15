@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsO365ConnectorCardAction : OnInvokeActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.Teams.OnO365ConnectorCardAction";
+        public new const string Kind = "Microsoft.OnTeamsO365ConnectorCardAction";
 
         [JsonConstructor]
         public OnTeamsO365ConnectorCardAction(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

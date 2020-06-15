@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         }
         
         [TestMethod]
-        public async Task ConditionalsTests_OnActivityTypes()
+        public async Task ConditionalsTests_OnTeamActivityTypes()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }

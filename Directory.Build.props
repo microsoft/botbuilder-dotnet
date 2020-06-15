@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageOutputPath>$(MSBuildThisFileDirectory)outputpackages\</PackageOutputPath>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)outputpackages</PackageOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -13,7 +13,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <CodeAnalysisRuleSet>$(SolutionDir)\BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(OS)' == 'Windows_NT'">$(SolutionDir)\BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(OS)' != 'Windows_NT'">$(SolutionDir)/BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsMessagingExtensionConfigurationQuerySettingUrl : OnInvokeActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.Teams.OnConfigurationQuerySettingUrl";
+        public new const string Kind = "Microsoft.OnTeamsMessagingExtensionConfigurationQuerySettingUrl";
 
         [JsonConstructor]
         public OnTeamsMessagingExtensionConfigurationQuerySettingUrl(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
