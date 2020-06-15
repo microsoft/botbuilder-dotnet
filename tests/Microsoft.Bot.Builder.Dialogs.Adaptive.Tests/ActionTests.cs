@@ -2,10 +2,18 @@
 // Licensed under the MIT License.
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
+using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
+using RichardSzalay.MockHttp;
+using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -345,6 +353,105 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task Action_DeleteProperties()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_HttpRequest()
+        {
+            var handler = new MockHttpMessageHandler();
+            handler
+                .When(HttpMethod.Post, "http://foo.com/")
+                .WithContent("Joe is 52")
+                .Respond("plain/text", "string");
+
+            handler
+                .When(HttpMethod.Post, "http://foo.com/")
+                .WithContent("{\r\n  \"text\": \"Joe is 52\",\r\n  \"age\": 52\r\n}")
+                .Respond("plain/text", "object");
+
+            handler
+                .When(HttpMethod.Post, "http://foo.com/")
+                .WithContent("[\r\n  {\r\n    \"text\": \"Joe is 52\",\r\n    \"age\": 52\r\n  },\r\n  {\r\n    \"text\": \"text\",\r\n    \"age\": 11\r\n  }\r\n]")
+                .Respond("plain/text", "array");
+
+            var testAdapter = new TestAdapter()
+                .UseStorage(new MemoryStorage())
+                .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
+
+            var rootDialog = new AdaptiveDialog()
+            {
+                Triggers = new List<Conditions.OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SetProperties()
+                            {
+                                Assignments = new List<PropertyAssignment>()
+                                {
+                                    new PropertyAssignment() { Property = "dialog.name", Value = "Joe" },
+                                    new PropertyAssignment() { Property = "dialog.age", Value = 52 },
+                                }
+                            },
+                            new HttpRequest()
+                            {
+                                Url = "http://foo.com/",
+                                Method = HttpRequest.HttpMethod.POST,
+                                ContentType = "plain/text",
+                                Body = "${dialog.name} is ${dialog.age}"
+                            },
+                            new SendActivity("${turn.lastresult.content}"),
+                            new HttpRequest()
+                            {
+                                Url = "http://foo.com/",
+                                Method = HttpRequest.HttpMethod.POST,
+                                ContentType = "application/json",
+                                Body = JToken.FromObject(new
+                                {
+                                    text = "${dialog.name} is ${dialog.age}",
+                                    age = "=dialog.age"
+                                })
+                            },
+                            new SendActivity("${turn.lastresult.content}"),
+                            new HttpRequest()
+                            {
+                                Url = "http://foo.com/",
+                                Method = HttpRequest.HttpMethod.POST,
+                                ContentType = "application/json",
+                                Body = JToken.FromObject(new object[]
+                                {
+                                    new 
+                                    {
+                                        text = "${dialog.name} is ${dialog.age}",
+                                        age = "=dialog.age"
+                                    },
+                                    new 
+                                    {
+                                        text = "text",
+                                        age = 11
+                                    }
+                                })
+                            },
+                            new SendActivity("${turn.lastresult.content}"),
+                            new SendActivity("done")
+                        }
+                    }
+                }
+            };
+
+            DialogManager dm = new DialogManager(rootDialog)
+                .UseResourceExplorer(new ResourceExplorer())
+                .UseLanguageGeneration();
+            dm.InitialTurnState.Set<HttpClient>(handler.ToHttpClient());
+
+            await new TestFlow((TestAdapter)testAdapter, dm.OnTurnAsync)
+                .SendConversationUpdate()
+                    .AssertReply("string")
+                    .AssertReply("object")
+                    .AssertReply("array")
+                    .AssertReply("done")
+                .StartTestAsync();
         }
     }
 }
