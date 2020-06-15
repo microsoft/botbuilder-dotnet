@@ -189,32 +189,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var client = new HttpClient();
+            var client = dc.Context.TurnState.Get<HttpClient>() ?? new HttpClient();
 
             // Single command running with a copy of the original data
             client.DefaultRequestHeaders.Clear();
 
-            object instanceBody = null;
-            string instanceBodyErr = null;
-
+            JToken instanceBody = null;
             if (this.Body != null)
             {
-                if (this.Body.Value is JObject)
+                var (body, err) = this.Body.TryGetValue(dc.State);
+                if (err != null)
                 {
-                    // For raw JSON Object, replace the jtoken recursively 
-                    var jObjectBody = (JToken)JToken.FromObject(this.Body.Value).DeepClone();
-                    await ReplaceJTokenRecursivelyAsync(dc, jObjectBody, cancellationToken).ConfigureAwait(false);
-                    instanceBody = jObjectBody;
+                    throw new ArgumentException(err);
                 }
-                else
-                {
-                    // If the body is string type , considered as expression
-                    (instanceBody, instanceBodyErr) = this.Body.TryGetValue(dc.State);
-                    if (instanceBodyErr != null)
-                    {
-                        throw new ArgumentException(instanceBodyErr);
-                    }
-                }
+
+                instanceBody = (JToken)JToken.FromObject(body).DeepClone();
             }
 
             var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dc.State));
@@ -225,12 +214,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException(instanceUrlError);
             }
 
+            // Bind each string token to the data in state
+            if (instanceBody != null)
+            {
+                instanceBody = await ReplaceJTokenRecursivelyAsync(dc.State, instanceBody, cancellationToken).ConfigureAwait(false);
+            }
+
             // Set headers
             if (instanceHeaders != null)
             {
                 foreach (var unit in instanceHeaders)
                 {
-                    client.DefaultRequestHeaders.TryAddWithoutValidation(unit.Key, unit.Value);
+                    var (result, error) = new StringExpression(unit.Value).TryGetValue(dc.State);
+                    client.DefaultRequestHeaders.TryAddWithoutValidation(unit.Key, result);
                 }
             }
 
@@ -337,7 +333,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     requestResult.Content = content;
                     break;
 
-                case ResponseTypes.None:
                 default:
                     break;
             }
@@ -361,14 +356,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return $"{this.GetType().Name}[{Method} {Url?.ToString()}]";
         }
 
-        private async Task ReplaceJTokenRecursivelyAsync(DialogContext dc, JToken token, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<JToken> ReplaceJTokenRecursivelyAsync(object state, JToken token, CancellationToken cancellationToken = default(CancellationToken))
         {
             switch (token.Type)
             {
                 case JTokenType.Object:
-                    foreach (var child in token.Children<JProperty>())
+                    // NOTE: ToList() is required because JToken.Replace will break the enumeration.
+                    foreach (var child in token.Children<JProperty>().ToList())
                     {
-                        await ReplaceJTokenRecursivelyAsync(dc, child, cancellationToken).ConfigureAwait(false);
+                        child.Replace(await ReplaceJTokenRecursivelyAsync(state, child, cancellationToken).ConfigureAwait(false));
                     }
 
                     break;
@@ -377,30 +373,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     // NOTE: ToList() is required because JToken.Replace will break the enumeration.
                     foreach (var child in token.Children().ToList())
                     {
-                        await ReplaceJTokenRecursivelyAsync(dc, child, cancellationToken).ConfigureAwait(false);
+                        child.Replace(await ReplaceJTokenRecursivelyAsync(state, child, cancellationToken).ConfigureAwait(false));
                     }
 
                     break;
 
                 case JTokenType.Property:
-                    await ReplaceJTokenRecursivelyAsync(dc, ((JProperty)token).Value, cancellationToken).ConfigureAwait(false);
+                    JProperty property = (JProperty)token;
+                    property.Value = await ReplaceJTokenRecursivelyAsync(state, property.Value, cancellationToken).ConfigureAwait(false);
                     break;
 
                 default:
                     if (token.Type == JTokenType.String)
                     {
-                        var text = token.ToString();
-
                         // if it is a "{bindingpath}" then run through expression parser and treat as a value
-                        var (result, error) = new ValueExpression(text).TryGetValue(dc.State);
+                        var (result, error) = new ValueExpression(token).TryGetValue(state);
                         if (error == null)
                         {
-                            token.Replace(JToken.FromObject(result));
+                            token = JToken.FromObject(result);
                         }
                     }
 
                     break;
             }
+
+            return token;
         }
 
         /// <summary>
