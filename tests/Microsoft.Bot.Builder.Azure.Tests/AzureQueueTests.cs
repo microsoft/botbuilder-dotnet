@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Azure.Storage.Queues;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Azure.Queues;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
