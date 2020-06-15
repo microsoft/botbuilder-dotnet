@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
-    "title": "OnChannelDeleted",
-    "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelDeleted'.",
+    "title": "OnTeamsO365ConnectorCardAction",
+    "description": "Actions triggered when a Teams InvokeActivity is received for 'actionableMessage/executeAction'.",
     "type": "object",
     "required": [
         "actions"

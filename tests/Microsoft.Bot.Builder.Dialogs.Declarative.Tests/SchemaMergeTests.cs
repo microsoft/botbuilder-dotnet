@@ -61,41 +61,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 .Where(r => !r.Id.EndsWith(".schema.dialog") && !ignoreFolders.Any(f => r.FullName.Contains(f)))
                 .Select(resource => new object[] { resource });
 
-            try
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    ProcessStartInfo startInfo;
-                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bf.cmd dialog:merge libraries/**/*.schema tests/**/*.schema -o {schemaPath}");
-                    startInfo.WorkingDirectory = solutionPath;
-
-                    startInfo.UseShellExecute = false;
-                    startInfo.CreateNoWindow = false;
-                    startInfo.RedirectStandardError = true;
-
-                    // startInfo.RedirectStandardOutput = true;
-                    // string output = process.StandardOutput.ReadToEnd();
-
-                    var process = Process.Start(startInfo);
-                    string error = process.StandardError.ReadToEnd();
-                    process.WaitForExit();
-
-                    if (!string.IsNullOrEmpty(error))
-                    {
-                        Trace.TraceError(error);
-                    }
-                }
-            }
-            catch (Exception err)
-            {
-                Trace.TraceError(err.Message);
-            }
-
-            if (File.Exists(schemaPath))
-            {
-                var json = File.ReadAllText(schemaPath);
-                Schema = JSchema.Parse(json);
-            }
+            var json = File.ReadAllText(schemaPath);
+            Schema = JSchema.Parse(json);
         }
 
         [DataTestMethod]

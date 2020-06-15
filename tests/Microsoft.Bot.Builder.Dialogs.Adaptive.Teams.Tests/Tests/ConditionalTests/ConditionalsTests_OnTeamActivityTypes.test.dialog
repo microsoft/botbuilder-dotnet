@@ -24,7 +24,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnAppBasedLinkQuery",
+                "$kind": "Microsoft.OnTeamsAppBasedLinkQuery",
                 "condition": "turn.activity.text == 'OnAppBasedLinkQuery'",
                 "actions": [
                     {
@@ -34,7 +34,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnCardAction",
+                "$kind": "Microsoft.OnTeamsCardAction",
                 "condition": "turn.activity.text == 'OnCardAction'",
                 "actions": [
                     {
@@ -44,7 +44,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnChannelCreated",
+                "$kind": "Microsoft.OnTeamsChannelCreated",
                 "condition": "turn.activity.text == 'OnChannelCreated'",
                 "actions": [
                     {
@@ -54,7 +54,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnChannelDeleted",
+                "$kind": "Microsoft.OnTeamsChannelDeleted",
                 "condition": "turn.activity.text == 'OnChannelDeleted'",
                 "actions": [
                     {
@@ -64,7 +64,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnChannelRenamed",
+                "$kind": "Microsoft.OnTeamsChannelRenamed",
                 "condition": "turn.activity.text == 'OnChannelRenamed'",
                 "actions": [
                     {
@@ -74,7 +74,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnFileConsent",
+                "$kind": "Microsoft.OnTeamsFileConsent",
                 "condition": "turn.activity.text == 'OnFileConsent'",
                 "actions": [
                     {
@@ -84,7 +84,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnCardButtonClicked",
+                "$kind":"Microsoft.OnTeamsMessagingExtensionCardButtonClicked",
                 "condition": "turn.activity.text == 'OnCardButtonClicked'",
                 "actions": [
                     {
@@ -94,7 +94,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnConfigurationQuerySettingUrl",
+                "$kind": "Microsoft.OnTeamsMessagingExtensionConfigurationQuerySettingUrl",
                 "condition": "turn.activity.text == 'OnConfigurationQuerySettingUrl'",
                 "actions": [
                     {
@@ -104,7 +104,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnConfigurationSetting",
+                "$kind": "Microsoft.OnTeamsMessagingExtensionConfigurationSetting",
                 "condition": "turn.activity.text == 'OnConfigurationSetting'",
                 "actions": [
                     {
@@ -114,7 +114,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnFetchTask",
+                "$kind": "Microsoft.OnTeamsMessagingExtensionFetchTask",
                 "condition": "turn.activity.text == 'OnFetchTask'",
                 "actions": [
                     {
@@ -124,7 +124,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnQuery",
+                "$kind": "Microsoft.OnTeamsMessagingExtensionQuery",
                 "condition": "turn.activity.text == 'OnQuery'",
                 "actions": [
                     {
@@ -134,7 +134,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnSelectItem",
+                "$kind": "Microsoft.OnTeamsMessagingExtensionSelectItem",
                 "condition": "turn.activity.text == 'OnSelectItem'",
                 "actions": [
                     {
@@ -144,7 +144,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnSubmitAction",
+                "$kind": "Microsoft.OnTeamsMessagingExtensionSubmitAction",
                 "condition": "turn.activity.text == 'OnSubmitAction'",
                 "actions": [
                     {
@@ -154,7 +154,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnO365ConnectorCardAction",
+                "$kind": "Microsoft.OnTeamsO365ConnectorCardAction",
                 "condition": "turn.activity.text == 'OnO365ConnectorCardAction'",
                 "actions": [
                     {
@@ -164,7 +164,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnTaskModuleFetch",
+                "$kind": "Microsoft.OnTeamsTaskModuleFetch",
                 "condition": "turn.activity.text == 'OnTaskModuleFetch'",
                 "actions": [
                     {
@@ -174,7 +174,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnTaskModuleSubmit",
+                "$kind": "Microsoft.OnTeamsTaskModuleSubmit",
                 "condition": "turn.activity.text == 'OnTaskModuleSubmit'",
                 "actions": [
                     {
@@ -184,7 +184,7 @@
                 ]
             },
             {
-                "$kind": "Microsoft.Teams.OnTeamRenamed",
+                "$kind": "Microsoft.OnTeamsTeamRenamed",
                 "condition": "turn.activity.text == 'OnTeamRenamed'",
                 "actions": [
                     {

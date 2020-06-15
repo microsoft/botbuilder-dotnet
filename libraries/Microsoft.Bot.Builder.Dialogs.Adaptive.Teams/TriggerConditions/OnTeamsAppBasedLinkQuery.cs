@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsAppBasedLinkQuery : OnInvokeActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.Teams.OnAppBasedLinkQuery";
+        public new const string Kind = "Microsoft.OnTeamsAppBasedLinkQuery";
 
         [JsonConstructor]
         public OnTeamsAppBasedLinkQuery(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

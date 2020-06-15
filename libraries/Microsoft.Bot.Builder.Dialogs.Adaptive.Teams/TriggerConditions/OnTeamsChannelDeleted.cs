@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsChannelDeleted : OnConversationUpdateActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.Teams.OnChannelDeleted";
+        public new const string Kind = "Microsoft.OnTeamsChannelDeleted";
 
         [JsonConstructor]
         public OnTeamsChannelDeleted(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

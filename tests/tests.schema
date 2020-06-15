@@ -230,6 +230,57 @@
 			"$ref": "#/definitions/Microsoft.OnRepromptDialog"
 		},
 		{
+			"$ref": "#/definitions/Microsoft.OnTeamsAppBasedLinkQuery"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsCardAction"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsChannelCreated"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsChannelDeleted"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsChannelRenamed"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsFileConsent"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionCardButtonClicked"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionConfigurationQuerySettingUrl"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionConfigurationSetting"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionFetchTask"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionQuery"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionSelectItem"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionSubmitAction"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsO365ConnectorCardAction"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsTaskModuleFetch"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsTaskModuleSubmit"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.OnTeamsTeamRenamed"
+		},
+		{
 			"$ref": "#/definitions/Microsoft.OnTypingActivity"
 		},
 		{
@@ -288,57 +339,6 @@
 		},
 		{
 			"$ref": "#/definitions/Microsoft.SwitchCondition"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnAppBasedLinkQuery"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnCardAction"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnChannelCreated"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnChannelDeleted"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnChannelRenamed"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnFileConsent"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionCardButtonClicked"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionConfigurationSetting"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionFetchTask"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionQuery"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionSelectItem"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionSubmitAction"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnO365ConnectorCardAction"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnTaskModuleFetch"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnTaskModuleSubmit"
-		},
-		{
-			"$ref": "#/definitions/Microsoft.Teams.OnTeamRenamed"
 		},
 		{
 			"$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
@@ -4205,10 +4205,10 @@
 					"$ref": "#/definitions/Microsoft.QnAMakerDialog"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.AdaptiveDialog"
+					"$ref": "#/definitions/Microsoft.Test.AssertCondition"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.Test.AssertCondition"
+					"$ref": "#/definitions/Microsoft.AdaptiveDialog"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.BeginDialog"
@@ -4436,10 +4436,10 @@
 					"type": "string"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+					"$ref": "#/definitions/Microsoft.LuisRecognizer"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.LuisRecognizer"
+					"$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
@@ -4477,6 +4477,57 @@
 					"type": "string",
 					"title": "Reference to Microsoft.ITrigger",
 					"description": "Reference to Microsoft.ITrigger .dialog file."
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsAppBasedLinkQuery"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsCardAction"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsChannelCreated"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsChannelDeleted"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsChannelRenamed"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsFileConsent"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionCardButtonClicked"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionConfigurationQuerySettingUrl"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionConfigurationSetting"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionFetchTask"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionQuery"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionSelectItem"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsMessagingExtensionSubmitAction"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsO365ConnectorCardAction"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsTaskModuleFetch"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsTaskModuleSubmit"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnTeamsTeamRenamed"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnActivity"
@@ -4552,57 +4603,6 @@
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnUnknownIntent"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnAppBasedLinkQuery"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnCardAction"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnChannelCreated"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnChannelDeleted"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnChannelRenamed"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnFileConsent"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionCardButtonClicked"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionConfigurationSetting"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionFetchTask"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionQuery"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionSelectItem"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnMessagingExtensionSubmitAction"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnO365ConnectorCardAction"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnTaskModuleFetch"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnTaskModuleSubmit"
-				},
-				{
-					"$ref": "#/definitions/Microsoft.Teams.OnTeamRenamed"
 				}
 			]
 		},
@@ -7129,6 +7129,1111 @@
 				}
 			}
 		},
+		"Microsoft.OnTeamsAppBasedLinkQuery": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsAppBasedLinkQuery",
+			"description": "Actions triggered when a Teams activity is received with activity.name == 'composeExtension/queryLink'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsAppBasedLinkQuery"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsCardAction": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsCardAction",
+			"description": "Actions triggered when a Teams InvokeActivity is received with no activity.name.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsCardAction"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsChannelCreated": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsChannelCreated",
+			"description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelCreated'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsChannelCreated"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsChannelDeleted": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsChannelDeleted",
+			"description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelDeleted'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsChannelDeleted"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsChannelRenamed": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsChannelRenamed",
+			"description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelRenamed'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsChannelRenamed"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsFileConsent": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsFileConsent",
+			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name == 'fileConsent/invoke'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsFileConsent"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsMessagingExtensionCardButtonClicked": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsMessagingExtensionCardButtonClicked",
+			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsMessagingExtensionCardButtonClicked"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsMessagingExtensionConfigurationQuerySettingUrl": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsMessagingExtensionConfigurationQuerySettingUrl",
+			"description": "Actions triggered when a Teams InvokeActivity is received with name='composeExtension/querySettingUrl'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsMessagingExtensionConfigurationQuerySettingUrl"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsMessagingExtensionConfigurationSetting": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsMessagingExtensionConfigurationSetting",
+			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/setting'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsMessagingExtensionConfigurationSetting"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsMessagingExtensionFetchTask": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsMessagingExtensionFetchTask",
+			"description": "Actions triggered when a Teams InvokeActivity is received when activity.name='composeExtension/fetchTask'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsMessagingExtensionFetchTask"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsMessagingExtensionQuery": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsMessagingExtensionQuery",
+			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/query'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsMessagingExtensionQuery"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsMessagingExtensionSelectItem": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsMessagingExtensionSelectItem",
+			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/selectItem'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsMessagingExtensionSelectItem"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsMessagingExtensionSubmitAction": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsMessagingExtensionSubmitAction",
+			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsMessagingExtensionSubmitAction"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsO365ConnectorCardAction": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsO365ConnectorCardAction",
+			"description": "Actions triggered when a Teams InvokeActivity is received for 'actionableMessage/executeAction'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsO365ConnectorCardAction"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsTaskModuleFetch": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsTaskModuleFetch",
+			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/fetch'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsTaskModuleFetch"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsTaskModuleSubmit": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsTaskModuleSubmit",
+			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/submit'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsTaskModuleSubmit"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnTeamsTeamRenamed": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "OnTeamsTeamRenamed",
+			"description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamRenamed'.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnTeamsTeamRenamed"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
 		"Microsoft.OnTypingActivity": {
 			"$role": [
 				"implements(Microsoft.ITrigger)",
@@ -8413,1111 +9518,6 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.SwitchCondition"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnAppBasedLinkQuery": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnAppBasedLinkQuery",
-			"description": "Actions triggered when a Teams activity is received with activity.name == 'composeExtension/queryLink'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnAppBasedLinkQuery"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnCardAction": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnCardAction",
-			"description": "Actions triggered when a Teams InvokeActivity is received with no activity.name.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnCardAction"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnChannelCreated": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnChannelCreated",
-			"description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelCreated'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnChannelCreated"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnChannelDeleted": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnChannelDeleted",
-			"description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelDeleted'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnChannelDeleted"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnChannelRenamed": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnChannelRenamed",
-			"description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelRenamed'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnChannelRenamed"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnFileConsent": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnFileConsent",
-			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name == 'fileConsent/invoke'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnFileConsent"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnMessagingExtensionCardButtonClicked": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnMessagingExtensionCardButtonClicked",
-			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnMessagingExtensionCardButtonClicked"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnMessagingExtensionConfigurationQuerySettingUrl": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnMessagingExtensionConfingurationQuerySettingURl",
-			"description": "Actions triggered when a Teams InvokeActivity is received with name='composeExtension/querySettingUrl'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnMessagingExtensionConfigurationSetting": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnMessagingExtensionConfigurationSetting",
-			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/setting'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnMessagingExtensionConfigurationSetting"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnMessagingExtensionFetchTask": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnMesssagingExtensionFetchTask",
-			"description": "Actions triggered when a Teams InvokeActivity is received when activity.name='composeExtension/fetchTask'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnMessagingExtensionFetchTask"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnMessagingExtensionQuery": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnMessagingExtensionsQuery",
-			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/query'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnMessagingExtensionQuery"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnMessagingExtensionSelectItem": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnMessagingExtensionSelectItem",
-			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/selectItem'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnMessagingExtensionSelectItem"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnMessagingExtensionSubmitAction": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnMessagingExtensionSubmitAction",
-			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnMessagingExtensionSubmitAction"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnO365ConnectorCardAction": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnO365ConnectorCardAction",
-			"description": "Actions triggered when a Teams InvokeActivity is received for 'actionableMessage/executeAction'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnO365ConnectorCardAction"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnTaskModuleFetch": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnTaskModuleFetch",
-			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/fetch'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnTaskModuleFetch"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnTaskModuleSubmit": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnTaskModuleSubmit",
-			"description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/submit'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnTaskModuleSubmit"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
-		},
-		"Microsoft.Teams.OnTeamRenamed": {
-			"$role": [
-				"implements(Microsoft.ITrigger)",
-				"extends(Microsoft.OnCondition)"
-			],
-			"title": "OnTeamRenamed",
-			"description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamRenamed'.",
-			"type": "object",
-			"required": [
-				"actions",
-				"$kind"
-			],
-			"additionalProperties": false,
-			"patternProperties": {
-				"^\\$": {
-					"title": "Tooling property",
-					"description": "Open ended property for tooling."
-				}
-			},
-			"properties": {
-				"condition": {
-					"$ref": "#/definitions/condition",
-					"title": "Condition",
-					"description": "Condition (expression).",
-					"examples": [
-						"user.vip == true"
-					]
-				},
-				"actions": {
-					"type": "array",
-					"title": "Actions",
-					"description": "Sequence of actions to execute.",
-					"items": {
-						"$kind": "Microsoft.IDialog",
-						"$ref": "#/definitions/Microsoft.IDialog"
-					}
-				},
-				"priority": {
-					"$ref": "#/definitions/integerExpression",
-					"title": "Priority",
-					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
-				},
-				"runOnce": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "Run Once",
-					"description": "True if rule should run once per unique conditions",
-					"examples": [
-						true,
-						"=f(x)"
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.Teams.OnTeamRenamed"
 				},
 				"$designer": {
 					"title": "Designer information",

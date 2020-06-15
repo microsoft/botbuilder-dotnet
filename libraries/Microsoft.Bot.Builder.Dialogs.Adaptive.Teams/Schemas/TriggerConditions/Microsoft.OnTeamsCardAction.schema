@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
-    "title": "OnTeamRenamed",
-    "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamRenamed'.",
+    "title": "OnTeamsCardAction",
+    "description": "Actions triggered when a Teams InvokeActivity is received with no activity.name.",
     "type": "object",
     "required": [
         "actions"
