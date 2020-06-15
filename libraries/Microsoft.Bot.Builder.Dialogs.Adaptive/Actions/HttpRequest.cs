@@ -194,16 +194,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Single command running with a copy of the original data
             client.DefaultRequestHeaders.Clear();
 
-            JToken instanceBody = null;
-            if (this.Body != null)
+            object instanceBody = null;
+            string instanceBodyErr = null;
+            
+            if (this.Body.Value is JObject)
             {
-                var (body, err) = this.Body.TryGetValue(dc.State);
-                if (err != null)
+                // For raw JSON Object, replace the jtoken recursively 
+                var jObjectBody = (JToken)JToken.FromObject(this.Body.Value).DeepClone();
+                await ReplaceJTokenRecursivelyAsync(dc, jObjectBody, cancellationToken).ConfigureAwait(false);
+                instanceBody = jObjectBody;
+            }
+            else
+            {
+                // If the body is string type , considered as expression
+                (instanceBody, instanceBodyErr) = this.Body.TryGetValue(dc.State);
+                if (instanceBodyErr != null)
                 {
-                    throw new ArgumentException(err);
+                    throw new ArgumentException(instanceBodyErr);
                 }
-
-                instanceBody = (JToken)JToken.FromObject(body).DeepClone();
             }
 
             var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dc.State));
@@ -212,12 +220,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (instanceUrlError != null)
             {
                 throw new ArgumentException(instanceUrlError);
-            }
-
-            // Bind each string token to the data in state
-            if (instanceBody != null)
-            {
-                await ReplaceJTokenRecursivelyAsync(dc, instanceBody, cancellationToken).ConfigureAwait(false);
             }
 
             // Set headers
