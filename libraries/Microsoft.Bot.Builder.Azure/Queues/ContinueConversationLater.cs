@@ -8,7 +8,7 @@ using Azure.Storage.Queues;
 using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Azure
+namespace Microsoft.Bot.Builder.Azure.Queues
 {
     /// <summary>
     /// Action which schedules a conversation to be continued later by writing a EventActivity(Name=ContinueConversation) to a Azure Storage queue.
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Azure
     public class ContinueConversationLater : Dialog
     {
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.ContinueConversationLater";
+        public const string Kind = "AzureQueues.ContinueConversationLater";
 
         private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore };
 
