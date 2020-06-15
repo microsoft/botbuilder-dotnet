@@ -371,6 +371,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             handler
                 .When(HttpMethod.Post, "http://foo.com/")
+                .WithHeaders(new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("bound", "52"),
+                    new KeyValuePair<string, string>("unbound", "dialog.age")
+                })
                 .WithContent("[\r\n  {\r\n    \"text\": \"Joe is 52\",\r\n    \"age\": 52\r\n  },\r\n  {\r\n    \"text\": \"text\",\r\n    \"age\": 11\r\n  }\r\n]")
                 .Respond("plain/text", "array");
 
@@ -419,14 +424,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Url = "http://foo.com/",
                                 Method = HttpRequest.HttpMethod.POST,
                                 ContentType = "application/json",
+                                Headers = new Dictionary<string, AdaptiveExpressions.Properties.StringExpression>()
+                                {
+                                    { "bound", "=dialog.age" },
+                                    { "unbound", "dialog.age" }
+                                },
                                 Body = JToken.FromObject(new object[]
                                 {
-                                    new 
+                                    new
                                     {
                                         text = "${dialog.name} is ${dialog.age}",
                                         age = "=dialog.age"
                                     },
-                                    new 
+                                    new
                                     {
                                         text = "text",
                                         age = 11
