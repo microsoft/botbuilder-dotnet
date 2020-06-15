@@ -39,6 +39,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return;
+            }
+
             // static field initialization
             var projectPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             var testsPath = Path.GetFullPath(Path.Combine(projectPath, ".."));
@@ -107,6 +112,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [DynamicData(nameof(Dialogs))]
         public async Task TestDialogResourcesAreValidForSchema(Resource resource)
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Assert.Inconclusive("This unit test only runs on windows");
+                return;
+            }
+
             if (Schema == null)
             {
                 Assert.Fail("missing schema file");
