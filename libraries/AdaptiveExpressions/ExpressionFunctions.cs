@@ -3118,22 +3118,37 @@ namespace AdaptiveExpressions
                 // String
                 new ExpressionEvaluator(
                     ExpressionType.Concat,
-                    Apply(
+                    ApplySequence(
                         args =>
                         {
-                            var builder = new StringBuilder();
-                            foreach (var arg in args)
-                            {
-                                if (arg != null)
-                                {
-                                    builder.Append(arg.ToString());
-                                }
-                            }
+                            var firstItem = args[0];
+                            var secondItem = args[1];
+                            var isFirstList = !TryParseList(firstItem, out var firstList);
+                            var isSecondList = !TryParseList(secondItem, out var secondList);
 
-                            return builder.ToString();
+                            if (firstItem == null && secondItem == null)
+                            {
+                                return null;
+                            }
+                            else if (firstItem == null && isSecondList)
+                            {
+                                return secondList;
+                            }
+                            else if (secondItem == null && isFirstList)
+                            {
+                                return firstList;
+                            }
+                            else if (isFirstList && isSecondList)
+                            {
+                                return firstList.OfType<object>().Concat(secondList.OfType<object>());
+                            }
+                            else
+                            {
+                                return $"{firstItem?.ToString()}{secondItem?.ToString()}";
+                            }
                         }),
-                    ReturnType.String,
-                    ValidateAtLeastOne),
+                    ReturnType.Array | ReturnType.String,
+                    (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
                 new ExpressionEvaluator(
                     ExpressionType.Length,
                     Apply(
