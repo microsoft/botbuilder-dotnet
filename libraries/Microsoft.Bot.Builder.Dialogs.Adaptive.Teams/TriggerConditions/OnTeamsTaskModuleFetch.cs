@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
     public class OnTeamsTaskModuleFetch : OnInvokeActivity
     {
         [JsonProperty("$kind")]
-        public new const string Kind = "Microsoft.OnTeamsTaskModuleFetch";
+        public new const string Kind = "Teams.OnTaskModuleFetch";
 
         [JsonConstructor]
         public OnTeamsTaskModuleFetch(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
