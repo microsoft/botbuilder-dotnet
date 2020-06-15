@@ -48,7 +48,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:RunCodeAnalysis=False /p:StyleCopEnabled=false'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:RunCodeAnalysis=false /p:StyleCopEnabled=false'
     modifyOutputPath: false
 
 - task: AzureCLI@1
