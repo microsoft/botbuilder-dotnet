@@ -39,11 +39,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return;
-            }
-
             // static field initialization
             var projectPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             var testsPath = Path.GetFullPath(Path.Combine(projectPath, ".."));
@@ -68,32 +63,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
             try
             {
-                ProcessStartInfo startInfo;
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
+                    ProcessStartInfo startInfo;
                     startInfo = new ProcessStartInfo("cmd.exe", $"/C bf.cmd dialog:merge libraries/**/*.schema tests/**/*.schema -o {schemaPath}");
                     startInfo.WorkingDirectory = solutionPath;
-                }
-                else
-                {
-                    startInfo = new ProcessStartInfo("bf", $"dialog:merge libraries/**/*.schema tests/**/*.schema -o {schemaPath}");
-                    startInfo.WorkingDirectory = solutionPath;
-                }
 
-                startInfo.UseShellExecute = false;
-                startInfo.CreateNoWindow = false;
-                startInfo.RedirectStandardError = true;
+                    startInfo.UseShellExecute = false;
+                    startInfo.CreateNoWindow = false;
+                    startInfo.RedirectStandardError = true;
 
-                // startInfo.RedirectStandardOutput = true;
-                // string output = process.StandardOutput.ReadToEnd();
+                    // startInfo.RedirectStandardOutput = true;
+                    // string output = process.StandardOutput.ReadToEnd();
 
-                var process = Process.Start(startInfo);
-                string error = process.StandardError.ReadToEnd();
-                process.WaitForExit();
+                    var process = Process.Start(startInfo);
+                    string error = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
 
-                if (!string.IsNullOrEmpty(error))
-                {
-                    Trace.TraceError(error);
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        Trace.TraceError(error);
+                    }
                 }
             }
             catch (Exception err)
@@ -112,12 +102,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [DynamicData(nameof(Dialogs))]
         public async Task TestDialogResourcesAreValidForSchema(Resource resource)
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Assert.Inconclusive("This unit test only runs on windows");
-                return;
-            }
-
             if (Schema == null)
             {
                 Assert.Fail("missing schema file");
