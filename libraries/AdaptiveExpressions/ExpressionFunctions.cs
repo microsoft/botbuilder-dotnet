@@ -3123,8 +3123,8 @@ namespace AdaptiveExpressions
                         {
                             var firstItem = args[0];
                             var secondItem = args[1];
-                            var isFirstList = !TryParseList(firstItem, out var firstList);
-                            var isSecondList = !TryParseList(secondItem, out var secondList);
+                            var isFirstList = TryParseList(firstItem, out var firstList);
+                            var isSecondList = TryParseList(secondItem, out var secondList);
 
                             if (firstItem == null && secondItem == null)
                             {
@@ -3140,7 +3140,7 @@ namespace AdaptiveExpressions
                             }
                             else if (isFirstList && isSecondList)
                             {
-                                return firstList.OfType<object>().Concat(secondList.OfType<object>());
+                                return firstList.OfType<object>().Concat(secondList.OfType<object>()).ToList();
                             }
                             else
                             {
@@ -3148,7 +3148,7 @@ namespace AdaptiveExpressions
                             }
                         }),
                     ReturnType.Array | ReturnType.String,
-                    (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
+                    ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Length,
                     Apply(
