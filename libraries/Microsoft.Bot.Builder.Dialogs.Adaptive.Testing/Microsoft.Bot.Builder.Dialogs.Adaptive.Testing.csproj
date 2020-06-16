@@ -7,6 +7,11 @@
     <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.xml</DocumentationFile>
+    <!-- 
+    TODO: Enable treat warnings as errors once FxCop is enabled and all the issues has been addressed.
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    -->
   </PropertyGroup>
 
   <PropertyGroup>
@@ -17,13 +22,14 @@
     <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.xml</DocumentationFile>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>Full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- These documentation warnings excludes should be removed as part of https://github.com/microsoft/botbuilder-dotnet/issues/4052 -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,7 +37,7 @@
     <Content Include="**/*.lg" />
     <Content Include="**/*.lu" />
     <Content Include="**/*.schema" />
-    <Content Include="**/*.qna"/>
+    <Content Include="**/*.qna" />
   </ItemGroup>
 
   <ItemGroup>
