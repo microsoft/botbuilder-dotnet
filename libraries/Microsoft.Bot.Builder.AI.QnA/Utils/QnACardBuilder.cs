@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="result">Result consists of References to other answers, also called as Prompts.</param>
         /// <param name="displayPreciseAnswerOnly">Parameter to set either of the two choices: 1. Precise answer only 2.  Precise answer and corresponding text.</param>
         /// <param name="cancellationToken">Cancellation Token.</param>
-        /// <returns>IMessageActivity.</returns>
+        /// <returns>Message activity for Query Result.</returns>
         public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly, CancellationToken cancellationToken)
         {
             if (result == null)
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 }
             }
 
-            string heroCardText = null;
+            string heroCardText = string.Empty;
             if (!string.IsNullOrWhiteSpace(result?.AnswerSpan?.Text))
             {
                 chatActivity.Text = result.AnswerSpan.Text;
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (buttonList != null || !string.IsNullOrWhiteSpace(heroCardText))
             {
-                var plCard = new HeroCard();
+                var plCard = new HeroCard();                           
 
                 if (buttonList != null)
                 {

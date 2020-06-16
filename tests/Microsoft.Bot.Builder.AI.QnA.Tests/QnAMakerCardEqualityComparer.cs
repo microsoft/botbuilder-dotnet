@@ -30,13 +30,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 return false;
             }
 
+            //Return false if only one of the attachments is null.
             if ((activity1.Attachments == null && activity2.Attachments != null) ||
                 (activity1.Attachments != null && activity2.Attachments == null))
             {
                 return false;
             }
 
-            // Check for attachments
+            // Check for attachments only if neither of the attachments are null.
             if (activity1.Attachments != null && activity2.Attachments != null)
             {
                 if (activity1.Attachments.Count != activity2.Attachments.Count)
