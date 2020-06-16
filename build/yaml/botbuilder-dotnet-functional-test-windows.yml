@@ -48,7 +48,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:CodeAnalysisTreatWarningsAsErrors=false --verbosity detailed'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:CodeAnalysisTreatWarningsAsErrors=false -p:CodeAnalysisRuleSet='' --verbosity detailed'
     modifyOutputPath: false
 
 - task: AzureCLI@1
