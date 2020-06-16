@@ -11,11 +11,15 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Adapters.Slack.Model;
+using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
@@ -36,7 +40,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </remarks>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public SlackAdapter(IConfiguration configuration, ILogger logger = null)
-            : this(new SlackClientWrapper(new SlackAdapterOptions(configuration["SlackVerificationToken"], configuration["SlackBotToken"], configuration["SlackClientSigningSecret"])), logger)
+            : this(new SlackAdapterOptions(configuration["SlackVerificationToken"], configuration["SlackBotToken"], configuration["SlackClientSigningSecret"]), logger)
         {
         }
 
@@ -44,19 +48,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Initializes a new instance of the <see cref="SlackAdapter"/> class.
         /// Creates a Slack adapter.
         /// </summary>
-        /// <param name="slackClient">An initialized instance of the SlackClientWrapper class to connect to.</param>
+        /// <param name="adapterOptions">The adapter options to be used when connecting to the Slack API.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public SlackAdapter(SlackClientWrapper slackClient, ILogger logger = null)
+        /// <param name="slackClient">The SlackClientWrapper used to connect to the Slack API.</param>
+        public SlackAdapter(SlackAdapterOptions adapterOptions, ILogger logger = null, SlackClientWrapper slackClient = null)
         {
-            _slackClient = slackClient ?? throw new ArgumentNullException(nameof(slackClient));
+            _slackClient = slackClient ?? new SlackClientWrapper(adapterOptions) ?? throw new ArgumentNullException(nameof(adapterOptions));
             _logger = logger ?? NullLogger.Instance;
         }
-
-        /// <summary>
-        /// Gets the wrapper for the underlying Slack client used by the adapter.
-        /// </summary>
-        /// <value>The wrapper for the underlying Slack client used by the adapter.</value>
-        public SlackClientWrapper SlackClientWrapper => _slackClient;
 
         /// <summary>
         /// Standard BotBuilder adapter method to send a message from the bot to the messaging API.
@@ -138,9 +137,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             var message = SlackHelper.ActivityToSlack(activity);
-            
+
             var results = await _slackClient.UpdateAsync(message.Ts, message.Channel, message.Text, cancellationToken: cancellationToken).ConfigureAwait(false);
-            
+
             if (!results.ok)
             {
                 throw new Exception($"Error updating activity on Slack:{results}");
@@ -265,72 +264,85 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             string body;
 
+            Activity activity = null;
+
             using (var sr = new StreamReader(request.Body))
             {
                 body = await sr.ReadToEndAsync().ConfigureAwait(false);
             }
 
-            var slackBody = SlackHelper.DeserializeBody(body);
-
-            if (slackBody.Type == "url_verification")
-            {
-                var text = slackBody.Challenge;
-
-                await SlackHelper.WriteAsync(response, HttpStatusCode.OK, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
-
-                return;
-            }
-
             if (!_slackClient.VerifySignature(request, body))
             {
                 const string text = "Rejected due to mismatched header signature";
-
                 await SlackHelper.WriteAsync(response, HttpStatusCode.Unauthorized, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
-
                 throw new Exception(text);
             }
 
-            if (!string.IsNullOrWhiteSpace(_slackClient.Options.SlackVerificationToken) && slackBody.Token != _slackClient.Options.SlackVerificationToken)
+            var requestContentType = request.Headers["Content-Type"].ToString();
+
+            if (requestContentType == "application/x-www-form-urlencoded")
             {
-                var text = $"Rejected due to mismatched verificationToken:{slackBody}";
+                var postValues = SlackHelper.QueryStringToDictionary(body);
 
-                await SlackHelper.WriteAsync(response, HttpStatusCode.Forbidden, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                if (postValues.ContainsKey("payload"))
+                {
+                    var payload = JsonConvert.DeserializeObject<InteractionPayload>(postValues["payload"]);
+                    activity = SlackHelper.PayloadToActivity(payload);
+                }
+                else if (postValues.ContainsKey("command"))
+                {
+                    var serializedPayload = JsonConvert.SerializeObject(postValues);
+                    var payload = JsonConvert.DeserializeObject<CommandPayload>(serializedPayload);
+                    activity = await SlackHelper.CommandToActivityAsync(payload, _slackClient, cancellationToken).ConfigureAwait(false);
+                }
+            }
+            else if (requestContentType == "application/json")
+            {
+                var bodyObject = JObject.Parse(body);
 
-                throw new Exception(text);
+                if (bodyObject["type"]?.ToString() == "url_verification")
+                {
+                    var verificationEvent = bodyObject.ToObject<UrlVerificationEvent>();
+                    await SlackHelper.WriteAsync(response, HttpStatusCode.OK, verificationEvent.Challenge, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                    return;
+                }
+
+                if (!string.IsNullOrWhiteSpace(_slackClient.Options.SlackVerificationToken) && bodyObject["token"]?.ToString() != _slackClient.Options.SlackVerificationToken)
+                {
+                    var text = $"Rejected due to mismatched verificationToken:{bodyObject["token"]}";
+                    await SlackHelper.WriteAsync(response, HttpStatusCode.Forbidden, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                    throw new Exception(text);
+                }
+
+                if (bodyObject["type"]?.ToString() == "event_callback")
+                {
+                    // this is an event api post
+                    var eventRequest = bodyObject.ToObject<EventRequest>();
+                    activity = await SlackHelper.EventToActivityAsync(eventRequest, _slackClient, cancellationToken).ConfigureAwait(false);
+                }
             }
 
-            Activity activity;
-
-            if (slackBody.Payload != null)
+            // As per official Slack API docs, some additional request types may be receieved that can be ignored
+            // but we should respond with a 200 status code
+            // https://api.slack.com/interactivity/slash-commands
+            if (activity == null)
             {
-                // handle interactive_message callbacks and block_actions
-                activity = SlackHelper.PayloadToActivity(slackBody.Payload);
-            }
-            else if (slackBody.Type == "event_callback")
-            {
-                // this is an event api post
-                activity = await SlackHelper.EventToActivityAsync(slackBody.Event, _slackClient, cancellationToken).ConfigureAwait(false);
-            }
-            else if (slackBody.Command != null)
-            {
-                activity = await SlackHelper.CommandToActivityAsync(slackBody, _slackClient, cancellationToken).ConfigureAwait(false);
+                await SlackHelper.WriteAsync(response, HttpStatusCode.OK, "Unable to transform request / payload into Activity. Possible unrecognized request type", Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                throw new Exception($"Unknown Slack event type {slackBody.Type}");
-            }
+                using (var context = new TurnContext(this, activity))
+                {
+                    context.TurnState.Add("httpStatus", ((int)HttpStatusCode.OK).ToString(System.Globalization.CultureInfo.InvariantCulture));
 
-            using (var context = new TurnContext(this, activity))
-            {
-                context.TurnState.Add("httpStatus", ((int)HttpStatusCode.OK).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                    await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                    var code = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
+                    var statusCode = (HttpStatusCode)code;
+                    var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
 
-                var code = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
-                var statusCode = (HttpStatusCode)code;
-                var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
-
-                await SlackHelper.WriteAsync(response, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                    await SlackHelper.WriteAsync(response, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
     }
