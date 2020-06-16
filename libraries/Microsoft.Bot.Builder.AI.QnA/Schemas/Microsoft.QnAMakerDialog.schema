@@ -92,12 +92,6 @@
       "title": "IsTest",
       "description": "True, if pointing to Test environment, else false.",
       "default": false
-    },
-    "displayPreciseAnswerOnly": {
-      "type": "boolean",
-      "title": "DisplayPreciseAnswerOnly",
-      "description": "True, if only precise answer needs to be displayed, else false.",
-      "default": false
     }, 
     "enablePreciseAnswer": {
       "$ref": "schema:#/definitions/booleanExpression",
@@ -107,7 +101,7 @@
     "displayPreciseAnswerOnly": {
       "$ref": "schema:#/definitions/booleanExpression",
       "title": "DisplayPreciseAnswerOnly",
-      "description": "True, if precise answer is opted, else false."
+      "description": "True, if precise answer text only is opted, else false."
     },
     "rankerType": {
       "$ref": "schema:#/definitions/stringExpression",
