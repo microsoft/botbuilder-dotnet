@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -40,6 +42,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Import regex.
         /// </summary>
         public static readonly Regex ImportRegex = new Regex(@"\[([^]]*)\]\(([^)]*)\)");
+
+        private static ConcurrentDictionary<string, LGTemplateParser.BodyContext> templateParseTreeCache = new ConcurrentDictionary<string, LGTemplateParser.BodyContext>();
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
@@ -253,6 +257,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     Visit(parseTree);
                 }
 
+                for (var i = 0; i < templates.Count - 1; i++)
+                {
+                    templates[i].Body = RemoveTrailingNewline(templates[i].Body);
+                }
+
                 return this.templates;
             }
 
@@ -431,6 +440,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private LGTemplateParser.BodyContext AntlrParseTemplate(string templateBody, int lineOffset)
             {
+                if (templateParseTreeCache.TryGetValue(templateBody, out var bodyParseTree))
+                {
+                    return bodyParseTree;
+                }
+
                 var input = new AntlrInputStream(templateBody);
                 var lexer = new LGTemplateLexer(input);
                 lexer.RemoveErrorListeners();
@@ -443,7 +457,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 parser.AddErrorListener(listener);
                 parser.BuildParseTree = true;
 
-                return parser.context().body();
+                var body = parser.context().body();
+
+                templateParseTreeCache.TryAdd(templateBody, body);
+
+                return body;
             }
 
             private Diagnostic BuildTemplatesDiagnostic(string errorMessage, ParserRuleContext context, DiagnosticSeverity severity = DiagnosticSeverity.Error)
