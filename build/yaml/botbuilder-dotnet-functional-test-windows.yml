@@ -32,7 +32,7 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
-  SolutionDir: $(System.DefaultWorkingDirectory)
+  SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  AzureSubscription: define this in Azure
 #  DeleteResourceGroup: (optional) define this in Azure. Default = true.
 #  WinTestBotAppId: define this in Azure
