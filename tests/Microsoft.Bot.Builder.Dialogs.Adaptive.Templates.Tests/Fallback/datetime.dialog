@@ -1,0 +1,115 @@
+﻿{
+  "$schema": "../../tests.schema",
+  "$kind": "Microsoft.AdaptiveDialog",
+  "generator": "test.lg",
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnBeginDialog",
+      "actions": [
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.date",
+          "value": "2018-01-01T08:00:00.000Z"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.time",
+          "value": "2018-01-01T08:00:00.000"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "turn.time",
+          "value": "2018-01-20T08:12:12.000Z"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${addToTime(user.date, 120, 'Second')}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${addSeconds(user.date, 180)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${addDays(user.date, 5)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${addHours(user.date, 7)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${addMinutes(user.date, 33)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${dayOfMonth(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${dayOfWeek(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${dayOfYear(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${month(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${date(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${year(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${formatDateTime(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${subtractFromTime(user.date, 1, 'year')}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getTimeOfDay(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${dateReadBack(user.date, addDays(user.date, 1))}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${convertFromUTC(user.date, 'Pacific Standard Time', 'D')}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${convertToUTC(user.time, 'Pacific Standard Time')}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${startOfDay(turn.time)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${startOfHour(turn.time)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${startOfMonth(turn.time)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${ticks(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${isDateTime(user.date)}"
+        }
+      ]
+    }
+  ]
+}

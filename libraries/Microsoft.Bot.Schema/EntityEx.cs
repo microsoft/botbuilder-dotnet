@@ -21,7 +21,9 @@ namespace Microsoft.Bot.Schema
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
         [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public JObject Properties { get; set; } = new JObject();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Retrieve internal payload.
@@ -52,7 +54,7 @@ namespace Microsoft.Bot.Schema
                 return false;
             }
 
-            return JsonConvert.SerializeObject(this).Equals(JsonConvert.SerializeObject(other));
+            return JsonConvert.SerializeObject(this).Equals(JsonConvert.SerializeObject(other), StringComparison.Ordinal);
         }
 
         public override bool Equals(object obj)

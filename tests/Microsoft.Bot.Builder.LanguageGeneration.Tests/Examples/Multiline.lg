@@ -1,0 +1,15 @@
+﻿# template1
+- ```
+> this is the generated lg content
+# generated1
+- hi
+```
+
+# template2(evaluateNow)
+- ```
+> this is the generated lg content
+# generated2
+- \```
+${evaluateNow} \${name}
+\```
+``` 

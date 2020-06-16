@@ -1,0 +1,16 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnEndOfActions",
+	"condition": "!$Cheese || $PropertyToChange == 'Cheese'",
+	"priority": "=indexOf(dialog.requiredProperties, 'Cheese')",
+	"actions": [
+		{
+			"$kind": "Microsoft.Ask",
+			"activity": "${AskCheese()}",
+			"expectedProperties": [
+				"Cheese"
+			]
+		}
+	],
+	"$Generator": "5a72cb8db03c87b150b1925ec37ab439"
+}

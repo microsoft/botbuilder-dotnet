@@ -87,6 +87,7 @@ namespace AdaptiveExpressions.Tests
             Test("addOrdinal(one)"), // should have Integer param
             Test("addOrdinal(one, two)"), // should have one param
             Test("newGuid(one)"), // should have no parameters
+            Test("EOL(one)"), // should have no parameters
             Test("indexOf(hello)"), // should have two parameters
             Test("indexOf(hello, world, one)"), // should have two parameters
             Test("indexOf(hello, one)"), // second parameter should be string
@@ -95,6 +96,10 @@ namespace AdaptiveExpressions.Tests
             Test("lastIndexOf(hello, world, one)"), // should have two parameters
             Test("lastIndexOf(hello, one)"), // second parameter should be string
             Test("lastIndexOf(one, hello)"), // first parameter should be list or string
+            Test("sentenceCase(hello, hello)"), // should have one parameters
+            Test("sentenceCase(one)"), // first parameter should be string
+            Test("titleCase(hello, hello)"), // should have one parameters
+            Test("titleCase(one)"), // first parameter should be string
             #endregion
 
             #region Logical comparison functions test
@@ -173,6 +178,16 @@ namespace AdaptiveExpressions.Tests
             Test("sum(items)"), //  should have number parameters
             Test("range(hello,one)"), // params should be integer
             Test("range(one,0)"), // the second param should be more than 0
+            Test("floor(hello)"), // should have a number parameter
+            Test("floor(1.2, 2.1)"), // should have one parameter
+            Test("ceiling(hello)"), // should have a number parameter
+            Test("ceiling(1.2, 2.1)"), // should have one parameter
+            Test("round(hello)"), // should have number parameters
+            Test("round(1.2, hello)"), // should have a number as the 2nd parameter
+            Test("round(1.2, 2.1)"), // should have integer as the 2nd parameter
+            Test("round(1.2, -2)"), // the 2nd parameter should not less than 0
+            Test("round(1.2, 16)"), // the 2nd parameter should not greater than 15
+            Test("round(1.2, 2, 3)"), // should have one or two number parameters
             #endregion
             
             #region Date and time function test
@@ -283,6 +298,12 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth(notValidTimeStamp)"), // not valid timestamp
             Test("startOfMonth(timeStamp, 'A')"), // not valid format
             Test("ticks(notValidTimeStamp)"), // not valid timestamp
+            Test("ticksToDays(12.12)"), // not an integer
+            Test("ticksToHours(timestamp)"), // not an integer
+            Test("ticksToMinutes(timestamp)"), // not an integer
+            Test("dateTimeDiff(notValidTimeStamp,'2018-01-01T08:00:00.000Z')"), // the first parameter is not a valid timestamp
+            Test("dateTimeDiff('2017-01-01T08:00:00.000Z',notValidTimeStamp)"), // the second parameter is not a valid timestamp
+            Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z', 'years')"), // should only have 2 parameters
             #endregion
 
             #region uri parsing function test

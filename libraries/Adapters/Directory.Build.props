@@ -1,4 +1,5 @@
 <Project>
+  <!-- Contains common properties that apply to projects under the Adapters folder -->
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
       <PrivateAssets>all</PrivateAssets>
@@ -6,5 +7,6 @@
     </PackageReference>
   </ItemGroup>
 
+  <!-- This ensures that Directory.Build.props in parent folders are merged with this one -->
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 </Project>

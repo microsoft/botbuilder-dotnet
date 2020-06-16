@@ -10,17 +10,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string NoTemplate = "LG file must have at least one template definition.";
 
-        public const string InvalidTemplateName = "Invalid template name. Template name should start with letter/number/_ and can only contains letter/number/./_.";
-
         public const string InvalidTemplateBody = "Invalid template body. Expecting '-' prefix. ";
-
-        public const string InvalidStrucName = "Invalid structure name. name should start with letter/number/_ and can only contains letter/number/./_.";
 
         public const string MissingStrucEnd = "Invalid structure body. Expecting ']' at the end of the body.";
 
         public const string EmptyStrucContent = "Invalid structure body. Body cannot be empty. ";
-
-        public const string InvalidStrucBody = "Invalid structure body. Body can include <PropertyName> = <Value> pairs or ${reference()} template reference.";
 
         public const string InvalidWhitespaceInCondition = "Invalid condition: At most 1 whitespace allowed between 'IF/ELSEIF/ELSE' and ':'.";
 
@@ -62,11 +56,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public const string LoopDetected = "Loop detected:";
 
-        public const string SyntaxError = "Unexpected content. Expecting a comment, template definition, import statement or option definition.";
-
         public const string InvalidMemory = "Scope is not a LG customized memory.";
 
         public const string StaticFailure = "Static failure with the following error.";
+
+        public const string InvalidTemplateNameType = "Expected string type for the parameter of template function.";
+
+        public static string InvalidStrucBody(string invalidBody) => $"Invalid structure body: '{invalidBody}'. Body can include <PropertyName> = <Value> pairs or ${{reference()}} template reference.";
+
+        public static string InvalidStrucName(string invalidName) => $"Invalid structure name: '{invalidName}'. name should start with letter/number/_ and can only contains letter/number/./_.";
+
+        public static string SyntaxError(string unexpectedContent) => $"{unexpectedContent}. Expecting a comment, template definition, import statement or option definition.";
+
+        public static string InvalidTemplateName(string invalidTemplateName) => $"Invalid template name: '{invalidTemplateName}'. Template names can only contain letter, underscore '_' or number. Any part of a template name (split by '.') cannot start with a number.";
+
+        public static string InvalidParameter(string invalidParameter) => $"Invalid parameter name: '{invalidParameter}'. Parameter names can only contain letter, underscore '_' or number.";
 
         public static string DuplicatedTemplateInSameTemplate(string templateName) => $"Duplicated definitions found for template: '{templateName}'.";
 
