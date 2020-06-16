@@ -114,6 +114,34 @@ namespace AdaptiveExpressions.Tests
             { "unixTimestamp", 1521118800 },
             { "unixTimestampFraction", 1521118800.5 },
             { "ticks", 637243624200000000 },
+            { 
+                "json1", @"{
+                          'FirstName': 'John',
+                          'LastName': 'Smith',
+                          'Enabled': false,
+                          'Roles': [ 'User' ]
+                        }"
+            },
+            { 
+                "json2", @"{
+                          'Enabled': true,
+                          'Roles': [ 'User', 'Admin' ]
+                        }"
+            },
+            {
+                "json3", @"{
+                          'Age': 36,
+                        }"
+            },
+            {
+                "jarray1", @"['a', 'b']"
+            },
+            {
+                "jarray2", @"['c', 'd']"
+            },
+            {
+                "jarray3", @"['e', 'f']"
+            },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
             {
                 "jsonStr", @"{
@@ -917,6 +945,10 @@ namespace AdaptiveExpressions.Tests
             Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
             Test("setProperty({}, 'name', user.nickname).name", "John"),
             Test("addProperty({}, 'name', user.name).name", null),
+            Test("string(merge(json(jarray1), json(jarray2)))", "[\"a\",\"b\",\"c\",\"d\"]"),
+            Test("string(merge(json(jarray1), json(jarray2), json(jarray3)))", "[\"a\",\"b\",\"c\",\"d\",\"e\",\"f\"]"),
+            Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"User\",\"Admin\"]}"),
+            Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"User\",\"Admin\"],\"Age\":36}"),
             #endregion
 
             #region  Memory access

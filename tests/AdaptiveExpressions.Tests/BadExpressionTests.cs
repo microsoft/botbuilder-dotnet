@@ -387,6 +387,9 @@ namespace AdaptiveExpressions.Tests
             Test("jPath(hello,'Manufacturers[0].Products[0].Price')"), // not a valid json
             Test("jPath(hello,'Manufacturers[0]/Products[0]/Price')"), // not a valid path
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
+            Test("merger(json(json1))"), // should have at least two arguments
+            Test("merger(json(json1), json(jarray1))"), // arguments should have same type
+            Test("merger(json(jarray1), json(json1))"), // arguments should have same type
             #endregion
 
             #region Memory access test
@@ -498,6 +501,11 @@ namespace AdaptiveExpressions.Tests
                 notValidTimestamp2 = "1521118800",
                 notValidTimestamp3 = "20181115",
                 relativeUri = "../catalog/shownew.htm?date=today",
+                json1 = @"{
+                          'Enabled': true,
+                          'Roles': [ 'User', 'Admin' ]
+                        }",
+                jarray1 = @"['a', 'b']",
                 turn = new
                 {
                     recognized = new

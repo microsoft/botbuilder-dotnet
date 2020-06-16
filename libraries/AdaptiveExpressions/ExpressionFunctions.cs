@@ -4495,6 +4495,53 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(ExpressionType.JPath, ApplyWithError(args => JPath(args[0], args[1].ToString())), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.Merge,
+                    ApplySequenceWithError(args =>
+                                {
+                                    object result = null;
+                                    string error = null;
+                                    if (args[0] is JObject)
+                                    {
+                                        if (!(args[1] is JObject))
+                                        {
+                                            error = $"The parameter {args[1]} must also be a JObject.";
+                                        }
+                                        else
+                                        {
+                                            (args[0] as JObject).Merge(args[1] as JObject, new JsonMergeSettings
+                                            {
+                                                MergeArrayHandling = MergeArrayHandling.Union
+                                            });
+
+                                            result = args[0];
+                                        }
+                                    }
+                                    else if (args[0] is JArray)
+                                    {
+                                        if (!(args[1] is JArray))
+                                        {
+                                            error = $"The parameter {args[1]} must also be a JArray.";
+                                        }
+                                        else
+                                        {
+                                            (args[0] as JArray).Merge(args[1] as JArray, new JsonMergeSettings
+                                            {
+                                                MergeArrayHandling = MergeArrayHandling.Union
+                                            });
+
+                                            result = args[0];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        error = $"The parameter {args[0]} must be a JObject or a JArray.";
+                                    }
+
+                                    return (result, error);
+                                }), 
+                    ReturnType.Object,
+                    (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
 
                 // Regex expression
                 new ExpressionEvaluator(
