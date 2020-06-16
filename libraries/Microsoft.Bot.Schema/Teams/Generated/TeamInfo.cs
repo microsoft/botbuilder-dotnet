@@ -32,21 +32,9 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="id">Unique identifier representing a team.</param>
         /// <param name="name">Name of team.</param>
         public TeamInfo(string id = default(string), string name = default(string))
-            : this(id, name, string.Empty)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the TeamInfo class.
-        /// </summary>
-        /// <param name="id">Unique identifier representing a team.</param>
-        /// <param name="name">Name of team.</param>
-        /// <param name="aadGroupId">AadGroupId of the team.</param>
-        public TeamInfo(string id = default(string), string name = default(string), string aadGroupId = default(string))
         {
             Id = id;
             Name = name;
-            AadGroupId = aadGroupId;
             CustomInit();
         }
 
