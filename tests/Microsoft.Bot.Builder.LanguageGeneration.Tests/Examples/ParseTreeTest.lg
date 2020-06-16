@@ -1,0 +1,24 @@
+﻿# template1
+- ${welcomeword} ${name}
+
+# template2
+- IF:${a > 0}
+- positve
+- ELSEIF: ${a == 0}
+- equals to 0
+- ELSE:
+- negative
+
+# template3
+-SWITCH: ${day}
+-CASE: ${'Saturday'}
+    -Happy Saturday!
+-CASE: ${'Sunday'}
+    -Happy Sunday!
+-DEFAULT:  
+    -Work Hard!
+
+# template4
+[MyStruct
+  body=${body}
+]

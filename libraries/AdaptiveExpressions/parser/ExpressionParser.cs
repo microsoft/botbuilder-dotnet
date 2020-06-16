@@ -113,7 +113,7 @@ namespace AdaptiveExpressions
 
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionAntlrParser.FuncInvokeExpContext context)
             {
-                var parameters = ProcessArgsList(context.argsList()).ToList();
+                var parameters = ProcessArgsList(context.argsList());
 
                 // Remove the check to check primaryExpression is just an IDENTIFIER to support "." in template name
                 var functionName = context.primaryExpression().GetText();
@@ -191,7 +191,7 @@ namespace AdaptiveExpressions
 
             public override Expression VisitArrayCreationExp([NotNull] ExpressionAntlrParser.ArrayCreationExpContext context)
             {
-                var parameters = ProcessArgsList(context.argsList()).ToList();
+                var parameters = ProcessArgsList(context.argsList());
                 return MakeExpression(ExpressionType.CreateArray, parameters.ToArray());
             }
 
@@ -276,15 +276,30 @@ namespace AdaptiveExpressions
             private Expression MakeExpression(string functionType, params Expression[] children)
                 => Expression.MakeExpression(_lookupFunction(functionType) ?? throw new SyntaxErrorException($"{functionType} does not have an evaluator, it's not a built-in function or a custom function."), children);
 
-            private IEnumerable<Expression> ProcessArgsList(ExpressionAntlrParser.ArgsListContext context)
+            private IList<Expression> ProcessArgsList(ExpressionAntlrParser.ArgsListContext context)
             {
-                if (context != null)
+                var result = new List<Expression>();
+                if (context == null)
                 {
-                    foreach (var expression in context.expression())
+                    return result;
+                }
+
+                foreach (var child in context.children)
+                {
+                    if (child is ExpressionAntlrParser.LambdaContext lambda)
                     {
-                        yield return Visit(expression);
+                        var evalParam = MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(lambda.IDENTIFIER().GetText()));
+                        var evalFun = Visit(lambda.expression());
+                        result.Add(evalParam);
+                        result.Add(evalFun);
+                    }
+                    else if (child is ExpressionAntlrParser.ExpressionContext expression)
+                    {
+                        result.Add(Visit(expression));
                     }
                 }
+
+                return result;
             }
 
             private string EvalEscape(string text)

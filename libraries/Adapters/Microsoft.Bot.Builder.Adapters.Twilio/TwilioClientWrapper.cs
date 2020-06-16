@@ -46,6 +46,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             TwilioClient.Init(Options.TwilioAccountSid, Options.TwilioAuthToken);
         }
 
+        /// <summary>
+        /// Gets the <see cref="TwilioAdapterOptions"/> for the wrapper. 
+        /// </summary>
+        /// <value>
+        /// The <see cref="TwilioAdapterOptions"/> for the wrapper.
+        /// </value>
         public TwilioAdapterOptions Options { get; }
 
         /// <summary>
