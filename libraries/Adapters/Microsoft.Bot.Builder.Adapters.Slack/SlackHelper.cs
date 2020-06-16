@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                         var newAttachment = new SlackAttachment()
                         {
                             AuthorName = att.Name,
-                            ThumbUrl = att.ThumbnailUrl,
+                            ThumbUrl = new Uri(att.ThumbnailUrl),
                         };
                         attachments.Add(newAttachment);
                     }

@@ -37,6 +37,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model
         public string EventTime { get; set; }
 
         [JsonExtensionData(ReadData = true, WriteData = true)]
-        public IDictionary<string, JToken> AdditionalProperties { get; set; }
+        public IDictionary<string, JToken> AdditionalProperties { get; } = new Dictionary<string, JToken>();
     }
 }

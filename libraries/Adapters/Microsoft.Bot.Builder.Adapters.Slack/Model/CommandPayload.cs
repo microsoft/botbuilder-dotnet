@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -34,9 +35,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model
         public string Command { get; set; }
 
         [JsonProperty(PropertyName = "response_url")]
-        public string ResponseUrl { get; set; }
+        public Uri ResponseUrl { get; set; }
 
         [JsonExtensionData(ReadData = true, WriteData = true)]
-        public IDictionary<string, JToken> AdditionalProperties { get; set; }
+        public IDictionary<string, JToken> AdditionalProperties { get; } = new Dictionary<string, JToken>();
     }
 }

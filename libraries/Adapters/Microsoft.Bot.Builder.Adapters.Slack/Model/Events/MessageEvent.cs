@@ -18,8 +18,5 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model.Events
         public string ChannelType { get; set; }
 
         public string SubType { get; set; }
-
-        [JsonExtensionData]
-        private IDictionary<string, JToken> AdditionalProperties { get; set; }
     }
 }

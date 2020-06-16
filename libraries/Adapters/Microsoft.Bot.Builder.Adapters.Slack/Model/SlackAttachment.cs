@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using SlackAPI;
@@ -14,20 +15,20 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 
         public string Footer { get; set; }
 
-        public List<AttachmentAction> Actions { get; set; } = new List<AttachmentAction>();
+        public List<AttachmentAction> Actions { get; } = new List<AttachmentAction>();
 
         [JsonProperty(PropertyName = "mrkdwn_in")]
-        public List<string> MrkDwnIn { get; set; } = new List<string>();
+        public List<string> MrkDwnIn { get; } = new List<string>();
 
         [JsonProperty(PropertyName = "thumb_url")]
-        public string ThumbUrl { get; set; }
+        public Uri ThumbUrl { get; set; }
 
         [JsonProperty(PropertyName = "image_url")]
-        public string ImageUrl { get; set; }
+        public Uri ImageUrl { get; set; }
 
-        public List<IBlock> Blocks { get; set; } = new List<IBlock>();
+        public List<IBlock> Blocks { get; } = new List<IBlock>();
 
-        public List<Field> Fields { get; set; } = new List<Field>();
+        public List<Field> Fields { get; } = new List<Field>();
 
         [JsonProperty(PropertyName = "footer_icon")]
         public string FooterIcon { get; set; }
