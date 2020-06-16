@@ -205,14 +205,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                     httpRequestMessage.Content = jsonContent;
 
-                    var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
-
-                    var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    return new InvokeResponse<T>
+                    using (var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
                     {
-                        Status = (int)response.StatusCode,
-                        Body = content.Length > 0 ? GetBodyContent<T>(content) : default
-                    };
+                        var content = (response.Content != null) ? await response.Content.ReadAsStringAsync().ConfigureAwait(false) : null;
+                        return new InvokeResponse<T>
+                        {
+                            Status = (int)response.StatusCode,
+                            Body = content?.Length > 0 ? GetBodyContent<T>(content) : default
+                        };
+                    }
                 }
             }
         }
