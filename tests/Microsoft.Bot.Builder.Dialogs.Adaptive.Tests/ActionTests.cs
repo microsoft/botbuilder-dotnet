@@ -3,6 +3,7 @@
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
 using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -366,7 +367,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             handler
                 .When(HttpMethod.Post, "http://foo.com/")
-                .WithContent("{\r\n  \"text\": \"Joe is 52\",\r\n  \"age\": 52\r\n}")
+                .WithContent("{\r\n  \"text\": \"Joe is 52\",\r\n  \"age\": 52\r\n}".Replace("\r\n", Environment.NewLine))
                 .Respond("plain/text", "object");
 
             handler
@@ -376,7 +377,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new KeyValuePair<string, string>("bound", "52"),
                     new KeyValuePair<string, string>("unbound", "dialog.age")
                 })
-                .WithContent("[\r\n  {\r\n    \"text\": \"Joe is 52\",\r\n    \"age\": 52\r\n  },\r\n  {\r\n    \"text\": \"text\",\r\n    \"age\": 11\r\n  }\r\n]")
+                .WithContent("[\r\n  {\r\n    \"text\": \"Joe is 52\",\r\n    \"age\": 52\r\n  },\r\n  {\r\n    \"text\": \"text\",\r\n    \"age\": 11\r\n  }\r\n]".Replace("\r\n", Environment.NewLine))
                 .Respond("plain/text", "array");
 
             var testAdapter = new TestAdapter()
