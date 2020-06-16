@@ -331,12 +331,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 else
                 {
                     var templateBody = context.templateBody().GetText();
-                    var file = context.Parent.Parent as LGFileParser.FileContext;
-                    var isLastTemplate = file.paragraph().Select(u => u.templateDefinition()).Where(u => u != null).Last() == context;
-                    if (!isLastTemplate)
-                    {
-                        templateBody = RemoveTrailingNewline(templateBody);
-                    }
 
                     var sourceRange = new SourceRange(context, this.templates.Id);
                     var template = new Template(templateName, parameters, templateBody, sourceRange);
