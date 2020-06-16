@@ -4505,29 +4505,13 @@ namespace AdaptiveExpressions
                                     {
                                         if (!(args[1] is JObject))
                                         {
-                                            error = $"The parameter {args[1]} must also be a JObject.";
+                                            error = $"The parameter {args[1]} must also be a JSON object.";
                                         }
                                         else
                                         {
                                             (args[0] as JObject).Merge(args[1] as JObject, new JsonMergeSettings
                                             {
-                                                MergeArrayHandling = MergeArrayHandling.Union
-                                            });
-
-                                            result = args[0];
-                                        }
-                                    }
-                                    else if (args[0] is JArray)
-                                    {
-                                        if (!(args[1] is JArray))
-                                        {
-                                            error = $"The parameter {args[1]} must also be a JArray.";
-                                        }
-                                        else
-                                        {
-                                            (args[0] as JArray).Merge(args[1] as JArray, new JsonMergeSettings
-                                            {
-                                                MergeArrayHandling = MergeArrayHandling.Union
+                                                MergeArrayHandling = MergeArrayHandling.Replace
                                             });
 
                                             result = args[0];
@@ -4535,7 +4519,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        error = $"The parameter {args[0]} must be a JObject or a JArray.";
+                                        error = $"The parameter {args[0]} must be a JSON object.";
                                     }
 
                                     return (result, error);

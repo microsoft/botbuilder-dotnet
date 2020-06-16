@@ -945,8 +945,6 @@ namespace AdaptiveExpressions.Tests
             Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
             Test("setProperty({}, 'name', user.nickname).name", "John"),
             Test("addProperty({}, 'name', user.name).name", null),
-            Test("string(merge(json(jarray1), json(jarray2)))", "[\"a\",\"b\",\"c\",\"d\"]"),
-            Test("string(merge(json(jarray1), json(jarray2), json(jarray3)))", "[\"a\",\"b\",\"c\",\"d\",\"e\",\"f\"]"),
             Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"User\",\"Admin\"]}"),
             Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"User\",\"Admin\"],\"Age\":36}"),
             #endregion
