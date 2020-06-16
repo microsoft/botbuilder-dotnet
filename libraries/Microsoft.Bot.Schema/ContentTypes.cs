@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Schema
     public partial class HeroCard
     {
         public const string ContentType = "application/vnd.microsoft.card.hero";
-
     }
 
     /// <summary>
