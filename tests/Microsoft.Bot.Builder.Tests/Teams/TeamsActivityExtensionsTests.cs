@@ -11,20 +11,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
     public class TeamsActivityExtensionsTests
     {
         [TestMethod]
-        public void TeamsGetAadGroupId()
-        {
-            // Arrange
-            const string AadGroupId = "teamGroup123";
-            var activity = new Activity { ChannelData = new TeamsChannelData { Team = new TeamInfo { AadGroupId = AadGroupId } } };
-
-            // Act
-            var groupId = activity.TeamsGetTeamInfo().AadGroupId;
-
-            // Assert
-            Assert.AreEqual(AadGroupId, groupId);
-        }
-
-        [TestMethod]
         public void TeamsGetTeamId()
         {
             // Arrange

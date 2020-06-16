@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Schema.Teams
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets aadGroupId of team.
+        /// Gets or sets the Azure AD Teams group ID.
         /// </summary>
         [JsonProperty(PropertyName = "aadGroupId")]
         public string AadGroupId { get; set; }
