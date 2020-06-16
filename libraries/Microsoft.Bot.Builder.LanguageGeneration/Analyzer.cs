@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    result.Union(AnalyzeExpression(body.objectStructureLine().GetText()));
+                    result.Union(AnalyzeExpression(body.expressionInStructure().GetText()));
                 }
             }
 
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var ifRules = context.ifElseTemplateBody().ifConditionRule();
             foreach (var ifRule in ifRules)
             {
-                var expression = ifRule.ifCondition().EXPRESSION(0);
+                var expression = ifRule.ifCondition().expression(0);
                 if (expression != null)
                 {
                     result.Union(AnalyzeExpression(expression.GetText()));
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             foreach (var iterNode in switchCaseNodes)
             {
-                var expression = iterNode.switchCaseStat().EXPRESSION();
+                var expression = iterNode.switchCaseStat().expression();
                 if (expression.Length > 0)
                 {
                     result.Union(AnalyzeExpression(expression[0].GetText()));
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override AnalyzerResult VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var result = new AnalyzerResult();
-            foreach (var expression in context.EXPRESSION())
+            foreach (var expression in context.expression())
             {
                 result.Union(AnalyzeExpression(expression.GetText()));
             }
@@ -170,13 +170,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new AnalyzerResult();
             foreach (var item in values)
             {
-                if (item.IsPureExpression(out var text))
+                if (item.IsPureExpression())
                 {
-                    result.Union(AnalyzeExpression(text));
+                    result.Union(AnalyzeExpression(item.expressionInStructure(0).GetText()));
                 }
                 else
                 {
-                    var expressions = item.EXPRESSION_IN_STRUCTURE_BODY();
+                    var expressions = item.expressionInStructure();
                     foreach (var expression in expressions)
                     {
                         result.Union(AnalyzeExpression(expression.GetText()));
@@ -186,11 +186,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             return result;
         }
-
-        private EvaluationTarget CurrentTarget() =>
-
-            // just don't want to write evaluationTargetStack.Peek() everywhere
-            evaluationTargetStack.Peek();
 
         /// <summary>
         /// Extract the templates ref out from an expression

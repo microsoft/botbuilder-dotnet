@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="data">Scope data.</param>
         /// <param name="locale">Locale info.</param>
         /// <returns>Evaluate result.</returns>
-        public object Generate(string template, object data, string locale)
+        public object Generate(string template, object data = null, string locale = "")
         {
             if (template == null)
             {

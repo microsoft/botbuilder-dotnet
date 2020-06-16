@@ -22,3 +22,6 @@
 # the-name-of-template
 - the body of template
 
+> Template names can only contain letter, underscore '_' or number. Any part of a template name (split by '.') cannot start with a number.
+# t1.1
+- hi

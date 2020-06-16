@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,
+                ValidateIssuerSigningKey = true,
             };
 
         /// <summary>

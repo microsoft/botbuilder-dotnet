@@ -27,6 +27,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public static class TemplatesParser
     {
         /// <summary>
+        /// Inline text id.
+        /// </summary>
+        public const string InlineContentId = "inline content";
+
+        /// <summary>
         /// option regex.
         /// </summary>
         public static readonly Regex OptionRegex = new Regex(@">\s*!#(.*)");
@@ -84,11 +89,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new ArgumentNullException(nameof(lg));
             }
 
-            var id = "inline content";
-            var newLG = new Templates(content: content, id: id, importResolver: lg.ImportResolver, options: lg.Options);
+            var newLG = new Templates(content: content, id: InlineContentId, importResolver: lg.ImportResolver, options: lg.Options);
             try
             {
-                newLG = new TemplatesTransformer(newLG).Transform(AntlrParseTemplates(content, id));
+                newLG = new TemplatesTransformer(newLG).Transform(AntlrParseTemplates(content, InlineContentId));
                 newLG.References = GetReferences(newLG)
                         .Union(lg.References)
                         .Union(new List<Templates> { lg })
@@ -234,6 +238,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private class TemplatesTransformer : LGFileParserBaseVisitor<object>
         {
             private static readonly Regex IdentifierRegex = new Regex(@"^[0-9a-zA-Z_]+$");
+            private static readonly Regex TemplateNamePartRegex = new Regex(@"^[a-zA-Z_][0-9a-zA-Z_]*$");
             private readonly Templates templates;
 
             public TemplatesTransformer(Templates templates)
@@ -256,7 +261,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var lineContent = context.INVALID_LINE().GetText();
                 if (!string.IsNullOrWhiteSpace(lineContent))
                 {
-                    this.templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError, context));
+                    this.templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError($"Unexpected content: '{lineContent}'"), context));
                 }
 
                 return null;
@@ -365,7 +370,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (!IdentifierRegex.IsMatch(parameter))
                     {
-                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName, context);
+                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidParameter(parameter), context);
                         this.templates.Diagnostics.Add(diagnostic);
                     }
                 }
@@ -376,10 +381,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var functionNameSplitDot = templateName.Split('.');
                 foreach (var id in functionNameSplitDot)
                 {
-                    if (!IdentifierRegex.IsMatch(id))
+                    if (!TemplateNamePartRegex.IsMatch(id))
                     {
-                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName, context);
+                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName(templateName), context);
                         this.templates.Diagnostics.Add(diagnostic);
+                        break;
                     }
                 }
             }

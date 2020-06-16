@@ -1,0 +1,13 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnIntent",
+	"intent": "ShowForm",
+	"condition": "turn.recognized.score > 0.5",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${showForm('sandwichTest', dialogClass.schema.$public)}"
+		}
+	],
+	"$Generator": "2ce45fdd8a842fbeb545d190afef1c36"
+}

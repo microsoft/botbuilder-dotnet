@@ -1,0 +1,293 @@
+
+@ list MeatEntity =
+	- bacon:
+		- bacon
+	- chicken:
+		- chicken
+	- ham:
+		- ham
+	- pulled pork:
+		- pulled
+		- pork
+		- pulled pork
+	- roast beef:
+		- roast
+		- beef
+		- roast beef
+	- salami:
+		- salami
+	- turkey:
+		- turkey
+	- none:
+		- none
+
+> Define how Meat is recognized as a property name
+@ list PROPERTYName
+    - Meat:
+		- meat
+
+
+> Define operations for property
+@ml AddToMeat = 
+    - @MeatEntity MeatEntity
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromMeat = 
+    - @MeatEntity MeatEntity
+    - @PROPERTYName PROPERTYName
+@ml ClearMeat =
+    - @PROPERTYName PROPERTYName
+@ml ShowMeat =
+    - @PROPERTYName PROPERTYName
+# sandwich
+> Add only
+- {@AddToMeat=add {@MeatEntity=beef}}
+- {@AddToMeat=add {@MeatEntity=pork}}
+- {@AddToMeat=add {@MeatEntity=salami}}
+- {@AddToMeat=with {@MeatEntity=bacon}}
+- {@AddToMeat=with {@MeatEntity=salami}}
+- {@AddToMeat=with {@MeatEntity=ham}}
+- {@AddToMeat=add {@MeatEntity=beef} and {@MeatEntity=ham}}
+- {@AddToMeat=add {@MeatEntity=roast beef} and {@MeatEntity=chicken}}
+- {@AddToMeat=add {@MeatEntity=pulled pork} and {@MeatEntity=ham}}
+- {@AddToMeat=with {@MeatEntity=pulled pork} and {@MeatEntity=turkey}}
+- {@AddToMeat=with {@MeatEntity=pulled} and {@MeatEntity=roast}}
+- {@AddToMeat=with {@MeatEntity=chicken} and {@MeatEntity=pulled}}
+- {@AddToMeat=add {@MeatEntity=pork}, {@MeatEntity=pulled pork} and {@MeatEntity=roast beef}}
+- {@AddToMeat=add {@MeatEntity=pulled pork}, {@MeatEntity=beef} and {@MeatEntity=roast beef}}
+- {@AddToMeat=add {@MeatEntity=roast}, {@MeatEntity=salami} and {@MeatEntity=beef}}
+- {@AddToMeat=with {@MeatEntity=roast beef}, {@MeatEntity=ham} and {@MeatEntity=turkey}}
+- {@AddToMeat=with {@MeatEntity=pork}, {@MeatEntity=ham} and {@MeatEntity=none}}
+- {@AddToMeat=with {@MeatEntity=roast beef}, {@MeatEntity=pork} and {@MeatEntity=ham}}
+- {@AddToMeat={@PROPERTYName=meat} is {@MeatEntity=turkey}}
+- {@AddToMeat={@PROPERTYName=meat} is {@MeatEntity=roast beef}}
+- {@AddToMeat={@PROPERTYName=meat} is {@MeatEntity=pork}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=chicken} and {@MeatEntity=chicken}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=pulled} and {@MeatEntity=salami}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=salami} and {@MeatEntity=beef}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=pulled}, {@MeatEntity=salami} and {@MeatEntity=chicken}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=roast beef}, {@MeatEntity=roast} and {@MeatEntity=salami}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=ham}, {@MeatEntity=pulled} and {@MeatEntity=roast beef}}
+- {@AddToMeat=add {@MeatEntity=pulled} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=pulled pork} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=roast beef} {@PROPERTYName=meat}}
+- {@AddToMeat=with {@MeatEntity=roast beef} {@PROPERTYName=meat}}
+- {@AddToMeat=with {@MeatEntity=pulled pork} {@PROPERTYName=meat}}
+- {@AddToMeat=with {@MeatEntity=turkey} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=chicken} and {@MeatEntity=salami} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=roast} and {@MeatEntity=chicken} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=roast} and {@MeatEntity=ham} {@PROPERTYName=meat}}
+- {@AddToMeat=with {@MeatEntity=roast beef} and {@MeatEntity=beef} {@PROPERTYName=meat}}
+- {@AddToMeat=with {@MeatEntity=pork} and {@MeatEntity=pulled} {@PROPERTYName=meat}}
+- {@AddToMeat=with {@MeatEntity=salami} and {@MeatEntity=none} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=roast}, {@MeatEntity=bacon} and {@MeatEntity=roast beef} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=roast}, {@MeatEntity=turkey} and {@MeatEntity=pork} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=turkey}, {@MeatEntity=beef} and {@MeatEntity=none} {@PROPERTYName=meat}}
+- {@AddToMeat=with {@MeatEntity=none}, {@MeatEntity=ham} and {@MeatEntity=bacon} {@PROPERTYName=meat}}
+- {@AddToMeat=with {@MeatEntity=salami}, {@MeatEntity=pulled pork} and {@MeatEntity=turkey} {@PROPERTYName=meat}}
+- {@AddToMeat=with {@MeatEntity=pulled pork}, {@MeatEntity=roast beef} and {@MeatEntity=pulled pork} {@PROPERTYName=meat}}
+- {@AddToMeat={@PROPERTYName=meat} is {@MeatEntity=pork}}
+- {@AddToMeat={@PROPERTYName=meat} is {@MeatEntity=pulled}}
+- {@AddToMeat={@PROPERTYName=meat} is {@MeatEntity=ham}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=turkey} and {@MeatEntity=ham}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=pulled pork} and {@MeatEntity=turkey}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=beef} and {@MeatEntity=none}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=roast beef}, {@MeatEntity=none} and {@MeatEntity=ham}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=pork}, {@MeatEntity=roast beef} and {@MeatEntity=pulled}}
+- {@AddToMeat={@PROPERTYName=meat} are {@MeatEntity=none}, {@MeatEntity=turkey} and {@MeatEntity=roast}}
+> Remove only
+- {@RemoveFromMeat=remove {@MeatEntity=pork}}
+- {@RemoveFromMeat=remove {@MeatEntity=chicken}}
+- {@RemoveFromMeat=remove {@MeatEntity=none}}
+- {@RemoveFromMeat=remove {@MeatEntity=roast} and {@MeatEntity=pulled}}
+- {@RemoveFromMeat=remove {@MeatEntity=pulled pork} and {@MeatEntity=salami}}
+- {@RemoveFromMeat=remove {@MeatEntity=turkey} and {@MeatEntity=pulled pork}}
+- {@RemoveFromMeat=remove {@MeatEntity=roast beef}, {@MeatEntity=chicken} and {@MeatEntity=chicken}}
+- {@RemoveFromMeat=remove {@MeatEntity=turkey}, {@MeatEntity=none} and {@MeatEntity=roast}}
+- {@RemoveFromMeat=remove {@MeatEntity=roast beef}, {@MeatEntity=ham} and {@MeatEntity=bacon}}
+- {@RemoveFromMeat=delete {@MeatEntity=none}}
+- {@RemoveFromMeat=delete {@MeatEntity=roast}}
+- {@RemoveFromMeat=delete {@MeatEntity=pulled pork}}
+- {@RemoveFromMeat=delete {@MeatEntity=pulled pork} and {@MeatEntity=chicken}}
+- {@RemoveFromMeat=delete {@MeatEntity=pulled pork} and {@MeatEntity=pulled pork}}
+- {@RemoveFromMeat=delete {@MeatEntity=pulled pork} and {@MeatEntity=roast}}
+- {@RemoveFromMeat=delete {@MeatEntity=bacon}, {@MeatEntity=roast} and {@MeatEntity=none}}
+- {@RemoveFromMeat=delete {@MeatEntity=roast}, {@MeatEntity=turkey} and {@MeatEntity=none}}
+- {@RemoveFromMeat=delete {@MeatEntity=turkey}, {@MeatEntity=beef} and {@MeatEntity=pork}}
+- {@RemoveFromMeat=without {@MeatEntity=chicken}}
+- {@RemoveFromMeat=without {@MeatEntity=salami}}
+- {@RemoveFromMeat=without {@MeatEntity=pulled}}
+- {@RemoveFromMeat=without {@MeatEntity=salami} and {@MeatEntity=ham}}
+- {@RemoveFromMeat=without {@MeatEntity=bacon} and {@MeatEntity=roast beef}}
+- {@RemoveFromMeat=without {@MeatEntity=pulled} and {@MeatEntity=none}}
+- {@RemoveFromMeat=without {@MeatEntity=roast}, {@MeatEntity=bacon} and {@MeatEntity=turkey}}
+- {@RemoveFromMeat=without {@MeatEntity=pulled pork}, {@MeatEntity=turkey} and {@MeatEntity=roast}}
+- {@RemoveFromMeat=without {@MeatEntity=chicken}, {@MeatEntity=chicken} and {@MeatEntity=chicken}}
+- {@RemoveFromMeat=with no {@MeatEntity=salami}}
+- {@RemoveFromMeat=with no {@MeatEntity=roast beef}}
+- {@RemoveFromMeat=with no {@MeatEntity=pulled}}
+- {@RemoveFromMeat=with no {@MeatEntity=bacon} and {@MeatEntity=beef}}
+- {@RemoveFromMeat=with no {@MeatEntity=salami} and {@MeatEntity=roast beef}}
+- {@RemoveFromMeat=with no {@MeatEntity=beef} and {@MeatEntity=roast beef}}
+- {@RemoveFromMeat=with no {@MeatEntity=salami}, {@MeatEntity=pulled} and {@MeatEntity=none}}
+- {@RemoveFromMeat=with no {@MeatEntity=turkey}, {@MeatEntity=chicken} and {@MeatEntity=bacon}}
+- {@RemoveFromMeat=with no {@MeatEntity=pork}, {@MeatEntity=pork} and {@MeatEntity=roast}}
+- {@RemoveFromMeat=remove {@MeatEntity=pulled} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=pulled pork} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=turkey} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=ham} and {@MeatEntity=pulled pork} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=beef} and {@MeatEntity=none} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=roast beef} and {@MeatEntity=turkey} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=pork}, {@MeatEntity=beef} and {@MeatEntity=salami} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=turkey}, {@MeatEntity=pork} and {@MeatEntity=bacon} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=pork}, {@MeatEntity=pork} and {@MeatEntity=chicken} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=delete {@MeatEntity=roast beef} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=delete {@MeatEntity=ham} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=delete {@MeatEntity=turkey} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=delete {@MeatEntity=turkey} and {@MeatEntity=roast} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=delete {@MeatEntity=pulled pork} and {@MeatEntity=roast} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=delete {@MeatEntity=salami} and {@MeatEntity=pulled} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=delete {@MeatEntity=beef}, {@MeatEntity=pulled pork} and {@MeatEntity=roast beef} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=delete {@MeatEntity=ham}, {@MeatEntity=turkey} and {@MeatEntity=pulled} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=delete {@MeatEntity=chicken}, {@MeatEntity=salami} and {@MeatEntity=beef} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=without {@MeatEntity=pulled}}
+- {@RemoveFromMeat=without {@MeatEntity=beef}}
+- {@RemoveFromMeat=without {@MeatEntity=bacon}}
+- {@RemoveFromMeat=without {@MeatEntity=chicken} and {@MeatEntity=pork} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=without {@MeatEntity=pork} and {@MeatEntity=none} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=without {@MeatEntity=turkey} and {@MeatEntity=bacon} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=without {@MeatEntity=none}, {@MeatEntity=ham} and {@MeatEntity=roast beef} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=without {@MeatEntity=beef}, {@MeatEntity=beef} and {@MeatEntity=roast beef} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=without {@MeatEntity=pulled}, {@MeatEntity=beef} and {@MeatEntity=salami} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=with no {@MeatEntity=pork} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=with no {@MeatEntity=roast} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=with no {@MeatEntity=salami} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=with no {@MeatEntity=bacon} and {@MeatEntity=roast beef} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=with no {@MeatEntity=bacon} and {@MeatEntity=none} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=with no {@MeatEntity=beef} and {@MeatEntity=salami} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=with no {@MeatEntity=roast}, {@MeatEntity=pulled} and {@MeatEntity=chicken} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=with no {@MeatEntity=chicken}, {@MeatEntity=roast} and {@MeatEntity=salami} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=with no {@MeatEntity=pulled pork}, {@MeatEntity=pulled} and {@MeatEntity=bacon} {@PROPERTYName=meat}}
+> Clear only
+- {@ClearMeat=clear {@PROPERTYName=meat}}
+- {@ClearMeat=remove {@PROPERTYName=meat}}
+- {@ClearMeat=empty {@PROPERTYName=meat}}
+- {@ClearMeat=please clear {@PROPERTYName=meat}}
+- {@ClearMeat=please remove {@PROPERTYName=meat}}
+- {@ClearMeat=please empty {@PROPERTYName=meat}}
+- {@ClearMeat=can you clear {@PROPERTYName=meat}}
+- {@ClearMeat=can you remove {@PROPERTYName=meat}}
+- {@ClearMeat=can you empty {@PROPERTYName=meat}}
+> Show only
+- {@ShowMeat=value of {@PROPERTYName=meat}}
+- {@ShowMeat=value for {@PROPERTYName=meat}}
+- {@ShowMeat=selection of {@PROPERTYName=meat}}
+- {@ShowMeat=selection for {@PROPERTYName=meat}}
+- {@ShowMeat=display {@PROPERTYName=meat}}
+- {@ShowMeat=show {@PROPERTYName=meat}}
+- {@ShowMeat=value of {@PROPERTYName=meat}}
+- {@ShowMeat=value for {@PROPERTYName=meat}}
+- {@ShowMeat={@PROPERTYName=meat} value}
+- {@ShowMeat={@PROPERTYName=meat} values}
+- {@ShowMeat={@PROPERTYName=meat} selection}
+> Combinations
+- {@AddToMeat=add {@MeatEntity=pork}} {@RemoveFromMeat=and remove {@MeatEntity=pulled pork}}
+- {@AddToMeat=add {@MeatEntity=pulled}} {@RemoveFromMeat=and remove {@MeatEntity=beef}}
+- {@AddToMeat=add {@MeatEntity=bacon}} {@RemoveFromMeat=and remove {@MeatEntity=ham}}
+- {@AddToMeat=add {@MeatEntity=salami}} {@RemoveFromMeat=remove {@MeatEntity=pork}}
+- {@AddToMeat=add {@MeatEntity=pulled}} {@RemoveFromMeat=remove {@MeatEntity=pulled pork}}
+- {@AddToMeat=add {@MeatEntity=none}} {@RemoveFromMeat=remove {@MeatEntity=ham}}
+- {@AddToMeat=add {@MeatEntity=roast beef}}, {@RemoveFromMeat=remove {@MeatEntity=chicken}}
+- {@AddToMeat=add {@MeatEntity=bacon}}, {@RemoveFromMeat=remove {@MeatEntity=pork}}
+- {@AddToMeat=add {@MeatEntity=roast}}, {@RemoveFromMeat=remove {@MeatEntity=beef}}
+- {@AddToMeat=add {@MeatEntity=none} and {@MeatEntity=salami}} {@RemoveFromMeat=and remove {@MeatEntity=turkey}}
+- {@AddToMeat=add {@MeatEntity=roast} and {@MeatEntity=ham}} {@RemoveFromMeat=and remove {@MeatEntity=salami}}
+- {@AddToMeat=add {@MeatEntity=roast beef} and {@MeatEntity=pork}} {@RemoveFromMeat=and remove {@MeatEntity=pulled}}
+- {@AddToMeat=add {@MeatEntity=bacon}, {@MeatEntity=none} and {@MeatEntity=chicken}} {@RemoveFromMeat=and remove {@MeatEntity=salami} and {@MeatEntity=bacon}}
+- {@AddToMeat=add {@MeatEntity=pulled pork}, {@MeatEntity=roast} and {@MeatEntity=ham}} {@RemoveFromMeat=and remove {@MeatEntity=none} and {@MeatEntity=none}}
+- {@AddToMeat=add {@MeatEntity=bacon}, {@MeatEntity=ham} and {@MeatEntity=pork}} {@RemoveFromMeat=and remove {@MeatEntity=beef} and {@MeatEntity=none}}
+- {@AddToMeat=add {@MeatEntity=turkey}, {@MeatEntity=none} and {@MeatEntity=pork}} {@RemoveFromMeat=remove {@MeatEntity=bacon} and {@MeatEntity=turkey}}
+- {@AddToMeat=add {@MeatEntity=chicken}, {@MeatEntity=ham} and {@MeatEntity=roast}} {@RemoveFromMeat=remove {@MeatEntity=pulled pork} and {@MeatEntity=roast}}
+- {@AddToMeat=add {@MeatEntity=roast beef}, {@MeatEntity=ham} and {@MeatEntity=none}} {@RemoveFromMeat=remove {@MeatEntity=beef} and {@MeatEntity=pork}}
+- {@AddToMeat=add {@MeatEntity=ham}}{@RemoveFromMeat=, remove {@MeatEntity=chicken}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=roast beef}}{@RemoveFromMeat=, remove {@MeatEntity=salami}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=turkey}}{@RemoveFromMeat=, remove {@MeatEntity=chicken}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=none}} {@AddToMeat=and add {@MeatEntity=chicken}}
+- {@RemoveFromMeat=remove {@MeatEntity=chicken}} {@AddToMeat=and add {@MeatEntity=ham}}
+- {@RemoveFromMeat=remove {@MeatEntity=pork}} {@AddToMeat=and add {@MeatEntity=pulled pork}}
+- {@RemoveFromMeat=remove {@MeatEntity=chicken} and {@MeatEntity=chicken}} {@AddToMeat=and add {@MeatEntity=none}}
+- {@RemoveFromMeat=remove {@MeatEntity=beef} and {@MeatEntity=pulled pork}} {@AddToMeat=and add {@MeatEntity=salami}}
+- {@RemoveFromMeat=remove {@MeatEntity=salami} and {@MeatEntity=roast beef}} {@AddToMeat=and add {@MeatEntity=roast beef}}
+- {@RemoveFromMeat=remove {@MeatEntity=roast}, {@MeatEntity=pulled} and {@MeatEntity=roast beef}} {@AddToMeat=and add {@MeatEntity=pork} and {@MeatEntity=none}}
+- {@RemoveFromMeat=remove {@MeatEntity=pork}, {@MeatEntity=roast beef} and {@MeatEntity=bacon}} {@AddToMeat=and add {@MeatEntity=none} and {@MeatEntity=chicken}}
+- {@RemoveFromMeat=remove {@MeatEntity=roast}, {@MeatEntity=turkey} and {@MeatEntity=roast beef}} {@AddToMeat=and add {@MeatEntity=turkey} and {@MeatEntity=roast beef}}
+- {@RemoveFromMeat=remove {@MeatEntity=chicken}}{@AddToMeat=, add {@MeatEntity=pulled pork}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=pulled pork}}{@AddToMeat=, add {@MeatEntity=roast beef}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=roast beef}}{@AddToMeat=, add {@MeatEntity=salami}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=chicken}} {@AddToMeat=and add {@MeatEntity=ham}}
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=pork}} {@AddToMeat=and add {@MeatEntity=turkey}}
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=none}} {@AddToMeat=and add {@MeatEntity=roast beef}}
+- {@ShowMeat=show {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=ham}} {@ShowMeat=and display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=none}} {@AddToMeat=and add {@MeatEntity=beef}}
+- {@ShowMeat=show {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=salami}} {@ShowMeat=and display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=pork}} {@AddToMeat=and add {@MeatEntity=ham}}
+- {@ShowMeat=show {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=bacon}} {@ShowMeat=and display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=chicken}} {@AddToMeat=and add {@MeatEntity=roast}}
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=none}} {@AddToMeat=add {@MeatEntity=none}} 
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=ham}} {@AddToMeat=add {@MeatEntity=salami}} 
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=bacon}} {@AddToMeat=add {@MeatEntity=pork}} 
+- {@AddToMeat=add {@MeatEntity=pulled pork} {@PROPERTYName=meat}} {@RemoveFromMeat=and remove {@MeatEntity=chicken} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=none} {@PROPERTYName=meat}} {@RemoveFromMeat=and remove {@MeatEntity=pulled pork} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=chicken} {@PROPERTYName=meat}} {@RemoveFromMeat=and remove {@MeatEntity=bacon} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=beef} {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=pulled pork} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=chicken} {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=roast beef} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=pulled pork} {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=none} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=turkey} {@PROPERTYName=meat}}, {@RemoveFromMeat=remove {@MeatEntity=salami} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=beef} {@PROPERTYName=meat}}, {@RemoveFromMeat=remove {@MeatEntity=pork} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=pulled} {@PROPERTYName=meat}}, {@RemoveFromMeat=remove {@MeatEntity=none} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=chicken} and {@MeatEntity=roast} {@PROPERTYName=meat}} {@RemoveFromMeat=and remove {@MeatEntity=roast} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=beef} and {@MeatEntity=bacon} {@PROPERTYName=meat}} {@RemoveFromMeat=and remove {@MeatEntity=none} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=pulled} and {@MeatEntity=turkey} {@PROPERTYName=meat}} {@RemoveFromMeat=and remove {@MeatEntity=bacon} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=beef}, {@MeatEntity=pulled} and {@MeatEntity=ham} {@PROPERTYName=meat}} {@RemoveFromMeat=and remove {@MeatEntity=bacon} and {@MeatEntity=pulled pork} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=pulled pork}, {@MeatEntity=bacon} and {@MeatEntity=roast beef} {@PROPERTYName=meat}} {@RemoveFromMeat=and remove {@MeatEntity=bacon} and {@MeatEntity=pork} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=chicken}, {@MeatEntity=turkey} and {@MeatEntity=turkey} {@PROPERTYName=meat}} {@RemoveFromMeat=and remove {@MeatEntity=bacon} and {@MeatEntity=beef} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=pulled}, {@MeatEntity=roast} and {@MeatEntity=ham} {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=salami} and {@MeatEntity=bacon} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=pulled pork}, {@MeatEntity=pork} and {@MeatEntity=roast beef} {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=roast} and {@MeatEntity=ham} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=roast beef}, {@MeatEntity=bacon} and {@MeatEntity=roast} {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=turkey} and {@MeatEntity=bacon} {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=pork} {@PROPERTYName=meat}}{@RemoveFromMeat=, remove {@MeatEntity=none} {@PROPERTYName=meat}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=pulled pork} {@PROPERTYName=meat}}{@RemoveFromMeat=, remove {@MeatEntity=roast} {@PROPERTYName=meat}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@AddToMeat=add {@MeatEntity=chicken} {@PROPERTYName=meat}}{@RemoveFromMeat=, remove {@MeatEntity=pork} {@PROPERTYName=meat}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=ham} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=roast} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=chicken} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=pulled} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=bacon} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=ham} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=salami} and {@MeatEntity=ham} {@PROPERTYName=meat}} {@AddToMeat=and add **MISSING**}
+- {@RemoveFromMeat=remove {@MeatEntity=pulled} and {@MeatEntity=roast} {@PROPERTYName=meat}} {@AddToMeat=and add **MISSING**}
+- {@RemoveFromMeat=remove {@MeatEntity=turkey} and {@MeatEntity=chicken} {@PROPERTYName=meat}} {@AddToMeat=and add **MISSING**}
+- {@RemoveFromMeat=remove {@MeatEntity=pulled}, {@MeatEntity=roast} and {@MeatEntity=turkey} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=bacon} and {@MeatEntity=ham} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=salami}, {@MeatEntity=pork} and {@MeatEntity=chicken} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=beef} and {@MeatEntity=pulled} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=turkey}, {@MeatEntity=pork} and {@MeatEntity=bacon} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=pork} and {@MeatEntity=pulled pork} {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=roast} {@PROPERTYName=meat}}{@AddToMeat=, add {@MeatEntity=bacon} {@PROPERTYName=meat}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=pulled} {@PROPERTYName=meat}}{@AddToMeat=, add {@MeatEntity=bacon} {@PROPERTYName=meat}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@RemoveFromMeat=remove {@MeatEntity=roast beef} {@PROPERTYName=meat}}{@AddToMeat=, add {@MeatEntity=pork} {@PROPERTYName=meat}} {@ShowMeat=and show {@PROPERTYName=meat}}
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=bacon} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=bacon} {@PROPERTYName=meat}}
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=turkey} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=bacon} {@PROPERTYName=meat}}
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=beef} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=pork} {@PROPERTYName=meat}}
+- {@ShowMeat=show {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=none} {@PROPERTYName=meat}} {@ShowMeat=and display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=beef} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=salami} {@PROPERTYName=meat}}
+- {@ShowMeat=show {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=pork} {@PROPERTYName=meat}} {@ShowMeat=and display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=pork} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=beef} {@PROPERTYName=meat}}
+- {@ShowMeat=show {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=roast} {@PROPERTYName=meat}} {@ShowMeat=and display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=pulled} {@PROPERTYName=meat}} {@AddToMeat=and add {@MeatEntity=pork} {@PROPERTYName=meat}}
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=pulled pork} {@PROPERTYName=meat}} {@AddToMeat=add {@MeatEntity=roast} {@PROPERTYName=meat}} 
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=pulled pork} {@PROPERTYName=meat}} {@AddToMeat=add {@MeatEntity=salami} {@PROPERTYName=meat}} 
+- {@ShowMeat=display {@PROPERTYName=meat}} {@RemoveFromMeat=remove {@MeatEntity=pulled} {@PROPERTYName=meat}} {@AddToMeat=add {@MeatEntity=beef} {@PROPERTYName=meat}} 
+- bacon
+- chicken
+- ham
+- pulled
+- pork
+- pulled pork
+- roast
+- beef
+- roast beef
+- salami
+- turkey
+- none
+
+- Meat
+
+
+> Generator: a51dbfdb1808c99929509ebccc8aada3

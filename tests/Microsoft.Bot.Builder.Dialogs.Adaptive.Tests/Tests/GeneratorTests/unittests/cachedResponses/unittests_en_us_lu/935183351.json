@@ -1,1 +1,0 @@
-{"query":"abc.com","prediction":{"topIntent":"unittests","intents":{"unittests":{"score":0.99999}},"entities":{"url":["abc.com"],"$instance":{"url":[{"type":"builtin.url","text":"abc.com","startIndex":0,"length":7,"modelTypeId":2,"modelType":"Prebuilt Entity Extractor","recognitionSources":["model"]}]}}}}

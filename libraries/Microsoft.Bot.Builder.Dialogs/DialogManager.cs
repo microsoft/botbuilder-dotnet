@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public UserState UserState { get; set; }
 
         /// <summary>
-        /// Gets InitialTurnState collection to copy into the turnstate on every turn.
+        /// Gets InitialTurnState collection to copy into the TurnState on every turn.
         /// </summary>
         /// <value>
         /// TurnState.
@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 context.TurnState.Set(pair.Key, pair.Value);
             }
 
-            // register DialogManager with turnstate.
+            // register DialogManager with TurnState.
             context.TurnState.Set(this);
 
             if (ConversationState == null)
@@ -185,13 +185,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Create DialogContext
             var dc = new DialogContext(Dialogs, context, dialogState);
 
-            // promote initial turnstate into dc.services for contextual services
+            // promote initial TurnState into dc.services for contextual services
             foreach (var service in dc.Services)
             {
                 dc.Services[service.Key] = service.Value;
             }
 
-            // map turnstate into root dialog context.services
+            // map TurnState into root dialog context.services
             foreach (var service in context.TurnState)
             {
                 dc.Services[service.Key] = service.Value;
@@ -295,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var activeDialogContext = GetActiveDialogContext(dc);
 
                 var remoteCancelText = "Skill was canceled through an EndOfConversation activity from the parent.";
-                await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{remoteCancelText}", cancellationToken: cancellationToken).ConfigureAwait(false);
+                await turnContext.TraceActivityAsync($"{GetType().Name}.OnTurnAsync()", label: $"{remoteCancelText}", cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Send cancellation message to the top dialog in the stack to ensure all the parents are canceled in the right order. 
                 return await activeDialogContext.CancelAllDialogsAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -321,20 +321,23 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 // restart root dialog
                 var startMessageText = $"Starting {_rootDialogId}.";
-                await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{startMessageText}", cancellationToken: cancellationToken).ConfigureAwait(false);
+                await turnContext.TraceActivityAsync($"{GetType().Name}.OnTurnAsync()", label: $"{startMessageText}", cancellationToken: cancellationToken).ConfigureAwait(false);
                 turnResult = await dc.BeginDialogAsync(_rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             await SendStateSnapshotTraceAsync(dc, "Skill State", cancellationToken).ConfigureAwait(false);
 
-            // Send end of conversation if it is completed or cancelled.
-            if (turnResult.Status == DialogTurnStatus.Complete || turnResult.Status == DialogTurnStatus.Cancelled)
+            if (ShouldSendEndOfConversationToParent(turnContext, turnResult))
             {
                 var endMessageText = $"Dialog {_rootDialogId} has **completed**. Sending EndOfConversation.";
-                await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{endMessageText}", value: turnResult.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await turnContext.TraceActivityAsync($"{GetType().Name}.OnTurnAsync()", label: $"{endMessageText}", value: turnResult.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Send End of conversation at the end.
-                var activity = new Activity(ActivityTypes.EndOfConversation) { Value = turnResult.Result };
+                var activity = new Activity(ActivityTypes.EndOfConversation)
+                {
+                    Value = turnResult.Result,
+                    Locale = turnContext.Activity.Locale
+                };
                 await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             }
 
@@ -367,6 +370,34 @@ namespace Microsoft.Bot.Builder.Dialogs
             await SendStateSnapshotTraceAsync(dc, "Bot State", cancellationToken).ConfigureAwait(false);
 
             return turnResult;
+        }
+
+        /// <summary>
+        /// Helper to determine if we should send an EndOfConversation to the parent or not.
+        /// </summary>
+        private bool ShouldSendEndOfConversationToParent(ITurnContext context, DialogTurnResult turnResult)
+        {
+            if (!(turnResult.Status == DialogTurnStatus.Complete || turnResult.Status == DialogTurnStatus.Cancelled))
+            {
+                // The dialog is still going, don't return EoC.
+                return false;
+            }
+
+            if (context.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims))
+            {
+                // EoC Activities returned by skills are bounced back to the bot by SkillHandler.
+                // In those cases we will have a SkillConversationReference instance in state.
+                var skillConversationReference = context.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey);
+                if (skillConversationReference != null)
+                {
+                    // If the skillConversationReference.OAuthScope is for one of the supported channels, we are at the root and we should not send an EoC.
+                    return skillConversationReference.OAuthScope != AuthenticationConstants.ToChannelFromBotOAuthScope && skillConversationReference.OAuthScope != GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope;
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

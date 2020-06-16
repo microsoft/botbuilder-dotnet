@@ -1087,8 +1087,8 @@
 		},
 		"Microsoft.BeginSkill": {
 			"$role": "implements(Microsoft.IDialog)",
-			"title": "Begin a skill dialog",
-			"description": "Begin a remote skill dialog.",
+			"title": "Begin a skill",
+			"description": "Begin a remote skill.",
 			"type": "object",
 			"required": [
 				"$kind"

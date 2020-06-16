@@ -1,0 +1,18 @@
+
+[sandwichTest-MeatEntity.en-us.lg](sandwichTest-MeatEntity.en-us.lg)
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
+[sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
+
+# AskMeat
+- ${askEnum('Meat')}
+
+
+> How to display the name of Meat
+# MeatName
+- meat
+
+# Meat(val)
+- ${MeatEntity(val)}
+
+
+> Generator: ad63364bbae30782c17982c48e36e124

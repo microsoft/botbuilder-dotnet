@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -20,6 +21,8 @@ namespace AdaptiveExpressions
     /// </summary>
     public class ExpressionParser : IExpressionParser
     {
+        private static ConcurrentDictionary<string, IParseTree> expressionDict = new ConcurrentDictionary<string, IParseTree>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionParser"/> class.
         /// Constructor.
@@ -57,6 +60,11 @@ namespace AdaptiveExpressions
 
         protected static IParseTree AntlrParse(string expression)
         {
+            if (expressionDict.TryGetValue(expression, out var expressionParseTree))
+            {
+                return expressionParseTree;
+            }
+
             var inputStream = new AntlrInputStream(expression);
             var lexer = new ExpressionAntlrLexer(inputStream);
             lexer.RemoveErrorListeners();
@@ -65,7 +73,9 @@ namespace AdaptiveExpressions
             parser.RemoveErrorListeners();
             parser.AddErrorListener(ParserErrorListener.Instance);
             parser.BuildParseTree = true;
-            return parser.file()?.expression();
+            var expressionContext = parser.file()?.expression();
+            expressionDict.TryAdd(expression, expressionContext);
+            return expressionContext;
         }
 
         private class ExpressionTransformer : ExpressionAntlrParserBaseVisitor<Expression>
@@ -103,7 +113,7 @@ namespace AdaptiveExpressions
 
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionAntlrParser.FuncInvokeExpContext context)
             {
-                var parameters = ProcessArgsList(context.argsList()).ToList();
+                var parameters = ProcessArgsList(context.argsList());
 
                 // Remove the check to check primaryExpression is just an IDENTIFIER to support "." in template name
                 var functionName = context.primaryExpression().GetText();
@@ -164,6 +174,11 @@ namespace AdaptiveExpressions
                     return Expression.ConstantExpression(intValue);
                 }
 
+                if (long.TryParse(context.GetText(), out var longValue))
+                {
+                    return Expression.ConstantExpression(longValue);
+                }
+
                 if (double.TryParse(context.GetText(), NumberStyles.Any, CultureInfo.InvariantCulture, out var doubleValue))
                 {
                     return Expression.ConstantExpression(doubleValue);
@@ -176,7 +191,7 @@ namespace AdaptiveExpressions
 
             public override Expression VisitArrayCreationExp([NotNull] ExpressionAntlrParser.ArrayCreationExpContext context)
             {
-                var parameters = ProcessArgsList(context.argsList()).ToList();
+                var parameters = ProcessArgsList(context.argsList());
                 return MakeExpression(ExpressionType.CreateArray, parameters.ToArray());
             }
 
@@ -261,15 +276,30 @@ namespace AdaptiveExpressions
             private Expression MakeExpression(string functionType, params Expression[] children)
                 => Expression.MakeExpression(_lookupFunction(functionType) ?? throw new SyntaxErrorException($"{functionType} does not have an evaluator, it's not a built-in function or a custom function."), children);
 
-            private IEnumerable<Expression> ProcessArgsList(ExpressionAntlrParser.ArgsListContext context)
+            private IList<Expression> ProcessArgsList(ExpressionAntlrParser.ArgsListContext context)
             {
-                if (context != null)
+                var result = new List<Expression>();
+                if (context == null)
                 {
-                    foreach (var expression in context.expression())
+                    return result;
+                }
+
+                foreach (var child in context.children)
+                {
+                    if (child is ExpressionAntlrParser.LambdaContext lambda)
                     {
-                        yield return Visit(expression);
+                        var evalParam = MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(lambda.IDENTIFIER().GetText()));
+                        var evalFun = Visit(lambda.expression());
+                        result.Add(evalParam);
+                        result.Add(evalFun);
+                    }
+                    else if (child is ExpressionAntlrParser.ExpressionContext expression)
+                    {
+                        result.Add(Visit(expression));
                     }
                 }
+
+                return result;
             }
 
             private string EvalEscape(string text)

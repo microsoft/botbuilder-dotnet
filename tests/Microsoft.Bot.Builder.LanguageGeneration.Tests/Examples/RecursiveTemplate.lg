@@ -1,0 +1,20 @@
+﻿> 1 + 2 + 3 +...+ number
+# RecursiveAccumulate(number)
+- IF:${number <= 1}
+ - ${1}
+- ELSE:
+ - ${RecursiveAccumulate(number - 1) + number}
+
+> 1 * 2 * 3 * 4 * 5 * ... * number
+# RecursiveFactorial(number)
+- IF: ${number <= 1}
+ - ${1}
+- ELSE:
+ - ${RecursiveFactorial(number - 1) * number}
+
+> 1, 1, 2, 3, 5, 8, 13 ... number th
+# RecursiveFibonacciSequence(number)
+- IF: ${number <= 2}
+ - ${1}
+- ELSE:
+ - ${RecursiveFibonacciSequence(number - 1) + RecursiveFibonacciSequence(number - 2)}

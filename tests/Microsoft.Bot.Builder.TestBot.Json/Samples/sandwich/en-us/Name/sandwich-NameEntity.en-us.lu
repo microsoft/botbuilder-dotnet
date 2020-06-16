@@ -1,0 +1,122 @@
+
+@ ml NameEntity
+
+> Define how Name is recognized as a property name
+@ list PROPERTYName
+    - Name:
+		- name
+
+
+> Define operations for property
+@ml AddToName = 
+    - @NameEntity NameEntity
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromName = 
+    - @NameEntity NameEntity
+    - @PROPERTYName PROPERTYName
+@ml ClearName =
+    - @PROPERTYName PROPERTYName
+@ml ShowName =
+    - @PROPERTYName PROPERTYName
+# sandwich
+> Add only
+- {@AddToName=add {@NameEntity=**NameEntity**}}
+- {@AddToName=with {@NameEntity=**NameEntity**}}
+- {@AddToName=add {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@AddToName=with {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@AddToName=add {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@AddToName=with {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@AddToName={@PROPERTYName=name} is {@NameEntity=**NameEntity**}}
+- {@AddToName={@PROPERTYName=name} are {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@AddToName={@PROPERTYName=name} are {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@AddToName=add {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=with {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=add {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=with {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=add {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=with {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName={@PROPERTYName=name} is {@NameEntity=**NameEntity**}}
+- {@AddToName={@PROPERTYName=name} are {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@AddToName={@PROPERTYName=name} are {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+> Remove only
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=delete {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=delete {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=delete {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=without {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=without {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=without {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=with no {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=with no {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=with no {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=delete {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=without {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=without {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=without {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=with no {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+> Clear only
+- {@ClearName=clear {@PROPERTYName=name}}
+- {@ClearName=remove {@PROPERTYName=name}}
+- {@ClearName=empty {@PROPERTYName=name}}
+- {@ClearName=please clear {@PROPERTYName=name}}
+- {@ClearName=please remove {@PROPERTYName=name}}
+- {@ClearName=please empty {@PROPERTYName=name}}
+- {@ClearName=can you clear {@PROPERTYName=name}}
+- {@ClearName=can you remove {@PROPERTYName=name}}
+- {@ClearName=can you empty {@PROPERTYName=name}}
+> Show only
+- {@ShowName=value of {@PROPERTYName=name}}
+- {@ShowName=value for {@PROPERTYName=name}}
+- {@ShowName=selection of {@PROPERTYName=name}}
+- {@ShowName=selection for {@PROPERTYName=name}}
+- {@ShowName=display {@PROPERTYName=name}}
+- {@ShowName=show {@PROPERTYName=name}}
+- {@ShowName=value of {@PROPERTYName=name}}
+- {@ShowName=value for {@PROPERTYName=name}}
+- {@ShowName={@PROPERTYName=name} value}
+- {@ShowName={@PROPERTYName=name} values}
+- {@ShowName={@PROPERTYName=name} selection}
+> Combinations
+- {@AddToName=add {@NameEntity=**NameEntity**}} {@RemoveFromName=and remove {@NameEntity=**NameEntity**}}
+- {@AddToName=add {@NameEntity=**NameEntity**}} {@RemoveFromName=remove {@NameEntity=**NameEntity**}}
+- {@AddToName=add {@NameEntity=**NameEntity**}}, {@RemoveFromName=remove {@NameEntity=**NameEntity**}}
+- {@AddToName=add {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}} {@RemoveFromName=and remove {@NameEntity=**NameEntity**}}
+- {@AddToName=add {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}} {@RemoveFromName=and remove {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@AddToName=add {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}} {@RemoveFromName=remove {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@AddToName=add {@NameEntity=**NameEntity**}}{@RemoveFromName=, remove {@NameEntity=**NameEntity**}} {@ShowName=and show {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**}} {@AddToName=and add {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}} {@AddToName=and add {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}} {@AddToName=and add {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**}}{@AddToName=, add {@NameEntity=**NameEntity**}} {@ShowName=and show {@PROPERTYName=name}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@NameEntity=**NameEntity**}} {@AddToName=and add {@NameEntity=**NameEntity**}}
+- {@ShowName=show {@PROPERTYName=name}} {@RemoveFromName=remove {@NameEntity=**NameEntity**}} {@ShowName=and display {@PROPERTYName=name}} {@RemoveFromName=remove {@NameEntity=**NameEntity**}} {@AddToName=and add {@NameEntity=**NameEntity**}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@NameEntity=**NameEntity**}} {@AddToName=add {@NameEntity=**NameEntity**}} 
+- {@AddToName=add {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@RemoveFromName=and remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=add {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@RemoveFromName=remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=add {@NameEntity=**NameEntity**} {@PROPERTYName=name}}, {@RemoveFromName=remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=add {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@RemoveFromName=and remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=add {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@RemoveFromName=and remove {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=add {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@RemoveFromName=remove {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@AddToName=add {@NameEntity=**NameEntity**} {@PROPERTYName=name}}{@RemoveFromName=, remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@ShowName=and show {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@AddToName=and add {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@AddToName=and add **MISSING**}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**}, {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@AddToName=and add {@NameEntity=**NameEntity**} and {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@RemoveFromName=remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}}{@AddToName=, add {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@ShowName=and show {@PROPERTYName=name}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@AddToName=and add {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@ShowName=show {@PROPERTYName=name}} {@RemoveFromName=remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@ShowName=and display {@PROPERTYName=name}} {@RemoveFromName=remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@AddToName=and add {@NameEntity=**NameEntity**} {@PROPERTYName=name}}
+- {@ShowName=display {@PROPERTYName=name}} {@RemoveFromName=remove {@NameEntity=**NameEntity**} {@PROPERTYName=name}} {@AddToName=add {@NameEntity=**NameEntity**} {@PROPERTYName=name}} 
+- **NameEntity**
+
+- Name
+
+
+> Generator: 899bf16fed0493e5eb0f1a5412e3ad7d
