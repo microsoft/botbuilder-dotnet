@@ -23,10 +23,6 @@ namespace Microsoft.Bot.Schema
     {
         public const string ContentType = "application/vnd.microsoft.card.hero";
 
-        public static explicit operator HeroCard(Attachment v)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>
