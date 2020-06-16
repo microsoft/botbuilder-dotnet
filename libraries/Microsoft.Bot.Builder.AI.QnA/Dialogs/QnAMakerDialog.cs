@@ -513,7 +513,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                     // Get active learning suggestion card activity.
                     var message = QnACardBuilder.GetSuggestionsCard(suggestedQuestions, dialogOptions.ResponseOptions.ActiveLearningCardTitle, dialogOptions.ResponseOptions.CardNoMatchText);
-                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+                    await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
 
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
                     stepContext.State.SetValue($"this.suggestedQuestions", suggestedQuestions);
@@ -646,8 +646,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
                     // Get multi-turn prompts card activity.
-                    var message = QnACardBuilder.GetQnADefaultResponse(answer, dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly, cancellationToken);
-                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+                    var message = QnACardBuilder.GetQnADefaultResponse(answer, dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                    await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
@@ -694,8 +694,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             // If response is present then show that response, else default answer.
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
-                var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly, cancellationToken);
-                await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+                var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
             }
             else
             {

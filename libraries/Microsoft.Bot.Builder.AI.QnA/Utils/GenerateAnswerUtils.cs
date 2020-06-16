@@ -156,12 +156,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
             
             if (queryOptions != null)
             {
-                if (queryOptions.ScoreThreshold != hydratedOptions.ScoreThreshold && queryOptions.ScoreThreshold != 0)
+                if (queryOptions.ScoreThreshold != 0)
                 {
                     hydratedOptions.ScoreThreshold = queryOptions.ScoreThreshold;
                 }
 
-                if (queryOptions.Top != hydratedOptions.Top && queryOptions.Top != 0)
+                if (queryOptions.Top != 0)
                 {
                     hydratedOptions.Top = queryOptions.Top;
                 }
@@ -184,10 +184,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task<QueryResults> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
-            AnswerSpanRequest answerSpanRequest = null;
+            var answerSpanRequest = new AnswerSpanRequest();
             if (options.EnablePreciseAnswer)
             {
-                answerSpanRequest = new AnswerSpanRequest { Enable = options.EnablePreciseAnswer };
+                answerSpanRequest.Enable = options.EnablePreciseAnswer;
             }
 
             var jsonRequest = JsonConvert.SerializeObject(
@@ -214,10 +214,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
-            AnswerSpanRequest answerSpanRequest = null;
+            var answerSpanRequest = new AnswerSpanRequest();
             if (options.EnablePreciseAnswer)
-            {
-                answerSpanRequest = new AnswerSpanRequest();
+            {                
                 answerSpanRequest.Enable = options.EnablePreciseAnswer;
             }
 

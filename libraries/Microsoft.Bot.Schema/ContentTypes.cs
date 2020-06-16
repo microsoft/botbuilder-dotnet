@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Bot.Schema
@@ -21,6 +22,11 @@ namespace Microsoft.Bot.Schema
     public partial class HeroCard
     {
         public const string ContentType = "application/vnd.microsoft.card.hero";
+
+        public static explicit operator HeroCard(Attachment v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>

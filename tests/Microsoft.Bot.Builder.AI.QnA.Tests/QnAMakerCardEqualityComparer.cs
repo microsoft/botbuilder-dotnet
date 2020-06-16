@@ -24,34 +24,22 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var activity1 = x.AsMessageActivity();
             var activity2 = y.AsMessageActivity();
+ 
+            int activity1AttachmentCount = 0;
+            int activity2AttachmentCount = 0;
 
-            if (activity1 == null || activity2 == null)
+            if (activity1?.Attachments != null)
             {
-                return false;
+                activity1AttachmentCount = activity1.Attachments.Count;
             }
 
-            //Return false if only one of the attachments is null.
-            if ((activity1.Attachments == null && activity2.Attachments != null) ||
-                (activity1.Attachments != null && activity2.Attachments == null))
+            if (activity2?.Attachments != null)
             {
-                return false;
+                activity2AttachmentCount = activity2.Attachments.Count;
             }
 
-            // Check for attachments only if neither of the attachments are null.
-            if (activity1.Attachments != null && activity2.Attachments != null)
-            {
-                if (activity1.Attachments.Count != activity2.Attachments.Count)
-                {
-                    return false;
-                }
-            }
-
-            if (!string.Equals(activity1.Text, activity2.Text))
-            {
-                return false;
-            }
-
-            return true;
+            return (activity1AttachmentCount == activity2AttachmentCount) &&
+                   string.Equals(activity1?.Text, activity2?.Text);
         }
 
         public int GetHashCode(IActivity obj)

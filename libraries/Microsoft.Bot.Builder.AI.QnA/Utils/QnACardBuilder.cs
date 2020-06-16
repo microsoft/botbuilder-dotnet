@@ -84,17 +84,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>IMessageActivity.</returns>
         public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
         {
-            return GetQnADefaultResponse(result, true, CancellationToken.None);
+            return GetQnADefaultResponse(result, true);
         }
 
         /// <summary>
         /// Get Answer Card.
         /// </summary>
-        /// <param name="result">Result consists of References to other answers, also called as Prompts.</param>
-        /// <param name="displayPreciseAnswerOnly">Parameter to set either of the two choices: 1. Precise answer only 2.  Precise answer and corresponding text.</param>
-        /// <param name="cancellationToken">Cancellation Token.</param>
+        /// <param name="result">Result consists of Answer, Precise Answer (Optionally) and References to other answers, also called as Prompts.</param>
+        /// <param name="displayPreciseAnswerOnly">Parameter to set either of the two choices: 1. Precise answer only 2.  Precise answer and corresponding text.</param>  
         /// <returns>Message activity for Query Result.</returns>
-        public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly, CancellationToken cancellationToken)
+        public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly)
         {
             if (result == null)
             {
@@ -104,12 +103,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var chatActivity = Activity.CreateMessageActivity();
             chatActivity.Text = result.Answer;
             
-            List<CardAction> buttonList = null;
+            var buttonList = new List<CardAction>();
             if (result?.Context?.Prompts != null &&
                 result.Context.Prompts.Any())
             {
-                buttonList = new List<CardAction>();
-
                 // Add all prompt
                 foreach (var prompt in result.Context.Prompts)
                 {
@@ -135,11 +132,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 }
             }
 
-            if (buttonList != null || !string.IsNullOrWhiteSpace(heroCardText))
+            if (buttonList.Any() || !string.IsNullOrWhiteSpace(heroCardText))
             {
                 var plCard = new HeroCard();                           
 
-                if (buttonList != null)
+                if (buttonList.Any())
                 {
                     plCard.Buttons = buttonList;
                 }
