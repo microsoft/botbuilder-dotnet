@@ -112,6 +112,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return newLG;
         }
 
+        public static IParseTree AntlrParseTemplates(string text, string id)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+
+            var input = new AntlrInputStream(text);
+            var lexer = new LGFileLexer(input);
+            lexer.RemoveErrorListeners();
+
+            var tokens = new CommonTokenStream(lexer);
+            var parser = new LGFileParser(tokens);
+            parser.RemoveErrorListeners();
+            var listener = new ErrorListener(id);
+
+            parser.AddErrorListener(listener);
+            parser.BuildParseTree = true;
+
+            return parser.file();
+        }
+
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
         /// </summary>
@@ -172,28 +194,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return (File.ReadAllText(importPath), importPath);
         }
 
-        private static IParseTree AntlrParseTemplates(string text, string id)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return null;
-            }
-
-            var input = new AntlrInputStream(text);
-            var lexer = new LGFileLexer(input);
-            lexer.RemoveErrorListeners();
-
-            var tokens = new CommonTokenStream(lexer);
-            var parser = new LGFileParser(tokens);
-            parser.RemoveErrorListeners();
-            var listener = new ErrorListener(id);
-
-            parser.AddErrorListener(listener);
-            parser.BuildParseTree = true;
-
-            return parser.file();
-        }
-
         private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null)
         {
             var resourcesFound = new HashSet<Templates>();
@@ -217,7 +217,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 catch (Exception e)
                 {
-                    var diagnostic = new Diagnostic(import.SourceRange.ParseTree.ConvertToRange(), e.Message, DiagnosticSeverity.Error, start.Id);
+                    var diagnostic = new Diagnostic(import.SourceRange.Range, e.Message, DiagnosticSeverity.Error, start.Id);
                     throw new TemplateException(e.Message, new List<Diagnostic>() { diagnostic });
                 }
 
@@ -239,7 +239,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private class TemplatesTransformer : LGFileParserBaseVisitor<object>
+        public class TemplatesTransformer : LGFileParserBaseVisitor<object>
         {
             private static readonly Regex IdentifierRegex = new Regex(@"^[0-9a-zA-Z_]+$");
             private static readonly Regex TemplateNamePartRegex = new Regex(@"^[a-zA-Z_][0-9a-zA-Z_]*$");
