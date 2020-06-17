@@ -15,7 +15,9 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// Validates JWT tokens sent to and from a Skill.
     /// </summary>
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class SkillValidation
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
         /// TO SKILL FROM BOT and TO BOT FROM SKILL: Token validation parameters when connecting a bot to a skill.
