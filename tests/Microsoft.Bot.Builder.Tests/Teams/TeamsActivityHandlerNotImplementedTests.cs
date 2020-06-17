@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Teams.Tests
 {
-    [TestClass]
     public class TeamsActivityHandlerNotImplementedTests
     {
-        [TestMethod]
+        [Fact]
         public async Task TestInvoke()
         {
             // Arrange
@@ -37,13 +36,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestFileConsentAccept()
         {
             // Arrange
@@ -76,13 +75,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestFileConsentDecline()
         {
             // Arrange
@@ -115,13 +114,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestActionableMessageExecuteAction()
         {
             // Arrange
@@ -145,13 +144,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestComposeExtensionQueryLink()
         {
             // Arrange
@@ -175,13 +174,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestComposeExtensionQuery()
         {
             // Arrange
@@ -205,13 +204,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionSelectItemAsync()
         {
             // Arrange
@@ -235,10 +234,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
         public async Task TestMessagingExtensionSubmitAction()
@@ -264,13 +263,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionSubmitActionPreviewActionEdit()
         {
             // Arrange
@@ -297,13 +296,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionSubmitActionPreviewActionSend()
         {
             // Arrange
@@ -330,13 +329,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionFetchTask()
         {
             // Arrange
@@ -360,13 +359,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionConfigurationQuerySettingsUrl()
         {
             // Arrange
@@ -389,13 +388,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionConfigurationSetting()
         {
             // Arrange
@@ -418,13 +417,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestTaskModuleFetch()
         {
             // Arrange
@@ -448,13 +447,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestTaskModuleSubmit()
         {
             // Arrange
@@ -478,13 +477,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestFileConsentAcceptImplemented()
         {
             // Arrange
@@ -517,13 +516,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestFileConsentDeclineImplemented()
         {
             // Arrange
@@ -556,13 +555,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionSubmitActionPreviewActionEditImplemented()
         {
             // Arrange
@@ -589,13 +588,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionSubmitActionPreviewActionSendImplemented()
         {
             // Arrange
@@ -622,10 +621,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
         private class TestActivityHandler : TeamsActivityHandler
