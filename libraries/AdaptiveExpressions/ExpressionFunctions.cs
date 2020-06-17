@@ -2927,7 +2927,7 @@ namespace AdaptiveExpressions
                             var count = Convert.ToInt32(args[1]);
                             if (count <= 0)
                             {
-                                error = $"The second parameter should be more than zero";
+                                error = $"The second parameter ${args[1]} should be more than zero";
                             }
                             else
                             {
@@ -2954,7 +2954,7 @@ namespace AdaptiveExpressions
                         object result = null;
                         if (args.Count == 2 && !args[1].IsInteger())
                         {
-                            error = $"The second {args[1]} parameter must be an integer.";
+                            error = $"The second parameter ${args[1]} must be an integer.";
                         }
 
                         if (error == null)
@@ -2962,7 +2962,7 @@ namespace AdaptiveExpressions
                             var digits = args.Count == 2 ? Convert.ToInt32(args[1]) : 0;
                             if (digits < 0 || digits > 15)
                             {
-                                error = $"The second parameter {args[1]} must be an integer between 0 and 15;";
+                                error = $"The second parameter {args[1]} must be an integer between 0 and 15.";
                             }
                             else
                             {
