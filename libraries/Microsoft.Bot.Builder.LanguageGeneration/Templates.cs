@@ -355,10 +355,38 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception(TemplateErrors.TemplateExist(templateName));
             }
 
+            // clear diagnostic
+            this.Diagnostics = new List<Diagnostic>();
+
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
-            var newContent = $"{Content}{newLine}{templateNameLine}{newLine}{newTemplateBody}";
-            Initialize(ParseText(newContent, Id, ImportResolver));
+            var content = $"{templateNameLine}{newLine}{newTemplateBody}";
+
+            // update content
+            this.Content = $"{Content}{newLine}{templateNameLine}{newLine}{newTemplateBody}";
+
+            var originalEmptyLG = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
+            var updatedTemplate = new TemplatesTransformer(originalEmptyLG).Transform(AntlrParseTemplates(content, Id));
+
+            var originStartLine = this.Count == 0 ? 0 : this.Last().SourceRange.Range.End.Line;
+            originalEmptyLG.Diagnostics.ToList().ForEach(u =>
+            {
+                u.Range.Start.Line += originStartLine;
+                this.Diagnostics.Add(u);
+            });
+
+            var newTemplate = updatedTemplate.First();
+            if (newTemplate == null)
+            {
+                return this;
+            }
+
+            var lineLength = newTemplate.SourceRange.Range.End.Line - newTemplate.SourceRange.Range.Start.Line;
+            newTemplate.SourceRange.Range.Start.Line = originStartLine + 1;
+            newTemplate.SourceRange.Range.End.Line = lineLength + originStartLine + 1;
+            this.Add(newTemplate);
+
+            new StaticChecker(this).Check().ForEach(u => this.Diagnostics.Add(u));
 
             return this;
         }
@@ -371,13 +399,33 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public Templates DeleteTemplate(string templateName)
         {
             var template = this.FirstOrDefault(u => u.Name == templateName);
-            if (template != null)
+            if (template == null)
             {
-                var startLine = template.SourceRange.Range.Start.Line - 1;
-                var stopLine = template.SourceRange.Range.End.Line - 1;
-                var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-                Initialize(ParseText(newContent, Id, ImportResolver));
+                return this;
             }
+
+            var startLine = template.SourceRange.Range.Start.Line - 1;
+            var stopLine = template.SourceRange.Range.End.Line - 1;
+            this.Content = ReplaceRangeContent(Content, startLine, stopLine, null);
+
+            var lineOffset = template.SourceRange.Range.End.Line - template.SourceRange.Range.Start.Line + 1;
+            var hasFound = false;
+            for (var i = 0; i < this.Count; i++)
+            {
+                if (hasFound)
+                {
+                    this[i].SourceRange.Range.Start.Line -= lineOffset;
+                    this[i].SourceRange.Range.End.Line -= lineOffset;
+                }
+                else if (this[i].Name == templateName)
+                {
+                    hasFound = true;
+                }
+            }
+
+            this.Remove(template);
+
+            new StaticChecker(this).Check().ForEach(u => this.Diagnostics.Add(u));
 
             return this;
         }
