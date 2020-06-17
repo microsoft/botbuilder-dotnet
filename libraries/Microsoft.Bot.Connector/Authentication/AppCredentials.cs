@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Authenticator abstraction used to obtain tokens through the Client Credentials OAuth 2.0 flow.
         /// </summary>
-        private readonly Lazy<IAuthenticator> authenticator;
+        private Lazy<IAuthenticator> authenticator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppCredentials"/> class.
@@ -52,7 +53,6 @@ namespace Microsoft.Bot.Connector.Authentication
         public AppCredentials(string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
         {
             OAuthScope = string.IsNullOrWhiteSpace(oAuthScope) ? AuthenticationConstants.ToChannelFromBotOAuthScope : oAuthScope;
-            authenticator = BuildIAuthenticator();
             ChannelAuthTenant = channelAuthTenant;
             CustomHttpClient = customHttpClient;
             Logger = logger;
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Connector.Authentication
             set
             {
                 // Advanced user only, see https://aka.ms/bots/tenant-restriction
-                var endpointUrl = string.Format(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, value);
+                var endpointUrl = string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, value);
 
                 if (Uri.TryCreate(endpointUrl, UriKind.Absolute, out var result))
                 {
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// The OAuth endpoint to use.
         /// </value>
-        public virtual string OAuthEndpoint => string.Format(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, ChannelAuthTenant);
+        public virtual string OAuthEndpoint => string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, ChannelAuthTenant);
 
         /// <summary>
         /// Gets the OAuth scope to use.
@@ -200,6 +200,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <remarks>If the task is successful, the result contains the access token string.</remarks>
         public async Task<string> GetTokenAsync(bool forceRefresh = false)
         {
+            authenticator ??= BuildIAuthenticator();
             var token = await authenticator.Value.GetTokenAsync(forceRefresh).ConfigureAwait(false);
             return token.AccessToken;
         }
@@ -242,7 +243,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
         }
 
-        private bool ShouldSetToken(HttpRequestMessage request)
+        private static bool ShouldSetToken(HttpRequestMessage request)
         {
             if (IsTrustedUrl(request.RequestUri))
             {
