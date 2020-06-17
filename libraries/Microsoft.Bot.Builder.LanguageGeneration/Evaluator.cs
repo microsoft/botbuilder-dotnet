@@ -23,9 +23,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string LGType = "lgType";
 
-        // PCRE: (?<!\\)\${(('(\\('|\\)|[^'])*?')|("(\\("|\\)|[^"])*?")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'"`])|({\s*}))+}?
-        public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
-        public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions lgOptions;
@@ -507,8 +504,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(isTemplate, ExpressionFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
             }
 
+            const string expandText = "expandText";
+
+            if (name.Equals(expandText))
+            {
+                return new ExpressionEvaluator(expandText, ExpressionFunctions.Apply(this.ExpandText()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
+            }
+
             return null;
         };
+
+        private Func<IReadOnlyList<object>, object> ExpandText()
+       => (IReadOnlyList<object> args) =>
+       {
+           var stringContent = args[0].ToString();
+           var newScope = CurrentTarget().Scope;
+           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+           return newTemplates.EvaluateText(stringContent, newScope, lgOptions);
+       };
 
         private Func<IReadOnlyList<object>, object> IsTemplate()
        => (IReadOnlyList<object> args) =>
@@ -536,9 +549,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
 
-           var evaluator = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-           var result = ExpressionRecognizeRegex.Replace(stringContent, evaluator);
-           return result.Escape();
+           var newScope = CurrentTarget().Scope;
+           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+           return newTemplates.EvaluateText(stringContent, newScope, lgOptions);
        };
 
         private string GetResourcePath(string filePath)
