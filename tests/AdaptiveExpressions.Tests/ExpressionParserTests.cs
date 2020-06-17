@@ -125,22 +125,13 @@ namespace AdaptiveExpressions.Tests
             { 
                 "json2", @"{
                           'Enabled': true,
-                          'Roles': [ 'User', 'Admin' ]
+                          'Roles': [ 'Customer', 'Admin' ]
                         }"
             },
             {
                 "json3", @"{
                           'Age': 36,
                         }"
-            },
-            {
-                "jarray1", @"['a', 'b']"
-            },
-            {
-                "jarray2", @"['c', 'd']"
-            },
-            {
-                "jarray3", @"['e', 'f']"
             },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
             {
@@ -945,8 +936,8 @@ namespace AdaptiveExpressions.Tests
             Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
             Test("setProperty({}, 'name', user.nickname).name", "John"),
             Test("addProperty({}, 'name', user.name).name", null),
-            Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"User\",\"Admin\"]}"),
-            Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"User\",\"Admin\"],\"Age\":36}"),
+            Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"]}"),
+            Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"],\"Age\":36}"),
             #endregion
 
             #region  Memory access

@@ -4501,25 +4501,18 @@ namespace AdaptiveExpressions
                                 {
                                     object result = null;
                                     string error = null;
-                                    if (args[0] is JObject)
+                                    if (args[0] is JObject && args[1] is JObject)
                                     {
-                                        if (!(args[1] is JObject))
+                                        (args[0] as JObject).Merge(args[1] as JObject, new JsonMergeSettings
                                         {
-                                            error = $"The parameter {args[1]} must also be a JSON object.";
-                                        }
-                                        else
-                                        {
-                                            (args[0] as JObject).Merge(args[1] as JObject, new JsonMergeSettings
-                                            {
-                                                MergeArrayHandling = MergeArrayHandling.Replace
-                                            });
+                                            MergeArrayHandling = MergeArrayHandling.Replace
+                                        });
 
-                                            result = args[0];
-                                        }
+                                        result = args[0];
                                     }
                                     else
                                     {
-                                        error = $"The parameter {args[0]} must be a JSON object.";
+                                        error = $"The arguments {args[0]} and {args[1]} must be a JSON objects.";
                                     }
 
                                     return (result, error);
