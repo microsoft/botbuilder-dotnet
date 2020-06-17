@@ -94,10 +94,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether Precise Answer needs to be provided from source text or not.
+        /// Gets or sets a value indicating whether to enable PreciseAnswer generation.
         /// </summary>
         /// <value>
-        /// To enable Precise Answer or not.
+        /// Choice whether to generate precise answer or not.
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
         public bool EnablePreciseAnswer { get; set; }

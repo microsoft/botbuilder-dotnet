@@ -109,10 +109,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public Metadata[] MetadataBoost { get; set; }
 
         /// <summary>
-        /// Gets or sets AnswerSpanRequest of the previous turn.
+        /// Gets or sets AnswerSpanRequest.
+        /// Users can request PreciseAnswer from QnAMaker using this configuration.
         /// </summary>
         /// <value>
-        /// The AnswerSpanRequest.
+        /// AnswerSpanRequest for requesting PreciseAnswer.
         /// </value>
         [JsonProperty("answerSpanRequest")]
         public AnswerSpanRequest AnswerSpanRequest { get; set; }

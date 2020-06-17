@@ -78,10 +78,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public QnAResponseContext Context { get; set; }
 
         /// <summary>
-        /// Gets or sets AnswerSpan of the previous turn.
+        /// Gets or sets details of PreciseAnswer.
         /// </summary>
         /// <value>
-        /// The answerspan value.
+        /// The PreciseAnswer related information in the Answer Text.
         /// </value>
         [JsonProperty("answerSpan")]
         public AnswerSpanResponse AnswerSpan { get; set; }

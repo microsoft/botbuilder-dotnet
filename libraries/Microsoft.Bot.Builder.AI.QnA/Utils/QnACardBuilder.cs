@@ -90,8 +90,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Get Answer Card.
         /// </summary>
-        /// <param name="result">Result consists of Answer, Precise Answer (Optionally) and References to other answers, also called as Prompts.</param>
-        /// <param name="displayPreciseAnswerOnly">Parameter to set either of the two choices: 1. Precise answer only 2.  Precise answer and corresponding text.</param>  
+        /// <param name="result">Result to be displayed.</param>
+        /// <param name="displayPreciseAnswerOnly">Choice whether to display Precise Answer Only or source text along with Precise Answer.</param>  
         /// <returns>Message activity for Query Result.</returns>
         public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly)
         {
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             if (result?.Context?.Prompts != null &&
                 result.Context.Prompts.Any())
             {
-                // Add all prompt
+                // Add all prompts
                 foreach (var prompt in result.Context.Prompts)
                 {
                     buttonList.Add(
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 chatActivity.Text = result.AnswerSpan.Text;
 
-                // When the configuration is set to display precise answer
+                // When the configuration is set to display precise answer only
                 if (!displayPreciseAnswerOnly)
                 {
                     heroCardText = result.Answer;
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (buttonList.Any() || !string.IsNullOrWhiteSpace(heroCardText))
             {
-                var plCard = new HeroCard();                           
+                var plCard = new HeroCard();  
 
                 if (buttonList.Any())
                 {

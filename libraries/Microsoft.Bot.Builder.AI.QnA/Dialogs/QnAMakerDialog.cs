@@ -294,7 +294,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// Gets or sets a value indicating whether to enable PreciseAnswer generation. 
         /// </summary>
         /// <value>
-        /// A value indicating user's choice between precise answer and full text in response to QnAMaker GenerateAnswer query.
+        /// Choice whether to generate precise answer or not.
         /// </value>
         [JsonProperty("enablePreciseAnswer")]
         public BoolExpression EnablePreciseAnswer { get; set; } = false;
@@ -656,13 +656,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return await stepContext.NextAsync(stepContext.Result, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Gets the options the dialog will use to display query results to the user.
-        /// </summary>
-        /// <param name="stepContext">The <see cref="WaterfallStepContext"/> for the current turn of conversation.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> for the current turn of conversation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        /// <remarks>If the task is successful, the result contains the <see cref="DialogTurnResult"/> as per user's choice.</remarks>
         private async Task<DialogTurnResult> DisplayQnAResultAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);

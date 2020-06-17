@@ -60,13 +60,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .WithContent("{\"question\":\"QnaMaker_ReturnsAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
-                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
-                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));   
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .WithContent("{\"question\":\"QnaMaker_ReturnsNoAnswer\",\"top\":3,\"strictFilters\":[{\"name\":\"dialogName\",\"value\":\"outer\"}],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnsNoAnswer.json"));
