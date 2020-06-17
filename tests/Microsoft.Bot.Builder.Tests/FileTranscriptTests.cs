@@ -3,7 +3,7 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -30,43 +30,43 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_BadArgs()
         {
             await BadArgs();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_LogActivity()
         {
             await LogActivity();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_LogMultipleActivities()
         {
             await LogMultipleActivities();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_GetConversationActivities()
         {
             await GetTranscriptActivities();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_GetConversationActivitiesStartDate()
         {
             await GetTranscriptActivitiesStartDate();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_ListConversations()
         {
             await ListTranscripts();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_DeleteConversation()
         {
             await DeleteTranscript();

@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Connector;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Tests
 
     public class Integration
     {
-        [TestMethod]
+        [Fact]
         public void CheckSerializerSettings()
         {
             // used in the integration layer

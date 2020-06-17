@@ -8,7 +8,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests

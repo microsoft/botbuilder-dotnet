@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -108,9 +108,9 @@ namespace Microsoft.Bot.Builder.Tests
             await Store.LogActivityAsync(activity);
 
             var results = await Store.GetTranscriptActivitiesAsync("test", conversationId);
-            Assert.AreEqual(1, results.Items.Length);
+            Assert.Equal(1, results.Items.Length);
 
-            Assert.AreEqual(JsonConvert.SerializeObject(activity), JsonConvert.SerializeObject(results.Items[0]));
+            Assert.Equal(JsonConvert.SerializeObject(activity), JsonConvert.SerializeObject(results.Items[0]));
         }
 
         public async Task LogMultipleActivities()
@@ -163,31 +163,31 @@ namespace Microsoft.Bot.Builder.Tests
 
             // make sure other channels and conversations don't return results
             var pagedResult = await Store.GetTranscriptActivitiesAsync("bogus", conversationId);
-            Assert.IsNull(pagedResult.ContinuationToken);
-            Assert.AreEqual(0, pagedResult.Items.Length);
+            Assert.Null(pagedResult.ContinuationToken);
+            Assert.Equal(0, pagedResult.Items.Length);
 
             // make sure other channels and conversations don't return results
             pagedResult = await Store.GetTranscriptActivitiesAsync("test", "bogus");
-            Assert.IsNull(pagedResult.ContinuationToken);
-            Assert.AreEqual(0, pagedResult.Items.Length);
+            Assert.Null(pagedResult.ContinuationToken);
+            Assert.Equal(0, pagedResult.Items.Length);
 
             pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId);
-            Assert.IsNull(pagedResult.ContinuationToken);
-            Assert.AreEqual(activities.Count, pagedResult.Items.Length);
+            Assert.Null(pagedResult.ContinuationToken);
+            Assert.Equal(activities.Count, pagedResult.Items.Length);
 
             int indexActivity = 0;
             foreach (var result in pagedResult.Items.OrderBy(result => result.Timestamp))
             {
-                Assert.AreEqual(JsonConvert.SerializeObject(activities[indexActivity++]), JsonConvert.SerializeObject(result));
+                Assert.Equal(JsonConvert.SerializeObject(activities[indexActivity++]), JsonConvert.SerializeObject(result));
             }
 
             pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId, startDate: start + TimeSpan.FromMinutes(5));
-            Assert.AreEqual(activities.Count / 2, pagedResult.Items.Length);
+            Assert.Equal(activities.Count / 2, pagedResult.Items.Length);
 
             indexActivity = 5;
             foreach (var result in pagedResult.Items.OrderBy(result => result.Timestamp))
             {
-                Assert.AreEqual(JsonConvert.SerializeObject(activities[indexActivity++]), JsonConvert.SerializeObject(result));
+                Assert.Equal(JsonConvert.SerializeObject(activities[indexActivity++]), JsonConvert.SerializeObject(result));
             }
         }
 
@@ -214,16 +214,16 @@ namespace Microsoft.Bot.Builder.Tests
             var pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId);
             var pagedResult2 = await Store.GetTranscriptActivitiesAsync("test", conversationId2);
 
-            Assert.AreEqual(activities.Count, pagedResult.Items.Length);
-            Assert.AreEqual(activities.Count, pagedResult2.Items.Length);
+            Assert.Equal(activities.Count, pagedResult.Items.Length);
+            Assert.Equal(activities.Count, pagedResult2.Items.Length);
 
             await Store.DeleteTranscriptAsync("test", conversationId);
 
             pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId);
             pagedResult2 = await Store.GetTranscriptActivitiesAsync("test", conversationId2);
 
-            Assert.AreEqual(0, pagedResult.Items.Length);
-            Assert.AreEqual(activities.Count, pagedResult2.Items.Length);
+            Assert.Equal(0, pagedResult.Items.Length);
+            Assert.Equal(activities.Count, pagedResult2.Items.Length);
         }
 
         public async Task GetTranscriptActivities()
@@ -245,8 +245,8 @@ namespace Microsoft.Bot.Builder.Tests
             do
             {
                 pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId, pagedResult?.ContinuationToken);
-                Assert.IsNotNull(pagedResult);
-                Assert.IsNotNull(pagedResult.Items);
+                Assert.NotNull(pagedResult);
+                Assert.NotNull(pagedResult.Items);
 
                 // NOTE: Assumes page size is consistent
                 if (pageSize == 0)
@@ -255,7 +255,7 @@ namespace Microsoft.Bot.Builder.Tests
                 }
                 else if (pageSize == pagedResult.Items.Count())
                 {
-                    Assert.IsTrue(!string.IsNullOrEmpty(pagedResult.ContinuationToken));
+                    Assert.True(!string.IsNullOrEmpty(pagedResult.ContinuationToken));
                 }
 
                 foreach (var item in pagedResult.Items)
@@ -266,11 +266,11 @@ namespace Microsoft.Bot.Builder.Tests
             }
             while (pagedResult.ContinuationToken != null);
 
-            Assert.AreEqual(activities.Count(), seen.Count);
+            Assert.Equal(activities.Count(), seen.Count);
 
             foreach (var activity in activities)
             {
-                Assert.IsTrue(seen.Contains(activity.Id));
+                Assert.True(seen.Contains(activity.Id));
             }
         }
 
@@ -294,8 +294,8 @@ namespace Microsoft.Bot.Builder.Tests
             do
             {
                 pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId, pagedResult?.ContinuationToken, startDate);
-                Assert.IsNotNull(pagedResult);
-                Assert.IsNotNull(pagedResult.Items);
+                Assert.NotNull(pagedResult);
+                Assert.NotNull(pagedResult.Items);
 
                 // NOTE: Assumes page size is consistent
                 if (pageSize == 0)
@@ -304,7 +304,7 @@ namespace Microsoft.Bot.Builder.Tests
                 }
                 else if (pageSize == pagedResult.Items.Count())
                 {
-                    Assert.IsTrue(!string.IsNullOrEmpty(pagedResult.ContinuationToken));
+                    Assert.True(!string.IsNullOrEmpty(pagedResult.ContinuationToken));
                 }
 
                 foreach (var item in pagedResult.Items)
@@ -315,11 +315,11 @@ namespace Microsoft.Bot.Builder.Tests
             }
             while (pagedResult.ContinuationToken != null);
 
-            Assert.AreEqual(activities.Count() / 2, seen.Count);
+            Assert.Equal(activities.Count() / 2, seen.Count);
 
             foreach (var activity in activities.Where(a => a.Timestamp >= startDate))
             {
-                Assert.IsTrue(seen.Contains(activity.Id));
+                Assert.True(seen.Contains(activity.Id));
             }
 
             foreach (var activity in activities.Where(a => a.Timestamp < startDate))
@@ -356,8 +356,8 @@ namespace Microsoft.Bot.Builder.Tests
             do
             {
                 pagedResult = await Store.ListTranscriptsAsync("test", pagedResult?.ContinuationToken);
-                Assert.IsNotNull(pagedResult);
-                Assert.IsNotNull(pagedResult.Items);
+                Assert.NotNull(pagedResult);
+                Assert.NotNull(pagedResult.Items);
 
                 // NOTE: Assumes page size is consistent
                 if (pageSize == 0)
@@ -366,7 +366,7 @@ namespace Microsoft.Bot.Builder.Tests
                 }
                 else if (pageSize == pagedResult.Items.Count())
                 {
-                    Assert.IsTrue(!string.IsNullOrEmpty(pagedResult.ContinuationToken));
+                    Assert.True(!string.IsNullOrEmpty(pagedResult.ContinuationToken));
                 }
 
                 foreach (var item in pagedResult.Items)
@@ -380,11 +380,11 @@ namespace Microsoft.Bot.Builder.Tests
             }
             while (pagedResult.ContinuationToken != null);
 
-            Assert.AreEqual(conversationIds.Count(), seen.Count);
+            Assert.Equal(conversationIds.Count(), seen.Count);
 
             foreach (var conversationId in conversationIds)
             {
-                Assert.IsTrue(seen.Contains(conversationId));
+                Assert.True(seen.Contains(conversationId));
             }
         }
 

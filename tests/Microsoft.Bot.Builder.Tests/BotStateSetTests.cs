@@ -3,7 +3,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("State Management")]
     public class BotStateSetTests
     {
-        [TestMethod]
+        [Fact]
         public void BotStateSet_Properties()
         {
             var storage = new MemoryStorage();
@@ -26,12 +26,12 @@ namespace Microsoft.Bot.Builder.Tests
 
             var stateSet = new BotStateSet(userState, convState);
 
-            Assert.AreEqual(stateSet.BotStates.Count, 2);
-            Assert.IsNotNull(stateSet.BotStates.OfType<UserState>().First());
-            Assert.IsNotNull(stateSet.BotStates.OfType<ConversationState>().First());
+            Assert.Equal(stateSet.BotStates.Count, 2);
+            Assert.NotNull(stateSet.BotStates.OfType<UserState>().First());
+            Assert.NotNull(stateSet.BotStates.OfType<ConversationState>().First());
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BotStateSet_LoadAsync()
         {
             var storage = new MemoryStorage();
@@ -48,12 +48,12 @@ namespace Microsoft.Bot.Builder.Tests
 
                 var stateSet = new BotStateSet(userState, convState);
 
-                Assert.AreEqual(stateSet.BotStates.Count, 2);
+                Assert.Equal(stateSet.BotStates.Count, 2);
 
                 var userCount = await userProperty.GetAsync(turnContext, () => 0);
-                Assert.AreEqual(0, userCount);
+                Assert.Equal(0, userCount);
                 var convCount = await convProperty.GetAsync(turnContext, () => 0);
-                Assert.AreEqual(0, convCount);
+                Assert.Equal(0, convCount);
 
                 await userProperty.SetAsync(turnContext, 10);
                 await convProperty.SetAsync(turnContext, 20);
@@ -75,13 +75,13 @@ namespace Microsoft.Bot.Builder.Tests
                 await stateSet.LoadAllAsync(turnContext);
 
                 var userCount = await userProperty.GetAsync(turnContext, () => 0);
-                Assert.AreEqual(10, userCount);
+                Assert.Equal(10, userCount);
                 var convCount = await convProperty.GetAsync(turnContext, () => 0);
-                Assert.AreEqual(20, convCount);
+                Assert.Equal(20, convCount);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BotStateSet_ReturnsDefaultForNullValueType()
         {
             var storage = new MemoryStorage();
@@ -98,24 +98,24 @@ namespace Microsoft.Bot.Builder.Tests
 
             var stateSet = new BotStateSet(userState, convState);
 
-            Assert.AreEqual(stateSet.BotStates.Count, 2);
+            Assert.Equal(stateSet.BotStates.Count, 2);
 
             var userObject = await userProperty.GetAsync(turnContext, () => null);
-            Assert.AreEqual(null, userObject);
+            Assert.Equal(null, userObject);
 
             // Ensure we also get null on second attempt
             userObject = await userProperty.GetAsync(turnContext, () => null);
-            Assert.AreEqual(null, userObject);
+            Assert.Equal(null, userObject);
 
             var convObject = await convProperty.GetAsync(turnContext, () => null);
-            Assert.AreEqual(null, convObject);
+            Assert.Equal(null, convObject);
 
             // Ensure we also get null on second attempt
             convObject = await convProperty.GetAsync(turnContext, () => null);
-            Assert.AreEqual(null, convObject);
+            Assert.Equal(null, convObject);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BotStateSet_SaveAsync()
         {
             var storage = new MemoryStorage();
@@ -130,14 +130,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             var stateSet = new BotStateSet(userState, convState);
 
-            Assert.AreEqual(stateSet.BotStates.Count, 2);
+            Assert.Equal(stateSet.BotStates.Count, 2);
             var context = TestUtilities.CreateEmptyContext();
             await stateSet.LoadAllAsync(context);
 
             var userCount = await userProperty.GetAsync(context, () => 0);
-            Assert.AreEqual(0, userCount);
+            Assert.Equal(0, userCount);
             var convCount = await convProperty.GetAsync(context, () => 0);
-            Assert.AreEqual(0, convCount);
+            Assert.Equal(0, convCount);
 
             await userProperty.SetAsync(context, 10);
             await convProperty.SetAsync(context, 20);
@@ -145,10 +145,10 @@ namespace Microsoft.Bot.Builder.Tests
             await stateSet.SaveAllChangesAsync(context);
 
             userCount = await userProperty.GetAsync(context, () => 0);
-            Assert.AreEqual(10, userCount);
+            Assert.Equal(10, userCount);
 
             convCount = await convProperty.GetAsync(context, () => 0);
-            Assert.AreEqual(20, convCount);
+            Assert.Equal(20, convCount);
         }
 
         internal class SomeComplexType

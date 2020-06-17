@@ -4,7 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Russian Doll Middleware, Nested Middleware sets")]
     public class MiddlewareSetTests
     {
-        [TestMethod]
+        [Fact]
         public async Task NestedSet_OnReceive()
         {
             bool innerOnReceiveCalled = false;
@@ -29,10 +29,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             await outer.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
 
-            Assert.IsTrue(innerOnReceiveCalled, "Inner Middleware Receive was not called.");
+            Assert.True(innerOnReceiveCalled, "Inner Middleware Receive was not called.");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NoMiddleware()
         {
             MiddlewareSet m = new MiddlewareSet();
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Tests
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NoMiddlewareWithDelegate()
         {
             var m = new MiddlewareSet();
@@ -54,10 +54,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             // No middleware. Should not explode.
             await m.ReceiveActivityWithStatusAsync(null, CallMe, default(CancellationToken));
-            Assert.IsTrue(wasCalled, "Delegate was not called");
+            Assert.True(wasCalled, "Delegate was not called");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OneMiddlewareItem()
         {
             var simple = new WasCalledMiddlware();
@@ -74,11 +74,11 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.IsFalse(simple.Called);
             await m.ReceiveActivityWithStatusAsync(null, CallMe, default(CancellationToken));
-            Assert.IsTrue(simple.Called);
-            Assert.IsTrue(wasCalled, "Delegate was not called");
+            Assert.True(simple.Called);
+            Assert.True(wasCalled, "Delegate was not called");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OneMiddlewareItemWithDelegate()
         {
             WasCalledMiddlware simple = new WasCalledMiddlware();
@@ -88,10 +88,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.IsFalse(simple.Called);
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
-            Assert.IsTrue(simple.Called);
+            Assert.True(simple.Called);
         }
 
-        [TestMethod]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public async Task BubbleUncaughtException()
         {
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Fail("Should never have gotten here");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TwoMiddlewareItems()
         {
             WasCalledMiddlware one = new WasCalledMiddlware();
@@ -116,11 +116,11 @@ namespace Microsoft.Bot.Builder.Tests
             m.Use(two);
 
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
-            Assert.IsTrue(one.Called);
-            Assert.IsTrue(two.Called);
+            Assert.True(one.Called);
+            Assert.True(two.Called);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TwoMiddlewareItemsWithDelegate()
         {
             WasCalledMiddlware one = new WasCalledMiddlware();
@@ -138,12 +138,12 @@ namespace Microsoft.Bot.Builder.Tests
             m.Use(two);
 
             await m.ReceiveActivityWithStatusAsync(null, CallMe, default(CancellationToken));
-            Assert.IsTrue(one.Called);
-            Assert.IsTrue(two.Called);
-            Assert.IsTrue(called == 1, "Incorrect number of calls to Delegate");
+            Assert.True(one.Called);
+            Assert.True(two.Called);
+            Assert.True(called == 1, "Incorrect number of calls to Delegate");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TwoMiddlewareItemsInOrder()
         {
             bool called1 = false;
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             CallMeMiddlware two = new CallMeMiddlware(() =>
             {
-                Assert.IsTrue(called1, "First Middleware was not called");
+                Assert.True(called1, "First Middleware was not called");
                 called2 = true;
             });
 
@@ -166,11 +166,11 @@ namespace Microsoft.Bot.Builder.Tests
             m.Use(two);
 
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
-            Assert.IsTrue(called1);
-            Assert.IsTrue(called2);
+            Assert.True(called1);
+            Assert.True(called2);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Status_OneMiddlewareRan()
         {
             bool called1 = false;
@@ -191,11 +191,11 @@ namespace Microsoft.Bot.Builder.Tests
                 },
                 default(CancellationToken));
 
-            Assert.IsTrue(called1);
-            Assert.IsTrue(didAllRun);
+            Assert.True(called1);
+            Assert.True(didAllRun);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Status_RunAtEndEmptyPipeline()
         {
             var m = new MiddlewareSet();
@@ -211,10 +211,10 @@ namespace Microsoft.Bot.Builder.Tests
                     return Task.CompletedTask;
                 },
                 default(CancellationToken));
-            Assert.IsTrue(didAllRun);
+            Assert.True(didAllRun);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Status_TwoItemsOneDoesNotCallNext()
         {
             bool called1 = false;
@@ -228,7 +228,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var two = new DoNotCallNextMiddleware(() =>
             {
-                Assert.IsTrue(called1, "First Middleware was not called");
+                Assert.True(called1, "First Middleware was not called");
                 called2 = true;
             });
 
@@ -245,14 +245,14 @@ namespace Microsoft.Bot.Builder.Tests
                     return Task.CompletedTask;
                 },
                 default(CancellationToken));
-            Assert.IsTrue(called1);
-            Assert.IsTrue(called2);
+            Assert.True(called1);
+            Assert.True(called2);
 
             // The 2nd middleware did not call next, so the "final" action should not have run.
             Assert.IsFalse(didAllRun);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Status_OneEntryThatDoesNotCallNext()
         {
             bool called1 = false;
@@ -273,14 +273,14 @@ namespace Microsoft.Bot.Builder.Tests
                 },
                 default(CancellationToken));
 
-            Assert.IsTrue(called1);
+            Assert.True(called1);
 
             // Our "Final" action MUST NOT have been called, as the Middlware Pipeline
             // didn't complete.
             Assert.IsFalse(didAllRun);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AnonymousMiddleware()
         {
             bool didRun = false;
@@ -294,10 +294,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.IsFalse(didRun);
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
-            Assert.IsTrue(didRun);
+            Assert.True(didRun);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TwoAnonymousMiddleware()
         {
             bool didRun1 = false;
@@ -316,11 +316,11 @@ namespace Microsoft.Bot.Builder.Tests
             }));
 
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
-            Assert.IsTrue(didRun1);
-            Assert.IsTrue(didRun2);
+            Assert.True(didRun1);
+            Assert.True(didRun2);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TwoAnonymousMiddlewareInOrder()
         {
             bool didRun1 = false;
@@ -335,17 +335,17 @@ namespace Microsoft.Bot.Builder.Tests
             }));
             m.Use(new AnonymousReceiveMiddleware(async (context, next, cancellationToken) =>
             {
-                Assert.IsTrue(didRun1, "Looks like the 1nd one has not yet run");
+                Assert.True(didRun1, "Looks like the 1nd one has not yet run");
                 didRun2 = true;
                 await next(cancellationToken);
             }));
 
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
-            Assert.IsTrue(didRun1);
-            Assert.IsTrue(didRun2);
+            Assert.True(didRun1);
+            Assert.True(didRun2);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MixedMiddlewareInOrderAnonymousFirst()
         {
             bool didRun1 = false;
@@ -359,23 +359,23 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsFalse(didRun2, "Looks like the second middleware was already run");
                 didRun1 = true;
                 await next(cancellationToken);
-                Assert.IsTrue(didRun2, "Second middleware should have completed running");
+                Assert.True(didRun2, "Second middleware should have completed running");
             }));
 
             m.Use(
                 new CallMeMiddlware(() =>
                 {
-                    Assert.IsTrue(didRun1, "First middleware should have already been called");
+                    Assert.True(didRun1, "First middleware should have already been called");
                     Assert.IsFalse(didRun2, "Second middleware should not have been invoked yet");
                     didRun2 = true;
                 }));
 
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
-            Assert.IsTrue(didRun1);
-            Assert.IsTrue(didRun2);
+            Assert.True(didRun1);
+            Assert.True(didRun2);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MixedMiddlewareInOrderAnonymousLast()
         {
             bool didRun1 = false;
@@ -393,17 +393,17 @@ namespace Microsoft.Bot.Builder.Tests
 
             m.Use(new AnonymousReceiveMiddleware(async (context, next, cancellationToken) =>
             {
-                Assert.IsTrue(didRun1, "First middleware has not been run yet");
+                Assert.True(didRun1, "First middleware has not been run yet");
                 didRun2 = true;
                 await next(cancellationToken);
             }));
 
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
-            Assert.IsTrue(didRun1);
-            Assert.IsTrue(didRun2);
+            Assert.True(didRun1);
+            Assert.True(didRun2);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RunCodeBeforeAndAfter()
         {
             bool didRun1 = false;
@@ -417,25 +417,25 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsFalse(didRun1, "Looks like the 1st middleware has already run");
                 didRun1 = true;
                 await next(cancellationToken);
-                Assert.IsTrue(didRun1, "The 2nd middleware should have run now.");
+                Assert.True(didRun1, "The 2nd middleware should have run now.");
                 codeafter2run = true;
             }));
 
             m.Use(new AnonymousReceiveMiddleware(async (context, next, cancellationToken) =>
             {
-                Assert.IsTrue(didRun1, "Looks like the 1st middleware has not been run");
+                Assert.True(didRun1, "Looks like the 1st middleware has not been run");
                 Assert.IsFalse(codeafter2run, "The code that runs after middleware 2 is complete has already run.");
                 didRun2 = true;
                 await next(cancellationToken);
             }));
 
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
-            Assert.IsTrue(didRun1);
-            Assert.IsTrue(didRun2);
-            Assert.IsTrue(codeafter2run);
+            Assert.True(didRun1);
+            Assert.True(didRun2);
+            Assert.True(codeafter2run);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CatchAnExceptionViaMiddlware()
         {
             var m = new MiddlewareSet();
@@ -450,7 +450,7 @@ namespace Microsoft.Bot.Builder.Tests
                 }
                 catch (Exception ex)
                 {
-                    Assert.IsTrue(ex.Message == "test");
+                    Assert.True(ex.Message == "test");
                     caughtException = true;
                 }
             }));
@@ -461,7 +461,7 @@ namespace Microsoft.Bot.Builder.Tests
             }));
 
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
-            Assert.IsTrue(caughtException);
+            Assert.True(caughtException);
         }
 
         public class WasCalledMiddlware : IMiddleware

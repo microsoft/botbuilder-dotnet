@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public TestContext TestContext { get; set; }
 
-        [TestMethod]
+        [Fact]
         [TestCategory("Middleware")]
         public async Task OnTurnError_Test()
         {

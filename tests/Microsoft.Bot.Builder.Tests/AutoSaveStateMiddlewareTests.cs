@@ -4,17 +4,16 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     [TestCategory("State Management")]
     public class AutoSaveStateMiddlewareTests
     {
         public TestContext TestContext { get; set; }
 
-        [TestMethod]
+        [Fact]
         public async Task AutoSaveStateMiddleware_DualReadWrite()
         {
             var storage = new MemoryStorage();
@@ -89,7 +88,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AutoSaveStateMiddleware_Chain()
         {
             var storage = new MemoryStorage();

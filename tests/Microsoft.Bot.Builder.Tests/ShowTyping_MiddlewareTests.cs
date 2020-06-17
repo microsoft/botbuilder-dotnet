@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public TestContext TestContext { get; set; }
 
-        [TestMethod]
+        [Fact]
         [TestCategory("Middleware")]
         public async Task ShowTyping_TestMiddleware_1_Second_Interval()
         {
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         [TestCategory("Middleware")]
         public async Task ShowTyping_TestMiddleware_Context_Completes_Before_Typing_Interval()
         {
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         [TestCategory("Middleware")]
         public async Task ShowTyping_TestMiddleware_ImmediateResponse_5SecondInterval()
         {
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         [TestCategory("Middleware")]
         public void ShowTyping_TestMiddleware_NegativeDelay()
         {
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         [TestCategory("Middleware")]
         public void ShowTyping_TestMiddleware_ZeroFrequency()
         {

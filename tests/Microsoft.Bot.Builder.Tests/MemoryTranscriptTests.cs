@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -15,43 +15,43 @@ namespace Microsoft.Bot.Builder.Tests
             this.Store = new MemoryTranscriptStore();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_BadArgs()
         {
             await BadArgs();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_LogActivity()
         {
             await LogActivity();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_LogMultipleActivities()
         {
             await LogMultipleActivities();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_GetConversationActivities()
         {
             await GetTranscriptActivities();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_GetConversationActivitiesStartDate()
         {
             await GetTranscriptActivitiesStartDate();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_ListConversations()
         {
             await ListTranscripts();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_DeleteConversation()
         {
             await DeleteTranscript();
