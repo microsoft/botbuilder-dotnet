@@ -83,50 +83,52 @@ namespace Microsoft.Bot.Connector
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
-                var httpResponse = await client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-                if (shouldTrace)
+                using (var httpResponse = await client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
                 {
-                    ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-                }
-
-                var statusCode = httpResponse.StatusCode;
-                cancellationToken.ThrowIfCancellationRequested();
-                string responseContent = null;
-                if (statusCode != HttpStatusCode.OK && statusCode != HttpStatusCode.NotFound)
-                {
-                    var ex = new ErrorResponseException(string.Format(CultureInfo.InvariantCulture, "Operation returned an invalid status code '{0}'", statusCode));
-                    try
-                    {
-                        responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        var errorBody = SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, client.DeserializationSettings);
-                        if (errorBody != null)
-                        {
-                            ex.Body = errorBody;
-                        }
-                    }
-                    catch (JsonException)
-                    {
-                        // Ignore the exception
-                    }
-
-                    ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
-                    ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
                     if (shouldTrace)
                     {
-                        ServiceClientTracing.Error(invocationId, ex);
+                        ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
                     }
 
-                    throw ex;
-                }
-
-                if (shouldTrace)
-                {
-                    // Create  and log result
-                    using (var result = new HttpOperationResponse<int>())
+                    var statusCode = httpResponse.StatusCode;
+                    cancellationToken.ThrowIfCancellationRequested();
+                    string responseContent = null;
+                    if (statusCode != HttpStatusCode.OK && statusCode != HttpStatusCode.NotFound)
                     {
-                        result.Request = httpRequest;
-                        result.Response = httpResponse;
-                        ServiceClientTracing.Exit(invocationId, result);
+                        var ex = new ErrorResponseException(string.Format(CultureInfo.InvariantCulture, "Operation returned an invalid status code '{0}'", statusCode));
+                        try
+                        {
+                            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            var errorBody = SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, client.DeserializationSettings);
+                            if (errorBody != null)
+                            {
+                                ex.Body = errorBody;
+                            }
+                        }
+                        catch (JsonException)
+                        {
+                            // Ignore the exception
+                        }
+
+                        ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                        ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                        if (shouldTrace)
+                        {
+                            ServiceClientTracing.Error(invocationId, ex);
+                        }
+
+                        throw ex;
+                    }
+
+                    if (shouldTrace)
+                    {
+                        // Create  and log result
+                        using (var result = new HttpOperationResponse<int>())
+                        {
+                            result.Request = httpRequest;
+                            result.Response = httpResponse;
+                            ServiceClientTracing.Exit(invocationId, result);
+                        }
                     }
                 }
             }
