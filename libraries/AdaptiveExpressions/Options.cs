@@ -21,7 +21,7 @@ namespace AdaptiveExpressions
         /// Gets or sets a value, a function that been called when there is null value hit in memory.
         /// </summary>
         /// <value>
-        /// The delegate.</placeholder>
+        /// The function delegate.
         /// </value>
         public Func<string, object> NullSubstitution { get; set; } = null;
     }

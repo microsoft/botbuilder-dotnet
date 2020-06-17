@@ -367,6 +367,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// then generates and returns a response if appropriate.
         /// </summary>
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
+        /// <param name="response">The <see cref="StreamingResponse"/> instance.</param>
         /// <returns>A response if the given request matches against a defined path.</returns>
         private StreamingResponse HandleCustomPaths(ReceiveRequest request, StreamingResponse response)
         {

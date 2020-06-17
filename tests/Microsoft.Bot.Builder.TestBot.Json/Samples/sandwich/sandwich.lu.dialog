@@ -1,0 +1,8 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+    "$kind": "Microsoft.MultiLanguageRecognizer",
+    "recognizers": {
+        "en-us": "sandwich.en-us.lu",
+        "": "sandwich.en-us.lu"
+    }
+}

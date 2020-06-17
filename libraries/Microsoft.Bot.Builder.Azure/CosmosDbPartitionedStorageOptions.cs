@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Azure
         public int ContainerThroughput { get; set; } = 400;
 
         /// <summary>
-        /// Gets or sets the suffix to be added to every key. <see cref="CosmosDbKeyEscape.EscapeKey"/>.
+        /// Gets or sets the suffix to be added to every key. <see cref="CosmosDbKeyEscape.EscapeKey(string)"/>.
         /// 
         /// Note: <see cref="CompatibilityMode"/> must be set to 'false' to use a KeySuffix.
         /// When KeySuffix is used, keys will NOT be truncated but an exception will be thrown if

@@ -81,7 +81,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 || !string.IsNullOrEmpty(activity.Text)
                 || activity.Attachments?.Any() == true
                 || !string.IsNullOrEmpty(activity.Speak)
-                || activity.SuggestedActions != null)
+                || activity.SuggestedActions != null
+                || activity.ChannelData != null)
             {
                 response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             }

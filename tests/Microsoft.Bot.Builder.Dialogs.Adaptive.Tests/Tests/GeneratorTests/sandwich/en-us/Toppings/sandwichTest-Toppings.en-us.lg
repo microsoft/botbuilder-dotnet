@@ -1,0 +1,16 @@
+
+[sandwichTest-ToppingsEntity.en-us.lg](sandwichTest-ToppingsEntity.en-us.lg)
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
+[sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
+
+# AskToppings
+- ${askEnumArray('Toppings')}
+
+> How to display the name of Toppings
+# ToppingsName
+- toppings
+
+# Toppings(values)
+- ${enumArrayValue('Toppings', values)}
+
+> Generator: ed60f17b1939666cb179d9058c7e710f

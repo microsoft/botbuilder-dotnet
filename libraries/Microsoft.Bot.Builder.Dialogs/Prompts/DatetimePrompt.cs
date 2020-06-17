@@ -98,10 +98,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             var result = new PromptRecognizerResult<IList<DateTimeResolution>>();
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                var message = turnContext.Activity.AsMessageActivity();
+                var utterance = turnContext.Activity.AsMessageActivity().Text;
+                if (string.IsNullOrEmpty(utterance))
+                {
+                    return Task.FromResult(result);
+                }
+
                 var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English;
                 var refTime = turnContext.Activity.LocalTimestamp?.LocalDateTime;
-                var results = DateTimeRecognizer.RecognizeDateTime(message.Text, culture, refTime: refTime);
+                var results = DateTimeRecognizer.RecognizeDateTime(utterance, culture, refTime: refTime);
                 if (results.Count > 0)
                 {
                     // Return list of resolutions from first match

@@ -1,0 +1,1 @@
+{"query":"no","prediction":{"topIntent":"sandwich","intents":{"sandwich":{"score":0.9928315}},"entities":{"boolean":[["false"]],"$instance":{"boolean":[{"type":"boolean","text":"no","startIndex":0,"length":2,"modelTypeId":5,"modelType":"List Entity Extractor","recognitionSources":["model"]}]}}}}

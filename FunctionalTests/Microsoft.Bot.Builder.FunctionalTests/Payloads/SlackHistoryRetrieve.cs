@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Bot.Builder.Adapters.Slack;
+using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.FunctionalTests.Payloads
@@ -15,6 +16,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests.Payloads
         public string Ok { get; set; }
 
         [JsonProperty(PropertyName = "messages")]
-        public List<SlackMessage> Messages { get; } = new List<SlackMessage>();
+        public List<MessageEvent> Messages { get; } = new List<MessageEvent>();
     }
 }

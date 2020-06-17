@@ -42,7 +42,11 @@ textContent
     ;
 
 argsList
-    : expression (COMMA expression)*
+    : (lambda|expression) (COMMA (lambda|expression))*
+    ;
+
+lambda
+    : IDENTIFIER ARROW expression
     ;
 
 keyValuePairList

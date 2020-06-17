@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             httpClient = httpClient ?? _httpClient;
 
-            var identity = await AuthenticateToken(authHeader, credentials, channelProvider, channelId, authConfig, serviceUrl, httpClient);
+            var identity = await AuthenticateToken(authHeader, credentials, channelProvider, channelId, authConfig, serviceUrl, httpClient).ConfigureAwait(false);
 
             await ValidateClaimsAsync(authConfig, identity.Claims).ConfigureAwait(false);
 

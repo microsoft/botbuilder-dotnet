@@ -54,6 +54,18 @@ namespace AdaptiveExpressions.Properties
 
         public static implicit operator ValueExpression(string valueOrExpression) => new ValueExpression(valueOrExpression);
 
+        public static implicit operator ValueExpression(int value) => new ValueExpression(value);
+
+        public static implicit operator ValueExpression(long value) => new ValueExpression(value);
+
+        public static implicit operator ValueExpression(float value) => new ValueExpression(value);
+
+        public static implicit operator ValueExpression(double value) => new ValueExpression(value);
+
+        public static implicit operator ValueExpression(DateTime value) => new ValueExpression(value);
+
+        public static implicit operator ValueExpression(bool value) => new ValueExpression(value);
+
         public static implicit operator ValueExpression(JToken valueOrExpression) => new ValueExpression(valueOrExpression);
         
         public static implicit operator ValueExpression(Expression expression) => new ValueExpression(expression);

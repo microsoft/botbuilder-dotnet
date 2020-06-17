@@ -1,0 +1,17 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "ClearBread",
+	"property": "Bread",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${clearPropertyMessage('Bread')}"
+		},
+		{
+			"$kind": "Microsoft.DeleteProperty",
+			"property": "$Bread"
+		}
+	],
+	"$Generator": "4097bda89b8d1ec502139965e7447c14"
+}

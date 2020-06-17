@@ -1,0 +1,32 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "SetCompleteConfirmation",
+	"entity": "boolean",
+	"actions": [
+		{
+			"$kind": "Microsoft.SetProperty",
+			"property": "$CompleteConfirmation",
+			"value": "=@boolean"
+		},
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$CompleteConfirmation == 'false'",
+			"actions": [
+				{
+					"$kind": "Microsoft.EndDialog"
+				}
+			],
+			"elseActions": [
+				{
+					"$kind": "Microsoft.Ask",
+					"activity": "${chooseProperty()}",
+					"expectedProperties": [
+						"PropertyToChange"
+					]
+				}
+			]
+		}
+	],
+	"$Generator": "83f43fbed505d7361ad635bd215c5c23"
+}

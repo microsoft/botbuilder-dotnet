@@ -1,9 +1,0 @@
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Missing.lg](unittests-library-Missing.lg)
-
-# AskOrdinalv2
-- ${askString('Ordinalv2')}
-
-
-# Ordinalv2Name
-- ordinalv2
