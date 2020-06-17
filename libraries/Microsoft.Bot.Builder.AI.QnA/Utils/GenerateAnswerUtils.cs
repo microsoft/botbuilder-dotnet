@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             if (options.RankerType == null)
             {
                 options.RankerType = RankerTypes.DefaultRankerType;
-            }                      
+            }
         }
 
         /// <summary>

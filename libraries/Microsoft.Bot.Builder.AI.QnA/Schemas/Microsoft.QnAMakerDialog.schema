@@ -1,10 +1,10 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.IDialog)",
-    "title": "QnAMaker Dialog",
-    "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
-    "type": "object",
-    "additionalProperties": false,
+  "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+  "$role": "implements(Microsoft.IDialog)",
+  "title": "QnAMaker Dialog",
+  "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
+  "type": "object",
+  "additionalProperties": false,
   "properties": {
     "knowledgeBaseId": {
       "$ref": "schema:#/definitions/stringExpression",
@@ -92,7 +92,7 @@
       "title": "IsTest",
       "description": "True, if pointing to Test environment, else false.",
       "default": false
-    }, 
+    },
     "enablePreciseAnswer": {
       "$ref": "schema:#/definitions/booleanExpression",
       "title": "EnablePreciseAnswer",
@@ -124,9 +124,9 @@
       ]
     }
   },
-    "required": [
-        "knowledgeBaseId",
-        "endpointKey",
-        "hostname"
-    ]
+  "required": [
+    "knowledgeBaseId",
+    "endpointKey",
+    "hostname"
+  ]
 }
