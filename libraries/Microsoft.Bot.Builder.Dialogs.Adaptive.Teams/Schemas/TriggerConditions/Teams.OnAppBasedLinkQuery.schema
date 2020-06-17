@@ -1,0 +1,10 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
+    "title": "OnTeamsAppBasedLinkQuery",
+    "description": "Actions triggered when a Teams activity is received with activity.name == 'composeExtension/queryLink'.",
+    "type": "object",
+    "required": [
+        "actions"
+    ]
+}
