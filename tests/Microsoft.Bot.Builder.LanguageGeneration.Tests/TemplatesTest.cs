@@ -851,7 +851,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             templates.AddTemplate("newtemplate#$%", new List<string> { "age", "name" }, "- hi ");
             Assert.AreEqual(1, templates.Diagnostics.Count);
             Assert.AreEqual(TemplateErrors.InvalidTemplateName("newtemplate#$%"), templates.Diagnostics[0].Message);
-            Assert.AreEqual(new BotRange(11, 0, 11, 29).ToString(), templates.Diagnostics[0].Range.ToString());
+            Assert.AreEqual(new Position(11, 0).ToString(), templates.Diagnostics[0].Range.Start.ToString());
+            Assert.AreEqual(11, templates.Diagnostics[0].Range.End.Line);
 
             templates.UpdateTemplate("newtemplate#$%", "newtemplateName", null, "- new hi");
             Assert.AreEqual(0, templates.Diagnostics.Count);
