@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Get list information
             var list = dc.State.GetValue<JArray>(LIST);
             var index = dc.State.GetIntValue(Index.GetValue(dc.State));
-            
+
             // Next item
             if (++index < list.Count)
             {
