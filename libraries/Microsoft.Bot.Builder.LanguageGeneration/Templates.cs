@@ -298,11 +298,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 template.SourceRange.Range.End.Line - 1,
                 content);
 
-            var originalEmptyLG = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
-            var updatedTemplate = new TemplatesTransformer(originalEmptyLG).Transform(AntlrParseTemplates(content, Id));
+            var updatedTemplate = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
+            updatedTemplate = new TemplatesTransformer(updatedTemplate).Transform(AntlrParseTemplates(content, Id));
 
             var originStartLine = template.SourceRange.Range.Start.Line - 1;
-            originalEmptyLG.Diagnostics.ToList().ForEach(u =>
+            updatedTemplate.Diagnostics.ToList().ForEach(u =>
             {
                 u.Range.Start.Line += originStartLine;
                 u.Range.End.Line += originStartLine;
