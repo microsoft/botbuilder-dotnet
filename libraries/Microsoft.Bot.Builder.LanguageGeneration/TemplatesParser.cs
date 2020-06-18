@@ -43,8 +43,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         public static readonly Regex ImportRegex = new Regex(@"\[([^]]*)\]\(([^)]*)\)");
 
-        private static ConcurrentDictionary<string, LGTemplateParser.BodyContext> templateParseTreeCache = new ConcurrentDictionary<string, LGTemplateParser.BodyContext>();
-
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
         /// </summary>
@@ -434,11 +432,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private LGTemplateParser.BodyContext AntlrParseTemplate(string templateBody, int lineOffset)
             {
-                if (templateParseTreeCache.TryGetValue(templateBody, out var bodyParseTree))
-                {
-                    return bodyParseTree;
-                }
-
                 var input = new AntlrInputStream(templateBody);
                 var lexer = new LGTemplateLexer(input);
                 lexer.RemoveErrorListeners();
@@ -451,11 +444,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 parser.AddErrorListener(listener);
                 parser.BuildParseTree = true;
 
-                var body = parser.context().body();
-
-                templateParseTreeCache.TryAdd(templateBody, body);
-
-                return body;
+                return parser.context().body();
             }
 
             private Diagnostic BuildTemplatesDiagnostic(string errorMessage, ParserRuleContext context, DiagnosticSeverity severity = DiagnosticSeverity.Error)

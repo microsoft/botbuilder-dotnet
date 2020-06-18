@@ -305,6 +305,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             originalEmptyLG.Diagnostics.ToList().ForEach(u =>
             {
                 u.Range.Start.Line += originStartLine;
+                u.Range.End.Line += originStartLine;
                 this.Diagnostics.Add(u);
             });
 
@@ -362,16 +363,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var content = $"{templateNameLine}{newLine}{newTemplateBody}";
 
+            var originStartLine = GetLinesOfText(this.Content).Length;
+
             // update content
             this.Content = $"{Content}{newLine}{templateNameLine}{newLine}{newTemplateBody}";
 
-            var originalEmptyLG = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
-            var updatedTemplate = new TemplatesTransformer(originalEmptyLG).Transform(AntlrParseTemplates(content, Id));
+            var updatedTemplate = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
+            updatedTemplate = new TemplatesTransformer(updatedTemplate).Transform(AntlrParseTemplates(content, Id));
 
-            var originStartLine = this.Count == 0 ? 0 : this.Last().SourceRange.Range.End.Line;
-            originalEmptyLG.Diagnostics.ToList().ForEach(u =>
+            updatedTemplate.Diagnostics.ToList().ForEach(u =>
             {
                 u.Range.Start.Line += originStartLine;
+                u.Range.End.Line += originStartLine;
                 this.Diagnostics.Add(u);
             });
 
@@ -403,6 +406,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return this;
             }
+
+            // clear diagnostic
+            this.Diagnostics = new List<Diagnostic>();
 
             var startLine = template.SourceRange.Range.Start.Line - 1;
             var stopLine = template.SourceRange.Range.End.Line - 1;
@@ -475,7 +481,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var destList = new List<string>();
 
             destList.AddRange(originList.Take(startLine));
-            destList.Add(replaceString);
+            
+            if (replaceString != null)
+            {
+                destList.Add(replaceString);
+            }
+
             destList.AddRange(originList.Skip(stopLine + 1));
 
             return string.Join(newLine, destList);
@@ -483,13 +494,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ConvertTemplateBody(string templateBody)
         {
-            var lines = templateBody.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
+            var lines = GetLinesOfText(templateBody);
             var destList = lines.Select(u =>
             {
                 return u.TrimStart().StartsWith("#") ? $"- {u.TrimStart()}" : u;
             });
 
             return string.Join(newLine, destList);
+        }
+
+        private string[] GetLinesOfText(string text)
+        {
+            if (text == null)
+            {
+                return new string[0];
+            }
+
+            return text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
         }
 
         private string BuildTemplateNameLine(string templateName, List<string> parameters)
@@ -502,23 +523,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return $"# {templateName}({string.Join(", ", parameters)})";
             }
-        }
-
-        /// <summary>
-        /// Use an existing LG file to override current object.
-        /// </summary>
-        /// <param name="templates">Existing LG file.</param>
-        private void Initialize(Templates templates)
-        {
-            this.Clear();
-            this.AddRange(templates);
-            Imports = templates.Imports;
-            Diagnostics = templates.Diagnostics;
-            References = templates.References;
-            Content = templates.Content;
-            ImportResolver = templates.ImportResolver;
-            Id = templates.Id;
-            ExpressionParser = templates.ExpressionParser;
         }
 
         private void CheckErrors()
