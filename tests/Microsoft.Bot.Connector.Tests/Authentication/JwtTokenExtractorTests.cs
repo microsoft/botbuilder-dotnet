@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -54,33 +55,39 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         [Trait("TestCategory", "WindowsOnly")]
         public async Task JwtTokenExtractor_WithExpiredCert_ShouldNotAllowCertSigningKey()
         {
-            var now = DateTimeOffset.UtcNow;
-            var cn = "test.cert.botframework.com";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var now = DateTimeOffset.UtcNow;
+                var cn = "test.cert.botframework.com";
 
-            // Create expired self-signed certificate
-            var cert = CreateSelfSignedCertificate("test.cert.botframework.com", from: now.AddDays(-10), to: now.AddDays(-9));
+                // Create expired self-signed certificate
+                var cert = CreateSelfSignedCertificate("test.cert.botframework.com", from: now.AddDays(-10), to: now.AddDays(-9));
 
-            // Build token extractor and use it to validate a token created from the cert
-            // Since the cert is expired, it should fail since the signing key is bad
-            await Assert.ThrowsAnyAsync<SecurityTokenInvalidSigningKeyException>(() => BuildExtractorAndValidateToken(cert));
+                // Build token extractor and use it to validate a token created from the cert
+                // Since the cert is expired, it should fail since the signing key is bad
+                await Assert.ThrowsAnyAsync<SecurityTokenInvalidSigningKeyException>(() => BuildExtractorAndValidateToken(cert));
 
-            DeleteKeyContainer(cn);
+                DeleteKeyContainer(cn);
+            }
         }
 
         [Fact]
         [Trait("TestCategory", "WindowsOnly")]
         public async Task JwtTokenExtractor_WithValidCert_ShouldNotAllowCertSigningKey()
         {
-            var now = DateTimeOffset.UtcNow;
-            var cn = "test.cert.botframework.com";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var now = DateTimeOffset.UtcNow;
+                var cn = "test.cert.botframework.com";
 
-            // Create valid self-signed certificate
-            var cert = CreateSelfSignedCertificate(cn, from: now.AddDays(-10), to: now.AddDays(9));
+                // Create valid self-signed certificate
+                var cert = CreateSelfSignedCertificate(cn, from: now.AddDays(-10), to: now.AddDays(9));
 
-            // Build token extractor and use it to validate a token created from the cert
-            await BuildExtractorAndValidateToken(cert);
+                // Build token extractor and use it to validate a token created from the cert
+                await BuildExtractorAndValidateToken(cert);
 
-            DeleteKeyContainer(cn);
+                DeleteKeyContainer(cn);
+            }
         }
 
         private static Task<ClaimsIdentity> BuildExtractorAndValidateToken(X509Certificate2 cert, TokenValidationParameters validationParameters = null)

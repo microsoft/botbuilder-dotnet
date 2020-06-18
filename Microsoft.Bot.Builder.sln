@@ -5,6 +5,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD743B78-D61F-4FBF-B620-FA83CE599A50}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Directory.Build.props = tests\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj", "{3CF175CF-1AF4-4109-96CB-221684DCED7D}"
 EndProject
@@ -71,6 +74,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.FunctionalTests", "FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj", "{B9DDC8CB-8EDF-4D98-913A-22F19E642223}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionalTests", "FunctionalTests", "{8667F820-8ADA-4498-91AE-AE95DEE5227E}"
+	ProjectSection(SolutionItems) = preProject
+		FunctionalTests\Directory.Build.props = FunctionalTests\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Testing", "libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.csproj", "{060F070A-BBFA-490E-BE89-3844C857B771}"
 EndProject
@@ -111,6 +117,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LuisV3.Tests", "tests\Microsoft.Bot.Builder.Ai.LUISV3.tests\Microsoft.Bot.Builder.AI.LuisV3.Tests.csproj", "{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{6230B915-B238-4E57-AAC4-06B4498F540F}"
+	ProjectSection(SolutionItems) = preProject
+		libraries\Adapters\Directory.Build.props = libraries\Adapters\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Twilio", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Twilio\Microsoft.Bot.Builder.Adapters.Twilio.csproj", "{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}"
 EndProject
@@ -175,6 +184,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parent", "tests\Skills\Parent\Parent.csproj", "{7F8ED2E7-A4BE-4855-BAF2-95657220E419}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Child", "tests\Skills\Child\Child.csproj", "{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Teams", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Teams\Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.csproj", "{23BF6935-D648-4874-91C7-1BF4D6FF64E3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests.csproj", "{DD5071A9-BAE1-45EF-814C-D071BE63CD47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -736,6 +749,22 @@ Global
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{23BF6935-D648-4874-91C7-1BF4D6FF64E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23BF6935-D648-4874-91C7-1BF4D6FF64E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23BF6935-D648-4874-91C7-1BF4D6FF64E3}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{23BF6935-D648-4874-91C7-1BF4D6FF64E3}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{23BF6935-D648-4874-91C7-1BF4D6FF64E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23BF6935-D648-4874-91C7-1BF4D6FF64E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23BF6935-D648-4874-91C7-1BF4D6FF64E3}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{23BF6935-D648-4874-91C7-1BF4D6FF64E3}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{DD5071A9-BAE1-45EF-814C-D071BE63CD47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD5071A9-BAE1-45EF-814C-D071BE63CD47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD5071A9-BAE1-45EF-814C-D071BE63CD47}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD5071A9-BAE1-45EF-814C-D071BE63CD47}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{DD5071A9-BAE1-45EF-814C-D071BE63CD47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD5071A9-BAE1-45EF-814C-D071BE63CD47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD5071A9-BAE1-45EF-814C-D071BE63CD47}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{DD5071A9-BAE1-45EF-814C-D071BE63CD47}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -817,6 +846,8 @@ Global
 		{54DA838C-8BB8-4038-8BDB-D887C02B2D9A} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{7F8ED2E7-A4BE-4855-BAF2-95657220E419} = {54DA838C-8BB8-4038-8BDB-D887C02B2D9A}
 		{1958FBA4-BF2D-48D9-A5DB-8915F553EBD3} = {54DA838C-8BB8-4038-8BDB-D887C02B2D9A}
+		{23BF6935-D648-4874-91C7-1BF4D6FF64E3} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{DD5071A9-BAE1-45EF-814C-D071BE63CD47} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

@@ -1,0 +1,10 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
+    "title": "OnTeamsMessagingExtensionCardButtonClicked",
+    "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
+    "type": "object",
+    "required": [
+        "actions"
+    ]
+}
