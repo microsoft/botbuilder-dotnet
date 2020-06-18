@@ -832,12 +832,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("newtemplateName2", templates[2].Name);
             Assert.AreEqual("- new hi\n- #hi2\n", templates[2].Body.Replace("\r\n", "\n"));
             Assert.AreEqual(new BotRange(10, 0, 12, 5).ToString(), templates[1].SourceRange.Range.ToString());
-            Assert.AreEqual(new BotRange(13, 0, 15, 8).ToString(), templates[2].SourceRange.Range.ToString());
+            Assert.AreEqual(new Position(13, 0).ToString(), templates[2].SourceRange.Range.Start.ToString());
+            Assert.AreEqual(15, templates[2].SourceRange.Range.End.Line);
 
             templates.DeleteTemplate("newtemplateName");
             Assert.AreEqual(2, templates.Count);
             Assert.AreEqual(0, templates.Diagnostics.Count);
-            Assert.AreEqual(new BotRange(10, 0, 12, 8).ToString(), templates[1].SourceRange.Range.ToString());
+            Assert.AreEqual(new Position(10, 0).ToString(), templates[1].SourceRange.Range.Start.ToString());
+            Assert.AreEqual(12, templates[1].SourceRange.Range.End.Line);
 
             templates.DeleteTemplate("newtemplateName2");
             Assert.AreEqual(1, templates.Count);
