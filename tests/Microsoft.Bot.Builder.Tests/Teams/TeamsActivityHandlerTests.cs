@@ -15,17 +15,16 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Microsoft.Rest.Serialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Teams.Tests
 {
-    [TestClass]
     public class TeamsActivityHandlerTests
     {
-        [TestMethod]
+        [Fact]
         public async Task TestConversationUpdateBotTeamsMemberAdded()
         {
             // Arrange
@@ -58,12 +57,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMembersAddedAsync", bot.Record[1]);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMembersAddedAsync", bot.Record[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationUpdateTeamsMemberAdded()
         {
             // Arrange
@@ -101,12 +100,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMembersAddedAsync", bot.Record[1]);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMembersAddedAsync", bot.Record[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationUpdateTeamsMemberAddedNoTeam()
         {
             // Arrange
@@ -137,12 +136,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMembersAddedAsync", bot.Record[1]);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMembersAddedAsync", bot.Record[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationUpdateTeamsMemberAddedFullDetailsInEvent()
         {
             // Arrange
@@ -211,12 +210,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMembersAddedAsync", bot.Record[1]);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMembersAddedAsync", bot.Record[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationUpdateTeamsMemberRemoved()
         {
             // Arrange
@@ -238,12 +237,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMembersRemovedAsync", bot.Record[1]);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMembersRemovedAsync", bot.Record[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationUpdateTeamsChannelCreated()
         {
             // Arrange
@@ -260,12 +259,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsChannelCreatedAsync", bot.Record[1]);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsChannelCreatedAsync", bot.Record[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationUpdateTeamsChannelDeleted()
         {
             // Arrange
@@ -282,12 +281,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsChannelDeletedAsync", bot.Record[1]);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsChannelDeletedAsync", bot.Record[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationUpdateTeamsChannelRenamed()
         {
             // Arrange
@@ -304,12 +303,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsChannelRenamedAsync", bot.Record[1]);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsChannelRenamedAsync", bot.Record[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationUpdateTeamsTeamRenamed()
         {
             // Arrange
@@ -326,12 +325,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsTeamRenamedAsync", bot.Record[1]);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTeamRenamedAsync", bot.Record[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestFileConsentAccept()
         {
             // Arrange
@@ -364,17 +363,17 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(3, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsFileConsentAsync", bot.Record[1]);
-            Assert.AreEqual("OnTeamsFileConsentAcceptAsync", bot.Record[2]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(3, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsFileConsentAsync", bot.Record[1]);
+            Assert.Equal("OnTeamsFileConsentAcceptAsync", bot.Record[2]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestFileConsentDecline()
         {
             // Arrange
@@ -407,17 +406,17 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(3, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsFileConsentAsync", bot.Record[1]);
-            Assert.AreEqual("OnTeamsFileConsentDeclineAsync", bot.Record[2]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(3, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsFileConsentAsync", bot.Record[1]);
+            Assert.Equal("OnTeamsFileConsentDeclineAsync", bot.Record[2]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestActionableMessageExecuteAction()
         {
             // Arrange
@@ -441,16 +440,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsO365ConnectorCardActionAsync", bot.Record[1]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsO365ConnectorCardActionAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestComposeExtensionQueryLink()
         {
             // Arrange
@@ -474,16 +473,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsAppBasedLinkQueryAsync", bot.Record[1]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsAppBasedLinkQueryAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestComposeExtensionQuery()
         {
             // Arrange
@@ -507,16 +506,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMessagingExtensionQueryAsync", bot.Record[1]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessagingExtensionQueryAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionSelectItemAsync()
         {
             // Arrange
@@ -540,16 +539,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMessagingExtensionSelectItemAsync", bot.Record[1]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessagingExtensionSelectItemAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionSubmitAction()
         {
             // Arrange
@@ -573,17 +572,17 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(3, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMessagingExtensionSubmitActionDispatchAsync", bot.Record[1]);
-            Assert.AreEqual("OnTeamsMessagingExtensionSubmitActionAsync", bot.Record[2]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(3, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessagingExtensionSubmitActionDispatchAsync", bot.Record[1]);
+            Assert.Equal("OnTeamsMessagingExtensionSubmitActionAsync", bot.Record[2]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionSubmitActionPreviewActionEdit()
         {
             // Arrange
@@ -610,17 +609,17 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(3, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMessagingExtensionSubmitActionDispatchAsync", bot.Record[1]);
-            Assert.AreEqual("OnTeamsMessagingExtensionBotMessagePreviewEditAsync", bot.Record[2]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(3, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessagingExtensionSubmitActionDispatchAsync", bot.Record[1]);
+            Assert.Equal("OnTeamsMessagingExtensionBotMessagePreviewEditAsync", bot.Record[2]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionSubmitActionPreviewActionSend()
         {
             // Arrange
@@ -647,17 +646,17 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(3, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMessagingExtensionSubmitActionDispatchAsync", bot.Record[1]);
-            Assert.AreEqual("OnTeamsMessagingExtensionBotMessagePreviewSendAsync", bot.Record[2]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(3, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessagingExtensionSubmitActionDispatchAsync", bot.Record[1]);
+            Assert.Equal("OnTeamsMessagingExtensionBotMessagePreviewSendAsync", bot.Record[2]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionFetchTask()
         {
             // Arrange
@@ -681,16 +680,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMessagingExtensionFetchTaskAsync", bot.Record[1]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessagingExtensionFetchTaskAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionConfigurationQuerySettingUrl()
         {
             // Arrange
@@ -714,16 +713,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync", bot.Record[1]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionConfigurationSetting()
         {
             // Arrange
@@ -747,16 +746,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMessagingExtensionConfigurationSettingAsync", bot.Record[1]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMessagingExtensionConfigurationSettingAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestTaskModuleFetch()
         {
             // Arrange
@@ -780,16 +779,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsTaskModuleFetchAsync", bot.Record[1]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTaskModuleFetchAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestTaskModuleSubmit()
         {
             // Arrange
@@ -813,16 +812,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsTaskModuleSubmitAsync", bot.Record[1]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTaskModuleSubmitAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestSigninVerifyState()
         {
             // Arrange
@@ -845,13 +844,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
            
             // Assert
-            Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsSigninVerifyStateAsync", bot.Record[1]);
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsSigninVerifyStateAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
         private class NotImplementedAdapter : BotAdapter

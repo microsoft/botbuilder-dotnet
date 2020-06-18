@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(retriever));
             }
 
-            var jsonDocument = await retriever.GetDocumentAsync(address, cancellationToken);
+            var jsonDocument = await retriever.GetDocumentAsync(address, cancellationToken).ConfigureAwait(false);
             var configurationRoot = JObject.Parse(jsonDocument);
 
             var keys = configurationRoot["keys"]?.Value<JArray>();
@@ -121,14 +121,14 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new ArgumentNullException(nameof(address));
             }
 
-            using (var documentResponse = await _httpClient.GetAsync(address, cancellationToken))
+            using (var documentResponse = await _httpClient.GetAsync(address, cancellationToken).ConfigureAwait(false))
             {
                 if (!documentResponse.IsSuccessStatusCode)
                 {
                     throw new Exception($"An non-success status code of {documentResponse.StatusCode} was received while fetching the endorsements document.");
                 }
 
-                var json = await documentResponse.Content.ReadAsStringAsync();
+                var json = await documentResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 if (string.IsNullOrWhiteSpace(json))
                 {
@@ -143,14 +143,14 @@ namespace Microsoft.Bot.Connector.Authentication
                     return string.Empty;
                 }
 
-                using (var keysResponse = await _httpClient.GetAsync(keysUrl, cancellationToken))
+                using (var keysResponse = await _httpClient.GetAsync(keysUrl, cancellationToken).ConfigureAwait(false))
                 {
                     if (!keysResponse.IsSuccessStatusCode)
                     {
                         throw new Exception($"An non-success status code of {keysResponse.StatusCode} was received while fetching the web key set document.");
                     }
 
-                    return await keysResponse.Content.ReadAsStringAsync();
+                    return await keysResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
             }
         }
