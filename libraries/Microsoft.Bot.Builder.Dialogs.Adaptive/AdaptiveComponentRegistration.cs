@@ -9,6 +9,7 @@ using AdaptiveExpressions.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Functions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
@@ -24,6 +25,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
+        public AdaptiveComponentRegistration()
+        {
+            Expression.Functions.Add(IsDialogActiveFunction.Name, new IsDialogActiveFunction());
+        }
+
         public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Conditionals
