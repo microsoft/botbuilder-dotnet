@@ -3,13 +3,17 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SlackAPI;
 
-namespace Microsoft.Bot.Builder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 {
-    public class SlackPayload
+    /// <summary>
+    /// Union class to represent various user interaction payloads https://api.slack.com/interactivity/handling#payloads.
+    /// </summary>
+    public class InteractionPayload
     {
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
@@ -27,7 +31,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public Team Team { get; set; }
 
         [JsonProperty(PropertyName = "message")]
-        public SlackMessage Message { get; set; }
+        public MessageEvent Message { get; set; }
 
         [JsonProperty(PropertyName = "user")]
         public User User { get; set; }
@@ -52,5 +56,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
         [JsonProperty(PropertyName = "response_url")]
         public Uri ResponseUrl { get; set; }
+
+        [JsonProperty(PropertyName = "view")]
+        public ModalView View { get; set; }
+
+        [JsonExtensionData(ReadData = true, WriteData = true)]
+        public IDictionary<string, JToken> AdditionalProperties { get; } = new Dictionary<string, JToken>();
     }
 }

@@ -506,15 +506,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
-            // Create a cycle detection observer
-            var cycleDetector = new CycleDetectionObserver();
-
-            // Register our cycle detector on the converters that support observer registration
-            foreach (var observableConverter in converters.Where(c => c is IObservableConverter))
-            {
-                (observableConverter as IObservableConverter).RegisterObserver(cycleDetector);
-            }
-
             var serializer = JsonSerializer.Create(new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Auto,
@@ -530,13 +521,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             });
 
-            // Pass 1 of cycle detection. This pass fills the cycle detector cache excluding cycles.
-            var pass1Result = token.ToObject<T>(serializer);
-
-            cycleDetector.CycleDetectionPass = CycleDetectionPasses.PassTwo;
-
-            // Pass 2 of cycle detection. This pass stitches objects from the cache into the places
-            // where we found cycles.
             return token.ToObject<T>(serializer);
         }
 

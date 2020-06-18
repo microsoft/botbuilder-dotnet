@@ -19,9 +19,12 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
     {
         private const string TestObjectKey = "TestObjectKey";
 
-        // Needed by serializer
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestDataObject"/> class.
+        /// </summary>
         public TestDataObject()
         {
+            // Note: This empty constructor is needed by the serializer.
         }
 
         /// <summary>

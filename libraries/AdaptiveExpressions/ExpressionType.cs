@@ -20,6 +20,9 @@ namespace AdaptiveExpressions
         public const string Average = "average";
         public const string Sum = "sum";
         public const string Range = "range";
+        public const string Floor = "floor";
+        public const string Ceiling = "ceiling";
+        public const string Round = "round";
 
         // Comparisons
         public const string LessThan = "<";

@@ -1,5 +1,6 @@
 {
   "files.associations": {
     "*.schema": "json"
-  }
+  },
+  "dotnet-test-explorer.testProjectPath": "**/*.Tests.csproj"
 }

@@ -21,10 +21,11 @@ namespace Microsoft.Bot.Connector.Authentication
                 {
                     return await task().ConfigureAwait(false);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (this is a generic catch all to handle retries)
                 catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     exceptions.Add(ex);
-
                     retry = retryExceptionHandler(ex, currentRetryCount);
                 }
 

@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId)
         {
-            return await GetIdentityAsync(authorizationHeader, channelId, new string[] { }).ConfigureAwait(false);
+            return await GetIdentityAsync(authorizationHeader, channelId, Array.Empty<string>()).ConfigureAwait(false);
         }
 
         public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId, string[] requiredEndorsements)
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId)
         {
-            return await GetIdentityAsync(scheme, parameter, channelId, new string[] { }).ConfigureAwait(false);
+            return await GetIdentityAsync(scheme, parameter, channelId, Array.Empty<string>()).ConfigureAwait(false);
         }
 
         public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId, string[] requiredEndorsements)
@@ -231,7 +231,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 // Validate Channel / Token Endorsements. For this, the channelID present on the Activity
                 // needs to be matched by an endorsement.
                 var keyId = (string)parsedJwtToken?.Header?[AuthenticationConstants.KeyIdHeader];
-                var endorsements = await _endorsementsData.GetConfigurationAsync();
+                var endorsements = await _endorsementsData.GetConfigurationAsync().ConfigureAwait(false);
 
                 // Note: On the Emulator Code Path, the endorsements collection is empty so the validation code
                 // below won't run. This is normal.

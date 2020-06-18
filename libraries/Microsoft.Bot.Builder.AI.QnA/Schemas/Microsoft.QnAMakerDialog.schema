@@ -92,6 +92,16 @@
             "title": "IsTest",
             "description": "True, if pointing to Test environment, else false.",
             "default": false
+        }, 
+        "enablePreciseAnswer": {
+          "$ref": "schema:#/definitions/booleanExpression",
+          "title": "EnablePreciseAnswer",
+          "description": "True, if PreciseAnswer is opted, else false."
+        },
+        "displayPreciseAnswerOnly": {
+          "$ref": "schema:#/definitions/booleanExpression",
+          "title": "DisplayPreciseAnswerOnly",
+          "description": "True, if PreciseAnswer text only is opted, else false."
         },
         "rankerType": {
             "$ref": "schema:#/definitions/stringExpression",
