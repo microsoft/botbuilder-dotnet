@@ -787,83 +787,83 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("2.lg"));
 
-            Assert.AreEqual(templates.Count, 1);
-            Assert.AreEqual(templates.Imports.Count, 0);
-            Assert.AreEqual(templates[0].Name, "wPhrase");
-            Assert.AreEqual(templates[0].Body.Replace("\r\n", "\n"), "> this is an in-template comment\n- Hi\n- Hello\n- Hiya\n- Hi");
-            Assert.AreEqual(templates[0].SourceRange.Range.ToString(), new BotRange(4, 0, 9, 4).ToString());
-            Assert.AreEqual(templates.Diagnostics.Count, 0);
+            Assert.AreEqual(1, templates.Count);
+            Assert.AreEqual(0, templates.Imports.Count);
+            Assert.AreEqual("wPhrase", templates[0].Name);
+            Assert.AreEqual("> this is an in-template comment\n- Hi\n- Hello\n- Hiya\n- Hi", templates[0].Body.Replace("\r\n", "\n"));
+            Assert.AreEqual(new BotRange(4, 0, 9, 4).ToString(), templates[0].SourceRange.Range.ToString());
+            Assert.AreEqual(0, templates.Diagnostics.Count);
 
             templates.AddTemplate("newtemplate", new List<string> { "age", "name" }, "- hi ");
-            Assert.AreEqual(templates.Count, 2);
-            Assert.AreEqual(templates.Imports.Count, 0);
-            Assert.AreEqual(templates.Diagnostics.Count, 0);
-            Assert.AreEqual(templates[0].SourceRange.Range.ToString(), new BotRange(4, 0, 9, 4).ToString());
-            Assert.AreEqual(templates[1].Name, "newtemplate");
-            Assert.AreEqual(templates[1].Parameters.Count, 2);
-            Assert.AreEqual(templates[1].Parameters[0], "age");
-            Assert.AreEqual(templates[1].Parameters[1], "name");
-            Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- hi ");
-            Assert.AreEqual(templates[1].SourceRange.Range.ToString(), new BotRange(10, 0, 11, 5).ToString());
+            Assert.AreEqual(2, templates.Count);
+            Assert.AreEqual(0, templates.Imports.Count);
+            Assert.AreEqual(0, templates.Diagnostics.Count);
+            Assert.AreEqual(new BotRange(4, 0, 9, 4).ToString(), templates[0].SourceRange.Range.ToString());
+            Assert.AreEqual("newtemplate", templates[1].Name);
+            Assert.AreEqual(2, templates[1].Parameters.Count);
+            Assert.AreEqual("age", templates[1].Parameters[0]);
+            Assert.AreEqual("name", templates[1].Parameters[1]);
+            Assert.AreEqual("- hi ", templates[1].Body.Replace("\r\n", "\n"));
+            Assert.AreEqual(new BotRange(10, 0, 11, 5).ToString(), templates[1].SourceRange.Range.ToString());
 
             templates.AddTemplate("newtemplate2", null, "- hi2 ");
-            Assert.AreEqual(templates.Count, 3);
-            Assert.AreEqual(templates.Diagnostics.Count, 0);
-            Assert.AreEqual(templates[2].Name, "newtemplate2");
-            Assert.AreEqual(templates[2].Body.Replace("\r\n", "\n"), "- hi2 ");
-            Assert.AreEqual(templates[2].SourceRange.Range.ToString(), new BotRange(12, 0, 13, 6).ToString());
+            Assert.AreEqual(3, templates.Count);
+            Assert.AreEqual(0, templates.Diagnostics.Count);
+            Assert.AreEqual("newtemplate2", templates[2].Name);
+            Assert.AreEqual("- hi2 ", templates[2].Body.Replace("\r\n", "\n"));
+            Assert.AreEqual(new BotRange(12, 0, 13, 6).ToString(), templates[2].SourceRange.Range.ToString());
 
             templates.UpdateTemplate("newtemplate", "newtemplateName", new List<string> { "newage", "newname" }, "- new hi\r\n#hi");
-            Assert.AreEqual(templates.Count, 3);
-            Assert.AreEqual(templates.Imports.Count, 0);
-            Assert.AreEqual(templates.Diagnostics.Count, 0);
-            Assert.AreEqual(templates[1].Name, "newtemplateName");
-            Assert.AreEqual(templates[1].Parameters.Count, 2);
-            Assert.AreEqual(templates[1].Parameters[0], "newage");
-            Assert.AreEqual(templates[1].Parameters[1], "newname");
-            Assert.AreEqual(templates[1].Body.Replace("\r\n", "\n"), "- new hi\n- #hi");
-            Assert.AreEqual(templates[1].SourceRange.Range.ToString(), new BotRange(10, 0, 12, 5).ToString());
-            Assert.AreEqual(templates[2].SourceRange.Range.ToString(), new BotRange(13, 0, 14, 6).ToString());
+            Assert.AreEqual(3, templates.Count);
+            Assert.AreEqual(0, templates.Imports.Count);
+            Assert.AreEqual(0, templates.Diagnostics.Count);
+            Assert.AreEqual("newtemplateName", templates[1].Name);
+            Assert.AreEqual(2, templates[1].Parameters.Count);
+            Assert.AreEqual("newage", templates[1].Parameters[0]);
+            Assert.AreEqual("newname", templates[1].Parameters[1]);
+            Assert.AreEqual("- new hi\n- #hi", templates[1].Body.Replace("\r\n", "\n"));
+            Assert.AreEqual(new BotRange(10, 0, 12, 5).ToString(), templates[1].SourceRange.Range.ToString());
+            Assert.AreEqual(new BotRange(13, 0, 14, 6).ToString(), templates[2].SourceRange.Range.ToString());
 
             templates.UpdateTemplate("newtemplate2", "newtemplateName2", new List<string> { "newage2", "newname2" }, "- new hi\r\n#hi2\r\n");
-            Assert.AreEqual(templates.Count, 3);
-            Assert.AreEqual(templates.Imports.Count, 0);
-            Assert.AreEqual(templates.Diagnostics.Count, 0);
-            Assert.AreEqual(templates[2].Name, "newtemplateName2");
-            Assert.AreEqual(templates[2].Body.Replace("\r\n", "\n"), "- new hi\n- #hi2\n");
-            Assert.AreEqual(templates[1].SourceRange.Range.ToString(), new BotRange(10, 0, 12, 5).ToString());
-            Assert.AreEqual(templates[2].SourceRange.Range.ToString(), new BotRange(13, 0, 15, 8).ToString());
+            Assert.AreEqual(3, templates.Count);
+            Assert.AreEqual(0, templates.Imports.Count);
+            Assert.AreEqual(0, templates.Diagnostics.Count);
+            Assert.AreEqual("newtemplateName2", templates[2].Name);
+            Assert.AreEqual("- new hi\n- #hi2\n", templates[2].Body.Replace("\r\n", "\n"));
+            Assert.AreEqual(new BotRange(10, 0, 12, 5).ToString(), templates[1].SourceRange.Range.ToString());
+            Assert.AreEqual(new BotRange(13, 0, 15, 8).ToString(), templates[2].SourceRange.Range.ToString());
 
             templates.DeleteTemplate("newtemplateName");
-            Assert.AreEqual(templates.Count, 2);
-            Assert.AreEqual(templates.Diagnostics.Count, 0);
-            Assert.AreEqual(templates[1].SourceRange.Range.ToString(), new BotRange(10, 0, 12, 8).ToString());
+            Assert.AreEqual(2, templates.Count);
+            Assert.AreEqual(0, templates.Diagnostics.Count);
+            Assert.AreEqual(new BotRange(10, 0, 12, 8).ToString(), templates[1].SourceRange.Range.ToString());
 
             templates.DeleteTemplate("newtemplateName2");
-            Assert.AreEqual(templates.Count, 1);
-            Assert.AreEqual(templates.Diagnostics.Count, 0);
-            Assert.AreEqual(templates[0].SourceRange.Range.ToString(), new BotRange(4, 0, 9, 4).ToString());
+            Assert.AreEqual(1, templates.Count);
+            Assert.AreEqual(0, templates.Diagnostics.Count);
+            Assert.AreEqual(new BotRange(4, 0, 9, 4).ToString(), templates[0].SourceRange.Range.ToString());
 
             // diagnostics
             // template error
             templates.AddTemplate("newtemplate#$%", new List<string> { "age", "name" }, "- hi ");
-            Assert.AreEqual(templates.Diagnostics.Count, 1);
-            Assert.AreEqual(templates.Diagnostics[0].Message, TemplateErrors.InvalidTemplateName("newtemplate#$%"));
-            Assert.AreEqual(templates.Diagnostics[0].Range.ToString(), new BotRange(11, 0, 11, 29).ToString());
+            Assert.AreEqual(1, templates.Diagnostics.Count);
+            Assert.AreEqual(TemplateErrors.InvalidTemplateName("newtemplate#$%"), templates.Diagnostics[0].Message);
+            Assert.AreEqual(new BotRange(11, 0, 11, 29).ToString(), templates.Diagnostics[0].Range.ToString());
 
             templates.UpdateTemplate("newtemplate#$%", "newtemplateName", null, "- new hi");
-            Assert.AreEqual(templates.Diagnostics.Count, 0);
+            Assert.AreEqual(0, templates.Diagnostics.Count);
 
             templates.UpdateTemplate("newtemplateName", "newtemplateName", null, "- ${wPhrase()}");
-            Assert.AreEqual(templates.Diagnostics.Count, 0);
+            Assert.AreEqual(0, templates.Diagnostics.Count);
 
             templates.UpdateTemplate("newtemplateName", "newtemplateName", null, "- ${NoTemplate()}");
-            Assert.AreEqual(templates.Diagnostics.Count, 1);
+            Assert.AreEqual(1, templates.Diagnostics.Count);
             Assert.IsTrue(templates.Diagnostics[0].Message.Contains("it's not a built-in function or a custom function"));
-            Assert.AreEqual(templates.Diagnostics[0].Range.ToString(), new BotRange(12, 2, 12, 17).ToString());
+            Assert.AreEqual(new BotRange(12, 2, 12, 17).ToString(), templates.Diagnostics[0].Range.ToString());
 
             templates.DeleteTemplate("newtemplateName");
-            Assert.AreEqual(templates.Diagnostics.Count, 0);
+            Assert.AreEqual(0, templates.Diagnostics.Count);
         }
 
         [TestMethod]
