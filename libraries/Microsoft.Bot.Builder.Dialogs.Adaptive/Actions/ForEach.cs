@@ -78,8 +78,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            // Set list information
             dc.State.SetValue(Index.GetValue(dc.State), -1);
+
+            // Set list information
             var items = dc.State.GetValue<JArray>(this.ItemsProperty.GetValue(dc.State));
             dc.State.SetValue(LIST, items);
 
@@ -103,6 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected virtual async Task<DialogTurnResult> NextItemAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
+            // Get list information
             var list = dc.State.GetValue<JArray>(LIST);
             var index = dc.State.GetIntValue(Index.GetValue(dc.State));
             
