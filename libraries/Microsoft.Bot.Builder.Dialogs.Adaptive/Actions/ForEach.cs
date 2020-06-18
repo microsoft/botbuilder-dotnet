@@ -18,9 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Foreach";
-        private int index; 
-        private JArray list;
-        
+        private const string LIST = "dialog.foreach.list";
+
         [JsonConstructor]
         public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
@@ -80,8 +79,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // Set list information
-            index = -1;
-            list = dc.State.GetValue<JArray>(this.ItemsProperty.GetValue(dc.State));
+            dc.State.SetValue(Index.GetValue(dc.State), -1);
+            var items = dc.State.GetValue<JArray>(this.ItemsProperty.GetValue(dc.State));
+            dc.State.SetValue(LIST, items);
 
             return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
         }
@@ -103,6 +103,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected virtual async Task<DialogTurnResult> NextItemAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
+            var list = dc.State.GetValue<JArray>(LIST);
+            var index = dc.State.GetIntValue(Index.GetValue(dc.State));
+            
             // Next item
             if (++index < list.Count)
             {
