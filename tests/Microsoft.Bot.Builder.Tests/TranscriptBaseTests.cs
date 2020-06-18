@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -15,6 +16,11 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public TranscriptBaseTests()
         {
+            var folder = Path.Combine(Path.GetTempPath(), nameof(FileTranscriptTests));
+            if (Directory.Exists(folder))
+            {
+                Directory.Delete(folder, true);
+            }
         }
 
         public ITranscriptStore Store { get; set; }
