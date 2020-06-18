@@ -545,20 +545,12 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
 
             var status = await adapter.GetTokenStatusAsync(turnContext, userId, "DEF");
             Assert.NotNull(status);
-<<<<<<< HEAD
             Assert.Single(status);
-=======
-            Assert.Equal(1, status.Length);
->>>>>>> 9eacdd923... replacing MSTest methods with Xunit methods
 
             var oAuthAppCredentials = MicrosoftAppCredentials.Empty;
             status = await adapter.GetTokenStatusAsync(turnContext, oAuthAppCredentials, userId, "DEF");
             Assert.NotNull(status);
-<<<<<<< HEAD
             Assert.Single(status);
-=======
-            Assert.Equal(1, status.Length);
->>>>>>> 9eacdd923... replacing MSTest methods with Xunit methods
         }
 
         [Theory]

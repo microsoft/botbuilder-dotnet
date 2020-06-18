@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -13,19 +14,15 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("Message")]
     public class MessageFactoryTests
     {
-        public TestContext TestContext { get; set; }
-
         [Fact]
         public void NullText()
         {
             var message = MessageFactory.Text(null);
             
-            Assert.Null(message.Text, "Message Text is not null. Null must have been passed through.");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.Null(message.Text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
         }
 
         [Fact]
@@ -35,8 +32,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.Text(messageText);
 
-            Assert.Equal(message.Text, messageText, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.Equal(message.Text, messageText);
+            Assert.Equal(message.Type, ActivityTypes.Message);
         }
 
         [Fact]
@@ -58,10 +55,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.Text(messageText, ssml);
 
-            Assert.Equal(message.Text, messageText, "Message Text is not an empty string");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
-            Assert.Equal(message.InputHint, InputHints.AcceptingInput, "InputHint is not AcceptingInput");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            Assert.Equal(message.Text, messageText);
+            Assert.Equal(message.Speak, ssml);
+            Assert.Equal(message.InputHint, InputHints.AcceptingInput);
+            Assert.Equal(message.Type, ActivityTypes.Message);
         }
 
         [Fact]
@@ -74,10 +71,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
 
-            Assert.Equal(message.Text, text, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.Equal(message.InputHint, inputHint, "InputHint does not match");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
             Assert.NotNull(message.SuggestedActions);
             Assert.NotNull(message.SuggestedActions.Actions);
             Assert.True(message.SuggestedActions.Actions.Count == 2);
@@ -99,10 +96,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
 
-            Assert.Equal(message.Text, text, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.Equal(message.InputHint, inputHint, "InputHint does not match");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
             Assert.NotNull(message.SuggestedActions);
             Assert.NotNull(message.SuggestedActions.Actions);
             Assert.True(
@@ -137,10 +134,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
-            Assert.Equal(message.Text, text, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.Equal(message.InputHint, inputHint, "InputHint does not match");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
             Assert.NotNull(message.SuggestedActions);
             Assert.NotNull(message.SuggestedActions.Actions);
             Assert.True(message.SuggestedActions.Actions.Count == 1);
@@ -182,10 +179,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
-            Assert.Equal(message.Text, text, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.Equal(message.InputHint, inputHint, "InputHint does not match");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
             Assert.NotNull(message.SuggestedActions);
             Assert.NotNull(message.SuggestedActions.Actions);
             Assert.True(message.SuggestedActions.Actions.Count == 2);
@@ -215,66 +212,54 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.Attachment(attachment, text, ssml, inputHint);
 
-            Assert.Equal(message.Text, text, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.Equal(message.InputHint, inputHint, "InputHint does not match");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
             Assert.True(message.Attachments.Count == 1, "Incorrect Attachment Count");
             Assert.True(message.Attachments[0].Name == attachmentName, "Incorrect Attachment Name");
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void SuggestedActionsCardActionCollectionNull()
         {
-            MessageFactory.SuggestedActions((IEnumerable<CardAction>)null);
-            Assert.Fail("Exception not thrown");
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.SuggestedActions((IEnumerable<CardAction>)null));
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void SuggestedActionsStringCollectionNull()
         {
-            MessageFactory.SuggestedActions((IEnumerable<string>)null);
-            Assert.Fail("Exception not thrown");
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.SuggestedActions((IEnumerable<string>)null));
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AttachmentNull()
         {
-            MessageFactory.Attachment((Attachment)null);
-            Assert.Fail("Exception not thrown");
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.Attachment((Attachment)null));
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AttachmentMultipleNull()
         {
-            MessageFactory.Attachment((IList<Attachment>)null);
-            Assert.Fail("Exception not thrown");
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.Attachment((IList<Attachment>)null));
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void CarouselNull()
         {
-            MessageFactory.Carousel((IList<Attachment>)null);
-            Assert.Fail("Exception not thrown");
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.Carousel((IList<Attachment>)null));
         }
 
-        [DataTestMethod]
-        [DataRow("url", null)]
-        [DataRow("url", "")]
-        [DataRow("url", " ")]
-        [DataRow(null, "contentType")]
-        [DataRow("", "contentType")]
-        [DataRow(" ", "contentType")]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Theory]
+        [InlineData("url", null)]
+        [InlineData("url", "")]
+        [InlineData("url", " ")]
+        [InlineData(null, "contentType")]
+        [InlineData("", "contentType")]
+        [InlineData(" ", "contentType")]
         public void ContentUrlNull(string url, string contentType)
         {
-            MessageFactory.ContentUrl(url, contentType);
-            Assert.Fail("Exception not thrown");
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.ContentUrl(url, contentType));
         }
 
         [Fact]
@@ -300,10 +285,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
 
-            Assert.Equal(message.Text, text, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.Equal(message.InputHint, inputHint, "InputHint does not match");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
             Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
             Assert.True(message.Attachments.Count == 2, "Incorrect Attachment Count");
             Assert.True(message.Attachments[0].Name == attachmentName, "Incorrect Attachment1 Name");
@@ -333,10 +318,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
 
-            Assert.Equal(message.Text, text, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.Equal(message.InputHint, inputHint, "InputHint does not match");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
             Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
             Assert.True(message.Attachments.Count == 2, "Incorrect Attachment Count");
             Assert.True(names.SetEquals(message.Attachments.Select(a => a.Name)), "Incorrect set of attachment names.");
@@ -365,10 +350,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
 
-            Assert.Equal(message.Text, text, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.Equal(message.InputHint, inputHint, "InputHint does not match");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
             Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.List);
             Assert.True(message.Attachments.Count == 2, "Incorrect Attachment Count");
             Assert.True(message.Attachments[0].Name == attachmentName1, "Incorrect Attachment1 Name");
@@ -399,10 +384,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
 
-            Assert.Equal(message.Text, text, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.Equal(message.InputHint, inputHint, "InputHint does not match");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
             Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.List);
             Assert.True(message.Attachments.Count == 2, "Incorrect Attachment Count");
             Assert.True(names.SetEquals(message.Attachments.Select(a => a.Name)), "Incorrect set of attachment names.");
@@ -420,22 +405,22 @@ namespace Microsoft.Bot.Builder.Tests
 
             var message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml, inputHint);
 
-            Assert.Equal(message.Text, text, "Message Text does not match");
-            Assert.Equal(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.Equal(message.InputHint, inputHint, "InputHint does not match");
-            Assert.Equal(message.Speak, ssml, "ssml text is incorrect");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
             Assert.True(message.Attachments.Count == 1);
             Assert.True(message.Attachments[0].Name == name, "Incorrect Attachment1 Name");
             Assert.True(message.Attachments[0].ContentType == contentType, "Incorrect contentType");
             Assert.True(message.Attachments[0].ContentUrl == uri, "Incorrect Uri");
         }
 
-        [DataTestMethod]
-        [DataRow("", null)]
-        [DataRow("Select color", "Select color")]
+        [Theory]
+        [InlineData("", null)]
+        [InlineData("Select color", "Select color")]
         public async Task ValidateImBack(string inputText, string expectedText)
         {
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ValidateImBack"));
 
             async Task ReplyWithImBack(ITurnContext ctx, CancellationToken cancellationToken)
             {

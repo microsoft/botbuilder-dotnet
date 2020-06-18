@@ -4,14 +4,11 @@
 using System;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Connector;
-using Xunit;
 using Newtonsoft.Json.Serialization;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("BotAdapter")]
-
     public class Integration
     {
         [Fact]
@@ -23,9 +20,9 @@ namespace Microsoft.Bot.Builder.Tests
             // connector exposes the serializer settings it uses
             var connector = new ConnectorClient(new Uri("http://localhost/"));
 
-            Assert.IsInstanceOfType(settings.ContractResolver, typeof(DefaultContractResolver));
-            Assert.IsInstanceOfType(connector.DeserializationSettings.ContractResolver, typeof(DefaultContractResolver));
-            Assert.IsInstanceOfType(connector.SerializationSettings.ContractResolver, typeof(DefaultContractResolver));
+            Assert.IsType<DefaultContractResolver>(settings.ContractResolver);
+            Assert.IsType<DefaultContractResolver>(connector.DeserializationSettings.ContractResolver);
+            Assert.IsType<DefaultContractResolver>(connector.SerializationSettings.ContractResolver);
         }
     }
 }

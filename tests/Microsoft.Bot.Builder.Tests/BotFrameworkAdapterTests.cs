@@ -14,14 +14,13 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Xunit;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class BotFrameworkAdapterTests
     {
         private const string AppCredentialsCacheName = "_appCredentialMap";
@@ -163,10 +162,10 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Null(sentActivity.Id); 
         }
 
-        [Fact]
-        [DataRow(null, null, null, AuthenticationConstants.ToChannelFromBotOAuthScope, 0, 1)]
-        [DataRow("00000000-0000-0000-0000-000000000001", CallerIdConstants.PublicAzureChannel, null, AuthenticationConstants.ToChannelFromBotOAuthScope, 1, 1)]
-        [DataRow("00000000-0000-0000-0000-000000000001", CallerIdConstants.USGovChannel, GovernmentAuthenticationConstants.ChannelService, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, 1, 1)]
+        [Theory]
+        [InlineData(null, null, null, AuthenticationConstants.ToChannelFromBotOAuthScope, 0, 1)]
+        [InlineData("00000000-0000-0000-0000-000000000001", CallerIdConstants.PublicAzureChannel, null, AuthenticationConstants.ToChannelFromBotOAuthScope, 1, 1)]
+        [InlineData("00000000-0000-0000-0000-000000000001", CallerIdConstants.USGovChannel, GovernmentAuthenticationConstants.ChannelService, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, 1, 1)]
         public async Task ProcessActivityAsyncCreatesCorrectCredsAndClient(string botAppId, string expectedCallerId, string channelService, string expectedScope, int expectedAppCredentialsCount, int expectedClientCredentialsCount)
         {
             var claims = new List<Claim>();

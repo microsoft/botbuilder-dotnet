@@ -7,8 +7,6 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("State Management")]
     public class BotStateSetTests
     {
         [Fact]

@@ -12,13 +12,12 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
-using Xunit;
 using Moq;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class BotFrameworkAdapterOAuthTests
     {
         [Fact]

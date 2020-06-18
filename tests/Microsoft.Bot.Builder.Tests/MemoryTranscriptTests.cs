@@ -6,7 +6,6 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class MemoryTranscriptTests : TranscriptBaseTests
     {
         public MemoryTranscriptTests()

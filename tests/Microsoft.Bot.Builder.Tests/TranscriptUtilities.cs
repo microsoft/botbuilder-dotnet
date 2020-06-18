@@ -8,8 +8,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using Microsoft.Bot.Schema;
-using Xunit;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Tests
         /// </summary>
         /// <param name="context">Test context.</param>
         /// <returns>A list of activities to test.</returns>
-        public static IEnumerable<IActivity> GetFromTestContext(TestContext context)
+        public static IEnumerable<IActivity> GetFromTestContext()
         {
             // Use TestContext to find transcripts using the following naming convention:
             // {BOTBUILDER_TRANSCRIPTS_LOCATION}\{TestClassName}\{TestMethodName}.chat

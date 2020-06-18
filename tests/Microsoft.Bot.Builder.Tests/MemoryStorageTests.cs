@@ -3,24 +3,21 @@
 
 using System;
 using System.Threading.Tasks;
-using Xunit;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("Storage")]
-    [TestCategory("Storage - Memory")]
-    public class MemoryStorageTests : StorageBaseTests
+    public class MemoryStorageTests : StorageBaseTests, IDisposable
     {
         private IStorage storage;
 
         public MemoryStorageTests()
         {
+            storage = new MemoryStorage();
         }
 
-        [TestInitialize]
-        public void Initialize()
+        public void Dispose()
         {
             storage = new MemoryStorage();
         }
@@ -34,7 +31,7 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public void MemoryParamTest()
         {
-            Assert.ThrowsException<ArgumentNullException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
                 new MemoryStorage((JsonSerializer)null));
         }
 

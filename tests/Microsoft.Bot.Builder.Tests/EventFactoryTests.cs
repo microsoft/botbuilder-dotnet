@@ -2,50 +2,38 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mime;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Xunit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("Event")]
     public class EventFactoryTests
     {
-        public TestContext TestContext { get; set; }
-
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void HandoffInitiationNullTurnContext()
         {
-            EventFactory.CreateHandoffInitiation(null, "some text");
+            Assert.Throws<ArgumentNullException>(() => EventFactory.CreateHandoffInitiation(null, "some text"));
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void HandoffStatusNullConversation()
         {
-            EventFactory.CreateHandoffStatus(null, "accepted");
+            Assert.Throws<ArgumentNullException>(() => EventFactory.CreateHandoffStatus(null, "accepted"));
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void HandoffStatusNullStatus()
         {
-            EventFactory.CreateHandoffStatus(new ConversationAccount(), null);
+            Assert.Throws<ArgumentNullException>(() => EventFactory.CreateHandoffStatus(new ConversationAccount(), null));
         }
 
         [Fact]
         public void TestCreateHandoffInitiation()
         {
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("TestCreateHandoffInitiation"));
             string fromID = "test";
             var activity = new Activity
             {
@@ -68,7 +56,7 @@ namespace Microsoft.Bot.Builder.Tests
             var handoffEvent = EventFactory.CreateHandoffInitiation(context, new { Skill = "any" }, transcript);
             Assert.Equal(handoffEvent.Name, HandoffEventNames.InitiateHandoff);
             var skill = (handoffEvent.Value as JObject)?.Value<string>("Skill");
-            Assert.Equal(skill, "any");
+            Assert.Equal("any", skill);
             Assert.Equal(handoffEvent.From.Id, fromID);
         }
 

@@ -6,16 +6,13 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Xunit;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class Transcript_MiddlewareTests
     {
-        public TestContext TestContext { get; set; }
-
         public static async Task LogActivitiesTest(ITranscriptStore transcriptStore)
         {
             var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
@@ -105,7 +102,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal("TestActivityWithId", pagedResult.Items[5].Id);
             Assert.Equal("3rd inbound message to TestFlow", pagedResult.Items[8].AsMessageActivity().Text);
             Assert.Equal("My Id is null.", pagedResult.Items[11].AsMessageActivity().Text);
-            Assert.True(pagedResult.Items[11].AsMessageActivity().Id.Contains("g_"));
+            Assert.Contains("g_", pagedResult.Items[11].AsMessageActivity().Id);
             foreach (var activity in pagedResult.Items)
             {
                 Assert.True(activity.Timestamp > default(DateTimeOffset));
@@ -203,7 +200,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        [TestCategory("Middleware")]
         public async Task MemoryTranscript_EnsureToLogActivitiesWithIdsTest()
         {
             var transcriptStore = new MemoryTranscriptStore();
@@ -211,7 +207,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        [TestCategory("Middleware")]
         public async Task MemoryTranscript_LogActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
@@ -219,7 +214,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        [TestCategory("Middleware")]
         public async Task MemoryTranscript_LogDeleteActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
@@ -227,7 +221,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        [TestCategory("Middleware")]
         public async Task MemoryTranscript_LogUpdateActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
@@ -235,7 +228,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        [TestCategory("Middleware")]
         public async Task MemoryTranscript_TestDateLogUpdateActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
@@ -243,7 +235,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        [TestCategory("Middleware")]
         public async Task FileTranscript_LogActivities()
         {
             var transcriptStore = GetFileTranscriptLogger();
@@ -251,7 +242,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        [TestCategory("Middleware")]
         public async Task FileTranscript_LogDeleteActivities()
         {
             var transcriptStore = GetFileTranscriptLogger();
@@ -259,7 +249,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        [TestCategory("Middleware")]
         public async Task FileTranscript_LogUpdateActivities()
         {
             var transcriptStore = GetFileTranscriptLogger();
@@ -267,7 +256,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        [TestCategory("Middleware")]
         public async Task FileTranscript_TestDateLogUpdateActivities()
         {
             var transcriptStore = GetFileTranscriptLogger();
@@ -310,7 +298,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         private FileTranscriptLogger GetFileTranscriptLogger()
         {
-            var path = Path.Combine(Path.GetTempPath(), TestContext.TestName);
+            var path = Path.Combine(Path.GetTempPath(), "GetFileTranscriptLogger");
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);

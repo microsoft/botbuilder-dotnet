@@ -10,12 +10,8 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("BotAdapter")]
     public class BotAdapterTests
     {
-        public TestContext TestContext { get; set; }
-
         [Fact]
         public void AdapterSingleUse()
         {
@@ -53,7 +49,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ContinueConversation_DirectMsgAsync()
         {
             bool callbackInvoked = false;
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ContinueConversation_DirectMsgAsync"));
             ConversationReference cr = new ConversationReference
             {
                 ActivityId = "activityId",

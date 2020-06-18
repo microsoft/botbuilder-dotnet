@@ -10,8 +10,6 @@ using Xunit;
 /// </summary>
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("BotFrameworkOptions")]
     public class BotFrameworkOptionsTests
     {
         [Fact]

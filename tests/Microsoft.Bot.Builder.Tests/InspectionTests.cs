@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
-using Xunit;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("InspectionMiddleware")]
     public class InspectionTests
     {
         [Fact]

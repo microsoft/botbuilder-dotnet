@@ -8,11 +8,8 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestCategory("State Management")]
     public class AutoSaveStateMiddlewareTests
     {
-        public TestContext TestContext { get; set; }
-
         [Fact]
         public async Task AutoSaveStateMiddleware_DualReadWrite()
         {
@@ -26,7 +23,7 @@ namespace Microsoft.Bot.Builder.Tests
             var convState = new ConversationState(storage);
             var convProperty = convState.CreateProperty<int>("convCount");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("AutoSaveStateMiddleware_DualReadWrite"))
                 .Use(new AutoSaveStateMiddleware(userState, convState));
 
             const int USER_INITITAL_COUNT = 100;
@@ -103,7 +100,7 @@ namespace Microsoft.Bot.Builder.Tests
             var bss = new AutoSaveStateMiddleware()
                 .Add(userState)
                 .Add(convState);
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("AutoSaveStateMiddleware_Chain"))
                 .Use(bss);
 
             const int USER_INITITAL_COUNT = 100;

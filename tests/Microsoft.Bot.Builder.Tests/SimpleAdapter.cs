@@ -38,14 +38,14 @@ namespace Microsoft.Bot.Builder.Tests
 
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
-            Assert.NotNull(reference, "SimpleAdapter.deleteActivity: missing reference");
+            Assert.NotNull(reference); // SimpleAdapter.deleteActivity: missing reference
             _callOnDelete?.Invoke(reference);
             return Task.CompletedTask;
         }
 
         public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
-            Assert.NotNull(activities, "SimpleAdapter.deleteActivity: missing reference");
+            Assert.NotNull(activities); // SimpleAdapter.deleteActivity: missing reference
             Assert.True(activities.Count() > 0, "SimpleAdapter.sendActivities: empty activities array.");
 
             _callOnSend?.Invoke(activities);
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Tests
 
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            Assert.NotNull(activity, "SimpleAdapter.updateActivity: missing activity");
+            Assert.NotNull(activity); //SimpleAdapter.updateActivity: missing activity
             _callOnUpdate?.Invoke(activity);
             return Task.FromResult(new ResourceResponse(activity.Id)); // echo back the Id
         }

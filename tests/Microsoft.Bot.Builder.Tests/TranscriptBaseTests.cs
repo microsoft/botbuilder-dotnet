@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using Xunit;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -21,83 +21,12 @@ namespace Microsoft.Bot.Builder.Tests
 
         public async Task BadArgs()
         {
-            try
-            {
-                await Store.LogActivityAsync(null);
-                Assert.Fail("LogActivity Should have thrown on null ");
-            }
-            catch (ArgumentNullException)
-            {
-            }
-            catch
-            {
-                Assert.Fail("LogActivity Should have thrown ArgumentNull exception on null ");
-            }
-
-            try
-            {
-                await Store.GetTranscriptActivitiesAsync(null, null);
-                Assert.Fail("GetConversationActivities Should have thrown on null");
-            }
-            catch (ArgumentNullException)
-            {
-            }
-            catch
-            {
-                Assert.Fail("DeleteConversation Should have thrown ArgumentNull ");
-            }
-
-            try
-            {
-                await Store.GetTranscriptActivitiesAsync("asdfds", null);
-                Assert.Fail("GetConversationActivities Should have thrown on null");
-            }
-            catch (ArgumentNullException)
-            {
-            }
-            catch
-            {
-                Assert.Fail("DeleteConversation Should have thrown ArgumentNull ");
-            }
-
-            try
-            {
-                await Store.ListTranscriptsAsync(null);
-                Assert.Fail("ListConversations Should have thrown on null");
-            }
-            catch (ArgumentNullException)
-            {
-            }
-            catch
-            {
-                Assert.Fail("ListConversations Should have thrown ArgumentNull ");
-            }
-
-            try
-            {
-                await Store.DeleteTranscriptAsync(null, null);
-                Assert.Fail("DeleteConversation Should have thrown on null channelId");
-            }
-            catch (ArgumentNullException)
-            {
-            }
-            catch
-            {
-                Assert.Fail("DeleteConversation Should have thrown ArgumentNull on channelId");
-            }
-
-            try
-            {
-                await Store.DeleteTranscriptAsync("test", null);
-                Assert.Fail("DeleteConversation Should have thrown on null conversationId");
-            }
-            catch (ArgumentNullException)
-            {
-            }
-            catch
-            {
-                Assert.Fail("DeleteConversation Should have thrown ArgumentNull on conversationId");
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Store.LogActivityAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Store.GetTranscriptActivitiesAsync(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Store.GetTranscriptActivitiesAsync("asdfds", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Store.ListTranscriptsAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Store.DeleteTranscriptAsync(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Store.DeleteTranscriptAsync("test", null));
         }
 
         public async Task LogActivity()
@@ -108,7 +37,7 @@ namespace Microsoft.Bot.Builder.Tests
             await Store.LogActivityAsync(activity);
 
             var results = await Store.GetTranscriptActivitiesAsync("test", conversationId);
-            Assert.Equal(1, results.Items.Length);
+            Assert.Single(results.Items);
 
             Assert.Equal(JsonConvert.SerializeObject(activity), JsonConvert.SerializeObject(results.Items[0]));
         }
@@ -164,12 +93,12 @@ namespace Microsoft.Bot.Builder.Tests
             // make sure other channels and conversations don't return results
             var pagedResult = await Store.GetTranscriptActivitiesAsync("bogus", conversationId);
             Assert.Null(pagedResult.ContinuationToken);
-            Assert.Equal(0, pagedResult.Items.Length);
+            Assert.Empty(pagedResult.Items);
 
             // make sure other channels and conversations don't return results
             pagedResult = await Store.GetTranscriptActivitiesAsync("test", "bogus");
             Assert.Null(pagedResult.ContinuationToken);
-            Assert.Equal(0, pagedResult.Items.Length);
+            Assert.Empty(pagedResult.Items);
 
             pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.Null(pagedResult.ContinuationToken);
@@ -222,7 +151,7 @@ namespace Microsoft.Bot.Builder.Tests
             pagedResult = await Store.GetTranscriptActivitiesAsync("test", conversationId);
             pagedResult2 = await Store.GetTranscriptActivitiesAsync("test", conversationId2);
 
-            Assert.Equal(0, pagedResult.Items.Length);
+            Assert.Empty(pagedResult.Items);
             Assert.Equal(activities.Count, pagedResult2.Items.Length);
         }
 
@@ -260,7 +189,7 @@ namespace Microsoft.Bot.Builder.Tests
 
                 foreach (var item in pagedResult.Items)
                 {
-                    Assert.IsFalse(seen.Contains(item.Id));
+                    Assert.DoesNotContain(item.Id, seen);
                     seen.Add(item.Id);
                 }
             }
@@ -270,7 +199,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             foreach (var activity in activities)
             {
-                Assert.True(seen.Contains(activity.Id));
+                Assert.Contains(activity.Id, seen);
             }
         }
 
@@ -309,7 +238,7 @@ namespace Microsoft.Bot.Builder.Tests
 
                 foreach (var item in pagedResult.Items)
                 {
-                    Assert.IsFalse(seen.Contains(item.Id));
+                    Assert.DoesNotContain(item.Id, seen);
                     seen.Add(item.Id);
                 }
             }
@@ -319,12 +248,12 @@ namespace Microsoft.Bot.Builder.Tests
 
             foreach (var activity in activities.Where(a => a.Timestamp >= startDate))
             {
-                Assert.True(seen.Contains(activity.Id));
+                Assert.Contains(activity.Id, seen);
             }
 
             foreach (var activity in activities.Where(a => a.Timestamp < startDate))
             {
-                Assert.IsFalse(seen.Contains(activity.Id));
+                Assert.DoesNotContain(activity.Id, seen);
             }
         }
 
@@ -371,7 +300,7 @@ namespace Microsoft.Bot.Builder.Tests
 
                 foreach (var item in pagedResult.Items)
                 {
-                    Assert.IsFalse(seen.Contains(item.Id));
+                    Assert.DoesNotContain(item.Id, seen);
                     if (item.Id.StartsWith("_ListConversations"))
                     {
                         seen.Add(item.Id);
@@ -384,7 +313,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             foreach (var conversationId in conversationIds)
             {
-                Assert.True(seen.Contains(conversationId));
+                Assert.Contains(conversationId, seen);
             }
         }
 

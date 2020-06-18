@@ -2,25 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class TurnContextStateCollectionTests
     {
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void TurnContextStateCollection_AddNullKey()
         {
             var ts = new TurnContextStateCollection();
-            ts.Add(null, new object());
-            Assert.Fail("Should Fail due to null key");
+            Assert.Throws<ArgumentNullException>(() => ts.Add(null, new object()));
         }
 
         [Fact]
@@ -34,16 +27,14 @@ namespace Microsoft.Bot.Builder.Tests
             ts.Add(test2);
             Assert.Equal(test, ts.Get<object>("test"));
             Assert.Equal(test2, ts.Get<object>());
-            Assert.AreNotEqual(test, ts.Get<object>());
+            Assert.NotEqual(test, ts.Get<object>());
         }
 
         [Fact]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void TurnContextStateCollection_SetNullKey()
         {
             var ts = new TurnContextStateCollection();
-            ts.Set(null, new object());
-            Assert.Fail("Should Fail due to null key");
+            Assert.Throws<ArgumentNullException>(() => ts.Set(null, new object()));
         }
         
         [Fact]
@@ -57,7 +48,7 @@ namespace Microsoft.Bot.Builder.Tests
             ts.Set(test2);
             Assert.Equal(test, ts.Get<object>("test"));
             Assert.Equal(test2, ts.Get<object>());
-            Assert.AreNotEqual(test, ts.Get<object>());
+            Assert.NotEqual(test, ts.Get<object>());
 
             ts.Set<object>("test", null);
             Assert.Null(ts.Get<object>("test"));
