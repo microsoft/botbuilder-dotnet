@@ -20,15 +20,6 @@ namespace Microsoft.Bot.Builder.Tests
             get { return Path.Combine(Path.GetTempPath(), nameof(FileTranscriptTests)); }
         }
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            if (Directory.Exists(Folder))
-            {
-                Directory.Delete(Folder, true);
-            }
-        }
-
         [Fact]
         public async Task FileTranscript_BadArgs()
         {
