@@ -23,9 +23,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string LGType = "lgType";
 
-        // PCRE: (?<!\\)\${(('(\\('|\\)|[^'])*?')|("(\\("|\\)|[^"])*?")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'"`])|({\s*}))+}?
-        public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
-        public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions lgOptions;
@@ -78,10 +75,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Evaluate result.</returns>
         public object EvaluateTemplate(string inputTemplateName, object scope)
         {
-            if (!(scope is CustomizedMemory))
-            {
-                scope = new CustomizedMemory(scope);
-            }
+            var memory = scope is CustomizedMemory scopeMemory ? scopeMemory : new CustomizedMemory(scope);
 
             (var reExecute, var templateName) = ParseTemplateName(inputTemplateName);
 
@@ -90,14 +84,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
-            if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
+            var templateTarget = new EvaluationTarget(templateName, memory);
+
+            var currentEvaluateId = templateTarget.GetId();
+
+            if (evaluationTargetStack.Any(e => e.GetId() == currentEvaluateId))
             {
                 throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
-
-            var templateTarget = new EvaluationTarget(templateName, scope);
-
-            var currentEvaluateId = templateTarget.GetId();
 
             EvaluationTarget previousEvaluateTarget = null;
             if (evaluationTargetStack.Count != 0)
@@ -143,7 +137,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 else
                 {
                     // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in 
-                    var propertyObject = JObject.FromObject(EvalExpression(body.objectStructureLine().GetText(), body.objectStructureLine()));
+                    var propertyObject = JObject.FromObject(EvalExpression(body.expressionInStructure().GetText(), body.expressionInStructure(), body.GetText()));
 
                     // Full reference to another structured template is limited to the structured template with same type 
                     if (propertyObject[LGType] != null && propertyObject[LGType].ToString() == typeName)
@@ -189,9 +183,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             var length = switchCaseNodes.Length;
-            var switchExprs = switchCaseNodes[0].switchCaseStat().EXPRESSION();
+            var switchExprs = switchCaseNodes[0].switchCaseStat().expression();
             var switchErrorPrefix = "Switch '" + switchExprs[0].GetText() + "': ";
-            var switchExprResult = EvalExpression(switchExprs[0].GetText(), switchCaseNodes[0].switchCaseStat(), switchErrorPrefix).ToString();
+            var switchExprResult = EvalExpression(switchExprs[0].GetText(), switchExprs[0], switchCaseNodes[0].switchCaseStat().GetText(), switchErrorPrefix).ToString();
             var idx = 0;
             foreach (var switchCaseNode in switchCaseNodes)
             {
@@ -214,10 +208,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                 }
 
-                var caseExprs = switchCaseNode.switchCaseStat().EXPRESSION();
+                var caseExprs = switchCaseNode.switchCaseStat().expression();
 
                 var caseErrorPrefix = "Case '" + caseExprs[0].GetText() + "': ";
-                var caseExprResult = EvalExpression(caseExprs[0].GetText(), switchCaseNode.switchCaseStat(), caseErrorPrefix).ToString();
+                var caseExprResult = EvalExpression(caseExprs[0].GetText(), caseExprs[0], switchCaseNode.switchCaseStat().GetText(), caseErrorPrefix).ToString();
                 if (switchExprResult == caseExprResult)
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
@@ -233,23 +227,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
             var result = new List<object>();
-            foreach (ITerminalNode node in context.children)
+            foreach (var child in context.children)
             {
-                switch (node.Symbol.Type)
+                if (child is LGTemplateParser.ExpressionContext expression)
                 {
-                    case LGTemplateParser.DASH:
-                    case LGTemplateParser.MULTILINE_PREFIX:
-                    case LGTemplateParser.MULTILINE_SUFFIX:
-                        break;
-                    case LGTemplateParser.ESCAPE_CHARACTER:
-                        result.Add(node.GetText().Escape());
-                        break;
-                    case LGTemplateParser.EXPRESSION:
-                        result.Add(EvalExpression(node.GetText(), context, prefixErrorMsg));
-                        break;
-                    default:
-                        result.Add(node.GetText());
-                        break;
+                    result.Add(EvalExpression(expression.GetText(), expression, context.GetText(), prefixErrorMsg));
+                }
+                else
+                {
+                    var node = child as ITerminalNode;
+                    switch (node.Symbol.Type)
+                    {
+                        case LGTemplateParser.DASH:
+                        case LGTemplateParser.MULTILINE_PREFIX:
+                        case LGTemplateParser.MULTILINE_SUFFIX:
+                            break;
+                        case LGTemplateParser.ESCAPE_CHARACTER:
+                            result.Add(node.GetText().Escape());
+                            break;
+                        default:
+                            result.Add(node.GetText());
+                            break;
+                    }
                 }
             }
 
@@ -311,7 +310,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return errorMsg;
         }
 
-        internal static void CheckExpressionResult(string exp, string error, object result, string templateName, ParserRuleContext context = null, string errorPrefix = "")
+        internal static void CheckExpressionResult(string exp, string error, object result, string templateName, string lineContent = "", string errorPrefix = "")
         {
             var errorMsg = string.Empty;
 
@@ -325,9 +324,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 childErrorMsg = ConcatErrorMsg(childErrorMsg, TemplateErrors.NullExpression(exp));
             }
 
-            if (context != null)
+            if (!string.IsNullOrWhiteSpace(lineContent))
             {
-                errorMsg = ConcatErrorMsg(errorMsg, TemplateErrors.ErrorExpression(context.GetText(), templateName, errorPrefix));
+                errorMsg = ConcatErrorMsg(errorMsg, TemplateErrors.ErrorExpression(lineContent, templateName, errorPrefix));
             }
 
             throw new Exception(ConcatErrorMsg(childErrorMsg, errorMsg));
@@ -340,27 +339,32 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new List<object>();
             foreach (var item in values)
             {
-                if (item.IsPureExpression(out var text))
+                if (item.IsPureExpression())
                 {
-                    result.Add(EvalExpression(text, context));
+                    result.Add(EvalExpression(item.expressionInStructure(0).GetText(), item.expressionInStructure(0), context.GetText()));
                 }
                 else
                 {
                     var itemStringResult = new StringBuilder();
-                    foreach (ITerminalNode node in item.children)
+                    foreach (var child in item.children)
                     {
-                        switch (node.Symbol.Type)
+                        if (child is LGTemplateParser.ExpressionInStructureContext expression)
                         {
-                            case LGTemplateParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                                itemStringResult.Append(node.GetText().Replace(@"\|", "|").Escape());
-                                break;
-                            case LGTemplateParser.EXPRESSION_IN_STRUCTURE_BODY:
-                                var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
-                                itemStringResult.Append(EvalExpression(node.GetText(), context, errorPrefix));
-                                break;
-                            default:
-                                itemStringResult.Append(node.GetText());
-                                break;
+                            var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
+                            itemStringResult.Append(EvalExpression(expression.GetText(), expression, context.GetText(), errorPrefix));
+                        }
+                        else
+                        {
+                            var node = child as ITerminalNode;
+                            switch (node.Symbol.Type)
+                            {
+                                case LGTemplateParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
+                                    itemStringResult.Append(node.GetText().Replace(@"\|", "|").Escape());
+                                    break;
+                                default:
+                                    itemStringResult.Append(node.GetText());
+                                    break;
+                            }
                         }
                     }
 
@@ -373,9 +377,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private bool EvalCondition(LGTemplateParser.IfConditionContext condition)
         {
-            var expression = condition.EXPRESSION(0);
+            var expression = condition.expression(0);
             if (expression == null || // no expression means it's else
-                EvalExpressionInCondition(expression.GetText(), condition, "Condition '" + expression.GetText() + "':"))
+                EvalExpressionInCondition(expression, condition.GetText(), "Condition '" + expression.GetText() + "':"))
             {
                 return true;
             }
@@ -383,9 +387,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return false;
         }
 
-        private bool EvalExpressionInCondition(string exp, ParserRuleContext context = null, string errorPrefix = "")
+        private bool EvalExpressionInCondition(ParserRuleContext expressionContext, string contentLine, string errorPrefix = "")
         {
-            exp = exp.TrimExpression();
+            var exp = expressionContext.GetText().TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
             if (lgOptions.StrictMode == true && (error != null || result == null))
@@ -396,7 +400,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     evaluationTargetStack.Pop();
                 }
 
-                CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
+                CheckExpressionResult(exp, error, result, templateName, contentLine, errorPrefix);
             }
             else if (error != null
                 || result == null
@@ -409,7 +413,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return true;
         }
 
-        private object EvalExpression(string exp, ParserRuleContext context = null, string errorPrefix = "")
+        private object EvalExpression(string exp, ParserRuleContext expressionContext = null, string lineContent = "", string errorPrefix = "")
         {
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
@@ -422,9 +426,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     evaluationTargetStack.Pop();
                 }
 
-                CheckExpressionResult(exp, error, result, templateName, context, errorPrefix);
+                CheckExpressionResult(exp, error, result, templateName, lineContent, errorPrefix);
             }
-            else if (result == null && lgOptions.StrictMode != false)
+            else if (result == null && lgOptions.StrictMode != true)
             {
                 result = "null";
             }
@@ -500,8 +504,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(isTemplate, ExpressionFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
             }
 
+            const string expandText = "expandText";
+
+            if (name.Equals(expandText))
+            {
+                return new ExpressionEvaluator(expandText, ExpressionFunctions.Apply(this.ExpandText()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
+            }
+
             return null;
         };
+
+        private Func<IReadOnlyList<object>, object> ExpandText()
+       => (IReadOnlyList<object> args) =>
+       {
+           var stringContent = args[0].ToString();
+           var newScope = CurrentTarget().Scope;
+           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+           return newTemplates.EvaluateText(stringContent, newScope, lgOptions);
+       };
 
         private Func<IReadOnlyList<object>, object> IsTemplate()
        => (IReadOnlyList<object> args) =>
@@ -529,9 +549,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
 
-           var evaluator = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-           var result = ExpressionRecognizeRegex.Replace(stringContent, evaluator);
-           return result.Escape();
+           var newScope = CurrentTarget().Scope;
+           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+           return newTemplates.EvaluateText(stringContent, newScope, lgOptions);
        };
 
         private string GetResourcePath(string filePath)
@@ -577,7 +597,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
             {
-                throw new Exception(TemplateErrors.InvalidTemplateName);
+                throw new Exception(TemplateErrors.InvalidTemplateNameType);
             }
 
             // Validate more if the name is string constant

@@ -291,6 +291,24 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
 
         /// <summary>
+        /// Gets or sets a value indicating whether to enable PreciseAnswer generation. 
+        /// </summary>
+        /// <value>
+        /// Choice whether to generate precise answer or not.
+        /// </value>
+        [JsonProperty("enablePreciseAnswer")]
+        public BoolExpression EnablePreciseAnswer { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user only wants to receive precise answer. 
+        /// </summary>
+        /// <value>
+        /// A value that indicates if user wants to receive full text along with the precise answer or not.
+        /// </value>
+        [JsonProperty("displayPreciseAnswerOnly")]
+        public BoolExpression DisplayPreciseAnswerOnly { get; set; } = true;
+
+        /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -331,6 +349,59 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             ObjectPath.SetPathValue(dc.ActiveDialog.State, Options, dialogOptions);
 
             return await base.BeginDialogAsync(dc, dialogOptions, cancellationToken).ConfigureAwait(false);
+        }
+
+        public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+        {
+            var interrupted = dc.State.GetValue<bool>(TurnPath.Interrupted, () => false);
+            if (interrupted)
+            {
+                // if qnamaker was interrupted then end the qnamaker dialog
+                return dc.EndDialogAsync(cancellationToken: cancellationToken);
+            }
+
+            return base.ContinueDialogAsync(dc, cancellationToken);
+        }
+
+        protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            if (dc.Context.Activity.Type == ActivityTypes.Message)
+            {
+                // decide whether we want to allow interruption or not.
+                // if we don't get a response from QnA which signifies we expected it,
+                // then we allow interruption.
+
+                var reply = dc.Context.Activity.Text;
+                var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(dc.ActiveDialog.State, Options);
+
+                if (reply.Equals(dialogOptions.ResponseOptions.CardNoMatchText, StringComparison.OrdinalIgnoreCase))
+                {
+                    // it matches nomatch text, we like that.
+                    return true;
+                }
+
+                var suggestedQuestions = dc.State.GetValue<List<string>>($"this.suggestedQuestions");
+                if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Compare(question, reply.Trim(), ignoreCase: true) == 0))
+                {
+                    // it matches one of the suggested actions, we like that.
+                    return true;
+                }
+
+                // Calling QnAMaker to get response.
+                var qnaClient = await GetQnAMakerClientAsync(dc).ConfigureAwait(false);
+                ResetOptions(dc, dialogOptions);
+
+                var response = await qnaClient.GetAnswersRawAsync(dc.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
+
+                // cache result so step doesn't have to do it again, this is a turn cache and we use hashcode so we don't conflict with any other qnamakerdialogs out there.
+                dc.State.SetValue($"turn.qnaresult{this.GetHashCode()}", response);
+
+                // disable interruption if we have answers.
+                return response.Answers.Any();
+            }
+
+            // call base for default behavior.
+            return await OnPostBubbleEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -374,8 +445,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 Context = new QnARequestContext(),
                 QnAId = 0,
                 RankerType = this.RankerType?.GetValue(dc.State),
-                IsTest = this.IsTest
-            });
+                IsTest = this.IsTest,
+                EnablePreciseAnswer = this.EnablePreciseAnswer.GetValue(dc.State)
+            }); 
         }
 
         /// <summary>
@@ -384,52 +456,39 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the response options to use.</remarks>
-        protected async virtual Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
+        protected virtual async Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
             return new QnADialogResponseOptions
             {
                 NoAnswer = await this.NoAnswer.BindAsync(dc, dc.State).ConfigureAwait(false),
                 ActiveLearningCardTitle = this.ActiveLearningCardTitle?.GetValue(dc.State) ?? DefaultCardTitle,
                 CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
-                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
+                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false),
+                DisplayPreciseAnswerOnly = this.DisplayPreciseAnswerOnly.GetValue(dc.State)
             };
         }
 
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
+            // clear suggestedQuestions between turns.
+            stepContext.State.RemoveValue($"this.suggestedQuestions");
 
-            // Resetting context and QnAId
-            dialogOptions.QnAMakerOptions.QnAId = 0;
-            dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
+            var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
+            ResetOptions(stepContext, dialogOptions);
 
             // Storing the context info
             stepContext.Values[ValueProperty.CurrentQuery] = stepContext.Context.Activity.Text;
 
-            // -Check if previous context is present, if yes then put it with the query
-            // -Check for id if query is present in reverse index.
-            var previousContextData = ObjectPath.GetPathValue<Dictionary<string, int>>(stepContext.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
-            var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);
-
-            if (previousQnAId > 0)
-            {
-                dialogOptions.QnAMakerOptions.Context = new QnARequestContext
-                {
-                    PreviousQnAId = previousQnAId
-                };
-
-                if (previousContextData.TryGetValue(stepContext.Context.Activity.Text, out var currentQnAId))
-                {
-                    dialogOptions.QnAMakerOptions.QnAId = currentQnAId;
-                }
-            }
-
             // Calling QnAMaker to get response.
             var qnaClient = await GetQnAMakerClientAsync(stepContext).ConfigureAwait(false);
-            var response = await qnaClient.GetAnswersRawAsync(stepContext.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
+            var response = stepContext.State.GetValue<QueryResults>($"turn.qnaresult{this.GetHashCode()}");
+            if (response == null)
+            {
+                response = await qnaClient.GetAnswersRawAsync(stepContext.Context, dialogOptions.QnAMakerOptions).ConfigureAwait(false);
+            }
 
             // Resetting previous query.
-            previousQnAId = -1;
+            var previousQnAId = -1;
             ObjectPath.SetPathValue(stepContext.ActiveDialog.State, PreviousQnAId, previousQnAId);
 
             // Take this value from GetAnswerResponse 
@@ -454,9 +513,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                     // Get active learning suggestion card activity.
                     var message = QnACardBuilder.GetSuggestionsCard(suggestedQuestions, dialogOptions.ResponseOptions.ActiveLearningCardTitle, dialogOptions.ResponseOptions.CardNoMatchText);
-                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+                    await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
 
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
+                    stepContext.State.SetValue($"this.suggestedQuestions", suggestedQuestions);
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
             }
@@ -468,10 +528,36 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             }
 
             stepContext.Values[ValueProperty.QnAData] = result;
+
             ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
             // If card is not shown, move to next step with top QnA response.
             return await stepContext.NextAsync(result, cancellationToken).ConfigureAwait(false);
+        }
+
+        private void ResetOptions(DialogContext dc, QnAMakerDialogOptions dialogOptions)
+        {
+            // Resetting context and QnAId
+            dialogOptions.QnAMakerOptions.QnAId = 0;
+            dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
+
+            // -Check if previous context is present, if yes then put it with the query
+            // -Check for id if query is present in reverse index.
+            var previousContextData = ObjectPath.GetPathValue<Dictionary<string, int>>(dc.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
+            var previousQnAId = ObjectPath.GetPathValue<int>(dc.ActiveDialog.State, PreviousQnAId, 0);
+
+            if (previousQnAId > 0)
+            {
+                dialogOptions.QnAMakerOptions.Context = new QnARequestContext
+                {
+                    PreviousQnAId = previousQnAId
+                };
+
+                if (previousContextData.TryGetValue(dc.Context.Activity.Text, out var currentQnAId))
+                {
+                    dialogOptions.QnAMakerOptions.QnAId = currentQnAId;
+                }
+            }
         }
 
         private async Task<DialogTurnResult> CallTrainAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -549,7 +635,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 if (answer.Context != null && answer.Context.Prompts.Count() > 0)
                 {
                     var previousContextData = ObjectPath.GetPathValue(stepContext.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
-                    var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);
 
                     foreach (var prompt in answer.Context.Prompts)
                     {
@@ -561,8 +646,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
                     // Get multi-turn prompts card activity.
-                    var message = QnACardBuilder.GetQnAPromptsCard(answer, dialogOptions.ResponseOptions.CardNoMatchText);
-                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+                    var message = QnACardBuilder.GetQnADefaultResponse(answer, dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                    await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
@@ -602,7 +687,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             // If response is present then show that response, else default answer.
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
-                await stepContext.Context.SendActivityAsync(response.First().Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
+                await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
             }
             else
             {

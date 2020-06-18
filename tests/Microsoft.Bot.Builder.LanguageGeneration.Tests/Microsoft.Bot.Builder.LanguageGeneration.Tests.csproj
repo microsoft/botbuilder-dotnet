@@ -24,6 +24,7 @@
     <None Remove="Examples\EvaluationOptions\d3.lg" />
     <None Remove="Examples\EvaluationOptions\d4.lg" />
     <None Remove="Examples\EvaluationOptions\f4.lg" />
+    <None Remove="Examples\EvaluationOptions\StrictModeTrue.lg" />
     <None Remove="Examples\import\import3.lg" />
     <None Remove="Examples\1.lg" />
     <None Remove="Examples\2.lg" />
@@ -46,6 +47,7 @@
     <None Remove="Examples\LGOptionTest.lg" />
     <None Remove="Examples\MultilineTextForAdaptiveCard.lg" />
     <None Remove="Examples\NonAdaptiveCardActivity.lg" />
+    <None Remove="Examples\StrictModeFalse.lg" />
     <None Remove="Examples\switchcase.lg" />
     <None Remove="Examples\TemplateNameWithDot.lg" />
     <None Remove="Examples\TemplateRef.lg" />
@@ -61,6 +63,10 @@
     <None Remove="Examples\NullTolerant.lg" />
     <None Remove="Examples\CustomFunction.lg" />
     <None Remove="Examples\CustomFunctionSub.lg" />
+    <None Remove="Examples\ParseTreeTest.lg" />
+    <None Remove="Examples\Multiline.lg" />
+    <None Remove="Examples\RecursiveTemplate.lg" />
+    <None Remove="Examples\ExpandText.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
@@ -158,6 +164,9 @@
     <Content Include="Examples\EvaluationOptions\f4.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Examples\EvaluationOptions\StrictModeTrue.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Examples\ExpressionExtract.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -165,6 +174,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\EvaluationOptions\LGOptionTest.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EvaluationOptions\StrictModeFalse.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\InjectionTest\common.lg">
@@ -234,6 +246,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\CustomFunctionSub.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\ParseTreeTest.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\ExpandText.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\Multiline.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\RecursiveTemplate.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\ConditionFormatError.lg">

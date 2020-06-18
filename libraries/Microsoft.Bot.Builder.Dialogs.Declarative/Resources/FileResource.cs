@@ -13,7 +13,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     public class FileResource : Resource
     {
         private Task<byte[]> contentTask;
-        private Task<string> textTask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileResource"/> class.

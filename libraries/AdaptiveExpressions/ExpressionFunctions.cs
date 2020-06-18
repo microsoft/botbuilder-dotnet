@@ -9,7 +9,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -52,6 +51,21 @@ namespace AdaptiveExpressions
         /// The default date time format string.
         /// </summary>
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
+
+        /// <summary>
+        /// Ticks of one day.
+        /// </summary>
+        private const long TicksPerDay = 24 * 60 * 60 * 10000000L;
+
+        /// <summary>
+        /// Ticks of one Hour.
+        /// </summary>
+        private const long TicksPerHour = 60 * 60 * 10000000L;
+
+        /// <summary>
+        /// Ticks of one Minute.
+        /// </summary>
+        private const long TicksPerMinute = 60 * 10000000L;
 
         /// <summary>
         /// Object used to lock Randomizer.
@@ -189,6 +203,13 @@ namespace AdaptiveExpressions
             => ValidateArityAndAnyType(expression, 2, 2, ReturnType.Number);
 
         /// <summary>
+        /// Validate 1 or 2 numeric arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateUnaryOrBinaryNumber(Expression expression)
+            => ValidateArityAndAnyType(expression, 1, 2, ReturnType.Number);
+
+        /// <summary>
         /// Validate 2 or more than 2 numeric arguments.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
@@ -215,6 +236,13 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression to validate.</param>
         public static void ValidateUnaryString(Expression expression)
             => ValidateArityAndAnyType(expression, 1, 1, ReturnType.String);
+
+        /// <summary>
+        /// Validate there is a single number argument.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateUnaryNumber(Expression expression)
+        => ValidateArityAndAnyType(expression, 1, 1, ReturnType.Number);
 
         /// <summary>
         /// Validate there is a single boolean argument.
@@ -749,6 +777,15 @@ namespace AdaptiveExpressions
             => new ExpressionEvaluator(type, Apply(function, VerifyStringOrNull), ReturnType.String, ValidateUnaryString);
 
         /// <summary>
+        /// Transform a number into another number.
+        /// </summary>
+        /// <param name="type">Expression type.</param>
+        /// <param name="function">Function to apply.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static ExpressionEvaluator NumberTransform(string type, Func<IReadOnlyList<object>, object> function)
+            => new ExpressionEvaluator(type, Apply(function, VerifyNumber), ReturnType.Number, ValidateUnaryNumber);
+
+        /// <summary>
         /// Transform a date-time to another date-time.
         /// </summary>
         /// <param name="type">Expression type.</param>
@@ -765,14 +802,14 @@ namespace AdaptiveExpressions
                     (args, error) = EvaluateChildren(expr, state, options);
                     if (error == null)
                     {
-                        if (args[0] is string string0 && args[1].IsInteger())
+                        if (args[1].IsInteger())
                         {
                             var formatString = (args.Count() == 3 && args[2] is string string1) ? string1 : DefaultDateTimeFormat;
-                            (value, error) = ParseISOTimestamp(string0, dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
+                            (value, error) = NormalizeToDateTime(args[0], dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
                         }
                         else
                         {
-                            error = $"{expr} could not be evaluated";
+                            error = $"{expr} should contain an ISO format timestamp and a time interval integer.";
                         }
                     }
 
@@ -787,7 +824,7 @@ namespace AdaptiveExpressions
         /// <param name="instance">Instance with property.</param>
         /// <param name="index">Property to lookup.</param>
         /// <returns>Value and error information if any.</returns>
-        public static (object value, string error) AccessIndex(object instance, int index)
+        public static (object value, string error) AccessIndex(object instance, long index)
         {
             // NOTE: This returns null rather than an error if property is not present
             if (instance == null)
@@ -802,7 +839,7 @@ namespace AdaptiveExpressions
             {
                 if (index >= 0 && index < list.Count)
                 {
-                    value = list[index];
+                    value = list[Convert.ToInt32(index)];
                 }
                 else
                 {
@@ -1734,6 +1771,7 @@ namespace AdaptiveExpressions
         {
             object result = null;
             string error = null;
+
             if (DateTime.TryParse(
                     s: timeStamp,
                     provider: CultureInfo.InvariantCulture,
@@ -1752,6 +1790,26 @@ namespace AdaptiveExpressions
             else
             {
                 error = $"Could not parse {timeStamp}";
+            }
+
+            return (result, error);
+        }
+
+        private static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, object> transform = null)
+        {
+            object result = null;
+            string error = null;
+            if (timestamp is string ts)
+            {
+                (result, error) = ParseISOTimestamp(ts, transform);
+            }
+            else if (timestamp is DateTime dt)
+            {
+                result = transform != null ? transform(dt) : dt;
+            }
+            else
+            {
+                error = $"{timestamp} should be a standard ISO format string or a DateTime object.";
             }
 
             return (result, error);
@@ -1799,14 +1857,14 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, string) ConvertFromUTC(string utcTimestamp, string timezone, string format)
+        private static (string, string) ConvertFromUTC(object utcTimestamp, string timezone, string format)
         {
             string error = null;
             string result = null;
             var utcDt = DateTime.UtcNow;
             object parsed = null;
             object convertedTimeZone = null;
-            (parsed, error) = ParseISOTimestamp(utcTimestamp);
+            (parsed, error) = NormalizeToDateTime(utcTimestamp);
             if (error == null)
             {
                 utcDt = ((DateTime)parsed).ToUniversalTime();
@@ -1826,14 +1884,21 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, string) ConvertToUTC(string sourceTimestamp, string sourceTimezone, string format)
+        private static (string, string) ConvertToUTC(object sourceTimestamp, string sourceTimezone, string format)
         {
             string error = null;
             string result = null;
             var srcDt = DateTime.UtcNow;
             try
             {
-                srcDt = DateTime.Parse(sourceTimestamp);
+                if (sourceTimestamp is string st)
+                {
+                    srcDt = DateTime.Parse(st);
+                }
+                else
+                {
+                    srcDt = (DateTime)sourceTimestamp;
+                }
             }
             catch
             {
@@ -1854,12 +1919,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, string) AddToTime(string timestamp, long interval, string timeUnit, string format)
+        private static (string, string) AddToTime(object timestamp, long interval, string timeUnit, string format)
         {
             string result = null;
             string error = null;
             object parsed = null;
-            (parsed, error) = ParseISOTimestamp(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
             if (error == null)
             {
                 var ts = (DateTime)parsed;
@@ -1875,12 +1940,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) StartOfDay(string timestamp, string format)
+        private static (object, string) StartOfDay(object timestamp, string format)
         {
             string result = null;
             string error = null;
             object parsed = null;
-            (parsed, error) = ParseISOTimestamp(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
 
             if (error == null)
             {
@@ -1892,12 +1957,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) StartOfHour(string timestamp, string format)
+        private static (object, string) StartOfHour(object timestamp, string format)
         {
             string result = null;
             string error = null;
             object parsed = null;
-            (parsed, error) = ParseISOTimestamp(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
 
             if (error == null)
             {
@@ -1911,12 +1976,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) StartOfMonth(string timestamp, string format)
+        private static (object, string) StartOfMonth(object timestamp, string format)
         {
             string result = null;
             object parsed = null;
             string error = null;
-            (parsed, error) = ParseISOTimestamp(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
 
             if (error == null)
             {
@@ -1930,12 +1995,12 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) Ticks(string timestamp)
+        private static (object, string) Ticks(object timestamp)
         {
             object result = null;
             object parsed = null;
             string error = null;
-            (parsed, error) = ParseISOTimestamp(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
 
             if (error == null)
             {
@@ -2874,6 +2939,41 @@ namespace AdaptiveExpressions
                         VerifyInteger),
                     ReturnType.Array,
                     ValidateBinaryNumber),
+                NumberTransform(
+                    ExpressionType.Floor,
+                    args => Math.Floor(Convert.ToDouble(args[0]))),
+                NumberTransform(
+                    ExpressionType.Ceiling,
+                    args => Math.Ceiling(Convert.ToDouble(args[0]))),
+                new ExpressionEvaluator(
+                    ExpressionType.Round,
+                    ApplyWithError(
+                        args =>
+                        {
+                        string error = null;
+                        object result = null;
+                        if (args.Count == 2 && !args[1].IsInteger())
+                        {
+                            error = $"The second {args[1]} parameter must be an integer.";
+                        }
+
+                        if (error == null)
+                        {
+                            var digits = args.Count == 2 ? Convert.ToInt32(args[1]) : 0;
+                            if (digits < 0 || digits > 15)
+                            {
+                                error = $"The second parameter {args[1]} must be an integer between 0 and 15;";
+                            }
+                            else
+                            {
+                                result = Math.Round(Convert.ToDouble(args[0]), digits);
+                            }
+                        }
+
+                        return (result, error);
+                    }, VerifyNumber),
+                    ReturnType.Number,
+                    ValidateUnaryOrBinaryNumber),
 
                 // Collection Functions
                 new ExpressionEvaluator(
@@ -3018,21 +3118,36 @@ namespace AdaptiveExpressions
                 // String
                 new ExpressionEvaluator(
                     ExpressionType.Concat,
-                    Apply(
+                    ApplySequence(
                         args =>
                         {
-                            var builder = new StringBuilder();
-                            foreach (var arg in args)
-                            {
-                                if (arg != null)
-                                {
-                                    builder.Append(arg.ToString());
-                                }
-                            }
+                            var firstItem = args[0];
+                            var secondItem = args[1];
+                            var isFirstList = TryParseList(firstItem, out var firstList);
+                            var isSecondList = TryParseList(secondItem, out var secondList);
 
-                            return builder.ToString();
+                            if (firstItem == null && secondItem == null)
+                            {
+                                return null;
+                            }
+                            else if (firstItem == null && isSecondList)
+                            {
+                                return secondList;
+                            }
+                            else if (secondItem == null && isFirstList)
+                            {
+                                return firstList;
+                            }
+                            else if (isFirstList && isSecondList)
+                            {
+                                return firstList.OfType<object>().Concat(secondList.OfType<object>()).ToList();
+                            }
+                            else
+                            {
+                                return $"{firstItem?.ToString()}{secondItem?.ToString()}";
+                            }
                         }),
-                    ReturnType.String,
+                    ReturnType.Array | ReturnType.String,
                     ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Length,
@@ -3142,7 +3257,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToString().ToLower();
+                                        return args[0].ToString().ToLowerInvariant();
                                     }
                                 }),
                 StringTransform(
@@ -3155,7 +3270,7 @@ namespace AdaptiveExpressions
                                     }
                                     else
                                     {
-                                        return args[0].ToString().ToUpper();
+                                        return args[0].ToString().ToUpperInvariant();
                                     }
                                 }),
                 StringTransform(
@@ -3257,6 +3372,11 @@ namespace AdaptiveExpressions
                     ReturnType.String,
                     (exprssion) => ValidateArityAndAnyType(exprssion, 0, 0)),
                 new ExpressionEvaluator(
+                    ExpressionType.EOL,
+                    Apply(args => Environment.NewLine),
+                    ReturnType.String,
+                    (exprssion) => ValidateArityAndAnyType(exprssion, 0, 0)),
+                new ExpressionEvaluator(
                     ExpressionType.IndexOf,
                     (expression, state, options) =>
                     {
@@ -3322,6 +3442,35 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.Number,
                     expr => ValidateOrder(expr, null, ReturnType.Array | ReturnType.String, ReturnType.Object)),
+                StringTransform(
+                                ExpressionType.SentenceCase,
+                                args =>
+                                {
+                                    var inputStr = (string)args[0];
+                                    if (string.IsNullOrEmpty(inputStr))
+                                    {
+                                        return string.Empty;
+                                    }
+                                    else
+                                    {
+                                        return inputStr.Substring(0, 1).ToUpperInvariant() + inputStr.Substring(1).ToLowerInvariant();
+                                    }
+                                }),
+                StringTransform(
+                                ExpressionType.TitleCase,
+                                args =>
+                                {
+                                    var inputStr = (string)args[0];
+                                    if (string.IsNullOrEmpty(inputStr))
+                                    {
+                                        return string.Empty;
+                                    }
+                                    else
+                                    {
+                                        var ti = CultureInfo.InvariantCulture.TextInfo;
+                                        return ti.ToTitleCase(inputStr);
+                                    }
+                                }),
 
                 // Date and time
                 TimeTransform(ExpressionType.AddDays, (ts, add) => ts.AddDays(add)),
@@ -3330,37 +3479,37 @@ namespace AdaptiveExpressions
                 TimeTransform(ExpressionType.AddSeconds, (ts, add) => ts.AddSeconds(add)),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfMonth,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Day), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Day)),
                     ReturnType.Number,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfWeek,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => Convert.ToInt32(dt.DayOfWeek)), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => Convert.ToInt32(dt.DayOfWeek))),
                     ReturnType.Number,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfYear,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.DayOfYear), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.DayOfYear)),
                     ReturnType.Number,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Month,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Month), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Month)),
                     ReturnType.Number,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Date,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture)), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture))),
                     ReturnType.String,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Year,
-                    ApplyWithError(args => ParseISOTimestamp((string)args[0], dt => dt.Year), VerifyString),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Year)),
                     ReturnType.Number,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.UtcNow,
-                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0].ToString() : DefaultDateTimeFormat), VerifyString),
+                    Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0].ToString() : DefaultDateTimeFormat)),
                     ReturnType.String),
                 new ExpressionEvaluator(
                     ExpressionType.FormatDateTime,
@@ -3443,26 +3592,26 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            if (args[0] is string string0 && args[1].IsInteger() && args[2] is string string2)
+                            if (args[1].IsInteger() && args[2] is string string2)
                             {
                                 var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
                                 Func<DateTime, DateTime> timeConverter;
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[1]), string2);
                                 if (error == null)
                                 {
-                                    (value, error) = ParseISOTimestamp(string0, dt => timeConverter(dt).ToString(format));
+                                    (value, error) = NormalizeToDateTime(args[0], dt => timeConverter(dt).ToString(format));
                                 }
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain an ISO format timestamp, a time interval integer, a string unit of time and an optional output format string.";
                             }
                         }
 
                         return (value, error);
                     },
                     ReturnType.String,
-                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
+                    (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.DateReadBack,
                     ApplyWithError(
@@ -3470,11 +3619,11 @@ namespace AdaptiveExpressions
                         {
                             object result = null;
                             string error;
-                            (result, error) = ParseISOTimestamp((string)args[0]);
+                            (result, error) = NormalizeToDateTime(args[0]);
                             if (error == null)
                             {
                                 var timestamp1 = (DateTime)result;
-                                (result, error) = ParseISOTimestamp((string)args[1]);
+                                (result, error) = NormalizeToDateTime(args[1]);
                                 if (error == null)
                                 {
                                     var timestamp2 = (DateTime)result;
@@ -3484,8 +3633,7 @@ namespace AdaptiveExpressions
                             }
 
                             return (result, error);
-                        },
-                        VerifyString),
+                        }),
                     ReturnType.String,
                     expr => ValidateOrder(expr, null, ReturnType.String, ReturnType.String)),
                 new ExpressionEvaluator(
@@ -3495,7 +3643,7 @@ namespace AdaptiveExpressions
                         {
                             object value = null;
                             string error = null;
-                            (value, error) = ParseISOTimestamp((string)args[0]);
+                            (value, error) = NormalizeToDateTime(args[0]);
                             if (error == null)
                             {
                                 var timestamp = (DateTime)value;
@@ -3526,10 +3674,9 @@ namespace AdaptiveExpressions
                             }
 
                             return (value, error);
-                        },
-                        VerifyString),
+                        }),
                     ReturnType.String,
-                    ValidateUnaryString),
+                    ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.GetFutureTime,
                     (expr, state, options) =>
@@ -3547,12 +3694,12 @@ namespace AdaptiveExpressions
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1, false);
                                 if (error == null)
                                 {
-                                    value = timeConverter(DateTime.Now).ToString(format);
+                                    value = timeConverter(DateTime.UtcNow).ToString(format);
                                 }
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a time interval integer, a string unit of time and an optional output format string.";
                             }
                         }
 
@@ -3577,12 +3724,12 @@ namespace AdaptiveExpressions
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1);
                                 if (error == null)
                                 {
-                                    value = timeConverter(DateTime.Now).ToString(format);
+                                    value = timeConverter(DateTime.UtcNow).ToString(format);
                                 }
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a time interval integer, a string unit of time and an optional output format string.";
                             }
                         }
 
@@ -3601,13 +3748,13 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp && args[1] is string targetTimeZone)
+                            if (args[1] is string targetTimeZone)
                             {
-                                (value, error) = ConvertFromUTC(timestamp, targetTimeZone, format);
+                                (value, error) = ConvertFromUTC(args[0], targetTimeZone, format);
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain an ISO format timestamp, a destination time zone string and an optional output format string.";
                             }
                         }
 
@@ -3626,13 +3773,13 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 3) ? (string)args[2] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp && args[1] is string sourceTimeZone)
+                            if (args[1] is string sourceTimeZone)
                             {
-                                (value, error) = ConvertToUTC(timestamp, sourceTimeZone, format);
+                                (value, error) = ConvertToUTC(args[0], sourceTimeZone, format);
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain an ISO format timestamp, a origin time zone string and an optional output format string.";
                             }
                         }
 
@@ -3651,20 +3798,20 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 4) ? (string)args[3] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp && args[1].IsInteger() && args[2] is string timeUnit)
+                            if (args[1].IsInteger() && args[2] is string timeUnit)
                             {
-                                (value, error) = AddToTime(timestamp, Convert.ToInt64(args[1]), timeUnit, format);
+                                (value, error) = AddToTime(args[0], Convert.ToInt64(args[1]), timeUnit, format);
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain an ISO format timestamp, a time interval integer, a string unit of time and an optional output format string.";
                             }
                         }
 
                         return (value, error);
                     },
                     ReturnType.String,
-                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
+                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.Number, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.StartOfDay,
                     (expr, state, options) =>
@@ -3676,14 +3823,7 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp)
-                            {
-                                (value, error) = StartOfDay(timestamp, format);
-                            }
-                            else
-                            {
-                                error = $"{expr} can't evaluate.";
-                            }
+                            (value, error) = StartOfDay(args[0], format);
                         }
 
                         return (value, error);
@@ -3701,14 +3841,7 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp)
-                            {
-                                (value, error) = StartOfHour(timestamp, format);
-                            }
-                            else
-                            {
-                                error = $"{expr} can't evaluate.";
-                            }
+                            (value, error) = StartOfHour(args[0], format);
                         }
 
                         return (value, error);
@@ -3726,14 +3859,7 @@ namespace AdaptiveExpressions
                         if (error == null)
                         {
                             var format = (args.Count() == 2) ? (string)args[1] : DefaultDateTimeFormat;
-                            if (args[0] is string timestamp)
-                            {
-                                (value, error) = StartOfMonth(timestamp, format);
-                            }
-                            else
-                            {
-                                error = $"{expr} can't evaluate.";
-                            }
+                            (value, error) = StartOfMonth(args[0], format);
                         }
 
                         return (value, error);
@@ -3750,20 +3876,117 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            if (args[0] is string ts)
-                            {
-                                (value, error) = Ticks(ts);
-                            }
-                            else
-                            {
-                                error = $"{expr} can't evaluate.";
-                            }
+                            (value, error) = Ticks(args[0]);
                         }
 
                         return (value, error);
                     },
                     ReturnType.Number,
                     expr => ValidateArityAndAnyType(expr, 1, 1, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.TicksToDays,
+                    (expr, state, options) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (args[0].IsInteger())
+                            {
+                                value = Convert.ToDouble(args[0]) / TicksPerDay;
+                            }
+                            else
+                            {
+                                error = $"{expr} should contain an integer of ticks";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    ValidateUnaryNumber),
+                new ExpressionEvaluator(
+                    ExpressionType.TicksToHours,
+                    (expr, state, options) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (args[0].IsInteger())
+                            {
+                                value = Convert.ToDouble(args[0]) / TicksPerHour;
+                            }
+                            else
+                            {
+                                error = $"{expr} should contain an integer of ticks";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    ValidateUnaryNumber),
+                new ExpressionEvaluator(
+                    ExpressionType.TicksToMinutes,
+                    (expr, state, options) =>
+                    {
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            if (args[0].IsInteger())
+                            {
+                                value = Convert.ToDouble(args[0]) / TicksPerMinute;
+                            }
+                            else
+                            {
+                                error = $"{expr} should contain an integer of ticks";
+                            }
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    ValidateUnaryNumber),
+                new ExpressionEvaluator(
+                    ExpressionType.DateTimeDiff,
+                    (expr, state, options) =>
+                    {
+                        object dateTimeStart = null;
+                        object dateTimeEnd = null;
+                        object value = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        (args, error) = EvaluateChildren(expr, state, options);
+                        if (error == null)
+                        {
+                            (dateTimeStart, error) = Ticks(args[0]);
+                            if (error == null)
+                            {
+                                (dateTimeEnd, error) = Ticks(args[1]);
+                            }
+                            else
+                            {
+                                error = $"{expr} must have two ISO timestamps.";
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            value = (long)dateTimeStart - (long)dateTimeEnd;
+                        }
+
+                        return (value, error);
+                    },
+                    ReturnType.Number,
+                    expr => ValidateArityAndAnyType(expr, 2, 2, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.IsDefinite,
                     (expr, state, options) =>
@@ -3947,7 +4170,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string.";
                             }
                         }
 
@@ -3971,7 +4194,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string.";
                             }
                         }
 
@@ -3995,7 +4218,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string.";
                             }
                         }
 
@@ -4019,7 +4242,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string.";
                             }
                         }
 
@@ -4043,7 +4266,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string .";
                             }
                         }
 
@@ -4067,7 +4290,7 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                error = $"{expr} can't evaluate.";
+                                error = $"{expr} should contain a URI string.";
                             }
                         }
 
@@ -4317,7 +4540,7 @@ namespace AdaptiveExpressions
                 //Type Checking Functions
                 new ExpressionEvaluator(
                     ExpressionType.IsString,
-                    Apply(args => args[0].GetType() == typeof(string)),
+                    Apply(args => args[0] != null && args[0].GetType() == typeof(string)),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
@@ -4337,7 +4560,7 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsObject,
-                    Apply(args => !(args[0] is JValue) && args[0].GetType().IsValueType == false && args[0].GetType() != typeof(string)),
+                    Apply(args => args[0] != null && !(args[0] is JValue) && args[0].GetType().IsValueType == false && args[0].GetType() != typeof(string)),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
@@ -4350,15 +4573,12 @@ namespace AdaptiveExpressions
                     Apply(
                         args =>
                         {
-                            if (args[0] is string)
+                            object value = null;
+                            string error = null;
+                            (value, error) = NormalizeToDateTime(args[0]);
+                            if (error == null)
                             {
-                                object value = null;
-                                string error = null;
-                                (value, error) = ParseISOTimestamp(args[0] as string);
-                                if (error == null)
-                                {
-                                    return true;
-                                }
+                                return true;
                             }
 
                             return false;

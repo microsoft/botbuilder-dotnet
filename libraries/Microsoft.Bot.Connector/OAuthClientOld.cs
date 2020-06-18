@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -18,8 +19,11 @@ namespace Microsoft.Bot.Connector
     /// <summary>
     /// Service client to handle requests to the Bot Framework API service.
     /// </summary>
+    [Obsolete("This class is deprecated, us OAuthClientConfig instead", error: true)]
     public class OAuthClientOld : ServiceClient<OAuthClientOld>
     {
+#pragma warning disable CA2000 // Dispose objects before losing scope (this class is deprecated, we won't fix FxCop issues)
+#pragma warning disable CA1801 // Review unused parameters (this class is deprecated, we won't fix FxCop issues)
         private readonly ConnectorClient _client;
         private readonly string _uri;
 
@@ -83,7 +87,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("userId", userId);
                 tracingParameters.Add("connectionName", connectionName);
@@ -93,7 +97,7 @@ namespace Microsoft.Bot.Connector
             }
 
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/usertoken/GetToken?userId={userId}&connectionName={connectionName}{magicCodeParam}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/", StringComparison.OrdinalIgnoreCase) ? string.Empty : "/")), "api/usertoken/GetToken?userId={userId}&connectionName={connectionName}{magicCodeParam}").ToString();
             tokenUrl = tokenUrl.Replace("{connectionName}", Uri.EscapeDataString(connectionName));
             tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
             if (!string.IsNullOrEmpty(magicCode))
@@ -107,6 +111,7 @@ namespace Microsoft.Bot.Connector
 
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
+
             HttpResponseMessage httpResponse = null;
             httpRequest.Method = new HttpMethod("GET");
             httpRequest.RequestUri = new Uri(tokenUrl);
@@ -184,7 +189,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("userId", userId);
                 tracingParameters.Add("connectionName", connectionName);
@@ -193,7 +198,7 @@ namespace Microsoft.Bot.Connector
             }
 
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/usertoken/SignOut?&userId={userId}{connectionNameParam}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/", StringComparison.OrdinalIgnoreCase) ? string.Empty : "/")), "api/usertoken/SignOut?&userId={userId}{connectionNameParam}").ToString();
             var connectionNameUri = $"&connectionName={Uri.EscapeDataString(connectionName)}";
             tokenUrl = tokenUrl.Replace(
                 "{connectionNameParam}",
@@ -259,7 +264,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("state", state);
                 tracingParameters.Add("finalRedirect", finalRedirect);
@@ -268,7 +273,7 @@ namespace Microsoft.Bot.Connector
             }
 
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/botsignin/getsigninurl?&state={state}{finalRedirectParam}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/", StringComparison.OrdinalIgnoreCase) ? string.Empty : "/")), "api/botsignin/getsigninurl?&state={state}{finalRedirectParam}").ToString();
             tokenUrl = tokenUrl.Replace("{state}", state);
             tokenUrl = tokenUrl.Replace(
                 "{finalRedirectParam}",
@@ -330,7 +335,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("userId", userId);
                 tracingParameters.Add("includeFilter", includeFilter);
@@ -339,7 +344,7 @@ namespace Microsoft.Bot.Connector
             }
 
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/usertoken/gettokenstatus?userId={userId}{includeFilterParam}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/", StringComparison.OrdinalIgnoreCase) ? string.Empty : "/")), "api/usertoken/gettokenstatus?userId={userId}{includeFilterParam}").ToString();
             tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
             if (!string.IsNullOrEmpty(includeFilter))
             {
@@ -451,7 +456,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("userId", userId);
                 tracingParameters.Add("connectionName", connectionName);
@@ -461,7 +466,7 @@ namespace Microsoft.Bot.Connector
             }
 
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/usertoken/GetAadTokens?userId={userId}&connectionName={connectionName}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/", StringComparison.OrdinalIgnoreCase) ? string.Empty : "/")), "api/usertoken/GetAadTokens?userId={userId}&connectionName={connectionName}").ToString();
             tokenUrl = tokenUrl.Replace("{userId}", Uri.EscapeDataString(userId));
             tokenUrl = tokenUrl.Replace("{connectionName}", Uri.EscapeDataString(connectionName));
 
@@ -520,7 +525,7 @@ namespace Microsoft.Bot.Connector
                 }
                 else
                 {
-                    var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", statusCode));
+                    var ex = new ErrorResponseException(string.Format(CultureInfo.InvariantCulture, "Operation returned an invalid status code '{0}'", statusCode));
                     string responseContent = null;
                     try
                     {
@@ -567,7 +572,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("emulateOAuthCards", emulateOAuthCards);
                 ServiceClientTracing.Enter(invocationId, this, "SendEmulateOAuthCards", tracingParameters);
@@ -576,7 +581,7 @@ namespace Microsoft.Bot.Connector
             var cancellationToken = default(CancellationToken);
 
             // Construct URL
-            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/") ? string.Empty : "/")), "api/usertoken/emulateOAuthCards?emulate={emulate}").ToString();
+            var tokenUrl = new Uri(new Uri(_uri + (_uri.EndsWith("/", StringComparison.OrdinalIgnoreCase) ? string.Empty : "/")), "api/usertoken/emulateOAuthCards?emulate={emulate}").ToString();
             tokenUrl = tokenUrl.Replace("{emulate}", emulateOAuthCards.ToString());
 
             // Create HTTP transport objects
@@ -602,5 +607,7 @@ namespace Microsoft.Bot.Connector
                 ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
         }
+#pragma warning restore CA2000 // Dispose objects before losing scope
+#pragma warning restore CA1801 // Review unused parameters
     }
 }

@@ -26,9 +26,12 @@ namespace Microsoft.Bot.Connector.Authentication
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,
+                ValidateIssuerSigningKey = true,
             };
 
+#pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking binary compat)
         public static string OpenIdMetadataUrl { get; set; } = GovernmentAuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl;
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Validate the incoming Auth Header as a token sent from a Bot Framework Government Channel Service.
@@ -123,7 +126,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            if (!await credentials.IsValidAppIdAsync(appIdFromClaim))
+            if (!await credentials.IsValidAppIdAsync(appIdFromClaim).ConfigureAwait(false))
             {
                 // The AppId is not valid. Not Authorized.
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appIdFromClaim}");
@@ -138,7 +141,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     throw new UnauthorizedAccessException();
                 }
 
-                if (!string.Equals(serviceUrlClaim, serviceUrl))
+                if (!string.Equals(serviceUrlClaim, serviceUrl, StringComparison.OrdinalIgnoreCase))
                 {
                     // Claim must match. Not Authorized.
                     throw new UnauthorizedAccessException();

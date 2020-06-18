@@ -91,7 +91,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override string ToString()
         {
-            return $"[{Severity}] {Range}: {Message}";
+            // ignore error range if source is inline content
+            if (Source == TemplatesParser.InlineContentId)
+            {
+                return $"[{Severity}] {Source}: {Message}";
+            }
+            else
+            {
+                return $"[{Severity}] {Source} {Range}: {Message}";
+            }
         }
     }
 }
