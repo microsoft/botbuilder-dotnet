@@ -1027,7 +1027,7 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> DataForThreadLocale => new[]
         {
-            Test("addDays(timestamp, 1, '', 'en-US')", "3/16/2018 1:00:00 PM"),
+            Test("replace(addDays(timestamp, 1, '', 'en-US'), '20', '')", "3/16/18 1:00:00 PM"),
             Test("addDays(timestamp, 1, 'D')", "vendredi 16 mars 2018"),
             Test("addHours(timestamp, 2, 'D')", "jeudi 15 mars 2018"),
             Test("addMinutes(timestamp, 30, '')", "15/03/2018 13:30:00"),
