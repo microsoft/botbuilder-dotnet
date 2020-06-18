@@ -66,6 +66,7 @@
     <None Remove="Examples\ParseTreeTest.lg" />
     <None Remove="Examples\Multiline.lg" />
     <None Remove="Examples\RecursiveTemplate.lg" />
+    <None Remove="Examples\ExpandText.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
@@ -250,7 +251,9 @@
     <Content Include="Examples\ParseTreeTest.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    
+    <Content Include="Examples\ExpandText.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Examples\Multiline.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
