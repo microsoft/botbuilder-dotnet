@@ -288,6 +288,16 @@ namespace AdaptiveExpressions.Tests
             { "timestamp", "2018-03-15T13:00:00.000Z" },
             { "unixTimestamp", 1521118800 },
             { "ticks", 637243624200000000 },
+            { 
+                "turn", 
+                new
+                {
+                    activity = new
+                    {
+                        locale = "es-ES"
+                    }
+                }    
+            }
         };
 
         public static HashSet<string> One { get; set; } = new HashSet<string> { "one" };
@@ -1017,7 +1027,7 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> DataForThreadLocale => new[]
         {
-            Test("addDays(timestamp, 1, '')", "16/03/2018 13:00:00"),
+            Test("addDays(timestamp, 1, '', 'en-US')", "3/16/2018 1:00:00 PM"),
             Test("addDays(timestamp, 1, 'D')", "vendredi 16 mars 2018"),
             Test("addHours(timestamp, 2, 'D')", "jeudi 15 mars 2018"),
             Test("addMinutes(timestamp, 30, '')", "15/03/2018 13:30:00"),
