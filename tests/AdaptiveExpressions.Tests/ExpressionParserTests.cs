@@ -283,6 +283,13 @@ namespace AdaptiveExpressions.Tests
             }
         };
 
+        private readonly object scopeForThreadLocale = new Dictionary<string, object>
+        {
+            { "timestamp", "2018-03-15T13:00:00.000Z" },
+            { "unixTimestamp", 1521118800 },
+            { "ticks", 637243624200000000 },
+        };
+
         public static HashSet<string> One { get; set; } = new HashSet<string> { "one" };
 
         public static HashSet<string> OneTwo { get; set; } = new HashSet<string> { "one", "two" };
@@ -290,6 +297,7 @@ namespace AdaptiveExpressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             //locale specific tests, on Mac OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
+            Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("replace(addHours(timestamp, 2, '', 'de-DE'), '20', '')", "15.03.18 15:00:00"),
             Test("replace(addMinutes(timestamp, 30, '', 'de-DE'), '20', '')", "15.03.18 13:30:00"),
@@ -1007,6 +1015,36 @@ namespace AdaptiveExpressions.Tests
             #endregion
         };
 
+        public static IEnumerable<object[]> DataForThreadLocale => new[]
+        {
+            Test("addDays(timestamp, 1, '')", "16/03/2018 13:00:00"),
+            Test("addDays(timestamp, 1, 'D')", "vendredi 16 mars 2018"),
+            Test("addHours(timestamp, 2, 'D')", "jeudi 15 mars 2018"),
+            Test("addMinutes(timestamp, 30, '')", "15/03/2018 13:30:00"),
+            Test("addToTime('2018-01-01T00:00:00.000Z', 1, 'Week', 'D')", "lundi 8 janvier 2018"),
+            Test("startOfDay('2018-03-15T13:30:30.000Z', 'D')", "jeudi 15 mars 2018"),
+            Test("startOfHour('2018-03-15T13:30:30.000Z', '')", "15/03/2018 13:00:00"),
+            Test("startOfMonth('2018-03-15T13:30:30.000Z', '')", "01/03/2018 00:00:00"),
+            Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', 'D')", "lundi 1 janvier 2018"),
+            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '')", "01/01/2018 18:00:00"),
+            Test("utcNow('D')", DateTime.UtcNow.ToString("D", new CultureInfo("fr-FR"))),
+            Test("getPastTime(1,'Day', 'D')", DateTime.UtcNow.AddDays(-1).ToString("D", new CultureInfo("fr-FR"))),
+            Test("subtractFromTime(timestamp, 1, 'Hour', '')", "15/03/2018 12:00:00"),
+            Test("formatEpoch(unixTimestamp, '')", "15/03/2018 13:00:00"),
+            Test("formatTicks(ticks, '')", "06/05/2020 11:47:00"),
+            Test("formatDateTime('2018-03-15', 'D')", "jeudi 15 mars 2018"),
+            Test("getFutureTime(1, 'Year', 'D')", DateTime.UtcNow.AddYears(1).ToString("D", new CultureInfo("fr-FR"))),
+            Test("addDays(timestamp, 1, '')", "16/03/2018 13:00:00"),
+            Test("toUpper('lowercase')", "LOWERCASE"),
+            Test("toLower('I AM WHAT I AM')", "i am what i am"),
+            Test("string(100.1)", "100,1"),
+            Test("sentenceCase('a')", "A"),
+            Test("sentenceCase('abc')", "Abc"),
+            Test("sentenceCase('aBC')", "Abc"),
+            Test("titleCase('a')", "A"),
+            Test("titleCase('abc dEF')", "Abc Def")
+        };
+
         public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
 
         public static bool IsNumber(object value) =>
@@ -1044,6 +1082,27 @@ namespace AdaptiveExpressions.Tests
         }
 
         [DataTestMethod]
+        [DynamicData(nameof(DataForThreadLocale))]
+        public void EvaluateWithLocale(string input, object expected, HashSet<string> expectedRefs)
+        {
+            var parsed = Expression.Parse(input);
+            Assert.IsNotNull(parsed);
+            var (actual, msg) = parsed.TryEvaluate(scopeForThreadLocale, locale: "fr-FR");
+            Assert.AreEqual(null, msg);
+            AssertObjectEquals(expected, actual);
+            if (expectedRefs != null)
+            {
+                var actualRefs = parsed.References();
+                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+            }
+
+            // ToString re-parse
+            var newExpression = Expression.Parse(parsed.ToString());
+            var newActual = newExpression.TryEvaluate(scopeForThreadLocale, locale: "fr-FR").value;
+            AssertObjectEquals(actual, newActual);
+        }
+
+        [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void EvaluateInOtherCultures(string input, object expected, HashSet<string> expectedRefs)
         {
@@ -1052,6 +1111,7 @@ namespace AdaptiveExpressions.Tests
             {
                 var originalCuture = Thread.CurrentThread.CurrentCulture;
                 Thread.CurrentThread.CurrentCulture = new CultureInfo(newCultureInfo);
+                Thread.SetData(Thread.GetNamedDataSlot("locale"), null);
                 var parsed = Expression.Parse(input);
                 Assert.IsNotNull(parsed);
                 var (actual, msg) = parsed.TryEvaluate(scope);
