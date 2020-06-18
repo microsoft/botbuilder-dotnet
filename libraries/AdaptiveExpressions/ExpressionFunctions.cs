@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using AdaptiveExpressions.Memory;
@@ -557,16 +558,6 @@ namespace AdaptiveExpressions
         }
 
         // Apply -- these are helpers for adding functions to the expression library.
-
-        public static string EvaluateLocale(IMemory state)
-        {
-            if (state.TryGetValue(LocaleMemoryPath, out var locale))
-            {
-                return locale as string;
-            }
-
-            return null;
-        }
 
         /// <summary>
         /// Generate an expression delegate that applies function after verifying all children.
@@ -2224,6 +2215,16 @@ namespace AdaptiveExpressions
             return (parsed, error);
         }
 
+        private static string EvaluateLocale(IMemory state)
+        {
+            if (state.TryGetValue(LocaleMemoryPath, out var locale))
+            {
+                return locale as string;
+            }
+
+            return null;
+        }
+
         private static (CultureInfo, string) TryParseLocale(string localeStr)
         {
             CultureInfo result = null;
@@ -2232,9 +2233,9 @@ namespace AdaptiveExpressions
             {
                 result = new CultureInfo(localeStr);
             }
-            catch
+            catch (Exception e)
             {
-                error = $"{localeStr} is not a valid locale string.";
+                error = e.Message;
             }
 
             return (result, error);
@@ -2253,7 +2254,7 @@ namespace AdaptiveExpressions
                 else if (args.Count == maxArgsLength - 1)
                 {
                     format = args[maxArgsLength - 2] as string;
-                    (locale, error) = DetermineLocaleFromMemory(state);
+                    (locale, error) = DetermineLocaleFromThreadLocalStorageAndMemory(state);
                 }
             }            
 
@@ -2271,7 +2272,7 @@ namespace AdaptiveExpressions
                 }
                 else if (args.Count == maxArgsLength - 1)
                 {
-                    (locale, error) = DetermineLocaleFromMemory(state);
+                    (locale, error) = DetermineLocaleFromThreadLocalStorageAndMemory(state);
                 }
             }
 
@@ -2839,12 +2840,24 @@ namespace AdaptiveExpressions
             return result;
         }
 
-        private static (CultureInfo, string) DetermineLocaleFromMemory(IMemory state)
+        private static (CultureInfo, string) DetermineLocaleFromThreadLocalStorageAndMemory(IMemory state)
         {
             string locale = EvaluateLocale(state);
+            var localeInThreadLocalStorage = Thread.GetData(Thread.GetNamedDataSlot("locale"));
             string error = null;
             var result = Locale;
-            if (locale != null)
+            if (localeInThreadLocalStorage != null)
+            {
+                try
+                {
+                    result = new CultureInfo(localeInThreadLocalStorage as string);
+                }
+                catch
+                {
+                    error = $"{localeInThreadLocalStorage} stored in thread local storage is not a valid locale string";
+                }
+            }
+            else if (locale != null)
             {
                 try
                 {
@@ -3936,7 +3949,7 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            (locale, error) = DetermineLocaleFromMemory(state);
+                            (locale, error) = DetermineLocaleFromThreadLocalStorageAndMemory(state);
                         }
 
                         if (error == null)

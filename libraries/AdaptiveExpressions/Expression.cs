@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using AdaptiveExpressions.Converters;
 using AdaptiveExpressions.Memory;
 using Newtonsoft.Json;
@@ -488,9 +489,10 @@ namespace AdaptiveExpressions
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
         /// <param name="options">Options used in the evaluation. </param>
+        /// <param name="locale">locale used in the evaluation. </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (object value, string error) TryEvaluate(object state, Options options = null)
-            => this.TryEvaluate<object>(MemoryFactory.Create(state), options);
+        public (object value, string error) TryEvaluate(object state, Options options = null, string locale = null)
+            => this.TryEvaluate<object>(MemoryFactory.Create(state), options, locale);
 
         /// <summary>
         /// Evaluate the expression.
@@ -500,22 +502,10 @@ namespace AdaptiveExpressions
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
         /// <param name="options">Options used in the evaluation. </param>
+        /// <param name="locale">locale used in the evaluation. </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (object value, string error) TryEvaluate(IMemory state, Options options = null)
-            => this.TryEvaluate<object>(state, options);
-
-        /// <summary>
-        /// Evaluate the expression.
-        /// </summary>
-        /// <typeparam name="T">type of result of the expression.</typeparam>
-        /// <param name="state">
-        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
-        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
-        /// </param>
-        /// <param name="options">Options used in the evaluation. </param>
-        /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (T value, string error) TryEvaluate<T>(object state, Options options = null)
-        => this.TryEvaluate<T>(MemoryFactory.Create(state), options);
+        public (object value, string error) TryEvaluate(IMemory state, Options options = null, string locale = null)
+            => this.TryEvaluate<object>(state, options, locale);
 
         /// <summary>
         /// Evaluate the expression.
@@ -526,10 +516,30 @@ namespace AdaptiveExpressions
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
         /// <param name="options">Options used in the evaluation. </param>
+        /// <param name="locale">locale used in the evaluation. </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (T value, string error) TryEvaluate<T>(IMemory state, Options options = null)
+        public (T value, string error) TryEvaluate<T>(object state, Options options = null, string locale = null)
+        => this.TryEvaluate<T>(MemoryFactory.Create(state), options, locale);
+
+        /// <summary>
+        /// Evaluate the expression.
+        /// </summary>
+        /// <typeparam name="T">type of result of the expression.</typeparam>
+        /// <param name="state">
+        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
+        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
+        /// </param>
+        /// <param name="options">Options used in the evaluation. </param>
+        /// <param name="locale">locale used in the evaluation. </param>
+        /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
+        public (T value, string error) TryEvaluate<T>(IMemory state, Options options = null, string locale = null)
         {
             var opts = options ?? new Options();
+            if (locale != null)
+            {
+                Thread.SetData(Thread.GetNamedDataSlot("locale"), locale);
+            }
+
             var (result, error) = Evaluator.TryEvaluate(this, state, opts);
             if (error != null)
             {
