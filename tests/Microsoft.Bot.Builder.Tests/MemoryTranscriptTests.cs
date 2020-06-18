@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,6 +13,11 @@ namespace Microsoft.Bot.Builder.Tests
             : base()
         {
             this.Store = new MemoryTranscriptStore();
+            var folder = Path.Combine(Path.GetTempPath(), nameof(MemoryTranscriptTests));
+            if (Directory.Exists(folder))
+            {
+                Directory.Delete(folder, true);
+            }
         }
 
         [Fact]

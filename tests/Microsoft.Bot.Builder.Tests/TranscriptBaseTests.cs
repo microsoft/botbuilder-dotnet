@@ -16,11 +16,6 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public TranscriptBaseTests()
         {
-            var folder = Path.Combine(Path.GetTempPath(), nameof(FileTranscriptTests));
-            if (Directory.Exists(folder))
-            {
-                Directory.Delete(folder, true);
-            }
         }
 
         public ITranscriptStore Store { get; set; }

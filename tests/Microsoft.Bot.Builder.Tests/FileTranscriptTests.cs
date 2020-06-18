@@ -13,6 +13,11 @@ namespace Microsoft.Bot.Builder.Tests
             : base()
         {
             this.Store = new FileTranscriptLogger(Folder);
+            var folder = Path.Combine(Path.GetTempPath(), nameof(FileTranscriptTests));
+            if (Directory.Exists(folder))
+            {
+                Directory.Delete(folder, true);
+            }
         }
 
         public static string Folder
