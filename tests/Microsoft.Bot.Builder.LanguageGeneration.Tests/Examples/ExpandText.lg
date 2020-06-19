@@ -1,2 +1,2 @@
 ﻿# template
-- ${expandText(@answer)}
+- ${length(expandText(@answer))}
