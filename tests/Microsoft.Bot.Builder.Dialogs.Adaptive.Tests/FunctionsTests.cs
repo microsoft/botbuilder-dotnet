@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public void IsDialogActiveTests()
+        public void IsDialogActive_Variations()
         {
             var config = new DialogStateManagerConfiguration()
             {
@@ -56,6 +56,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(false, Expression.Parse("isDialogActive('c')").TryEvaluate(dsm).value);
             Assert.AreEqual(false, Expression.Parse("isDialogActive('f')").TryEvaluate(dsm).value);
             Assert.AreEqual(true, Expression.Parse("isDialogActive('F')").TryEvaluate(dsm).value);
+        }
+
+        [TestMethod]
+        public async Task IsDialogActive()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]
