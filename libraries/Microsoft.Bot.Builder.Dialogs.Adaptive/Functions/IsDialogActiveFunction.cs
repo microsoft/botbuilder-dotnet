@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Functions
     public class IsDialogActiveFunction : ExpressionEvaluator
     {
         public const string Name = "isDialogActive";
+        public const string Alias = "isActionActive";
 
         public IsDialogActiveFunction()
             : base(Name, Function, ReturnType.Boolean)
