@@ -14,48 +14,47 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class BotFrameworkAdapterTests
     {
         private const string AppCredentialsCacheName = "_appCredentialMap";
         private const string ConnectorClientsCacheName = "_connectorClients";
 
-        [TestMethod]
+        [Fact]
         public async Task TenantIdShouldBeSetInConversationForTeams()
         {
             var activity = await ProcessActivity(Channels.Msteams, "theTenantId", null);
-            Assert.AreEqual("theTenantId", activity.Conversation.TenantId);
+            Assert.Equal("theTenantId", activity.Conversation.TenantId);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TenantIdShouldNotChangeInConversationForTeamsIfPresent()
         {
             var activity = await ProcessActivity(Channels.Msteams, "theTenantId", "shouldNotBeReplaced");
-            Assert.AreEqual("shouldNotBeReplaced", activity.Conversation.TenantId);
+            Assert.Equal("shouldNotBeReplaced", activity.Conversation.TenantId);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TenantIdShouldNotBeSetInConversationIfNotTeams()
         {
             var activity = await ProcessActivity(Channels.Directline, "theTenantId", null);
-            Assert.IsNull(activity.Conversation.TenantId);
+            Assert.Null(activity.Conversation.TenantId);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TenantIdShouldNotFailIfNoChannelData()
         {
             var activity = await ProcessActivity(Channels.Directline, null, null);
-            Assert.IsNull(activity.Conversation.TenantId);
+            Assert.Null(activity.Conversation.TenantId);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CreateConversationOverloadProperlySetsTenantId()
         {
             // Arrange
@@ -118,14 +117,14 @@ namespace Microsoft.Bot.Builder.Tests
             await adapter.CreateConversationAsync(activity.ChannelId, activity.ServiceUrl, credentials, parameters, UpdateParameters, reference, new CancellationToken());
 
             // Assert - all values set correctly
-            Assert.AreEqual(tenantIdValue, JObject.FromObject(newActivity.ChannelData)["tenant"]["tenantId"]);
-            Assert.AreEqual(activityIdValue, newActivity.Id);
-            Assert.AreEqual(conversationIdValue, newActivity.Conversation.Id);
-            Assert.AreEqual(tenantIdValue, newActivity.Conversation.TenantId);
-            Assert.AreEqual(eventActivityName, newActivity.Name);
+            Assert.Equal(tenantIdValue, JObject.FromObject(newActivity.ChannelData)["tenant"]["tenantId"]);
+            Assert.Equal(activityIdValue, newActivity.Id);
+            Assert.Equal(conversationIdValue, newActivity.Conversation.Id);
+            Assert.Equal(tenantIdValue, newActivity.Conversation.TenantId);
+            Assert.Equal(eventActivityName, newActivity.Name);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OutgoingActivityIdsAreNotSent()
         {
             // Arrange
@@ -160,13 +159,13 @@ namespace Microsoft.Bot.Builder.Tests
             var sentActivity = mockConnector.MemoryConversations.SentActivities.FirstOrDefault(f => f.Type == ActivityTypes.Message);
 
             // Assert - assert the reply's id is not sent
-            Assert.IsNull(sentActivity.Id); 
+            Assert.Null(sentActivity.Id); 
         }
 
-        [TestMethod]
-        [DataRow(null, null, null, AuthenticationConstants.ToChannelFromBotOAuthScope, 0, 1)]
-        [DataRow("00000000-0000-0000-0000-000000000001", CallerIdConstants.PublicAzureChannel, null, AuthenticationConstants.ToChannelFromBotOAuthScope, 1, 1)]
-        [DataRow("00000000-0000-0000-0000-000000000001", CallerIdConstants.USGovChannel, GovernmentAuthenticationConstants.ChannelService, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, 1, 1)]
+        [Theory]
+        [InlineData(null, null, null, AuthenticationConstants.ToChannelFromBotOAuthScope, 0, 1)]
+        [InlineData("00000000-0000-0000-0000-000000000001", CallerIdConstants.PublicAzureChannel, null, AuthenticationConstants.ToChannelFromBotOAuthScope, 1, 1)]
+        [InlineData("00000000-0000-0000-0000-000000000001", CallerIdConstants.USGovChannel, GovernmentAuthenticationConstants.ChannelService, GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, 1, 1)]
         public async Task ProcessActivityAsyncCreatesCorrectCredsAndClient(string botAppId, string expectedCallerId, string channelService, string expectedScope, int expectedAppCredentialsCount, int expectedClientCredentialsCount)
         {
             var claims = new List<Claim>();
@@ -192,7 +191,7 @@ namespace Microsoft.Bot.Builder.Tests
                     expectedClientCredentialsCount);
 
                 var scope = context.TurnState.Get<string>(BotAdapter.OAuthScopeKey);
-                Assert.AreEqual(expectedCallerId, context.Activity.CallerId);
+                Assert.Equal(expectedCallerId, context.Activity.CallerId);
             });
 
             var sut = new BotFrameworkAdapter(credentialProvider, new SimpleChannelProvider(channelService));
@@ -207,7 +206,7 @@ namespace Microsoft.Bot.Builder.Tests
                 CancellationToken.None);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ProcessActivityAsyncForForwardedActivity()
         {
             var botAppId = "00000000-0000-0000-0000-000000000001";
@@ -233,8 +232,8 @@ namespace Microsoft.Bot.Builder.Tests
                     1);
 
                 var scope = context.TurnState.Get<string>(BotAdapter.OAuthScopeKey);
-                Assert.AreEqual(botAppId, scope);
-                Assert.AreEqual($"{CallerIdConstants.BotToBotPrefix}{botAppId}", context.Activity.CallerId);
+                Assert.Equal(botAppId, scope);
+                Assert.Equal($"{CallerIdConstants.BotToBotPrefix}{botAppId}", context.Activity.CallerId);
             });
 
             var sut = new BotFrameworkAdapter(credentialProvider);
@@ -249,7 +248,7 @@ namespace Microsoft.Bot.Builder.Tests
                 CancellationToken.None);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ContinueConversationAsyncWithoutAudience()
         {
             // Arrange
@@ -290,12 +289,12 @@ namespace Microsoft.Bot.Builder.Tests
                 var turnStateClient = turnContext.TurnState.Get<IConnectorClient>();
                 var clientCreds = turnStateClient.Credentials as AppCredentials;
 
-                Assert.AreEqual(skill1AppId, clientCreds.MicrosoftAppId);
-                Assert.AreEqual(AuthenticationConstants.ToChannelFromBotOAuthScope, clientCreds.OAuthScope);
-                Assert.AreEqual(client.BaseUri, turnStateClient.BaseUri);
+                Assert.Equal(skill1AppId, clientCreds.MicrosoftAppId);
+                Assert.Equal(AuthenticationConstants.ToChannelFromBotOAuthScope, clientCreds.OAuthScope);
+                Assert.Equal(client.BaseUri, turnStateClient.BaseUri);
 
                 var scope = turnContext.TurnState.Get<string>(BotAdapter.OAuthScopeKey);
-                Assert.AreEqual(AuthenticationConstants.ToChannelFromBotOAuthScope, scope);
+                Assert.Equal(AuthenticationConstants.ToChannelFromBotOAuthScope, scope);
             });
 
             // Create ConversationReference to send a proactive message from Skill1 to a channel
@@ -304,7 +303,7 @@ namespace Microsoft.Bot.Builder.Tests
             await adapter.ContinueConversationAsync(skillsIdentity, refs, callback, default);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ContinueConversationAsyncWithAudience()
         {
             // Arrange
@@ -345,12 +344,12 @@ namespace Microsoft.Bot.Builder.Tests
                 var turnStateClient = turnContext.TurnState.Get<IConnectorClient>();
                 var clientCreds = turnStateClient.Credentials as AppCredentials;
 
-                Assert.AreEqual(skill1AppId, clientCreds.MicrosoftAppId);
-                Assert.AreEqual(skill2AppId, clientCreds.OAuthScope);
-                Assert.AreEqual(client.BaseUri, turnStateClient.BaseUri);
+                Assert.Equal(skill1AppId, clientCreds.MicrosoftAppId);
+                Assert.Equal(skill2AppId, clientCreds.OAuthScope);
+                Assert.Equal(client.BaseUri, turnStateClient.BaseUri);
 
                 var scope = turnContext.TurnState.Get<string>(BotAdapter.OAuthScopeKey);
-                Assert.AreEqual(skill2AppId, scope);
+                Assert.Equal(skill2AppId, scope);
             });
 
             // Create ConversationReference to send a proactive message from Skill1 to Skill2
@@ -359,7 +358,7 @@ namespace Microsoft.Bot.Builder.Tests
             await adapter.ContinueConversationAsync(skillsIdentity, refs, skill2AppId, callback, default);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DeliveryModeExpectReplies()
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
@@ -389,16 +388,16 @@ namespace Microsoft.Bot.Builder.Tests
 
             var invokeResponse = await adapter.ProcessActivityAsync(string.Empty, inboundActivity, callback, CancellationToken.None);
 
-            Assert.AreEqual((int)HttpStatusCode.OK, invokeResponse.Status);
+            Assert.Equal((int)HttpStatusCode.OK, invokeResponse.Status);
             var activities = ((ExpectedReplies)invokeResponse.Body).Activities;
-            Assert.AreEqual(3, activities.Count);
-            Assert.AreEqual("activity 1", activities[0].Text);
-            Assert.AreEqual("activity 2", activities[1].Text);
-            Assert.AreEqual("activity 3", activities[2].Text);
+            Assert.Equal(3, activities.Count);
+            Assert.Equal("activity 1", activities[0].Text);
+            Assert.Equal("activity 2", activities[1].Text);
+            Assert.Equal("activity 3", activities[2].Text);
             mockHttpMessageHandler.Protected().Verify<Task<HttpResponseMessage>>("SendAsync", Times.Never(), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DeliveryModeNormal()
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
@@ -430,7 +429,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var invokeResponse = await adapter.ProcessActivityAsync(string.Empty, inboundActivity, callback, CancellationToken.None);
 
-            Assert.IsNull(invokeResponse);
+            Assert.Null(invokeResponse);
             mockHttpMessageHandler.Protected().Verify<Task<HttpResponseMessage>>("SendAsync", Times.Exactly(3), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
         }
 
@@ -485,10 +484,10 @@ namespace Microsoft.Bot.Builder.Tests
                 var credsCache = GetCache<ConcurrentDictionary<string, AppCredentials>>((BotFrameworkAdapter)turnContext.Adapter, AppCredentialsCacheName);
                 var cacheKey = $"{expectedAppId}{expectedScope}";
                 credsCache.TryGetValue(cacheKey, out var creds);
-                Assert.AreEqual(credsCount, credsCache.Count);
+                Assert.Equal(credsCount, credsCache.Count);
 
-                Assert.AreEqual(expectedAppId, creds.MicrosoftAppId);
-                Assert.AreEqual(expectedScope, creds.OAuthScope);
+                Assert.Equal(expectedAppId, creds.MicrosoftAppId);
+                Assert.Equal(expectedScope, creds.OAuthScope);
             }
         }
 
@@ -498,11 +497,11 @@ namespace Microsoft.Bot.Builder.Tests
             var cacheKey = expectedAppId == null ? $"{expectedUrl}:" : $"{expectedUrl}{expectedAppId}:{expectedScope}";
             clientCache.TryGetValue(cacheKey, out var client);
 
-            Assert.AreEqual(clientCount, clientCache.Count);
+            Assert.Equal(clientCount, clientCache.Count);
             var creds = (AppCredentials)client?.Credentials;
-            Assert.AreEqual(expectedAppId, creds?.MicrosoftAppId);
-            Assert.AreEqual(expectedScope, creds?.OAuthScope);
-            Assert.AreEqual(expectedUrl, client?.BaseUri);
+            Assert.Equal(expectedAppId, creds?.MicrosoftAppId);
+            Assert.Equal(expectedScope, creds?.OAuthScope);
+            Assert.Equal(expectedUrl, client?.BaseUri);
         }
 
         private static T GetCache<T>(BotFrameworkAdapter adapter, string fieldName)
