@@ -541,7 +541,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (name.Equals(expandText))
             {
-                return new ExpressionEvaluator(expandText, ExpressionFunctions.Apply(this.ExpandText()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
+                return new ExpressionEvaluator(expandText, ExpressionFunctions.Apply(this.ExpandText()), ReturnType.Object, ExpressionFunctions.ValidateUnaryString);
             }
 
             return null;
