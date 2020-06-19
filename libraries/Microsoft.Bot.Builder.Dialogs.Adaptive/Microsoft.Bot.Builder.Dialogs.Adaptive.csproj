@@ -61,15 +61,4 @@
     <ProjectReference Include="..\AdaptiveExpressions\AdaptiveExpressions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Schemas\Templates\" />
-    <Folder Include="Templates\" />
-  </ItemGroup>
-
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties schemas_4actions_4microsoft_1begindialog_1schema__JsonSchema="" />
-    </VisualStudio>
-  </ProjectExtensions>
-
 </Project>

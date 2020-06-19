@@ -32,6 +32,7 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'debug'
   Parameters.solution: Microsoft.Bot.Builder.sln
+  SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  FacebookTestBotAppId: define this in Azure
 #  FacebookTestBotAppSecret: define this in Azure
 #  AzureSubscription: define this in Azure
@@ -63,7 +64,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot -p:TreatWarningsAsErrors=false'
     modifyOutputPath: false
 
 - task: AzureCLI@1

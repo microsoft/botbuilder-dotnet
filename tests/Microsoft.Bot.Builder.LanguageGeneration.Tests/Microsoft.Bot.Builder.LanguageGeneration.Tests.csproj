@@ -67,6 +67,7 @@
     <None Remove="Examples\Multiline.lg" />
     <None Remove="Examples\RecursiveTemplate.lg" />
     <None Remove="Examples\CrudInit.lg" />
+    <None Remove="Examples\ExpandText.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
@@ -252,6 +253,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\CrudInit.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\ExpandText.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\Multiline.lg">

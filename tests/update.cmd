@@ -1,1 +1,2 @@
-bf dialog:merge ../libraries/**/*.schema ./**/*.schema -b "" -o tests.schema
+cd..
+bf dialog:merge libraries/**/*.schema tests/**/*.schema -o tests/tests.schema --verbose

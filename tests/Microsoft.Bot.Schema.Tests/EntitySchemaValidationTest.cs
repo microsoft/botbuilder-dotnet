@@ -1,21 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Schema.Tests
 {
     /// <summary>
     /// Entity schema validation tests to ensure that serilization and deserialization work as expected.
     /// </summary>
-    [TestClass]
     public class EntitySchemaValidationTest
     {
         /// <summary>
         /// Ensures that <see cref="GeoCoordinates"/> class can be serialized and deserialized properly.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void EntityTests_GeoCoordinatesSerializationDeserializationTest()
         {
             GeoCoordinates geoCoordinates = new GeoCoordinates()
@@ -24,19 +23,19 @@ namespace Microsoft.Bot.Schema.Tests
                 Elevation = 23,
             };
 
-            Assert.AreEqual("GeoCoordinates", geoCoordinates.Type);
+            Assert.Equal("GeoCoordinates", geoCoordinates.Type);
             string serialized = JsonConvert.SerializeObject(geoCoordinates);
 
             Entity deserializedEntity = JsonConvert.DeserializeObject<Entity>(serialized);
-            Assert.AreEqual(deserializedEntity.Type, geoCoordinates.Type);
+            Assert.Equal(deserializedEntity.Type, geoCoordinates.Type);
             var geo = deserializedEntity.GetAs<GeoCoordinates>();
-            Assert.AreEqual(geo.Type, geoCoordinates.Type);
+            Assert.Equal(geo.Type, geoCoordinates.Type);
         }
 
         /// <summary>
         /// Ensures that <see cref="Mention"/> class can be serialized and deserialized properly.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void EntityTests_MentionSerializationDeserializationTest()
         {
             Mention mentionEntity = new Mention()
@@ -44,19 +43,19 @@ namespace Microsoft.Bot.Schema.Tests
                 Text = "TESTTEST",
             };
 
-            Assert.AreEqual("mention", mentionEntity.Type);
+            Assert.Equal("mention", mentionEntity.Type);
             string serialized = JsonConvert.SerializeObject(mentionEntity);
 
             Entity deserializedEntity = JsonConvert.DeserializeObject<Entity>(serialized);
-            Assert.AreEqual(deserializedEntity.Type, mentionEntity.Type);
+            Assert.Equal(deserializedEntity.Type, mentionEntity.Type);
             var mentionDeserialized = deserializedEntity.GetAs<Mention>();
-            Assert.AreEqual(mentionDeserialized.Type, mentionEntity.Type);
+            Assert.Equal(mentionDeserialized.Type, mentionEntity.Type);
         }
 
         /// <summary>
         /// Ensures that <see cref="Place"/> class can be serialized and deserialized properly.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void EntityTests_PlaceSerializationDeserializationTest()
         {
             Place placeEntity = new Place()
@@ -64,13 +63,13 @@ namespace Microsoft.Bot.Schema.Tests
                 Name = "TESTTEST",
             };
 
-            Assert.AreEqual("Place", placeEntity.Type);
+            Assert.Equal("Place", placeEntity.Type);
             string serialized = JsonConvert.SerializeObject(placeEntity);
 
             Entity deserializedEntity = JsonConvert.DeserializeObject<Entity>(serialized);
-            Assert.AreEqual(deserializedEntity.Type, placeEntity.Type);
+            Assert.Equal(deserializedEntity.Type, placeEntity.Type);
             var placeDeserialized = deserializedEntity.GetAs<Place>();
-            Assert.AreEqual(placeDeserialized.Type, placeEntity.Type);
+            Assert.Equal(placeDeserialized.Type, placeEntity.Type);
         }
     }
 }
