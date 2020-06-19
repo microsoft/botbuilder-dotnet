@@ -7,21 +7,25 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Transcripts.Tests
 {
-    [TestClass]
     public class CoreTests
     {
-        public TestContext TestContext { get; set; }
+        public static readonly string ClassName = "CoreTests";
 
-        [TestMethod]
+        [Fact]
         public async Task BotAdapted_Bracketing()
         {
+<<<<<<< HEAD
             var activities = TranscriptUtilities.GetFromTestContext("CoreTests", "BotAdapted_Bracketing");
+=======
+            var testName = "BotAdapted_Bracketing";
+            var activities = TranscriptUtilities.GetFromTestContext(ClassName, testName);
+>>>>>>> 01f6eb67c... porting to xunit
 
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(testName))
                 .Use(new BeforeAfterMiddleware());
             adapter.OnTurnError = async (context, exception) =>
             {
