@@ -1,0 +1,6 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "title": "Microsoft Test IHttpRequestMock",
+    "description": "Components which derive from HttpRequestMock class",
+    "$role": "interface"
+}
