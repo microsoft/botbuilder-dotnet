@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var stateSet = new BotStateSet(userState, convState);
 
-            Assert.Equal(stateSet.BotStates.Count, 2);
+            Assert.Equal(2, stateSet.BotStates.Count);
             Assert.NotNull(stateSet.BotStates.OfType<UserState>().First());
             Assert.NotNull(stateSet.BotStates.OfType<ConversationState>().First());
         }
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Tests
 
                 var stateSet = new BotStateSet(userState, convState);
 
-                Assert.Equal(stateSet.BotStates.Count, 2);
+                Assert.Equal(2, stateSet.BotStates.Count);
 
                 var userCount = await userProperty.GetAsync(turnContext, () => 0);
                 Assert.Equal(0, userCount);
@@ -96,21 +96,21 @@ namespace Microsoft.Bot.Builder.Tests
 
             var stateSet = new BotStateSet(userState, convState);
 
-            Assert.Equal(stateSet.BotStates.Count, 2);
+            Assert.Equal(2, stateSet.BotStates.Count);
 
             var userObject = await userProperty.GetAsync(turnContext, () => null);
-            Assert.Equal(null, userObject);
+            Assert.Null(userObject);
 
             // Ensure we also get null on second attempt
             userObject = await userProperty.GetAsync(turnContext, () => null);
-            Assert.Equal(null, userObject);
+            Assert.Null(userObject);
 
             var convObject = await convProperty.GetAsync(turnContext, () => null);
-            Assert.Equal(null, convObject);
+            Assert.Null(convObject);
 
             // Ensure we also get null on second attempt
             convObject = await convProperty.GetAsync(turnContext, () => null);
-            Assert.Equal(null, convObject);
+            Assert.Null(convObject);
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var stateSet = new BotStateSet(userState, convState);
 
-            Assert.Equal(stateSet.BotStates.Count, 2);
+            Assert.Equal(2, stateSet.BotStates.Count);
             var context = TestUtilities.CreateEmptyContext();
             await stateSet.LoadAllAsync(context);
 

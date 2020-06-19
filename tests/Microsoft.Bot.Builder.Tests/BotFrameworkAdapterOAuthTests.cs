@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Make sure it only polled once and it ended
             Assert.Equal(1, callCount);
-            Assert.True(adapter.Logger.LogData.Contains("PollForTokenAsync completed without receiving a token"));
+            Assert.Contains("PollForTokenAsync completed without receiving a token", adapter.Logger.LogData);
         }
 
         [Fact]
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Make sure it only polled twice and it changed settings
             Assert.Equal(2, callCount);
-            Assert.True(adapter.Logger.LogData.Contains("PollForTokenAsync received new polling settings: timeout=50000, interval=500"));
+            Assert.Contains("PollForTokenAsync received new polling settings: timeout=50000, interval=500", adapter.Logger.LogData);
         }
 
         [Fact]
