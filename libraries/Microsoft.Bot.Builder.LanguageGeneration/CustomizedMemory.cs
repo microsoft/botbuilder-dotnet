@@ -86,7 +86,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public string Version()
         {
-            return "0";
+            var globalMemoryId = this.GlobalMemory?.Version() ?? string.Empty;
+            var localMemoryId = this.LocalMemory?.Version() ?? string.Empty;
+
+            return globalMemoryId + localMemoryId;
         }
     }
 }

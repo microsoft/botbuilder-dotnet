@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using SlackAPI;
 
-namespace Microsoft.Bot.Builder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 {
     /// <summary>
     /// Message to send to Slack.
@@ -17,24 +15,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <value>The ephemeral indicator of the message.</value>
         public string Ephemeral { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether a message is sent by the user or not.
-        /// </summary>
-        /// <value>The as-user indicator of the message.</value>
-        public bool AsUser { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the URL for an icon.
-        /// </summary>
-        /// <value>The URL for an icon.</value>
-        public Uri IconUrl { get; set; }
-
-        /// <summary>
-        /// Gets or Sets an emoji icon.
-        /// </summary>
-        /// <value>The emoji icon.</value>
-        public string IconEmoji { get; set; }
 
         /// <summary>
         /// Gets or Sets the timestamp of the thread.
@@ -61,12 +41,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public string Text { get; set; }
 
         /// <summary>
-        /// Gets or sets the team.
-        /// </summary>
-        /// <value>The team the user belongs to.</value>
-        public string Team { get; set; }
-
-        /// <summary>
         /// Gets or sets the timestamp.
         /// </summary>
         /// <value>The timestamp for the message.</value>
@@ -85,23 +59,16 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public string BotId { get; set; }
 
         /// <summary>
-        /// Gets or sets the icons.
-        /// </summary>
-        /// <value>A set of icons that could come with the message.</value>
-        public UserProfile Icons { get; set; }
-
-        /// <summary>
         /// Gets or sets the blocks that could come with the message.
         /// </summary>
         /// <value>The blocks that could come with the message.</value>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToSlack method")]
-        public List<Block> Blocks { get; set; } = new List<Block>();
+        public object Blocks { get; set; }
 
         /// <summary>
         /// Gets or sets the attachments that could come with the message.
         /// </summary>
         /// <value>The attachments that could come with the message.</value>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToSlack method")]
-        public List<Attachment> Attachments { get; set; } = new List<Attachment>();
+        public List<SlackAttachment> Attachments { get; set; } = new List<SlackAttachment>();
     }
 }

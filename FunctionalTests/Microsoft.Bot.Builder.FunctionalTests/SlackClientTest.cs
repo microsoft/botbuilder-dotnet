@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         private async Task SendMessageAsync(string echoGuid)
         {
-            var timestamp = DateTime.Now.ToString();
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
 
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())

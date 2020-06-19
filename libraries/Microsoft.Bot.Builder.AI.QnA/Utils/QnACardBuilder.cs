@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentNullException(nameof(suggestionsList));
             }
 
-            if (cardTitle == null) 
+            if (cardTitle == null)
             {
                 throw new ArgumentNullException(nameof(cardTitle));
             }
@@ -77,48 +77,80 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Get active learning suggestions card.
+        /// Get Card for MultiTurn scenario. (Can be deprecated from 4.10.0 release of sdk).
         /// </summary>
-        /// <param name="result">Result to be dispalyed as prompts.</param>
+        /// <param name="result">Result to be displayed.</param>
         /// <param name="cardNoMatchText">No match text.</param>
         /// <returns>IMessageActivity.</returns>
         public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
+        {
+            return GetQnADefaultResponse(result, true);
+        }
+
+        /// <summary>
+        /// Get Answer Card.
+        /// </summary>
+        /// <param name="result">Result to be displayed.</param>
+        /// <param name="displayPreciseAnswerOnly">Choice whether to display Precise Answer Only or source text along with Precise Answer.</param>  
+        /// <returns>Message activity for Query Result.</returns>
+        public static IMessageActivity GetQnADefaultResponse(QueryResult result, bool displayPreciseAnswerOnly)
         {
             if (result == null)
             {
                 throw new ArgumentNullException(nameof(result));
             }
 
-            if (cardNoMatchText == null)
-            {
-                throw new ArgumentNullException(nameof(cardNoMatchText));
-            }
-
             var chatActivity = Activity.CreateMessageActivity();
             chatActivity.Text = result.Answer;
+            
             var buttonList = new List<CardAction>();
-
-            // Add all prompt
-            foreach (var prompt in result.Context.Prompts)
+            if (result?.Context?.Prompts != null &&
+                result.Context.Prompts.Any())
             {
-                buttonList.Add(
-                    new CardAction()
-                    {
-                        Value = prompt.DisplayText,
-                        Type = "imBack",
-                        Title = prompt.DisplayText,
-                    });
+                // Add all prompts
+                foreach (var prompt in result.Context.Prompts)
+                {
+                    buttonList.Add(
+                        new CardAction()
+                        {
+                            Value = prompt.DisplayText,
+                            Type = "imBack",
+                            Title = prompt.DisplayText,
+                        });
+                }
             }
 
-            var plCard = new HeroCard()
+            string heroCardText = string.Empty;
+            if (!string.IsNullOrWhiteSpace(result?.AnswerSpan?.Text))
             {
-                Buttons = buttonList
-            };
+                chatActivity.Text = result.AnswerSpan.Text;
 
-            // Create the attachment.
-            var attachment = plCard.ToAttachment();
+                // When the configuration is set to display precise answer only
+                if (!displayPreciseAnswerOnly)
+                {
+                    heroCardText = result.Answer;
+                }
+            }
 
-            chatActivity.Attachments.Add(attachment);
+            if (buttonList.Any() || !string.IsNullOrWhiteSpace(heroCardText))
+            {
+                var plCard = new HeroCard();  
+
+                if (buttonList.Any())
+                {
+                    plCard.Buttons = buttonList;
+                }
+
+                if (!string.IsNullOrWhiteSpace(heroCardText))
+                {
+                    plCard.Text = heroCardText;
+                }
+
+                // Create the attachment.
+                var attachment = plCard.ToAttachment();
+
+                chatActivity.Attachments.Add(attachment);
+            }
 
             return chatActivity;
         }

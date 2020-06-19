@@ -214,6 +214,13 @@ namespace AdaptiveExpressions
             => ValidateArityAndAnyType(expression, 2, 2, ReturnType.Number);
 
         /// <summary>
+        /// Validate 1 or 2 numeric arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateUnaryOrBinaryNumber(Expression expression)
+            => ValidateArityAndAnyType(expression, 1, 2, ReturnType.Number);
+
+        /// <summary>
         /// Validate 2 or more than 2 numeric arguments.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
@@ -808,6 +815,15 @@ namespace AdaptiveExpressions
 
         public static ExpressionEvaluator StringTransform(string type, Func<IReadOnlyList<object>, IMemory, (object, string)> function)
             => new ExpressionEvaluator(type, ApplyWithErrorAndState(function, VerifyStringOrNull), ReturnType.String, expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String));
+
+        /// <summary>
+        /// Transform a number into another number.
+        /// </summary>
+        /// <param name="type">Expression type.</param>
+        /// <param name="function">Function to apply.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static ExpressionEvaluator NumberTransform(string type, Func<IReadOnlyList<object>, object> function)
+            => new ExpressionEvaluator(type, Apply(function, VerifyNumber), ReturnType.Number, ValidateUnaryNumber);
 
         /// <summary>
         /// Transform a date-time to another date-time.
@@ -3066,6 +3082,41 @@ namespace AdaptiveExpressions
                         VerifyInteger),
                     ReturnType.Array,
                     ValidateBinaryNumber),
+                NumberTransform(
+                    ExpressionType.Floor,
+                    args => Math.Floor(Convert.ToDouble(args[0]))),
+                NumberTransform(
+                    ExpressionType.Ceiling,
+                    args => Math.Ceiling(Convert.ToDouble(args[0]))),
+                new ExpressionEvaluator(
+                    ExpressionType.Round,
+                    ApplyWithError(
+                        args =>
+                        {
+                        string error = null;
+                        object result = null;
+                        if (args.Count == 2 && !args[1].IsInteger())
+                        {
+                            error = $"The second {args[1]} parameter must be an integer.";
+                        }
+
+                        if (error == null)
+                        {
+                            var digits = args.Count == 2 ? Convert.ToInt32(args[1]) : 0;
+                            if (digits < 0 || digits > 15)
+                            {
+                                error = $"The second parameter {args[1]} must be an integer between 0 and 15;";
+                            }
+                            else
+                            {
+                                result = Math.Round(Convert.ToDouble(args[0]), digits);
+                            }
+                        }
+
+                        return (result, error);
+                    }, VerifyNumber),
+                    ReturnType.Number,
+                    ValidateUnaryOrBinaryNumber),
 
                 // Collection Functions
                 new ExpressionEvaluator(
@@ -3210,21 +3261,36 @@ namespace AdaptiveExpressions
                 // String
                 new ExpressionEvaluator(
                     ExpressionType.Concat,
-                    Apply(
+                    ApplySequence(
                         args =>
                         {
-                            var builder = new StringBuilder();
-                            foreach (var arg in args)
-                            {
-                                if (arg != null)
-                                {
-                                    builder.Append(arg.ToString());
-                                }
-                            }
+                            var firstItem = args[0];
+                            var secondItem = args[1];
+                            var isFirstList = TryParseList(firstItem, out var firstList);
+                            var isSecondList = TryParseList(secondItem, out var secondList);
 
-                            return builder.ToString();
+                            if (firstItem == null && secondItem == null)
+                            {
+                                return null;
+                            }
+                            else if (firstItem == null && isSecondList)
+                            {
+                                return secondList;
+                            }
+                            else if (secondItem == null && isFirstList)
+                            {
+                                return firstList;
+                            }
+                            else if (isFirstList && isSecondList)
+                            {
+                                return firstList.OfType<object>().Concat(secondList.OfType<object>()).ToList();
+                            }
+                            else
+                            {
+                                return $"{firstItem?.ToString()}{secondItem?.ToString()}";
+                            }
                         }),
-                    ReturnType.String,
+                    ReturnType.Array | ReturnType.String,
                     ValidateAtLeastOne),
                 new ExpressionEvaluator(
                     ExpressionType.Length,
@@ -4791,7 +4857,7 @@ namespace AdaptiveExpressions
                 //Type Checking Functions
                 new ExpressionEvaluator(
                     ExpressionType.IsString,
-                    Apply(args => args[0].GetType() == typeof(string)),
+                    Apply(args => args[0] != null && args[0].GetType() == typeof(string)),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(
@@ -4811,7 +4877,7 @@ namespace AdaptiveExpressions
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.IsObject,
-                    Apply(args => !(args[0] is JValue) && args[0].GetType().IsValueType == false && args[0].GetType() != typeof(string)),
+                    Apply(args => args[0] != null && !(args[0] is JValue) && args[0].GetType().IsValueType == false && args[0].GetType() != typeof(string)),
                     ReturnType.Boolean,
                     ValidateUnary),
                 new ExpressionEvaluator(

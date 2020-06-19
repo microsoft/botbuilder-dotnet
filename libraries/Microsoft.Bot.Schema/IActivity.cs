@@ -33,7 +33,9 @@ namespace Microsoft.Bot.Schema
         /// <value>
         /// Service URL where responses to this activity should be sent.
         /// </value>
+#pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking binary compat)
         string ServiceUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets timestamp when this message was sent (UTC).
@@ -100,7 +102,9 @@ namespace Microsoft.Bot.Schema
         /// <value>
         /// Collection of Entity objects, each of which contains metadata about this activity. Each Entity object is typed.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         IList<Entity> Entities { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets channel-specific payload.
@@ -121,14 +125,18 @@ namespace Microsoft.Bot.Schema
         /// <value>
         /// Channel-specific payload.
         /// </value>
+#pragma warning disable CA1721 // Property names should not match get methods (we can't change this without breaking binary compat)
         dynamic ChannelData { get; set; }
+#pragma warning restore CA1721 // Property names should not match get methods
 
         /// <summary>
         /// Gets the channel data as strongly typed object.
         /// </summary>
         /// <typeparam name="TypeT">The expected type of the object.</typeparam>
         /// <returns>The strongly typed channel data.</returns>
+#pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change this without breaking binary compat)
         TypeT GetChannelData<TypeT>();
+#pragma warning restore CA1715 // Identifiers should have correct prefix
 
         /// <summary>
         /// Try to get the channeldata as a strongly typed object.
@@ -136,7 +144,9 @@ namespace Microsoft.Bot.Schema
         /// <typeparam name="TypeT">Type T.</typeparam>
         /// <param name="instance">instance.</param>
         /// <returns>false if there is no valid channeldata available.</returns>
+#pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change this without breaking binary compat)
         bool TryGetChannelData<TypeT>(out TypeT instance);
+#pragma warning restore CA1715 // Identifiers should have correct prefix
 
         /// <summary>
         /// Return IMessageActivity if this is a message activity, null otherwise.
