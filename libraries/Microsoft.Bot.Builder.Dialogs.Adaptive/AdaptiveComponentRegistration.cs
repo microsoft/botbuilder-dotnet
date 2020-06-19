@@ -30,6 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             // adaptive dialog functions
             Expression.Functions.Add(IsDialogActiveFunction.Name, new IsDialogActiveFunction());
+            Expression.Functions.Add(IsDialogActiveFunction.Alias, new IsDialogActiveFunction());
             Expression.Functions.Add(HasPendingActionsFunction.Name, new HasPendingActionsFunction());
         }
 
