@@ -2,26 +2,22 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Microsoft.Bot.Builder;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Schema.Tests
 {
     /// <summary>
     /// Tests to ensure that Card Extension methods work as expected.
     /// </summary>
-    [TestClass]
     public class CardExTest
     {
-        private static readonly List<Attachment> _attachments = new List<Attachment>();
-
         /// <summary>
-        /// Ensures that the <see cref="HeroCard"/> can be added as an attachment in a message.
+        /// Ensures that the <see cref="HeroCard"/> can be used as an attachment.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void HeroCardToAttachmentTest()
         {
-            var message = MessageFactory.Attachment(_attachments);
+            var attachments = new List<Attachment>();
 
             var heroCard = new HeroCard
             {
@@ -31,19 +27,19 @@ namespace Microsoft.Bot.Schema.Tests
                 Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: "https://docs.microsoft.com/bot-framework") },
             };
 
-            message.Attachments.Add(heroCard.ToAttachment());
+            attachments.Add(heroCard.ToAttachment());
 
-            Assert.IsNotNull(message.Attachments);
-            Assert.AreEqual("application/vnd.microsoft.card.hero", message.Attachments[0].ContentType);
+            Assert.NotEmpty(attachments);
+            Assert.Equal("application/vnd.microsoft.card.hero", attachments[0].ContentType);
         }
 
         /// <summary>
-        /// Ensures that the <see cref="ThumbnailCard"/> can be added as an attachment in a message.
+        /// Ensures that the <see cref="ThumbnailCard"/> can be used as an attachment.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ThumbnailCardToAttachmentTest()
         {
-            var message = MessageFactory.Attachment(_attachments);
+            var attachments = new List<Attachment>();
 
             var thumbnailCard = new ThumbnailCard
             {
@@ -53,19 +49,19 @@ namespace Microsoft.Bot.Schema.Tests
                 Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: "https://docs.microsoft.com/bot-framework") },
             };
 
-            message.Attachments.Add(thumbnailCard.ToAttachment());
+            attachments.Add(thumbnailCard.ToAttachment());
 
-            Assert.IsNotNull(message.Attachments);
-            Assert.AreEqual("application/vnd.microsoft.card.thumbnail", message.Attachments[0].ContentType);
+            Assert.NotEmpty(attachments);
+            Assert.Equal("application/vnd.microsoft.card.thumbnail", attachments[0].ContentType);
         }
 
         /// <summary>
-        /// Ensures that the <see cref="SigninCard"/> can be added as an attachment in a message.
+        /// Ensures that the <see cref="SigninCard"/> can be used as an attachment.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void SigninCardToAttachmentTest()
         {
-            var message = MessageFactory.Attachment(_attachments);
+            var attachments = new List<Attachment>();
 
             var signinCard = new SigninCard
             {
@@ -73,19 +69,19 @@ namespace Microsoft.Bot.Schema.Tests
                 Buttons = new List<CardAction> { new CardAction(ActionTypes.Signin, "Sign-in", value: "https://login.microsoftonline.com/") },
             };
 
-            message.Attachments.Add(signinCard.ToAttachment());
+            attachments.Add(signinCard.ToAttachment());
 
-            Assert.IsNotNull(message.Attachments);
-            Assert.AreEqual("application/vnd.microsoft.card.signin", message.Attachments[0].ContentType);
+            Assert.NotEmpty(attachments);
+            Assert.Equal("application/vnd.microsoft.card.signin", attachments[0].ContentType);
         }
 
         /// <summary>
-        /// Ensures that the <see cref="ReceiptCard"/> can be added as an attachment in a message.
+        /// Ensures that the <see cref="ReceiptCard"/> can be used as an attachment.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void ReceiptCardToAttachmentTest()
         {
-            var message = MessageFactory.Attachment(_attachments);
+            var attachments = new List<Attachment>();
 
             var receiptCard = new ReceiptCard
             {
@@ -116,19 +112,19 @@ namespace Microsoft.Bot.Schema.Tests
                 },
             };
 
-            message.Attachments.Add(receiptCard.ToAttachment());
+            attachments.Add(receiptCard.ToAttachment());
 
-            Assert.IsNotNull(message.Attachments);
-            Assert.AreEqual("application/vnd.microsoft.card.receipt", message.Attachments[0].ContentType);
+            Assert.NotEmpty(attachments);
+            Assert.Equal("application/vnd.microsoft.card.receipt", attachments[0].ContentType);
         }
 
         /// <summary>
-        /// Ensures that the <see cref="AudioCard"/> can be added as an attachment in a message.
+        /// Ensures that the <see cref="AudioCard"/> can be used as an attachment.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void AudioCardToAttachmentTest()
         {
-            var message = MessageFactory.Attachment(_attachments);
+            var attachments = new List<Attachment>();
 
             var audioCard = new AudioCard
             {
@@ -157,19 +153,19 @@ namespace Microsoft.Bot.Schema.Tests
                 },
             };
 
-            message.Attachments.Add(audioCard.ToAttachment());
+            attachments.Add(audioCard.ToAttachment());
 
-            Assert.IsNotNull(message.Attachments);
-            Assert.AreEqual("application/vnd.microsoft.card.audio", message.Attachments[0].ContentType);
+            Assert.NotEmpty(attachments);
+            Assert.Equal("application/vnd.microsoft.card.audio", attachments[0].ContentType);
         }
 
         /// <summary>
-        /// Ensures that the <see cref="VideoCard"/> can be added as an attachment in a message.
+        /// Ensures that the <see cref="VideoCard"/> can be used as an attachment.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void VideoCardToAttachmentTest()
         {
-            var message = MessageFactory.Attachment(_attachments);
+            var attachments = new List<Attachment>();
 
             var videoCard = new VideoCard
             {
@@ -198,19 +194,19 @@ namespace Microsoft.Bot.Schema.Tests
                 },
             };
 
-            message.Attachments.Add(videoCard.ToAttachment());
+            attachments.Add(videoCard.ToAttachment());
 
-            Assert.IsNotNull(message.Attachments);
-            Assert.AreEqual("application/vnd.microsoft.card.video", message.Attachments[0].ContentType);
+            Assert.NotEmpty(attachments);
+            Assert.Equal("application/vnd.microsoft.card.video", attachments[0].ContentType);
         }
 
         /// <summary>
-        /// Ensures that the <see cref="AnimationCard"/> can be added as an attachment in a message.
+        /// Ensures that the <see cref="AnimationCard"/> can be used as an attachment.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void AnimationCardToAttachmentTest()
         {
-            var message = MessageFactory.Attachment(_attachments);
+            var attachments = new List<Attachment>();
 
             var animationCard = new AnimationCard
             {
@@ -229,20 +225,20 @@ namespace Microsoft.Bot.Schema.Tests
                 },
             };
 
-            message.Attachments.Add(animationCard.ToAttachment());
+            attachments.Add(animationCard.ToAttachment());
 
-            Assert.IsNotNull(message.Attachments);
-            Assert.AreEqual("application/vnd.microsoft.card.animation", message.Attachments[0].ContentType);
+            Assert.NotEmpty(attachments);
+            Assert.Equal("application/vnd.microsoft.card.animation", attachments[0].ContentType);
         }
 
         /// <summary>
-        /// Ensures that the <see cref="OAuthCard"/> can be added as an attachment in a message.
+        /// Ensures that the <see cref="OAuthCard"/> can be used as an attachment.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void OAuthCardToAttachmentTest()
         {
-            var message = MessageFactory.Attachment(_attachments);
-            
+            var attachments = new List<Attachment>();
+
             var oauthCard = new OAuthCard
             {
                 Text = "Please, sign in",
@@ -250,10 +246,10 @@ namespace Microsoft.Bot.Schema.Tests
                 Buttons = new List<CardAction> { new CardAction(ActionTypes.Signin, "Login", value: "https://login.microsoftonline.com/") },
             };
 
-            message.Attachments.Add(oauthCard.ToAttachment());
+            attachments.Add(oauthCard.ToAttachment());
 
-            Assert.IsNotNull(message.Attachments);
-            Assert.AreEqual("application/vnd.microsoft.card.oauth", message.Attachments[0].ContentType);
+            Assert.NotEmpty(attachments);
+            Assert.Equal("application/vnd.microsoft.card.oauth", attachments[0].ContentType);
         }
     }
 }
