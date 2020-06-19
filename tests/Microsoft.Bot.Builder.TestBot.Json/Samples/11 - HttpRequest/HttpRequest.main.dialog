@@ -1,7 +1,6 @@
 {
     "$schema": "../../testbot.schema",
     "$kind": "Microsoft.AdaptiveDialog",
-    "$id": "root",
     "triggers": [
         {
             "$kind": "Microsoft.OnBeginDialog",

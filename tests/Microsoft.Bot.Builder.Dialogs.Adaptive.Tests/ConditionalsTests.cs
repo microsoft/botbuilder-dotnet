@@ -175,14 +175,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 $"((turn.dialogEvent.name == '{DialogEvents.Error}') && (turn.test == 1))");
 
             AssertExpression(
-                new OnCustomEvent()
-                {
-                    Event = "CustomEvent",
-                    Condition = "turn.test == 1"
-                },
-                "((turn.dialogEvent.name == 'CustomEvent') && (turn.test == 1))");
-
-            AssertExpression(
                 new OnDialogEvent()
                 {
                     Event = "DialogEvent",

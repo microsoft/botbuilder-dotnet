@@ -7,17 +7,17 @@
     "additionalProperties": false,
     "properties": {
         "arg1": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
+            "$ref": "schema:#/definitions/numberExpression",
             "title": "Arg1",
             "description": "Value from callers memory to use as arg 1"
         },
         "arg2": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/numberExpression",
+            "$ref": "schema:#/definitions/numberExpression",
             "title": "Arg2",
             "description": "Value from callers memory to use as arg 2"
         },
         "result": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Result",
             "description": "Property to store the result in"
         }

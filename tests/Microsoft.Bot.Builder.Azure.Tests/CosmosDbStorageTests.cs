@@ -36,6 +36,11 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private static readonly string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
         private static readonly Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
+            {
+                return false;
+            }
+
             if (File.Exists(_emulatorPath))
             {
                 var tries = 5;
@@ -82,7 +87,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestInitialize]
         public void TestInit()
         {
-            if (_hasEmulator.Value)
+            if (CheckEmulator())
             {
                 _storage = new CosmosDbStorage(new CosmosDbStorageOptions
                 {

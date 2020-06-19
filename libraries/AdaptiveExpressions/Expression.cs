@@ -345,7 +345,6 @@ namespace AdaptiveExpressions
         /// Return all static paths to memory.  If there is a computed element index, then the path is terminated there,
         /// but you might get other paths from the computed part as well.
         /// </remarks>
-        /// <param name="expression">Expression to get references from.</param>
         /// <returns>List of the static reference paths.</returns>
         public IReadOnlyList<string> References()
         {

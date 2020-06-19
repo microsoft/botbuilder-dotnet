@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public const string Kind = "Microsoft.RecognizerSet";
 
         [JsonConstructor]
-        public RecognizerSet()
+        public RecognizerSet([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(callerPath, callerLine)
         {
         }
 
@@ -54,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
 
             // run all of the recognizers in parallel
-            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics)));
+            var results = await Task.WhenAll(Recognizers.Select(r => r.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics))).ConfigureAwait(false);
 
             // merge intents
             var result = MergeResults(results);

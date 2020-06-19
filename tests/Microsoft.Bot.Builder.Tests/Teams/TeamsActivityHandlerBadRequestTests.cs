@@ -1,20 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Teams.Tests
 {
-    [TestClass]
     public class TeamsActivityHandlerBadRequestTests
     {
-        [TestMethod]
+        [Fact]
         public async Task TestFileConsentBadAction()
         {
             // Arrange
@@ -47,13 +45,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(400, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(400, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMessagingExtensionSubmitActionPreviewBadAction()
         {
             // Arrange
@@ -80,10 +78,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
-            Assert.IsNotNull(activitiesToSend);
-            Assert.AreEqual(1, activitiesToSend.Length);
-            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
-            Assert.AreEqual(400, ((InvokeResponse)activitiesToSend[0].Value).Status);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(400, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
     }
 }

@@ -50,12 +50,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
                         if (!string.IsNullOrWhiteSpace(conversation?.ToString()))
                         {
                             conversationId = (string)conversation["id"];
-
-                            using (var sha256Hash = SHA256.Create())
-                            {
-                                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(conversationId));
-                                sessionId = System.Convert.ToBase64String(bytes);
-                            }
+                            sessionId = StringUtils.Hash(conversationId);
                         }
 
                         var context = telemetry.Context;

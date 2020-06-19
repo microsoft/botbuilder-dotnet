@@ -7,7 +7,7 @@
     "properties": {
         "template": {
             "title": "Template",
-            "Description": "Language Generator template to evaluate to create the text",
+            "description": "Language Generator template to evaluate to create the text.",
             "type": "string"
         }
     },

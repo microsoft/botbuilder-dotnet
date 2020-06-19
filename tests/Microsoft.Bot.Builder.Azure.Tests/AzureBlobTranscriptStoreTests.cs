@@ -60,35 +60,22 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // These tests require Azure Storage Emulator v5.7
-        [TestInitialize]
-        public void TestInit()
+        public void ContainerInit()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                var container = CloudStorageAccount.Parse(ConnectionString)
-                    .CreateCloudBlobClient()
-                    .GetContainerReference(ContainerName);
-                container.DeleteIfExists();
-            }
-        }
-
-        public bool CheckEmulator()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return StorageEmulatorHelper.EnsureStarted();
-            }
-
-            Assert.Inconclusive("This test requires Azure Storage Emulator to run");
-            return false;
+            var container = CloudStorageAccount.Parse(ConnectionString)
+                .CreateCloudBlobClient()
+                .GetContainerReference(ContainerName);
+            container.DeleteIfExists();
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptsEmptyTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+
                 var unusedChannelId = Guid.NewGuid().ToString();
                 var transcripts = await TranscriptStore.ListTranscriptsAsync(unusedChannelId);
                 Assert.AreEqual(transcripts.Items.Length, 0);
@@ -99,8 +86,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityEmptyTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 foreach (var convoId in ConversationSpecialIds)
                 {
                     var activities = await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, convoId);
@@ -113,8 +102,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 var loggedActivities = new IActivity[5];
                 var activities = new List<IActivity>();
                 for (var i = 0; i < 5; i++)
@@ -133,8 +124,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemoveTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 for (var i = 0; i < 5; i++)
                 {
                     var a = CreateActivity(i, i, ConversationIds);
@@ -151,8 +144,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddSpecialCharsTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 var loggedActivities = new IActivity[ConversationSpecialIds.Length];
                 var activities = new List<IActivity>();
                 for (var i = 0; i < ConversationSpecialIds.Length; i++)
@@ -171,8 +166,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemoveSpecialCharsTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 for (var i = 0; i < ConversationSpecialIds.Length; i++)
                 {
                     var a = CreateActivity(i, i, ConversationSpecialIds);
@@ -189,8 +186,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddPagedResultTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 var cleanChanel = Guid.NewGuid().ToString();
 
                 var loggedPagedResult = new PagedResult<IActivity>();
@@ -221,8 +220,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemovePagedTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 var loggedActivities = new PagedResult<IActivity>();
                 int i;
                 for (i = 0; i < ConversationSpecialIds.Length; i++)
@@ -241,8 +242,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task LongIdAddTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
                 try
                 {
                     var a = CreateActivity(0, 0, LongId);
@@ -263,8 +265,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public void BlobTranscriptParamTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
                 Assert.ThrowsException<FormatException>(() => new AzureBlobTranscriptStore("123", ContainerName));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
@@ -284,8 +287,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task NullBlobTest()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
                 AzureBlobTranscriptStore store = null;
 
                 await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
@@ -299,8 +303,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestCategory("Middleware")]
         public async Task LogActivities()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
                     .Use(new TranscriptLoggerMiddleware(TranscriptStore));
@@ -346,8 +352,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestCategory("Middleware")]
         public async Task LogUpdateActivities()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
                     .Use(new TranscriptLoggerMiddleware(TranscriptStore));
@@ -388,8 +396,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestCategory("Middleware")]
         public async Task TestDateLogUpdateActivities()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 var dateTimeStartOffset1 = new DateTimeOffset(DateTime.Now);
                 var dateTimeStartOffset2 = new DateTimeOffset(DateTime.UtcNow);
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
@@ -445,8 +455,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestCategory("Middleware")]
         public async Task LogDeleteActivities()
         {
-            if (CheckEmulator())
+            if (StorageEmulatorHelper.CheckEmulator())
             {
+                ContainerInit();
+                
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
                     .Use(new TranscriptLoggerMiddleware(TranscriptStore));

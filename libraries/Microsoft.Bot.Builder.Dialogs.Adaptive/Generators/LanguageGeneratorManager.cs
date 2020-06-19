@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// multi language lg resources. en -> [resourcelist].
         /// </summary>
-        private readonly Dictionary<string, IList<IResource>> multilanguageResources;
+        private readonly Dictionary<string, IList<Resource>> multilanguageResources;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </value>
         public ConcurrentDictionary<string, LanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, LanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
-        public static ImportResolverDelegate ResourceExplorerResolver(string locale, Dictionary<string, IList<IResource>> resourceMapping)
+        public static ImportResolverDelegate ResourceExplorerResolver(string locale, Dictionary<string, IList<Resource>> resourceMapping)
         {
             return (string source, string id) =>
             {
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             };
         }
 
-        private void ResourceExplorer_Changed(IResource[] resources)
+        private void ResourceExplorer_Changed(object sender, IEnumerable<Resource> resources)
         {
             // reload changed LG files
             foreach (var resource in resources.Where(r => Path.GetExtension(r.Id).ToLower() == ".lg"))
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
         }
 
-        private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
+        private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(Resource resource)
         {
             var fileResource = resource as FileResource;
             if (fileResource == null)

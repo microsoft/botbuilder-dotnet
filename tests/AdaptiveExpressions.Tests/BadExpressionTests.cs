@@ -87,6 +87,7 @@ namespace AdaptiveExpressions.Tests
             Test("addOrdinal(one)"), // should have Integer param
             Test("addOrdinal(one, two)"), // should have one param
             Test("newGuid(one)"), // should have no parameters
+            Test("EOL(one)"), // should have no parameters
             Test("indexOf(hello)"), // should have two parameters
             Test("indexOf(hello, world, one)"), // should have two parameters
             Test("indexOf(hello, one)"), // second parameter should be string
@@ -95,6 +96,10 @@ namespace AdaptiveExpressions.Tests
             Test("lastIndexOf(hello, world, one)"), // should have two parameters
             Test("lastIndexOf(hello, one)"), // second parameter should be string
             Test("lastIndexOf(one, hello)"), // first parameter should be list or string
+            Test("sentenceCase(hello, hello)"), // should have one parameters
+            Test("sentenceCase(one)"), // first parameter should be string
+            Test("titleCase(hello, hello)"), // should have one parameters
+            Test("titleCase(one)"), // first parameter should be string
             #endregion
 
             #region Logical comparison functions test
@@ -139,6 +144,10 @@ namespace AdaptiveExpressions.Tests
             Test("base64ToBinary(one)"), // should have string param
             Test("base64ToString(hello, world)"), // shoule have 1 param
             Test("base64ToString(false)"), // should have string param
+            Test("formatNumber(1,2,3)"), // invalid locale type
+            Test("formatNumber(1,2,'dlkj'"), // invalid locale
+            Test("formatNumber(1,2.0)"), // the second parameter should be an integer
+            Test("formatNumber(hello,2.0)"), // the first parameter should be a number
             #endregion
 
             #region Math functions test
@@ -169,9 +178,33 @@ namespace AdaptiveExpressions.Tests
             Test("sum(items)"), //  should have number parameters
             Test("range(hello,one)"), // params should be integer
             Test("range(one,0)"), // the second param should be more than 0
+            Test("floor(hello)"), // should have a number parameter
+            Test("floor(1.2, 2.1)"), // should have one parameter
+            Test("ceiling(hello)"), // should have a number parameter
+            Test("ceiling(1.2, 2.1)"), // should have one parameter
+            Test("round(hello)"), // should have number parameters
+            Test("round(1.2, hello)"), // should have a number as the 2nd parameter
+            Test("round(1.2, 2.1)"), // should have integer as the 2nd parameter
+            Test("round(1.2, -2)"), // the 2nd parameter should not less than 0
+            Test("round(1.2, 16)"), // the 2nd parameter should not greater than 15
+            Test("round(1.2, 2, 3)"), // should have one or two number parameters
             #endregion
             
             #region Date and time function test
+            Test("isDefinite(12345)"), // should hava a string or a TimexProperty parameter
+            Test("isDefinite('world', 123445)"), // should have only one parameter
+            Test("isTime(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isTime('world', 123445)"), // should have only one parameter
+            Test("isDuration(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDuration('world', 123445)"), // should have only one parameter
+            Test("isDate(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDate('world', 123445)"), // should have only one parameter
+            Test("isTimeRange(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isTimeRange('world', 123445)"), // should have only one parameter
+            Test("isDateRange(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDateRange('world', 123445)"), // should have only one parameter
+            Test("isPresent(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isPresent('world', 123445)"), // should have only one parameter
             Test("addDays('errortime', 1)"), // error datetime format
             Test("addDays(timestamp, 'hi')"), // second param should be integer
             Test("addDays(timestamp)"), // should have 2 or 3 params
@@ -214,7 +247,13 @@ namespace AdaptiveExpressions.Tests
             Test("formatDateTime(notValidTimestamp)"), // error datetime format
             Test("formatDateTime(notValidTimestamp2)"), // error datetime format
             Test("formatDateTime(notValidTimestamp3)"), // error datetime format
-            Test("formatDateTime(timestamp, 'yyyy', 1)"), // should have 2 or 3 params
+            Test("formatDateTime({})"), // error valid datetime
+            Test("formatDateTime(timestamp, 1)"), // invalid format string
+            Test("formatEpoch('time')"), // error string
+            Test("formatEpoch(timestamp, 'yyyy', 1)"), // should have 1 or 2 params
+            Test("formatTicks('string')"), // String is not valid
+            Test("formatTicks(2.3)"), // float is not valid
+            Test("formatTicks({})"), // object is not valid
             Test("subtractFromTime('errortime', 'yyyy', 1)"), // error datetime format
             Test("subtractFromTime(timestamp, 1, 'W')"), // error time unit
             Test("subtractFromTime(timestamp, timestamp, 'W')"), // error parameters format
@@ -259,6 +298,12 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth(notValidTimeStamp)"), // not valid timestamp
             Test("startOfMonth(timeStamp, 'A')"), // not valid format
             Test("ticks(notValidTimeStamp)"), // not valid timestamp
+            Test("ticksToDays(12.12)"), // not an integer
+            Test("ticksToHours(timestamp)"), // not an integer
+            Test("ticksToMinutes(timestamp)"), // not an integer
+            Test("dateTimeDiff(notValidTimeStamp,'2018-01-01T08:00:00.000Z')"), // the first parameter is not a valid timestamp
+            Test("dateTimeDiff('2017-01-01T08:00:00.000Z',notValidTimeStamp)"), // the second parameter is not a valid timestamp
+            Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z', 'years')"), // should only have 2 parameters
             #endregion
 
             #region uri parsing function test
@@ -324,7 +369,7 @@ namespace AdaptiveExpressions.Tests
             Test("sortBy(createArray('H','e','l','l','o'), 'x', hi)"), // second param should be string
 #endregion
 
-#region Object manipulation and construction functions test
+            #region Object manipulation and construction functions test
             Test("json(1,2)"), // should have 1 parameter
             Test("json(1)"), // should be string parameter
             Test("json('{\"key1\":value1\"}')"), // invalid json format string 
@@ -342,25 +387,25 @@ namespace AdaptiveExpressions.Tests
             Test("jPath(hello,'Manufacturers[0].Products[0].Price')"), // not a valid json
             Test("jPath(hello,'Manufacturers[0]/Products[0]/Price')"), // not a valid path
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
-#endregion
+            #endregion
 
-#region Memory access test
+            #region Memory access test
             Test("getProperty(bag, 1)"), // second param should be string
             Test("Accessor(1)"), // first param should be string
             Test("Accessor(bag, 1)"), // second should be object
             Test("one[0]"),  // one is not list
             Test("items[3]"), // index out of range
             Test("items[one+0.5]"), // index is not integer
-#endregion
+            #endregion
             
-#region Regex
+            #region Regex
             Test("isMatch('^[a-z]+$')"), // should have 2 parameter
             Test("isMatch('abC', one)"), // second param should be string
             Test("isMatch(1, '^[a-z]+$')"), // first param should be string
             Test("isMatch('abC', '^[a-z+$')"), // bad regular expression
-#endregion
+            #endregion
 
-#region Type Checking
+            #region Type Checking
             Test("isString(hello, hello)"), // should have 1 parameter
             Test("isInteger(2, 3)"), // should have 1 parameter
             Test("isFloat(1.2, 3.1)"), // should have 1 parameter
@@ -368,18 +413,18 @@ namespace AdaptiveExpressions.Tests
             Test("isObejct(emptyJObject, hello)"), // should have 1 parameter
             Test("isDateTime('2018-03-15T13:00:00.000Z', hello)"), // should have 1 parameter
             Test("isBoolean(false, false)"), // should have 1 parameter
-#endregion
+            #endregion
 
-#region SetPathToValue tests
+            #region SetPathToValue tests
             Test("setPathToValue(2+3, 4)"), // Not a real path
             Test("setPathToValue(a)"), // Missing value
-#endregion
+            #endregion
 
-#region TriggerTree Tests
+            #region TriggerTree Tests
 
             // optional throws because it's a placeholder only interpreted by trigger tree and is removed before evaluation
             Test("optional(true)"), 
-#endregion
+            #endregion
         };
 
         /// <summary>

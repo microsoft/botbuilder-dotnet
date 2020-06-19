@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AdaptiveExpressions;
 using AdaptiveExpressions.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
@@ -12,7 +13,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Skills;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -29,9 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Conditionals
             yield return new DeclarativeType<OnCondition>(OnCondition.Kind);
             yield return new DeclarativeType<OnError>(OnError.Kind);
-
             yield return new DeclarativeType<OnDialogEvent>(OnDialogEvent.Kind);
-            yield return new DeclarativeType<OnCustomEvent>(OnCustomEvent.Kind);
 
             yield return new DeclarativeType<OnBeginDialog>(OnBeginDialog.Kind);
             yield return new DeclarativeType<OnCancelDialog>(OnCancelDialog.Kind);
@@ -60,6 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Actions
             yield return new DeclarativeType<BeginDialog>(BeginDialog.Kind);
+            yield return new DeclarativeType<BeginSkill>(BeginSkill.Kind);
             yield return new DeclarativeType<CancelDialog>(CancelDialog.Kind);
             yield return new DeclarativeType<CancelAllDialogs>(CancelAllDialogs.Kind);
             yield return new DeclarativeType<DebugBreak>(DebugBreak.Kind);
@@ -142,7 +141,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Dialogs
             yield return new DeclarativeType<AdaptiveDialog>(AdaptiveDialog.Kind);
-            yield return new DeclarativeType<AdaptiveSkillDialog>(AdaptiveSkillDialog.Kind);
 
             // register x.dialog.schema/x.dialog as DynamicBeginDialog $kind="x" => DynamicBeginDialog(x.dialog) resource.
             foreach (var schema in resourceExplorer.GetResources(".schema").Where(s => resourceExplorer.GetTypeForKind(Path.GetFileNameWithoutExtension(s.Id)) == null))

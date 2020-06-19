@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
             if (!dc.Context.TurnState.TryGetValue(ScopePath.Settings, out object settings))
             {
-                var configuration = HostContext.Current.Get<IConfiguration>();
+                var configuration = dc.Context.TurnState.Get<IConfiguration>();
                 if (configuration != null)
                 {
                     settings = LoadSettings(configuration);

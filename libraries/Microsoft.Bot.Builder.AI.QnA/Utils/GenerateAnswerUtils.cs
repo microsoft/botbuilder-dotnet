@@ -138,12 +138,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 options.StrictFilters = new Metadata[] { };
             }
-
-            if (options.MetadataBoost == null)
-            {
-                options.MetadataBoost = new Metadata[] { };
-            }
-
+           
             if (options.RankerType == null)
             {
                 options.RankerType = RankerTypes.DefaultRankerType;
@@ -158,15 +153,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
             var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(this.Options));
-
+            
             if (queryOptions != null)
             {
-                if (queryOptions.ScoreThreshold != hydratedOptions.ScoreThreshold && queryOptions.ScoreThreshold != 0)
+                if (queryOptions.ScoreThreshold != 0)
                 {
                     hydratedOptions.ScoreThreshold = queryOptions.ScoreThreshold;
                 }
 
-                if (queryOptions.Top != hydratedOptions.Top && queryOptions.Top != 0)
+                if (queryOptions.Top != 0)
                 {
                     hydratedOptions.Top = queryOptions.Top;
                 }
@@ -176,16 +171,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     hydratedOptions.StrictFilters = queryOptions.StrictFilters;
                 }
 
-                if (queryOptions.MetadataBoost?.Length > 0)
-                {
-                    hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
-                }
-
                 hydratedOptions.Context = queryOptions.Context;
                 hydratedOptions.QnAId = queryOptions.QnAId;
                 hydratedOptions.IsTest = queryOptions.IsTest;
-
                 hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
+                hydratedOptions.EnablePreciseAnswer = queryOptions.EnablePreciseAnswer;
             }
 
             return hydratedOptions;
@@ -194,18 +184,24 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task<QueryResults> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
+            var answerSpanRequest = new AnswerSpanRequest();
+            if (options.EnablePreciseAnswer)
+            {
+                answerSpanRequest.Enable = options.EnablePreciseAnswer;
+            }
+
             var jsonRequest = JsonConvert.SerializeObject(
                 new
                 {
                     question = messageActivity.Text,
                     top = options.Top,
                     strictFilters = options.StrictFilters,
-                    metadataBoost = options.MetadataBoost,
                     scoreThreshold = options.ScoreThreshold,
                     context = options.Context,
                     qnaId = options.QnAId,
                     isTest = options.IsTest,
-                    rankerType = options.RankerType
+                    rankerType = options.RankerType,
+                    answerSpanRequest = answerSpanRequest
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(httpClient);
@@ -218,6 +214,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
+            var answerSpanRequest = new AnswerSpanRequest();
+            if (options.EnablePreciseAnswer)
+            {                
+                answerSpanRequest.Enable = options.EnablePreciseAnswer;
+            }
+
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = (Activity)messageActivity,
@@ -226,11 +228,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 ScoreThreshold = options.ScoreThreshold,
                 Top = options.Top,
                 StrictFilters = options.StrictFilters,
-                MetadataBoost = options.MetadataBoost,
                 Context = options.Context,
                 QnAId = options.QnAId,
                 IsTest = options.IsTest,
-                RankerType = options.RankerType
+                RankerType = options.RankerType,
+                AnswerSpanRequest = answerSpanRequest
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);

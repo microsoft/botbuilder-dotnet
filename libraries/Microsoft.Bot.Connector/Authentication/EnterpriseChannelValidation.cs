@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -26,6 +27,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,
+                ValidateIssuerSigningKey = true,
             };
 
         /// <summary>
@@ -70,7 +72,7 @@ namespace Microsoft.Bot.Connector.Authentication
             var tokenExtractor = new JwtTokenExtractor(
                 httpClient,
                 ToBotFromEnterpriseChannelTokenValidationParameters,
-                string.Format(AuthenticationConstants.ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat, channelService),
+                string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat, channelService),
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements).ConfigureAwait(false);
@@ -118,7 +120,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            if (!await credentials.IsValidAppIdAsync(appIdFromClaim))
+            if (!await credentials.IsValidAppIdAsync(appIdFromClaim).ConfigureAwait(false))
             {
                 // The AppId is not valid. Not Authorized.
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appIdFromClaim}");
@@ -133,7 +135,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     throw new UnauthorizedAccessException();
                 }
 
-                if (!string.Equals(serviceUrlClaim, serviceUrl))
+                if (!string.Equals(serviceUrlClaim, serviceUrl, StringComparison.OrdinalIgnoreCase))
                 {
                     // Claim must match. Not Authorized.
                     throw new UnauthorizedAccessException();

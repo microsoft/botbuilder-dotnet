@@ -11,7 +11,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -19,7 +19,7 @@
             ]
         },
         "itemsProperty": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Items property",
             "description": "Property that holds the array.",
             "examples": [
@@ -27,13 +27,13 @@
             ]
         },
         "index": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Index property",
             "description": "Property that holds the index of the item.",
             "default": "dialog.foreach.index"
         },
         "value": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Value property",
             "description": "Property that holds the value of the item.",
             "default": "dialog.foreach.value"

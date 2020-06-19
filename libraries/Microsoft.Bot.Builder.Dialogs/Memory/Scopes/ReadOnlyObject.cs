@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <summary>
         /// Initializes a new instance of the <see cref="ReadOnlyObject"/> class.
         /// </summary>
-        /// <param name="dialogContext">dialog context for evalutation of expression properties.</param>
         /// <param name="obj">object to wrap.  Any expression properties on it will be evaluated using the dc.</param>
         public ReadOnlyObject(object obj)
         {

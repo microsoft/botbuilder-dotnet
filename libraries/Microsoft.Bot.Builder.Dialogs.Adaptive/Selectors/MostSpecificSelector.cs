@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public override async Task<IReadOnlyList<OnCondition>> Select(ActionContext context, CancellationToken cancel)
+        public override async Task<IReadOnlyList<OnCondition>> SelectAsync(ActionContext context, CancellationToken cancellationToken)
         {
             var triggers = _tree.Matches(context.State);
             var matches = new List<OnCondition>();
@@ -47,10 +47,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
 
             IReadOnlyList<OnCondition> selections = matches;
-            if (Selector != null)
+            if (matches.Count > 0 && Selector != null)
             {
                 Selector.Initialize(matches, false);
-                selections = await Selector.Select(context, cancel).ConfigureAwait(false);
+                selections = await Selector.SelectAsync(context, cancellationToken).ConfigureAwait(false);
             }
 
             return selections;

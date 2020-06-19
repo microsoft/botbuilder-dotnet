@@ -22,7 +22,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </remarks>
     public class Templates : List<Template>
     {
+        /// <summary>
+        /// Temp Template ID for inline content.
+        /// </summary>
+        public const string InlineTemplateId = "__temp__";
         private readonly string newLine = Environment.NewLine;
+        private readonly Regex newLineRegex = new Regex("(\r?\n)");
+        private readonly string namespaceKey = "@namespace";
+        private readonly string exportsKey = "@exports";
 
         public Templates(
             IList<Template> templates = null,
@@ -48,6 +55,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Id = id ?? string.Empty;
             ExpressionParser = expressionParser ?? new ExpressionParser();
             Options = options ?? new List<string>();
+            this.InjectToExpressionFunction();
         }
 
         /// <summary>
@@ -142,6 +150,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public EvaluationOptions LgOptions => new EvaluationOptions(Options);
 
         /// <summary>
+        /// Gets the namespace to register for current LG file.
+        /// </summary>
+        /// <value>
+        /// A string value.
+        /// </value>
+        public string Namespace => ExtractNameSpace(Options);
+
+        /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
         /// </summary>
         /// <param name="filePath">Absolute path of a LG file.</param>
@@ -151,7 +167,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static Templates ParseFile(
             string filePath,
             ImportResolverDelegate importResolver = null,
-            ExpressionParser expressionParser = null) => TemplatesParser.ParseFile(filePath, importResolver, expressionParser);
+            ExpressionParser expressionParser = null)
+        {
+            return TemplatesParser.ParseFile(filePath, importResolver, expressionParser).InjectToExpressionFunction();
+        }
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
@@ -165,7 +184,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             string content,
             string id = "",
             ImportResolverDelegate importResolver = null,
-            ExpressionParser expressionParser = null) => TemplatesParser.ParseText(content, id, importResolver, expressionParser);
+            ExpressionParser expressionParser = null) => TemplatesParser.ParseText(content, id, importResolver, expressionParser).InjectToExpressionFunction();
 
         /// <summary>
         /// Evaluate a template with given name and scope.
@@ -179,7 +198,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             CheckErrors();
             var evalOpt = opt != null ? opt.Merge(LgOptions) : LgOptions;
             var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt);
-            return evaluator.EvaluateTemplate(templateName, scope);
+            var result = evaluator.EvaluateTemplate(templateName, scope);
+            if (evalOpt.LineBreakStyle == LGLineBreakStyle.Markdown && result is string str)
+            {
+                result = newLineRegex.Replace(str, "$1$1");
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -201,17 +226,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             CheckErrors();
 
             // wrap inline string with "# name and -" to align the evaluation process
-            var fakeTemplateId = "__temp__";
             var multiLineMark = "```";
 
             text = !text.Trim().StartsWith(multiLineMark) && text.Contains('\n')
                    ? $"{multiLineMark}{text}{multiLineMark}" : text;
 
-            var newContent = $"# {fakeTemplateId} {newLine} - {text}";
+            var newContent = $"# {InlineTemplateId} {newLine} - {text}";
 
             var newLG = TemplatesParser.ParseTextWithRef(newContent, this);
 
-            return newLG.Evaluate(fakeTemplateId, scope, evalOpt);
+            return newLG.Evaluate(InlineTemplateId, scope, evalOpt);
         }
 
         /// <summary>
@@ -326,6 +350,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override int GetHashCode() => (Id, Content).GetHashCode();
 
+        private Templates InjectToExpressionFunction()
+        {
+            var totalTempaltes = new List<Templates> { this }.Union(References);
+            foreach (var curTemplates in totalTempaltes)
+            {
+                var globalFuncs = curTemplates.GetGlobalFunctionTable(curTemplates.Options);
+                foreach (var templateName in globalFuncs)
+                {
+                    if (curTemplates.Any(u => u.Name == templateName))
+                    {
+                        var newGlobalName = $"{curTemplates.Namespace}.{templateName}";
+                        Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, ExpressionFunctions.Apply(this.GlobalTemplateFunction(templateName)), ReturnType.Object));
+                    }
+                }
+            }
+
+            return this;
+        }
+
         private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
         {
             var originList = originString.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
@@ -395,5 +438,65 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
         }
+
+        private string ExtractOptionsByKey(string nameOfKey, IList<string> options)
+        {
+            string result = null;
+            foreach (var option in options)
+            {
+                if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
+                {
+                    var index = option.IndexOf('=');
+                    var key = option.Substring(0, index).Trim().ToLower();
+                    var value = option.Substring(index + 1).Trim();
+                    if (key == nameOfKey)
+                    {
+                        result = value;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private string ExtractNameSpace(IList<string> options)
+        {
+            var result = ExtractOptionsByKey(namespaceKey, options);
+
+            if (result == null)
+            {
+                if (Path.IsPathRooted(this.Id))
+                {
+                    result = Path.GetFileNameWithoutExtension(this.Id);
+                }
+                else
+                {
+                    throw new Exception("namespace is required or the id should be an absoulte path!");
+                }
+            }
+
+            return result;
+        }
+
+        private IList<string> GetGlobalFunctionTable(IList<string> options)
+        {
+            var result = new List<string>();
+            var value = ExtractOptionsByKey(exportsKey, options);
+            if (value != null)
+            {
+                var templateList = value.Split(',').ToList();
+                templateList.ForEach(u => result.Add(u.Trim()));
+            }
+
+            return result;
+        }
+
+        private Func<IReadOnlyList<object>, object> GlobalTemplateFunction(string templateName)
+        => (IReadOnlyList<object> args) =>
+        {
+            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
+            var newScope = evaluator.ConstructScope(templateName, args.ToList());
+            return evaluator.EvaluateTemplate(templateName, newScope);
+        };
     }
 }

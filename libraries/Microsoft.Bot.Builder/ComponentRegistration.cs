@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -10,11 +12,11 @@ using System.Reflection;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// ComponentRegistration is a placeholder class for discovering assets from components. 
+    /// ComponentRegistration is a signature class for discovering assets from components. 
     /// </summary>
     /// <remarks>
-    /// To make your components available to the system you derive from ComponentRegistration and implement the 
-    /// interfaces which definethe components.  These components then are consumed in appropriate places by the 
+    /// To make your components available to the system you derive from ComponentRegistration and implement appropriate 
+    /// interfaces which register functionality.  These components then are consumed in appropriate places by the 
     /// systems that need them. For example, to add declarative types to the system you simply add class that 
     /// implements IComponentDeclarativeTypes.
     /// <code>
@@ -26,66 +28,31 @@ namespace Microsoft.Bot.Builder
     ///          ...
     ///     }
     /// }
+    /// startup.cs:
+    ///      ComponentRegistration.Add(new DeclarativeComponentRegistration()); 
+    ///      ComponentRegistration.Add(new MyComponentRegistration());
     /// </code>
     /// </remarks>
     public class ComponentRegistration
     {
+        private static ConcurrentDictionary<Type, ComponentRegistration> components = new ConcurrentDictionary<Type, ComponentRegistration>();
+
         /// <summary>
-        /// Gets list of all classes in process which are derived from ComponentRegistration.
+        /// Gets list of all ComponentRegistration objects registered.
         /// </summary>
-        /// <remarks>
-        /// This is a lazy list because we only want to do this work once.  This calculates this by
-        /// using Reflection over all of the assemblies in the AppDomain (and their references) to discover
-        /// all of the ComponentRegistrationClasses and build a list of them.
-        /// </remarks>
         /// <value>
-        /// A list of ComponentRegistration objects.
+        /// A numeration of ComponentRegistration objects.
         /// </value>
-        public static Lazy<List<ComponentRegistration>> Components { get; private set; } = new Lazy<List<ComponentRegistration>>(() =>
+        public static IEnumerable<object> Components => components.Values;
+
+        /// <summary>
+        /// Add a component which implements registration methods.
+        /// </summary>
+        /// <remarks>Only one instance per type is allowed for components.</remarks>
+        /// <param name="componentRegistration">componentRegistration.</param>
+        public static void Add(ComponentRegistration componentRegistration)
         {
-            void LoadReferencedAssembly(Assembly assembly)
-            {
-                foreach (AssemblyName name in assembly.GetReferencedAssemblies().Where(a => !a.Name.StartsWith("System")))
-                {
-                    if (!AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName == name.FullName))
-                    {
-                        try
-                        {
-                            LoadReferencedAssembly(Assembly.Load(name));
-                        }
-                        catch (Exception err)
-                        {
-                            Trace.TraceInformation(err.Message);
-                        }
-                    }
-                }
-            }
-
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                LoadReferencedAssembly(assembly);
-            }
-
-            var components = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(assembly =>
-                {
-                    try
-                    {
-                        // verify it's an assembly we can get types from.
-                        assembly.GetTypes();
-                        return !assembly.GetName().Name.StartsWith("System");
-                    }
-                    catch (System.Reflection.ReflectionTypeLoadException)
-                    {
-                        return false;
-                    }
-                })
-                .SelectMany(x => x.GetTypes())
-                .Where(type => typeof(ComponentRegistration).IsAssignableFrom(type))
-                .Select(t => (ComponentRegistration)Activator.CreateInstance(t))
-                .ToList<ComponentRegistration>();
-
-            return components;
-        });
+            components[componentRegistration.GetType()] = componentRegistration;
+        }
     }
 }

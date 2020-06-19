@@ -1,31 +1,26 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
-    "$role": "implements(Microsoft.ITrigger)",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On intent recognition",
     "description": "Actions to perform when specified intent is recognized.",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.OnCondition.schema#"
+    "properties": {
+        "intent": {
+            "type": "string",
+            "title": "Intent",
+            "description": "Name of intent."
         },
-        {
-            "properties": {
-                "intent": {
-                    "type": "string",
-                    "title": "Intent",
-                    "description": "Name of intent."
-                },
-                "entities": {
-                    "type": "array",
-                    "title": "Entities",
-                    "description": "Required entities.",
-                    "items": {
-                        "type": "string"
-                    }
-                }
+        "entities": {
+            "type": "array",
+            "title": "Entities",
+            "description": "Required entities.",
+            "items": {
+                "type": "string",
+                "title": "Entity",
+                "description": "Entity that must be present."
             }
         }
-    ],
+    },
     "required": [
         "actions"
     ]

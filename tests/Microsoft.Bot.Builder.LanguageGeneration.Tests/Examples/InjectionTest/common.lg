@@ -1,0 +1,10 @@
+﻿> !# @exports = looking, countTotal, sumFourNumbers
+
+#looking
+-${{user: {name: "John"}}.user.name}
+
+#countTotal(list1, list2)
+- ${count(union(list1,list2))}
+
+#sumFourNumbers(a,b,c,d)
+- ${a+b+c+d}

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -58,6 +59,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.IsNotNull(ds.Find("B"), "B is missing");
             Assert.IsNull(ds.Find("C"), "C should not be found");
             await Task.CompletedTask;
+        }
+
+        [TestMethod]
+        public void DialogSet_GetVersion()
+        {
+            var ds = new DialogSet();
+            var version1 = ds.GetVersion();
+            Assert.IsNotNull(version1);
+
+            var ds2 = new DialogSet();
+            var version2 = ds.GetVersion();
+            Assert.IsNotNull(version2);
+            Assert.AreEqual(version1, version2, "Same configuration should give same version");
+
+            ds2.Add(new LamdaDialog((dc, ct) => null) { Id = "A" });
+            var version3 = ds2.GetVersion();
+            Assert.IsNotNull(version3);
+            Assert.AreNotEqual(version2, version3, "version should change if there is a change");
+
+            var version4 = ds2.GetVersion();
+            Assert.IsNotNull(version3);
+            Assert.AreEqual(version3, version4, "version be same if there is no change");
+
+            var ds3 = new DialogSet()
+                .Add(new LamdaDialog((dc, ct) => null) { Id = "A" });
+
+            var version5 = ds3.GetVersion();
+            Assert.IsNotNull(version5);
+            Assert.AreEqual(version5, version4, "version be same if there is no change");
         }
 
         [TestMethod]

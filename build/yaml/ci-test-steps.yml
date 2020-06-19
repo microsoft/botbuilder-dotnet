@@ -7,13 +7,13 @@ steps:
    New-Item CodeCoverage -ItemType Directory -Force
   displayName: 'Create Code Coverage directory'
 
-- task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Build-InlinePowershell.Xpirit-Vsts-Build-InlinePowershell.InlinePowershell@1
-  displayName: 'Start CosmosDB Emulator'
-  inputs:
-    Script: |
-        Write-Host "Starting CosmosDB Emulator on Windows"
-        Import-Module "C:/Program Files/Azure Cosmos DB Emulator/PSModules/Microsoft.Azure.CosmosDB.Emulator"
-        Start-CosmosDbEmulator
+# - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Build-InlinePowershell.Xpirit-Vsts-Build-InlinePowershell.InlinePowershell@1
+#   displayName: 'Start CosmosDB Emulator'
+#   inputs:
+#     Script: |
+#         Write-Host "Starting CosmosDB Emulator on Windows"
+#         Import-Module "C:/Program Files/Azure Cosmos DB Emulator/PSModules/Microsoft.Azure.CosmosDB.Emulator"
+#         Start-CosmosDbEmulator
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test (release)'

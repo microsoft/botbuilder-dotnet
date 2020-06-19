@@ -254,7 +254,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             properties.Add(QnATelemetryConstants.KnowledgeBaseIdProperty, _endpoint.KnowledgeBaseId);
 
             var text = turnContext.Activity.Text;
-            var userName = turnContext.Activity.From.Name;
+            var userName = turnContext.Activity.From?.Name;
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
             if (this.LogPersonalInformation)

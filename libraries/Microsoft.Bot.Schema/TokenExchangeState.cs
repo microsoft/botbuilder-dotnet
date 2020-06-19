@@ -44,7 +44,9 @@ namespace Microsoft.Bot.Schema
         /// The URL of the bot messaging endpoint.
         /// </value>
         [JsonProperty("botUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking binary compat)
         public string BotUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets the bot's registered application ID.

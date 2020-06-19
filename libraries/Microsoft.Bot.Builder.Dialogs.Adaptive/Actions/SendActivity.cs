@@ -81,7 +81,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 || !string.IsNullOrEmpty(activity.Text)
                 || activity.Attachments?.Any() == true
                 || !string.IsNullOrEmpty(activity.Speak)
-                || activity.SuggestedActions != null)
+                || activity.SuggestedActions != null
+                || activity.ChannelData != null)
             {
                 response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             }
@@ -93,27 +94,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (Activity is ActivityTemplate at)
             {
-                return $"{this.GetType().Name}({Ellipsis(at.Template.Trim(), 30)})";
+                return $"{this.GetType().Name}({StringUtils.Ellipsis(at.Template.Trim(), 30)})";
             }
 
-            return $"{this.GetType().Name}('{Ellipsis(Activity?.ToString().Trim(), 30)}')";
-        }
-
-        private static string Ellipsis(string text, int length)
-        {
-            if (text.Length <= length)
-            {
-                return text;
-            }
-
-            var pos = text.IndexOf(" ", length);
-
-            if (pos >= 0)
-            {
-                return text.Substring(0, pos) + "...";
-            }
-
-            return text;
+            return $"{this.GetType().Name}('{StringUtils.Ellipsis(Activity?.ToString().Trim(), 30)}')";
         }
     }
 }

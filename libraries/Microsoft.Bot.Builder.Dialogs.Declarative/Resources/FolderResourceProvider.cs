@@ -13,11 +13,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     /// <summary>
     /// Class which gives ResourceExplorer access to resources which are stored in file system.
     /// </summary>
-    public class FolderResourceProvider : IResourceProvider, IDisposable
+    public class FolderResourceProvider : ResourceProvider, IDisposable
     {
-        private ResourceExplorer resourceExplorer;
-        private FileSystemWatcher watcher;
         private Dictionary<string, FileResource> resources = new Dictionary<string, FileResource>();
+        private FileSystemWatcher watcher;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FolderResourceProvider"/> class.
@@ -27,18 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="includeSubFolders">Should include sub folders.</param>
         /// <param name="monitorChanges">Should monitor changes.</param>
         public FolderResourceProvider(ResourceExplorer resourceExplorer, string folder, bool includeSubFolders = true, bool monitorChanges = true)
+            : base(resourceExplorer)
         {
-            this.resourceExplorer = resourceExplorer;
             this.IncludeSubFolders = includeSubFolders;
             folder = PathUtils.NormalizePath(folder);
             this.Directory = new DirectoryInfo(folder);
-            SearchOption option = this.IncludeSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-
-            foreach (var fileInfo in this.Directory.EnumerateFiles($"*.*", option).Where(fi => resourceExplorer.ResourceTypes.Contains(fi.Extension.TrimStart('.'))))
-            {
-                var fileResource = new FileResource(fileInfo.FullName);
-                this.resources[fileResource.Id] = fileResource;
-            }
+            this.Id = this.Directory.FullName;
+            Refresh();
 
             if (monitorChanges)
             {
@@ -51,11 +45,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 this.watcher.Renamed += Watcher_Renamed;
             }
         }
-
-        /// <summary>
-        /// Event which fires when monitoring folder for file changes.
-        /// </summary>
-        public event ResourceChangedEventHandler Changed;
 
         /// <summary>
         /// Gets or sets folder to enumerate.
@@ -73,17 +62,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </value>
         public bool IncludeSubFolders { get; set; }
 
-        /// <summary>
-        /// Gets the id for this provider (the folder it is bound to).
-        /// </summary>
-        /// <value>
-        /// The id for this provider (the folder it is bound to).
-        /// </value>
-        public string Id
-        {
-            get { return this.Directory.FullName; }
-        }
-
         public void Dispose()
         {
             lock (Directory)
@@ -98,12 +76,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
+        /// Refresh any cached content and look for new content.
+        /// </summary>
+        public override void Refresh()
+        {
+            this.resources.Clear();
+
+            SearchOption option = this.IncludeSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+
+            foreach (var fileInfo in this.Directory.EnumerateFiles($"*.*", option).Where(fi => this.ResourceExplorer.ResourceTypes.Contains(fi.Extension.TrimStart('.'))))
+            {
+                var fileResource = new FileResource(fileInfo.FullName);
+                this.resources[fileResource.Id] = fileResource;
+            }
+        }
+
+        /// <summary>
         /// GetResource by id.
         /// </summary>
         /// <param name="id">Resource ID.</param>
         /// <param name="resource">the found resource.</param>
         /// <returns>true if resource was found.</returns>
-        public bool TryGetResource(string id, out IResource resource)
+        public override bool TryGetResource(string id, out Resource resource)
         {
             lock (this.resources)
             {
@@ -123,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="extension">Resource extension.</param>
         /// <returns>Collection of resources.</returns>
-        public IEnumerable<IResource> GetResources(string extension)
+        public override IEnumerable<Resource> GetResources(string extension)
         {
             extension = $".{extension.TrimStart('.').ToLower()}";
 
@@ -141,15 +135,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private void Watcher_Deleted(object sender, FileSystemEventArgs e)
         {
             var ext = Path.GetExtension(e.FullPath);
-            if (this.resourceExplorer.ResourceTypes.Contains(ext.TrimStart('.')))
+            if (this.ResourceExplorer.ResourceTypes.Contains(ext.TrimStart('.')))
             {
                 lock (this.resources)
                 {
                     this.resources.Remove(Path.GetFileName(e.FullPath));
-                    if (this.Changed != null)
-                    {
-                        this.Changed(new IResource[] { new FileResource(e.FullPath) });
-                    }
+                    this.OnChanged(new Resource[] { new FileResource(e.FullPath) });
                 }
             }
         }
@@ -157,16 +148,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private void Watcher_Renamed(object sender, RenamedEventArgs e)
         {
             var ext = Path.GetExtension(e.FullPath);
-            if (this.resourceExplorer.ResourceTypes.Contains(ext.TrimStart('.')))
+            if (this.ResourceExplorer.ResourceTypes.Contains(ext.TrimStart('.')))
             {
                 lock (this.resources)
                 {
                     var fileResource = new FileResource(e.FullPath);
                     this.resources[fileResource.Id] = fileResource;
-                    if (this.Changed != null)
-                    {
-                        this.Changed(new IResource[] { fileResource });
-                    }
+                    this.OnChanged(new Resource[] { fileResource });
                 }
             }
         }
@@ -174,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
             var ext = Path.GetExtension(e.FullPath);
-            if (this.resourceExplorer.ResourceTypes.Contains(ext.TrimStart('.')))
+            if (this.ResourceExplorer.ResourceTypes.Contains(ext.TrimStart('.')))
             {
                 var fileResource = new FileResource(e.FullPath);
 
@@ -183,10 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     this.resources[fileResource.Id] = fileResource;
                 }
 
-                if (this.Changed != null)
-                {
-                    this.Changed(new IResource[] { fileResource });
-                }
+                this.OnChanged(new Resource[] { fileResource });
             }
         }
     }

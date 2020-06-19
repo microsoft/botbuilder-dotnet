@@ -56,9 +56,7 @@ namespace Microsoft.Bot.Builder
 
             if (lgResult is string lgStringResult)
             {
-                var isStructuredLG = ParseStructuredLGResult(lgStringResult, out var lgStructuredResult);
-                return isStructuredLG ? BuildActivityFromLGStructuredResult(lgStructuredResult)
-                    : BuildActivityFromText(lgStringResult?.Trim());
+                return BuildActivityFromText(lgStringResult?.Trim());
             }
 
             try
@@ -444,39 +442,6 @@ namespace Microsoft.Bot.Builder
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// parse the lg string output. If the output is structured result, get the object result and return true.
-        /// </summary>
-        /// <param name="lgStringResult">lg string output.</param>
-        /// <param name="lgStructuredResult">lg json object result.</param>
-        /// <returns>judge if the lg string output is structured result.</returns>
-        private static bool ParseStructuredLGResult(string lgStringResult, out JObject lgStructuredResult)
-        {
-            lgStructuredResult = new JObject();
-            lgStringResult = lgStringResult?.Trim();
-
-            if (string.IsNullOrWhiteSpace(lgStringResult)
-                || !lgStringResult.StartsWith("{") || !lgStringResult.EndsWith("}"))
-            {
-                return false;
-            }
-
-            try
-            {
-                lgStructuredResult = JObject.Parse(lgStringResult);
-                if (string.IsNullOrWhiteSpace(GetStructureType(lgStructuredResult)))
-                {
-                    return false;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-
-            return true;
         }
 
         private static IList<string> CheckStructuredResult(JObject lgJObj)

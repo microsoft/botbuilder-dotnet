@@ -41,5 +41,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// the parent DC.
         /// </value>
         public int? StackIndex { get; set; }
+
+        /// <summary>
+        /// Gets or sets version string.
+        /// </summary>
+        /// <value>Unique string from the dialog this dialoginstance is tracking which is used to identify when a dialog has changed in way that should emit an event for changed content.</value>
+        public string Version { get; set; }
     }
 }

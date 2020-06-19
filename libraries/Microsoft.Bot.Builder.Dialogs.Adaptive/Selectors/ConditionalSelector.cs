@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public override async Task<IReadOnlyList<OnCondition>> Select(ActionContext actionContext, CancellationToken cancel = default)
+        public override async Task<IReadOnlyList<OnCondition>> SelectAsync(ActionContext actionContext, CancellationToken cancellationToken = default)
         {
             var (eval, _) = Condition.TryGetValue(actionContext.State);
             TriggerSelector selector;
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 IfFalse.Initialize(_conditionals, _evaluate);
             }
 
-            return await selector.Select(actionContext, cancel).ConfigureAwait(false);
+            return await selector.SelectAsync(actionContext, cancellationToken).ConfigureAwait(false);
         }
     }
 }

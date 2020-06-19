@@ -11,7 +11,7 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/booleanExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
             "description": "Optional condition which if true will disable this action.",
             "examples": [
@@ -19,7 +19,7 @@
             ]
         },
         "itemsProperty": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Items property",
             "description": "Property that holds the array.",
             "examples": [
@@ -35,19 +35,19 @@
             "description": "Actions to execute for each page. Use '$foreach.page' to access each page."
         },
         "pageIndex": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Index property",
             "description": "Property that holds the index of the page.",
             "default": "dialog.foreach.pageindex"
         },
         "page": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Page property",
             "description": "Property that holds the value of the page.",
             "default": "dialog.foreach.page"
         },
         "pageSize": {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/definitions.schema#/definitions/integerExpression",
+            "$ref": "schema:#/definitions/integerExpression",
             "title": "Page size",
             "description": "Number of items in each page.",
             "default": 10

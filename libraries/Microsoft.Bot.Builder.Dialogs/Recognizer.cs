@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -22,6 +24,19 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </remarks>
     public class Recognizer
     {
+        public Recognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            if (!string.IsNullOrEmpty(callerPath))
+            {
+                DebugSupport.SourceMap.Add(this, new SourceRange()
+                {
+                    Path = callerPath,
+                    StartPoint = new SourcePoint() { LineIndex = callerLine, CharIndex = 0 },
+                    EndPoint = new SourcePoint() { LineIndex = callerLine + 1, CharIndex = 0 },
+                });
+            }
+        }
+
         /// <summary>
         /// Gets or sets id of the recognizer.
         /// </summary>

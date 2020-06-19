@@ -111,9 +111,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 recognizerResult = new RecognizerResult
                 {
-                    Text = utterance,
-                    Intents = new Dictionary<string, IntentScore>() { { string.Empty, new IntentScore() { Score = 1.0 } } },
-                    Entities = new JObject(),
+                    Text = utterance
                 };
             }
             else
@@ -197,8 +195,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 };
             var queryOptions = new JObject
                 {
-                    { "overridePredictions", options.PreferExternalEntities },
+                    { "preferExternalEntities", options.PreferExternalEntities },
                 };
+
+            if (!string.IsNullOrEmpty(options.DateTimeReference))
+            {
+                queryOptions.Add("datetimeReference", options.DateTimeReference);
+            }
+
             content.Add("options", queryOptions);
 
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };

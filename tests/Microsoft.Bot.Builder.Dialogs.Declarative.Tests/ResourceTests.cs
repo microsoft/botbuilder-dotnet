@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -100,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
-                explorer.Changed += (resources) =>
+                explorer.Changed += (e, resources) =>
                 {
                     if (resources.Any(resource => resource.Id == testId))
                     {
@@ -138,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
-                explorer.Changed += (resources) =>
+                explorer.Changed += (e, resources) =>
                 {
                     if (resources.Any(res => res.Id == testId))
                     {
@@ -176,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
-                explorer.Changed += (resources) =>
+                explorer.Changed += (e, resources) =>
                 {
                     if (resources.Any(resource => resource.Id == testId))
                     {

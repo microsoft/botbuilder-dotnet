@@ -5,16 +5,18 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Observers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
-    public class InterfaceConverter<T> : JsonConverter
+    public class InterfaceConverter<T> : JsonConverter, IObservableConverter
         where T : class
     {
         private readonly ResourceExplorer resourceExplorer;
+        private readonly List<IConverterObserver> observers = new List<IConverterObserver>();
         private readonly SourceContext sourceContext;
 
         public InterfaceConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
@@ -41,7 +43,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
                 }
 
+                foreach (var observer in this.observers)
+                {
+                    if (observer.OnBeforeLoadToken(jToken, out T interceptResult))
+                    {
+                        return interceptResult;
+                    }
+                }
+
                 var kind = (string)jToken["$kind"];
+              
                 if (kind == null)
                 {
                     // see if there is jObject resolver
@@ -54,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jToken)}");
                 }
 
-                // if IdRefResolver made a source context available for the JToken, then add it to the context stack
+                // if reference resolution made a source context available for the JToken, then add it to the context stack
                 var found = DebugSupport.SourceMap.TryGetValue(jToken, out var rangeResolved);
                 using (found ? new SourceScope(sourceContext, rangeResolved) : null)
                 {
@@ -65,6 +76,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     {
                         range = sourceContext.CallStack.Peek().DeepClone();
                         DebugSupport.SourceMap.Add(result, range);
+                    }
+
+                    foreach (var observer in this.observers)
+                    {
+                        if (observer.OnAfterLoadToken(jToken, result, out T interceptedResult))
+                        {
+                            return interceptedResult;
+                        }
                     }
 
                     return result;
@@ -80,6 +99,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             serializer.Serialize(writer, value);
+        }
+
+        /// <inheritdoc/>
+        public void RegisterObserver(IConverterObserver observer)
+        {
+            if (observer == null)
+            {
+                throw new ArgumentNullException(nameof(observer));
+            }
+
+            this.observers.Add(observer);
         }
     }
 }

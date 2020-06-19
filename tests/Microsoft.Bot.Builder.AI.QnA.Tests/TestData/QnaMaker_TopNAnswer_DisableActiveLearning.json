@@ -1,0 +1,65 @@
+{
+  "activeLearningEnabled": false,
+  "answers": [
+    {
+      "questions": [
+        "Q1"
+      ],
+      "answer": "A1",
+      "score": 80,
+      "id": 15,
+      "source": "Editorial",
+      "metadata": [
+        {
+          "name": "topic",
+          "value": "value"
+        }
+      ]
+    },
+    {
+      "questions": [
+        "Q2"
+      ],
+      "answer": "A2",
+      "score": 78,
+      "id": 16,
+      "source": "Editorial",
+      "metadata": [
+        {
+          "name": "topic",
+          "value": "value"
+        }
+      ]
+    },
+    {
+      "questions": [
+        "Q3"
+      ],
+      "answer": "A3",
+      "score": 75,
+      "id": 17,
+      "source": "Editorial",
+      "metadata": [
+        {
+          "name": "topic",
+          "value": "value"
+        }
+      ]
+    },
+    {
+      "questions": [
+        "Q4"
+      ],
+      "answer": "A4",
+      "score": 50,
+      "id": 18,
+      "source": "Editorial",
+      "metadata": [
+        {
+          "name": "topic",
+          "value": "value"
+        }
+      ]
+    }
+  ]
+}

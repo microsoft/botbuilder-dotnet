@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -46,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="lgText">lg template text.</param>
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<IResource>> resourceMapping)
+        public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<Resource>> resourceMapping)
         {
             this.Id = id ?? DEFAULTLABEL;
             var (_, locale) = LGResourceLoader.ParseLGFileName(id);
@@ -59,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="filePath">lg template file absolute path.</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<IResource>> resourceMapping)
+        public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<Resource>> resourceMapping)
         {
             filePath = PathUtils.NormalizePath(filePath);
             this.Id = Path.GetFileName(filePath);
@@ -84,12 +85,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="dialogContext">Context for the current turn of conversation.</param>
         /// <param name="template">template to evaluate.</param>
         /// <param name="data">data to bind to.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>generated text.</returns>
-        public override async Task<string> Generate(DialogContext dialogContext, string template, object data)
+        public override Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
             try
             {
-                return await Task.FromResult(lg.EvaluateText(template, data).ToString());
+                return Task.FromResult(lg.EvaluateText(template, data));
             }
             catch (Exception err)
             {

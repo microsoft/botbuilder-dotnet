@@ -42,6 +42,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Gets a unique string which represents the version of this dialog.  If the version changes between turns the dialog system will emit a DialogChanged event.
+        /// </summary>
+        /// <returns>Version will change when steps count changes (because dialog has no way of evaluating the content of the steps.</returns>
+        public override string GetVersion()
+        {
+            return $"{this.Id}:{_steps.Count}";
+        }
+
+        /// <summary>
         /// Adds a new step to the waterfall.
         /// </summary>
         /// <param name="step">Step to add.</param>

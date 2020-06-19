@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -96,27 +99,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private int NextSeq => Interlocked.Increment(ref sequence);
 
-        public static string Ellipsis(string text, int length)
-        {
-            if (text == null)
-            {
-                return string.Empty;
-            }
-
-            if (text.Length <= length)
-            {
-                return text;
-            }
-
-            int pos = text.IndexOf(" ", length);
-            if (pos >= 0)
-            {
-                return text.Substring(0, pos) + "...";
-            }
-
-            return text;
-        }
-
         async Task IDialogDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
         {
             try
@@ -128,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     turnText = activity.Type;
                 }
 
-                var threadText = $"'{Ellipsis(turnText, 18)}'";
+                var threadText = $"'{StringUtils.Ellipsis(turnText, 18)}'";
                 await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {codeModel.NameFor(item)} ", item, null, cancellationToken).ConfigureAwait(false);
 
                 await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
@@ -372,7 +354,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             var phase = run.Phase;
             var suffix = item != null ? $" ==> {codeModel.NameFor(item)}" : string.Empty;
-            var threadText = $"{Ellipsis(thread?.Name, 18)}";
+            var threadText = $"{StringUtils.Ellipsis(thread?.Name, 18)}";
             if (threadText.Length <= 2)
             {
                 threadText = thread.TurnContext.Activity.Type;
@@ -593,9 +575,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 var arguments = evaluate.Arguments;
                 DecodeFrame(arguments.FrameId, out var thread, out var frame);
                 var expression = arguments.Expression.Trim('"');
-                var result = frame.Evaluate(expression);
-                if (result != null)
+
+                try
                 {
+                    var result = frame.Evaluate(expression);
                     var body = new
                     {
                         result = dataModel.ToString(result),
@@ -604,9 +587,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                     return Protocol.Response.From(NextSeq, evaluate, body);
                 }
-                else
+                catch (Exception ex)
                 {
-                    return Protocol.Response.Fail(NextSeq, evaluate, string.Empty);
+                    return Protocol.Response.Fail(NextSeq, evaluate, ex.Message);
                 }
             }
             else if (message is Protocol.Request<Protocol.Continue> cont)
