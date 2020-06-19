@@ -20,13 +20,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// This will pick up --root as the root folder to run in.  
         /// </remarks>
         /// <param name="builder">Configuration builder to modify.</param>
+        /// <param name="botRoot">bot Root.</param>
+        /// <param name="qnaRegion">qnaRegion.</param>
+        /// <param name="environment">enviroment.</param>
         /// <returns>Modified configuration builder.</returns>
-        public static IConfigurationBuilder UseQnAMakerSettings(this IConfigurationBuilder builder)
+        public static IConfigurationBuilder UseQnAMakerSettings(this IConfigurationBuilder builder, string botRoot, string qnaRegion, string environment)
         {
-            var configuration = builder.Build();
-            var botRoot = configuration.GetValue<string>("root") ?? ".";
-            var qnaRegion = configuration.GetValue<string>("region") ?? "westus";
-            var environment = configuration.GetValue<string>("environment") ?? Environment.UserName;
             var settings = new Dictionary<string, string>();
             settings["BotRoot"] = botRoot;
             builder.AddInMemoryCollection(settings);

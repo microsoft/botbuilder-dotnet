@@ -158,8 +158,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             List<Metadata> filters = new List<Metadata>();
             if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
             {
-                string filterDialogName = dialogContext.ActiveDialog.Id.Replace(".main.dialog", string.Empty);
-                filters.Add(new Metadata() { Name = "dialogName", Value = filterDialogName });
+                filters.Add(new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id });
             }
 
             // if there is $qna.metadata set add to filters
@@ -210,9 +209,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 ObjectPath.SetPathValue(recognizerResult, "entities.answer", answerArray);
 
                 var instance = new JArray();
-                instance.Add(JObject.FromObject(topAnswer));
+                var data = JObject.FromObject(topAnswer);
+                data["startIndex"] = 0;
+                data["endIndex"] = activity.Text.Length;
+                instance.Add(data);
                 ObjectPath.SetPathValue(recognizerResult, "entities.$instance.answer", instance);
-
                 recognizerResult.Properties["answers"] = answers;
             }
             else

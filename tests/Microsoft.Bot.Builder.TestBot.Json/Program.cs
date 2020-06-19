@@ -36,8 +36,13 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((hostingContext, builder) =>
             {
-                builder.UseLuisSettings();
-                builder.UseQnAMakerSettings();
+                var configuration = builder.Build();
+                var botRoot = configuration.GetValue<string>("root") ?? ".";
+                var region = configuration.GetValue<string>("LUIS_AUTHORING_REGION") ?? configuration.GetValue<string>("region") ?? "westus";
+                var environment = configuration.GetValue<string>("environment") ?? Environment.UserName;
+
+                builder.UseLuisSettings(botRoot, region, environment);
+                builder.UseQnAMakerSettings(botRoot, region, environment);
                 builder.AddUserSecrets("TestBot");
             })
             .ConfigureWebHostDefaults(webBuilder =>
