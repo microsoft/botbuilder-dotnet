@@ -341,7 +341,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 case ResponseTypes.Binary:
                     // Try to resolve binary data
-                    var bytes = await response.Content.ReadAsByteArrayAsync();
+                    var bytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                     requestResult.Content = bytes;
                     break;
                    
