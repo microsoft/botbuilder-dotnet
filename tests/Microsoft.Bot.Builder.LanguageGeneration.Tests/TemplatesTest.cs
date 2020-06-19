@@ -111,6 +111,25 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestExpandText()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("ExpandText.lg"));
+
+            var scope = new JObject
+            {
+                ["@answer"] = "hello ${user.name}",
+                ["user"] = new JObject
+                {
+                    ["name"] = "vivian"
+                }
+            };
+
+            // - ${length(expandText(@answer))}
+            var evaled = templates.Evaluate("template", scope);
+            Assert.AreEqual("hello vivian".Length, evaled);
+        }
+
+        [TestMethod]
         public void TestBasicSwitchCaseTemplate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("switchcase.lg"));
@@ -686,6 +705,45 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestExpandTemplateWithEmptyListInStructuredLG()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Expand.lg"));
+
+            var data = new Dictionary<string, object>()
+            {
+                { "Name", "NAME" },
+                { "Address", "ADDRESS" },
+            };
+
+            var input = new
+            {
+                Data = data
+            };
+
+            var name = "PointOfInterestSuggestedActionName";
+            var evaled = templates.ExpandTemplate(name, input).ToList();
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["text"].ToString(), "NAME at ADDRESS");
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["speak"].ToString(), "NAME at ADDRESS");
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["attachments"].Count(), 0);
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["attachmentlayout"].ToString(), "list");
+            Assert.AreEqual(JObject.Parse(evaled[0].ToString())["inputhint"].ToString(), "ignoringInput");
+        }
+
+        [TestMethod]
+        public void TestExpandTemplateWithStrictMode()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeFalse.lg"));
+            
+            var evaled = templates.ExpandTemplate("StrictFalse");
+            Assert.AreEqual("null", evaled[0].ToString());
+
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeTrue.lg"));
+
+            var exception = Assert.ThrowsException<Exception>(() => templates.ExpandTemplate("StrictTrue"));
+            Assert.IsTrue(exception.Message.Contains("'variable_not_defined' evaluated to null. [StrictTrue]  Error occurred when evaluating '-${variable_not_defined}'"));
+        }
+
+        [TestMethod]
         public void TestEvalExpression()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("EvalExpression.lg"));
@@ -726,6 +784,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("template11");
             Assert.AreEqual(evaled, 18L);
+        }
+
+        [TestMethod]
+        public void TestRecursiveTemplate()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("RecursiveTemplate.lg"));
+            var evaled = templates.Evaluate("RecursiveAccumulate", new { number = 10 });
+            Assert.AreEqual(evaled, 55L);
+
+            evaled = templates.Evaluate("RecursiveFactorial", new { number = 5 });
+            Assert.AreEqual(evaled, 1 * 2 * 3 * 4 * 5L);
+
+            evaled = templates.Evaluate("RecursiveFibonacciSequence", new { number = 5 });
+            Assert.AreEqual(evaled, 5L);
         }
 
         [TestMethod]

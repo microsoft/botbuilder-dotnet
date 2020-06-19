@@ -6,6 +6,8 @@
     <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</PackageVersion>
     <Configurations>Debug;Release;</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.TemplateManager.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -14,20 +16,21 @@
     <Summary>This library implements .NET TemplateManager classes to manage libraries of template renderers in Microsoft Bot Builder SDK v4</Summary>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.TemplateManager.xml</DocumentationFile>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>Full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- These documentation warnings excludes should be removed as part of https://github.com/microsoft/botbuilder-dotnet/issues/4052 -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

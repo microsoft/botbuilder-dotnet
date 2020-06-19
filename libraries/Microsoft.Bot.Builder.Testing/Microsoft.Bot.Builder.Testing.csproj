@@ -7,6 +7,8 @@
     <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Testing.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -14,10 +16,6 @@
     <PackageId>Microsoft.Bot.Builder.Testing</PackageId>
     <Description>Library for building bot tests using Microsoft Bot Framework Connector</Description>
     <Summary>Library for building bot tests using Microsoft Bot Framework Connector</Summary>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Testing.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

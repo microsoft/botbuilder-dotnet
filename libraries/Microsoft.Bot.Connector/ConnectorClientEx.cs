@@ -70,7 +70,9 @@ namespace Microsoft.Bot.Connector
         /// <param name="customHttpClient">The HTTP client to use for this connector client.</param>
         /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
         /// add to the HTTP client pipeline.</param>
+#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
         public ConnectorClient(Uri baseUri, ServiceClientCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+#pragma warning restore CA1801 // Review unused parameters
             : this(baseUri, handlers)
         {
             this.Credentials = credentials;
@@ -94,7 +96,9 @@ namespace Microsoft.Bot.Connector
         /// <param name="customHttpClient">The HTTP client to use for this connector client.</param>
         /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
         /// add to the HTTP client pipeline.</param>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the addJwtTokenRefresher parameter without breaking binary compat)
         public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, HttpClientHandler httpClientHandler, bool addJwtTokenRefresher = true, HttpClient customHttpClient = null, params DelegatingHandler[] handlers)
+#pragma warning restore CA1801 // Review unused parameters
             : this(baseUri, httpClientHandler, handlers)
         {
             this.Credentials = credentials;

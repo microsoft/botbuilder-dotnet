@@ -16,7 +16,6 @@ namespace AdaptiveExpressions.Memory
     public class SimpleObjectMemory : IMemory
     {
         private object memory = null;
-        private int version = 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleObjectMemory"/> class.
@@ -173,14 +172,11 @@ namespace AdaptiveExpressions.Memory
                     return;
                 }
             }
-
-            // Update the version once memory has been updated
-            version++;
         }
 
         public string Version()
         {
-            return version.ToString();
+            return ToString();
         }
 
         public override string ToString()

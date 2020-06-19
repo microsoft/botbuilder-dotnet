@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var luisRegion = configuration.GetValue<string>("LUIS_AUTHORING_REGION") ?? configuration.GetValue<string>("region") ?? "westus";
             var environment = configuration.GetValue<string>("environment") ?? Environment.UserName;
             var settings = new Dictionary<string, string>();
-            settings["luis:endpoint"] = $"https://{luisRegion}.api.cognitive.microsoft.com";
+            settings["luis:endpoint"] = configuration.GetValue<string>("luis:endpoint") ?? $"https://{luisRegion}.api.cognitive.microsoft.com";
             settings["BotRoot"] = botRoot;
             builder.AddInMemoryCollection(settings);
             if (environment == "Development")

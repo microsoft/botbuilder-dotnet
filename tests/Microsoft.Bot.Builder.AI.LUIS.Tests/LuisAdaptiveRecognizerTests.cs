@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             'endpoint': '=settings.luis.endpoint',
             'endpointKey': '=settings.luis.endpointKey', 'dynamicLists': " + DynamicListJSon + "}";
 
-        private static readonly string DynamicListsDirectory = PathUtils.NormalizePath(@"..\..\..\Tests\LuisAdaptiveRecognizerTests");
+        private static readonly string DynamicListsDirectory = PathUtils.NormalizePath(@"..\..\..\tests\LuisAdaptiveRecognizerTests");
         
         public static ResourceExplorer ResourceExplorer { get; set; }
 
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Build();
             
             ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(LuisAdaptiveRecognizerTests)), monitorChanges: false)
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "tests", nameof(LuisAdaptiveRecognizerTests)), monitorChanges: false)
                 .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(Configuration));
         }
 
