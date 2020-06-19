@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
         /// <summary>
-        /// Constant key used for storing information in turn state.
+        /// Constant key used for storing activity information in turn state.
         /// </summary>
         public static readonly string BotActivityKey = "BotBuilderActivity";
 
