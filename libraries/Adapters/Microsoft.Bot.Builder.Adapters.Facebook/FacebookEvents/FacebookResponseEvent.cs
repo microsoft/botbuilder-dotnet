@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 {
     /// <summary>
-    /// Represents in the incoming object received from Facebook and processed by the adapter.
+    /// Represents the incoming object received from Facebook and processed by the adapter.
     /// </summary>
     public class FacebookResponseEvent
     {
