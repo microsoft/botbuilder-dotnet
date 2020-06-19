@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         public async Task UserStateTest()
         {
             var testName = "UserStateTest";
-            var activities = TranscriptUtilities.GetFromTestContext(ClassName, testName);
+            var activities = TranscriptUtilities.GetActivitiesFromFile(ClassName, testName);
 
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<UserStateObject>("test");
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         public async Task ConversationStateTest()
         {
             var testName = "ConversationStateTest";
-            var activities = TranscriptUtilities.GetFromTestContext(ClassName, testName);
+            var activities = TranscriptUtilities.GetActivitiesFromFile(ClassName, testName);
 
             var storage = new MemoryStorage();
 
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         public async Task CustomStateTest()
         {
             var testName = "CustomStateTest";
-            var activities = TranscriptUtilities.GetFromTestContext(ClassName, testName);
+            var activities = TranscriptUtilities.GetActivitiesFromFile(ClassName, testName);
 
             var storage = new MemoryStorage();
             var customState = new CustomState(storage);

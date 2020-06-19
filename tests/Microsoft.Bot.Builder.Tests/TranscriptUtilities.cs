@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Tests
         /// <param name="className">Class name.</param>
         /// <param name="testName">Test name.</param>
         /// <returns>A list of activities to test.</returns>
-        public static IEnumerable<IActivity> GetFromTestContext(string className, string testName)
+        public static IEnumerable<IActivity> GetActivitiesFromFile(string className, string testName)
         {
             // Use TestContext to find transcripts using the following naming convention:
             // {BOTBUILDER_TRANSCRIPTS_LOCATION}\{TestClassName}\{TestMethodName}.chat

@@ -18,12 +18,8 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         [Fact]
         public async Task BotAdapted_Bracketing()
         {
-<<<<<<< HEAD
-            var activities = TranscriptUtilities.GetFromTestContext("CoreTests", "BotAdapted_Bracketing");
-=======
             var testName = "BotAdapted_Bracketing";
-            var activities = TranscriptUtilities.GetFromTestContext(ClassName, testName);
->>>>>>> 01f6eb67c... porting to xunit
+            var activities = TranscriptUtilities.GetActivitiesFromFile(ClassName, testName);
 
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(testName))
                 .Use(new BeforeAfterMiddleware());
