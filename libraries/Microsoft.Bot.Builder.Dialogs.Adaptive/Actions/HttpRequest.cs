@@ -321,7 +321,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 case ResponseTypes.Activities:
                     var activities = JsonConvert.DeserializeObject<Activity[]>((string)content);
-                    requestResult.Content = JObject.FromObject(activities);
+                    requestResult.Content = JArray.FromObject(activities);
                     await dc.Context.SendActivitiesAsync(activities, cancellationToken: cancellationToken).ConfigureAwait(false);
                     break;
 
