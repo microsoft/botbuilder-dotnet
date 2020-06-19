@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Functions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Functions;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
@@ -22,22 +23,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class FunctionsTests
     {
+        public static ResourceExplorer ResourceExplorer { get; set; }
+
         public TestContext TestContext { get; set; }
 
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(FunctionsTests)), monitorChanges: false);
+
+            // this will test that we are registering the custom functions
+            var component = new AdaptiveComponentRegistration();
+        }
+
         [TestMethod]
-        public void IsDialogActive()
+        public void IsDialogActiveTests()
         {
             var config = new DialogStateManagerConfiguration()
             {
                 MemoryScopes = new List<MemoryScope>()
                 {
-                    new MockDialogContextMemory(new { stack = new[] { "a", "d", "F" } })
+                    new MockMemoryScope("dialogContext", new { stack = new[] { "a", "d", "F" } })
                 }
             };
             var dc = new DialogContext(new DialogSet(), new TurnContext(new TestAdapter(), new Schema.Activity()), new DialogState());
             DialogStateManager dsm = new DialogStateManager(dc, config);
-
-            Expression.Functions.Add(IsDialogActiveFunction.Name, new IsDialogActiveFunction());
 
             Assert.AreEqual(true, Expression.Parse("isDialogActive('a')").TryEvaluate(dsm).value);
             Assert.AreEqual(true, Expression.Parse("isDialogActive('b','c','d')").TryEvaluate(dsm).value);
@@ -47,12 +58,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(true, Expression.Parse("isDialogActive('F')").TryEvaluate(dsm).value);
         }
 
-        public class MockDialogContextMemory : MemoryScope
+        [TestMethod]
+        public async Task HasPendingActions()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        public class MockMemoryScope : MemoryScope
         {
             private object memory;
 
-            public MockDialogContextMemory(object memory)
-                : base("dialogContext", false)
+            public MockMemoryScope(string name, object memory)
+                : base(name, false)
             {
                 this.memory = JObject.FromObject(memory);
             }
