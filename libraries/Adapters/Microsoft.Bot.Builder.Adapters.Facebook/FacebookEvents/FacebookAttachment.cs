@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 {
+    /// <summary>
+    /// Facebook Attachment object that can be sent as part of a Facebook message.
+    /// </summary>
     public class FacebookAttachment
     {
         /// <summary>

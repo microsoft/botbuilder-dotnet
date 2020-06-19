@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 {
+    /// <summary>
+    /// Represents the incoming object received from Facebook and processed by the adapter.
+    /// </summary>
     public class FacebookResponseEvent
     {
         /// <summary>
@@ -21,6 +24,10 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// <value>Array containing event data.</value>
         public List<FacebookEntry> Entry { get; } = new List<FacebookEntry>();
 
+        /// <summary>
+        /// Gets the flag to determine if the Entry property should be serialized.
+        /// </summary>
+        /// <returns>True if Entry count is greater than zero.</returns>
         public bool ShouldSerializeEntry()
         {
             return Entry.Count > 0;

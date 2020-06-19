@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates
 {
+    /// <summary>
+    /// Default action template.
+    /// </summary>
     public class DefaultAction
     {
         /// <summary>
