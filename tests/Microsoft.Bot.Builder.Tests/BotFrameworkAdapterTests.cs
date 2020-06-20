@@ -16,6 +16,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Moq;
 using Moq.Protected;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -147,7 +148,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var reply = MessageFactory.Text("test");
             reply.Id = "TestReplyId";
-            
+
             // Act
             using (var turnContext = new TurnContext(adapter, incomingActivity))
             {
@@ -359,6 +360,67 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task ProcessContinueConversationEvent()
+        {
+            var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+
+            ConversationReference cr = new ConversationReference
+            {
+                ActivityId = "activityId",
+                Bot = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+                ChannelId = "testChannel",
+                ServiceUrl = "https://fake.service.url",
+                Conversation = new ConversationAccount
+                {
+                    ConversationType = string.Empty,
+                    Id = "testConversationId",
+                    IsGroup = false,
+                    Name = "testConversationName",
+                    Role = "user",
+                },
+                User = new ChannelAccount
+                {
+                    Id = "channelId",
+                    Name = "testChannelAccount",
+                    Role = "bot",
+                },
+            };
+
+            var activity = cr.GetContinuationActivity();
+            activity.Value = "test";
+
+            // Create ClaimsIdentity that represents Skill1-to-Skill1 communication
+            var appId = "00000000-0000-0000-0000-000000skill1";
+
+            var claims = new List<Claim>
+            {
+                new Claim(AuthenticationConstants.AudienceClaim, appId),
+                new Claim(AuthenticationConstants.AppIdClaim, appId),
+                new Claim(AuthenticationConstants.VersionClaim, "1.0")
+            };
+            var identity = new ClaimsIdentity(claims);
+
+            var callback = new BotCallbackHandler(async (turnContext, ct) =>
+            {
+                var cr2 = turnContext.Activity.GetConversationReference();
+                cr.ActivityId = null; // activityids will be different...
+                cr2.ActivityId = null;
+                Assert.Equal(JsonConvert.SerializeObject(cr), JsonConvert.SerializeObject(cr2));
+                Assert.Equal("test", (string)turnContext.Activity.Value);
+            });
+
+            await adapter.ProcessActivityAsync(identity, (Activity)activity, callback, default);
+        }
+
+        [Fact]
         public async Task DeliveryModeExpectReplies()
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
@@ -455,7 +517,7 @@ namespace Microsoft.Bot.Builder.Tests
                     ServiceUrl = "https://smba.trafficmanager.net/amer/",
                     ChannelData = channelData,
                     Conversation = new ConversationAccount
-                        { TenantId = conversationTenantId },
+                    { TenantId = conversationTenantId },
                 },
                 (context, token) =>
                 {
@@ -471,7 +533,7 @@ namespace Microsoft.Bot.Builder.Tests
             var channelData = new JObject
             {
                 ["tenant"] = new JObject
-                    { ["id"] = channelDataTenantId },
+                { ["id"] = channelDataTenantId },
             };
 
             return await ProcessActivity(channelId, channelData, conversationTenantId);
