@@ -413,8 +413,8 @@ namespace Microsoft.Bot.Builder.Tests
                 var cr2 = turnContext.Activity.GetConversationReference();
                 cr.ActivityId = null; // activityids will be different...
                 cr2.ActivityId = null;
-                Assert.AreEqual(JsonConvert.SerializeObject(cr), JsonConvert.SerializeObject(cr2), "cr should match");
-                Assert.AreEqual("test", turnContext.Activity.Value, "value payload should come through");
+                Assert.Equal(JsonConvert.SerializeObject(cr), JsonConvert.SerializeObject(cr2));
+                Assert.Equal("test", (string)turnContext.Activity.Value);
             });
 
             await adapter.ProcessActivityAsync(identity, (Activity)activity, callback, default);
