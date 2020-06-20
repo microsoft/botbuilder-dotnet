@@ -12,16 +12,15 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class BotFrameworkAdapterOAuthTests
     {
-        [TestMethod]
+        [Fact]
         public async Task BotFrameworkAdapterFindsOAuthCards()
         {
             var mockConnector = new MemoryConnectorClient();
@@ -35,18 +34,18 @@ namespace Microsoft.Bot.Builder.Tests
             var eventActivity = await ProcessOAuthCardTest(adapter, mockConnector, originalActivity);
             
             // bot received the event activity
-            Assert.IsNotNull(eventActivity);
-            Assert.AreEqual(originalActivity.Conversation.Id, eventActivity.Conversation.Id);
-            Assert.AreEqual(originalActivity.From.Id, eventActivity.From.Id);
-            Assert.AreEqual(originalActivity.From.Name, eventActivity.From.Name);
-            Assert.AreEqual(ActivityTypes.Event, eventActivity.Type);
-            Assert.AreEqual(SignInConstants.TokenResponseEventName, eventActivity.Name);
+            Assert.NotNull(eventActivity);
+            Assert.Equal(originalActivity.Conversation.Id, eventActivity.Conversation.Id);
+            Assert.Equal(originalActivity.From.Id, eventActivity.From.Id);
+            Assert.Equal(originalActivity.From.Name, eventActivity.From.Name);
+            Assert.Equal(ActivityTypes.Event, eventActivity.Type);
+            Assert.Equal(SignInConstants.TokenResponseEventName, eventActivity.Name);
 
             var tokenResponse = eventActivity.Value as TokenResponse;
-            Assert.AreEqual("12345", tokenResponse.Token);
+            Assert.Equal("12345", tokenResponse.Token);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SendsTokenOnSecondAttempt()
         {
             var mockConnector = new MemoryConnectorClient();
@@ -66,18 +65,18 @@ namespace Microsoft.Bot.Builder.Tests
             var eventActivity = await ProcessOAuthCardTest(adapter, mockConnector, originalActivity);
             
             // bot received the event activity
-            Assert.IsNotNull(eventActivity);
-            Assert.AreEqual(originalActivity.Conversation.Id, eventActivity.Conversation.Id);
-            Assert.AreEqual(originalActivity.From.Id, eventActivity.From.Id);
-            Assert.AreEqual(originalActivity.From.Name, eventActivity.From.Name);
-            Assert.AreEqual(ActivityTypes.Event, eventActivity.Type);
-            Assert.AreEqual(SignInConstants.TokenResponseEventName, eventActivity.Name);
+            Assert.NotNull(eventActivity);
+            Assert.Equal(originalActivity.Conversation.Id, eventActivity.Conversation.Id);
+            Assert.Equal(originalActivity.From.Id, eventActivity.From.Id);
+            Assert.Equal(originalActivity.From.Name, eventActivity.From.Name);
+            Assert.Equal(ActivityTypes.Event, eventActivity.Type);
+            Assert.Equal(SignInConstants.TokenResponseEventName, eventActivity.Name);
 
             var tokenResponse = eventActivity.Value as TokenResponse;
-            Assert.AreEqual("1234", tokenResponse.Token);
+            Assert.Equal("1234", tokenResponse.Token);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task PollingEnds()
         {
             var mockConnector = new MemoryConnectorClient();
@@ -95,10 +94,10 @@ namespace Microsoft.Bot.Builder.Tests
             var eventActivity = await ProcessOAuthCardTest(adapter, mockConnector, originalActivity);
 
             // Only 1 call to GetToken is called
-            Assert.AreEqual(1, calls);
+            Assert.Equal(1, calls);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TokenResponsePropertiesEndPolling()
         {
             var mockConnector = new MemoryConnectorClient();
@@ -124,11 +123,11 @@ namespace Microsoft.Bot.Builder.Tests
             await Task.Delay(3000);
 
             // Make sure it only polled once and it ended
-            Assert.AreEqual(1, callCount);
-            Assert.IsTrue(adapter.Logger.LogData.Contains("PollForTokenAsync completed without receiving a token"));
+            Assert.Equal(1, callCount);
+            Assert.Contains("PollForTokenAsync completed without receiving a token", adapter.Logger.LogData);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TokenResponsePropertiesCanChange()
         {
             var mockConnector = new MemoryConnectorClient();
@@ -164,11 +163,11 @@ namespace Microsoft.Bot.Builder.Tests
             await Task.Delay(2000);
 
             // Make sure it only polled twice and it changed settings
-            Assert.AreEqual(2, callCount);
-            Assert.IsTrue(adapter.Logger.LogData.Contains("PollForTokenAsync received new polling settings: timeout=50000, interval=500"));
+            Assert.Equal(2, callCount);
+            Assert.Contains("PollForTokenAsync received new polling settings: timeout=50000, interval=500", adapter.Logger.LogData);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NoConnectionNameThrows()
         {
             var mockConnector = new MemoryConnectorClient();
@@ -213,7 +212,7 @@ namespace Microsoft.Bot.Builder.Tests
                 },
                 CancellationToken.None);
 
-            Assert.IsTrue(threw);
+            Assert.True(threw);
         }
 
         private async Task<Activity> ProcessOAuthCardTest(MockAdapter adapter, MemoryConnectorClient mockConnector, Activity originalActivity, Activity outhCardActivity = null, bool expectsEvent = true)

@@ -4,17 +4,13 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("State Management")]
     public class AutoSaveStateMiddlewareTests
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
+        [Fact]
         public async Task AutoSaveStateMiddleware_DualReadWrite()
         {
             var storage = new MemoryStorage();
@@ -27,7 +23,7 @@ namespace Microsoft.Bot.Builder.Tests
             var convState = new ConversationState(storage);
             var convProperty = convState.CreateProperty<int>("convCount");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("AutoSaveStateMiddleware_DualReadWrite"))
                 .Use(new AutoSaveStateMiddleware(userState, convState));
 
             const int USER_INITITAL_COUNT = 100;
@@ -89,7 +85,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AutoSaveStateMiddleware_Chain()
         {
             var storage = new MemoryStorage();
@@ -104,7 +100,7 @@ namespace Microsoft.Bot.Builder.Tests
             var bss = new AutoSaveStateMiddleware()
                 .Add(userState)
                 .Add(convState);
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("AutoSaveStateMiddleware_Chain"))
                 .Use(bss);
 
             const int USER_INITITAL_COUNT = 100;

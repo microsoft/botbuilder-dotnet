@@ -12,15 +12,14 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Teams.Tests
 {
-    [TestClass]
     public class TeamsInfoTests
     {
-        [TestMethod]
+        [Fact]
         public async Task TestSendMessageToTeamsChannelAsync()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -51,7 +50,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await handler.OnTurnAsync(turnContext);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestGetTeamDetailsAsync()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -82,7 +81,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await handler.OnTurnAsync(turnContext);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestTeamGetMembersAsync()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -113,7 +112,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await handler.OnTurnAsync(turnContext);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestGroupChatGetMembersAsync()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -138,7 +137,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await handler.OnTurnAsync(turnContext);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestGetChannelsAsync()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -169,7 +168,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await handler.OnTurnAsync(turnContext);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestGetMemberAsync()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -201,7 +200,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             await handler.OnTurnAsync(turnContext);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestGetMemberNoTeamAsync()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -254,7 +253,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                         await CallTeamGetMemberAsync(turnContext);
                         break;
                     default:
-                        Assert.IsTrue(false);
+                        Assert.True(false);
                         break;
                 }
             }
@@ -267,77 +266,77 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 var cancelToken = new CancellationToken();
                 var reference = await TeamsInfo.SendMessageToTeamsChannelAsync(turnContext, message, channelId, creds, cancelToken);
 
-                Assert.AreEqual(reference.Item1.ActivityId, "activityId123");
-                Assert.AreEqual(reference.Item1.ChannelId, "channelId123");
-                Assert.AreEqual(reference.Item1.ServiceUrl, "https://test.coffee");
-                Assert.AreEqual(reference.Item2, "activityId123");
+                Assert.Equal(reference.Item1.ActivityId, "activityId123");
+                Assert.Equal(reference.Item1.ChannelId, channelId);
+                Assert.Equal(reference.Item1.ServiceUrl, turnContext.Activity.ServiceUrl);
+                Assert.Equal(reference.Item2, "activityId123");
             }
 
             private async Task CallGetTeamDetailsAsync(ITurnContext turnContext)
             {
                 var teamDetails = await TeamsInfo.GetTeamDetailsAsync(turnContext);
 
-                Assert.AreEqual("team-id", teamDetails.Id);
-                Assert.AreEqual("team-name", teamDetails.Name);
-                Assert.AreEqual("team-aadgroupid", teamDetails.AadGroupId);
+                Assert.Equal("team-id", teamDetails.Id);
+                Assert.Equal("team-name", teamDetails.Name);
+                Assert.Equal("team-aadgroupid", teamDetails.AadGroupId);
             }
 
             private async Task CallTeamGetMembersAsync(ITurnContext turnContext)
             {
                 var members = (await TeamsInfo.GetMembersAsync(turnContext)).ToArray();
 
-                Assert.AreEqual("id-1", members[0].Id);
-                Assert.AreEqual("name-1", members[0].Name);
-                Assert.AreEqual("givenName-1", members[0].GivenName);
-                Assert.AreEqual("surname-1", members[0].Surname);
-                Assert.AreEqual("userPrincipalName-1", members[0].UserPrincipalName);
+                Assert.Equal("id-1", members[0].Id);
+                Assert.Equal("name-1", members[0].Name);
+                Assert.Equal("givenName-1", members[0].GivenName);
+                Assert.Equal("surname-1", members[0].Surname);
+                Assert.Equal("userPrincipalName-1", members[0].UserPrincipalName);
 
-                Assert.AreEqual("id-2", members[1].Id);
-                Assert.AreEqual("name-2", members[1].Name);
-                Assert.AreEqual("givenName-2", members[1].GivenName);
-                Assert.AreEqual("surname-2", members[1].Surname);
-                Assert.AreEqual("userPrincipalName-2", members[1].UserPrincipalName);
+                Assert.Equal("id-2", members[1].Id);
+                Assert.Equal("name-2", members[1].Name);
+                Assert.Equal("givenName-2", members[1].GivenName);
+                Assert.Equal("surname-2", members[1].Surname);
+                Assert.Equal("userPrincipalName-2", members[1].UserPrincipalName);
             }
 
             private async Task CallTeamGetMemberAsync(ITurnContext turnContext)
             {
                 var member = await TeamsInfo.GetMemberAsync(turnContext, turnContext.Activity.From.Id);
 
-                Assert.AreEqual("id-1", member.Id);
-                Assert.AreEqual("name-1", member.Name);
-                Assert.AreEqual("givenName-1", member.GivenName);
-                Assert.AreEqual("surname-1", member.Surname);
-                Assert.AreEqual("userPrincipalName-1", member.UserPrincipalName);
+                Assert.Equal("id-1", member.Id);
+                Assert.Equal("name-1", member.Name);
+                Assert.Equal("givenName-1", member.GivenName);
+                Assert.Equal("surname-1", member.Surname);
+                Assert.Equal("userPrincipalName-1", member.UserPrincipalName);
             }
 
             private async Task CallGroupChatGetMembersAsync(ITurnContext turnContext)
             {
                 var members = (await TeamsInfo.GetMembersAsync(turnContext)).ToArray();
 
-                Assert.AreEqual("id-3", members[0].Id);
-                Assert.AreEqual("name-3", members[0].Name);
-                Assert.AreEqual("givenName-3", members[0].GivenName);
-                Assert.AreEqual("surname-3", members[0].Surname);
-                Assert.AreEqual("userPrincipalName-3", members[0].UserPrincipalName);
+                Assert.Equal("id-3", members[0].Id);
+                Assert.Equal("name-3", members[0].Name);
+                Assert.Equal("givenName-3", members[0].GivenName);
+                Assert.Equal("surname-3", members[0].Surname);
+                Assert.Equal("userPrincipalName-3", members[0].UserPrincipalName);
 
-                Assert.AreEqual("id-4", members[1].Id);
-                Assert.AreEqual("name-4", members[1].Name);
-                Assert.AreEqual("givenName-4", members[1].GivenName);
-                Assert.AreEqual("surname-4", members[1].Surname);
-                Assert.AreEqual("userPrincipalName-4", members[1].UserPrincipalName);
+                Assert.Equal("id-4", members[1].Id);
+                Assert.Equal("name-4", members[1].Name);
+                Assert.Equal("givenName-4", members[1].GivenName);
+                Assert.Equal("surname-4", members[1].Surname);
+                Assert.Equal("userPrincipalName-4", members[1].UserPrincipalName);
             }
 
             private async Task CallGetChannelsAsync(ITurnContext turnContext)
             {
                 var channels = (await TeamsInfo.GetTeamChannelsAsync(turnContext)).ToArray();
 
-                Assert.AreEqual("channel-id-1", channels[0].Id);
+                Assert.Equal("channel-id-1", channels[0].Id);
 
-                Assert.AreEqual("channel-id-2", channels[1].Id);
-                Assert.AreEqual("channel-name-2", channels[1].Name);
+                Assert.Equal("channel-id-2", channels[1].Id);
+                Assert.Equal("channel-name-2", channels[1].Name);
 
-                Assert.AreEqual("channel-id-3", channels[2].Id);
-                Assert.AreEqual("channel-name-3", channels[2].Name);
+                Assert.Equal("channel-id-3", channels[2].Id);
+                Assert.Equal("channel-name-3", channels[2].Name);
             }
         }
 
