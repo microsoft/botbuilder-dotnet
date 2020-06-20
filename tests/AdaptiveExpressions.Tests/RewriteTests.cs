@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using AdaptiveExpressions;
 using Xunit;
 
 namespace AdaptiveExpressions.Tests
@@ -25,7 +24,7 @@ namespace AdaptiveExpressions.Tests
             var original = Expression.Parse(input, Lookup);
             var dnf = original.DisjunctiveNormalForm();
             var expectedDnf = Expression.Parse(expected, Lookup);
-            Assert.True(dnf.DeepEquals(expectedDnf), $"{original} is {dnf}, not {expectedDnf}");
+            Assert.True(dnf.DeepEquals(expectedDnf));
         }
 
         private ExpressionEvaluator Lookup(string type)

@@ -11,7 +11,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
