@@ -2358,7 +2358,7 @@ namespace AdaptiveExpressions
                     }
                     else
                     {
-                        error = $"there is no matching node for path: ${jpath} in the given JSON";
+                        error = $"there is no matching node for path: {jpath} in the given JSON";
                     }
                 }
             }
@@ -2927,7 +2927,7 @@ namespace AdaptiveExpressions
                             var count = Convert.ToInt32(args[1]);
                             if (count <= 0)
                             {
-                                error = $"The second parameter ${args[1]} should be more than zero";
+                                error = $"The second parameter {args[1]} should be more than zero";
                             }
                             else
                             {
@@ -2954,7 +2954,7 @@ namespace AdaptiveExpressions
                         object result = null;
                         if (args.Count == 2 && !args[1].IsInteger())
                         {
-                            error = $"The second parameter ${args[1]} must be an integer.";
+                            error = $"The second parameter {args[1]} must be an integer.";
                         }
 
                         if (error == null)
@@ -4328,15 +4328,15 @@ namespace AdaptiveExpressions
                             string error = null;
                             if (!args[0].IsNumber())
                             {
-                                error = $"formatNumber first argument ${args[0]} must be number";
+                                error = $"formatNumber first argument {args[0]} must be number";
                             }
                             else if (!args[1].IsInteger())
                             {
-                                error = $"formatNumber second argument ${args[1]} must be number";
+                                error = $"formatNumber second argument {args[1]} must be number";
                             }
                             else if (args.Count == 3 && !(args[2] is string))
                             {
-                                error = $"formatNumber third agument ${args[2]} must be a locale";
+                                error = $"formatNumber third agument {args[2]} must be a locale";
                             }
                             else
                             {
