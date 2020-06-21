@@ -619,7 +619,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        [ExpectedException(typeof(InvalidOperationException), "bad activity should throw InvalidOperationException")]
         public async Task UserState_BadFromThrows()
         {
             var dictionary = new Dictionary<string, JObject>();
@@ -631,8 +631,8 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
-        public async Task ConversationState_BadConverationThrows()
+        [ExpectedException(typeof(InvalidOperationException), "bad activity should throw InvalidOperationException")]
+        public async Task ConversationState_BadConversationThrows()
         {
             var dictionary = new Dictionary<string, JObject>();
             var userState = new ConversationState(new MemoryStorage(dictionary));
@@ -643,7 +643,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        [ExpectedException(typeof(InvalidOperationException), "bad activity should throw InvalidOperationException")]
         public async Task PrivateConversationState_BadActivityFromThrows()
         {
             var dictionary = new Dictionary<string, JObject>();
@@ -656,7 +656,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        [ExpectedException(typeof(InvalidOperationException), "bad activity should throw InvalidOperationException")]
         public async Task PrivateConversationState_BadActivityConversationThrows()
         {
             var dictionary = new Dictionary<string, JObject>();

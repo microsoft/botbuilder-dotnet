@@ -16,8 +16,8 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class TranscriptLoggerMiddleware : IMiddleware
     {
-        private static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
-        private ITranscriptLogger logger;
+        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
+        private readonly ITranscriptLogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranscriptLoggerMiddleware"/> class.
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="transcriptLogger">The conversation store to use.</param>
         public TranscriptLoggerMiddleware(ITranscriptLogger transcriptLogger)
         {
-            logger = transcriptLogger ?? throw new ArgumentNullException("TranscriptLoggerMiddleware requires a ITranscriptLogger implementation.  ");
+            _logger = transcriptLogger ?? throw new ArgumentNullException(nameof(transcriptLogger), "TranscriptLoggerMiddleware requires a ITranscriptLogger implementation.  ");
         }
 
         /// <summary>
@@ -114,20 +114,24 @@ namespace Microsoft.Bot.Builder
 
                 // As we are deliberately not using await, disable the associated warning.
 #pragma warning disable 4014
-                logger.LogActivityAsync(activity).ContinueWith(
+#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler (need to think this one through, ignoring for now)
+                _logger.LogActivityAsync(activity).ContinueWith(
+#pragma warning restore 4014
                     task =>
                     {
                         try
                         {
                             task.Wait();
                         }
+#pragma warning disable CA1031 // Do not catch general exception types (this should probably be addressed later, but for now we just log the error and continue the execution)
                         catch (Exception err)
+#pragma warning restore CA1031
                         {
                             Trace.TraceError($"Transcript logActivity failed with {err}");
                         }
                     },
                     cancellationToken);
-#pragma warning restore 4014
+#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
             }
         }
 
@@ -145,7 +149,7 @@ namespace Microsoft.Bot.Builder
 
             if (activity == null)
             {
-                throw new ArgumentNullException("Cannot check or add Id on a null Activity.");
+                throw new ArgumentNullException(nameof(activity), "Cannot check or add Id on a null Activity.");
             }
 
             if (activity.Id == null)
@@ -157,7 +161,7 @@ namespace Microsoft.Bot.Builder
             return activityWithId;
         }
 
-        private void LogActivity(Queue<IActivity> transcript, IActivity activity)
+        private static void LogActivity(Queue<IActivity> transcript, IActivity activity)
         {
             if (activity.Timestamp == null)
             {

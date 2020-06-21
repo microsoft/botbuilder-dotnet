@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -39,7 +40,8 @@ namespace Microsoft.Bot.Builder
                     }
 
                     // Poll as a background task
-                    Task.Run(() => PollForTokenAsync(adapter, logger, turnContext, activity, oauthCard.ConnectionName, cancellationToken))
+#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler (need to think this one through, ignoring for now)
+                    Task.Run(() => PollForTokenAsync(adapter, logger, turnContext, oauthCard.ConnectionName, cancellationToken))
                         .ContinueWith(t =>
                         {
                             if (t.Exception != null)
@@ -47,11 +49,12 @@ namespace Microsoft.Bot.Builder
                                 logger.LogError(t.Exception.InnerException ?? t.Exception, "PollForTokenAsync threw an exception", oauthCard.ConnectionName);
                             }
                         });
+#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
                 }
             }
         }
 
-        private static async Task PollForTokenAsync(BotFrameworkAdapter adapter, ILogger logger, ITurnContext turnContext, Activity activity, string connectionName, CancellationToken cancellationToken)
+        private static async Task PollForTokenAsync(BotFrameworkAdapter adapter, ILogger logger, ITurnContext turnContext, string connectionName, CancellationToken cancellationToken)
         {
             TokenResponse tokenResponse = null;
             bool shouldEndPolling = false;
@@ -111,7 +114,7 @@ namespace Microsoft.Bot.Builder
 
                 if (!shouldEndPolling)
                 {
-                    await Task.Delay(pollingRequestsInterval).ConfigureAwait(false);
+                    await Task.Delay(pollingRequestsInterval, cancellationToken).ConfigureAwait(false);
                 }
             }
 

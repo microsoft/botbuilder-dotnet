@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Connector.Authentication
             // [0] = "Bearer"
             // [1] = "[Big Long String]"
             var authScheme = parts[0];
-            if (!authScheme.Equals("Bearer", StringComparison.InvariantCultureIgnoreCase))
+            if (!authScheme.Equals("Bearer", StringComparison.OrdinalIgnoreCase))
             {
                 // The scheme MUST be "Bearer"
                 return false;

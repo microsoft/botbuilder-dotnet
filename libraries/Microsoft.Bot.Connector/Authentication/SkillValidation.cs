@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             var audience = claimsList.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
-            if (string.IsNullOrWhiteSpace(audience) || AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCulture))
+            if (string.IsNullOrWhiteSpace(audience) || AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.OrdinalIgnoreCase))
             {
                 // The audience is https://api.botframework.com and not an appId.
                 return false;

@@ -75,6 +75,7 @@ namespace Microsoft.Bot.Builder
                 if (cts != null)
                 {
                     cts.Cancel();
+                    cts.Dispose();
                 }
             }
         }
