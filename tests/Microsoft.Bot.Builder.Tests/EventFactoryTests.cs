@@ -2,50 +2,38 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mime;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("Event")]
     public class EventFactoryTests
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void HandoffInitiationNullTurnContext()
         {
-            EventFactory.CreateHandoffInitiation(null, "some text");
+            Assert.Throws<ArgumentNullException>(() => EventFactory.CreateHandoffInitiation(null, "some text"));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void HandoffStatusNullConversation()
         {
-            EventFactory.CreateHandoffStatus(null, "accepted");
+            Assert.Throws<ArgumentNullException>(() => EventFactory.CreateHandoffStatus(null, "accepted"));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void HandoffStatusNullStatus()
         {
-            EventFactory.CreateHandoffStatus(new ConversationAccount(), null);
+            Assert.Throws<ArgumentNullException>(() => EventFactory.CreateHandoffStatus(new ConversationAccount(), null));
         }
 
-        [TestMethod]
+        [Fact]
         public void TestCreateHandoffInitiation()
         {
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("TestCreateHandoffInitiation"));
             string fromID = "test";
             var activity = new Activity
             {
@@ -61,48 +49,48 @@ namespace Microsoft.Bot.Builder.Tests
 
             var transcript = new Transcript(new Activity[] { MessageFactory.Text("hello") });
 
-            Assert.IsNull(transcript.Activities[0].ChannelId);
-            Assert.IsNull(transcript.Activities[0].ServiceUrl);
-            Assert.IsNull(transcript.Activities[0].Conversation);
+            Assert.Null(transcript.Activities[0].ChannelId);
+            Assert.Null(transcript.Activities[0].ServiceUrl);
+            Assert.Null(transcript.Activities[0].Conversation);
 
             var handoffEvent = EventFactory.CreateHandoffInitiation(context, new { Skill = "any" }, transcript);
-            Assert.AreEqual(handoffEvent.Name, HandoffEventNames.InitiateHandoff);
+            Assert.Equal(handoffEvent.Name, HandoffEventNames.InitiateHandoff);
             var skill = (handoffEvent.Value as JObject)?.Value<string>("Skill");
-            Assert.AreEqual(skill, "any");
-            Assert.AreEqual(handoffEvent.From.Id, fromID);
+            Assert.Equal("any", skill);
+            Assert.Equal(handoffEvent.From.Id, fromID);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestCreateHandoffStatus()
         {
             var state = "failed";
             var message = "timed out";
             var handoffEvent = EventFactory.CreateHandoffStatus(new ConversationAccount(), state, message);
-            Assert.AreEqual(handoffEvent.Name, HandoffEventNames.HandoffStatus);
+            Assert.Equal(handoffEvent.Name, HandoffEventNames.HandoffStatus);
 
             var stateFormEvent = (handoffEvent.Value as JObject)?.Value<string>("state");
-            Assert.AreEqual(stateFormEvent, state);
+            Assert.Equal(stateFormEvent, state);
 
             var messageFormEvent = (handoffEvent.Value as JObject)?.Value<string>("message");
-            Assert.AreEqual(messageFormEvent, message);
+            Assert.Equal(messageFormEvent, message);
 
             string status = JsonConvert.SerializeObject(handoffEvent.Value, Formatting.None);
-            Assert.AreEqual(status, $"{{\"state\":\"{state}\",\"message\":\"{message}\"}}");
-            Assert.IsNotNull((handoffEvent as Activity).Attachments);
-            Assert.IsNotNull(handoffEvent.Id);
+            Assert.Equal(status, $"{{\"state\":\"{state}\",\"message\":\"{message}\"}}");
+            Assert.NotNull((handoffEvent as Activity).Attachments);
+            Assert.NotNull(handoffEvent.Id);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestCreateHandoffStatusNoMessage()
         {
             var state = "failed";
             var handoffEvent = EventFactory.CreateHandoffStatus(new ConversationAccount(), state);
 
             var stateFormEvent = (handoffEvent.Value as JObject)?.Value<string>("state");
-            Assert.AreEqual(state, stateFormEvent);
+            Assert.Equal(state, stateFormEvent);
 
             var messageFormEvent = (handoffEvent.Value as JObject)?.Value<string>("message");
-            Assert.AreEqual(null, messageFormEvent);
+            Assert.Equal(null, messageFormEvent);
         }
     }
 }

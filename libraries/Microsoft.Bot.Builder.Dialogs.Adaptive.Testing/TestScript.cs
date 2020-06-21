@@ -9,12 +9,16 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
@@ -82,6 +86,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public string Locale { get; set; } = "en-us";
 
         /// <summary>
+        /// Gets or sets the mock data for Microsoft.HttpRequest.
+        /// </summary>
+        /// <value>
+        /// A list of mocks.
+        /// </value>
+        [JsonProperty("httpRequestMocks")]
+        public List<HttpRequestMock> HttpRequestMocks { get; set; } = new List<HttpRequestMock>();
+
+        /// <summary>
         /// Gets or sets the test script actions.
         /// </summary>
         /// <value>
@@ -108,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
-           
+
             var adapter = (TestAdapter)new TestAdapter(TestAdapter.CreateConversation(testName))
                 .Use(new RegisterClassMiddleware<IConfiguration>(this.Configuration))
                 .UseStorage(storage)
@@ -138,6 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 
             adapter.EnableTrace = this.EnableTrace;
             adapter.Locale = this.Locale;
+            adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));
 
             if (callback != null)
             {
