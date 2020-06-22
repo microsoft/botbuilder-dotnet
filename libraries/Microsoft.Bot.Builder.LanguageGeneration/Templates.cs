@@ -281,33 +281,31 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template == null)
             {
-                return this;
-            }
+                ClearDiagnostic();
 
-            ClearDiagnostic();
+                var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
+                var newTemplateBody = ConvertTemplateBody(templateBody);
+                var content = $"{templateNameLine}{newLine}{newTemplateBody}";
 
-            var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
-            var newTemplateBody = ConvertTemplateBody(templateBody);
-            var content = $"{templateNameLine}{newLine}{newTemplateBody}";
+                // update content
+                this.Content = ReplaceRangeContent(
+                    this.Content,
+                    template.SourceRange.Range.Start.Line - 1,
+                    template.SourceRange.Range.End.Line - 1,
+                    content);
 
-            // update content
-            this.Content = ReplaceRangeContent(
-                this.Content,
-                template.SourceRange.Range.Start.Line - 1,
-                template.SourceRange.Range.End.Line - 1,
-                content);
+                var updatedTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
+                updatedTemplates = new TemplatesTransformer(updatedTemplates).Transform(AntlrParseTemplates(content, Id));
 
-            var updatedTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
-            updatedTemplates = new TemplatesTransformer(updatedTemplates).Transform(AntlrParseTemplates(content, Id));
+                var originStartLine = template.SourceRange.Range.Start.Line - 1;
+                AppendDiagnosticWithOffset(updatedTemplates.Diagnostics, originStartLine);
 
-            var originStartLine = template.SourceRange.Range.Start.Line - 1;
-            AppendDiagnosticWithOffset(updatedTemplates.Diagnostics, originStartLine);
-
-            var newTemplate = updatedTemplates.FirstOrDefault();
-            if (newTemplate != null)
-            {
-                AdjustRangeForUpdateTemplate(template, newTemplate);
-                new StaticChecker(this).Check().ForEach(u => this.Diagnostics.Add(u));
+                var newTemplate = updatedTemplates.FirstOrDefault();
+                if (newTemplate != null)
+                {
+                    AdjustRangeForUpdateTemplate(template, newTemplate);
+                    new StaticChecker(this).Check().ForEach(u => this.Diagnostics.Add(u));
+                }
             }
 
             return this;
@@ -363,20 +361,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public Templates DeleteTemplate(string templateName)
         {
             var template = this.FirstOrDefault(u => u.Name == templateName);
-            if (template == null)
+            if (template != null)
             {
-                return this;
+                ClearDiagnostic();
+
+                var startLine = template.SourceRange.Range.Start.Line - 1;
+                var stopLine = template.SourceRange.Range.End.Line - 1;
+                this.Content = ReplaceRangeContent(Content, startLine, stopLine, null);
+
+                AdjustRangeForDeleteTemplate(template);
+                this.Remove(template);
+                new StaticChecker(this).Check().ForEach(u => this.Diagnostics.Add(u));
             }
-
-            ClearDiagnostic();
-
-            var startLine = template.SourceRange.Range.Start.Line - 1;
-            var stopLine = template.SourceRange.Range.End.Line - 1;
-            this.Content = ReplaceRangeContent(Content, startLine, stopLine, null);
-
-            AdjustRangeForDeleteTemplate(template);
-            this.Remove(template);
-            new StaticChecker(this).Check().ForEach(u => this.Diagnostics.Add(u));
 
             return this;
         }
