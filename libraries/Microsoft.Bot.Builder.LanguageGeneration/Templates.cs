@@ -279,7 +279,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public Templates UpdateTemplate(string templateName, string newTemplateName, List<string> parameters, string templateBody)
         {
             var template = this.FirstOrDefault(u => u.Name == templateName);
-            if (template == null)
+            if (template != null)
             {
                 ClearDiagnostic();
 
