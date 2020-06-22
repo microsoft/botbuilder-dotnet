@@ -95,6 +95,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public List<HttpRequestMock> HttpRequestMocks { get; set; } = new List<HttpRequestMock>();
 
         /// <summary>
+        /// Gets or sets the mock data for Microsoft.OAuthInput.
+        /// </summary>
+        /// <value>
+        /// A list of mocks.
+        /// </value>
+        [JsonProperty("userTokenMocks")]
+        public List<MockData<UserTokenMock>> UserTokenMocks { get; set; } = new List<MockData<UserTokenMock>>();
+
+        /// <summary>
         /// Gets or sets the test script actions.
         /// </summary>
         /// <value>
@@ -152,6 +161,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             adapter.EnableTrace = this.EnableTrace;
             adapter.Locale = this.Locale;
             adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));
+
+            foreach (var userToken in UserTokenMocks)
+            {
+                userToken.Data.Setup(adapter);
+            }
 
             if (callback != null)
             {
