@@ -11,7 +11,6 @@ using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
-using BotRange = Microsoft.Bot.Builder.LanguageGeneration.Range;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
