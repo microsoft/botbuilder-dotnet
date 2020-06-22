@@ -13,6 +13,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Azure classes for using Azure Services on the Microsoft Bot Builder SDK</Description>
+    <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -41,19 +42,31 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="**/*.dialog" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
+    <Content Include="**/*.qna" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.21" />
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
+    <PackageReference Include="Azure.Storage.Queues" Version="12.3.2" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.2.0" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.1.2" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="9.4.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />
   </ItemGroup>
 </Project>

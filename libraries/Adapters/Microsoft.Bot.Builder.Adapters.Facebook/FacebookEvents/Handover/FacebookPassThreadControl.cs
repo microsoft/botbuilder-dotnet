@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover
 {
+    /// <summary>
+    /// Event object sent to Facebook when requesting to pass thread control to another app.
+    /// </summary>
     public class FacebookPassThreadControl : FacebookThreadControl
     {
         /// <summary>

@@ -75,6 +75,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                     .Send("foo")
                     .AssertReply(
                         (activity) => throw new Exception(uniqueExceptionId), "should throw")
+
                     .StartTestAsync());
         }
 

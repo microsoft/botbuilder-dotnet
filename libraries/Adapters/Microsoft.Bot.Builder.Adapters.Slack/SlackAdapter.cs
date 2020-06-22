@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             var requestContentType = request.Headers["Content-Type"].ToString();
 
-            if (requestContentType == "application/x-www-form-urlencoded")
+            if (requestContentType.StartsWith("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase))
             {
                 var postValues = SlackHelper.QueryStringToDictionary(body);
 
@@ -296,7 +296,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     activity = await SlackHelper.CommandToActivityAsync(payload, _slackClient, cancellationToken).ConfigureAwait(false);
                 }
             }
-            else if (requestContentType == "application/json")
+            else if (requestContentType.StartsWith("application/json", StringComparison.OrdinalIgnoreCase))
             {
                 var bodyObject = JObject.Parse(body);
 

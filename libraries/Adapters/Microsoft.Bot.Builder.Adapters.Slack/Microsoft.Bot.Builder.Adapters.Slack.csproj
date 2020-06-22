@@ -15,8 +15,6 @@
     <PackageId>Microsoft.Bot.Builder.Adapters.Slack</PackageId>
     <Description>Library for connecting bots with Slack.</Description>
     <Summary>This library implements C# classes for the Slack adapter.</Summary>
-    <!-- The SlackAPI package isn't signed, so supress the warning. There seems to not be a way to supress this for ONLY SlackAPI. -->
-    <NoWarn>$(NoWarn),CS8002</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
