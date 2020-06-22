@@ -4,7 +4,6 @@
 #pragma warning disable SA1202 // Elements should be ordered by access
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using AdaptiveExpressions;
@@ -23,20 +22,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasic()
         {
-            var templates = Templates.ParseFile("D:/common.lg");
+            var templates = Templates.ParseFile(GetExampleFilePath("2.lg"));
 
-            var sw = new Stopwatch();
+            var evaled = templates.Evaluate("wPhrase");
+            var options = new List<string> { "Hi", "Hello", "Hiya" };
 
-            sw.Start();
-            templates.UpdateTemplate("ampm", "b", null, "-hiasdasdasd" + "\r\n");
-            sw.Stop();
-            File.AppendAllText("D:/1.txt", sw.ElapsedMilliseconds.ToString() + "\r\n");
-
-            sw.Reset();
-            sw.Start();
-            templates.DeleteTemplate("b");
-            sw.Stop();
-            File.AppendAllText("D:/1.txt", sw.ElapsedMilliseconds.ToString() + "\r\n");
+            Assert.IsTrue(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
         }
 
         [TestMethod]
