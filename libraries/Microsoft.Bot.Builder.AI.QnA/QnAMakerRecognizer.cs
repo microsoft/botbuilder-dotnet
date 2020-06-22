@@ -21,13 +21,22 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
     /// </summary>
     public class QnAMakerRecognizer : Recognizer
     {
+        /// <summary>
+        /// The declarative type for this recognizer.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.QnAMakerRecognizer";
 
+        /// <summary>
+        /// Key used when adding the intent to the <see cref="RecognizerResult"/> intents collection.
+        /// </summary>
         public const string QnAMatchIntent = "QnAMatch";
 
         private const string IntentPrefix = "intent=";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMakerRecognizer"/> class.
+        /// </summary>
         public QnAMakerRecognizer()
         {
         }
@@ -128,6 +137,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         [JsonProperty("qnaId")]
         public IntExpression QnAId { get; set; } = 0;
 
+        /// <summary>
+        /// Gets or sets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.
+        /// </summary>
+        /// <value>
+        /// A instance of <see cref="HttpClient"/>.
+        /// </value>
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
@@ -149,6 +164,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         [JsonProperty("enablePreciseAnswer")]
         public BoolExpression EnablePreciseAnswer { get; set; } = false;
 
+        /// <summary>
+        /// Return results of the call to QnA Maker.
+        /// </summary>
+        /// <param name="dialogContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="activity">The incoming activity received from the user. The Text property value is used as the query text for QnA Maker.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <returns>A <see cref="RecognizerResult"/> containing the QnA Maker result.</returns>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             // Identify matched intents
@@ -241,6 +265,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             return recognizerResult;
         }
 
+        /// <summary>
+        /// Gets an instance of <see cref="IQnAMakerClient"/>.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> used to access state.</param>
+        /// <returns>An instance of <see cref="IQnAMakerClient"/>.</returns>
         protected virtual Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
             var qnaClient = dc.Context.TurnState.Get<IQnAMakerClient>();

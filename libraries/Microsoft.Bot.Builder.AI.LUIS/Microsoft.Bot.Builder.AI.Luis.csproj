@@ -23,12 +23,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!-- These documentation warnings excludes should be removed as part of https://github.com/microsoft/botbuilder-dotnet/issues/4052 -->
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
-  </PropertyGroup>
-
-  <ItemGroup>
+	<ItemGroup>
     <Content Include="**/*.dialog" />
     <Content Include="**/*.lg" />
     <Content Include="**/*.lu" />

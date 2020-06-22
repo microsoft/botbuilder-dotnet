@@ -351,6 +351,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return await base.BeginDialogAsync(dc, dialogOptions, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             var interrupted = dc.State.GetValue<bool>(TurnPath.Interrupted, () => false);
@@ -363,6 +364,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return base.ContinueDialogAsync(dc, cancellationToken);
         }
 
+        /// <inheritdoc/>
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             if (dc.Context.Activity.Type == ActivityTypes.Message)
