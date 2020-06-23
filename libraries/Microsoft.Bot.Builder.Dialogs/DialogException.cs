@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The dialog context active when the exception was thrown.
         /// </value>
-        public DialogInstance ActiveDialog { get; set; }
+        public string ActiveDialog { get; set; }
 
         /// <summary>
         /// Gets or sets the active dialog data.
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The dialog context active when the exception was thrown.
         /// </value>
-        public DialogInstance Parent { get; set; }
+        public string Parent { get; set; }
 
         /// <summary>
         /// Gets or sets the active dialog data.
@@ -62,14 +62,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The dialog context active when the exception was thrown.
         /// </value>
-        public List<DialogInstance> Stack { get; set; }
+        public List<string> Stack { get; set; }
 
         private void SetPropertiesFromDc(DialogContext dialogContext)
         {
-            this.ActiveDialog = dialogContext.ActiveDialog;
-            this.Parent = dialogContext.Parent?.ActiveDialog;
+            this.ActiveDialog = dialogContext.ActiveDialog?.Id;
+            this.Parent = dialogContext.Parent?.ActiveDialog?.Id;
 
-            this.Stack = new List<DialogInstance>();
+            this.Stack = new List<string>();
             var currentDc = dialogContext;
 
             while (currentDc != null)
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     // filter out ActionScope items because they are internal bookkeeping.
                     if (!item.Id.StartsWith("ActionScope["))
                     {
-                        this.Stack.Add(item);
+                        this.Stack.Add(item.Id);
                     }
                 }
 
