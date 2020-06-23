@@ -116,18 +116,6 @@
             {
               "name": "MicrosoftAppPassword",
               "value": "[parameters('appSecret')]"
-            },
-            {
-              "name": "SlackVerificationToken",
-              "value": "[parameters('slackVerificationToken')]"
-            },
-            {
-              "name": "SlackBotToken",
-              "value": "[parameters('slackBotToken')]"
-            },
-            {
-              "name": "SlackClientSigningSecret",
-              "value": "[parameters('slackClientSigningSecret')]"
             }
           ],
           "cors": {
