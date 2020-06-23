@@ -53,11 +53,12 @@ steps:
     modifyOutputPath: false
 
 - task: AzureCLI@1
-  displayName: 'Create Resource Group, deploy bot, create DirectLine channel'
+  displayName: 'Create resources, deploy bot, create DirectLine channel'
   inputs:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
+     call az group create --location westus --name $(BotGroup)
      call az deployment create --name "$(WinTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template.json" --location "westus" --parameters appId=$(WinTestBotAppId) appSecret="$(WinTestBotAppSecret)" botId="$(WinTestBotBotName)" botSku=F0 newAppServicePlanName="$(WinTestBotBotName)" newWebAppName="$(WinTestBotBotName)" groupName="$(WinTestBotBotGroup)" groupLocation="westus" newAppServicePlanLocation="westus"
      call az webapp deployment source config-zip --resource-group "$(WinTestBotBotGroup)" --name "$(WinTestBotBotName)" --src "$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot\PublishedBot.zip"
      call az bot directline create -n "$(WinTestBotBotName)" -g "$(WinTestBotBotGroup)" > "$(System.DefaultWorkingDirectory)\DirectLineCreate.json"
