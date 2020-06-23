@@ -1,0 +1,77 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "TestIntent",
+                    "pattern": "(?i)test"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "TestIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "property": "$name",
+                        "prompt": "name?",
+                        "allowInterruptions": true
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Hello, ${$name}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "TestIntent",
+                "condition": "hasPendingActions()",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I'm doing it already..."
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "test"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "test"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I'm doing it already..."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Tom"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, Tom"
+        }
+    ]
+}

@@ -24,6 +24,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
+     /// <summary>
+     /// BotAdapter to allow for handling Facebook App payloads and responses via the Facebook API.
+     /// </summary>
     public class FacebookAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private const string HubModeSubscribe = "subscribe";
@@ -33,6 +36,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// </summary>
         private readonly FacebookClientWrapper _facebookClient;
         private readonly ILogger _logger;
+        private readonly FacebookAdapterOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookAdapter"/> class using configuration settings.
@@ -46,19 +50,21 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// </remarks>
         /// <param name="logger">The logger this adapter should use.</param>
         public FacebookAdapter(IConfiguration configuration, ILogger logger = null)
-            : this(new FacebookClientWrapper(new FacebookAdapterOptions(configuration["FacebookVerifyToken"], configuration["FacebookAppSecret"], configuration["FacebookAccessToken"])), logger)
+            : this(new FacebookAdapterOptions(configuration["FacebookVerifyToken"], configuration["FacebookAppSecret"], configuration["FacebookAccessToken"]), logger)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookAdapter"/> class using an existing Facebook client.
         /// </summary>
-        /// <param name="facebookClient">A Facebook API interface.</param>
+        /// <param name="options">Options for the Facebook Adapter.</param>
         /// <param name="logger">The logger this adapter should use.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="facebookClient"/> is null.</exception>
-        public FacebookAdapter(FacebookClientWrapper facebookClient, ILogger logger = null)
+        /// <param name="facebookClient">Client used to interact with the Facebook API.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
+        public FacebookAdapter(FacebookAdapterOptions options, ILogger logger = null, FacebookClientWrapper facebookClient = null)
         {
-            _facebookClient = facebookClient ?? throw new ArgumentNullException(nameof(facebookClient));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _facebookClient = facebookClient ?? new FacebookClientWrapper(options);
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -219,7 +225,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <exception cref="AuthenticationException">The webhook receives message with invalid signature.</exception>
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
         {
-            if (httpRequest.Query["hub.mode"] == HubModeSubscribe)
+            if (httpRequest.Query["hub.mode"] == HubModeSubscribe && _options.VerifyIncomingRequests)
             {
                 await _facebookClient.VerifyWebhookAsync(httpRequest, httpResponse, cancellationToken).ConfigureAwait(false);
                 return;
@@ -232,7 +238,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 stringifiedBody = await sr.ReadToEndAsync().ConfigureAwait(false);
             }
 
-            if (!_facebookClient.VerifySignature(httpRequest, stringifiedBody))
+            if (!_facebookClient.VerifySignature(httpRequest, stringifiedBody) && _options.VerifyIncomingRequests)
             {
                 await FacebookHelper.WriteAsync(httpResponse, HttpStatusCode.Unauthorized, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
                 throw new AuthenticationException("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");

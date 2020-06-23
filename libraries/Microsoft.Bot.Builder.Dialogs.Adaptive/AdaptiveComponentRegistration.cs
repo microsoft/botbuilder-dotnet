@@ -9,6 +9,7 @@ using AdaptiveExpressions.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Functions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
@@ -18,12 +19,21 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Functions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
+        public AdaptiveComponentRegistration()
+        {
+            // adaptive dialog functions
+            Expression.Functions.Add(IsDialogActiveFunction.Name, new IsDialogActiveFunction());
+            Expression.Functions.Add(IsDialogActiveFunction.Alias, new IsDialogActiveFunction());
+            Expression.Functions.Add(HasPendingActionsFunction.Name, new HasPendingActionsFunction());
+        }
+
         public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Conditionals

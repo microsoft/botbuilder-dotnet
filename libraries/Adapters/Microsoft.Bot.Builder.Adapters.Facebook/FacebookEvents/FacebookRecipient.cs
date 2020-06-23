@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 {
+    /// <summary>
+    /// Facebook Recipient object used as part of a Facebook message.
+    /// </summary>
     public class FacebookRecipient
     {
         /// <summary>
