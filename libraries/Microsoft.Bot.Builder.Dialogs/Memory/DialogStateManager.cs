@@ -290,6 +290,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
+        /// Get a string value from memory using a path expression.
+        /// </summary>
+        /// <param name="pathExpression">The path expression.</param>
+        /// <param name="defaultValue">Default value if the value doesn't exist.</param>
+        /// <returns>string or null if path is not valid.</returns>
+        public string GetStringValue(string pathExpression, string defaultValue = default)
+        {
+            return GetValue<string>(pathExpression, () => defaultValue);
+        }
+
+        /// <summary>
         /// Set memory to value.
         /// </summary>
         /// <param name="path">Path to memory.</param>
