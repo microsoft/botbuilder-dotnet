@@ -65,11 +65,11 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "${turn.dialogEvent.value.activedialog.id}"
+                        "activity": "${turn.dialogEvent.value.activedialog}"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "${turn.dialogEvent.value.parent.id}"
+                        "activity": "${turn.dialogEvent.value.parent}"
                     }
                 ]
             },
