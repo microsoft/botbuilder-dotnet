@@ -67,7 +67,7 @@ steps:
   displayName: 'Set Environment Variables'
 
 - task: AzureCLI@1
-  displayName: 'Create Resources'
+  displayName: 'Create resources, deploy bot'
   inputs:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
