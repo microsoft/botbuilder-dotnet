@@ -10,11 +10,13 @@ namespace AdaptiveExpressions
         public Options()
         {
             this.NullSubstitution = null;
+            this.Locale = string.Empty;
         }
 
         public Options(Options opt)
         {
             this.NullSubstitution = opt.NullSubstitution;
+            this.Locale = opt.Locale;
         }
 
         /// <summary>
@@ -24,5 +26,13 @@ namespace AdaptiveExpressions
         /// The function delegate.
         /// </value>
         public Func<string, object> NullSubstitution { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets a value, a string of locale info.
+        /// </summary>
+        /// <value>
+        /// The locale info.
+        /// </value>
+        public string Locale { get; set; } = string.Empty;
     }
 }

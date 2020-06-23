@@ -1111,24 +1111,26 @@ namespace AdaptiveExpressions.Tests
             var newActual = newExpression.TryEvaluate(scope).value;
             AssertObjectEquals(actual, newActual);
         }
+
         [Theory]
         [MemberData(nameof(DataForThreadLocale))]
         public void EvaluateWithLocale(string input, object expected, HashSet<string> expectedRefs)
         {
             var parsed = Expression.Parse(input);
-            Assert.IsNotNull(parsed);
-            var (actual, msg) = parsed.TryEvaluate(scopeForThreadLocale, locale: "fr-FR");
-            Assert.AreEqual(null, msg);
+            Assert.NotNull(parsed);
+            var opts = new Options() { Locale = "fr-FR" };
+            var (actual, msg) = parsed.TryEvaluate(scopeForThreadLocale, opts);
+            Assert.Null(msg);
             AssertObjectEquals(expected, actual);
             if (expectedRefs != null)
             {
                 var actualRefs = parsed.References();
-                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+                Assert.True(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
 
             // ToString re-parse
             var newExpression = Expression.Parse(parsed.ToString());
-            var newActual = newExpression.TryEvaluate(scopeForThreadLocale, locale: "fr-FR").value;
+            var newActual = newExpression.TryEvaluate(scopeForThreadLocale, opts).value;
             AssertObjectEquals(actual, newActual);
         }
 
