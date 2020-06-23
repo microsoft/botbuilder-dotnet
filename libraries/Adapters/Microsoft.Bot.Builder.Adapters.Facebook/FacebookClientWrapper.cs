@@ -15,6 +15,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
+    /// <summary>
+    /// Client for interacting with the Facebook API.
+    /// </summary>
     public class FacebookClientWrapper
     {
         /// <summary>
