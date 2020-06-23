@@ -1,0 +1,99 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "Append",
+                    "pattern": "(?i)append"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "property": "$something",
+                        "prompt": "Say append",
+                        "allowInterruptions": true
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You said ${$something}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Append",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I'm going to append new actions actions via EditActions"
+                    },
+                    {
+                        "$kind": "Microsoft.EditActions",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "New actions..."
+                            },
+                            {
+                                "$kind": "Microsoft.TextInput",
+                                "property": "user.name",
+                                "prompt": "What's your name?"
+                            }
+                        ],
+                        "changeType": "appendActions"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Say append"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "append"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I'm going to append new actions actions via EditActions"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Say append"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "blah"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You said blah"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "New actions..."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "What's your name?"
+        }
+    ]
+}
