@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 else
                 {
                     var content = resource.ReadTextAsync().GetAwaiter().GetResult();
-                    return (content, resource.Id);
+                    return (content, (resource as FileResource).FullName);
                 }
             };
         }
@@ -84,15 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(Resource resource)
         {
-            var fileResource = resource as FileResource;
-            if (fileResource == null)
-            {
-                return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, multilanguageResources);
-            }
-            else
-            {
-                return new TemplateEngineLanguageGenerator(fileResource.FullName, multilanguageResources);
-            }
+            return new TemplateEngineLanguageGenerator(resource as FileResource, multilanguageResources);
         }
     }
 }

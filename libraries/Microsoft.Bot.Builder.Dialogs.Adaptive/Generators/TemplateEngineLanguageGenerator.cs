@@ -20,17 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.TemplateEngineLanguageGenerator";
 
-        private const string DEFAULTLABEL = "Unknown";
-
         private readonly LanguageGeneration.Templates lg;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
-        /// </summary>
-        public TemplateEngineLanguageGenerator()
-        {
-            this.lg = new LanguageGeneration.Templates();
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
@@ -44,30 +34,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
-        /// <param name="lgText">lg template text.</param>
-        /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
+        /// <param name="resource">File resource.</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<Resource>> resourceMapping)
+        public TemplateEngineLanguageGenerator(FileResource resource, Dictionary<string, IList<Resource>> resourceMapping)
         {
-            this.Id = id ?? DEFAULTLABEL;
-            var (_, locale) = LGResourceLoader.ParseLGFileName(id);
-            var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lg = LanguageGeneration.Templates.ParseText(lgText ?? string.Empty, Id, importResolver);
-        }
+            this.Id = resource.FullName;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
-        /// </summary>
-        /// <param name="filePath">lg template file absolute path.</param>
-        /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<Resource>> resourceMapping)
-        {
-            filePath = PathUtils.NormalizePath(filePath);
-            this.Id = Path.GetFileName(filePath);
-
-            var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
+            var (_, locale) = LGResourceLoader.ParseLGFileName(resource.Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lg = LanguageGeneration.Templates.ParseFile(filePath, importResolver);
+            this.lg = LanguageGeneration.Templates.ParseFile(resource.FullName, importResolver);
         }
 
         /// <summary>
