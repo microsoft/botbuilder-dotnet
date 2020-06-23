@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -108,30 +109,34 @@ namespace Microsoft.Bot.Builder
             await nextTurn(cancellationToken).ConfigureAwait(false);
 
             // flush transcript at end of turn
+            var logTasks = new List<Task>();
             while (transcript.Count > 0)
             {
+                // Process the queue and log all the activities in parallel.
                 var activity = transcript.Dequeue();
 
-                // As we are deliberately not using await, disable the associated warning.
-#pragma warning disable 4014
-#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler (need to think this one through, ignoring for now)
-                _logger.LogActivityAsync(activity).ContinueWith(
-#pragma warning restore 4014
-                    task =>
-                    {
-                        try
-                        {
-                            task.Wait();
-                        }
+                // Add the logging task to the list (we don't call await here, we await all the calls together later).
+                logTasks.Add(TryLogActivityAsync(_logger, activity));
+            }
+
+            if (logTasks.Any())
+            {
+                // Wait for all the activities to be logged before continuing.
+                await Task.WhenAll(logTasks).ConfigureAwait(false);
+            }
+        }
+
+        private static async Task TryLogActivityAsync(ITranscriptLogger logger, IActivity activity)
+        {
+            try
+            {
+                await logger.LogActivityAsync(activity).ConfigureAwait(false);
+            }
 #pragma warning disable CA1031 // Do not catch general exception types (this should probably be addressed later, but for now we just log the error and continue the execution)
-                        catch (Exception err)
-#pragma warning restore CA1031
-                        {
-                            Trace.TraceError($"Transcript logActivity failed with {err}");
-                        }
-                    },
-                    cancellationToken);
+            catch (Exception ex)
 #pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
+            {
+                Trace.TraceError($"Transcript logActivity failed with {ex}");
             }
         }
 
