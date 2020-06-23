@@ -11,8 +11,10 @@ Use the [ASP.Net Team](https://github.com/dotnet/aspnetcore/blob/master/docs/Dai
 Move to semver2 and use "." rather than "-" to follow semver2 sorting rules. This [file in ASp.Net Core](https://github.com/dotnet/aspnetcore/blob/3787d7e7f070543cc9368d589a504fa8c4bd4830/eng/Versions.props) can be looked at to learn more. 
 
 The tags we use for preview versions are:
-* -daily.<yyyymmdd>.{incrementing value}
-* -rc.{0}
+```
+-daily.<yyyymmdd>.{incrementing value}
+-rc.{incrementing value}
+```
 
 Note: We are avoding the "-preview" tag for daily builds as we occasionally release "preview" assemblies that have a final semver moniker of "4.10.0-preview". 
 
