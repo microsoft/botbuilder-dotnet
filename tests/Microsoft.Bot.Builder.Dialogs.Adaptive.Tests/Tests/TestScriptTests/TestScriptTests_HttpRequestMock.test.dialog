@@ -1,0 +1,115 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test HttpRequestMock",
+    "httpRequestMocks": [
+        "get.mock",
+        "all.mock"
+    ],
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "GET",
+                        "url": "http://127.0.0.1",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "GET",
+                        "url": "http://127.0.0.1",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content.data}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "GET",
+                        "url": "http://127.0.0.1",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "POST",
+                        "url": "http://127.0.0.1",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "GET",
+                        "url": "http://127.0.0.1",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "GET",
+                        "url": "http://127.0.0.1",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "string response"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "object response"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "byte array response"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "fallback response"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "repeated response"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "repeated response"
+        }
+    ]
+}

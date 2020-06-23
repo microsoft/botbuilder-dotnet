@@ -1,33 +1,12 @@
 ﻿using System.Collections.Generic;
-using AdaptiveExpressions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace AdaptiveExpressions.Tests
 {
-    [TestClass]
     public class RewriteTests
     {
         public static IEnumerable<object[]> Data => new[]
         {
-            /*
-            Test("woof.blah", "woof.blah"),
-            Test("!woof.blah", "!woof.blah"),
-            Test("!!woof.blah", "woof.blah"),
-
-            // Comparisons
-            Test("!(woof.blah < 3)", "woof.blah >= 3"),
-            Test("!(woof.blah <= 3)", "woof.blah > 3"),
-            Test("!(woof.blah == 3)", "woof.blah != 3"),
-            Test("!(woof.blah != 3)", "woof.blah == 3"),
-            Test("!(woof.blah >= 3)", "woof.blah < 3"),
-            Test("!(woof.blah > 3)", "woof.blah <= 3"),
-
-            // Logical
-            Test("bark == 1 && bark == 2", "bark == 1 && bark == 2"),
-            Test("bark == 1 || bark == 2", "bark == 1 || bark == 2"),
-            Test("(bark == 1 || bark == 2) && (arg == 3 || arg == 4)", 
-                "or(bark == 1 && arg == 3, bark == 1 && arg == 4, bark == 2 && arg == 3, bark == 2 && arg == 4)"),
-            */
             Test("!(bark == 1 && bark == 2) && arg == 3", "(bark != 1 && arg == 3) || (bark != 2 && arg == 3)"),
             Test("!(bark == 1 && bark == 2)", "bark != 1 || bark != 2"),
             Test("!(bark == 1 || bark == 2)", "bark != 1 && bark != 2"),
@@ -38,14 +17,14 @@ namespace AdaptiveExpressions.Tests
 
         public static object[] Test(string input, string expected) => new object[] { input, expected };
 
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
+        [Theory]
+        [MemberData(nameof(Data))]
         public void Evaluate(string input, string expected)
         {
             var original = Expression.Parse(input, Lookup);
             var dnf = original.DisjunctiveNormalForm();
             var expectedDnf = Expression.Parse(expected, Lookup);
-            Assert.IsTrue(dnf.DeepEquals(expectedDnf), $"{original} is {dnf}, not {expectedDnf}");
+            Assert.True(dnf.DeepEquals(expectedDnf));
         }
 
         private ExpressionEvaluator Lookup(string type)
