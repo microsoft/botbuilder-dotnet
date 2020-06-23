@@ -205,13 +205,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 await this.DebuggerStepAsync(dialog, DialogEvents.BeginDialog, cancellationToken).ConfigureAwait(false);
                 return await dialog.BeginDialogAsync(this, options: options, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            catch (DialogException)
-            {
-                throw;
-            }
             catch (Exception err)
             {
-                throw new DialogException(this, err.Message, err);
+                SetExceptionContextData(err);
+                throw;
             }
         }
 
@@ -245,13 +242,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
             }
-            catch (DialogException)
-            {
-                throw;
-            }
             catch (Exception err)
             {
-                throw new DialogException(this, err.Message, err);
+                SetExceptionContextData(err);
+                throw;
             }
         }
 
@@ -303,13 +297,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return new DialogTurnResult(DialogTurnStatus.Empty);
                 }
             }
-            catch (DialogException)
-            {
-                throw;
-            }
             catch (Exception err)
             {
-                throw new DialogException(this, err.Message, err);
+                SetExceptionContextData(err);
+                throw;
             }
         }
 
@@ -373,13 +364,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return new DialogTurnResult(DialogTurnStatus.Complete, result);
                 }
             }
-            catch (DialogException)
-            {
-                throw;
-            }
             catch (Exception err)
             {
-                throw new DialogException(this, err.Message, err);
+                SetExceptionContextData(err);
+                throw;
             }
         }
 
@@ -405,13 +393,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return await this.CancelAllDialogsAsync(false, eventName: null, eventValue: null, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            catch (DialogException)
-            {
-                throw;
-            }
             catch (Exception err)
             {
-                throw new DialogException(this, err.Message, err);
+                SetExceptionContextData(err);
+                throw;
             }
         }
 
@@ -485,13 +470,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return new DialogTurnResult(DialogTurnStatus.Empty);
                 }
             }
-            catch (DialogException)
-            {
-                throw;
-            }
             catch (Exception err)
             {
-                throw new DialogException(this, err.Message, err);
+                SetExceptionContextData(err);
+                throw;
             }
         }
 
@@ -525,13 +507,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Start replacement dialog
                 return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
             }
-            catch (DialogException)
-            {
-                throw;
-            }
             catch (Exception err)
             {
-                throw new DialogException(this, err.Message, err);
+                SetExceptionContextData(err);
+                throw;
             }
         }
 
@@ -569,13 +548,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                 }
             }
-            catch (DialogException)
-            {
-                throw;
-            }
             catch (Exception err)
             {
-                throw new DialogException(this, err.Message, err);
+                SetExceptionContextData(err);
+                throw;
             }
         }
 
@@ -604,13 +580,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 return null;
             }
-            catch (DialogException)
-            {
-                throw;
-            }
             catch (Exception err)
             {
-                throw new DialogException(this, err.Message, err);
+                SetExceptionContextData(err);
+                throw;
             }
         }
 
@@ -672,13 +645,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 return false;
             }
-            catch (DialogException)
-            {
-                throw;
-            }
             catch (Exception err)
             {
-                throw new DialogException(this, err.Message, err);
+                SetExceptionContextData(err);
+                throw;
             }
         }
 
@@ -706,6 +676,38 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 // set Turn.LastResult to result
                 ObjectPath.SetPathValue(this.Context.TurnState, TurnPath.LastResult, result);
+            }
+        }
+
+        private void SetExceptionContextData(Exception exception)
+        {
+            if (!exception.Data.Contains(nameof(DialogContext)))
+            {
+                var stack = new List<string>();
+                var currentDc = this;
+
+                while (currentDc != null)
+                {
+                    // (PORTERS NOTE: javascript stack is reversed with top of stack on end)
+                    foreach (var item in currentDc.Stack)
+                    {
+                        // filter out ActionScope items because they are internal bookkeeping.
+                        if (!item.Id.StartsWith("ActionScope["))
+                        {
+                            stack.Add(item.Id);
+                        }
+                    }
+
+                    currentDc = currentDc.Parent;
+                }
+
+                exception.Data.Add(nameof(DialogContext), new Dictionary<string, object>
+                {
+                    { nameof(ActiveDialog), this.ActiveDialog?.Id },
+                    { nameof(Parent), this.Parent?.ActiveDialog?.Id },
+                    { nameof(Stack), stack },
+                    { nameof(State), this.State.GetMemorySnapshot() }
+                });
             }
         }
     }

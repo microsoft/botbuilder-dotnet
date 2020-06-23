@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 if (key.IndexOfAny(Separators) == -1)
                 {
                     // Root is handled by SetMemory rather than SetValue
-                    var scope = GetMemoryScope(key) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(key));
+                    var scope = GetMemoryScope(key) ?? throw new ArgumentOutOfRangeException(nameof(key), GetBadScopeMessage(key));
                     scope.SetMemory(this.dialogContext, JToken.FromObject(value));
                 }
                 else
@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             MemoryScope memoryScope = null;
             string remainingPath;
-            
+
             try
             {
                 memoryScope = ResolveMemoryScope(path, out remainingPath);
