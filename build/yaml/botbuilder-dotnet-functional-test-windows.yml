@@ -59,7 +59,7 @@ steps:
     scriptLocation: inlineScript
     inlineScript: |
      call az group create --location westus --name $(BotGroup)
-     call az deployment create --name "$(WinTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template.json" --location "westus" --parameters appId=$(WinTestBotAppId) appSecret="$(WinTestBotAppSecret)" botId="$(WinTestBotBotName)" botSku=F0 newAppServicePlanName="$(WinTestBotBotName)" newWebAppName="$(WinTestBotBotName)" groupName="$(WinTestBotBotGroup)" groupLocation="westus" newAppServicePlanLocation="westus"
+     call az deployment group create --resource-group "$(WinTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-preexisting-rg.json" --parameters appId=$(WinTestBotAppId) appSecret="$(WinTestBotAppSecret)" botId="$(WinTestBotBotName)" botSku=F0 newAppServicePlanName="$(WinTestBotBotName)" newWebAppName="$(WinTestBotBotName)" appServicePlanLocation="westus" --name "$(WinTestBotBotName)"
      call az webapp deployment source config-zip --resource-group "$(WinTestBotBotGroup)" --name "$(WinTestBotBotName)" --src "$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot\PublishedBot.zip"
      call az bot directline create -n "$(WinTestBotBotName)" -g "$(WinTestBotBotGroup)" > "$(System.DefaultWorkingDirectory)\DirectLineCreate.json"
 
