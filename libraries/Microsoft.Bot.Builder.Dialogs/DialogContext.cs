@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             : this(dialogs, parentDialogContext.Context, state)
         {
             Parent = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
-            
+
             if (Parent.Services != null)
             {
                 // copy parent services into this dialogcontext.
@@ -175,33 +175,44 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="Dialog.BeginDialogAsync(DialogContext, object, CancellationToken)"/>
         public async Task<DialogTurnResult> BeginDialogAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (string.IsNullOrEmpty(dialogId))
+            try
             {
-                throw new ArgumentNullException(nameof(dialogId));
+                if (string.IsNullOrEmpty(dialogId))
+                {
+                    throw new ArgumentNullException(nameof(dialogId));
+                }
+
+                // Look up dialog
+                var dialog = FindDialog(dialogId);
+                if (dialog == null)
+                {
+                    throw new Exception(
+                        $"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found." +
+                        " The dialog must be included in the current or parent DialogSet." +
+                        " For example, if subclassing a ComponentDialog you can call AddDialog() within your constructor.");
+                }
+
+                // Push new instance onto stack
+                var instance = new DialogInstance
+                {
+                    Id = dialogId,
+                    State = new Dictionary<string, object>(),
+                };
+
+                Stack.Insert(0, instance);
+
+                // Call dialog's BeginAsync() method
+                await this.DebuggerStepAsync(dialog, DialogEvents.BeginDialog, cancellationToken).ConfigureAwait(false);
+                return await dialog.BeginDialogAsync(this, options: options, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-
-            // Look up dialog
-            var dialog = FindDialog(dialogId);
-            if (dialog == null)
+            catch (DialogException)
             {
-                throw new Exception(
-                    $"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found." +
-                    " The dialog must be included in the current or parent DialogSet." +
-                    " For example, if subclassing a ComponentDialog you can call AddDialog() within your constructor.");
+                throw;
             }
-
-            // Push new instance onto stack
-            var instance = new DialogInstance
+            catch (Exception err)
             {
-                Id = dialogId,
-                State = new Dictionary<string, object>(),
-            };
-
-            Stack.Insert(0, instance);
-
-            // Call dialog's BeginAsync() method
-            await this.DebuggerStepAsync(dialog, DialogEvents.BeginDialog, cancellationToken).ConfigureAwait(false);
-            return await dialog.BeginDialogAsync(this, options: options, cancellationToken: cancellationToken).ConfigureAwait(false);
+                throw new DialogException(this, err.Message, err);
+            }
         }
 
         /// <summary>
@@ -220,17 +231,28 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="Prompt{T}.BeginDialogAsync(DialogContext, object, CancellationToken)"/>
         public async Task<DialogTurnResult> PromptAsync(string dialogId, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (string.IsNullOrEmpty(dialogId))
+            try
             {
-                throw new ArgumentNullException(nameof(dialogId));
-            }
+                if (string.IsNullOrEmpty(dialogId))
+                {
+                    throw new ArgumentNullException(nameof(dialogId));
+                }
 
-            if (options == null)
+                if (options == null)
+                {
+                    throw new ArgumentNullException(nameof(options));
+                }
+
+                return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
+            }
+            catch (DialogException)
             {
-                throw new ArgumentNullException(nameof(options));
+                throw;
             }
-
-            return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
+            catch (Exception err)
+            {
+                throw new DialogException(this, err.Message, err);
+            }
         }
 
         /// <summary>
@@ -250,33 +272,44 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="Dialog.ContinueDialogAsync(DialogContext, CancellationToken)"/>
         public async Task<DialogTurnResult> ContinueDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            // if we are continuing and haven't emitted the activityReceived event, emit it
-            // NOTE: This is backward compatible way for activity received to be fired even if you have legacy dialog loop
-            if (!this.Context.TurnState.ContainsKey("activityReceivedEmitted"))
+            try
             {
-                this.Context.TurnState["activityReceivedEmitted"] = true;
-
-                // Dispatch "activityReceived" event
-                // - This will queue up any interruptions.
-                await this.EmitEventAsync(DialogEvents.ActivityReceived, value: this.Context.Activity, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-
-            if (this.ActiveDialog != null)
-            {
-                // Lookup dialog
-                var dialog = this.FindDialog(this.ActiveDialog.Id);
-
-                if (dialog == null)
+                // if we are continuing and haven't emitted the activityReceived event, emit it
+                // NOTE: This is backward compatible way for activity received to be fired even if you have legacy dialog loop
+                if (!this.Context.TurnState.ContainsKey("activityReceivedEmitted"))
                 {
-                    throw new Exception($"Failed to continue dialog. A dialog with id {this.ActiveDialog.Id} could not be found.");
+                    this.Context.TurnState["activityReceivedEmitted"] = true;
+
+                    // Dispatch "activityReceived" event
+                    // - This will queue up any interruptions.
+                    await this.EmitEventAsync(DialogEvents.ActivityReceived, value: this.Context.Activity, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
 
-                // Continue dialog execution
-                return await dialog.ContinueDialogAsync(this, cancellationToken).ConfigureAwait(false);
+                if (this.ActiveDialog != null)
+                {
+                    // Lookup dialog
+                    var dialog = this.FindDialog(this.ActiveDialog.Id);
+
+                    if (dialog == null)
+                    {
+                        throw new Exception($"Failed to continue dialog. A dialog with id {this.ActiveDialog.Id} could not be found.");
+                    }
+
+                    // Continue dialog execution
+                    return await dialog.ContinueDialogAsync(this, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    return new DialogTurnResult(DialogTurnStatus.Empty);
+                }
             }
-            else
+            catch (DialogException)
             {
-                return new DialogTurnResult(DialogTurnStatus.Empty);
+                throw;
+            }
+            catch (Exception err)
+            {
+                throw new DialogException(this, err.Message, err);
             }
         }
 
@@ -311,31 +344,42 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="Dialog.EndDialogAsync(ITurnContext, DialogInstance, DialogReason, CancellationToken)"/>
         public async Task<DialogTurnResult> EndDialogAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (result is CancellationToken)
+            try
             {
-                throw new ArgumentException($"{this.ActiveDialog.Id}.EndDialogAsync() You can't pass a cancellation token as the result of a dialog when calling EndDialog.");
-            }
-
-            // End the active dialog
-            await EndActiveDialogAsync(DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            // Resume parent dialog
-            if (ActiveDialog != null)
-            {
-                // Lookup dialog
-                var dialog = this.FindDialog(ActiveDialog.Id);
-                if (dialog == null)
+                if (result is CancellationToken)
                 {
-                    throw new Exception($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                    throw new ArgumentException($"{this.ActiveDialog.Id}.EndDialogAsync() You can't pass a cancellation token as the result of a dialog when calling EndDialog.");
                 }
 
-                // Return result to previous dialog
-                await this.DebuggerStepAsync(dialog, "ResumeDialog", cancellationToken).ConfigureAwait(false);
-                return await dialog.ResumeDialogAsync(this, DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
+                // End the active dialog
+                await EndActiveDialogAsync(DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                // Resume parent dialog
+                if (ActiveDialog != null)
+                {
+                    // Lookup dialog
+                    var dialog = this.FindDialog(ActiveDialog.Id);
+                    if (dialog == null)
+                    {
+                        throw new Exception($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                    }
+
+                    // Return result to previous dialog
+                    await this.DebuggerStepAsync(dialog, "ResumeDialog", cancellationToken).ConfigureAwait(false);
+                    return await dialog.ResumeDialogAsync(this, DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    return new DialogTurnResult(DialogTurnStatus.Complete, result);
+                }
             }
-            else
+            catch (DialogException)
             {
-                return new DialogTurnResult(DialogTurnStatus.Complete, result);
+                throw;
+            }
+            catch (Exception err)
+            {
+                throw new DialogException(this, err.Message, err);
             }
         }
 
@@ -357,7 +401,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
         public async Task<DialogTurnResult> CancelAllDialogsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.CancelAllDialogsAsync(false, eventName: null, eventValue: null, cancellationToken: cancellationToken).ConfigureAwait(false);
+            try
+            {
+                return await this.CancelAllDialogsAsync(false, eventName: null, eventValue: null, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            catch (DialogException)
+            {
+                throw;
+            }
+            catch (Exception err)
+            {
+                throw new DialogException(this, err.Message, err);
+            }
         }
 
         /// <summary>
@@ -381,51 +436,62 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
         public async Task<DialogTurnResult> CancelAllDialogsAsync(bool cancelParents, string eventName = null, object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (eventValue is CancellationToken)
+            try
             {
-                throw new ArgumentException($"{nameof(eventValue)} cannot be a cancellation token");
-            }
-
-            eventName = eventName ?? DialogEvents.CancelDialog;
-
-            if (Stack.Any() || Parent != null)
-            {
-                // Cancel all local and parent dialogs while checking for interception
-                var notify = false;
-                var dialogContext = this;
-
-                while (dialogContext != null)
+                if (eventValue is CancellationToken)
                 {
-                    if (dialogContext.Stack.Any())
-                    {
-                        // Check to see if the dialog wants to handle the event
-                        if (notify)
-                        {
-                            var eventHandled = await dialogContext.EmitEventAsync(eventName, eventValue, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-                            if (eventHandled)
-                            {
-                                break;
-                            }
-                        }
-
-                        // End the active dialog
-                        await dialogContext.EndActiveDialogAsync(DialogReason.CancelCalled).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        dialogContext = cancelParents ? dialogContext.Parent : null;
-                    }
-
-                    notify = true;
+                    throw new ArgumentException($"{nameof(eventValue)} cannot be a cancellation token");
                 }
 
-                return new DialogTurnResult(DialogTurnStatus.Cancelled);
+                eventName = eventName ?? DialogEvents.CancelDialog;
+
+                if (Stack.Any() || Parent != null)
+                {
+                    // Cancel all local and parent dialogs while checking for interception
+                    var notify = false;
+                    var dialogContext = this;
+
+                    while (dialogContext != null)
+                    {
+                        if (dialogContext.Stack.Any())
+                        {
+                            // Check to see if the dialog wants to handle the event
+                            if (notify)
+                            {
+                                var eventHandled = await dialogContext.EmitEventAsync(eventName, eventValue, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                                if (eventHandled)
+                                {
+                                    break;
+                                }
+                            }
+
+                            // End the active dialog
+                            await dialogContext.EndActiveDialogAsync(DialogReason.CancelCalled).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            dialogContext = cancelParents ? dialogContext.Parent : null;
+                        }
+
+                        notify = true;
+                    }
+
+                    return new DialogTurnResult(DialogTurnStatus.Cancelled);
+                }
+                else
+                {
+                    // Stack was empty and no parent
+                    return new DialogTurnResult(DialogTurnStatus.Empty);
+                }
             }
-            else
+            catch (DialogException)
             {
-                // Stack was empty and no parent
-                return new DialogTurnResult(DialogTurnStatus.Empty);
+                throw;
+            }
+            catch (Exception err)
+            {
+                throw new DialogException(this, err.Message, err);
             }
         }
 
@@ -444,18 +510,29 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
         public async Task<DialogTurnResult> ReplaceDialogAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (options is CancellationToken)
+            try
             {
-                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+                if (options is CancellationToken)
+                {
+                    throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+                }
+
+                // End the current dialog and giving the reason.
+                await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                ObjectPath.SetPathValue(this.Context.TurnState, "turn.__repeatDialogId", dialogId);
+
+                // Start replacement dialog
+                return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
             }
-
-            // End the current dialog and giving the reason.
-            await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            ObjectPath.SetPathValue(this.Context.TurnState, "turn.__repeatDialogId", dialogId);
-
-            // Start replacement dialog
-            return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
+            catch (DialogException)
+            {
+                throw;
+            }
+            catch (Exception err)
+            {
+                throw new DialogException(this, err.Message, err);
+            }
         }
 
         /// <summary>
@@ -469,25 +546,36 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="Dialog.RepromptDialogAsync(ITurnContext, DialogInstance, CancellationToken)"/>
         public async Task RepromptDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Emit 'RepromptDialog' event
-            var handled = await EmitEventAsync(name: DialogEvents.RepromptDialog, value: null, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            if (!handled)
+            try
             {
-                // Check for a dialog on the stack
-                if (ActiveDialog != null)
-                {
-                    // Lookup dialog
-                    var dialog = this.FindDialog(ActiveDialog.Id);
-                    if (dialog == null)
-                    {
-                        throw new Exception($"DialogSet.RepromptDialogAsync(): Can't find A dialog with an id of '{ActiveDialog.Id}'.");
-                    }
+                // Emit 'RepromptDialog' event
+                var handled = await EmitEventAsync(name: DialogEvents.RepromptDialog, value: null, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                    // Ask dialog to re-prompt if supported
-                    await this.DebuggerStepAsync(dialog, DialogEvents.RepromptDialog, cancellationToken).ConfigureAwait(false);
-                    await dialog.RepromptDialogAsync(Context, ActiveDialog, cancellationToken).ConfigureAwait(false);
+                if (!handled)
+                {
+                    // Check for a dialog on the stack
+                    if (ActiveDialog != null)
+                    {
+                        // Lookup dialog
+                        var dialog = this.FindDialog(ActiveDialog.Id);
+                        if (dialog == null)
+                        {
+                            throw new Exception($"DialogSet.RepromptDialogAsync(): Can't find A dialog with an id of '{ActiveDialog.Id}'.");
+                        }
+
+                        // Ask dialog to re-prompt if supported
+                        await this.DebuggerStepAsync(dialog, DialogEvents.RepromptDialog, cancellationToken).ConfigureAwait(false);
+                        await dialog.RepromptDialogAsync(Context, ActiveDialog, cancellationToken).ConfigureAwait(false);
+                    }
                 }
+            }
+            catch (DialogException)
+            {
+                throw;
+            }
+            catch (Exception err)
+            {
+                throw new DialogException(this, err.Message, err);
             }
         }
 
@@ -498,21 +586,32 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>dialog with that id.</returns>
         public Dialog FindDialog(string dialogId)
         {
-            if (this.Dialogs != null)
+            try
             {
-                var dialog = this.Dialogs.Find(dialogId);
-                if (dialog != null)
+                if (this.Dialogs != null)
                 {
-                    return dialog;
+                    var dialog = this.Dialogs.Find(dialogId);
+                    if (dialog != null)
+                    {
+                        return dialog;
+                    }
                 }
-            }
 
-            if (this.Parent != null)
+                if (this.Parent != null)
+                {
+                    return this.Parent.FindDialog(dialogId);
+                }
+
+                return null;
+            }
+            catch (DialogException)
             {
-                return this.Parent.FindDialog(dialogId);
+                throw;
             }
-
-            return null;
+            catch (Exception err)
+            {
+                throw new DialogException(this, err.Message, err);
+            }
         }
 
         /// <summary>
@@ -527,49 +626,60 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>True if the event was handled.</returns>
         public async Task<bool> EmitEventAsync(string name, object value = null, bool bubble = true, bool fromLeaf = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Initialize event
-            var dialogEvent = new DialogEvent()
+            try
             {
-                Bubble = bubble,
-                Name = name,
-                Value = value,
-            };
-
-            var dc = this;
-
-            // Find starting dialog
-            if (fromLeaf)
-            {
-                while (true)
+                // Initialize event
+                var dialogEvent = new DialogEvent()
                 {
-                    var childDc = dc.Child;
+                    Bubble = bubble,
+                    Name = name,
+                    Value = value,
+                };
 
-                    if (childDc != null)
+                var dc = this;
+
+                // Find starting dialog
+                if (fromLeaf)
+                {
+                    while (true)
                     {
-                        dc = childDc;
-                    }
-                    else
-                    {
-                        break;
+                        var childDc = dc.Child;
+
+                        if (childDc != null)
+                        {
+                            dc = childDc;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
-            }
 
-            // Dispatch to active dialog first
-            var instance = dc.ActiveDialog;
+                // Dispatch to active dialog first
+                var instance = dc.ActiveDialog;
 
-            if (instance != null)
-            {
-                var dialog = dc.FindDialog(instance.Id);
-
-                if (dialog != null)
+                if (instance != null)
                 {
-                    await this.DebuggerStepAsync(dialog, name, cancellationToken).ConfigureAwait(false);
-                    return await dialog.OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
-                }
-            }
+                    var dialog = dc.FindDialog(instance.Id);
 
-            return false;
+                    if (dialog != null)
+                    {
+                        await this.DebuggerStepAsync(dialog, name, cancellationToken).ConfigureAwait(false);
+                        return await dialog.OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+
+                return false;
+            }
+            catch (DialogException)
+            {
+                throw;
+            }
+            catch (Exception err)
+            {
+                throw new DialogException(this, err.Message, err);
+            }
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
