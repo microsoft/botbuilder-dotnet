@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -33,13 +34,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogOptions = new SkillDialogOptions();
             var sut = new SkillDialog(dialogOptions);
             var client = new DialogTestClient(Channels.Test, sut);
-            await Assert.ThrowsExceptionAsync<DialogException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "null options should fail");
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "null options should fail");
 
             client = new DialogTestClient(Channels.Test, sut, new Dictionary<string, string>());
-            await Assert.ThrowsExceptionAsync<DialogException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "options should be of type DialogArgs");
+            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "options should be of type DialogArgs");
 
             client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions());
-            await Assert.ThrowsExceptionAsync<DialogException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "Activity in DialogArgs should be set");
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "Activity in DialogArgs should be set");
         }
 
         [TestMethod]
@@ -207,7 +208,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
             // Send something to the dialog 
-            await Assert.ThrowsExceptionAsync<DialogException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"));
+            await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"));
         }
 
         [TestMethod]

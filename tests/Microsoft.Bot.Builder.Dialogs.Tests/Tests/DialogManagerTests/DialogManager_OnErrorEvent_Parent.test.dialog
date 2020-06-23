@@ -65,11 +65,11 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "${turn.dialogEvent.value.activedialog}"
+                        "activity": "${turn.dialogEvent.value.data.dialogcontext.activedialog}"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "${turn.dialogEvent.value.parent}"
+                        "activity": "${turn.dialogEvent.value.data.dialogcontext.parent}"
                     }
                 ]
             },
@@ -103,7 +103,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Specified argument was out of the range of valid values.\nParameter name: 'foo' does not match memory scopes:[turn,settings,dialog,dialogContext,dialogclass,class,this,conversation,user]"
+            "text": "'foo' does not match memory scopes:[turn,settings,dialog,dialogContext,dialogclass,class,this,conversation,user]"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
