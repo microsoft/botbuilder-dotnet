@@ -79,11 +79,6 @@ namespace AdaptiveExpressions
         private static readonly CultureInfo Locale = CultureInfo.InvariantCulture;
 
         /// <summary>
-        /// The Path stores the locale info in memory.
-        /// </summary>
-        private static readonly string LocaleMemoryPath = "turn.activity.locale";
-
-        /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
         /// </summary>
         /// <param name="value">Value to verify.</param>
@@ -845,7 +840,7 @@ namespace AdaptiveExpressions
                     
                     if (error == null)
                     {
-                        (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 4);
+                        (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
                     }
 
                     if (error == null)
@@ -2231,16 +2226,6 @@ namespace AdaptiveExpressions
             return (parsed, error);
         }
 
-        private static string EvaluateLocale(IMemory state)
-        {
-            if (state.TryGetValue(LocaleMemoryPath, out var locale))
-            {
-                return locale as string;
-            }
-
-            return null;
-        }
-
         private static (CultureInfo, string) TryParseLocale(string localeStr)
         {
             CultureInfo result = null;
@@ -2257,7 +2242,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (string, CultureInfo, string) DetermineFormatAndLocale(IMemory state, IReadOnlyList<object> args, string format, CultureInfo locale, int maxArgsLength)
+        private static (string, CultureInfo, string) DetermineFormatAndLocale(IReadOnlyList<object> args, string format, CultureInfo locale, int maxArgsLength)
         {
             string error = null;
             if (maxArgsLength >= 2)
@@ -2270,14 +2255,14 @@ namespace AdaptiveExpressions
                 else if (args.Count == maxArgsLength - 1)
                 {
                     format = args[maxArgsLength - 2] as string;
-                    (locale, error) = DetermineLocaleFromThreadLocalStorageAndMemory(state);
+                    locale = Thread.CurrentThread.CurrentCulture;
                 }
             }            
 
             return (format, locale, error);
         }
 
-        private static (CultureInfo, string) DetermineLocale(IMemory state, IReadOnlyList<object> args, CultureInfo locale, int maxArgsLength)
+        private static (CultureInfo, string) DetermineLocale(IReadOnlyList<object> args, CultureInfo locale, int maxArgsLength)
         {
             string error = null;
             if (maxArgsLength >= 2)
@@ -2288,7 +2273,7 @@ namespace AdaptiveExpressions
                 }
                 else if (args.Count == maxArgsLength - 1)
                 {
-                    (locale, error) = DetermineLocaleFromThreadLocalStorageAndMemory(state);
+                    locale = Thread.CurrentThread.CurrentCulture;
                 }
             }
 
@@ -2856,38 +2841,6 @@ namespace AdaptiveExpressions
             return result;
         }
 
-        private static (CultureInfo, string) DetermineLocaleFromThreadLocalStorageAndMemory(IMemory state)
-        {
-            string locale = EvaluateLocale(state);
-            var localeInThreadLocalStorage = Thread.GetData(Thread.GetNamedDataSlot("locale"));
-            string error = null;
-            var result = Locale;
-            if (localeInThreadLocalStorage != null)
-            {
-                try
-                {
-                    result = new CultureInfo(localeInThreadLocalStorage as string);
-                }
-                catch
-                {
-                    error = $"{localeInThreadLocalStorage} stored in thread local storage is not a valid locale string";
-                }
-            }
-            else if (locale != null)
-            {
-                try
-                {
-                    result = new CultureInfo(locale);
-                }
-                catch
-                {
-                    error = $"{locale} stored in turn.activity.locale is not a valid locale string";
-                }
-            }
-
-            return (result, error);
-        }
-
         private static IDictionary<string, ExpressionEvaluator> GetStandardFunctions()
         {
             var functions = new List<ExpressionEvaluator>
@@ -3397,7 +3350,7 @@ namespace AdaptiveExpressions
                                     string result = null;
                                     string error = null;
                                     CultureInfo locale = null;
-                                    (locale, error) = DetermineLocale(state, args, locale, 2);
+                                    (locale, error) = DetermineLocale(args, locale, 2);
                                     
                                     if (error == null)
                                     {
@@ -3420,7 +3373,7 @@ namespace AdaptiveExpressions
                                     string result = null;
                                     string error = null;
                                     CultureInfo locale = null;
-                                    (locale, error) = DetermineLocale(state, args, locale, 2);
+                                    (locale, error) = DetermineLocale(args, locale, 2);
 
                                     if (error == null)
                                     {
@@ -3612,7 +3565,7 @@ namespace AdaptiveExpressions
                                     string result = null;
                                     string error = null;
                                     CultureInfo locale = null;
-                                    (locale, error) = DetermineLocale(state, args, locale, 2);
+                                    (locale, error) = DetermineLocale(args, locale, 2);
 
                                     if (error == null)
                                     {
@@ -3636,7 +3589,7 @@ namespace AdaptiveExpressions
                                     string result = null;
                                     string error = null;
                                     CultureInfo locale = null;
-                                    (locale, error) = DetermineLocale(state, args, locale, 2);
+                                    (locale, error) = DetermineLocale(args, locale, 2);
 
                                     if (error == null)
                                     {
@@ -3699,7 +3652,7 @@ namespace AdaptiveExpressions
                             string format = DefaultDateTimeFormat;
                             object result = null;
                             CultureInfo locale = null;
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 2);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 2);
                             result = DateTime.UtcNow.ToString(format, locale);
 
                             return (result, error);
@@ -3716,7 +3669,7 @@ namespace AdaptiveExpressions
                             var timestamp = args[0];
                             var format = DefaultDateTimeFormat;
                             CultureInfo locale = null;
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
                             
                             if (error == null)
                             {
@@ -3748,7 +3701,7 @@ namespace AdaptiveExpressions
                             var timestamp = args[0];
                             var format = DefaultDateTimeFormat;
                             CultureInfo locale = null;
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
                             if (error == null)
                             {
                                 if (timestamp.IsNumber())
@@ -3777,7 +3730,7 @@ namespace AdaptiveExpressions
                             var timestamp = args[0];
                             var format = DefaultDateTimeFormat;
                             CultureInfo locale = null;
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
                             if (error == null) 
                             {
                                 if (timestamp.IsInteger())
@@ -3809,7 +3762,7 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 5);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 5);
                         }
 
                         if (error == null)
@@ -3911,7 +3864,7 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 4);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
                         }
                         
                         if (error == null)
@@ -3947,7 +3900,7 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 4);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
                         }
 
                         if (error == null)
@@ -3984,7 +3937,7 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 4);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
                         }
 
                         if (error == null)
@@ -4015,12 +3968,12 @@ namespace AdaptiveExpressions
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
-                            (locale, error) = DetermineLocaleFromThreadLocalStorageAndMemory(state);
+                            locale = Thread.CurrentThread.CurrentCulture;
                         }
 
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 4);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
                         }
 
                         if (error == null)
@@ -4052,7 +4005,7 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 5);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 5);
                         }
 
                         if (error == null)
@@ -4084,7 +4037,7 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
                         }
 
                         if (error == null)
@@ -4109,7 +4062,7 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
                         }
 
                         if (error == null)
@@ -4134,7 +4087,7 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
-                            (format, locale, error) = DetermineFormatAndLocale(state, args, format, locale, 3);
+                            (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
                         }
 
                         if (error == null)
@@ -4626,7 +4579,7 @@ namespace AdaptiveExpressions
                                 }
                                 else
                                 {                                    
-                                    (locale, error) = DetermineLocale(state, args, locale, 2);
+                                    (locale, error) = DetermineLocale(args, locale, 2);
                                 }
                             }
 
@@ -4675,7 +4628,7 @@ namespace AdaptiveExpressions
                             
                             if (error == null)
                             {
-                                (locale, error) = DetermineLocale(state, args, locale, 3);
+                                (locale, error) = DetermineLocale(args, locale, 3);
                             }
                             
                             if (error == null)
