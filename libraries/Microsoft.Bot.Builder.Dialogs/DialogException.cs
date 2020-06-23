@@ -68,7 +68,24 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             this.ActiveDialog = dialogContext.ActiveDialog;
             this.Parent = dialogContext.Parent?.ActiveDialog;
-            this.Stack = dialogContext.Stack;
+
+            this.Stack = new List<DialogInstance>();
+            var currentDc = dialogContext;
+
+            while (currentDc != null)
+            {
+                // (PORTERS NOTE: javascript stack is reversed with top of stack on end)
+                foreach (var item in currentDc.Stack)
+                {
+                    // filter out ActionScope items because they are internal bookkeeping.
+                    if (!item.Id.StartsWith("ActionScope["))
+                    {
+                        this.Stack.Add(item);
+                    }
+                }
+
+                currentDc = currentDc.Parent;
+            }
 
             // put state snapshot into data.
             foreach (var memory in dialogContext.State.GetMemorySnapshot())
