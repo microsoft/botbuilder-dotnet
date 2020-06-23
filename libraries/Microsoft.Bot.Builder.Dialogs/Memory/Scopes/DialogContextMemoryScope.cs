@@ -2,9 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
@@ -19,6 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </remarks>
     public class DialogContextMemoryScope : MemoryScope
     {
+        public const string Stack = "stack";
+        public const string ActiveDialog = "activeDialog";
+        public const string Parent = "parent";
+
         public DialogContextMemoryScope()
             : base(ScopePath.DialogContext, includeInSnapshot: false)
         {
@@ -34,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             var memory = new JObject();
             JArray stack = new JArray();
             var currentDc = dc;
-            
+
             // go to leaf node
             while (currentDc.Child != null)
             {
@@ -57,9 +58,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             }
 
             // top of stack is stack[0]. 
-            memory["stack"] = stack;
-            memory["activeDialog"] = dc.ActiveDialog?.Id;
-            memory["parent"] = dc.Parent?.ActiveDialog?.Id;
+            memory[Stack] = stack;
+            memory[ActiveDialog] = dc.ActiveDialog?.Id;
+            memory[Parent] = dc.Parent?.ActiveDialog?.Id;
             return memory;
         }
 
