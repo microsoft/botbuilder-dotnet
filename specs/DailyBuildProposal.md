@@ -8,13 +8,15 @@ This proposal describes our plan to publish daily builds for consumption. The go
 Use the [ASP.Net Team](https://github.com/dotnet/aspnetcore/blob/master/docs/DailyBuilds.md) as inspiration, and draft off the work they do. 
 
 # Versioning
-Move to semver2. This [file in ASp.Net Core](https://github.com/dotnet/aspnetcore/blob/3787d7e7f070543cc9368d589a504fa8c4bd4830/eng/Versions.props) can be looked at to learn more. 
+Move to semver2 and use "." rather than "-" to follow semver2 sorting rules. This [file in ASp.Net Core](https://github.com/dotnet/aspnetcore/blob/3787d7e7f070543cc9368d589a504fa8c4bd4830/eng/Versions.props) can be looked at to learn more. 
 
 The tags we use for preview versions are:
-* -preview.<yyyymmdd>.{incrementing value}
-* -rc.{0}
+```
+-daily.<yyyymmdd>.{incrementing value}
+-rc.{incrementing value}
+```
 
-Note: use of "." rather than "-" to follow semver2 sorting rules. 
+Note: We are avoding the "-preview" tag for daily builds as we occasionally release "preview" assemblies that have a final semver moniker of "4.10.0-preview". 
 
 # Daily Builds
 Copying what the ASP.Net team does, all our Nuget packages would be pushed to the SDK_Public project at [fuselabs.visualstudio.com](https://fuselabs.visualstudio.com). 
@@ -46,7 +48,7 @@ To debug daily builds using Visual Studio
 Daily builds older than 90 days are automatically deleted. 
 
 # Summary - Weekly Builds
-Once per week, preferably on a Monday, a daily build is pushed to Nuget.org. This serves 2 purposes:
+Once per week, preferably on a Monday, a daily build is pushed to Nuget.org. This build happens from master, the same as a standard daily build. This serves 2 purposes:
 
 1. Keeps Nuget "Fresh" for people that don't want daily builds.
 2. Keeps the release pipelines active and working, and prevents issues. 
@@ -69,3 +71,6 @@ nuget.exe push -Source "sdk_public_nuget" -ApiKey az <packagePath>
 1. Initially, our daily builds should go to both MyGet and Azure Devops. 
 2. Our docs are updated once builds are in both locations. 
 3. Towards the end of 2020, we stop publising to MyGet.
+
+# Containers
+ASP.Net and .Net Core 5 also publish a container to [Docker Hub](https://hub.docker.com/_/microsoft-dotnet-nightly-aspnet/) as part of their daily feed. We should consider that, along with our samples, in the next iteration of this work. 
