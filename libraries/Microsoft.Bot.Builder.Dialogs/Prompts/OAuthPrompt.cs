@@ -300,7 +300,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             switch (channelId)
             {
-                case Channels.Msteams:
                 case Channels.Cortana:
                 case Channels.Skype:
                 case Channels.Skypeforbusiness:
@@ -570,15 +569,16 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     if (tokenExchangeResponse == null || string.IsNullOrEmpty(tokenExchangeResponse.Token))
                     {
-                        await SendInvokeResponseAsync(
-                            turnContext,
-                            HttpStatusCode.Conflict,
-                            new TokenExchangeInvokeResponse
-                            {
-                                Id = tokenExchangeRequest.Id,
-                                ConnectionName = _settings.ConnectionName,
-                                FailureDetail = "The bot is unable to exchange token. Proceed with regular login.",
-                            }, cancellationToken).ConfigureAwait(false);
+                        await this.SendInvokeResponseAsync(
+                           turnContext,
+                           cancellationToken,
+                           HttpStatusCode.PreconditionFailed,
+                           new TokenExchangeInvokeResponse()
+                           {
+                               Id = tokenExchangeRequest.Id,
+                               ConnectionName = _settings.ConnectionName,
+                               FailureDetail = "The bot is unable to exchange token. Proceed with regular login.",
+                           }).ConfigureAwait(false);
                     }
                     else
                     {
