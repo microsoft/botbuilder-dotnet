@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Memory;
 using Antlr4.Runtime;
@@ -444,7 +445,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
             var parse = this.ExpressionParser.Parse(exp);
-            var opt = new Options();
+            var opt = new Options() { Locale = Thread.CurrentThread.CurrentCulture };
             opt.NullSubstitution = lgOptions.NullSubstitution;
             return parse.TryEvaluate(scope, opt);
         }

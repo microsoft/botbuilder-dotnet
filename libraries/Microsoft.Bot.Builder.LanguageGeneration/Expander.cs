@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using AdaptiveExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
@@ -458,7 +459,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
             string error;
             object value;
-            (value, error) = parse.TryEvaluate(scope);
+            var opt = new Options() { Locale = Thread.CurrentThread.CurrentCulture };
+            opt.NullSubstitution = lgOptions.NullSubstitution;
+            (value, error) = parse.TryEvaluate(scope, opt);
 
             return (value, error);
         }
