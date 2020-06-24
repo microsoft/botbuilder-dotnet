@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Fallback\datetime.dialog" />
     <None Remove="Fallback\inject.dialog" />
+    <None Remove="Fallback\locale.dialog" />
     <None Remove="Fallback\test.dialog" />
     <None Remove="lg\inject.lg" />
   </ItemGroup>
@@ -51,6 +52,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Fallback\inject.dialog">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Fallback\locale.dialog">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Fallback\test.dialog">
