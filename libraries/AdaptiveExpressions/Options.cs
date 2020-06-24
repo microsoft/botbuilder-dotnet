@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Threading;
 
 namespace AdaptiveExpressions
 {
@@ -10,7 +12,7 @@ namespace AdaptiveExpressions
         public Options()
         {
             this.NullSubstitution = null;
-            this.Locale = string.Empty;
+            this.Locale = null;
         }
 
         public Options(Options opt)
@@ -28,11 +30,11 @@ namespace AdaptiveExpressions
         public Func<string, object> NullSubstitution { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets a value, a string of locale info.
+        /// Gets or sets a value, a locale of CultureInfo.
         /// </summary>
         /// <value>
         /// The locale info.
         /// </value>
-        public string Locale { get; set; } = string.Empty;
+        public CultureInfo Locale { get; set; } = null;
     }
 }

@@ -209,10 +209,6 @@ namespace AdaptiveExpressions.Tests
                                 }
                             }
                         }
-                    },
-                    activity = new
-                    {
-                        locale = "en-US"
                     }
                 }
             },
@@ -323,15 +319,15 @@ namespace AdaptiveExpressions.Tests
             Test("replace(formatDateTime('2018-03-15', '', 'de-DE'), '20', '')", "15.03.18 00:00:00"),
             Test("substring(getFutureTime(1,'Year', '', 'de-DE'), 0, 10)", DateTime.UtcNow.AddYears(1).ToString(new CultureInfo("de-DE")).Substring(0, 10)),
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
-            Test("toUpper('lowercase')", "LOWERCASE"),
+            Test("toUpper('lowercase', 'en-US')", "LOWERCASE"),
             Test("toLower('I AM WHAT I AM', 'fr-FR')", "i am what i am"),
             Test("string(user.income, 'fr-FR')", "100,1"),
-            Test("string(user.income)", "100.1"),
+            Test("string(user.income, 'en-US')", "100.1"),
             Test("sentenceCase('a', 'fr-FR')", "A"),
-            Test("sentenceCase('abc')", "Abc"),
+            Test("sentenceCase('abc', 'en-US')", "Abc"),
             Test("sentenceCase('aBC', 'fr-FR')", "Abc"),
-            Test("titleCase('a')", "A"),
-            Test("titleCase('abc dEF')", "Abc Def"),
+            Test("titleCase('a', 'en-US')", "A"),
+            Test("titleCase('abc dEF', 'en-US')", "Abc Def"),
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
@@ -689,9 +685,9 @@ namespace AdaptiveExpressions.Tests
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
             Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
             Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
-            Test("formatNumber(20.0000, 2)", "20.00"),
-            Test("formatNumber(12.123, 2)", "12.12"),
-            Test("formatNumber(1.551, 2)", "1.55"),
+            Test("formatNumber(20.0000, 2, 'en-US')", "20.00"),
+            Test("formatNumber(12.123, 2, 'en-US')", "12.12"),
+            Test("formatNumber(1.551, 2, 'en-US')", "1.55"),
             Test("formatNumber(12.123, 4, 'de-DE')", "12,1230"),
             Test("formatNumber(12000.3, 4, 'fr-fr')", "12\x00a0000,3000"),
             #endregion
@@ -816,11 +812,11 @@ namespace AdaptiveExpressions.Tests
             Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.UtcNow.AddMonths(1).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.UtcNow.AddDays(7).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.UtcNow.AddDays(1).ToString("MM-dd-yy")),
-            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D')", "Monday, January 1, 2018"),
-            Test("convertFromUTC(timestampObj2, 'Pacific Standard Time', 'D')", "Monday, January 1, 2018"),
-            Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D')", "Monday, January 1, 2018"),
+            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D', 'en-US')", "Monday, January 1, 2018"),
+            Test("convertFromUTC(timestampObj2, 'Pacific Standard Time', 'D', 'en-US')", "Monday, January 1, 2018"),
+            Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D', 'en-US')", "Monday, January 1, 2018"),
             Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time')", "2018-01-01T08:00:00.000Z"),
-            Test("addToTime('2018-01-01T08:00:00.000Z', 1, 'Day', 'D')", "Tuesday, January 2, 2018"),
+            Test("addToTime('2018-01-01T08:00:00.000Z', 1, 'Day', 'D', 'en-US')", "Tuesday, January 2, 2018"),
             Test("addToTime('2018-01-01T00:00:00.000Z', 1, 'Week')", "2018-01-08T00:00:00.000Z"),
             Test("addToTime(timestampObj2, 1, 'Week')", "2018-01-09T02:00:00.000Z"),
             Test("startOfDay('2018-03-15T13:30:30.000Z')", "2018-03-15T00:00:00.000Z"),
@@ -1118,7 +1114,8 @@ namespace AdaptiveExpressions.Tests
         {
             var parsed = Expression.Parse(input);
             Assert.NotNull(parsed);
-            var opts = new Options() { Locale = "fr-FR" };
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            var opts = new Options() { Locale = new CultureInfo("fr-FR") };
             var (actual, msg) = parsed.TryEvaluate(scopeForThreadLocale, opts);
             Assert.Null(msg);
             AssertObjectEquals(expected, actual);
@@ -1143,7 +1140,6 @@ namespace AdaptiveExpressions.Tests
             {
                 var originalCuture = Thread.CurrentThread.CurrentCulture;
                 Thread.CurrentThread.CurrentCulture = new CultureInfo(newCultureInfo);
-                Thread.SetData(Thread.GetNamedDataSlot("locale"), null);
                 var parsed = Expression.Parse(input);
                 Assert.NotNull(parsed);
                 var (actual, msg) = parsed.TryEvaluate(scope);
