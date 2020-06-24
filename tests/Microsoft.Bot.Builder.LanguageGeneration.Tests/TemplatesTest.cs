@@ -835,6 +835,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(0, templates.Diagnostics.Count);
             newTemplate = templates[3];
             Assert.AreEqual("newtemplate2", newTemplate.Name);
+            Assert.AreEqual(0, newTemplate.Parameters.Count);
             Assert.AreEqual("- hi2 ", newTemplate.Body);
             Assert.AreEqual(16, newTemplate.SourceRange.Range.Start.Line);
             Assert.AreEqual(17, newTemplate.SourceRange.Range.End.Line);
@@ -862,6 +863,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(0, templates.Diagnostics.Count);
             newTemplate = templates[3];
             Assert.AreEqual("newtemplateName2", newTemplate.Name);
+            Assert.AreEqual(2, newTemplate.Parameters.Count);
             Assert.AreEqual("- new hi\n- #hi2\n", newTemplate.Body.Replace("\r\n", "\n"));
             Assert.AreEqual(17, newTemplate.SourceRange.Range.Start.Line);
             Assert.AreEqual(19, newTemplate.SourceRange.Range.End.Line);
@@ -906,6 +908,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(0, templates.Diagnostics.Count);
             newTemplate = templates[3];
             Assert.AreEqual("newtemplate2", newTemplate.Name);
+            Assert.AreEqual(0, newTemplate.Parameters.Count);
             Assert.AreEqual("- hi2 ", newTemplate.Body);
             Assert.AreEqual(16, newTemplate.SourceRange.Range.Start.Line);
             Assert.AreEqual(17, newTemplate.SourceRange.Range.End.Line);
