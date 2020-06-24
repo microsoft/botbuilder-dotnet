@@ -15,6 +15,14 @@
             "title": "Description",
             "description": "Description of the test script"
         },
+        "httpRequestMocks": {
+            "type": "array",
+            "title": "Http Request Mocks",
+            "description": "Mock data for Microsoft.HttpRequest.",
+            "items": {
+                "$kind": "Microsoft.Test.IHttpRequestMock"
+            }
+        },
         "script": {
             "type": "array",
             "title": "Test actions",

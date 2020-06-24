@@ -53,12 +53,13 @@ steps:
     modifyOutputPath: false
 
 - task: AzureCLI@1
-  displayName: 'Create Resource Group, deploy bot, create DirectLine channel'
+  displayName: 'Create resources, deploy bot, create DirectLine channel'
   inputs:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-     call az deployment create --name "$(WinTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template.json" --location "westus" --parameters appId=$(WinTestBotAppId) appSecret="$(WinTestBotAppSecret)" botId="$(WinTestBotBotName)" botSku=F0 newAppServicePlanName="$(WinTestBotBotName)" newWebAppName="$(WinTestBotBotName)" groupName="$(WinTestBotBotGroup)" groupLocation="westus" newAppServicePlanLocation="westus"
+     call az group create --location westus --name $(WinTestBotBotGroup)
+     call az deployment group create --resource-group "$(WinTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-preexisting-rg.json" --parameters appId=$(WinTestBotAppId) appSecret="$(WinTestBotAppSecret)" botId="$(WinTestBotBotName)" botSku=F0 newAppServicePlanName="$(WinTestBotBotName)" newWebAppName="$(WinTestBotBotName)" appServicePlanLocation="westus" --name "$(WinTestBotBotName)"
      call az webapp deployment source config-zip --resource-group "$(WinTestBotBotGroup)" --name "$(WinTestBotBotName)" --src "$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot\PublishedBot.zip"
      call az bot directline create -n "$(WinTestBotBotName)" -g "$(WinTestBotBotGroup)" > "$(System.DefaultWorkingDirectory)\DirectLineCreate.json"
 
@@ -67,7 +68,9 @@ steps:
    $key = $json.properties.properties.sites.key
    echo "##vso[task.setvariable variable=DIRECTLINE;]$key"
    echo "##vso[task.setvariable variable=BOTID;]$(WinTestBotBotName)"
-  displayName: 'Get Bot Keys'
+   Write-Host "DIRECTLINE=$key";
+   Write-Host "BOTID=$(WinTestBotBotName)";
+  displayName: 'Set up directline keys'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'

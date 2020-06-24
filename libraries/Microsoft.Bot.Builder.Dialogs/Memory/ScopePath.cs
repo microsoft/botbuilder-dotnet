@@ -25,6 +25,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string DialogClass = "dialogclass";
 
         /// <summary>
+        /// DialogContext memory scope root path.
+        /// </summary>
+        public const string DialogContext = "dialogContext";
+
+        /// <summary>
         /// This memory scope root path.
         /// </summary>
         public const string This = "this";

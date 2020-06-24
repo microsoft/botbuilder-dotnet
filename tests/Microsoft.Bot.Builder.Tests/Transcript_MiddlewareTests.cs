@@ -6,16 +6,13 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class Transcript_MiddlewareTests
     {
-        public TestContext TestContext { get; set; }
-
         public static async Task LogActivitiesTest(ITranscriptStore transcriptStore)
         {
             var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
@@ -34,27 +31,27 @@ namespace Microsoft.Bot.Builder.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
                     .AssertReply("echo:foo")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
             await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-            Assert.AreEqual(6, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.IsNotNull(pagedResult.Items[1].AsTypingActivity());
-            Assert.AreEqual("echo:foo", pagedResult.Items[2].AsMessageActivity().Text);
-            Assert.AreEqual("bar", pagedResult.Items[3].AsMessageActivity().Text);
-            Assert.IsNotNull(pagedResult.Items[4].AsTypingActivity());
-            Assert.AreEqual("echo:bar", pagedResult.Items[5].AsMessageActivity().Text);
+            Assert.Equal(6, pagedResult.Items.Length);
+            Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.NotNull(pagedResult.Items[1].AsTypingActivity());
+            Assert.Equal("echo:foo", pagedResult.Items[2].AsMessageActivity().Text);
+            Assert.Equal("bar", pagedResult.Items[3].AsMessageActivity().Text);
+            Assert.NotNull(pagedResult.Items[4].AsTypingActivity());
+            Assert.Equal("echo:bar", pagedResult.Items[5].AsMessageActivity().Text);
             foreach (var activity in pagedResult.Items)
             {
-                Assert.IsTrue(!string.IsNullOrWhiteSpace(activity.Id));
-                Assert.IsTrue(activity.Timestamp > default(DateTimeOffset));
+                Assert.True(!string.IsNullOrWhiteSpace(activity.Id));
+                Assert.True(activity.Timestamp > default(DateTimeOffset));
             }
         }
 
@@ -89,7 +86,7 @@ namespace Microsoft.Bot.Builder.Tests
                  .Send("inbound message to TestFlow")
                     .AssertReply("I am an activity with an Id.")
                  .Send("2nd inbound message to TestFlow")
-                   .AssertReply((activity) => Assert.AreEqual(activity.Id, "TestActivityWithId"))
+                   .AssertReply((activity) => Assert.Equal(activity.Id, "TestActivityWithId"))
                  .Send("3rd inbound message to TestFlow")
                    .AssertReply("My Id is null.")
                  .StartTestAsync();
@@ -97,18 +94,18 @@ namespace Microsoft.Bot.Builder.Tests
             await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-            Assert.AreEqual(12, pagedResult.Items.Length);
-            Assert.AreEqual("inbound message to TestFlow", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.IsNotNull(pagedResult.Items[1].AsMessageActivity());
-            Assert.AreEqual("I am an activity with an Id.", pagedResult.Items[1].AsMessageActivity().Text);
-            Assert.AreEqual("2nd inbound message to TestFlow", pagedResult.Items[4].AsMessageActivity().Text);
-            Assert.AreEqual("TestActivityWithId", pagedResult.Items[5].Id);
-            Assert.AreEqual("3rd inbound message to TestFlow", pagedResult.Items[8].AsMessageActivity().Text);
-            Assert.AreEqual("My Id is null.", pagedResult.Items[11].AsMessageActivity().Text);
-            Assert.IsTrue(pagedResult.Items[11].AsMessageActivity().Id.Contains("g_"));
+            Assert.Equal(12, pagedResult.Items.Length);
+            Assert.Equal("inbound message to TestFlow", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.NotNull(pagedResult.Items[1].AsMessageActivity());
+            Assert.Equal("I am an activity with an Id.", pagedResult.Items[1].AsMessageActivity().Text);
+            Assert.Equal("2nd inbound message to TestFlow", pagedResult.Items[4].AsMessageActivity().Text);
+            Assert.Equal("TestActivityWithId", pagedResult.Items[5].Id);
+            Assert.Equal("3rd inbound message to TestFlow", pagedResult.Items[8].AsMessageActivity().Text);
+            Assert.Equal("My Id is null.", pagedResult.Items[11].AsMessageActivity().Text);
+            Assert.Contains("g_", pagedResult.Items[11].AsMessageActivity().Id);
             foreach (var activity in pagedResult.Items)
             {
-                Assert.IsTrue(activity.Timestamp > default(DateTimeOffset));
+                Assert.True(activity.Timestamp > default(DateTimeOffset));
             }
         }
 
@@ -143,10 +140,10 @@ namespace Microsoft.Bot.Builder.Tests
             await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-            Assert.AreEqual(3, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.AreEqual("new response", pagedResult.Items[1].AsMessageActivity().Text);
-            Assert.AreEqual("update", pagedResult.Items[2].AsMessageActivity().Text);
+            Assert.Equal(3, pagedResult.Items.Length);
+            Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.Equal("new response", pagedResult.Items[1].AsMessageActivity().Text);
+            Assert.Equal("update", pagedResult.Items[2].AsMessageActivity().Text);
         }
 
         public static async Task TestDateLogUpdateActivitiesTest(ITranscriptStore transcriptStore)
@@ -185,89 +182,80 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Perform some queries
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, dateTimeStartOffset1.DateTime);
-            Assert.AreEqual(3, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.AreEqual("new response", pagedResult.Items[1].AsMessageActivity().Text);
-            Assert.AreEqual("update", pagedResult.Items[2].AsMessageActivity().Text);
+            Assert.Equal(3, pagedResult.Items.Length);
+            Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.Equal("new response", pagedResult.Items[1].AsMessageActivity().Text);
+            Assert.Equal("update", pagedResult.Items[2].AsMessageActivity().Text);
 
             // Perform some queries
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, DateTimeOffset.MinValue);
-            Assert.AreEqual(3, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.AreEqual("new response", pagedResult.Items[1].AsMessageActivity().Text);
-            Assert.AreEqual("update", pagedResult.Items[2].AsMessageActivity().Text);
+            Assert.Equal(3, pagedResult.Items.Length);
+            Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.Equal("new response", pagedResult.Items[1].AsMessageActivity().Text);
+            Assert.Equal("update", pagedResult.Items[2].AsMessageActivity().Text);
 
             // Perform some queries
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, DateTimeOffset.MaxValue);
-            Assert.AreEqual(0, pagedResult.Items.Length);
+            Assert.Equal(0, pagedResult.Items.Length);
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task MemoryTranscript_EnsureToLogActivitiesWithIdsTest()
         {
             var transcriptStore = new MemoryTranscriptStore();
             await EnsureToLogActivitiesWithIdsTest(transcriptStore);
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task MemoryTranscript_LogActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
             await LogActivitiesTest(transcriptStore);
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task MemoryTranscript_LogDeleteActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
             await LogDeleteActivitesTest(transcriptStore);
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task MemoryTranscript_LogUpdateActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
             await LogUpdateActivitiesTest(transcriptStore);
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task MemoryTranscript_TestDateLogUpdateActivities()
         {
             var transcriptStore = new MemoryTranscriptStore();
             await TestDateLogUpdateActivitiesTest(transcriptStore);
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task FileTranscript_LogActivities()
         {
             var transcriptStore = GetFileTranscriptLogger();
             await LogActivitiesTest(transcriptStore);
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task FileTranscript_LogDeleteActivities()
         {
             var transcriptStore = GetFileTranscriptLogger();
             await LogDeleteActivitesTest(transcriptStore);
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task FileTranscript_LogUpdateActivities()
         {
             var transcriptStore = GetFileTranscriptLogger();
             await LogUpdateActivitiesTest(transcriptStore);
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task FileTranscript_TestDateLogUpdateActivities()
         {
             var transcriptStore = GetFileTranscriptLogger();
@@ -301,16 +289,16 @@ namespace Microsoft.Bot.Builder.Tests
             await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-            Assert.AreEqual(3, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.IsNotNull(pagedResult.Items[1].AsMessageDeleteActivity());
-            Assert.AreEqual(ActivityTypes.MessageDelete, pagedResult.Items[1].Type);
-            Assert.AreEqual("deleteIt", pagedResult.Items[2].AsMessageActivity().Text);
+            Assert.Equal(3, pagedResult.Items.Length);
+            Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.NotNull(pagedResult.Items[1].AsMessageDeleteActivity());
+            Assert.Equal(ActivityTypes.MessageDelete, pagedResult.Items[1].Type);
+            Assert.Equal("deleteIt", pagedResult.Items[2].AsMessageActivity().Text);
         }
 
         private FileTranscriptLogger GetFileTranscriptLogger()
         {
-            var path = Path.Combine(Path.GetTempPath(), TestContext.TestName);
+            var path = Path.Combine(Path.GetTempPath(), "GetFileTranscriptLogger");
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);

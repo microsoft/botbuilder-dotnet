@@ -2,33 +2,31 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Schema.Tests
 {
-    [TestClass]
     public class ActivityTest
     {
-        [TestMethod]
+        [Fact]
         public void GetConversationReference()
         {
             var activity = CreateActivity();
 
             var conversationReference = activity.GetConversationReference();
 
-            Assert.AreEqual(activity.Id, conversationReference.ActivityId);
-            Assert.AreEqual(activity.From.Id, conversationReference.User.Id);
-            Assert.AreEqual(activity.Recipient.Id, conversationReference.Bot.Id);
-            Assert.AreEqual(activity.Conversation.Id, conversationReference.Conversation.Id);
-            Assert.AreEqual(activity.ChannelId, conversationReference.ChannelId);
-            Assert.AreEqual(activity.Locale, conversationReference.Locale);
-            Assert.AreEqual(activity.ServiceUrl, conversationReference.ServiceUrl);
+            Assert.Equal(activity.Id, conversationReference.ActivityId);
+            Assert.Equal(activity.From.Id, conversationReference.User.Id);
+            Assert.Equal(activity.Recipient.Id, conversationReference.Bot.Id);
+            Assert.Equal(activity.Conversation.Id, conversationReference.Conversation.Id);
+            Assert.Equal(activity.ChannelId, conversationReference.ChannelId);
+            Assert.Equal(activity.Locale, conversationReference.Locale);
+            Assert.Equal(activity.ServiceUrl, conversationReference.ServiceUrl);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetReplyConversationReference()
         {
             var activity = CreateActivity();
@@ -40,16 +38,16 @@ namespace Microsoft.Bot.Schema.Tests
 
             var conversationReference = activity.GetReplyConversationReference(reply);
 
-            Assert.AreEqual(reply.Id, conversationReference.ActivityId);
-            Assert.AreEqual(activity.From.Id, conversationReference.User.Id);
-            Assert.AreEqual(activity.Recipient.Id, conversationReference.Bot.Id);
-            Assert.AreEqual(activity.Conversation.Id, conversationReference.Conversation.Id);
-            Assert.AreEqual(activity.ChannelId, conversationReference.ChannelId);
-            Assert.AreEqual(activity.Locale, conversationReference.Locale);
-            Assert.AreEqual(activity.ServiceUrl, conversationReference.ServiceUrl);
+            Assert.Equal(reply.Id, conversationReference.ActivityId);
+            Assert.Equal(activity.From.Id, conversationReference.User.Id);
+            Assert.Equal(activity.Recipient.Id, conversationReference.Bot.Id);
+            Assert.Equal(activity.Conversation.Id, conversationReference.Conversation.Id);
+            Assert.Equal(activity.ChannelId, conversationReference.ChannelId);
+            Assert.Equal(activity.Locale, conversationReference.Locale);
+            Assert.Equal(activity.ServiceUrl, conversationReference.ServiceUrl);
         }
 
-        [TestMethod]
+        [Fact]
         public void RemoveRecipientMention_forTeams()
         {
             var activity = CreateActivity();
@@ -74,10 +72,10 @@ namespace Microsoft.Bot.Schema.Tests
             activity.Entities = lst;
 
             var strippedActivityText = activity.RemoveRecipientMention();
-            Assert.AreEqual(strippedActivityText, expectedStrippedName);
+            Assert.Equal(strippedActivityText, expectedStrippedName);
         }
 
-        [TestMethod]
+        [Fact]
         public void RemoveRecipientMention_forNonTeamsScenario()
         {
             var activity = CreateActivity();
@@ -102,10 +100,10 @@ namespace Microsoft.Bot.Schema.Tests
             activity.Entities = lst;
 
             var strippedActivityText = activity.RemoveRecipientMention();
-            Assert.AreEqual(strippedActivityText, expectedStrippedName);
+            Assert.Equal(strippedActivityText, expectedStrippedName);
         }
 
-        [TestMethod]
+        [Fact]
         public void ApplyConversationReference_isIncoming()
         {
             var activity = CreateActivity();
@@ -131,17 +129,17 @@ namespace Microsoft.Bot.Schema.Tests
 
             activity.ApplyConversationReference(conversationReference, true);
 
-            Assert.AreEqual(conversationReference.ChannelId, activity.ChannelId);
-            Assert.AreEqual(conversationReference.Locale, activity.Locale);
-            Assert.AreEqual(conversationReference.ServiceUrl, activity.ServiceUrl);
-            Assert.AreEqual(conversationReference.Conversation.Id, activity.Conversation.Id);
+            Assert.Equal(conversationReference.ChannelId, activity.ChannelId);
+            Assert.Equal(conversationReference.Locale, activity.Locale);
+            Assert.Equal(conversationReference.ServiceUrl, activity.ServiceUrl);
+            Assert.Equal(conversationReference.Conversation.Id, activity.Conversation.Id);
 
-            Assert.AreEqual(conversationReference.User.Id, activity.From.Id);
-            Assert.AreEqual(conversationReference.Bot.Id, activity.Recipient.Id);
-            Assert.AreEqual(conversationReference.ActivityId, activity.Id);
+            Assert.Equal(conversationReference.User.Id, activity.From.Id);
+            Assert.Equal(conversationReference.Bot.Id, activity.Recipient.Id);
+            Assert.Equal(conversationReference.ActivityId, activity.Id);
         }
 
-        [TestMethod]
+        [Fact]
         public void ApplyConversationReference()
         {
             var activity = CreateActivity();
@@ -168,17 +166,17 @@ namespace Microsoft.Bot.Schema.Tests
 
             activity.ApplyConversationReference(conversationReference, false);
 
-            Assert.AreEqual(conversationReference.ChannelId, activity.ChannelId);
-            Assert.AreEqual(conversationReference.Locale, activity.Locale);
-            Assert.AreEqual(conversationReference.ServiceUrl, activity.ServiceUrl);
-            Assert.AreEqual(conversationReference.Conversation.Id, activity.Conversation.Id);
+            Assert.Equal(conversationReference.ChannelId, activity.ChannelId);
+            Assert.Equal(conversationReference.Locale, activity.Locale);
+            Assert.Equal(conversationReference.ServiceUrl, activity.ServiceUrl);
+            Assert.Equal(conversationReference.Conversation.Id, activity.Conversation.Id);
 
-            Assert.AreEqual(conversationReference.Bot.Id, activity.From.Id);
-            Assert.AreEqual(conversationReference.User.Id, activity.Recipient.Id);
-            Assert.AreEqual(conversationReference.ActivityId, activity.ReplyToId);
+            Assert.Equal(conversationReference.Bot.Id, activity.From.Id);
+            Assert.Equal(conversationReference.User.Id, activity.Recipient.Id);
+            Assert.Equal(conversationReference.ActivityId, activity.ReplyToId);
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateTraceAllowsNullRecipient()
         {
             // https://github.com/Microsoft/botbuilder-dotnet/issues/1580
@@ -187,10 +185,10 @@ namespace Microsoft.Bot.Schema.Tests
             var trace = activity.CreateTrace("test");
 
             // CreateTrace flips Recipient and From
-            Assert.IsNull(trace.From.Id);
+            Assert.Null(trace.From.Id);
         }
 
-        [TestMethod]
+        [Fact]
         public void IsFromStreamingConnectionTests()
         {
             var nonStreaming = new List<string>()
@@ -214,13 +212,13 @@ namespace Microsoft.Bot.Schema.Tests
             nonStreaming.ForEach(s =>
             {
                 activity.ServiceUrl = s;
-                Assert.IsFalse(activity.IsFromStreamingConnection());
+                Assert.False(activity.IsFromStreamingConnection());
             });
 
             streaming.ForEach(s =>
             {
                 activity.ServiceUrl = s;
-                Assert.IsTrue(activity.IsFromStreamingConnection());
+                Assert.True(activity.IsFromStreamingConnection());
             });
         }
 

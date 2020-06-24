@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the content type for the body of the http operation.
         /// </summary>
-        /// <value>Content type such as "application/json" or "test/plain".  Default is "application/json".</value>
+        /// <value>Content type such as "application/json" or "text/plain".  Default is "application/json".</value>
         [DefaultValue("application/json")]
         [JsonProperty("contentType")]
         public StringExpression ContentType { get; set; } = "application/json";

@@ -124,9 +124,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 }
             };
 
-            // - ${expandText(@answer)}
+            // - ${length(expandText(@answer))}
             var evaled = templates.Evaluate("template", scope);
-            Assert.AreEqual("hello vivian", evaled);
+            Assert.AreEqual("hello vivian".Length, evaled);
         }
 
         [TestMethod]
