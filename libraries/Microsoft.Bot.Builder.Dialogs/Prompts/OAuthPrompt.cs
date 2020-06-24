@@ -304,7 +304,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             switch (channelId)
             {
-                case Channels.Msteams:
                 case Channels.Cortana:
                 case Channels.Skype:
                 case Channels.Skypeforbusiness:
@@ -565,7 +564,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         await this.SendInvokeResponseAsync(
                            turnContext,
                            cancellationToken,
-                           HttpStatusCode.Conflict,
+                           HttpStatusCode.PreconditionFailed,
                            new TokenExchangeInvokeResponse()
                            {
                                Id = tokenExchangeRequest.Id,
