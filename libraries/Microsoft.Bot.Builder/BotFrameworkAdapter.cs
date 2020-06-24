@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder
             Use(new TenantIdWorkaroundForTeamsMiddleware());
 
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
-            ConnectorClient.AddDefaultRequestHeaders(customHttpClient ?? DefaultHttpClient);
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
 
         /// <summary>
