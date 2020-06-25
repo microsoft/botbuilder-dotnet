@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         private readonly List<MessageActionsPayloadAttachment> _attachments = new List<MessageActionsPayloadAttachment>();
         private readonly List<MessageActionsPayloadMention> _mentions = new List<MessageActionsPayloadMention>();
         private readonly List<MessageActionsPayloadReaction> _reactions = new List<MessageActionsPayloadReaction>();
+        private readonly Uri _linkToMessage = new Uri("https://teams.microsoft.com/l/message/testing-id");
 
         /// <summary>
         /// Ensures the constructor of the <see cref="MessageActionsPayload"/> class works as expected.
@@ -108,6 +109,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.Equal(payload.Attachments, deserializedPayload.Attachments);
             Assert.Equal(payload.Mentions, deserializedPayload.Mentions);
             Assert.Equal(payload.Reactions, deserializedPayload.Reactions);
+            Assert.Equal(payload.LinkToMessage, deserializedPayload.LinkToMessage);
         }
 
         /// <summary>
@@ -133,7 +135,8 @@ namespace Microsoft.Bot.Schema.Tests.Teams
                 AttachmentLayout = _attachmentLayout,
                 Attachments = _attachments,
                 Mentions = _mentions,
-                Reactions = _reactions
+                Reactions = _reactions,
+                LinkToMessage = _linkToMessage
             };
         }
     }
