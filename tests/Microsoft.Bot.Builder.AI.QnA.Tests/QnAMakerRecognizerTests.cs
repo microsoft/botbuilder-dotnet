@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Recognizers;
+using Microsoft.Bot.Builder.AI.QnA.Tests;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -30,26 +31,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         private const string _endpointKey = "dummy-key";
         private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
-        public static ResourceExplorer ResourceExplorer { get; set; }
-
-        public static void ClassInitialize()
-        {
-            var parent = Environment.CurrentDirectory;
-            while (!string.IsNullOrEmpty(parent))
-            {
-                if (Directory.EnumerateFiles(parent, "*proj").Any())
-                {
-                    break;
-                }
-                else
-                {
-                    parent = Path.GetDirectoryName(parent);
-                }
-            }
-
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(parent, monitorChanges: false);
-        }
+        public static ResourceExplorer ResourceExplorer { get; set; }      
 
         public AdaptiveDialog QnAMakerRecognizer_DialogBase()
         {
@@ -73,6 +55,21 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [Fact]
         public async Task QnAMakerRecognizer_WithTopNAnswer()
         {
+            var parent = Environment.CurrentDirectory;
+            while (!string.IsNullOrEmpty(parent))
+            {
+                if (Directory.EnumerateFiles(parent, "*proj").Any())
+                {
+                    break;
+                }
+                else
+                {
+                    parent = Path.GetDirectoryName(parent);
+                }
+            }
+
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(parent, monitorChanges: false);
             var rootDialog = QnAMakerRecognizer_DialogBase();
 
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_TopNAnswer.json")));
@@ -87,6 +84,22 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [Fact]
         public async Task QnAMakerRecognizer_WithAnswer()
         {
+            var parent = Environment.CurrentDirectory;
+            while (!string.IsNullOrEmpty(parent))
+            {
+                if (Directory.EnumerateFiles(parent, "*proj").Any())
+                {
+                    break;
+                }
+                else
+                {
+                    parent = Path.GetDirectoryName(parent);
+                }
+            }
+
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(parent, monitorChanges: false);
+
             var rootDialog = QnAMakerRecognizer_DialogBase();
 
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnsAnswer.json")));
@@ -103,6 +116,22 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [Fact]
         public async Task QnAMakerRecognizer_WithNoAnswer()
         {
+            var parent = Environment.CurrentDirectory;
+            while (!string.IsNullOrEmpty(parent))
+            {
+                if (Directory.EnumerateFiles(parent, "*proj").Any())
+                {
+                    break;
+                }
+                else
+                {
+                    parent = Path.GetDirectoryName(parent);
+                }
+            }
+
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(parent, monitorChanges: false);
+
             var rootDialog = QnAMakerRecognizer_DialogBase();
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json")));
 
@@ -115,6 +144,22 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [Fact]
         public async Task QnAMakerRecognizer_WithIntent()
         {
+            var parent = Environment.CurrentDirectory;
+            while (!string.IsNullOrEmpty(parent))
+            {
+                if (Directory.EnumerateFiles(parent, "*proj").Any())
+                {
+                    break;
+                }
+                else
+                {
+                    parent = Path.GetDirectoryName(parent);
+                }
+            }
+
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(parent, monitorChanges: false);
+
             var rootDialog = QnAMakerRecognizer_DialogBase();
 
             await CreateFlow(rootDialog)
