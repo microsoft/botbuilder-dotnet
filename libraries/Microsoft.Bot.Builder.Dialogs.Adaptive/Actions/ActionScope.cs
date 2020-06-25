@@ -186,24 +186,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected virtual async Task<DialogTurnResult> BeginActionAsync(DialogContext dc, int offset, CancellationToken cancellationToken = default)
         {
-            // put locale info into Thread.CurrentThread.CurrentCulture
-            var turnExists = dc.Context.TurnState.TryGetValue("turn", out var turnContent);
-            if (turnExists == true && turnContent != null)
-            {
-                var locale = (turnContent as JObject).SelectToken("$.activity.locale");
-                if (locale != null)
-                {
-                    try
-                    {
-                        Thread.CurrentThread.CurrentCulture = new CultureInfo((locale as JValue).ToObject<string>());
-                    }
-                    catch
-                    {
-                        //do nothing if the turn.activity.locale is invalid
-                    }
-                }
-            }
-
             // get the action for the offset
             dc.State.SetValue(OFFSETKEY, offset);
 

@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -23,6 +24,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Expander : LGTemplateParserBaseVisitor<List<object>>
     {
         public const string LGType = "lgType";
+        private const string LocaleExpression = "turn.activity.locale";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions lgOptions;
         private readonly ExpressionParser expressionParser;
@@ -452,6 +454,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         // just don't want to write evaluationTargetStack.Peek() everywhere
         private EvaluationTarget CurrentTarget() => evaluationTargetStack.Peek();
 
+        private CultureInfo EvalCurrentCultureInfo(object scope)
+        {
+            CultureInfo result = null;
+            var parse = this.ExpanderExpressionParser.Parse(LocaleExpression);
+            var (locale, error) = parse.TryEvaluate(scope);
+            if (locale != null && error == null)
+            {
+                try
+                {
+                    result = new CultureInfo(locale as string);
+                }
+                catch
+                {
+                    // do nothing if locale in turn.activity.locale is illegal
+                }
+            }
+
+            return result;
+        }
+
         private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
             var expanderExpression = this.ExpanderExpressionParser.Parse(exp);
@@ -459,7 +481,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
             string error;
             object value;
-            var opt = new Options() { Locale = Thread.CurrentThread.CurrentCulture };
+            var locale = EvalCurrentCultureInfo(scope);
+            var opt = new Options() { Locale = locale ?? Thread.CurrentThread.CurrentCulture };
             opt.NullSubstitution = lgOptions.NullSubstitution;
             (value, error) = parse.TryEvaluate(scope, opt);
 

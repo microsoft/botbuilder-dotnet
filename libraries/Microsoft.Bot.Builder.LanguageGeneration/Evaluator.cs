@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Memory;
@@ -23,8 +23,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Evaluator : LGTemplateParserBaseVisitor<object>
     {
         public const string LGType = "lgType";
-
         private const string ReExecuteSuffix = "!";
+        private const string LocaleExpression = "turn.activity.locale";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions lgOptions;
 
@@ -442,10 +442,31 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // just don't want to write evaluationTargetStack.Peek() everywhere
             evaluationTargetStack.Peek();
 
+        private CultureInfo EvalCurrentCultureInfo(object scope)
+        {
+            CultureInfo result = null;
+            var parse = this.ExpressionParser.Parse(LocaleExpression);
+            var (locale, error) = parse.TryEvaluate(scope);
+            if (locale != null && error == null)
+            {
+                try
+                {
+                    result = new CultureInfo(locale as string);
+                }
+                catch
+                {
+                    // do nothing if locale in turn.activity.locale is illegal
+                }
+            }
+
+            return result;
+        }
+
         private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
             var parse = this.ExpressionParser.Parse(exp);
-            var opt = new Options() { Locale = Thread.CurrentThread.CurrentCulture };
+            var locale = EvalCurrentCultureInfo(scope);
+            var opt = new Options() { Locale = locale ?? Thread.CurrentThread.CurrentCulture };
             opt.NullSubstitution = lgOptions.NullSubstitution;
             return parse.TryEvaluate(scope, opt);
         }
