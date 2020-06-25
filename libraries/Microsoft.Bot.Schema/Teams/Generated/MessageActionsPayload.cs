@@ -61,8 +61,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="mentions">List of entities mentioned in the
         /// message.</param>
         /// <param name="reactions">Reactions for the message.</param>
-        /// <param name="linkToMessage">Link back to the message.</param>
-        public MessageActionsPayload(string id = default(string), string replyToId = default(string), string messageType = default(string), string createdDateTime = default(string), string lastModifiedDateTime = default(string), bool? deleted = default(bool?), string subject = default(string), string summary = default(string), string importance = default(string), string locale = default(string), MessageActionsPayloadFrom from = default(MessageActionsPayloadFrom), MessageActionsPayloadBody body = default(MessageActionsPayloadBody), string attachmentLayout = default(string), IList<MessageActionsPayloadAttachment> attachments = default(IList<MessageActionsPayloadAttachment>), IList<MessageActionsPayloadMention> mentions = default(IList<MessageActionsPayloadMention>), IList<MessageActionsPayloadReaction> reactions = default(IList<MessageActionsPayloadReaction>), Uri linkToMessage = default(Uri))
+        public MessageActionsPayload(string id = default(string), string replyToId = default(string), string messageType = default(string), string createdDateTime = default(string), string lastModifiedDateTime = default(string), bool? deleted = default(bool?), string subject = default(string), string summary = default(string), string importance = default(string), string locale = default(string), MessageActionsPayloadFrom from = default(MessageActionsPayloadFrom), MessageActionsPayloadBody body = default(MessageActionsPayloadBody), string attachmentLayout = default(string), IList<MessageActionsPayloadAttachment> attachments = default(IList<MessageActionsPayloadAttachment>), IList<MessageActionsPayloadMention> mentions = default(IList<MessageActionsPayloadMention>), IList<MessageActionsPayloadReaction> reactions = default(IList<MessageActionsPayloadReaction>))
         {
             Id = id;
             ReplyToId = replyToId;
@@ -80,7 +79,6 @@ namespace Microsoft.Bot.Schema.Teams
             Attachments = attachments;
             Mentions = mentions;
             Reactions = reactions;
-            LinkToMessage = linkToMessage;
             CustomInit();
         }
 

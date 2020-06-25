@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Bot.Schema.Teams;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Schema.Tests.Teams
@@ -13,6 +14,22 @@ namespace Microsoft.Bot.Schema.Tests.Teams
     /// </summary>
     public class MessageActionsPayloadTests
     {
+        private readonly string _id = "testId";
+        private readonly string _replyId = "replyId";
+        private readonly string _messageType = "message";
+        private readonly bool _deleted = false;
+        private readonly string _subject = "test-subject";
+        private readonly string _summary = "test-summary";
+        private readonly string _importance = "normal";
+        private readonly string _locale = "en-us";
+        private readonly string _attachmentLayout = "test-layout";
+        private readonly string _date = DateTime.Today.ToString();
+        private readonly MessageActionsPayloadFrom _from = new MessageActionsPayloadFrom();
+        private readonly MessageActionsPayloadBody _body = new MessageActionsPayloadBody();
+        private readonly List<MessageActionsPayloadAttachment> _attachments = new List<MessageActionsPayloadAttachment>();
+        private readonly List<MessageActionsPayloadMention> _mentions = new List<MessageActionsPayloadMention>();
+        private readonly List<MessageActionsPayloadReaction> _reactions = new List<MessageActionsPayloadReaction>();
+
         /// <summary>
         /// Ensures the constructor of the <see cref="MessageActionsPayload"/> class works as expected.
         /// </summary>
@@ -21,7 +38,22 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         {
             var messageActionPayload = new MessageActionsPayload();
 
-            Assert.NotNull(messageActionPayload);
+            Assert.Equal(default, messageActionPayload.Id);
+            Assert.Equal(default, messageActionPayload.ReplyToId);
+            Assert.Equal(default, messageActionPayload.MessageType);
+            Assert.Equal(default, messageActionPayload.CreatedDateTime);
+            Assert.Equal(default, messageActionPayload.LastModifiedDateTime);
+            Assert.Equal(default, messageActionPayload.Deleted);
+            Assert.Equal(default, messageActionPayload.Subject);
+            Assert.Equal(default, messageActionPayload.Summary);
+            Assert.Equal(default, messageActionPayload.Importance);
+            Assert.Equal(default, messageActionPayload.Locale);
+            Assert.Equal(default, messageActionPayload.From);
+            Assert.Equal(default, messageActionPayload.Body);
+            Assert.Equal(default, messageActionPayload.AttachmentLayout);
+            Assert.Equal(default, messageActionPayload.Attachments);
+            Assert.Equal(default, messageActionPayload.Mentions);
+            Assert.Equal(default, messageActionPayload.Reactions);
         }
 
         /// <summary>
@@ -30,359 +62,79 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         [Fact]
         public void TestMessageActionsPayloadConstructorWithArguments()
         {
-            var messageActionPayload = new MessageActionsPayload
-            {
-                Id = "testId",
-                CreatedDateTime = DateTime.Today.ToString(),
-                Deleted = false,
-                Importance = "normal",
-                Locale = "en-us",
-                From = new MessageActionsPayloadFrom(),
-                Body = new MessageActionsPayloadBody(),
-                Attachments = new List<MessageActionsPayloadAttachment>(),
-                Mentions = new List<MessageActionsPayloadMention>(),
-                LinkToMessage = new Uri("https://teams.microsoft.com/l/message/testing-id")
-            };
+            var payload = CreateActionPayload();
 
-            Assert.NotNull(messageActionPayload);
+            Assert.Equal(_id, payload.Id);
+            Assert.Equal(_replyId, payload.ReplyToId);
+            Assert.Equal(_messageType, payload.MessageType);
+            Assert.Equal(_date, payload.CreatedDateTime);
+            Assert.Equal(_date, payload.LastModifiedDateTime);
+            Assert.Equal(_deleted, payload.Deleted);
+            Assert.Equal(_subject, payload.Subject);
+            Assert.Equal(_summary, payload.Summary);
+            Assert.Equal(_importance, payload.Importance);
+            Assert.Equal(_locale, payload.Locale);
+            Assert.Equal(_from, payload.From);
+            Assert.Equal(_body, payload.Body);
+            Assert.Equal(_attachmentLayout, payload.AttachmentLayout);
+            Assert.Equal(_attachments, payload.Attachments);
+            Assert.Equal(_mentions, payload.Mentions);
+            Assert.Equal(_reactions, payload.Reactions);
         }
 
         /// <summary>
-        /// Ensures that the Id property can be set and retrieved.
+        /// Ensures that <see cref="MessageActionsPayload"/> class can be serialized and deserialized properly.
         /// </summary>
         [Fact]
-        public void TestGetId()
+        public void TestSerializationDeserialization()
         {
-            var id = "testId";
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { Id = id } }
-            };
+            var payload = CreateActionPayload();
+            var serializedPayload = JsonConvert.SerializeObject(payload);
+            var deserializedPayload = JsonConvert.DeserializeObject<MessageActionsPayload>(serializedPayload);
 
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(id, channelData.MessagePayload.Id);
+            Assert.Equal(payload.Id, deserializedPayload.Id);
+            Assert.Equal(payload.ReplyToId, deserializedPayload.ReplyToId);
+            Assert.Equal(payload.MessageType, deserializedPayload.MessageType);
+            Assert.Equal(payload.CreatedDateTime, deserializedPayload.CreatedDateTime);
+            Assert.Equal(payload.LastModifiedDateTime, deserializedPayload.LastModifiedDateTime);
+            Assert.Equal(payload.Deleted, deserializedPayload.Deleted);
+            Assert.Equal(payload.Subject, deserializedPayload.Subject);
+            Assert.Equal(payload.Summary, deserializedPayload.Summary);
+            Assert.Equal(payload.Importance, deserializedPayload.Importance);
+            Assert.Equal(payload.Locale, deserializedPayload.Locale);
+            Assert.Equal(payload.From.User, deserializedPayload.From.User);
+            Assert.Equal(payload.Body.Content, deserializedPayload.Body.Content);
+            Assert.Equal(payload.AttachmentLayout, deserializedPayload.AttachmentLayout);
+            Assert.Equal(payload.Attachments, deserializedPayload.Attachments);
+            Assert.Equal(payload.Mentions, deserializedPayload.Mentions);
+            Assert.Equal(payload.Reactions, deserializedPayload.Reactions);
         }
 
         /// <summary>
-        /// Ensures that the ReplyToId property can be set and retrieved.
+        /// Creates a <see cref="MessageActionsPayload"/> to be used in the tests.
         /// </summary>
-        [Fact]
-        public void TestGetReplyToId()
+        /// <returns>A MessageActionsPayload set with testing values.</returns>
+        private MessageActionsPayload CreateActionPayload()
         {
-            var replyToId = "replyId";
-            var activity = new Activity
+            return new MessageActionsPayload
             {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { ReplyToId = replyToId } }
+                Id = _id,
+                ReplyToId = _replyId,
+                MessageType = _messageType,
+                CreatedDateTime = _date,
+                LastModifiedDateTime = _date,
+                Deleted = _deleted,
+                Subject = _subject,
+                Summary = _summary,
+                Importance = _importance,
+                Locale = _locale,
+                From = _from,
+                Body = _body,
+                AttachmentLayout = _attachmentLayout,
+                Attachments = _attachments,
+                Mentions = _mentions,
+                Reactions = _reactions
             };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(replyToId, channelData.MessagePayload.ReplyToId);
-        }
-
-        /// <summary>
-        /// Ensures that the MessageType property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetMessageType()
-        {
-            var messageType = "message";
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { MessageType = messageType } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(messageType, channelData.MessagePayload.MessageType);
-        }
-
-        /// <summary>
-        /// Ensures that the CreatedDateTime property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetCreatedDateTime()
-        {
-            var createdDateTime = DateTime.Today.ToString();
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { CreatedDateTime = createdDateTime } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(createdDateTime, channelData.MessagePayload.CreatedDateTime);
-        }
-
-        /// <summary>
-        /// Ensures that the LastModifiedDateTime property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetLastModifiedDateTime()
-        {
-            var lastModifiedDateTime = DateTime.Today.ToString();
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { LastModifiedDateTime = lastModifiedDateTime } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(lastModifiedDateTime, channelData.MessagePayload.LastModifiedDateTime);
-        }
-
-        /// <summary>
-        /// Ensures that the Deleted property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetDeleted()
-        {
-            var deleted = true;
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { Deleted = deleted } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.True(channelData.MessagePayload.Deleted);
-        }
-
-        /// <summary>
-        /// Ensures that the Subject property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetSubject()
-        {
-            var subject = "test subject";
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { Subject = subject } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(subject, channelData.MessagePayload.Subject);
-        }
-
-        /// <summary>
-        /// Ensures that the Summary property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetSummary()
-        {
-            var summary = "test summary";
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { Summary = summary } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(summary, channelData.MessagePayload.Summary);
-        }
-
-        /// <summary>
-        /// Ensures that the Importance property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetImportance()
-        {
-            var importance = "normal";
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { Importance = importance } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(importance, channelData.MessagePayload.Importance);
-        }
-
-        /// <summary>
-        /// Ensures that the Locale property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetLocale()
-        {
-            var locale = "en-us";
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { Locale = locale } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(locale, channelData.MessagePayload.Locale);
-        }
-
-        /// <summary>
-        /// Ensures that the From property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetFrom()
-        {
-            var from = new MessageActionsPayloadFrom { User = new MessageActionsPayloadUser("testUser") };
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { From = from } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(from, channelData.MessagePayload.From);
-        }
-
-        /// <summary>
-        /// Ensures that the Body property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetBody()
-        {
-            var body = new MessageActionsPayloadBody { ContentType = "text", Content = "test body" };
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { Body = body } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(body, channelData.MessagePayload.Body);
-        }
-
-        /// <summary>
-        /// Ensures that the AttachmentLayout property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetAttachmentLayout()
-        {
-            var attachmentLayout = "testLayout";
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { AttachmentLayout = attachmentLayout } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(attachmentLayout, channelData.MessagePayload.AttachmentLayout);
-        }
-
-        /// <summary>
-        /// Ensures that the Attachments property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetAttachments()
-        {
-            var attachments = new List<MessageActionsPayloadAttachment>
-            {
-                new MessageActionsPayloadAttachment { Id = "attachment1" },
-                new MessageActionsPayloadAttachment { Id = "attachment2" }
-            };
-
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { Attachments = attachments } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(attachments, channelData.MessagePayload.Attachments);
-        }
-
-        /// <summary>
-        /// Ensures that the Mentions property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetMentions()
-        {
-            var mentions = new List<MessageActionsPayloadMention> 
-            { 
-                new MessageActionsPayloadMention { Id = 1 },
-                new MessageActionsPayloadMention { Id = 2 }
-            };
-
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { Mentions = mentions } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(mentions, channelData.MessagePayload.Mentions);
-        }
-
-        /// <summary>
-        /// Ensures that the Reactions property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetReactions()
-        {
-            var reactions = new List<MessageActionsPayloadReaction>
-            {
-                new MessageActionsPayloadReaction { ReactionType = "like" },
-                new MessageActionsPayloadReaction { ReactionType = "heart" }
-            };
-
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { Reactions = reactions } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(reactions, channelData.MessagePayload.Reactions);
-        }
-
-        /// <summary>
-        /// Ensures that the LinkToMessage property can be set and retrieved.
-        /// </summary>
-        [Fact]
-        public void TestGetLinkToMessage()
-        {
-            var linkToMessage = new Uri("https://teams.microsoft.com/l/message/testing-id");
-            var activity = new Activity 
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "composeExtension/submitAction",
-                ChannelData = new MessagingExtensionAction { MessagePayload = new MessageActionsPayload { LinkToMessage = linkToMessage } }
-            };
-
-            var channelData = activity.GetChannelData<MessagingExtensionAction>();
-
-            Assert.Equal(linkToMessage, channelData.MessagePayload.LinkToMessage);
         }
     }
 }
