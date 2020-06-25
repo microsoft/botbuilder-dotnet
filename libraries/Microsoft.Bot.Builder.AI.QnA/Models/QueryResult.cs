@@ -76,14 +76,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty(PropertyName = "context")]
         public QnAResponseContext Context { get; set; }
-
-        /// <summary>
-        /// Gets or sets details of PreciseAnswer.
-        /// </summary>
-        /// <value>
-        /// The PreciseAnswer related information in the Answer Text.
-        /// </value>
-        [JsonProperty("answerSpan")]
-        public AnswerSpanResponse AnswerSpan { get; set; }
     }
 }
