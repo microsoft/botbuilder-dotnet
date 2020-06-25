@@ -401,6 +401,16 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Dispose any disposable objects owned by the class here.
+            }
         }
 
         private async Task<ResourceResponse> UpdateActivityInternalAsync(
@@ -412,11 +422,11 @@ namespace Microsoft.Bot.Builder
             BotAssert.ActivityNotNull(activity);
             if (updateHandlers == null)
             {
-                throw new ArgumentException(nameof(updateHandlers));
+                throw new ArgumentException($"{nameof(updateHandlers)} is null.", nameof(updateHandlers));
             }
 
             // No middleware to run.
-            if (updateHandlers.Count() == 0)
+            if (!updateHandlers.Any())
             {
                 if (callAtBottom != null)
                 {
@@ -452,11 +462,11 @@ namespace Microsoft.Bot.Builder
 
             if (deleteHandlers == null)
             {
-                throw new ArgumentException(nameof(deleteHandlers));
+                throw new ArgumentException($"{nameof(deleteHandlers)} is null", nameof(deleteHandlers));
             }
 
             // No middleware to run.
-            if (deleteHandlers.Count() == 0)
+            if (!deleteHandlers.Any())
             {
                 if (callAtBottom != null)
                 {

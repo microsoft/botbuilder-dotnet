@@ -37,8 +37,8 @@ namespace Microsoft.Bot.Builder
         /// <see cref="Schema.ConversationAccount.Id"/> is missing.</exception>
         protected override string GetStorageKey(ITurnContext turnContext)
         {
-            var channelId = turnContext.Activity.ChannelId ?? throw new ArgumentNullException("invalid activity-missing channelId");
-            var userId = turnContext.Activity.From?.Id ?? throw new ArgumentNullException("invalid activity-missing From.Id");
+            var channelId = turnContext.Activity.ChannelId ?? throw new InvalidOperationException("invalid activity-missing channelId");
+            var userId = turnContext.Activity.From?.Id ?? throw new InvalidOperationException("invalid activity-missing From.Id");
             return $"{channelId}/users/{userId}";
         }
     }

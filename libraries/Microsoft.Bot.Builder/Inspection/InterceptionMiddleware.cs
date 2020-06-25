@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder
             Logger = logger ?? NullLogger.Instance;
         }
 
-        protected ILogger Logger { get; private set; }
+        protected ILogger Logger { get; }
 
         async Task IMiddleware.OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder
                 catch (Exception e)
                 {
                     await InvokeTraceExceptionAsync(turnContext, e.TraceActivity(), cancellationToken).ConfigureAwait(false);
-                    throw e;
+                    throw;
                 }
             }
 
@@ -80,9 +80,11 @@ namespace Microsoft.Bot.Builder
             {
                 return await InboundAsync(turnContext, traceActivity, cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception e)
+#pragma warning disable CA1031 // Do not catch general exception types (exception are logged and ignored)
+            catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
-                Logger.LogWarning($"Exception in inbound interception {e.Message}");
+                Logger.LogWarning($"Exception in inbound interception {ex.Message}");
                 return (true, false);
             }
         }
@@ -93,9 +95,11 @@ namespace Microsoft.Bot.Builder
             {
                 await OutboundAsync(turnContext, traceActivities, cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception e)
+#pragma warning disable CA1031 // Do not catch general exception types (exception are logged and ignored)
+            catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
-                Logger.LogWarning($"Exception in outbound interception {e.Message}");
+                Logger.LogWarning($"Exception in outbound interception {ex.Message}");
             }
         }
 
@@ -110,9 +114,11 @@ namespace Microsoft.Bot.Builder
             {
                 await TraceStateAsync(turnContext, cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception e)
+#pragma warning disable CA1031 // Do not catch general exception types (exception are logged and ignored)
+            catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
-                Logger.LogWarning($"Exception in state interception {e.Message}");
+                Logger.LogWarning($"Exception in state interception {ex.Message}");
             }
         }
 
@@ -122,9 +128,11 @@ namespace Microsoft.Bot.Builder
             {
                 await OutboundAsync(turnContext, new Activity[] { traceActivity }, cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception e)
+#pragma warning disable CA1031 // Do not catch general exception types (exception are logged and ignored)
+            catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
-                Logger.LogWarning($"Exception in exception interception {e.Message}");
+                Logger.LogWarning($"Exception in exception interception {ex.Message}");
             }
         }
     }
