@@ -1,0 +1,94 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "Insert",
+                    "pattern": "(?i)insert"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "property": "$something",
+                        "prompt": "Say insert"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You said ${$something}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Insert",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I'm going to insert new actions actions via EditActions"
+                    },
+                    {
+                        "$kind": "Microsoft.EditActions",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "New actions..."
+                            },
+                            {
+                                "$kind": "Microsoft.TextInput",
+                                "property": "user.name",
+                                "prompt": "What's your name?"
+                            }
+                        ],
+                        "changeType": "insertActions"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Say insert"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "insert"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I'm going to insert new actions actions via EditActions"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "New actions..."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "What's your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Joe"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Say insert"
+        }
+    ]
+}
