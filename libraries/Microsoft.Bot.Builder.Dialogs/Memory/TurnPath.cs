@@ -1,8 +1,13 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (We can't change this without breaking binary compat)
     public class TurnPath
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
         /// The result from the last dialog that was called.
@@ -19,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public const string Recognized = "turn.recognized";
 
-         /// <summary>
+        /// <summary>
         /// Path to the top intent.
         /// </summary>
         public const string TopIntent = "turn.recognized.intent";
@@ -50,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string Interrupted = "turn.interrupted";
 
         /// <summary>
-        /// The current dialog event (set during event processings).
+        /// The current dialog event (set during event processing).
         /// </summary>
         public const string DialogEvent = "turn.dialogEvent";
 
@@ -64,29 +69,40 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public const string ActivityProcessed = "turn.activityProcessed";
 
-        [Obsolete]
+        [Obsolete("This property is deprecated, use TurnPath.LastResult instead.")]
         public const string LASTRESULT = "turn.lastresult";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.Activity instead.")]
         public const string ACTIVITY = "turn.activity";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.Recognized instead.")]
         public const string RECOGNIZED = "turn.recognized";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.TopIntent instead.")]
         public const string TOPINTENT = "turn.recognized.intent";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.TopScore instead.")]
         public const string TOPSCORE = "turn.recognized.score";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.Text instead.")]
         public const string TEXT = "turn.recognized.text";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.UnrecognizedText instead.")]
         public const string UNRECOGNIZEDTEXT = "turn.unrecognizedText";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.RecognizedEntities instead.")]
         public const string RECOGNIZEDENTITIES = "turn.recognizedEntities";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.Interrupted instead.")]
         public const string INTERRUPTED = "turn.interrupted";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.DialogEvent instead.")]
         public const string DIALOGEVENT = "turn.dialogEvent";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.RepeatedIds instead.")]
         public const string REPEATEDIDS = "turn.repeatedIds";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use TurnPath.ActivityProcessed instead.")]
         public const string ACTIVITYPROCESSED = "turn.activityProcessed";
 
         /// <summary>

@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,10 +15,10 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogSet
     {
-        private readonly IStatePropertyAccessor<DialogState> _dialogState;
         private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
-        private string _version;
+        private readonly IStatePropertyAccessor<DialogState> _dialogState;
         private IBotTelemetryClient _telemetryClient;
+        private string _version;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogSet"/> class.
@@ -72,22 +71,22 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>Version will change when any of the child dialogs version changes.</returns>
         public virtual string GetVersion()
         {
-            if (this._version == null)
+            if (_version == null)
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (var dialog in this._dialogs)
+                var sb = new StringBuilder();
+                foreach (var dialog in _dialogs)
                 {
-                    var v = this._dialogs[dialog.Key].GetVersion();
+                    var v = _dialogs[dialog.Key].GetVersion();
                     if (v != null)
                     {
                         sb.Append(v);
                     }
                 }
 
-                this._version = StringUtils.Hash(sb.ToString());
+                _version = StringUtils.Hash(sb.ToString());
             }
 
-            return this._version;
+            return _version;
         }
 
         /// <summary>
@@ -104,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public DialogSet Add(Dialog dialog)
         {
             // Ensure new version hash is computed
-            this._version = null;
+            _version = null;
 
             if (dialog == null)
             {
@@ -126,17 +125,15 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 while (true)
                 {
-                    var suffixId = dialog.Id + nextSuffix.ToString();
+                    var suffixId = dialog.Id + nextSuffix;
 
                     if (!_dialogs.ContainsKey(suffixId))
                     {
                         dialog.Id = suffixId;
                         break;
                     }
-                    else
-                    {
-                        nextSuffix++;
-                    }
+
+                    nextSuffix++;
                 }
             }
 
@@ -165,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the created <see cref="DialogContext"/>.
         /// </remarks>
-        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -173,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (_dialogState == null)
             {
                 // Note: This shouldn't ever trigger, as the _dialogState is set in the constructor and validated there.
-                throw new InvalidOperationException($"DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor.");
+                throw new InvalidOperationException("DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor.");
             }
 
             // Load/initialize dialog state

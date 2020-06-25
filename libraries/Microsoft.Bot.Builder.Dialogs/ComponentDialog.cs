@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         public const string PersistedDialogState = "dialogs";
 
-        private bool initialized = false;
+        private bool _initialized;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ComponentDialog"/> class.
@@ -254,9 +254,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected async Task EnsureInitializedAsync(DialogContext outerDc)
         {
-            if (!this.initialized)
+            if (!this._initialized)
             {
-                this.initialized = true;
+                this._initialized = true;
                 await OnInitializeAsync(outerDc).ConfigureAwait(false);
             }
         }
@@ -378,22 +378,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return outerDc.EndDialogAsync(result, cancellationToken);
         }
 
-        private DialogContext CreateInnerDc(DialogContext outerDc, DialogInstance instance)
-        {
-            var state = BuildDialogState(instance);
-
-            return new DialogContext(this.Dialogs, outerDc, state);
-        }
-
-        // NOTE: You should only call this if you don't have a dc to work with (such as OnResume()) 
-        private DialogContext CreateInnerDc(ITurnContext turnContext, DialogInstance instance)
-        {
-            var state = BuildDialogState(instance);
-
-            return new DialogContext(this.Dialogs, turnContext, state);
-        }
-
-        private DialogState BuildDialogState(DialogInstance instance)
+        private static DialogState BuildDialogState(DialogInstance instance)
         {
             DialogState state;
 
@@ -413,6 +398,21 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return state;
+        }
+
+        private DialogContext CreateInnerDc(DialogContext outerDc, DialogInstance instance)
+        {
+            var state = BuildDialogState(instance);
+
+            return new DialogContext(this.Dialogs, outerDc, state);
+        }
+
+        // NOTE: You should only call this if you don't have a dc to work with (such as OnResume()) 
+        private DialogContext CreateInnerDc(ITurnContext turnContext, DialogInstance instance)
+        {
+            var state = BuildDialogState(instance);
+
+            return new DialogContext(this.Dialogs, turnContext, state);
         }
     }
 }
