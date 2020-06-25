@@ -55,26 +55,27 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="Bot.Schema.IActivity"/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
-            CancellationTokenSource cts = null;
-            try
+            using (var cts = new CancellationTokenSource())
             {
-                // If the incoming activity is a MessageActivity, start a timer to periodically send the typing activity
-                if (turnContext.Activity.Type == ActivityTypes.Message)
+                Task typingTask = null;
+                try
                 {
-                    cts = new CancellationTokenSource();
-                    cancellationToken.Register(() => cts.Cancel());
+                    // If the incoming activity is a MessageActivity, start a timer to periodically send the typing activity.
+                    if (turnContext.Activity.Type == ActivityTypes.Message)
+                    {
+                        // do not await task - we want this to run in the background and we will cancel it when its done
+                        typingTask = SendTypingAsync(turnContext, _delay, _period, cts.Token);
+                    }
 
-                    // do not await task - we want this to run in the background and we will cancel it when its done
-                    var task = Task.Run(() => SendTypingAsync(turnContext, _delay, _period, cts.Token), cancellationToken);
+                    await next(cancellationToken).ConfigureAwait(false);
                 }
-
-                await next(cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                if (cts != null)
+                finally
                 {
-                    cts.Cancel();
+                    if (typingTask != null && !typingTask.IsCanceled)
+                    {
+                        // Cancel the typing loop.
+                        cts.Cancel();
+                    }
                 }
             }
         }
@@ -96,7 +97,7 @@ namespace Microsoft.Bot.Builder
                     await Task.Delay(period, cancellationToken).ConfigureAwait(false);
                 }
             }
-            catch (TaskCanceledException)
+            catch (OperationCanceledException)
             {
                 // do nothing
             }

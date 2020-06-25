@@ -42,7 +42,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <param name="channelId">The ID of the channel to validate.</param>
         /// <returns>ClaimsIdentity.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string serviceUrl, HttpClient httpClient, string channelId)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             return await AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient, channelId, new AuthenticationConfiguration()).ConfigureAwait(false);
         }
@@ -60,7 +62,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="channelId">The ID of the channel to validate.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <returns>ClaimsIdentity.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string serviceUrl, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             if (authConfig == null)
             {
@@ -82,7 +86,9 @@ namespace Microsoft.Bot.Connector.Authentication
             return identity;
         }
 
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task ValidateIdentity(ClaimsIdentity identity, ICredentialProvider credentials, string serviceUrl)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             if (identity == null)
             {
