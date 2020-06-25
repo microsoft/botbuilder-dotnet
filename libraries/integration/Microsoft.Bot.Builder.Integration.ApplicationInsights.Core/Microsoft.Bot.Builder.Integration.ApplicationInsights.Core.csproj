@@ -24,8 +24,7 @@
 
   <PropertyGroup>
     <!-- These documentation warnings excludes should be removed as part of https://github.com/microsoft/botbuilder-dotnet/issues/4052 -->
-    <!-- SX1309: FieldNamesShouldBeginWithUnderscores should be fixed as part of https://github.com/microsoft/botframework-sdk/issues/5933 -->
-    <NoWarn>$(NoWarn);CS1591;SX1309</NoWarn>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
@@ -38,7 +37,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.ApplicationInsights" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
