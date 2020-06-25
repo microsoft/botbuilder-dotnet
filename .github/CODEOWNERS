@@ -11,8 +11,12 @@
 # In each subsection folders are ordered first by depth, then alphabetically.
 # This should make it easy to add new rules without breaking existing ones.
 
+# Bot Framework SDK notes:
+# The first code owners for a file or library are the primary approvers.
+# The later code owners represent a "escalation path" in case the primary code owners are unavailable.
+
 # Global rule:
-* @tomlm @cleemullins @mrivera-ms
+* @microsoft/bb-dotnet @microsoft/bf-admin
 
 # Various C# Libraries
 /FunctionalTests/**                 @gabog @mrivera-ms
@@ -22,13 +26,23 @@
 /libraries/Adapters/**              @garypretty
 
 # Adaptive Expressions
-/libraries/AdaptiveExpressions/**   @tomlm @carlosscastro @boydc2014 @chrimc62
+/libraries/AdaptiveExpressions/**   @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
 
 # Platform Integration Libaries
-/libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core/**           @garypretty
-/libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi/**         @garypretty
-/libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.Core/**                        @johnataylor
-/libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.WebApi/**                      @johnataylor
+/libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core/**           @garypretty @microsoft/bb-dotnet @microsoft/bf-admin
+/libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi/**         @garypretty @microsoft/bb-dotnet @microsoft/bf-admin
+/libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.Core/**                        @johnataylor @microsoft/bb-dotnet @microsoft/bf-admin
+/libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.WebApi/**                      @johnataylor @microsoft/bb-dotnet @microsoft/bf-admin
+
+# Adaptive Dialogs
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                                @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams/**                          @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                        @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+#   Adaptive Dialogs' tests
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling/**                          @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests/**                        @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests/**                    @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Tests/**                              @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
 
 # BotBuilder Libaries
 /libraries/Microsoft.Bot.Builder/**                                                @mrivera-ms @gabog @johnataylor
@@ -37,8 +51,6 @@
 /libraries/Microsoft.Bot.Builder.ApplicationInsights/**                            @garypretty
 /libraries/Microsoft.Bot.Builder.Azure/**                                          @mrivera-ms
 /libraries/Microsoft.Bot.Builder.Dialogs/**                                        @mrivera-ms @gabog @johnataylor
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                               @mrivera-ms @tomlm
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                       @mrivera-ms @tomlm
 /libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                              @mrivera-ms @tomlm @gabog
 /libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                            @mrivera-ms @tomlm
 /libraries/Microsoft.Bot.Builder.LanguageGeneration/**                             @mrivera-ms @tomlm @boydc2014 @chrimc62
