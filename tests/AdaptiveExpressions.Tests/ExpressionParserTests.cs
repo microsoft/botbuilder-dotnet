@@ -922,6 +922,8 @@ namespace AdaptiveExpressions.Tests
 
             #region  Memory access
             Test("getProperty(bag, concat('na','me'))", "mybag"),
+            Test("getProperty('bag').index", 3),
+            Test("getProperty(concat('he', 'llo'))", "hello"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> { "bag.list", "bag.index" }),
             Test("items[nestedItems[1].x]", "two", new HashSet<string> { "items", "nestedItems[1].x" }),
