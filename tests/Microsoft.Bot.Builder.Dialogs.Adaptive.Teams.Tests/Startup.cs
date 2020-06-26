@@ -9,11 +9,10 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 {
-    [TestClass]
     internal class Startup
     {
         public Startup()
@@ -26,8 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 
         public IConfiguration Configuration { get; }
 
-        [AssemblyInitialize]
-        public static void Initialize(TestContext testContext)
+        public static void Initialize()
         {
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new DialogsComponentRegistration());
