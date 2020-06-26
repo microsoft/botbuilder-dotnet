@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (ConversationState == null)
             {
-                ConversationState = context.TurnState.Get<ConversationState>() ?? throw new ArgumentNullException(nameof(ConversationState));
+                ConversationState = context.TurnState.Get<ConversationState>() ?? throw new InvalidOperationException($"Unable to get an instance of {nameof(ConversationState)} from turnContext.");
             }
             else
             {
@@ -283,6 +283,34 @@ namespace Microsoft.Bot.Builder.Dialogs
             return GetActiveDialogContext(child);
         }
 
+        /// <summary>
+        /// Helper to determine if we should send an EndOfConversation to the parent or not.
+        /// </summary>
+        private static bool ShouldSendEndOfConversationToParent(ITurnContext context, DialogTurnResult turnResult)
+        {
+            if (!(turnResult.Status == DialogTurnStatus.Complete || turnResult.Status == DialogTurnStatus.Cancelled))
+            {
+                // The dialog is still going, don't return EoC.
+                return false;
+            }
+
+            if (context.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims))
+            {
+                // EoC Activities returned by skills are bounced back to the bot by SkillHandler.
+                // In those cases we will have a SkillConversationReference instance in state.
+                var skillConversationReference = context.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey);
+                if (skillConversationReference != null)
+                {
+                    // If the skillConversationReference.OAuthScope is for one of the supported channels, we are at the root and we should not send an EoC.
+                    return skillConversationReference.OAuthScope != AuthenticationConstants.ToChannelFromBotOAuthScope && skillConversationReference.OAuthScope != GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         private async Task<DialogTurnResult> HandleSkillOnTurnAsync(DialogContext dc, CancellationToken cancellationToken)
         {
             // the bot is running as a skill. 
@@ -370,34 +398,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             await SendStateSnapshotTraceAsync(dc, "Bot State", cancellationToken).ConfigureAwait(false);
 
             return turnResult;
-        }
-
-        /// <summary>
-        /// Helper to determine if we should send an EndOfConversation to the parent or not.
-        /// </summary>
-        private bool ShouldSendEndOfConversationToParent(ITurnContext context, DialogTurnResult turnResult)
-        {
-            if (!(turnResult.Status == DialogTurnStatus.Complete || turnResult.Status == DialogTurnStatus.Cancelled))
-            {
-                // The dialog is still going, don't return EoC.
-                return false;
-            }
-
-            if (context.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims))
-            {
-                // EoC Activities returned by skills are bounced back to the bot by SkillHandler.
-                // In those cases we will have a SkillConversationReference instance in state.
-                var skillConversationReference = context.TurnState.Get<SkillConversationReference>(SkillHandler.SkillConversationReferenceKey);
-                if (skillConversationReference != null)
-                {
-                    // If the skillConversationReference.OAuthScope is for one of the supported channels, we are at the root and we should not send an EoC.
-                    return skillConversationReference.OAuthScope != AuthenticationConstants.ToChannelFromBotOAuthScope && skillConversationReference.OAuthScope != GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope;
-                }
-
-                return true;
-            }
-
-            return false;
         }
     }
 }

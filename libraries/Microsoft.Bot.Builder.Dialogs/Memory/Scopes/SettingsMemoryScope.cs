@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
@@ -13,12 +14,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </summary>
     public class SettingsMemoryScope : MemoryScope
     {
-        private Dictionary<string, object> emptySettings = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _emptySettings = new Dictionary<string, object>();
 
         public SettingsMemoryScope()
             : base(ScopePath.Settings)
         {
-            this.IncludeInSnapshot = false;
+            IncludeInSnapshot = false;
         }
 
         /// <summary>
@@ -34,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (!dc.Context.TurnState.TryGetValue(ScopePath.Settings, out object settings))
+            if (!dc.Context.TurnState.TryGetValue(ScopePath.Settings, out var settings))
             {
                 var configuration = dc.Context.TurnState.Get<IConfiguration>();
                 if (configuration != null)
@@ -43,7 +44,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
                     if (ScopeToBot)
                     {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
                         var appId = ((TurnContext)dc.Context).AppId ?? throw new ArgumentNullException(nameof(TurnContext.AppId));
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
                         settings = ObjectPath.GetPathValue<object>(settings, appId);
                     }
@@ -52,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 }
             }
 
-            return settings ?? emptySettings;
+            return settings ?? _emptySettings;
         }
 
         public override void SetMemory(DialogContext dc, object memory)
@@ -74,13 +77,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 // load configuration into settings dictionary
                 foreach (var child in configuration.AsEnumerable())
                 {
-                    string[] keys = child.Key.Split(':');
+                    var keys = child.Key.Split(':');
 
                     // initialize all parts of path up to the key/value we are attempting to set
                     dynamic parent = null;
-                    string parentKey = string.Empty;
+                    var parentKey = string.Empty;
                     dynamic node = settings;
-                    for (int i = 0; i < keys.Length - 1; i++)
+                    for (var i = 0; i < keys.Length - 1; i++)
                     {
                         var key = keys[i];
                         if (!node.ContainsKey(key))
@@ -96,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                     if (child.Value != null)
                     {
                         var lastKey = keys.Last();
-                        bool hasIndex = int.TryParse(lastKey, out int index);
+                        var hasIndex = int.TryParse(lastKey, out var index);
                         if (hasIndex)
                         {
                             // if node is dictionary, and has zero elements then convert to array
@@ -117,12 +120,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                             else
                             {
                                 // it's an array
-                                object[] arr = (object[])node;
+                                var arr = (object[])node;
                                 if (arr.Length < index + 1)
                                 {
                                     // auto-resize to be bigger if we need to 
                                     // NOTE: keys seem to be reverse indexed, which means we should have already "right-sized" the array
-                                    Array.Resize<object>(ref arr, index + 1);
+                                    Array.Resize(ref arr, index + 1);
                                     parent[parentKey] = arr;
                                     node = arr;
                                 }
@@ -133,17 +136,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                         }
                         else
                         {
-                            var arr = node as object[];
-                            if (arr != null)
+                            if (node is object[] arr)
                             {
                                 // we got a non-number key but we have building an array, convert the array to dictionary
                                 // NOTE: keys is sorting reverse which means we should we always start out with a dictionary for nonnumberic keys
                                 var dict = new Dictionary<string, object>();
-                                for (int i = 0; i < arr.Length; i++)
+                                for (var i = 0; i < arr.Length; i++)
                                 {
                                     if (arr[i] != null)
                                     {
-                                        dict[i.ToString()] = arr[i];
+                                        dict[i.ToString(CultureInfo.InvariantCulture)] = arr[i];
                                     }
                                 }
 

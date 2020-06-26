@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +19,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
     /// MemoryScopes are named root level objects, which can exist either in the dialogcontext or off of turn state
     /// PathResolvers allow for shortcut behavior for mapping things like $foo -> dialog.foo.
     /// </summary>
+#pragma warning disable CA1710 // Identifiers should have correct suffix (We can't rename this class without breaking binary compat)
     public class DialogStateManager : IDictionary<string, object>
+#pragma warning restore CA1710 // Identifiers should have correct suffix
     {
         /// <summary>
         /// Information for tracking when path was last modified.
@@ -27,17 +30,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         private static readonly char[] Separators = { ',', '[' };
 
-        private readonly DialogContext dialogContext;
-        private int version = 0;
+        private readonly DialogContext _dialogContext;
+        private int _version;
 
         public DialogStateManager(DialogContext dc, DialogStateManagerConfiguration configuration = null)
         {
-            dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
+            _dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
 
             if (configuration != null)
             {
                 // cache for any other new dialogStatemanager instances in this turn.  
-                dc.Context.TurnState.Set(configuration);
+                _dialogContext.Context.TurnState.Set(configuration);
             }
 
             // DialogManager sets dm.StateConfiguration into the turnstate so it can be configured from there.
@@ -46,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             {
                 // this bootstraps non-DialogManager dialog contexts.
                 this.Configuration = new DialogStateManagerConfiguration();
-                dc.Context.TurnState.Set(this.Configuration);
+                _dialogContext.Context.TurnState.Set(this.Configuration);
             }
         }
 
@@ -54,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public ICollection<string> Keys => Configuration.MemoryScopes.Select(ms => ms.Name).ToList();
 
-        public ICollection<object> Values => Configuration.MemoryScopes.Select(ms => ms.GetMemory(dialogContext)).ToList();
+        public ICollection<object> Values => Configuration.MemoryScopes.Select(ms => ms.GetMemory(_dialogContext)).ToList();
 
         public int Count => Configuration.MemoryScopes.Count;
 
@@ -69,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 {
                     // Root is handled by SetMemory rather than SetValue
                     var scope = GetMemoryScope(key) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(key));
-                    scope.SetMemory(this.dialogContext, JToken.FromObject(value));
+                    scope.SetMemory(_dialogContext, JToken.FromObject(value));
                 }
                 else
                 {
@@ -90,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return Configuration.MemoryScopes.FirstOrDefault(ms => string.Compare(ms.Name, name, ignoreCase: true) == 0);
+            return Configuration.MemoryScopes.FirstOrDefault(ms => string.Compare(ms.Name, name, StringComparison.OrdinalIgnoreCase) == 0);
         }
 
         /// <summary>
@@ -99,7 +102,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>Current version.</returns>
         public string Version()
         {
-            return version.ToString();
+            return _version.ToString(CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -112,8 +115,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             var scope = path;
             var sepIndex = -1;
-            var dot = path.IndexOf(".");
-            var openSquareBracket = path.IndexOf("[");
+            var dot = path.IndexOf(".", StringComparison.OrdinalIgnoreCase);
+            var openSquareBracket = path.IndexOf("[", StringComparison.OrdinalIgnoreCase);
 
             if (dot > 0 && openSquareBracket > 0)
             {
@@ -178,7 +181,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             {
                 memoryScope = ResolveMemoryScope(path, out remainingPath);
             }
+#pragma warning disable CA1031 // Do not catch general exception types (Unable to get the value for some reason, catch, log and return false, ignoring exception)
             catch (Exception err)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 Trace.TraceError(err.Message);
                 return false;
@@ -191,7 +196,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             if (string.IsNullOrEmpty(remainingPath))
             {
-                var memory = memoryScope.GetMemory(this.dialogContext);
+                var memory = memoryScope.GetMemory(_dialogContext);
                 if (memory == null)
                 {
                     return false;
@@ -202,8 +207,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             // TODO: HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
-            const string first = ".first()";
-            var iFirst = path.ToLower().LastIndexOf(first);
+            const string first = ".FIRST()";
+            var iFirst = path.ToUpperInvariant().LastIndexOf(first, StringComparison.Ordinal);
             if (iFirst >= 0)
             {
                 object entity = null;
@@ -284,7 +289,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>string or null if path is not valid.</returns>
         public string GetStringValue(string pathExpression, string defaultValue = default)
         {
-            return GetValue<string>(pathExpression, () => defaultValue);
+            return GetValue(pathExpression, () => defaultValue);
         }
 
         /// <summary>
@@ -304,14 +309,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 value = JToken.FromObject(value);
             }
 
-            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             if (TrackChange(path, value))
             {
                 ObjectPath.SetPathValue(this, path, value);
             }
 
             // Every set will increase version
-            version++;
+            _version++;
         }
 
         /// <summary>
@@ -320,7 +325,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="path">Path to remove the leaf property.</param>
         public void RemoveValue(string path)
         {
-            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            path = TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             if (TrackChange(path, null))
             {
                 ObjectPath.RemovePathValue(this, path);
@@ -335,9 +340,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             var result = new JObject();
 
-            foreach (var scope in Configuration.MemoryScopes.Where(ms => ms.IncludeInSnapshot == true))
+            foreach (var scope in Configuration.MemoryScopes.Where(ms => ms.IncludeInSnapshot))
             {
-                var memory = scope.GetMemory(dialogContext);
+                var memory = scope.GetMemory(_dialogContext);
                 if (memory != null)
                 {
                     result[scope.Name] = JToken.FromObject(memory);
@@ -352,11 +357,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </summary>
         /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>Task.</returns>
-        public async Task LoadAllScopesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task LoadAllScopesAsync(CancellationToken cancellationToken = default)
         {
-            foreach (var scope in this.Configuration.MemoryScopes)
+            foreach (var scope in Configuration.MemoryScopes)
             {
-                await scope.LoadAsync(this.dialogContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await scope.LoadAsync(_dialogContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -365,11 +370,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// </summary>
         /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>Task.</returns>
-        public async Task SaveAllChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SaveAllChangesAsync(CancellationToken cancellationToken = default)
         {
-            foreach (var scope in this.Configuration.MemoryScopes)
+            foreach (var scope in Configuration.MemoryScopes)
             {
-                await scope.SaveChangesAsync(this.dialogContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await scope.SaveChangesAsync(_dialogContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -379,13 +384,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="name">name of the scope.</param>
         /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>Task.</returns>
-        public async Task DeleteScopesMemoryAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task DeleteScopesMemoryAsync(string name, CancellationToken cancellationToken = default)
         {
-            name = name.ToLower();
-            var scope = this.Configuration.MemoryScopes.SingleOrDefault(s => s.Name.ToLower() == name);
+            name = name.ToUpperInvariant();
+            var scope = Configuration.MemoryScopes.SingleOrDefault(s => s.Name.ToUpperInvariant() == name);
             if (scope != null)
             {
-                await scope.DeleteAsync(this.dialogContext, cancellationToken).ConfigureAwait(false);
+                await scope.DeleteAsync(_dialogContext, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -396,7 +401,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool ContainsKey(string key)
         {
-            return Configuration.MemoryScopes.Any(ms => ms.Name.ToLower() == key.ToLower());
+            return Configuration.MemoryScopes.Any(ms => ms.Name.ToUpperInvariant() == key.ToUpperInvariant());
         }
 
         public bool Remove(string key)
@@ -406,7 +411,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public bool TryGetValue(string key, out object value)
         {
-            return this.TryGetValue<object>(key, out value);
+            return TryGetValue<object>(key, out value);
         }
 
         public void Add(KeyValuePair<string, object> item)
@@ -428,7 +433,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             foreach (var ms in Configuration.MemoryScopes)
             {
-                array[arrayIndex++] = new KeyValuePair<string, object>(ms.Name, ms.GetMemory(dialogContext));
+                array[arrayIndex++] = new KeyValuePair<string, object>(ms.Name, ms.GetMemory(_dialogContext));
             }
         }
 
@@ -441,7 +446,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             foreach (var ms in Configuration.MemoryScopes)
             {
-                yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(dialogContext));
+                yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(_dialogContext));
             }
         }
 
@@ -497,8 +502,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             foreach (var ms in Configuration.MemoryScopes)
             {
-                yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(dialogContext));
+                yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(_dialogContext));
             }
+        }
+
+        private static bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory)
+        {
+            if (ObjectPath.TryGetPathValue<JArray>(memory, remainingPath, out var array))
+            {
+                if (array != null && array.Count > 0)
+                {
+                    if (array[0] is JArray first)
+                    {
+                        if (first.Count > 0)
+                        {
+                            var second = first[0];
+                            value = ObjectPath.MapValueTo<T>(second);
+                            return true;
+                        }
+
+                        return false;
+                    }
+
+                    value = ObjectPath.MapValueTo<T>(array[0]);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private string GetBadScopeMessage(string path)
@@ -511,15 +542,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             var hasPath = false;
             if (ObjectPath.TryResolvePath(this, path, out var segments))
             {
-                var root = segments.Count() > 1 ? segments[1] as string : string.Empty;
+                var root = segments.Count > 1 ? segments[1] as string : string.Empty;
 
                 // Skip _* as first scope, i.e. _adaptive, _tracker, ...
-                if (!root.StartsWith("_"))
+                if (!root.StartsWith("_", StringComparison.Ordinal))
                 {
                     // Convert to a simple path with _ between segments
                     var pathName = string.Join("_", segments);
                     var trackedPath = $"{PathTracker}.{pathName}";
                     uint? counter = null;
+
                     void Update()
                     {
                         if (TryGetValue<uint>(trackedPath, out var lastChanged))
@@ -540,7 +572,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                         void CheckChildren(string property, object instance)
                         {
                             // Add new child segment
-                            trackedPath += "_" + property.ToLower();
+#pragma warning disable CA1308 // Normalize strings to uppercase (we assume properties are lowercase). 
+                            trackedPath += "_" + property.ToLowerInvariant();
+#pragma warning restore CA1308 // Normalize strings to uppercase
                             Update();
                             if (instance is object child)
                             {
@@ -559,33 +593,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             return hasPath;
-        }
-
-        private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory)
-        {
-            if (ObjectPath.TryGetPathValue<JArray>(memory, remainingPath, out var array))
-            {
-                if (array != null && array.Count > 0)
-                {
-                    var first = array[0] as JArray;
-                    if (first != null)
-                    {
-                        if (first.Count > 0)
-                        {
-                            var second = first[0];
-                            value = ObjectPath.MapValueTo<T>(second);
-                            return true;
-                        }
-
-                        return false;
-                    }
-
-                    value = ObjectPath.MapValueTo<T>(array[0]);
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }

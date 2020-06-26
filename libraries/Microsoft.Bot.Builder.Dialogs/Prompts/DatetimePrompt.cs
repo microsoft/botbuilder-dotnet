@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Task.FromResult(result);
         }
 
-        private DateTimeResolution ReadResolution(IDictionary<string, string> resolution)
+        private static DateTimeResolution ReadResolution(IDictionary<string, string> resolution)
         {
             var result = new DateTimeResolution();
 
