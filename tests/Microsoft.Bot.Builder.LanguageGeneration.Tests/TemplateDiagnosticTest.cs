@@ -125,17 +125,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.Equal(1, diagnostics.Count);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.True(diagnostics[0].Message.Contains("Close } is missing in Expression"));
+            Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
 
             diagnostics = Templates.ParseText("#Demo2\r\n- ${createArray(1,\r\n, 2,3)").Diagnostics;
             Assert.Equal(1, diagnostics.Count);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.True(diagnostics[0].Message.Contains("Close } is missing in Expression"));
+            Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
 
             diagnostics = Templates.ParseText("#Demo4\r\n- ${createArray(1,\r\n2,3)\r\n> this is a comment").Diagnostics;
             Assert.Equal(1, diagnostics.Count);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.True(diagnostics[0].Message.Contains("Close } is missing in Expression"));
+            Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
         }
 
         [Fact]
