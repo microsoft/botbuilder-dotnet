@@ -2,15 +2,15 @@
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder
 {
-    [TestClass]
+    //[TestClass]
     public class Startup
     {
-        [AssemblyInitialize]
-        public static void Initialize(TestContext testContext)
+        //[AssemblyInitialize]
+        public static void Initialize() //TestContext testContext)
         {
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
