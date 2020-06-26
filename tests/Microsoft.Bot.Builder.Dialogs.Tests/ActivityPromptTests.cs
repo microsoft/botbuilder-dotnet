@@ -193,8 +193,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply("please send an event.")
+            .AssertReply("please send an event.")
+            .AssertReply("Test complete.")
             .Send("test")
             .AssertReply("Retrying - please send an event.")
+            .AssertReply("please send an event.")
             .AssertReply("Test complete.")
             .StartTestAsync();
         }
