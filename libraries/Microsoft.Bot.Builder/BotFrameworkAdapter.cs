@@ -14,7 +14,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.OAuth;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -218,7 +217,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// The map of applications to <see cref="AppCredentials"/> for this adapter.
         /// </value>
-        protected ConcurrentDictionary<string, AppCredentials> AppCredentialMap { get => _appCredentialMap; }
+        protected ConcurrentDictionary<string, AppCredentials> AppCredentialMap => _appCredentialMap;
 
         /// <summary>
         /// Gets the custom <see cref="HttpClient"/> for this adapter if specified.
@@ -226,7 +225,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// The custom <see cref="HttpClient"/> for this adapter if specified.
         /// </value>
-        protected HttpClient HttpClient { get => _httpClient; }
+        protected HttpClient HttpClient => _httpClient;
 
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
@@ -341,6 +340,7 @@ namespace Microsoft.Bot.Builder
             // Reusing the code from the above override, ContinueConversationAsync()
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
+                context.AppId = claimsIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
 
@@ -436,6 +436,7 @@ namespace Microsoft.Bot.Builder
             {
                 activity.CallerId = await GenerateCallerIdAsync(claimsIdentity).ConfigureAwait(false);
 
+                context.AppId = claimsIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
 
                 // The OAuthScope is also stored on the TurnState to get the correct AppCredentials if fetching a token is required.
@@ -1254,6 +1255,8 @@ namespace Microsoft.Bot.Builder
 
             using (var context = new TurnContext(this, (Activity)eventActivity))
             {
+                context.AppId = credentials.MicrosoftAppId;
+
                 var claimsIdentity = new ClaimsIdentity();
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, credentials.MicrosoftAppId));
                 claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, credentials.MicrosoftAppId));

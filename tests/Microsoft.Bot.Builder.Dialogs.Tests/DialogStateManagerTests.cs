@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class DialogStateManagerTests
     {
-        private Foo foo = new Foo()
+        private Foo _foo = new Foo()
         {
             Name = "Tom",
             Age = 15,
@@ -245,15 +245,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateDialogContext(async (dc, ct) =>
             {
                 // complex type paths
-                dc.State.SetValue("UseR.fOo", foo);
+                dc.State.SetValue("UseR.fOo", _foo);
                 Assert.AreEqual("bob", dc.State.GetValue<string>("user.foo.SuBname.name"));
 
                 // complex type paths
-                dc.State.SetValue("ConVerSation.FOo", foo);
+                dc.State.SetValue("ConVerSation.FOo", _foo);
                 Assert.AreEqual("bob", dc.State.GetValue<string>("conversation.foo.SuBname.name"));
 
                 // complex type paths
-                dc.State.SetValue("TurN.fOo", foo);
+                dc.State.SetValue("TurN.fOo", _foo);
                 Assert.AreEqual("bob", dc.State.GetValue<string>("TuRN.foo.SuBname.name"));
             }).StartTestAsync();
         }
@@ -305,15 +305,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateDialogContext(async (dc, ct) =>
             {
                 // complex type paths
-                dc.State.SetValue("UseR.fOo", foo);
+                dc.State.SetValue("UseR.fOo", _foo);
                 Assert.AreEqual(dc.State.GetValue<Foo>("user.foo").SubName.Name, "bob");
 
                 // complex type paths
-                dc.State.SetValue("ConVerSation.FOo", foo);
+                dc.State.SetValue("ConVerSation.FOo", _foo);
                 Assert.AreEqual(dc.State.GetValue<Foo>("conversation.foo").SubName.Name, "bob");
 
                 // complex type paths
-                dc.State.SetValue("TurN.fOo", foo);
+                dc.State.SetValue("TurN.fOo", _foo);
                 Assert.AreEqual(dc.State.GetValue<Foo>("turn.foo").SubName.Name, "bob");
             }).StartTestAsync();
         }

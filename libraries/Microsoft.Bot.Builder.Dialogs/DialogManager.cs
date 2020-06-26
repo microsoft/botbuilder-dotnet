@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The DialogStateManagerConfiguration.
         /// </value>
-        public DialogStateManagerConfiguration StateConfiguration { get; set; }
+        public DialogStateManagerConfiguration StateConfiguration { get; set; } = new DialogStateManagerConfiguration();
 
         /// <summary>
         /// Gets or sets (optional) number of milliseconds to expire the bot's state after.
@@ -164,6 +164,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 botStateSet.Add(UserState);
             }
 
+            context.TurnState.Set(this.StateConfiguration ?? new DialogStateManagerConfiguration());
+
             // create property accessors
             var lastAccessProperty = ConversationState.CreateProperty<DateTime>(LastAccess);
             var lastAccess = await lastAccessProperty.GetAsync(context, () => DateTime.UtcNow, cancellationToken).ConfigureAwait(false);
@@ -198,9 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // get the DialogStateManager configuration
-            var dialogStateManager = new DialogStateManager(dc, StateConfiguration);
-            await dialogStateManager.LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
-            dc.Context.TurnState.Add(dialogStateManager);
+            await dc.State.LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
 
             DialogTurnResult turnResult = null;
 
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // save all state scopes to their respective botState locations.
-            await dialogStateManager.SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dc.State.SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
 
             // save BotState changes
             await botStateSet.SaveAllChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);

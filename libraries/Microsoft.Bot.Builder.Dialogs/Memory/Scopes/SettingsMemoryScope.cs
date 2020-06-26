@@ -21,6 +21,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             this.IncludeInSnapshot = false;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to scope memory to bot only.
+        /// </summary>
+        /// <value>If true then settings memory scope will be scoped to bot's section of IConfiguration[turnContext.AppId].</value>
+        public bool ScopeToBot { get; set; } = false;
+
         public override object GetMemory(DialogContext dc)
         {
             if (dc == null)
@@ -34,6 +40,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 if (configuration != null)
                 {
                     settings = LoadSettings(configuration);
+
+                    if (ScopeToBot)
+                    {
+                        var appId = ((TurnContext)dc.Context).AppId ?? throw new ArgumentNullException(nameof(TurnContext.AppId));
+
+                        settings = ObjectPath.GetPathValue<object>(settings, appId);
+                    }
+
                     dc.Context.TurnState[ScopePath.Settings] = settings;
                 }
             }

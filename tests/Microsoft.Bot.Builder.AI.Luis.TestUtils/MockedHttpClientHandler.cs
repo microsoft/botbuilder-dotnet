@@ -9,11 +9,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
 {
     public class MockedHttpClientHandler : HttpClientHandler
     {
-        private readonly HttpClient client;
+        private readonly HttpClient _client;
 
         public MockedHttpClientHandler(HttpClient client)
         {
-            this.client = client;
+            this._client = client;
         }
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
                 Content = request.Content,
                 Method = request.Method,
             };
-            return client.SendAsync(mockedRequest, cancellationToken);
+            return _client.SendAsync(mockedRequest, cancellationToken);
         }
     }
 }

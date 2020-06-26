@@ -52,6 +52,12 @@ namespace Microsoft.Bot.Builder
         public TurnContextStateCollection TurnState { get; } = new TurnContextStateCollection();
 
         /// <summary>
+        /// Gets or sets the bot AppId.
+        /// </summary>
+        /// <value>The MicrosoftAppId of the current executing bot.</value>
+        public string AppId { get; set; }
+
+        /// <summary>
         /// Gets the activity associated with this turn; or <c>null</c> when processing
         /// a proactive message.
         /// </summary>

@@ -30,10 +30,10 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private static readonly string SoundFilePath = $"..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}Assets{Path.DirectorySeparatorChar}TellMeAJoke.wav";
         private static string speechSubscription = null;
         private static string speechBotSecret = null;
-        private List<MessageRecord> messages = new List<MessageRecord>();
-        private List<ActivityRecord> activities = new List<ActivityRecord>();
-        private WaveOutEvent player = new WaveOutEvent();
-        private Queue<WavQueueEntry> playbackStreams = new Queue<WavQueueEntry>();
+        private List<MessageRecord> _messages = new List<MessageRecord>();
+        private List<ActivityRecord> _activities = new List<ActivityRecord>();
+        private WaveOutEvent _player = new WaveOutEvent();
+        private Queue<WavQueueEntry> _playbackStreams = new Queue<WavQueueEntry>();
 
         private enum Sender
         {
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             System.Threading.Thread.Sleep(1000);
 
             // Read the bot's message.
-            var botAnswer = messages.LastOrDefault();
+            var botAnswer = _messages.LastOrDefault();
 
             // Cleanup
             await connector.DisconnectAsync();
@@ -130,9 +130,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 }
 
                 var wavStream = new RawSourceWaveStream(stream, new WaveFormat(16000, 16, 1));
-                playbackStreams.Enqueue(new WavQueueEntry(id, false, stream, wavStream));
+                _playbackStreams.Enqueue(new WavQueueEntry(id, false, stream, wavStream));
 
-                if (player.PlaybackState != PlaybackState.Playing)
+                if (_player.PlaybackState != PlaybackState.Playing)
                 {
                     Task.Run(() => PlayFromAudioQueue());
                 }
@@ -152,26 +152,26 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                     .ToList();
             }
 
-            activities.Add(new ActivityRecord(json, activity, Sender.Bot));
-            messages.Add(new MessageRecord(activity.Text, Sender.Bot));
+            _activities.Add(new ActivityRecord(json, activity, Sender.Bot));
+            _messages.Add(new MessageRecord(activity.Text, Sender.Bot));
         }
 
         private bool PlayFromAudioQueue()
         {
             WavQueueEntry entry = null;
-            lock (this.playbackStreams)
+            lock (this._playbackStreams)
             {
-                if (this.playbackStreams.Count > 0)
+                if (this._playbackStreams.Count > 0)
                 {
-                    entry = this.playbackStreams.Peek();
+                    entry = this._playbackStreams.Peek();
                 }
             }
 
             if (entry != null)
             {
                 System.Diagnostics.Debug.WriteLine($"START playing {entry.Id}");
-                this.player.Init(entry.Reader);
-                this.player.Play();
+                this._player.Init(entry.Reader);
+                this._player.Play();
                 return true;
             }
 
@@ -238,14 +238,14 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         private class ProducerConsumerStream : Stream
         {
-            private readonly MemoryStream innerStream = new MemoryStream();
-            private readonly object lockable = new object();
+            private readonly MemoryStream _innerStream = new MemoryStream();
+            private readonly object _lockable = new object();
 
-            private bool disposed = false;
+            private bool _disposed = false;
 
-            private long readPosition = 0;
+            private long _readPosition = 0;
 
-            private long writePosition = 0;
+            private long _writePosition = 0;
 
             public ProducerConsumerStream()
             {
@@ -275,9 +275,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             {
                 get
                 {
-                    lock (this.lockable)
+                    lock (this._lockable)
                     {
-                        return this.innerStream.Length;
+                        return this._innerStream.Length;
                     }
                 }
             }
@@ -286,9 +286,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             {
                 get
                 {
-                    lock (this.lockable)
+                    lock (this._lockable)
                     {
-                        return this.innerStream.Position;
+                        return this._innerStream.Position;
                     }
                 }
 
@@ -300,19 +300,19 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             public override void Flush()
             {
-                lock (this.lockable)
+                lock (this._lockable)
                 {
-                    this.innerStream.Flush();
+                    this._innerStream.Flush();
                 }
             }
 
             public override int Read(byte[] buffer, int offset, int count)
             {
-                lock (this.lockable)
+                lock (this._lockable)
                 {
-                    this.innerStream.Position = this.readPosition;
-                    int red = this.innerStream.Read(buffer, offset, count);
-                    this.readPosition = this.innerStream.Position;
+                    this._innerStream.Position = this._readPosition;
+                    int red = this._innerStream.Read(buffer, offset, count);
+                    this._readPosition = this._innerStream.Position;
 
                     return red;
                 }
@@ -321,7 +321,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             public override long Seek(long offset, SeekOrigin origin)
             {
                 // Seek is for read only
-                return this.readPosition;
+                return this._readPosition;
             }
 
             public override void SetLength(long value)
@@ -331,17 +331,17 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             public override void Write(byte[] buffer, int offset, int count)
             {
-                lock (this.lockable)
+                lock (this._lockable)
                 {
-                    this.innerStream.Position = this.writePosition;
-                    this.innerStream.Write(buffer, offset, count);
-                    this.writePosition = this.innerStream.Position;
+                    this._innerStream.Position = this._writePosition;
+                    this._innerStream.Write(buffer, offset, count);
+                    this._writePosition = this._innerStream.Position;
                 }
             }
 
             protected override void Dispose(bool disposing)
             {
-                if (this.disposed)
+                if (this._disposed)
                 {
                     return;
                 }
@@ -349,14 +349,14 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 if (disposing)
                 {
                     // Free managed objects help by this instance
-                    if (this.innerStream != null)
+                    if (this._innerStream != null)
                     {
-                        this.innerStream.Dispose();
+                        this._innerStream.Dispose();
                     }
                 }
 
                 // Free any unmanaged objects here.
-                this.disposed = true;
+                this._disposed = true;
 
                 // Call the base class implementation.
                 base.Dispose(disposing);

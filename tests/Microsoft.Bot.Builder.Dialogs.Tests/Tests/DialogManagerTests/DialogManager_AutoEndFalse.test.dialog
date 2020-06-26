@@ -1,0 +1,154 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "autoEndDialog": false,
+        "defaultResultProperty": "dialog.result",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "toot",
+                    "pattern": "toot"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "toot",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "toot"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "foo is ${dialog.foo}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "dialog.foo",
+                        "value": "BAR"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "foo is ${dialog.foo}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnConversationUpdateActivity",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "turn.Activity.membersAdded",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.IfCondition",
+                                "condition": "string(dialog.foreach.value.id) != string(turn.Activity.Recipient.id)",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "hi"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate",
+            "membersAdded": [ "tom" ]
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "toot"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "toot"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "foo is null"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "foo is BAR"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "toot"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "toot"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "foo is BAR"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "foo is BAR"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "toot"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "toot"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "foo is BAR"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "foo is BAR"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "toot"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "toot"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "foo is BAR"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "foo is BAR"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "toot"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "toot"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "foo is BAR"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "foo is BAR"
+        }
+    ]
+}

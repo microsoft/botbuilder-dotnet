@@ -131,6 +131,7 @@ namespace Microsoft.Bot.Builder
         {
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
+                context.AppId = botId;
                 return RunPipelineAsync(context, callback, cancellationToken);
             }
         }

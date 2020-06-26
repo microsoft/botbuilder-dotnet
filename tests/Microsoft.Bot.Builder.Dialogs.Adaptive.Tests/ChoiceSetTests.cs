@@ -26,10 +26,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class ChoiceSetTests
     {
-        private JsonSerializerSettings settings = new JsonSerializerSettings()
+        private JsonSerializerSettings _settings = new JsonSerializerSettings()
         {
-            Converters = new List<JsonConverter>() 
-            { 
+            Converters = new List<JsonConverter>()
+            {
                 new ChoiceSetConverter(),
                 new ObjectExpressionConverter<ChoiceSet>()
             }
@@ -116,9 +116,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 Choices = "test"
             };
-            var json = JsonConvert.SerializeObject(sample, settings);
+            var json = JsonConvert.SerializeObject(sample, _settings);
 
-            var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
+            var bar = JsonConvert.DeserializeObject<Bar>(json, _settings);
             Assert.AreEqual(typeof(Bar), bar.GetType());
             Assert.AreEqual(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
             var (result, error) = bar.Choices.TryGetValue(state);
@@ -143,9 +143,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new Choice() { Value = "test3" }
                 }
             };
-            var json = JsonConvert.SerializeObject(sample, settings);
+            var json = JsonConvert.SerializeObject(sample, _settings);
 
-            var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
+            var bar = JsonConvert.DeserializeObject<Bar>(json, _settings);
             Assert.AreEqual(typeof(Bar), bar.GetType());
             Assert.AreEqual(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
             var (result, error) = bar.Choices.TryGetValue(state);
@@ -171,9 +171,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            var json = JsonConvert.SerializeObject(sample, settings);
+            var json = JsonConvert.SerializeObject(sample, _settings);
 
-            var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
+            var bar = JsonConvert.DeserializeObject<Bar>(json, _settings);
             Assert.AreEqual(typeof(Bar), bar.GetType());
             Assert.AreEqual(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
             var (result, error) = bar.Choices.TryGetValue(state);

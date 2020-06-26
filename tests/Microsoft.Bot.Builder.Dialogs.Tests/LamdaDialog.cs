@@ -11,16 +11,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
     public class LamdaDialog : Dialog
     {
-        private Func<DialogContext, CancellationToken, Task> handler;
+        private Func<DialogContext, CancellationToken, Task> _handler;
 
         public LamdaDialog(Func<DialogContext, CancellationToken, Task> handler)
         {
-            this.handler = handler;
+            this._handler = handler;
         }
 
         public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            await this.handler(dc, cancellationToken);
+            await this._handler(dc, cancellationToken);
             return await dc.EndDialogAsync();
         }
     }

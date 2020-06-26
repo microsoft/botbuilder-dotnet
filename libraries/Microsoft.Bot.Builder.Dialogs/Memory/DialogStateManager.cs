@@ -32,35 +32,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public DialogStateManager(DialogContext dc, DialogStateManagerConfiguration configuration = null)
         {
-            ComponentRegistration.Add(new DialogsComponentRegistration());
-
             dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
+
+            if (configuration != null)
+            {
+                // cache for any other new dialogStatemanager instances in this turn.  
+                dc.Context.TurnState.Set(configuration);
+            }
+
+            // DialogManager sets dm.StateConfiguration into the turnstate so it can be configured from there.
             this.Configuration = configuration ?? dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
             if (this.Configuration == null)
             {
+                // this bootstraps non-DialogManager dialog contexts.
                 this.Configuration = new DialogStateManagerConfiguration();
-
-                // get all of the component memory scopes
-                foreach (var component in ComponentRegistration.Components.OfType<IComponentMemoryScopes>())
-                {
-                    foreach (var memoryScope in component.GetMemoryScopes())
-                    {
-                        this.Configuration.MemoryScopes.Add(memoryScope);
-                    }
-                }
-
-                // get all of the component path resolvers
-                foreach (var component in ComponentRegistration.Components.OfType<IComponentPathResolvers>())
-                {
-                    foreach (var pathResolver in component.GetPathResolvers())
-                    {
-                        this.Configuration.PathResolvers.Add(pathResolver);
-                    }
-                }
+                dc.Context.TurnState.Set(this.Configuration);
             }
-
-            // cache for any other new dialogStatemanager instances in this turn.  
-            dc.Context.TurnState.Set<DialogStateManagerConfiguration>(this.Configuration);
         }
 
         public DialogStateManagerConfiguration Configuration { get; set; }
@@ -186,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             MemoryScope memoryScope = null;
             string remainingPath;
-            
+
             try
             {
                 memoryScope = ResolveMemoryScope(path, out remainingPath);

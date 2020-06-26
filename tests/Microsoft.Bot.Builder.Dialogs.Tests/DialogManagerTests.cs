@@ -188,6 +188,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task DialogManager_AutoEndFalse()
+        {
+            await TestUtilities.RunTestScript();
+        }
+
+        [TestMethod]
+        public async Task DialogManager_AutoEndTrue()
+        {
+            await TestUtilities.RunTestScript();
+        }
+
+        [TestMethod]
         public async Task DialogManager_DialogSet()
         {
             var storage = new MemoryStorage();
@@ -255,7 +267,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .Send("SomeName")
                 .AssertReply("Hello SomeName, nice to meet you!")
                 .StartTestAsync();
-            
+
             Assert.AreEqual(DialogTurnStatus.Complete, _dmTurnResult.TurnResult.Status);
 
             if (shouldSendEoc)

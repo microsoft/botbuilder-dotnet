@@ -4,12 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -156,29 +158,45 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Standard BotBuilder adapter method for continuing an existing conversation based on a conversation reference.
+        /// Sends a proactive message from the bot to a conversation.
         /// </summary>
-        /// <param name="reference">A <see cref="ConversationReference"/> to be applied to future messages.</param>
-        /// <param name="logic">A bot logic function that will perform continuing action.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
+        /// <param name="botId">The appId of the bot.</param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most _channels require a user to initialize a conversation with a bot
+        /// before the bot can send activities to the user.
+        /// <para>This method registers the following services for the turn.<list type="bullet">
+        /// <item><description><see cref="IIdentity"/> (key = "BotIdentity"), a claims claimsIdentity for the bot.
+        /// </description></item>
+        /// </list></para>
+        /// </remarks>
+        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        public override async Task ContinueConversationAsync(string botId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
+            if (botId == null)
+            {
+                throw new ArgumentNullException(botId);
+            }
+
             if (reference == null)
             {
                 throw new ArgumentNullException(nameof(reference));
             }
 
-            if (logic == null)
+            if (callback == null)
             {
-                throw new ArgumentNullException(nameof(logic));
+                throw new ArgumentNullException(nameof(callback));
             }
 
             var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
 
             using (var context = new TurnContext(this, request))
             {
-                await RunPipelineAsync(context, logic, cancellationToken).ConfigureAwait(false);
+                context.AppId = botId;
+                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -203,10 +221,24 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
+                context.AppId = claimsIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Standard BotBuilder adapter method for continuing an existing conversation based on a conversation reference.
+        /// </summary>
+        /// <param name="reference">A conversation reference to be applied to future messages.</param>
+        /// <param name="logic">A bot logic function that will perform continuing action in the form 'async(context) => { ... }'.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        [Obsolete("This method has been replaced with ContinueConversationAsync(botId) or ContinueConverationAsync(claimsIdentity)")]
+        public Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
+        {
+            throw new NotSupportedException("This method has been replaced with ContinueConversationAsync(botId) or ContinueConverationAsync(claimsIdentity)");
         }
 
         /// <summary>
@@ -275,6 +307,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             using (var context = new TurnContext(this, activity))
             {
+                context.AppId = "UNKNOWN IDENTITY";
                 await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
             }
         }

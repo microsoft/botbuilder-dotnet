@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -24,9 +25,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
-     /// <summary>
-     /// BotAdapter to allow for handling Facebook App payloads and responses via the Facebook API.
-     /// </summary>
+    /// <summary>
+    /// BotAdapter to allow for handling Facebook App payloads and responses via the Facebook API.
+    /// </summary>
     public class FacebookAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private const string HubModeSubscribe = "subscribe";
@@ -157,33 +158,38 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Sends a proactive message to a conversation using a conversation reference.
+        /// Sends a proactive message from the bot to a conversation.
         /// </summary>
+        /// <param name="botId">The bot MicrosoftAppId for the conversation.</param>
         /// <param name="reference">A reference to the conversation to continue.</param>
-        /// <param name="logic">The method to call for the resulting bot turn.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>Call this method to proactively send a message to a conversation.</remarks>
-        /// <exception cref="ArgumentNullException"><paramref name="logic"/> or
-        /// <paramref name="reference"/> is null.</exception>
-        public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// <para>This method registers the following services for the turn.<list type="bullet">
+        /// <item><description><see cref="IIdentity"/> (key = "BotIdentity"), a claims claimsIdentity for the bot.
+        /// </description></item>
+        /// </list></para>
+        /// </remarks>
+        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        public override async Task ContinueConversationAsync(string botId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             if (reference == null)
             {
                 throw new ArgumentNullException(nameof(reference));
             }
 
-            if (logic == null)
+            if (callback == null)
             {
-                throw new ArgumentNullException(nameof(logic));
+                throw new ArgumentNullException(nameof(callback));
             }
 
             var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
 
             using (var context = new TurnContext(this, request))
             {
-                await RunPipelineAsync(context, logic, cancellationToken).ConfigureAwait(false);
+                context.AppId = botId;
+                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -206,10 +212,28 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         {
             using (var context = new TurnContext(this, reference.GetContinuationActivity()))
             {
+                context.AppId = claimsIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
                 context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
                 context.TurnState.Add<BotCallbackHandler>(callback);
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Sends a proactive message to a conversation using a conversation reference.
+        /// </summary>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="logic">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.</remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="logic"/> or
+        /// <paramref name="reference"/> is null.</exception>
+        [Obsolete("This has been replaced with ContinueConversationAsync(claims) or ContinueConversationAsync(botId)")]
+        public Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
+        {
+            throw new NotSupportedException("This method has been replaced with ContinueConversationAsync(claims)");
         }
 
         /// <summary>
@@ -260,6 +284,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
                     using (var context = new TurnContext(this, activity))
                     {
+                        context.AppId = "UNKNOWN IDENTITY";
+
                         await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
                     }
                 }

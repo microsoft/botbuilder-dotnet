@@ -19,7 +19,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
@@ -484,6 +483,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task ScopedSettingsMemoryScopeTest()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("test", "yoyo"), }).AddJsonFile(@"test.settings.json")
+                .Build();
+
+            var storage = new MemoryStorage();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            {
+                AppId = "xyzpdq"
+            }
+                .Use(new RegisterClassMiddleware<IConfiguration>(configuration))
+                .UseStorage(storage)
+                .UseBotState(new UserState(storage))
+                .UseBotState(new ConversationState(storage))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            DialogManager dm = new DialogManager(new SettingsScopeTestDialog());
+            dm.StateConfiguration.MemoryScopes.RemoveAll(ms => ms is SettingsMemoryScope);
+            dm.StateConfiguration.MemoryScopes.Add(new SettingsMemoryScope() { ScopeToBot = true });
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext);
+            })
+            .Send("settings.string")
+                .AssertReply("xyztest")
+            .Send("settings.int")
+                .AssertReply("1003")
+            .Send("settings.array[0]")
+                .AssertReply("xyzzero")
+            .Send("settings.array[1]")
+                .AssertReply("xyzone")
+            .Send("settings.array[2]")
+                .AssertReply("xyztwo")
+            .Send("settings.array[3]")
+                .AssertReply("xyzthree")
+            .Send("settings.fakeArray.0")
+                .AssertReply("xyzzero")
+            .Send("settings.fakeArray.1")
+                .AssertReply("xyzone")
+            .Send("settings.fakeArray.2")
+                .AssertReply("xyztwo")
+            .Send("settings.fakeArray.3")
+                .AssertReply("xyzthree")
+            .Send("settings.fakeArray.zzz")
+                .AssertReply("xyzcat")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task TestPathResolvers()
         {
             var storage = new MemoryStorage();
@@ -530,20 +580,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await dc.Context.SendActivityAsync(dc.State.GetValue<string>(dc.Context.Activity.Text));
+            var value = dc.State.GetValue<string>(dc.Context.Activity.Text);
+            await dc.Context.SendActivityAsync(value);
             return await dc.EndDialogAsync();
         }
     }
 
     internal class PathResolverTestDialog : Dialog
     {
-        private string[] entities = new string[] { "test1", "test2" };
+        private string[] _entities = new string[] { "test1", "test2" };
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             ValidateSetValue(dc, "#test", "turn.recognized.intents.test");
             ValidateSetValue(dc, "$test", "dialog.test");
-            ValidateSetValue(dc, "@@test", "turn.recognized.entities.test", entities);
+            ValidateSetValue(dc, "@@test", "turn.recognized.entities.test", _entities);
             Assert.AreEqual("test1", dc.State.GetValue<string>("@test"));
             Assert.AreEqual("test2", dc.State.GetValue<string[]>("@@test")[1]);
 

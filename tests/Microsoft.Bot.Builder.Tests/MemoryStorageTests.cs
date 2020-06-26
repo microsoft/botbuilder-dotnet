@@ -10,22 +10,22 @@ namespace Microsoft.Bot.Builder.Tests
 {
     public class MemoryStorageTests : StorageBaseTests, IDisposable
     {
-        private IStorage storage;
+        private IStorage _storage;
 
         public MemoryStorageTests()
         {
-            storage = new MemoryStorage();
+            _storage = new MemoryStorage();
         }
 
         public void Dispose()
         {
-            storage = new MemoryStorage();
+            _storage = new MemoryStorage();
         }
 
         [Fact]
         public async Task MemoryStorage_CreateObjectTest()
         {
-            await CreateObjectTest(storage);
+            await CreateObjectTest(_storage);
         }
 
         [Fact]
@@ -38,32 +38,32 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public async Task MemoryStorage_ReadUnknownTest()
         {
-            await ReadUnknownTest(storage);
+            await ReadUnknownTest(_storage);
         }
 
         [Fact]
         public async Task MemoryStorage_UpdateObjectTest()
         {
-            await UpdateObjectTest(storage);
+            await UpdateObjectTest(_storage);
         }
 
         [Fact]
         public async Task MemoryStorage_DeleteObjectTest()
         {
-            await DeleteObjectTest(storage);
+            await DeleteObjectTest(_storage);
         }
 
         [Fact]
         public async Task MemoryStorage_HandleCrazyKeys()
         {
-            await HandleCrazyKeys(storage);
+            await HandleCrazyKeys(_storage);
         }
 
         [Fact]
         public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
         {
-            storage = new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
-            await StatePersistsThroughMultiTurn(storage);
+            _storage = new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+            await StatePersistsThroughMultiTurn(_storage);
         }
     }
 }

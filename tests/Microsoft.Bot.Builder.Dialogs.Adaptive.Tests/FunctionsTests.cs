@@ -72,17 +72,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         public class MockMemoryScope : MemoryScope
         {
-            private object memory;
+            private object _memory;
 
             public MockMemoryScope(string name, object memory)
                 : base(name, false)
             {
-                this.memory = JObject.FromObject(memory);
+                this._memory = JObject.FromObject(memory);
             }
 
             public override object GetMemory(DialogContext dc)
             {
-                return this.memory;
+                return this._memory;
             }
 
             public override void SetMemory(DialogContext dc, object memory)

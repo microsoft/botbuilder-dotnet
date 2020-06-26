@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Streaming
             : base(credentialProvider, authConfig, channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
         {
         }
-        
+
         public BotFrameworkHttpAdapterBase(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
             : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, null, null, logger)
         {
@@ -100,7 +100,14 @@ namespace Microsoft.Bot.Builder.Streaming
                 // Pipes are unauthenticated. Pending to check that we are in pipes right now. Do not merge to master without that.
                 if (ClaimsIdentity != null)
                 {
+                    context.AppId = ClaimsIdentity.Claims.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
                     context.TurnState.Add<IIdentity>(BotIdentityKey, ClaimsIdentity);
+                }
+                else
+                {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+                    throw new ArgumentNullException(nameof(ClaimsIdentity));
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
                 }
 
                 var connectorClient = CreateStreamingConnectorClient(activity, requestHandler);
