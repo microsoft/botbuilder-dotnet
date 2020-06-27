@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Xunit;
@@ -24,7 +26,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         [Fact]
         public async Task ConditionalsTests_OnTeamActivityTypes()
         {
+            ClassInitialize();
+            Initialize();
             await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        internal static void Initialize()
+        {
+            ComponentRegistration.Add(new DeclarativeComponentRegistration());
+            ComponentRegistration.Add(new DialogsComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveComponentRegistration());
+            ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());
+            ComponentRegistration.Add(new TeamsComponentRegistration());
         }
     }
 }
