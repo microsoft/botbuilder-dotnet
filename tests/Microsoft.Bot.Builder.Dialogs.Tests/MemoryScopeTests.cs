@@ -502,7 +502,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             DialogManager dm = new DialogManager(new SettingsScopeTestDialog());
             dm.StateConfiguration.MemoryScopes.RemoveAll(ms => ms is SettingsMemoryScope);
-            dm.StateConfiguration.MemoryScopes.Add(new SettingsMemoryScope() { ScopeToBot = true });
+            dm.StateConfiguration.MemoryScopes.Add(new SettingsMemoryScope() { ScopeToAppId = true });
 
             await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
