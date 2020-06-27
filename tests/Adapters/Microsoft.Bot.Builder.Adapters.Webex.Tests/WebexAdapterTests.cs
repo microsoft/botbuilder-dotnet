@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
                 return Task.CompletedTask;
             }
 
-            await webexAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
+            await webexAdapter.ContinueConversationAsync("mybot", conversationReference, BotsLogic, default);
             Assert.True(callbackInvoked);
         }
 
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
                 return Task.CompletedTask;
             }
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await webexAdapter.ContinueConversationAsync(null, BotsLogic, default); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await webexAdapter.ContinueConversationAsync("mybot", null, BotsLogic, default); });
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
             var conversationReference = new ConversationReference();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await webexAdapter.ContinueConversationAsync(conversationReference, null, default); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await webexAdapter.ContinueConversationAsync("mybot", conversationReference, null, default); });
         }
 
         [Fact]

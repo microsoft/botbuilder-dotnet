@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
     public class FacebookAdapterTests
     {
         private readonly FacebookAdapterOptions _testOptions = new FacebookAdapterOptions("Test", "Test", "Test");
-        
+
         public FacebookAdapterTests()
         {
             _testOptions.VerifyIncomingRequests = false;
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
                 return Task.CompletedTask;
             }
 
-            await facebookAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
+            await facebookAdapter.ContinueConversationAsync("mybot", conversationReference, BotsLogic, default);
             Assert.True(callbackInvoked);
         }
 
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
                 return Task.CompletedTask;
             }
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookAdapter.ContinueConversationAsync(null, BotsLogic, default); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookAdapter.ContinueConversationAsync("mybot", null, BotsLogic, default); });
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             var facebookAdapter = new FacebookAdapter(_testOptions);
             var conversationReference = new ConversationReference();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookAdapter.ContinueConversationAsync(conversationReference, null, default); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookAdapter.ContinueConversationAsync("mybot", conversationReference, null, default); });
         }
 
         [Fact]
@@ -148,9 +148,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         public async Task ProcessAsyncShouldThrowExceptionWithUnverifiedSignature()
         {
             var testOptionsVerifyEnabled = new FacebookAdapterOptions("Test", "Test", "Test")
-                {
-                    VerifyIncomingRequests = true
-                };
+            {
+                VerifyIncomingRequests = true
+            };
 
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(testOptionsVerifyEnabled);
             var facebookAdapter = new FacebookAdapter(testOptionsVerifyEnabled, null, facebookClientWrapper.Object);
@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             Assert.Equal(testResponse, responses[0].Id);
             facebookClientWrapper.Verify(api => api.RequestThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), default), Times.Once);
         }
-        
+
         [Fact]
         public async Task UpdateActivityAsyncShouldThrowNotImplementedException()
         {

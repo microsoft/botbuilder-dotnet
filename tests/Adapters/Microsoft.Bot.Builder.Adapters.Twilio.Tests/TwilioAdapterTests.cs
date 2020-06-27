@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
-            
+
             httpRequest.SetupGet(req => req.Body).Returns(stream);
 
             twilioApi.SetupAllProperties();
@@ -214,8 +214,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
                 return Task.CompletedTask;
             }
 
-            await twilioAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
-            
+            await twilioAdapter.ContinueConversationAsync("mybot", conversationReference, BotsLogic, default);
+
             Assert.True(callbackInvoked);
         }
 
@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
                 return Task.CompletedTask;
             }
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await twilioAdapter.ContinueConversationAsync(null, BotsLogic, default); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await twilioAdapter.ContinueConversationAsync("mybot", null, BotsLogic, default); });
         }
 
         [Fact]
@@ -238,7 +238,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var twilioAdapter = new TwilioAdapter(new Mock<TwilioClientWrapper>(_testOptions).Object);
             var conversationReference = new ConversationReference();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await twilioAdapter.ContinueConversationAsync(conversationReference, null, default); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await twilioAdapter.ContinueConversationAsync("mybot", conversationReference, null, default); });
         }
     }
 }

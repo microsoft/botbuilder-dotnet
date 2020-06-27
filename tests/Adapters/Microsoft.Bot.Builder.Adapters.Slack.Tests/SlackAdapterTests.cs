@@ -368,7 +368,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
                 return Task.CompletedTask;
             }
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await slackAdapter.ContinueConversationAsync(null, BotsLogic, default); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await slackAdapter.ContinueConversationAsync("mybot", null, BotsLogic, default); });
         }
 
         [Fact]
@@ -379,7 +379,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var slackAdapter = new SlackAdapter(_testOptions, slackClient: slackApi.Object);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await slackAdapter.ContinueConversationAsync(new ConversationReference(), null, default); });
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await slackAdapter.ContinueConversationAsync("mybot", new ConversationReference(), null, default); });
         }
 
         [Fact]
@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
                 return Task.CompletedTask;
             }
 
-            await slackAdapter.ContinueConversationAsync(new ConversationReference(), BotsLogic, default);
+            await slackAdapter.ContinueConversationAsync("mybot", new ConversationReference(), BotsLogic, default);
 
             Assert.True(callbackInvoked);
         }
