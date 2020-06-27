@@ -313,6 +313,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             return true;
         }
 
+        private static bool ChannelRequiresSignInLink(string channelId)
+        {
+            switch (channelId)
+            {
+                case Channels.Msteams:
+                    return true;
+            }
+
+            return false;
+        }
+
         private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
@@ -377,7 +388,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         cardActionType = ActionTypes.OpenUrl;
                     }
                 }
-                else
+                else if (!ChannelRequiresSignInLink(turnContext.Activity.ChannelId))
                 {
                     value = null;
                 }
