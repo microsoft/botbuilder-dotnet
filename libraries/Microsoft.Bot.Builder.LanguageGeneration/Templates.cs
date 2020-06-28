@@ -425,8 +425,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private void AdjustRangeForUpdateTemplate(Template oldTemplate, Template newTemplate)
         {
-            var lineOffset = newTemplate.SourceRange.Range.End.Line - newTemplate.SourceRange.Range.Start.Line
-                - (oldTemplate.SourceRange.Range.End.Line - oldTemplate.SourceRange.Range.Start.Line);
+            var newRange = newTemplate.SourceRange.Range.End.Line - newTemplate.SourceRange.Range.Start.Line;
+            var oldRange = oldTemplate.SourceRange.Range.End.Line - oldTemplate.SourceRange.Range.Start.Line;
+            var lineOffset = newRange - oldRange;
 
             var hasFound = false;
 
