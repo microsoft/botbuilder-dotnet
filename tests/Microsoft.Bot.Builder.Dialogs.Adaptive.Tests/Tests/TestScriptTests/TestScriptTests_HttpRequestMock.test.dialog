@@ -77,6 +77,13 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${dialog.result.content}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "POST",
+                        "url": "http://127.0.0.2",
+                        "resultProperty": "dialog.result"
                     }
                 ]
             }
@@ -110,6 +117,10 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "repeated response"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Object reference not set to an instance of an object."
         }
     ]
 }
