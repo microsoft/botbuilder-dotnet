@@ -3,12 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
@@ -148,7 +150,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             foreach (var caseScope in this.Cases)
             {
-                var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dc.State);
+                var opt = new Options() { Locale = dc.EvalLocaleFromDialogContext() };
+                var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dc.State, opt);
 
                 if (error != null)
                 {
