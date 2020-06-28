@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 if (OutputFormat != null)
                 {
-                    var opt = new Options() { Locale = dc.EvalLocaleFromDialogContext() };
+                    var opt = new Options() { Locale = dc.EvalLocaleInfo() };
                     var (outputValue, error) = this.OutputFormat.TryEvaluate(dc.State, opt);
                     if (error == null)
                     {
