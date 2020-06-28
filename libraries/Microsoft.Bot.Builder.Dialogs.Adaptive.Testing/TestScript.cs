@@ -9,10 +9,10 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// A list of mocks.
         /// </value>
         [JsonProperty("userTokenMocks")]
-        public List<MockData<UserTokenMock>> UserTokenMocks { get; set; } = new List<MockData<UserTokenMock>>();
+        public List<UserTokenMock> UserTokenMocks { get; set; } = new List<UserTokenMock>();
 
         /// <summary>
         /// Gets or sets the test script actions.
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 
             foreach (var userToken in UserTokenMocks)
             {
-                userToken.Data.Setup(adapter);
+                userToken.Setup(adapter);
             }
 
             if (callback != null)

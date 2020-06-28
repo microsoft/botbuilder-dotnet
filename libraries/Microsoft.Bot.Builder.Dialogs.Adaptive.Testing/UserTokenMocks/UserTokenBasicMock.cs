@@ -5,15 +5,15 @@ using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Adapters;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks
 {
-    public class UserTokenMock : MockData<UserTokenMock>
+    public class UserTokenBasicMock : UserTokenMock
     {
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.Test.UserTokenMock";
+        public const string Kind = "Microsoft.Test.UserTokenBasicMock";
 
         [JsonConstructor]
-        public UserTokenMock([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
+        public UserTokenBasicMock([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
             RegisterSourcePath(path, line);
         }
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
         [JsonProperty("magicCode")]
         public string MagicCode { get; set; }
 
-        public void Setup(TestAdapter adapter)
+        public override void Setup(TestAdapter adapter)
         {
             var conversation = adapter.Conversation;
             var channelId = string.IsNullOrEmpty(ChannelId) ? conversation.ChannelId : ChannelId;

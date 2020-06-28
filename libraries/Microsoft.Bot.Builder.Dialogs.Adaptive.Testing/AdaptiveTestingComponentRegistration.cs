@@ -4,8 +4,8 @@
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
@@ -32,14 +32,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             yield return new DeclarativeType<AssertReplyOneOf>(AssertReplyOneOf.Kind);
             yield return new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.Kind);
             yield return new DeclarativeType<HttpRequestSequenceMock>(HttpRequestSequenceMock.Kind);
-            yield return new DeclarativeType<UserTokenMock>(UserTokenMock.Kind);
+            yield return new DeclarativeType<UserTokenBasicMock>(UserTokenBasicMock.Kind);
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield return new InterfaceConverter<TestAction>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<HttpRequestMock>(resourceExplorer, sourceContext);
-            yield return new InterfaceConverter<MockData<UserTokenMock>>(resourceExplorer, sourceContext);
+            yield return new InterfaceConverter<UserTokenMock>(resourceExplorer, sourceContext);
         }
     }
 }

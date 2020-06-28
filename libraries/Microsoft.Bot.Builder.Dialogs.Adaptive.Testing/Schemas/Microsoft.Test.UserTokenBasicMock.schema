@@ -1,8 +1,8 @@
 ﻿{
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.Test.IUserTokenMock)",
-    "title": "Microsoft Test UserTokenMock",
-    "description": "Mock UserToken",
+    "title": "Microsoft Test UserTokenBasicMock",
+    "description": "Mock Basic UserToken",
     "type": "object",
     "required": [
         "connectionName",

@@ -1,18 +1,14 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks
 {
-    /// <summary>
-    /// Helper class for mocks that want to be loaded from file and don't have variations.
-    /// </summary>
-    /// <typeparam name="T">The actual mock implementation.</typeparam>
-    public abstract class MockData<T>
-        where T : MockData<T>
+    public abstract class UserTokenMock
     {
-        public T Data => (T)this;
+        public abstract void Setup(TestAdapter adapter);
 
         protected void RegisterSourcePath(string path, int line)
         {
