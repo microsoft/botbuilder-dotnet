@@ -4158,7 +4158,7 @@ namespace AdaptiveExpressions
                         {
                             if (parsed.Year != null || parsed.Month == null || parsed.DayOfMonth == null)
                             {
-                                error = $"The paramter {args[0]} must be a timex expression only month and day-of-month, for example: XXXX-10-31.";
+                                error = $"{args[0]} must be a timex string which only contains month and day-of-month, for example: 'XXXX-10-31'.";
                             }
                         }
 
@@ -4213,7 +4213,7 @@ namespace AdaptiveExpressions
                         {
                             if (parsed.Year != null || parsed.Month == null || parsed.DayOfMonth == null)
                             {
-                                error = $"The paramter {args[0]} must be a timex expression only contains month and day-of-month, for example: XXXX-10-31.";
+                                error = $"{args[0]} must be a timex string which only contains month and day-of-month, for example: 'XXXX-10-31'.";
                             }
                         }
 
@@ -4263,7 +4263,7 @@ namespace AdaptiveExpressions
                         {
                             if (!formatRegex.IsMatch(args[0] as string))
                             {
-                                error = $"The format of input {args[0]} must be 'TXX-mm-ss', for example: 'TXX:15:28'";
+                                error = $"{args[0]}  must be a timex string which only contains minutes and seconds, for example: 'TXX:15:28'";
                             }
                         }
 
@@ -4310,7 +4310,7 @@ namespace AdaptiveExpressions
                         {
                             if (!formatRegex.IsMatch(args[0] as string))
                             {
-                                error = $"The format of input {args[0]} must be 'TXX-mm-ss', for example: 'TXX:15:28'";
+                                error = $"{args[0]}  must be a timex string which only contains minutes and seconds, for example: 'TXX:15:28'";
                             }
                         }
 
