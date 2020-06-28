@@ -84,7 +84,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(Resource resource)
         {
-            return new TemplateEngineLanguageGenerator(resource as FileResource, multilanguageResources);
+            if (resource is FileResource fileResource)
+            {
+                return new TemplateEngineLanguageGenerator(fileResource.FullName, multilanguageResources);
+            }
+            else
+            {
+                throw new Exception("resource is not file resource.");
+            }
         }
     }
 }
