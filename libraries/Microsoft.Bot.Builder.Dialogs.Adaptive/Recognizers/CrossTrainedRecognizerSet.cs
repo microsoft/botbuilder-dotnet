@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 throw new ArgumentNullException(nameof(activity));
             }
 
-            if (Recognizers.Count() == 0)
+            if (Recognizers.Any() == false)
             {
                 return new RecognizerResult()
                 {
