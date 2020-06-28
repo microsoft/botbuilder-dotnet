@@ -110,6 +110,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return newLG;
         }
 
+        /// <summary>
+        /// Parse LG content and achieve the AST.
+        /// </summary>
+        /// <param name="text">LG content.</param>
+        /// <param name="id">Source id.</param>
+        /// <returns>The abstract syntax tree of lg file.</returns>
         public static IParseTree AntlrParseTemplates(string text, string id)
         {
             if (string.IsNullOrEmpty(text))
@@ -237,6 +243,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
+        /// <summary>
+        /// Templates transfeormer. Fullfill more details and body context into the templates object.
+        /// </summary>
         public class TemplatesTransformer : LGFileParserBaseVisitor<object>
         {
             private static readonly Regex IdentifierRegex = new Regex(@"^[0-9a-zA-Z_]+$");
@@ -248,6 +257,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 this.templates = templates;
             }
 
+            /// <summary>
+            /// Transform the parse tree into templates.
+            /// </summary>
+            /// <param name="parseTree">Input abstract syntax tree.</param>
+            /// <returns>Templates.</returns>
             public Templates Transform(IParseTree parseTree)
             {
                 if (parseTree != null)
