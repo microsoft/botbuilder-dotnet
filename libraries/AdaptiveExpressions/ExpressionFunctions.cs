@@ -1135,7 +1135,7 @@ namespace AdaptiveExpressions
                     // get root value from memory
                     if (!(firstItem is string))
                     {
-                        error = $"if GetProperty contains only one parameter, please make sure it is string. But get {firstItem?.GetType()?.Name ?? "null"}";
+                        error = $"Single parameter {children[0]} is not a string.";
                     }
                     else
                     {
