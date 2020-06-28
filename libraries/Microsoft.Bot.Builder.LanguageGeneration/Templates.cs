@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
-                ClearDiagnostic();
+                ClearDiagnostics();
 
                 var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
                 var newTemplateBody = ConvertTemplateBody(templateBody);
@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 updatedTemplates = new TemplatesTransformer(updatedTemplates).Transform(AntlrParseTemplates(content, Id));
 
                 var originStartLine = template.SourceRange.Range.Start.Line - 1;
-                AppendDiagnosticWithOffset(updatedTemplates.Diagnostics, originStartLine);
+                AppendDiagnosticsWithOffset(updatedTemplates.Diagnostics, originStartLine);
 
                 var newTemplate = updatedTemplates.FirstOrDefault();
                 if (newTemplate != null)
@@ -326,7 +326,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception(TemplateErrors.TemplateExist(templateName));
             }
 
-            ClearDiagnostic();
+            ClearDiagnostics();
 
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
@@ -340,7 +340,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
             newTemplates = new TemplatesTransformer(newTemplates).Transform(AntlrParseTemplates(content, Id));
 
-            AppendDiagnosticWithOffset(newTemplates.Diagnostics, originStartLine);
+            AppendDiagnosticsWithOffset(newTemplates.Diagnostics, originStartLine);
 
             var newTemplate = newTemplates.FirstOrDefault();
             if (newTemplate != null)
@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
-                ClearDiagnostic();
+                ClearDiagnostics();
 
                 var startLine = template.SourceRange.Range.Start.Line - 1;
                 var stopLine = template.SourceRange.Range.End.Line - 1;
@@ -410,11 +410,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return this;
         }
 
-        private void AppendDiagnosticWithOffset(IList<Diagnostic> diagnostic, int offset)
+        private void AppendDiagnosticsWithOffset(IList<Diagnostic> diagnostics, int offset)
         {
-            if (diagnostic != null)
+            if (diagnostics != null)
             {
-                diagnostic.ToList().ForEach(u =>
+                diagnostics.ToList().ForEach(u =>
                 {
                     u.Range.Start.Line += offset;
                     u.Range.End.Line += offset;
@@ -472,7 +472,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private void ClearDiagnostic()
+        private void ClearDiagnostics()
         {
             this.Diagnostics = new List<Diagnostic>();
         }
