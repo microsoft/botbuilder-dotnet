@@ -3,12 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -89,9 +91,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public override Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
+            var lgOpt = new EvaluationOptions() { Locale = dialogContext.EvalLocaleFromDialogContext() };
+
             try
             {
-                return Task.FromResult(lg.EvaluateText(template, data));
+                return Task.FromResult(lg.EvaluateText(template, data, lgOpt));
             }
             catch (Exception err)
             {
