@@ -136,6 +136,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_EditActionInsertActions()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_EditActionAppendActions()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task Action_EditActionReplaceSequence()
         {
             await TestUtils.RunTestScript(ResourceExplorer);

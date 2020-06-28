@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -10,12 +12,18 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogContextVisibleState
     {
         [JsonProperty(PropertyName = "user")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IDictionary<string, object> User { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         [JsonProperty(PropertyName = "conversation")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IDictionary<string, object> Conversation { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         [JsonProperty(PropertyName = "dialog")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IDictionary<string, object> Dialog { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

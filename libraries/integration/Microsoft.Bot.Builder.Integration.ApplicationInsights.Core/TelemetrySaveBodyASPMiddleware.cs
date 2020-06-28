@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
     // This class has been deprecated in favor of using TelemetryInitializerMiddleware in
     // Microsoft.Bot.Integration.ApplicationInsights.Core and Microsoft.Bot.Integration.ApplicationInsights.WebApi
     [Obsolete("This class is deprecated. Please add TelemetryInitializerMiddleware to your adapter's middleware pipeline instead.")]
+    [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "This class is deprecated, we won't fix FxCop issues")]
+    [SuppressMessage("AsyncUsage.CSharp.Naming", "UseAsyncSuffix:Use Async suffix", Justification = "This class is deprecated, we won't fix FxCop issues")]
     public class TelemetrySaveBodyASPMiddleware
     {
         private readonly RequestDelegate _next;
@@ -37,7 +40,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
                 {
                     using (var reader = new StreamReader(request.Body, Encoding.UTF8, true, 4096, true))
                     {
-                        var body = await reader.ReadToEndAsync();
+                        var body = await reader.ReadToEndAsync().ConfigureAwait(false);
                         var jsonObject = JObject.Parse(body);
 
                         // Save data in cache.
@@ -55,7 +58,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
                 }
             }
 
-            await _next(httpContext);
+            await _next(httpContext).ConfigureAwait(false);
         }
     }
 }
