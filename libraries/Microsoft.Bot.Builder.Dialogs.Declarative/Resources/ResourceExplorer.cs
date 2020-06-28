@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     if (result is Dialog dlg)
                     {
                         // dialog id's are resource ids
-                        dlg.Id = resource.Id;
+                        dlg.Id = resource.Id.EndsWith(".dialog") ? resource.Id.Substring(0, resource.Id.LastIndexOf(".")) : resource.Id;
                     }
 
                     return result;
