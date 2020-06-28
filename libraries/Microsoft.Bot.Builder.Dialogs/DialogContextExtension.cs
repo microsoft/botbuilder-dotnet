@@ -17,13 +17,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogContext">The dialogContext to extract information.</param>
         /// <returns>A <see cref="CultureInfo"/> representing the current locale.</returns>
-        public static CultureInfo EvalLocaleFromDialogContext(this DialogContext dialogContext)
+        public static CultureInfo EvalLocaleInfo(this DialogContext dialogContext)
         {
             string locale = null;
-            var turnExists = dialogContext.Context.TurnState.TryGetValue(Turn, out var turnContent);
+            object turnContent = null;
+            var turnExists = dialogContext?.Context?.TurnState?.TryGetValue(Turn, out turnContent);
             if (turnExists == true && turnContent != null)
             {
-                var localeValue = (turnContent as JObject).SelectToken(LocalePath) as JValue;
+                var localeValue = (turnContent as JObject)?.SelectToken(LocalePath) as JValue;
                 if (localeValue != null)
                 {
                     locale = localeValue.ToObject<string>();

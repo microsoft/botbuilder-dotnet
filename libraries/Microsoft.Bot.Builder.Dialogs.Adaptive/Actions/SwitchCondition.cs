@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             foreach (var caseScope in this.Cases)
             {
-                var opt = new Options() { Locale = dc.EvalLocaleFromDialogContext() };
+                var opt = new Options() { Locale = dc.EvalLocaleInfo() };
                 var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dc.State, opt);
 
                 if (error != null)

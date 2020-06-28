@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 {
                     var conditional = _conditionals[i];
                     var expression = conditional.GetExpression();
-                    var opt = new Options() { Locale = context.EvalLocaleFromDialogContext() };
+                    var opt = new Options() { Locale = context.EvalLocaleInfo() };
                     var (value, error) = expression.TryEvaluate(context.State, opt);
                     var eval = error == null && (bool)value;
                     if (eval == true)
