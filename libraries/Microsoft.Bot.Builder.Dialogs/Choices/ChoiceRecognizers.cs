@@ -4,17 +4,19 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.Number;
-using Microsoft.Recognizers.Text.NumberWithUnit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     /// <summary>
     /// Contains methods for matching user input against a list of choices.
     /// </summary>
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class ChoiceRecognizers
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
         /// Matches user input against a list of choices.
@@ -37,10 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <returns>A list of found choices, sorted by most relevant first.</returns>
         public static List<ModelResult<FoundChoice>> RecognizeChoices(string utterance, IList<Choice> list, FindChoicesOptions options = null)
         {
-            if (utterance == null)
-            {
-                utterance = string.Empty;
-            }
+            utterance ??= string.Empty;
 
             // Try finding choices by text search first
             // - We only want to use a single strategy for returning results to avoid issues where utterances
@@ -54,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 if (options == null || options.RecognizeOrdinals)
                 {
                     // Next try finding by ordinal
-                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale).GetOrdinalModel(locale));
+                    matches = RecognizeNumbers(utterance, new NumberRecognizer(locale).GetOrdinalModel(locale));
                     foreach (var match in matches)
                     {
                         MatchChoiceByIndex(list, matched, match);
@@ -64,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 if (matches.Count == 0 && (options == null || options.RecognizeNumbers))
                 {
                     // Then try by numerical index
-                    matches = RecognizeNumbers(utterance, locale, new NumberRecognizer(locale).GetNumberModel(locale));
+                    matches = RecognizeNumbers(utterance, new NumberRecognizer(locale).GetNumberModel(locale));
                     foreach (var match in matches)
                     {
                         MatchChoiceByIndex(list, matched, match);
@@ -85,35 +84,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             try
             {
                 // converts Resolution Values containing "end" (e.g. utterance "last") in numeric values.
-                var value = match.Resolution.Value.Replace("end", list.Count.ToString());
-                var dt = new DataTable();
-                var result = (int)dt.Compute(value, string.Empty);
-
-                var index = result - 1;
-                if (index >= 0 && index < list.Count)
+                var value = match.Resolution.Value.Replace("end", list.Count.ToString(CultureInfo.InvariantCulture));
+                using (var dt = new DataTable())
                 {
-                    var choice = list[index];
-                    matched.Add(new ModelResult<FoundChoice>
+                    var result = (int)dt.Compute(value, string.Empty);
+
+                    var index = result - 1;
+                    if (index >= 0 && index < list.Count)
                     {
-                        Start = match.Start,
-                        End = match.End,
-                        TypeName = "choice",
-                        Text = match.Text,
-                        Resolution = new FoundChoice
+                        var choice = list[index];
+                        matched.Add(new ModelResult<FoundChoice>
                         {
-                            Value = choice.Value,
-                            Index = index,
-                            Score = 1.0f,
-                        },
-                    });
+                            Start = match.Start,
+                            End = match.End,
+                            TypeName = "choice",
+                            Text = match.Text,
+                            Resolution = new FoundChoice
+                            {
+                                Value = choice.Value,
+                                Index = index,
+                                Score = 1.0f,
+                            },
+                        });
+                    }
                 }
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we shouldn't do this but it is hard to tell what the original dev had in mind for this case, ignoring for now)
             catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
             }
         }
 
-        private static List<ModelResult<FoundChoice>> RecognizeNumbers(string utterance, string culture, IModel model)
+        private static List<ModelResult<FoundChoice>> RecognizeNumbers(string utterance, IModel model)
         {
             var result = model.Parse(utterance);
             return result.Select(r =>

@@ -291,24 +291,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         public StringExpression RankerType { get; set; } = new StringExpression(RankerTypes.DefaultRankerType);
 
         /// <summary>
-        /// Gets or sets a value indicating whether to enable PreciseAnswer generation. 
-        /// </summary>
-        /// <value>
-        /// Choice whether to generate precise answer or not.
-        /// </value>
-        [JsonProperty("enablePreciseAnswer")]
-        public BoolExpression EnablePreciseAnswer { get; set; } = false;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the user only wants to receive precise answer. 
-        /// </summary>
-        /// <value>
-        /// A value that indicates if user wants to receive full text along with the precise answer or not.
-        /// </value>
-        [JsonProperty("displayPreciseAnswerOnly")]
-        public BoolExpression DisplayPreciseAnswerOnly { get; set; } = true;
-
-        /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -445,9 +427,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 Context = new QnARequestContext(),
                 QnAId = 0,
                 RankerType = this.RankerType?.GetValue(dc.State),
-                IsTest = this.IsTest,
-                EnablePreciseAnswer = this.EnablePreciseAnswer.GetValue(dc.State)
-            }); 
+                IsTest = this.IsTest
+            });
         }
 
         /// <summary>
@@ -456,15 +437,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the response options to use.</remarks>
-        protected virtual async Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
+        protected async virtual Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
             return new QnADialogResponseOptions
             {
                 NoAnswer = await this.NoAnswer.BindAsync(dc, dc.State).ConfigureAwait(false),
                 ActiveLearningCardTitle = this.ActiveLearningCardTitle?.GetValue(dc.State) ?? DefaultCardTitle,
                 CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
-                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false),
-                DisplayPreciseAnswerOnly = this.DisplayPreciseAnswerOnly.GetValue(dc.State)
+                CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
             };
         }
 
@@ -513,7 +493,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                     // Get active learning suggestion card activity.
                     var message = QnACardBuilder.GetSuggestionsCard(suggestedQuestions, dialogOptions.ResponseOptions.ActiveLearningCardTitle, dialogOptions.ResponseOptions.CardNoMatchText);
-                    await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
+                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
                     stepContext.State.SetValue($"this.suggestedQuestions", suggestedQuestions);
@@ -528,7 +508,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             }
 
             stepContext.Values[ValueProperty.QnAData] = result;
-
             ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
             // If card is not shown, move to next step with top QnA response.
@@ -635,6 +614,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 if (answer.Context != null && answer.Context.Prompts.Count() > 0)
                 {
                     var previousContextData = ObjectPath.GetPathValue(stepContext.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
+                    var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);
 
                     foreach (var prompt in answer.Context.Prompts)
                     {
@@ -646,8 +626,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                     ObjectPath.SetPathValue(stepContext.ActiveDialog.State, Options, dialogOptions);
 
                     // Get multi-turn prompts card activity.
-                    var message = QnACardBuilder.GetQnADefaultResponse(answer, dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
-                    await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
+                    var message = QnACardBuilder.GetQnAPromptsCard(answer, dialogOptions.ResponseOptions.CardNoMatchText);
+                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
@@ -687,8 +667,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             // If response is present then show that response, else default answer.
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
-                var message = QnACardBuilder.GetQnADefaultResponse(response.First(), dialogOptions.ResponseOptions.DisplayPreciseAnswerOnly);
-                await stepContext.Context.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
+                await stepContext.Context.SendActivityAsync(response.First().Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {

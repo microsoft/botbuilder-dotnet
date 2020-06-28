@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>True if this channel provider represents a channel on US Government Azure.</returns>
         public bool IsGovernment()
         {
-            return string.Equals(GovernmentAuthenticationConstants.ChannelService, ChannelService, StringComparison.InvariantCultureIgnoreCase);
+            return string.Equals(GovernmentAuthenticationConstants.ChannelService, ChannelService, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

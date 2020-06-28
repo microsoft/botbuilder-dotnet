@@ -92,14 +92,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to enable PreciseAnswer generation.
-        /// </summary>
-        /// <value>
-        /// Choice whether to generate precise answer or not.
-        /// </value>
-        [JsonProperty("enablePreciseAnswer")]
-        public bool EnablePreciseAnswer { get; set; }
     }
 }

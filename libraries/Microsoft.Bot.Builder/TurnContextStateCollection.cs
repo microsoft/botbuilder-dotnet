@@ -133,6 +133,16 @@ namespace Microsoft.Bot.Builder
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Dispose any disposable objects owned by the class here.
+            }
         }
     }
 }
