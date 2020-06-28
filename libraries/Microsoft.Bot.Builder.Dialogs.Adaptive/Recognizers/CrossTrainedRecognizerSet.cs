@@ -79,6 +79,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 throw new ArgumentNullException(nameof(activity));
             }
 
+            if (Recognizers.Any() == false)
+            {
+                return new RecognizerResult()
+                {
+                    Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
+                };
+            }
+
             EnsureRecognizerIds();
 
             // run all of the recognizers in parallel
