@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Bot.Schema;
@@ -14,11 +15,15 @@ namespace Microsoft.Bot.Builder
     /// The ActivityFactory
     /// to generate text and then uses simple markdown semantics like chatdown to create Activity.
     /// </summary>
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class ActivityFactory
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
+#pragma warning disable CA1308 // Normalize strings to uppercase (LG is heavily invested in lowercase, ignoring this rule in this class)
         private const string LGType = "lgType";
-        private static readonly string ErrorPrefix = "[ERROR]";
-        private static readonly string WarningPrefix = "[WARNING]";
+        private const string ErrorPrefix = "[ERROR]";
+        private const string WarningPrefix = "[WARNING]";
+        private const string AdaptiveCardType = "application/vnd.microsoft.card.adaptive";
 
         private static readonly IList<string> AllActivityTypes = GetAllPublicConstantValues<string>(typeof(ActivityTypes));
         private static readonly IList<string> AllActivityProperties = GetAllProperties(typeof(Activity));
@@ -36,8 +41,6 @@ namespace Microsoft.Bot.Builder
             { nameof(ReceiptCard).ToLowerInvariant(), ReceiptCard.ContentType },
         };
 
-        private static readonly string AdaptiveCardType = "application/vnd.microsoft.card.adaptive";
-
         /// <summary>
         /// Generate the activity.
         /// Support Both string LG result and structured LG result.
@@ -47,7 +50,7 @@ namespace Microsoft.Bot.Builder
         public static Activity FromObject(object lgResult)
         {
             var diagnostics = CheckLGResult(lgResult);
-            var errors = diagnostics.Where(u => u.StartsWith(ErrorPrefix));
+            var errors = diagnostics.Where(u => u.StartsWith(ErrorPrefix, StringComparison.Ordinal));
 
             if (errors.Any())
             {
@@ -64,7 +67,9 @@ namespace Microsoft.Bot.Builder
                 var lgJsonResult = JObject.FromObject(lgResult);
                 return BuildActivityFromLGStructuredResult(lgJsonResult);
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we should narrow down the exception being caught but for now we just attempt to build the activity from the text property)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 return BuildActivityFromText(lgResult?.ToString()?.Trim());
             }
@@ -84,7 +89,7 @@ namespace Microsoft.Bot.Builder
                     return new List<string> { BuildDiagnostic("LG output is empty", false) };
                 }
 
-                if (!lgStringResult.StartsWith("{") || !lgStringResult.EndsWith("}"))
+                if (!lgStringResult.StartsWith("{", StringComparison.Ordinal) || !lgStringResult.EndsWith("}", StringComparison.Ordinal))
                 {
                     return new List<string> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
                 }
@@ -94,7 +99,9 @@ namespace Microsoft.Bot.Builder
                 {
                     lgStructuredResult = JObject.Parse(lgStringResult);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (we should narrow down the exception being caught but for now we just show an error message)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     return new List<string> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
                 }
@@ -108,7 +115,9 @@ namespace Microsoft.Bot.Builder
                 {
                     lgStructuredResult = JObject.FromObject(lgResult);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (we should narrow down the exception being caught but for now we just show an error message)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     return new List<string> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
                 }
@@ -414,7 +423,8 @@ namespace Microsoft.Bot.Builder
                 boolResult = true;
                 return true;
             }
-            else if (boolValue.ToLowerInvariant() == "false")
+
+            if (boolValue.ToLowerInvariant() == "false")
             {
                 boolResult = false;
                 return true;
@@ -757,5 +767,6 @@ namespace Microsoft.Bot.Builder
         {
             return type.GetProperties().Select(u => u.Name.ToLowerInvariant()).ToList();
         }
+#pragma warning restore CA1308 // Normalize strings to uppercase
     }
 }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -28,11 +31,19 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (!string.IsNullOrEmpty(callerPath))
             {
-                DebugSupport.SourceMap.Add(this, new SourceRange()
+                DebugSupport.SourceMap.Add(this, new SourceRange
                 {
                     Path = callerPath,
-                    StartPoint = new SourcePoint() { LineIndex = callerLine, CharIndex = 0 },
-                    EndPoint = new SourcePoint() { LineIndex = callerLine + 1, CharIndex = 0 },
+                    StartPoint = new SourcePoint
+                    {
+                        LineIndex = callerLine,
+                        CharIndex = 0
+                    },
+                    EndPoint = new SourcePoint
+                    {
+                        LineIndex = callerLine + 1,
+                        CharIndex = 0
+                    },
                 });
             }
         }
@@ -60,7 +71,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <returns>Analysis of utterance.</returns>
+#pragma warning disable CA1068 // CancellationToken parameters must come last (we can't change this without breaking binary compat)
         public virtual Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
+#pragma warning restore CA1068 // CancellationToken parameters must come last
         {
             throw new NotImplementedException();
         }
@@ -75,11 +88,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <returns>Analysis of utterance.</returns>
+#pragma warning disable CA1068 // CancellationToken parameters must come last (we can't change this without breaking binary compat)
         public virtual async Task<T> RecognizeAsync<T>(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
+#pragma warning restore CA1068 // CancellationToken parameters must come last
             where T : IRecognizerConvert, new()
         {
             var result = new T();
-            result.Convert(await this.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false));
+            result.Convert(await RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false));
             return result;
         }
 
@@ -92,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A dictionary that can be included when calling the TrackEvent method on the TelemetryClient.</returns>
         protected virtual Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dialogContext = null)
         {
-            var properties = new Dictionary<string, string>()
+            var properties = new Dictionary<string, string>
             {
                 { "Text", recognizerResult.Text },
                 { "AlteredText", recognizerResult.AlteredText },
@@ -107,8 +122,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (telemetryProperties != null)
             {
                 return telemetryProperties.Concat(properties)
-                           .GroupBy(kv => kv.Key)
-                           .ToDictionary(g => g.Key, g => g.First().Value);
+                    .GroupBy(kv => kv.Key)
+                    .ToDictionary(g => g.Key, g => g.First().Value);
             }
 
             return properties;
@@ -123,13 +138,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="telemetryMetrics">The metrics to be included as part of the event tracking.</param>
         protected void TrackRecognizerResult(DialogContext dialogContext, string eventName, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics)
         {
-            if (this.TelemetryClient is NullBotTelemetryClient)
+            if (TelemetryClient is NullBotTelemetryClient)
             {
                 var turnStateTelemetryClient = dialogContext.Context.TurnState.Get<IBotTelemetryClient>();
-                this.TelemetryClient = turnStateTelemetryClient ?? this.TelemetryClient;
+                TelemetryClient = turnStateTelemetryClient ?? TelemetryClient;
             }
 
-            this.TelemetryClient.TrackEvent(eventName, telemetryProperties, telemetryMetrics);
+            TelemetryClient.TrackEvent(eventName, telemetryProperties, telemetryMetrics);
         }
     }
 }

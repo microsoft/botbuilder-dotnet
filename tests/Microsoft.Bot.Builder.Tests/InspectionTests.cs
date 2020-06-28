@@ -9,16 +9,14 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("InspectionMiddleware")]
     public class InspectionTests
     {
-        [TestMethod]
+        [Fact]
         public async Task ScenarioWithInspectionMiddlwarePassthrough()
         {
             var inspectionState = new InspectionState(new MemoryStorage());
@@ -36,10 +34,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var outboundActivity = adapter.ActiveQueue.Dequeue();
 
-            Assert.AreEqual("hi", outboundActivity.Text);
+            Assert.Equal("hi", outboundActivity.Text);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ScenarioWithInspectionMiddlwareOpenAttach()
         {
             // Arrange
@@ -98,32 +96,32 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             var outboundActivity = applicationAdapter.ActiveQueue.Dequeue();
-            Assert.AreEqual("echo: hi", outboundActivity.Text);
-            Assert.AreEqual(3, recordingHttpClient.Requests.Count);
+            Assert.Equal("echo: hi", outboundActivity.Text);
+            Assert.Equal(3, recordingHttpClient.Requests.Count);
 
             var inboundTrace = JObject.Parse(recordingHttpClient.Requests[0]);
 
-            Assert.AreEqual("trace", inboundTrace["type"].ToString());
-            Assert.AreEqual("ReceivedActivity", inboundTrace["name"].ToString());
-            Assert.AreEqual("message", inboundTrace["value"]["type"].ToString());
-            Assert.AreEqual("hi", inboundTrace["value"]["text"].ToString());
+            Assert.Equal("trace", inboundTrace["type"].ToString());
+            Assert.Equal("ReceivedActivity", inboundTrace["name"].ToString());
+            Assert.Equal("message", inboundTrace["value"]["type"].ToString());
+            Assert.Equal("hi", inboundTrace["value"]["text"].ToString());
 
             var outboundTrace = JObject.Parse(recordingHttpClient.Requests[1]);
 
-            Assert.AreEqual("trace", outboundTrace["type"].ToString());
-            Assert.AreEqual("SentActivity", outboundTrace["name"].ToString());
-            Assert.AreEqual("message", outboundTrace["value"]["type"].ToString());
-            Assert.AreEqual("echo: hi", outboundTrace["value"]["text"].ToString());
+            Assert.Equal("trace", outboundTrace["type"].ToString());
+            Assert.Equal("SentActivity", outboundTrace["name"].ToString());
+            Assert.Equal("message", outboundTrace["value"]["type"].ToString());
+            Assert.Equal("echo: hi", outboundTrace["value"]["text"].ToString());
 
             var stateTrace = JObject.Parse(recordingHttpClient.Requests[2]);
 
-            Assert.AreEqual("trace", stateTrace["type"].ToString());
-            Assert.AreEqual("BotState", stateTrace["name"].ToString());
-            Assert.AreEqual("hello", stateTrace["value"]["userState"]["x"]["Property"].ToString());
-            Assert.AreEqual("world", stateTrace["value"]["conversationState"]["y"]["Property"].ToString());
+            Assert.Equal("trace", stateTrace["type"].ToString());
+            Assert.Equal("BotState", stateTrace["name"].ToString());
+            Assert.Equal("hello", stateTrace["value"]["userState"]["x"]["Property"].ToString());
+            Assert.Equal("world", stateTrace["value"]["conversationState"]["y"]["Property"].ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ScenarioWithInspectionMiddlwareOpenAttachWithMention()
         {
             // Arrange
@@ -191,32 +189,32 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             var outboundActivity = applicationAdapter.ActiveQueue.Dequeue();
-            Assert.AreEqual("echo: hi", outboundActivity.Text);
-            Assert.AreEqual(3, recordingHttpClient.Requests.Count);
+            Assert.Equal("echo: hi", outboundActivity.Text);
+            Assert.Equal(3, recordingHttpClient.Requests.Count);
 
             var inboundTrace = JObject.Parse(recordingHttpClient.Requests[0]);
 
-            Assert.AreEqual("trace", inboundTrace["type"].ToString());
-            Assert.AreEqual("ReceivedActivity", inboundTrace["name"].ToString());
-            Assert.AreEqual("message", inboundTrace["value"]["type"].ToString());
-            Assert.AreEqual("hi", inboundTrace["value"]["text"].ToString());
+            Assert.Equal("trace", inboundTrace["type"].ToString());
+            Assert.Equal("ReceivedActivity", inboundTrace["name"].ToString());
+            Assert.Equal("message", inboundTrace["value"]["type"].ToString());
+            Assert.Equal("hi", inboundTrace["value"]["text"].ToString());
 
             var outboundTrace = JObject.Parse(recordingHttpClient.Requests[1]);
 
-            Assert.AreEqual("trace", outboundTrace["type"].ToString());
-            Assert.AreEqual("SentActivity", outboundTrace["name"].ToString());
-            Assert.AreEqual("message", outboundTrace["value"]["type"].ToString());
-            Assert.AreEqual("echo: hi", outboundTrace["value"]["text"].ToString());
+            Assert.Equal("trace", outboundTrace["type"].ToString());
+            Assert.Equal("SentActivity", outboundTrace["name"].ToString());
+            Assert.Equal("message", outboundTrace["value"]["type"].ToString());
+            Assert.Equal("echo: hi", outboundTrace["value"]["text"].ToString());
 
             var stateTrace = JObject.Parse(recordingHttpClient.Requests[2]);
 
-            Assert.AreEqual("trace", stateTrace["type"].ToString());
-            Assert.AreEqual("BotState", stateTrace["name"].ToString());
-            Assert.AreEqual("hello", stateTrace["value"]["userState"]["x"]["Property"].ToString());
-            Assert.AreEqual("world", stateTrace["value"]["conversationState"]["y"]["Property"].ToString());
+            Assert.Equal("trace", stateTrace["type"].ToString());
+            Assert.Equal("BotState", stateTrace["name"].ToString());
+            Assert.Equal("hello", stateTrace["value"]["userState"]["x"]["Property"].ToString());
+            Assert.Equal("world", stateTrace["value"]["conversationState"]["y"]["Property"].ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ScenarioWithInspectionMiddlwareOpenAttachAndTracePassThrough()
         {
             // Arrange
@@ -269,20 +267,20 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             var outboundActivity = applicationAdapter.ActiveQueue.Dequeue();
-            Assert.AreEqual("CustomTrace", outboundActivity.Name);
-            Assert.AreEqual(2, recordingHttpClient.Requests.Count);
+            Assert.Equal("CustomTrace", outboundActivity.Name);
+            Assert.Equal(2, recordingHttpClient.Requests.Count);
 
             var inboundTrace = JObject.Parse(recordingHttpClient.Requests[0]);
 
-            Assert.AreEqual("trace", inboundTrace["type"].ToString());
-            Assert.AreEqual("ReceivedActivity", inboundTrace["name"].ToString());
-            Assert.AreEqual("message", inboundTrace["value"]["type"].ToString());
-            Assert.AreEqual("hi", inboundTrace["value"]["text"].ToString());
+            Assert.Equal("trace", inboundTrace["type"].ToString());
+            Assert.Equal("ReceivedActivity", inboundTrace["name"].ToString());
+            Assert.Equal("message", inboundTrace["value"]["type"].ToString());
+            Assert.Equal("hi", inboundTrace["value"]["text"].ToString());
 
             var outboundTrace = JObject.Parse(recordingHttpClient.Requests[1]);
 
-            Assert.AreEqual("trace", outboundTrace["type"].ToString());
-            Assert.AreEqual("CustomTrace", outboundTrace["name"].ToString());
+            Assert.Equal("trace", outboundTrace["type"].ToString());
+            Assert.Equal("CustomTrace", outboundTrace["name"].ToString());
         }
 
         private class Scratch

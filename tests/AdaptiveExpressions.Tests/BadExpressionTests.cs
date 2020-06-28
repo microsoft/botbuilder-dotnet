@@ -1,19 +1,13 @@
 ﻿#pragma warning disable SA1124 // Do not use regions
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using AdaptiveExpressions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace AdaptiveExpressions.Tests
 {
-    [TestClass]
     public class BadExpressionTests
     {
-        private TestContext testContextInstance;
-
         public static IEnumerable<object[]> SyntaxErrorExpressions => new[]
         {
             Test("hello world"),
@@ -431,36 +425,22 @@ namespace AdaptiveExpressions.Tests
         ///  Gets or sets the test context which provides
         ///  information about and functionality for the current test run.
         /// </summary>
-        /// <value>The TestContext.</value>
-        public TestContext TestContext
-        {
-            get { return testContextInstance; }
-            set { testContextInstance = value; }
-        }
-
+        /// <param name="input">Input.</param>
+        /// <returns>object[].</returns>
         public static object[] Test(string input) => new object[] { input };
                 
-        [DataTestMethod]
-        [DynamicData(nameof(SyntaxErrorExpressions))]
-        [ExpectedException(typeof(SyntaxErrorException))]
+        [Theory]
+        [MemberData(nameof(SyntaxErrorExpressions))]
         public void ParseSyntaxErrors(string exp)
         {
-            try
-            {
-                Expression.Parse(exp);
-            }
-            catch (Exception e)
-            {
-                TestContext.WriteLine(e.Message);
-                throw;
-            }
+            Assert.Throws<SyntaxErrorException>(() => Expression.Parse(exp));
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(BadExpressions))]
+        [Theory]
+        [MemberData(nameof(BadExpressions))]
         public void Evaluate(string exp)
         {
-            var isFail = false;
+            var passed = false;
             object scope = new
             {
                 one = 1.0,
@@ -527,23 +507,15 @@ namespace AdaptiveExpressions.Tests
                 var (value, error) = Expression.Parse(exp).TryEvaluate(scope);
                 if (error != null)
                 {
-                    isFail = true;
-                }
-                else
-                {
-                    TestContext.WriteLine(error);
+                    passed = true;
                 }
             }
-            catch (Exception e)
+            catch
             {
-                isFail = true;
-                TestContext.WriteLine(e.Message);
+                passed = true;
             }
 
-            if (isFail == false)
-            {
-                Assert.Fail("Test method did not throw expected exception");
-            }
+            Assert.True(passed);
         }
     }
 }

@@ -24,24 +24,39 @@ namespace Microsoft.Bot.Builder
                 {
                     // This is a mock secure SendToConversation to grab the exact HTTP headers.
                     // If you have no appId and no secret this code will run but not produce an Authorization header.
-                    var captureHandler = new CaptureRequestHandler();
-                    var client = new ConnectorClient(connector.BaseUri, connector.Credentials, captureHandler);
-                    var activity = new Activity { Type = ActivityTypes.Message, Conversation = new ConversationAccount { Id = "capture" } };
-                    client.Conversations.SendToConversation(activity);
-                    var headers = captureHandler.Request.Headers;
-                    healthResults.Authorization = headers.Authorization?.ToString();
-                    healthResults.UserAgent = headers.UserAgent?.ToString();
+                    using (var captureHandler = new CaptureRequestHandler())
+                    {
+                        using (var client = new ConnectorClient(connector.BaseUri, connector.Credentials, captureHandler))
+                        {
+                            var activity = new Activity
+                            {
+                                Type = ActivityTypes.Message,
+                                Conversation = new ConversationAccount { Id = "capture" }
+                            };
+                            client.Conversations.SendToConversation(activity);
+                            var headers = captureHandler.Request.Headers;
+                            healthResults.Authorization = headers.Authorization?.ToString();
+                            healthResults.UserAgent = headers.UserAgent?.ToString();
+                        }
+                    }
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (ignoring, see comment in catch block)
                 catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     // This exception happens when you have a valid appId but invalid or blank secret.
-
                     // No callbacks will be possible, although the bot maybe healthy in other respects.
                 }
             }
 
             var successMessage = "Health check succeeded.";
-            healthResults.Messages = healthResults.Authorization != null ? new[] { successMessage } : new[] { successMessage, "Callbacks are not authorized." };
+            healthResults.Messages = healthResults.Authorization != null
+                ? new[] { successMessage }
+                : new[]
+                {
+                    successMessage,
+                    "Callbacks are not authorized."
+                };
 
             return new HealthCheckResponse { HealthResults = healthResults };
         }
