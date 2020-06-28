@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             const string resourceIdentifier = "Mocked Resource Identifier";
             var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
-            twilioApi.Setup(x => x.SendMessage(It.IsAny<CreateMessageOptions>(), default)).Returns(Task.FromResult(resourceIdentifier));
+            twilioApi.Setup(x => x.SendMessageAsync(It.IsAny<CreateMessageOptions>(), default)).Returns(Task.FromResult(resourceIdentifier));
 
             var twilioAdapter = new TwilioAdapter(twilioApi.Object);
             var resourceResponses = await twilioAdapter.SendActivitiesAsync(null, new Activity[] { activity.Object }, default).ConfigureAwait(false);
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             const string resourceIdentifier = "Mocked Resource Identifier";
             var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);
-            twilioApi.Setup(x => x.SendMessage(It.IsAny<CreateMessageOptions>(), default)).Returns(Task.FromResult(resourceIdentifier));
+            twilioApi.Setup(x => x.SendMessageAsync(It.IsAny<CreateMessageOptions>(), default)).Returns(Task.FromResult(resourceIdentifier));
 
             var twilioAdapter = new TwilioAdapter(twilioApi.Object);
             var resourceResponses = await twilioAdapter.SendActivitiesAsync(null, new Activity[] { activity.Object }, default).ConfigureAwait(false);

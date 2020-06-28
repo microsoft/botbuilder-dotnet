@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -160,7 +161,7 @@ namespace Microsoft.Bot.Builder
                             throw new Exception($"Etag conflict.\r\n\r\nOriginal: {newStoreItem.ETag}\r\nCurrent: {oldStateETag}");
                         }
 
-                        newState["eTag"] = (_eTag++).ToString();
+                        newState["eTag"] = (_eTag++).ToString(CultureInfo.InvariantCulture);
                     }
 
                     _memory[change.Key] = newState;

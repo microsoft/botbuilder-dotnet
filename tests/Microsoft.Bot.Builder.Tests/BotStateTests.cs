@@ -610,7 +610,7 @@ namespace Microsoft.Bot.Builder.Tests
             var context = TestUtilities.CreateEmptyContext();
             context.Activity.From = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => testProperty.GetAsync(context));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => testProperty.GetAsync(context));
         }
 
         [Fact]
@@ -621,7 +621,7 @@ namespace Microsoft.Bot.Builder.Tests
             var context = TestUtilities.CreateEmptyContext();
             context.Activity.Conversation = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => testProperty.GetAsync(context));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => testProperty.GetAsync(context));
         }
 
         [Fact]
@@ -633,7 +633,7 @@ namespace Microsoft.Bot.Builder.Tests
             context.Activity.Conversation = null;
             context.Activity.From = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => testProperty.GetAsync(context));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => testProperty.GetAsync(context));
         }
 
         [Fact]
@@ -644,7 +644,7 @@ namespace Microsoft.Bot.Builder.Tests
             var context = TestUtilities.CreateEmptyContext();
             context.Activity.Conversation = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            await Assert.ThrowsAsync<ArgumentNullException>(() => testProperty.GetAsync(context));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => testProperty.GetAsync(context));
         }
 
         [Fact]
