@@ -42,15 +42,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
-        /// <param name="resource">File resource.</param>
+        /// <param name="filePath">lg template file absolute path.</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
-        public TemplateEngineLanguageGenerator(FileResource resource, Dictionary<string, IList<Resource>> resourceMapping)
+        public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<Resource>> resourceMapping)
         {
-            this.Id = resource.FullName;
+            filePath = PathUtils.NormalizePath(filePath);
+            this.Id = filePath;
 
-            var (_, locale) = LGResourceLoader.ParseLGFileName(resource.Id);
+            var (_, locale) = LGResourceLoader.ParseLGFileName(Path.GetFileName(filePath));
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lg = LanguageGeneration.Templates.ParseFile(resource.FullName, importResolver);
+            this.lg = LanguageGeneration.Templates.ParseFile(filePath, importResolver);
         }
 
         /// <summary>
