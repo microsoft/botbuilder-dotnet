@@ -869,7 +869,7 @@ namespace AdaptiveExpressions
                     object value = null;
                     string error = null;
                     IReadOnlyList<object> args;
-                    var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                    var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                     var format = DefaultDateTimeFormat;
                     (args, error) = EvaluateChildren(expr, state, options);
                     
@@ -3379,7 +3379,7 @@ namespace AdaptiveExpressions
                                 {
                                     string result = null;
                                     string error = null;
-                                    var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                                    var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                                     (locale, error) = DetermineLocale(args, locale, 2);
                                     
                                     if (error == null)
@@ -3402,7 +3402,7 @@ namespace AdaptiveExpressions
                                 {
                                     string result = null;
                                     string error = null;
-                                    var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                                    var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                                     (locale, error) = DetermineLocale(args, locale, 2);
 
                                     if (error == null)
@@ -3594,7 +3594,7 @@ namespace AdaptiveExpressions
                                 {
                                     string result = null;
                                     string error = null;
-                                    var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                                    var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                                     (locale, error) = DetermineLocale(args, locale, 2);
 
                                     if (error == null)
@@ -3618,7 +3618,7 @@ namespace AdaptiveExpressions
                                 {
                                     string result = null;
                                     string error = null;
-                                    var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                                    var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                                     (locale, error) = DetermineLocale(args, locale, 2);
 
                                     if (error == null)
@@ -3681,7 +3681,7 @@ namespace AdaptiveExpressions
                             string error = null;
                             string format = DefaultDateTimeFormat;
                             object result = null;
-                            var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                             (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 2);
                             result = DateTime.UtcNow.ToString(format, locale);
 
@@ -3698,7 +3698,7 @@ namespace AdaptiveExpressions
                             string error = null;
                             var timestamp = args[0];
                             var format = DefaultDateTimeFormat;
-                            var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                             (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
                             
                             if (error == null)
@@ -3730,7 +3730,7 @@ namespace AdaptiveExpressions
                             string error = null;
                             var timestamp = args[0];
                             var format = DefaultDateTimeFormat;
-                            var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                             (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
                             if (error == null)
                             {
@@ -3759,7 +3759,7 @@ namespace AdaptiveExpressions
                             string error = null;
                             var timestamp = args[0];
                             var format = DefaultDateTimeFormat;
-                            var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                             (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
                             if (error == null) 
                             {
@@ -3786,7 +3786,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                        var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                         var format = DefaultDateTimeFormat;
                         (args, error) = EvaluateChildren(expr, state, options);
 
@@ -3888,7 +3888,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                        var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                         var format = DefaultDateTimeFormat;
                         (args, error) = EvaluateChildren(expr, state, options);
 
@@ -3925,7 +3925,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                        var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                         var format = DefaultDateTimeFormat;
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
@@ -3961,7 +3961,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                        var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                         var format = DefaultDateTimeFormat;
                         (args, error) = EvaluateChildren(expr, state, options);
 
@@ -3993,7 +3993,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                        var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                         var format = DefaultDateTimeFormat;
                         (args, error) = EvaluateChildren(expr, state, options);
 
@@ -4025,7 +4025,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                        var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                         var format = DefaultDateTimeFormat;
                         (args, error) = EvaluateChildren(expr, state, options);
 
@@ -4057,7 +4057,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                        var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                         var format = DefaultDateTimeFormat;
                         (args, error) = EvaluateChildren(expr, state, options);
 
@@ -4082,7 +4082,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                        var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                         var format = DefaultDateTimeFormat;
                         (args, error) = EvaluateChildren(expr, state, options);
 
@@ -4107,7 +4107,7 @@ namespace AdaptiveExpressions
                         object value = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                        var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                         var format = DefaultDateTimeFormat;
                         (args, error) = EvaluateChildren(expr, state, options);
 
@@ -4595,7 +4595,7 @@ namespace AdaptiveExpressions
                     (expression, state, options) =>
                         {
                             string result = null;
-                            var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                             var (args, error) = EvaluateChildren(expression, state, options);
                             if (error == null)
                             {
@@ -4638,7 +4638,7 @@ namespace AdaptiveExpressions
                         {
                             string result = null;
                             string error = null;
-                            var locale = options.Locale ?? Thread.CurrentThread.CurrentCulture;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                             if (!args[0].IsNumber())
                             {
                                 error = $"formatNumber first argument ${args[0]} must be number";

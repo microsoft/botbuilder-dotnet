@@ -6,9 +6,9 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using AdaptiveExpressions.Converters;
 using AdaptiveExpressions.Memory;
 using Newtonsoft.Json;
@@ -532,7 +532,14 @@ namespace AdaptiveExpressions
             var opts = options ?? new Options();
             if (opts.Locale != null)
             {
-                Thread.CurrentThread.CurrentCulture = opts.Locale;
+                try
+                {
+                    new CultureInfo(opts.Locale);
+                }
+                catch (Exception err)
+                {
+                    throw err;
+                }               
             }
 
             var (result, error) = Evaluator.TryEvaluate(this, state, opts);
