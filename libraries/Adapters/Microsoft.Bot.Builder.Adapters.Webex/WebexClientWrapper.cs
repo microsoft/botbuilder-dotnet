@@ -18,6 +18,9 @@ using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
+    /// <summary>
+    /// A client for interacting with the Webex Teams API.
+    /// </summary>
     public class WebexClientWrapper
     {
         private const string WebhookUrl = "https://api.ciscospark.com/v1/webhooks";
@@ -49,6 +52,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             _api = TeamsAPI.CreateVersion1Client(Options.WebexAccessToken);
         }
 
+        /// <summary>
+        /// Gets the options collection for the adapter.
+        /// </summary>
+        /// <value>A WebexAdapterOptions class exposing properties for each of the available options.</value>
         public WebexAdapterOptions Options { get; }
 
         /// <summary>
