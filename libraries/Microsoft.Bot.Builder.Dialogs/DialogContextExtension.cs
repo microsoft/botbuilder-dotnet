@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using Newtonsoft.Json;
+﻿using System.Globalization;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -18,32 +16,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogContext">The dialogContext to extract information.</param>
         /// <returns>A <see cref="CultureInfo"/> representing the current locale.</returns>
-        public static CultureInfo EvalLocaleInfo(this DialogContext dialogContext)
+        public static string GetLocale(this DialogContext dialogContext)
         {
             string locale = null;
             object turnContent = null;
             var turnExists = dialogContext?.Context?.TurnState?.TryGetValue(Turn, out turnContent);
             if (turnExists == true && turnContent != null)
             {
-                var localeValue = (turnContent as JObject)?.SelectToken(LocalePath) as JValue;
-                if (localeValue != null)
+                if ((turnContent as JObject)?.SelectToken(LocalePath) is JValue localeValue)
                 {
                     locale = localeValue.ToObject<string>();
                 }
             }
 
-            try
-            {
-                return new CultureInfo(locale);
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch
-            {
-                // do nothing if locale is illegal
-            }
-#pragma warning restore CA1031 // Do not catch general exception types
-
-            return null;
+            return locale;
         }
     }
 }

@@ -1115,7 +1115,7 @@ namespace AdaptiveExpressions.Tests
             var parsed = Expression.Parse(input);
             Assert.NotNull(parsed);
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            var opts = new Options() { Locale = new CultureInfo("fr-FR") };
+            var opts = new Options() { Locale = "fr-FR" };
             var (actual, msg) = parsed.TryEvaluate(scopeForThreadLocale, opts);
             Assert.Null(msg);
             AssertObjectEquals(expected, actual);

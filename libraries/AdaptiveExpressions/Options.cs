@@ -34,6 +34,6 @@ namespace AdaptiveExpressions
         /// <value>
         /// The locale info.
         /// </value>
-        public CultureInfo Locale { get; set; } = null;
+        public string Locale { get; set; } = null;
     }
 }

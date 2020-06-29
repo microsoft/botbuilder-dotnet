@@ -4,16 +4,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
 using AdaptiveExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -460,7 +456,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
             string error;
             object value;
-            var opt = new Options() { Locale = lgOptions.Locale ?? Thread.CurrentThread.CurrentCulture };
+            var opt = new Options() { Locale = lgOptions.Locale };
             opt.NullSubstitution = lgOptions.NullSubstitution;
             (value, error) = parse.TryEvaluate(scope, opt);
 

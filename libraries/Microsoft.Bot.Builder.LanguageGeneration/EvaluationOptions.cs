@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -103,7 +102,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// A CultureInfo or null object.
         /// </value>
-        public CultureInfo Locale { get; set; } = null;
+        public string Locale { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the option of a function to replace a null value. If nullSubstitution is specified,

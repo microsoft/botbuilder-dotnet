@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
 
         public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            var opt = new Options() { Locale = dc.EvalLocaleInfo() };
+            var opt = new Options() { Locale = dc.GetLocale() };
             var (result, error) = Condition.TryEvaluate(dc.State);
             if ((bool)result == false)
             {
