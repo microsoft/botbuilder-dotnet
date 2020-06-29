@@ -501,8 +501,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             DialogManager dm = new DialogManager(new SettingsScopeTestDialog());
-            dm.StateConfiguration.MemoryScopes.RemoveAll(ms => ms is SettingsMemoryScope);
-            dm.StateConfiguration.MemoryScopes.Add(new SettingsMemoryScope() { ScopeToAppId = true });
+            dm.StateConfiguration.MemoryScopes.Where(ms => ms is SettingsMemoryScope).Cast<SettingsMemoryScope>().First().ScopeToAppId = true;
 
             await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
