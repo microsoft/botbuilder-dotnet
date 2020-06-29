@@ -175,6 +175,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
             // post the activity to the url using the bot's credentials.
+            Logger.LogInformation($"Posting activity. ActivityId: {activity.Id} from BotId: {botId}");
             return await SecurePostActivityAsync<T>(botEndpoint, activity, token, cancellationToken).ConfigureAwait(false);
         }
 
