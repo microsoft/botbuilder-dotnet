@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -35,12 +36,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return new CultureInfo(locale);
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch
             {
                 // do nothing if locale is illegal
             }
-
-            return null;
+#pragma warning restore CA1031 // Do not catch general exception types
         }
     }
 }
