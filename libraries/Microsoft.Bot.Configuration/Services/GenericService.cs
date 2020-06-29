@@ -9,9 +9,15 @@ namespace Microsoft.Bot.Configuration
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// An Generic service containing configuration properties for the service.
+    /// </summary>
     [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class GenericService : ConnectedService
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenericService"/> class.
+        /// </summary>
         public GenericService()
             : base(ServiceTypes.Generic)
         {
