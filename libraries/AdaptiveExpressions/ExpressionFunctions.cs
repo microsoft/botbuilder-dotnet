@@ -210,6 +210,13 @@ namespace AdaptiveExpressions
             => ValidateArityAndAnyType(expression, 1, 2, ReturnType.Number);
 
         /// <summary>
+        /// Validate 1 or 2 string arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateUnaryOrBinaryString(Expression expression)
+            => ValidateArityAndAnyType(expression, 1, 2, ReturnType.String);
+
+        /// <summary>
         /// Validate 2 or more than 2 numeric arguments.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
@@ -4144,9 +4151,9 @@ namespace AdaptiveExpressions
                         TimexProperty parsed = null;
                         string result = null;
                         string error = null;
-                        var validYear = 0;
-                        var validMonth = 0;
-                        var validDay = 0;
+                        var (validYear, validMonth, validDay) = (0, 0, 0);
+                        var currentUtcTime = DateTime.UtcNow;
+                        var convertedDateTime = currentUtcTime;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
@@ -4164,34 +4171,51 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
-                            var (year, month, day) = (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-                            if (parsed.Month > month || (parsed.Month == month && parsed.DayOfMonth >= day))
+                            if (args.Count == 2 && args[1] is string timezone)
                             {
-                                validYear = year;
+                                object convertedTimeZone = null;
+                                (convertedTimeZone, error) = ConvertTimeZoneFormat(timezone);
+                                if (error == null)
+                                {
+                                    convertedDateTime = TimeZoneInfo.ConvertTimeFromUtc(currentUtcTime, (TimeZoneInfo)convertedTimeZone);
+                                }
                             }
                             else
                             {
-                                validYear = year + 1;
-                            }
-
-                            validMonth = parsed.Month ?? 0;
-                            validDay = parsed.DayOfMonth ?? 0;
-
-                            if (validMonth == 2 && validDay == 29)
-                            {
-                                while (!DateTime.IsLeapYear(validYear))
-                                {
-                                    validYear += 1;
-                                }
-                            }
-
-                            result = TimexProperty.FromDate(new DateTime(validYear, validMonth, validDay)).TimexValue;
+                                convertedDateTime = currentUtcTime.ToLocalTime();
+                            }                          
                         }
+
+                        if (error == null)
+                            {
+                                var (year, month, day) = (convertedDateTime.Year, convertedDateTime.Month, convertedDateTime.Day);
+                                if (parsed.Month > month || (parsed.Month == month && parsed.DayOfMonth >= day))
+                                {
+                                    validYear = year;
+                                }
+                                else
+                                {
+                                    validYear = year + 1;
+                                }
+
+                                validMonth = parsed.Month ?? 0;
+                                validDay = parsed.DayOfMonth ?? 0;
+
+                                if (validMonth == 2 && validDay == 29)
+                                {
+                                    while (!DateTime.IsLeapYear(validYear))
+                                    {
+                                        validYear += 1;
+                                    }
+                                }
+
+                                result = TimexProperty.FromDate(new DateTime(validYear, validMonth, validDay)).TimexValue;
+                            }
 
                         return (result, error);
                     },
                     ReturnType.String,
-                    ValidateUnaryString),
+                    ValidateUnaryOrBinaryString),
                 new ExpressionEvaluator(
                     ExpressionType.GetPreviousViableDate,
                     (expr, state, options) =>
@@ -4199,9 +4223,9 @@ namespace AdaptiveExpressions
                         TimexProperty parsed = null;
                         string result = null;
                         string error = null;
-                        var validYear = 0;
-                        var validMonth = 0;
-                        var validDay = 0;
+                        var (validYear, validMonth, validDay) = (0, 0, 0);
+                        var currentUtcTime = DateTime.UtcNow;
+                        var convertedDateTime = currentUtcTime;
                         IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
@@ -4219,7 +4243,24 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
-                            var (year, month, day) = (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+                            if (args.Count == 2 && args[1] is string timezone)
+                            {
+                                object convertedTimeZone = null;
+                                (convertedTimeZone, error) = ConvertTimeZoneFormat(timezone);
+                                if (error == null)
+                                {
+                                    convertedDateTime = TimeZoneInfo.ConvertTimeFromUtc(currentUtcTime, (TimeZoneInfo)convertedTimeZone);
+                                }
+                            }
+                            else
+                            {
+                                convertedDateTime = currentUtcTime.ToLocalTime();
+                            }
+                        }
+
+                        if (error == null)
+                        {
+                            var (year, month, day) = (convertedDateTime.Year, convertedDateTime.Month, convertedDateTime.Day);
                             if (parsed.Month <= month || (parsed.Month == month && parsed.DayOfMonth < day))
                             {
                                 validYear = year;
@@ -4245,7 +4286,7 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.String,
-                    ValidateUnaryString),
+                    ValidateUnaryOrBinaryString),
                 new ExpressionEvaluator(
                     ExpressionType.GetNextViableTime,
                     (expr, state, options) =>
@@ -4253,11 +4294,11 @@ namespace AdaptiveExpressions
                         TimexProperty parsed = null;
                         string result = null;
                         string error = null;
-                        var validHour = 0;
-                        var validMinute = 0;
-                        var validSecond = 0;
-                        IReadOnlyList<object> args;
+                        var (validHour, validMinute, validSecond) = (0, 0, 0);
                         var formatRegex = new Regex("TXX:[0-5][0-9]:[0-5][0-9]");
+                        var currentUtcTime = DateTime.UtcNow;
+                        var convertedDateTime = currentUtcTime;
+                        IReadOnlyList<object> args;
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
@@ -4269,12 +4310,29 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
+                            if (args.Count == 2 && args[1] is string timezone)
+                            {
+                                object convertedTimeZone = null;
+                                (convertedTimeZone, error) = ConvertTimeZoneFormat(timezone);
+                                if (error == null)
+                                {
+                                    convertedDateTime = TimeZoneInfo.ConvertTimeFromUtc(currentUtcTime, (TimeZoneInfo)convertedTimeZone);
+                                }
+                            }
+                            else
+                            {
+                                convertedDateTime = currentUtcTime.ToLocalTime();
+                            }
+                        }
+
+                        if (error == null)
+                        {
                             (parsed, error) = ParseTimexProperty((args[0] as string).Replace("XX", "00"));
                         }
 
                         if (error == null)
                         {
-                            var (hour, minute, second) = (DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+                            var (hour, minute, second) = (convertedDateTime.Hour, convertedDateTime.Minute, convertedDateTime.Second);
                             if (parsed.Minute > minute || (parsed.Minute == minute && parsed.Second >= second))
                             {
                                 validHour = hour;
@@ -4292,7 +4350,7 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.String,
-                    ValidateUnaryString),
+                    ValidateUnaryOrBinaryString),
                 new ExpressionEvaluator(
                     ExpressionType.GetPreviousViableTime,
                     (expr, state, options) =>
@@ -4300,11 +4358,11 @@ namespace AdaptiveExpressions
                         TimexProperty parsed = null;
                         string result = null;
                         string error = null;
-                        var validHour = 0;
-                        var validMinute = 0;
-                        var validSecond = 0;
+                        var (validHour, validMinute, validSecond) = (0, 0, 0);
                         IReadOnlyList<object> args;
                         var formatRegex = new Regex("TXX:[0-5][0-9]:[0-5][0-9]");
+                        var currentUtcTime = DateTime.UtcNow;
+                        var convertedDateTime = currentUtcTime;
                         (args, error) = EvaluateChildren(expr, state, options);
                         if (error == null)
                         {
@@ -4316,12 +4374,29 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
+                            if (args.Count == 2 && args[1] is string timezone)
+                            {
+                                object convertedTimeZone = null;
+                                (convertedTimeZone, error) = ConvertTimeZoneFormat(timezone);
+                                if (error == null)
+                                {
+                                    convertedDateTime = TimeZoneInfo.ConvertTimeFromUtc(currentUtcTime, (TimeZoneInfo)convertedTimeZone);
+                                }
+                            }
+                            else
+                            {
+                                convertedDateTime = currentUtcTime.ToLocalTime();
+                            }
+                        }
+
+                        if (error == null)
+                        {
                             (parsed, error) = ParseTimexProperty((args[0] as string).Replace("XX", "00"));
                         }
 
                         if (error == null)
                         {
-                            var (hour, minute, second) = (DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+                            var (hour, minute, second) = (convertedDateTime.Hour, convertedDateTime.Minute, convertedDateTime.Second);
                             if (parsed.Minute < minute || (parsed.Minute == minute && parsed.Second < second))
                             {
                                 validHour = hour;
@@ -4339,7 +4414,7 @@ namespace AdaptiveExpressions
                         return (result, error);
                     },
                     ReturnType.String,
-                    ValidateUnaryString),
+                    ValidateUnaryOrBinaryString),
 
                 // URI Parsing
                 new ExpressionEvaluator(
