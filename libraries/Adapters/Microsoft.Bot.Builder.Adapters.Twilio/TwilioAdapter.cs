@@ -41,18 +41,19 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// </remarks>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public TwilioAdapter(IConfiguration configuration, ILogger logger = null)
-            : this(new TwilioClientWrapper(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"]))), logger)
+            : this(new TwilioAdapterOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"])), logger)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class.
         /// </summary>
-        /// <param name="twilioClient">The Twilio client to connect to.</param>
+        /// <param name="options">Options for the Twilio Adapter.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public TwilioAdapter(TwilioClientWrapper twilioClient, ILogger logger = null)
+        /// <param name="twilioClient">Client to use for the Twilio API.</param>
+        public TwilioAdapter(TwilioAdapterOptions options, ILogger logger = null, TwilioClientWrapper twilioClient = null)
         {
-            _twilioClient = twilioClient ?? throw new ArgumentNullException(nameof(twilioClient));
+            _twilioClient = twilioClient ?? new TwilioClientWrapper(options);
             _logger = logger ?? NullLogger.Instance;
         }
 
