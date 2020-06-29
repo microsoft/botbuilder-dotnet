@@ -361,10 +361,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.Equal("Hello joe", result);
             Assert.Null(error);
 
-            str = new StringExpression(@"c:\test\test\test");
-            Assert.Equal(@"=`c:\\test\\test\\test`", str.ExpressionText);
+            // slashes are the chars
+            str = new StringExpression("c:\\test\\test\\test");
             (result, error) = str.TryGetValue(data);
-            Assert.Equal(@"c:\test\test\test", result);
+            Assert.Equal("c:\\test\\test\\test", result);
+            Assert.Null(error);
+
+            // tabs are the chars
+            str = new StringExpression("c:\test\test\test");
+            (result, error) = str.TryGetValue(data);
+            Assert.Equal("c:\test\test\test", result);
             Assert.Null(error);
         }
 
@@ -408,10 +414,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.Equal("Hello 13", result);
             Assert.Null(error);
 
-            val = new ValueExpression(@"c:\test\test\test");
-            Assert.Equal(@"=`c:\\test\\test\\test`", val.ExpressionText);
+            // slashes are the chars
+            val = new ValueExpression("c:\\test\\test\\test");
             (result, error) = val.TryGetValue(data);
-            Assert.Equal(@"c:\test\test\test", result);
+            Assert.Equal("c:\\test\\test\\test", result);
+            Assert.Null(error);
+
+            // tabs are the chars
+            val = new ValueExpression("c:\test\test\test");
+            (result, error) = val.TryGetValue(data);
+            Assert.Equal("c:\test\test\test", result);
             Assert.Null(error);
         }
 
