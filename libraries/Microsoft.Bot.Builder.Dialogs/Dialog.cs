@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private IBotTelemetryClient _telemetryClient;
 
         [JsonProperty("id")]
-        private string id;
+        private string _id;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Dialog"/> class.
@@ -50,13 +50,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             get
             {
-                id = id ?? OnComputeId();
-                return id;
+                _id = _id ?? OnComputeId();
+                return _id;
             }
 
             set
             {
-                id = value;
+                _id = value;
             }
         }
 

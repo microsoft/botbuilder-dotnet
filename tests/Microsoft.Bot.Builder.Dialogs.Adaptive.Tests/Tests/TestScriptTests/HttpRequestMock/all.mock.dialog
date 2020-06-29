@@ -1,0 +1,10 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "url": "http://127.0.0.1",
+    "responses": [
+        {
+            "content": "fallback response"
+        }
+    ]
+}

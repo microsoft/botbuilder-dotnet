@@ -7,6 +7,9 @@ namespace Microsoft.Bot.Configuration
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Configuration properties for a Azure Blob Storage service.
+    /// </summary>
     [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class BlobStorageService : AzureService
     {

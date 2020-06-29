@@ -1,8 +1,13 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class ScopePath
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
         /// User memory scope root path.
@@ -25,6 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string DialogClass = "dialogclass";
 
         /// <summary>
+        /// DialogContext memory scope root path.
+        /// </summary>
+        public const string DialogContext = "dialogContext";
+
+        /// <summary>
         /// This memory scope root path.
         /// </summary>
         public const string This = "this";
@@ -44,21 +54,28 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         public const string Turn = "turn";
 
-        [Obsolete]
+        [Obsolete("This property is deprecated, use ScopePath.User instead.")]
         public const string USER = "user";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use ScopePath.Conversation instead.")]
         public const string CONVERSATION = "conversation";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use ScopePath.Dialog instead.")]
         public const string DIALOG = "dialog";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use ScopePath.DialogClass instead.")]
         public const string DIALOGCLASS = "dialogclass";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use ScopePath.This instead.")]
         public const string THIS = "this";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use ScopePath.Class instead.")]
         public const string CLASS = "class";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use ScopePath.Settings instead.")]
         public const string SETTINGS = "settings";
-        [Obsolete]
+
+        [Obsolete("This property is deprecated, use ScopePath.Turn instead.")]
         public const string TURN = "turn";
     }
 }

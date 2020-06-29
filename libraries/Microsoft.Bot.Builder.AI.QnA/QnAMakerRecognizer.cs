@@ -140,15 +140,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         [JsonProperty("logPersonalInformation")]
         public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
 
-        /// <summary>
-        /// Gets or sets a value indicating whether to enable PreciseAnswer generation. 
-        /// </summary>
-        /// <value>
-        /// Choice whether to generate precise answer or not.
-        /// </value>
-        [JsonProperty("enablePreciseAnswer")]
-        public BoolExpression EnablePreciseAnswer { get; set; } = false;
-
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             // Identify matched intents
@@ -189,8 +180,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     Top = this.Top.GetValue(dialogContext.State),
                     QnAId = this.QnAId.GetValue(dialogContext.State),
                     RankerType = this.RankerType.GetValue(dialogContext.State),
-                    IsTest = this.IsTest,
-                    EnablePreciseAnswer = this.EnablePreciseAnswer.GetValue(dialogContext.State)
+                    IsTest = this.IsTest
                 },
                 null).ConfigureAwait(false);
 
@@ -217,13 +207,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 var answerArray = new JArray();
                 answerArray.Add(topAnswer.Answer);
                 ObjectPath.SetPathValue(recognizerResult, "entities.answer", answerArray);
-
-                if (!string.IsNullOrEmpty(topAnswer.AnswerSpan?.Text))
-                {
-                    var answerSpanArray = new JArray();
-                    answerSpanArray.Add(topAnswer.AnswerSpan.Text);
-                    ObjectPath.SetPathValue(recognizerResult, "entities.answerspan", answerSpanArray);
-                }
 
                 var instance = new JArray();
                 instance.Add(JObject.FromObject(topAnswer));

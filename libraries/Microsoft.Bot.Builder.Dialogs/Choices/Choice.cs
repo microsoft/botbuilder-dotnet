@@ -10,7 +10,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
     /// <summary>
     /// Represents a choice for a choice prompt.
     /// </summary>
+#pragma warning disable CA1724 // Namespace name conflict (we can't change this without breaking binary compat)
     public class Choice
+#pragma warning restore CA1724 // Namespace name conflict
     {
         public Choice(string value = null)
         {
@@ -43,6 +45,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// The list of synonyms to recognize in addition to the value.
         /// </value>
         [JsonProperty("synonyms")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<string> Synonyms { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }
