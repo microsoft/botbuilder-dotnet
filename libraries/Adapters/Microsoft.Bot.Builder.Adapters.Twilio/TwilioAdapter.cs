@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
@@ -40,10 +41,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// TwilioAuthToken: The authentication token for the account.
         /// TwilioValidationUrl: The validation URL for incoming requests.
         /// </remarks>
+        /// <param name="adapterOptions">Options for the <see cref="TwilioAdapter"/>.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public TwilioAdapter(IConfiguration configuration, ILogger logger = null)
+        public TwilioAdapter(IConfiguration configuration, TwilioAdapterOptions adapterOptions = null, ILogger logger = null)
             : this(
-                new TwilioClientWrapper(new TwilioClientWrapperOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"]))), logger)
+                new TwilioClientWrapper(new TwilioClientWrapperOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"]))), adapterOptions, logger)
         {
         }
 
@@ -51,9 +53,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class.
         /// </summary>
         /// <param name="twilioClient">The Twilio client to connect to.</param>
-        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <param name="adapterOptions">Options for the <see cref="TwilioAdapter"/>.</param>
-        public TwilioAdapter(TwilioClientWrapper twilioClient, ILogger logger = null, TwilioAdapterOptions adapterOptions = null)
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public TwilioAdapter(TwilioClientWrapper twilioClient, TwilioAdapterOptions adapterOptions, ILogger logger = null)
         {
             _twilioClient = twilioClient ?? throw new ArgumentNullException(nameof(twilioClient));
             _logger = logger ?? NullLogger.Instance;
@@ -138,8 +140,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
             if (_options.ValidateIncomingRequests && !_twilioClient.ValidateSignature(httpRequest, bodyDictionary))
             {
-                throw new Exception(
-                    "WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                throw new AuthenticationException("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
             }
 
             var activity = TwilioHelper.PayloadToActivity(bodyDictionary);
