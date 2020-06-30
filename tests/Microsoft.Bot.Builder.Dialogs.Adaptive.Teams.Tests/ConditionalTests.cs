@@ -15,23 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 {
     public class ConditionalTests
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
-
-        public static void ClassInitialize()
-        {
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(ConditionalTests)), monitorChanges: false);
-        }
-        
-        [Fact]
-        public async Task ConditionalsTests_OnTeamActivityTypes()
-        {
-            ClassInitialize();
-            Initialize();
-            await TestUtils.RunTestScript(ResourceExplorer);
-        }
-
-        internal static void Initialize()
+        public ConditionalTests()
         {
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new DialogsComponentRegistration());
@@ -39,6 +23,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
             ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
             ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());
             ComponentRegistration.Add(new TeamsComponentRegistration());
+
+            ResourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(ConditionalTests)), monitorChanges: false);
+        }
+
+        public static ResourceExplorer ResourceExplorer { get; set; }
+        
+        [Fact]
+        public async Task ConditionalsTests_OnTeamActivityTypes()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
     }
 }
