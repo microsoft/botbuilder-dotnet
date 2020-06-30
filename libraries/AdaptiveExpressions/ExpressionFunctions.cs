@@ -1794,7 +1794,9 @@ namespace AdaptiveExpressions
                     styles: DateTimeStyles.RoundtripKind,
                     result: out var parsed))
             {
+#pragma warning disable CA1309 // Use ordinal stringcomparison
                 if (parsed.ToString(DefaultDateTimeFormat).Equals(timeStamp, StringComparison.InvariantCultureIgnoreCase))
+#pragma warning restore CA1309 // Use ordinal stringcomparison
                 {
                     result = transform != null ? transform(parsed) : parsed;
                 }
@@ -1806,6 +1808,22 @@ namespace AdaptiveExpressions
             else
             {
                 error = $"Could not parse {timeStamp}";
+            }
+
+            return (result, error);
+        }
+
+        private static (int, string) ParseInt32(object input)
+        {
+            int result = 0;
+            string error = null;
+            try
+            {
+                result = Convert.ToInt32(input);
+            }
+            catch
+            {
+                error = $"{input} must be a 32-bit signed integer.";
             }
 
             return (result, error);
@@ -2940,15 +2958,24 @@ namespace AdaptiveExpressions
                         {
                             string error = null;
                             IList result = null;
-                            var count = Convert.ToInt32(args[1]);
-                            if (count <= 0)
+                            var count = 0;                
+                            (count, error) = ParseInt32(args[1]);
+                            if (error == null)
                             {
-                                error = $"The second parameter should be more than zero";
-                            }
-                            else
-                            {
-                                result = Enumerable.Range(Convert.ToInt32(args[0]), count).ToList();
-                            }
+                                if (count <= 0)
+                                {
+                                    error = $"The second parameter should be more than zero";
+                                }
+                                else
+                                {
+                                    var start = 0;
+                                    (start, error) = ParseInt32(args[0]);
+                                    if (error == null)
+                                    {
+                                        result = Enumerable.Range(start, count).ToList();
+                                    }
+                                }
+                            }                         
 
                             return (result, error);
                         },
@@ -2975,14 +3002,22 @@ namespace AdaptiveExpressions
 
                         if (error == null)
                         {
-                            var digits = args.Count == 2 ? Convert.ToInt32(args[1]) : 0;
-                            if (digits < 0 || digits > 15)
+                            var digits = 0;
+                            if (args.Count == 2)
                             {
-                                error = $"The second parameter {args[1]} must be an integer between 0 and 15;";
+                                (digits, error) = ParseInt32(args[1]);
                             }
-                            else
+
+                            if (error == null)
                             {
-                                result = Math.Round(Convert.ToDouble(args[0]), digits);
+                                if (digits < 0 || digits > 15)
+                                {
+                                    error = $"The second parameter {args[1]} must be an integer between 0 and 15;";
+                                }
+                                else
+                                {
+                                    result = Math.Round(Convert.ToDouble(args[0]), digits);
+                                }
                             }
                         }
 
@@ -3071,11 +3106,23 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.IndicesAndValues, IndicesAndValues, ReturnType.Array, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Flatten,
-                    Apply(
+                    ApplyWithError(
                         args =>
                         {
-                            var depth = args.Count > 1 ? Convert.ToInt32(args[1]) : 100;
-                            return Flatten((IEnumerable<object>)args[0], depth);
+                            var depth = 100;
+                            object result = null;
+                            string error = null;
+                            if (args.Count > 1)
+                            {
+                                (depth, error) = ParseInt32(args[1]);
+                            }
+
+                            if (error == null)
+                            {
+                                result = Flatten((IEnumerable<object>)args[0], depth);
+                            }
+
+                            return (result, error);
                         }),
                     ReturnType.Array,
                     (expression) => ValidateOrder(expression, new[] { ReturnType.Number }, ReturnType.Array)),
@@ -3342,7 +3389,20 @@ namespace AdaptiveExpressions
                     ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.AddOrdinal,
-                    Apply(args => AddOrdinal(Convert.ToInt32(args[0])), VerifyInteger),
+                    ApplyWithError(
+                        args => 
+                        {
+                            object result = null;
+                            string error = null;
+                            var input = 0;
+                            (input, error) = ParseInt32(args[0]);
+                            if (error == null)
+                            {
+                                result = AddOrdinal(input);
+                            }
+
+                            return (result, error);
+                        }, VerifyInteger),
                     ReturnType.String,
                     (expression) => ValidateArityAndAnyType(expression, 1, 1, ReturnType.Number)),
                 new ExpressionEvaluator(
@@ -4371,16 +4431,20 @@ namespace AdaptiveExpressions
                             }
                             else
                             {
-                                try
+                                var precision = 0;
+                                (precision, error) = ParseInt32(args[1]);
+                                if (error == null)
                                 {
-                                    var number = Convert.ToDouble(args[0]);
-                                    var precision = Convert.ToInt32(args[1]);
-                                    var locale = args.Count == 3 ? new CultureInfo(args[2] as string) : CultureInfo.InvariantCulture;
-                                    result = number.ToString("N" + precision.ToString(), locale);
-                                }
-                                catch
-                                {
-                                    error = $"{args[3]} is not a valid locale for formatNumber";
+                                    try
+                                    {
+                                        var number = Convert.ToDouble(args[0]);
+                                        var locale = args.Count == 3 ? new CultureInfo(args[2] as string) : CultureInfo.InvariantCulture;
+                                        result = number.ToString("N" + precision.ToString(), locale);
+                                    }
+                                    catch
+                                    {
+                                        error = $"{args[3]} is not a valid locale for formatNumber";
+                                    }
                                 }
                             }
 
@@ -4400,17 +4464,26 @@ namespace AdaptiveExpressions
                         {
                             object value = null;
                             string error = null;
-                            var min = Convert.ToInt32(args[0]);
-                            var max = Convert.ToInt32(args[1]);
-                            if (min >= max)
+                            var min = 0;
+                            var max = 0;
+                            (min, error) = ParseInt32(args[0]);
+                            if (error == null)
                             {
-                                error = $"{min} is not < {max} for rand";
+                                (max, error) = ParseInt32(args[1]);
                             }
-                            else
+                            
+                            if (error == null)
                             {
-                                lock (_randomizerLock)
+                                if (min >= max)
                                 {
-                                    value = Randomizer.Next(min, max);
+                                    error = $"{min} is not < {max} for rand";
+                                }
+                                else
+                                {
+                                    lock (_randomizerLock)
+                                    {
+                                        value = Randomizer.Next(min, max);
+                                    }
                                 }
                             }
 
