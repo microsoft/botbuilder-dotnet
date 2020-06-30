@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Foreach";
-        private const string LIST = "dialog.foreach.list";
+        private const string List = "dialog.foreach.list";
 
         [JsonConstructor]
         public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             // Set list information
             var items = dc.State.GetValue<JArray>(this.ItemsProperty.GetValue(dc.State));
-            dc.State.SetValue(LIST, items);
+            dc.State.SetValue(List, items);
 
             return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
         }
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected virtual async Task<DialogTurnResult> NextItemAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             // Get list information
-            var list = dc.State.GetValue<JArray>(LIST);
+            var list = dc.State.GetValue<JArray>(List);
             var index = dc.State.GetIntValue(Index.GetValue(dc.State));
 
             // Next item
