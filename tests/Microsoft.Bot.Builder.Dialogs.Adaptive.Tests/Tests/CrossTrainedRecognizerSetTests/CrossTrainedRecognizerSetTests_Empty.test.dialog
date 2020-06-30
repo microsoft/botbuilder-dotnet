@@ -1,0 +1,52 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$schema": "../../../tests.schema",
+            "$kind": "Microsoft.CrossTrainedRecognizerSet",
+            "recognizers": [
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "UnknownIntent:${turn.recognized.intent}"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "UnknownIntent:None"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "x"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "UnknownIntent:None"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "y"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "UnknownIntent:None"
+        }
+    ]
+}

@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
+    /// <summary>
+    /// Represents the payload received when a Webex Message is sent to the bot.
+    /// </summary>
     public class WebexMessageRequest
     {
         /// <summary>
