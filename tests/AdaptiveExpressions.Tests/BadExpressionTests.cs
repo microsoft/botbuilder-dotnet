@@ -169,6 +169,8 @@ namespace AdaptiveExpressions.Tests
             Test("rand(5, 6.1)"), //  param should be integer
             Test("rand(5)"), //  need two params
             Test("rand(7, 6)"), //  minvalue cannot be greater than maxValue
+            Test("rand(21223123221322, 10)"), // the first parameter should be a 32-bit signed integer
+            Test("rand(10, 21223123221322)"), // the first parameter should be a 32-bit signed integer
             Test("sum(items)"), //  should have number parameters
             Test("range(hello,one)"), // params should be integer
             Test("range(one,0)"), // the second param should be more than 0
@@ -361,6 +363,7 @@ namespace AdaptiveExpressions.Tests
             Test("sortBy(hello, 'x')"), // first param should be list
             Test("sortBy(createArray('H','e','l','l','o'), 1)"), // second param should be string
             Test("sortBy(createArray('H','e','l','l','o'), 'x', hi)"), // second param should be string
+            Test("flatten(createArray(1,createArray(2),createArray(createArray(3, 4), createArray(5,6))), 123456789012345)"), // the second parameter should be a 32-bit signed integer
 #endregion
 
             #region Object manipulation and construction functions test
