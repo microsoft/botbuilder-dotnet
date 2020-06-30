@@ -242,6 +242,9 @@ namespace Microsoft.Bot.Builder.Teams
                         case "teamDeleted":
                             return OnTeamsTeamDeletedAsync(channelData.Team, turnContext, cancellationToken);
 
+                        case "teamHardDeleted":
+                            return OnTeamsTeamHardDeletedAsync(channelData.Team, turnContext, cancellationToken);
+
                         case "teamRenamed":
                             return OnTeamsTeamRenamedAsync(channelData.Team, turnContext, cancellationToken);
 
@@ -340,6 +343,11 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         protected virtual Task OnTeamsTeamDeletedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnTeamsTeamHardDeletedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
