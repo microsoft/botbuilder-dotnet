@@ -140,6 +140,11 @@ namespace Microsoft.Bot.Builder.Azure
             _client.ConnectionPolicy.UserAgentSuffix = $"Microsoft-BotFramework {version}";
         }
 
+        /// <summary>
+        /// Escapes a given key to be compatible for use with Cosmos DB. 
+        /// </summary>
+        /// <param name="key">The key to be sanitized (escaped).</param>
+        /// <returns>An appropriately escaped version of the key.</returns>
         [Obsolete("Replaced by CosmosDBKeyEscape.EscapeKey.")]
         public static string SanitizeKey(string key) => CosmosDbKeyEscape.EscapeKey(key);
 

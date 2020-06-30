@@ -32,27 +32,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public string InitialDialogId { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="IBotTelemetryClient"/> to use for logging.
-        /// When setting this property, all of the contained dialogs' <see cref="Dialog.TelemetryClient"/>
-        /// properties are also set.
-        /// </summary>
-        /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
-        /// <seealso cref="DialogSet.TelemetryClient"/>
-        public override IBotTelemetryClient TelemetryClient
-        {
-            get
-            {
-                return base.TelemetryClient;
-            }
-
-            set
-            {
-                base.TelemetryClient = value ?? NullBotTelemetryClient.Instance;
-                Dialogs.TelemetryClient = base.TelemetryClient;
-            }
-        }
-
-        /// <summary>
         /// Called when the dialog is started and pushed onto the parent's dialog stack.
         /// </summary>
         /// <param name="outerDc">The parent <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -234,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The <see cref="ComponentDialog"/> after the operation is complete.</returns>
         /// <remarks>The added dialog's <see cref="Dialog.TelemetryClient"/> is set to the
-        /// <see cref="TelemetryClient"/> of the component dialog.</remarks>
+        /// <see cref="DialogContainer.TelemetryClient"/> of the component dialog.</remarks>
         public ComponentDialog AddDialog(Dialog dialog)
         {
             this.Dialogs.Add(dialog);
