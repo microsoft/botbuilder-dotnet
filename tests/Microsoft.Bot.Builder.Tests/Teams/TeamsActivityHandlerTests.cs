@@ -1006,16 +1006,22 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsTeamHardDeletedAsync(teamInfo, turnContext, cancellationToken);
             }
 
-            protected override Task OnTeamsTeamUnarchivedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsTeamUnarchivedAsync(teamInfo, turnContext, cancellationToken);
-            }
-
             protected override Task OnTeamsTeamRenamedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsTeamRenamedAsync(teamInfo, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsTeamRestoredAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsTeamRestoredAsync(teamInfo, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsTeamUnarchivedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsTeamUnarchivedAsync(teamInfo, turnContext, cancellationToken);
             }
 
             protected override Task OnTeamsMembersAddedAsync(IList<TeamsChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
