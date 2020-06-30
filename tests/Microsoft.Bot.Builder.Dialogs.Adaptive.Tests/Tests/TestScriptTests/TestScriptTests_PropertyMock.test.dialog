@@ -1,5 +1,5 @@
 ﻿{
-    "$schema": "../../../schemas/sdk.schema",
+    "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "description": "Test Mock Settings",
     "propertyMocks": [
@@ -35,18 +35,6 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${settings.object.property}"
-                    },
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "${count(settings.array)}"
-                    },
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "${settings.array[0]}"
-                    },
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "${settings.array[1].data}"
                     }
                 ]
             }
@@ -55,6 +43,10 @@
     "script": [
         {
             "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "file"
         },
         {
@@ -66,7 +58,7 @@
             "text": "overwrite file"
         },
         {
-            "$kind": "Microsoft.Test.UserSays",
+            "$kind": "Microsoft.Test.AssertReply",
             "text": "overwrite base"
         },
         {
@@ -76,18 +68,6 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "set object"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "2"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "set array 0"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "set array 1"
         }
     ]
 }

@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// Gets or sets the mock data for properties.
         /// </summary>
         /// <value>
-        /// A list of mocks. In first match first use order.
+        /// A list of property mocks. In first match first use order.
         /// </value>
         [JsonProperty("propertyMocks")]
         public List<PropertyMock> PropertyMocks { get; set; } = new List<PropertyMock>();
