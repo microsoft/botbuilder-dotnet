@@ -340,6 +340,15 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Invoked when a Team Archived event activity is received from the connector.
+        /// Team Archived correspond to the user archiving a team.
+        /// </summary>
+        /// <param name="teamInfo">The team info object representing the team.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual Task OnTeamsTeamArchivedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
@@ -365,6 +374,15 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Invoked when a Team Unarchived event activity is received from the connector.
+        /// Team Unarchived correspond to the user unarchiving a team.
+        /// </summary>
+        /// <param name="teamInfo">The team info object representing the team.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual Task OnTeamsTeamUnarchivedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
