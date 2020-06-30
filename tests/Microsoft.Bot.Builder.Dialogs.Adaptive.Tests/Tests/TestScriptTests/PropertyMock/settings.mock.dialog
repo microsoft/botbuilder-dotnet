@@ -1,0 +1,34 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.SettingsPropertiesMock",
+    "assignments": [
+        {
+            "property": "fileoverwrite",
+            "value": "overwrite file"
+        },
+        {
+            "property": "baseoverwrite",
+            "value": "overwrite base"
+        },
+        {
+            "property": "selfoverwrite",
+            "value": "overwrite self"
+        },
+        {
+            "property": "selfoverwrite",
+            "value": "this is overwritten"
+        },
+        {
+            "property": "object.property",
+            "value": "set object"
+        },
+        {
+            "property": "array.0",
+            "value": "set array 0"
+        },
+        {
+            "property": "array.1.data",
+            "value": "set array 1"
+        }
+    ]
+}
