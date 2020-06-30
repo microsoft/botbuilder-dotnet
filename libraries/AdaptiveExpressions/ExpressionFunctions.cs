@@ -2284,11 +2284,13 @@ namespace AdaptiveExpressions
             {
                 if (args.Count == maxArgsLength)
                 {
+                    // if the number of args equals to the maxArgsLength, the second last one is format, and the last one is locale
                     format = args[maxArgsLength - 2] as string;
                     (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
                 }
                 else if (args.Count == maxArgsLength - 1)
                 {
+                    // if the number of args equals to the maxArgsLength - 1, the last one is format,
                     format = args[maxArgsLength - 2] as string;
                 }
             }        

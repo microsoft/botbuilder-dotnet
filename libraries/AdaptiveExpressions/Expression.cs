@@ -532,14 +532,7 @@ namespace AdaptiveExpressions
             var opts = options ?? new Options();
             if (opts.Locale != null)
             {
-                try
-                {
-                    new CultureInfo(opts.Locale);
-                }
-                catch (Exception err)
-                {
-                    throw err;
-                }               
+                new CultureInfo(opts.Locale);             
             }
 
             var (result, error) = Evaluator.TryEvaluate(this, state, opts);
