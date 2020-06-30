@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
         /// <summary>
         /// Gets or sets the value to set.
         /// </summary>
-        /// <value>Only string is supported.</value>
+        /// <value>Value string.</value>
         [JsonProperty("value")]
         public string Value { get; set; }
     }

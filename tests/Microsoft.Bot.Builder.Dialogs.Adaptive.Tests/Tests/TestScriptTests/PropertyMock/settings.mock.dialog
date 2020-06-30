@@ -21,14 +21,6 @@
         {
             "property": "object.property",
             "value": "set object"
-        },
-        {
-            "property": "array.0",
-            "value": "set array 0"
-        },
-        {
-            "property": "array.1.data",
-            "value": "set array 1"
         }
     ]
 }

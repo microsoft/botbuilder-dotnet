@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
 {
+    /// <summary>
+    /// Mock one or more settings property values.
+    /// </summary>
     public class SettingsPropertiesMock : PropertyMock
     {
         [JsonProperty("$kind")]

@@ -320,6 +320,9 @@
 			"$ref": "#/definitions/Microsoft.Test.Script"
 		},
 		{
+			"$ref": "#/definitions/Microsoft.Test.SettingsPropertiesMock"
+		},
+		{
 			"$ref": "#/definitions/Microsoft.Test.UserActivity"
 		},
 		{
@@ -7612,16 +7615,6 @@
 					"description": "True, if pointing to Test environment, else false.",
 					"default": false
 				},
-				"enablePreciseAnswer": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "EnablePreciseAnswer",
-					"description": "True, if PreciseAnswer is opted, else false."
-				},
-				"displayPreciseAnswerOnly": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "DisplayPreciseAnswerOnly",
-					"description": "True, if PreciseAnswer text only is opted, else false."
-				},
 				"rankerType": {
 					"$ref": "#/definitions/stringExpression",
 					"title": "Ranker Type",
@@ -7807,11 +7800,6 @@
 					"$ref": "#/definitions/integerExpression",
 					"title": "QnAId",
 					"description": "A number or expression which is the QnAId to paass to QnAMaker API."
-				},
-				"enablePreciseAnswer": {
-					"$ref": "#/definitions/booleanExpression",
-					"title": "EnablePreciseAnswer",
-					"description": "True, if PreciseAnswer is opted, else false."
 				},
 				"$kind": {
 					"title": "Kind of dialog object",
@@ -9004,6 +8992,21 @@
 				}
 			]
 		},
+		"Microsoft.Test.IPropertyMock": {
+			"title": "Microsoft Test IPropertyMock",
+			"description": "Components which derive from PropertyMock class",
+			"$role": "interface",
+			"oneOf": [
+				{
+					"type": "string",
+					"title": "Reference to Microsoft.Test.IPropertyMock",
+					"description": "Reference to Microsoft.Test.IPropertyMock .dialog file."
+				},
+				{
+					"$ref": "#/definitions/Microsoft.Test.SettingsPropertiesMock"
+				}
+			]
+		},
 		"Microsoft.Test.ITestAction": {
 			"title": "Microsoft Test ITestAction",
 			"description": "Components which derive from TestAction class",
@@ -9078,6 +9081,15 @@
 						"$ref": "#/definitions/Microsoft.Test.IHttpRequestMock"
 					}
 				},
+				"propertyMocks": {
+					"type": "array",
+					"title": "Property Mocks",
+					"description": "A list of property mocks. In first match first use order.",
+					"items": {
+						"$kind": "Microsoft.Test.IPropertyMock",
+						"$ref": "#/definitions/Microsoft.Test.IPropertyMock"
+					}
+				},
 				"script": {
 					"type": "array",
 					"title": "Test actions",
@@ -9105,6 +9117,65 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.Test.Script"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.Test.SettingsPropertiesMock": {
+			"$role": "implements(Microsoft.Test.IPropertyMock)",
+			"title": "Mock Settings Properties",
+			"description": "Mock one or more settings property values.",
+			"type": "object",
+			"required": [
+				"assignments",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"assignments": {
+					"type": "array",
+					"title": "Assignments",
+					"description": "Property assignments as settings.property=value pairs. In first match first use order.",
+					"items": {
+						"type": "object",
+						"title": "Settings Property Assignment",
+						"description": "Property Assignment (used in SettingsPropertiesMock).",
+						"properties": {
+							"property": {
+								"type": "string",
+								"title": "Property",
+								"description": "A property path without settings.",
+								"examples": [
+									"connectionName"
+								]
+							},
+							"value": {
+								"type": "string",
+								"title": "Value",
+								"description": "Value string.",
+								"examples": [
+									"Graph"
+								]
+							}
+						}
+					}
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.Test.SettingsPropertiesMock"
 				},
 				"$designer": {
 					"title": "Designer information",
