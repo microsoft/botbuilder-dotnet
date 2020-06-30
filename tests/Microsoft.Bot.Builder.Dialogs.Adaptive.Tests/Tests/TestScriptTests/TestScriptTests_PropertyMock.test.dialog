@@ -1,0 +1,93 @@
+﻿{
+    "$schema": "../../../schemas/sdk.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test Mock Settings",
+    "propertyMocks": [
+        "settings.mock",
+        "settingsbase.mock"
+    ],
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.file}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.base}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.fileoverwrite}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.baseoverwrite}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.selfoverwrite}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.object.property}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${count(settings.array)}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.array[0]}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.array[1].data}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "file"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "base"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "overwrite file"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "overwrite base"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "overwrite self"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "set object"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "set array 0"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "set array 1"
+        }
+    ]
+}
