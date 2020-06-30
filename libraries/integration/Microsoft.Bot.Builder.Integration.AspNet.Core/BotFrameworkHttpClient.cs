@@ -89,6 +89,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var appCredentials = await GetAppCredentialsAsync(fromBotId, toBotId).ConfigureAwait(false);
             if (appCredentials == null)
             {
+                Logger.LogError("Unable to get appCredentials to connect to the skill");
                 throw new InvalidOperationException("Unable to get appCredentials to connect to the skill");
             }
 
@@ -174,6 +175,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
             // post the activity to the url using the bot's credentials.
+            Logger.LogInformation($"Posting activity. ActivityId: {activity.Id} from BotId: {botId}");
             return await SecurePostActivityAsync<T>(botEndpoint, activity, token, cancellationToken).ConfigureAwait(false);
         }
 
