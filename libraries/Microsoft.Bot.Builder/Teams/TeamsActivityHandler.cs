@@ -236,6 +236,9 @@ namespace Microsoft.Bot.Builder.Teams
                         case "channelRenamed":
                             return OnTeamsChannelRenamedAsync(channelData.Channel, channelData.Team, turnContext, cancellationToken);
 
+                        case "channelRestored":
+                            return OnTeamsChannelRestoredAsync(channelData.Channel, channelData.Team, turnContext, cancellationToken);
+
                         case "teamRenamed":
                             return OnTeamsTeamRenamedAsync(channelData.Team, turnContext, cancellationToken);
 
@@ -321,6 +324,21 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         protected virtual Task OnTeamsChannelRenamedAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a Channel Restored event activity is received from the connector.
+        /// Channel Restored correspond to the user restoring a previously deleted channel.
+        /// </summary>
+        /// <param name="channelInfo">The channel info object which describes the channel.</param>
+        /// <param name="teamInfo">The team info object representing the team.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsChannelRestoredAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
