@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [Fact]
         public async Task TestConversationUpdateTeamsTeamArchived()
         {
-            //Arrange
+            // Arrange
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
@@ -331,13 +331,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
-        public async Task TestConversationUpdateTeamsTeamUnarchived()
+        public async Task TestConversationUpdateTeamsTeamDeleted()
         {
             // Arrange
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                ChannelData = new TeamsChannelData { EventType = "teamUnarchived" },
+                ChannelData = new TeamsChannelData { EventType = "teamDeleted" },
                 ChannelId = Channels.Msteams,
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
@@ -349,7 +349,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Assert
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.Equal("OnTeamsTeamUnarchivedAsync", bot.Record[1]);
+            Assert.Equal("OnTeamsTeamDeletedAsync", bot.Record[1]);
         }
 
         [Fact]
@@ -372,6 +372,28 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
             Assert.Equal("OnTeamsTeamRenamedAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestConversationUpdateTeamsTeamUnarchived()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                ChannelData = new TeamsChannelData { EventType = "teamUnarchived" },
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTeamUnarchivedAsync", bot.Record[1]);
         }
 
         [Fact]
@@ -954,6 +976,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsTeamRenamedAsync(teamInfo, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsTeamDeletedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsTeamDeletedAsync(teamInfo, turnContext, cancellationToken);
             }
 
             protected override Task OnTeamsTeamRenamedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
