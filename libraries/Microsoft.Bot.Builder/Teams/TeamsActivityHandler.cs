@@ -239,6 +239,9 @@ namespace Microsoft.Bot.Builder.Teams
                         case "teamArchived":
                             return OnTeamsTeamArchivedAsync(channelData.Team, turnContext, cancellationToken);
 
+                        case "teamUnarchived":
+                            return OnTeamsTeamUnarchivedAsync(channelData.Team, turnContext, cancellationToken);
+
                         case "teamRenamed":
                             return OnTeamsTeamRenamedAsync(channelData.Team, turnContext, cancellationToken);
 
@@ -329,6 +332,11 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         protected virtual Task OnTeamsTeamArchivedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task OnTeamsTeamUnarchivedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
