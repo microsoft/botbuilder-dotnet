@@ -805,7 +805,22 @@ namespace AdaptiveExpressions
                         if (args[1].IsInteger())
                         {
                             var formatString = (args.Count() == 3 && args[2] is string string1) ? string1 : DefaultDateTimeFormat;
-                            (value, error) = NormalizeToDateTime(args[0], dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
+                            (value, error) = NormalizeToDateTime(args[0], dt => 
+                            {
+                                var result = dt;
+                                var (interval, error) = ParseInt32(args[1]);
+                                if (error == null)
+                                {
+                                    result = function(dt, interval);
+                                }
+
+                                return (result, error);
+                            });
+                            
+                            if (error == null)
+                            {
+                                value = Convert.ToDateTime(value).ToString(formatString);
+                            }
                         }
                         else
                         {
@@ -839,7 +854,12 @@ namespace AdaptiveExpressions
             {
                 if (index >= 0 && index < list.Count)
                 {
-                    value = list[Convert.ToInt32(index)];
+                    var newIndex = 0;
+                    (newIndex, error) = ParseInt32(index);
+                    if (error == null)
+                    {
+                        value = list[newIndex];
+                    }
                 }
                 else
                 {
@@ -1187,8 +1207,12 @@ namespace AdaptiveExpressions
                 {
                     if (idxValue.IsInteger())
                     {
-                        var idx = Convert.ToInt32(idxValue);
-                        (value, error) = AccessIndex(inst, idx);
+                        var idx = 0;
+                        (idx, error) = ParseInt32(idxValue);
+                        if (error == null)
+                        {
+                            (value, error) = AccessIndex(inst, idx);
+                        }  
                     }
                     else if (idxValue is string idxStr)
                     {
@@ -1783,7 +1807,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) ParseISOTimestamp(string timeStamp, Func<DateTime, object> transform = null)
+        private static (object, string) ParseISOTimestamp(string timeStamp, Func<DateTime, (object, string)> transform = null)
         {
             object result = null;
             string error = null;
@@ -1794,11 +1818,9 @@ namespace AdaptiveExpressions
                     styles: DateTimeStyles.RoundtripKind,
                     result: out var parsed))
             {
-#pragma warning disable CA1309 // Use ordinal stringcomparison
                 if (parsed.ToString(DefaultDateTimeFormat).Equals(timeStamp, StringComparison.InvariantCultureIgnoreCase))
-#pragma warning restore CA1309 // Use ordinal stringcomparison
                 {
-                    result = transform != null ? transform(parsed) : parsed;
+                    (result, error) = transform != null ? transform(parsed) : (parsed, null);
                 }
                 else
                 {
@@ -1829,7 +1851,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        private static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, object> transform = null)
+        private static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, (object, string)> transform = null)
         {
             object result = null;
             string error = null;
@@ -1839,7 +1861,7 @@ namespace AdaptiveExpressions
             }
             else if (timestamp is DateTime dt)
             {
-                result = transform != null ? transform(dt) : dt;
+                (result, error) = transform != null ? transform(dt) : (dt, null);
             }
             else
             {
@@ -3555,32 +3577,32 @@ namespace AdaptiveExpressions
                 TimeTransform(ExpressionType.AddSeconds, (ts, add) => ts.AddSeconds(add)),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfMonth,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Day)),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => (dt.Day, null))),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfWeek,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => Convert.ToInt32(dt.DayOfWeek))),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => ParseInt32(dt.DayOfWeek))),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.DayOfYear,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.DayOfYear)),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => (dt.DayOfYear, null))),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Month,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Month)),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => (dt.Month, null))),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Date,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture))),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => (dt.Date.ToString("M/dd/yyyy", CultureInfo.InvariantCulture), null))),
                     ReturnType.String,
                     ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.Year,
-                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => dt.Year)),
+                    ApplyWithError(args => NormalizeToDateTime(args[0], dt => (dt.Year, null))),
                     ReturnType.Number,
                     ValidateUnary),
                 new ExpressionEvaluator(
@@ -3675,7 +3697,7 @@ namespace AdaptiveExpressions
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[1]), string2);
                                 if (error == null)
                                 {
-                                    (value, error) = NormalizeToDateTime(args[0], dt => timeConverter(dt).ToString(format));
+                                    (value, error) = NormalizeToDateTime(args[0], dt => (timeConverter(dt).ToString(format), null));
                                 }
                             }
                             else
