@@ -89,6 +89,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var appCredentials = await GetAppCredentialsAsync(fromBotId, toBotId).ConfigureAwait(false);
             if (appCredentials == null)
             {
+                Logger.LogError("Unable to get appCredentials to connect to the skill");
                 throw new InvalidOperationException("Unable to get appCredentials to connect to the skill");
             }
 
@@ -174,6 +175,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
             // post the activity to the url using the bot's credentials.
+            Logger.LogInformation($"Posting activity. ActivityId: {activity.Id} from BotId: {botId}");
             return await SecurePostActivityAsync<T>(botEndpoint, activity, token, cancellationToken).ConfigureAwait(false);
         }
 
@@ -188,6 +190,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
             return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+        }
+        
+        private static T GetBodyContent<T>(string content)
+        {
+            return JsonConvert.DeserializeObject<T>(content);
         }
 
         private async Task<InvokeResponse<T>> SecurePostActivityAsync<T>(Uri toUrl, Activity activity, string token, CancellationToken cancellationToken)
@@ -216,11 +223,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     }
                 }
             }
-        }
-
-        private T GetBodyContent<T>(string content)
-        {
-            return JsonConvert.DeserializeObject<T>(content);
         }
 
         /// <summary>
