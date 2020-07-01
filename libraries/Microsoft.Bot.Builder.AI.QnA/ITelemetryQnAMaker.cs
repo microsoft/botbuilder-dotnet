@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
+    /// <summary>
+    /// Interface for adding telemetry logging capabilities to <see cref="QnAMaker"/>.
+    /// </summary>
     public interface ITelemetryQnAMaker
     {
         /// <summary>

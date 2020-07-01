@@ -11,8 +11,15 @@
 # In each subsection folders are ordered first by depth, then alphabetically.
 # This should make it easy to add new rules without breaking existing ones.
 
+# Bot Framework SDK notes:
+# The first code owners for a file or library are the primary approvers.
+# The later code owners represent a "escalation path" in case the primary code owners are unavailable.
+# - @microsoft/bb-dotnet will also never receive a request for a PR review and should be manually requested
+#   for PRs that only trigger the Global rule ("*")
+# - @microsoft/bf-admin should never receive a request for a PR review
+
 # Global rule:
-* @tomlm @cleemullins @mrivera-ms
+* @microsoft/bb-dotnet @microsoft/bf-admin
 
 # Various C# Libraries
 /FunctionalTests/**                 @gabog @mrivera-ms
@@ -22,33 +29,48 @@
 /libraries/Adapters/**              @garypretty
 
 # Adaptive Expressions
-/libraries/AdaptiveExpressions/**   @tomlm @carlosscastro @boydc2014 @chrimc62
+/libraries/AdaptiveExpressions/**   @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
 
-# Platform Integration Libaries
-/libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core/**           @garypretty
-/libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi/**         @garypretty
-/libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.Core/**                        @johnataylor
-/libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.WebApi/**                      @johnataylor
+# Platform Integration Libaries (.NET Core and WebApi)
+/libraries/integration/**                                                           @microsoft/bb-dotnet-integration @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/integration/**                                                               @microsoft/bb-dotnet-integration @microsoft/bb-dotnet @microsoft/bf-admin
 
-# BotBuilder Libaries
-/libraries/Microsoft.Bot.Builder/**                                                @mrivera-ms @gabog @johnataylor
+# Adaptive Dialogs
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                                @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams/**                          @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                        @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+#   Adaptive Dialogs' tests
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling/**                          @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests/**                        @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests/**                    @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Tests/**                              @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+
+# AdaptiveExpressions & LanguageGeneration libraries
+/libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                            @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/libraries/Microsoft.Bot.Builder.LanguageGeneration/**                             @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/AdaptiveExpressions.Tests/**                                                @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/Microsoft.Bot.Builder.LanguageGeneration.Tests/**                           @microsoft/bf-adaptive @microsoft/bb-dotnet @microsoft/bf-admin
+
+# BotBuilder libaries
 /libraries/Microsoft.Bot.Builder.AI.LUIS/**                                        @munozemilio
 /libraries/Microsoft.Bot.Builder.AI.QnA/**                                         @mrivera-ms @johnataylor
 /libraries/Microsoft.Bot.Builder.ApplicationInsights/**                            @garypretty
 /libraries/Microsoft.Bot.Builder.Azure/**                                          @mrivera-ms
 /libraries/Microsoft.Bot.Builder.Dialogs/**                                        @mrivera-ms @gabog @johnataylor
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                               @mrivera-ms @tomlm
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                       @mrivera-ms @tomlm
 /libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                              @mrivera-ms @tomlm @gabog
-/libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                            @mrivera-ms @tomlm
-/libraries/Microsoft.Bot.Builder.LanguageGeneration/**                             @mrivera-ms @tomlm @boydc2014 @chrimc62
 /libraries/Microsoft.Bot.Builder.TemplateManager/**                                @mrivera-ms @tomlm
 /libraries/Microsoft.Bot.Builder.Testing/**                                        @gabog
 /libraries/Microsoft.Bot.Configuration/**                                          @tomlm
 /libraries/Microsoft.Bot.Connector/**                                              @mrivera-ms @carlosscastro @johnataylor
-/libraries/Microsoft.Bot.Schema/**                                                 @mrivera-ms @johnataylor
-/libraries/Microsoft.Bot.Streaming/**                                              @mrivera-ms @carlosscastro
 
-# Tests
-/tests/AdaptiveExpressions.Tests/**                                                @tomlm @boydc2014 @chrimc62 
-/tests/Microsoft.Bot.Builder.LanguageGeneration.Tests/**                           @tomlm @boydc2014 @chrimc62
+# Bot Framework Schema
+/libraries/Microsoft.Bot.Schema/**                                                 @mrivera-ms @johnataylor @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/Microsoft.Bot.Schema.Tests/**                                               @mrivera-ms @johnataylor @microsoft/bb-dotnet @microsoft/bf-admin
+
+# Streaming library
+/libraries/Microsoft.Bot.Streaming/**                                              @microsoft/bf-streaming @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/Microsoft.Bot.Builder.Streaming.Tests/**                                    @microsoft/bf-streaming @microsoft/bb-dotnet @microsoft/bf-admin
+
+# BotBuilder library
+/libraries/Microsoft.Bot.Builder/**                                                @gabog @johnataylor @microsoft/bb-dotnet @microsoft/bf-admin
+/tests/Microsoft.Bot.Builder.Tests/**                                              @gabog @johnataylor @microsoft/bb-dotnet @microsoft/bf-admin

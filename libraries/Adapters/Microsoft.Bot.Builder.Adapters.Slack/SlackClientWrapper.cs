@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Slack.Model;
+using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using SlackAPI;
@@ -29,13 +30,13 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Creates a Slack client by supplying the access token.
         /// </summary>
         /// <param name="options">An object containing API credentials, a webhook verification token and other options.</param>
-        public SlackClientWrapper(SlackAdapterOptions options)
+        public SlackClientWrapper(SlackClientWrapperOptions options)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
 
             if (string.IsNullOrWhiteSpace(options.SlackVerificationToken) && string.IsNullOrWhiteSpace(options.SlackClientSigningSecret))
             {
-                const string warning = "****************************************************************************************" +
+                const string message = "****************************************************************************************" +
                                        "* WARNING: Your bot is operating without recommended security mechanisms in place.     *" +
                                        "* Initialize your adapter with a clientSigningSecret parameter to enable               *" +
                                        "* verification that all incoming webhooks originate with Slack:                        *" +
@@ -45,7 +46,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                                        "****************************************************************************************" +
                                        ">> Slack docs: https://api.slack.com/docs/verifying-requests-from-slack";
 
-                throw new Exception(warning + Environment.NewLine + "Required: include a verificationToken or clientSigningSecret to verify incoming Events API webhooks");
+                throw new InvalidOperationException(message + Environment.NewLine + "Required: include a verificationToken or clientSigningSecret to verify incoming Events API webhooks");
             }
 
             _api = new SlackTaskClient(options.SlackBotToken);
@@ -53,12 +54,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         }
 
         /// <summary>
-        /// Gets the SlackAdapterOptions.
+        /// Gets the <see cref="SlackClientWrapperOptions"/>.
         /// </summary>
         /// <value>
         /// An object containing API credentials, a webhook verification token and other options.
         /// </value>
-        public SlackAdapterOptions Options { get; }
+        public SlackClientWrapperOptions Options { get; }
 
         /// <summary>
         /// Gets the user identity.
@@ -104,9 +105,22 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="asUser">If the message is being sent as user instead of as a bot.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="UpdateResponse"/> representing the response to the operation.</returns>
-        public virtual async Task<UpdateResponse> UpdateAsync(string ts, string channelId, string text, string botName = null, string parse = null, bool linkNames = false, Attachment[] attachments = null, bool asUser = false, CancellationToken cancellationToken = default)
+        public virtual async Task<SlackResponse> UpdateAsync(string ts, string channelId, string text, string botName = null, string parse = null, bool linkNames = false, Attachment[] attachments = null, bool asUser = false, CancellationToken cancellationToken = default)
         {
-            return await _api.UpdateAsync(ts, channelId, text, botName, parse, linkNames, attachments, asUser).ConfigureAwait(false);
+            var updateResponse = await _api.UpdateAsync(ts, channelId, text, botName, parse, linkNames, attachments, asUser).ConfigureAwait(false);
+
+            return new SlackResponse()
+            {
+                Ok = updateResponse.ok,
+                Message = new MessageEvent()
+                {
+                    User = updateResponse.message.user,
+                    Type = updateResponse.message.type,
+                    Text = updateResponse.message.text
+                },
+                Channel = updateResponse.channel,
+                Ts = updateResponse.ts
+            };
         }
 
         /// <summary>
@@ -188,23 +202,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// In multi-team mode, this will use the `getBotUserByTeam` method passed to the constructor to pull the information from a developer-defined source.
         /// </summary>
         /// <param name="activity">An Activity.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The identity of the bot's user.</returns>
-        public async Task<string> GetBotUserByTeamAsync(Activity activity, CancellationToken cancellationToken)
+        public virtual string GetBotUserIdentity(Activity activity)
         {
-            if (!string.IsNullOrWhiteSpace(Identity))
-            {
-                return Identity;
-            }
-
-            if (activity.Conversation.Properties["team"] == null)
-            {
-                return null;
-            }
-
-            // multi-team mode
-            var userId = await Options.GetBotUserByTeamAsync(activity.Conversation.Properties["team"].ToString(), cancellationToken).ConfigureAwait(false);
-            return !string.IsNullOrWhiteSpace(userId) ? userId : throw new Exception("Missing credentials for team.");
+            return Identity;
         }
 
         /// <summary>
@@ -223,7 +224,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                      Options.SlackRedirectUri == null ||
                      Options.SlackScopes.Count == 0)
             {
-                throw new Exception("Missing Slack API credentials! Provide SlackClientId, SlackClientSecret, scopes and SlackRedirectUri as part of the SlackAdapter options.");
+                throw new InvalidOperationException("Missing Slack API credentials! Provide SlackClientId, SlackClientSecret, scopes and SlackRedirectUri as part of the SlackAdapter options.");
             }
         }
     }

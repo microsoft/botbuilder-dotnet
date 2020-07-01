@@ -91,6 +91,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task TestScriptTests_UserTokenMock()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task TestScriptTests_UserTyping()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
