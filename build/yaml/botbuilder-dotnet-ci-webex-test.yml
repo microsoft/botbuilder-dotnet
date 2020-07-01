@@ -67,7 +67,8 @@ steps:
     azureSubscription: '$(AzureSubscription)'
     scriptLocation: inlineScript
     inlineScript: |
-     call az deployment create --name "$(WebexTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(WebexTestBotAppId) appSecret="$(WebexTestBotAppSecret)" botId="$(WebexTestBotBotName)" botSku=F0 newAppServicePlanName="$(WebexTestBotBotName)" newWebAppName="$(WebexTestBotBotName)" groupName="$(WebexTestBotBotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)"
+     call az group create --location westus --name $(WebexTestBotBotGroup)
+     call az deployment group create --resource-group "$(WebexTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(WebexTestBotAppId)" appSecret="$(WebexTestBotAppSecret)" botId="$(WebexTestBotBotName)" botSku=F0 newAppServicePlanName="$(WebexTestBotBotName)" newWebAppName="$(WebexTestBotBotName)" appServicePlanLocation="westus" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)" --name "$(WebexTestBotBotName)"
      call az webapp deployment source config-zip --resource-group "$(WebexTestBotBotGroup)" --name "$(WebexTestBotBotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot\PublishedBot.zip"
 
 - task: AzureCLI@1

@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             }
 
             var memory = new JObject();
-            JArray stack = new JArray();
+            var stack = new JArray();
             var currentDc = dc;
 
             // go to leaf node
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 foreach (var item in currentDc.Stack)
                 {
                     // filter out ActionScope items because they are internal bookkeeping.
-                    if (!item.Id.StartsWith("ActionScope["))
+                    if (!item.Id.StartsWith("ActionScope[", StringComparison.Ordinal))
                     {
                         stack.Add(item.Id);
                     }

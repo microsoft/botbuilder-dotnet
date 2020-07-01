@@ -137,11 +137,6 @@
             "$ref": "schema:#/definitions/integerExpression",
             "title": "QnAId",
             "description": "A number or expression which is the QnAId to paass to QnAMaker API."
-        },
-        "enablePreciseAnswer": {
-          "$ref": "schema:#/definitions/booleanExpression",
-          "title": "EnablePreciseAnswer",
-          "description": "True, if PreciseAnswer is opted, else false."
         }
     },
     "required": [

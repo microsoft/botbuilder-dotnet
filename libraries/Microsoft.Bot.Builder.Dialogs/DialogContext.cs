@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
-using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -144,7 +143,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// DialogStateManager with unified memory view of all memory scopes.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public DialogStateManager State { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets the services collection which is contextual to this dialog context.
@@ -333,10 +334,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 await this.DebuggerStepAsync(dialog, "ResumeDialog", cancellationToken).ConfigureAwait(false);
                 return await dialog.ResumeDialogAsync(this, DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else
-            {
-                return new DialogTurnResult(DialogTurnStatus.Complete, result);
-            }
+
+            return new DialogTurnResult(DialogTurnStatus.Complete, result);
         }
 
         /// <summary>

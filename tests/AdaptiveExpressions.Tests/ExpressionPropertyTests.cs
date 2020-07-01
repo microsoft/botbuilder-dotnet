@@ -19,7 +19,7 @@ using Xunit;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     public class ExpressionPropertyTests
-    { 
+    {
         private object data = new
         {
             test = "hello",
@@ -360,6 +360,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             (result, error) = str.TryGetValue(data);
             Assert.Equal("Hello joe", result);
             Assert.Null(error);
+
+            // slashes are the chars
+            str = new StringExpression("c:\\test\\test\\test");
+            (result, error) = str.TryGetValue(data);
+            Assert.Equal("c:\\test\\test\\test", result);
+            Assert.Null(error);
+
+            // tabs are the chars
+            str = new StringExpression("c:\test\test\test");
+            (result, error) = str.TryGetValue(data);
+            Assert.Equal("c:\test\test\test", result);
+            Assert.Null(error);
         }
 
         [Fact]
@@ -400,6 +412,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.Equal(val.ToString(), JsonConvert.DeserializeObject<ValueExpression>(JsonConvert.SerializeObject(val, settings: settings), settings: settings).ToString());
             (result, error) = val.TryGetValue(data);
             Assert.Equal("Hello 13", result);
+            Assert.Null(error);
+
+            // slashes are the chars
+            val = new ValueExpression("c:\\test\\test\\test");
+            (result, error) = val.TryGetValue(data);
+            Assert.Equal("c:\\test\\test\\test", result);
+            Assert.Null(error);
+
+            // tabs are the chars
+            val = new ValueExpression("c:\test\test\test");
+            (result, error) = val.TryGetValue(data);
+            Assert.Equal("c:\test\test\test", result);
             Assert.Null(error);
         }
 
@@ -738,19 +762,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         public class ImplicitCastTest
         {
-            public StringExpression Str { get; set; } 
+            public StringExpression Str { get; set; }
 
-            public IntExpression Int { get; set; } 
+            public IntExpression Int { get; set; }
 
-            public EnumExpression<TestEnum> Enm { get; set; } 
+            public EnumExpression<TestEnum> Enm { get; set; }
 
-            public NumberExpression Number { get; set; } 
+            public NumberExpression Number { get; set; }
 
-            public ValueExpression Value { get; set; } 
+            public ValueExpression Value { get; set; }
 
             public BoolExpression Bool { get; set; }
 
-            public ArrayExpression<string> Strings { get; set; } 
+            public ArrayExpression<string> Strings { get; set; }
         }
 
         [JsonConverter(typeof(StringEnumConverter), /*camelCase*/ true)]
