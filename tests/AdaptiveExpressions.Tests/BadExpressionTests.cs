@@ -80,6 +80,7 @@ namespace AdaptiveExpressions.Tests
             Test("countWord(one)"), // should have string param
             Test("addOrdinal(one)"), // should have Integer param
             Test("addOrdinal(one, two)"), // should have one param
+            Test("addOrdinal(122332132123123123)"), // should have a 32-bit signed integer
             Test("newGuid(one)"), // should have no parameters
             Test("EOL(one)"), // should have no parameters
             Test("indexOf(hello)"), // should have two parameters
@@ -184,6 +185,7 @@ namespace AdaptiveExpressions.Tests
             Test("round(1.2, -2)"), // the 2nd parameter should not less than 0
             Test("round(1.2, 16)"), // the 2nd parameter should not greater than 15
             Test("round(1.2, 2, 3)"), // should have one or two number parameters
+            Test("round(1.2, 21232123123123123)"), // the second parameter should be a 32-bit signed integer
             #endregion
             
             #region Date and time function test
@@ -205,22 +207,26 @@ namespace AdaptiveExpressions.Tests
             Test("addDays(timestamp, 'hi')"), // second param should be integer
             Test("addDays(timestamp)"), // should have 2 or 3 params
             Test("addDays(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
+            Test("addDays(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("addDays(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addHours('errortime', 1)"), // error datetime format
             Test("addHours(timestamp, 'hi')"), // second param should be integer
             Test("addHours(timestamp)"), // should have 2 or 3 params
             Test("addHours(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
+            Test("addHours(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("addHours(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addMinutes('errortime', 1)"), // error datetime format
             Test("addMinutes(timestamp, 'hi')"), // second param should be integer
             Test("addMinutes(timestamp)"), // should have 2 or 3 params
             Test("addMinutes(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
+            Test("addMinutes(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("addMinutes(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addSeconds('errortime', 1)"), // error datetime format
             Test("addSeconds(timestamp, 'hi')"), // second param should be integer
             Test("addSeconds(timestamp)"), // should have 2 or 3 params
             Test("addSeconds(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
             Test("addSeconds(notISOTimestamp, 1)"), // not ISO datetime format
+            Test("addSeconds(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("dayOfMonth('errortime')"), // error datetime format
             Test("dayOfMonth(timestamp, 1)"), // should have 1 param
             Test("dayOfMonth(notISOTimestamp)"), // not ISO datetime format
