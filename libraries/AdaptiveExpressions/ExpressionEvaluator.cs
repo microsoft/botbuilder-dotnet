@@ -1,7 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
 using AdaptiveExpressions.Memory;
+using Newtonsoft.Json.Linq;
+using static AdaptiveExpressions.ExpressionFunctions;
 
 namespace AdaptiveExpressions
 {
@@ -99,6 +103,117 @@ namespace AdaptiveExpressions
             }
         }
 
+        public static EvaluateExpressionDelegate Apply(Func<IReadOnlyList<object>, object> function, VerifyExpression verify = null)
+            =>
+            (expression, state, options) =>
+            {
+                object value = null;
+                string error = null;
+                IReadOnlyList<object> args;
+                (args, error) = EvaluateChildren(expression, state, options, verify);
+                if (error == null)
+                {
+                    try
+                    {
+                        value = function(args);
+                    }
+                    catch (Exception e)
+                    {
+                        error = e.Message;
+                    }
+                }
+
+                value = ResolveValue(value);
+
+                return (value, error);
+            };
+
+        public static object ResolveValue(object obj)
+        {
+            object value;
+            if (!(obj is JValue jval))
+            {
+                value = obj;
+            }
+            else
+            {
+                value = jval.Value;
+                if (jval.Type == JTokenType.Integer)
+                {
+                    value = jval.ToObject<long>();
+                }
+                else if (jval.Type == JTokenType.String)
+                {
+                    value = jval.ToObject<string>();
+                }
+                else if (jval.Type == JTokenType.Boolean)
+                {
+                    value = jval.ToObject<bool>();
+                }
+                else if (jval.Type == JTokenType.Float)
+                {
+                    value = jval.ToObject<double>();
+                }
+            }
+
+            return value;
+        }
+
+        public static (IReadOnlyList<object>, string error) EvaluateChildren(Expression expression, IMemory state, Options options, VerifyExpression verify = null)
+        {
+            var args = new List<object>();
+            object value;
+            string error = null;
+            var pos = 0;
+            foreach (var child in expression.Children)
+            {
+                (value, error) = child.TryEvaluate(state, options);
+                if (error != null)
+                {
+                    break;
+                }
+
+                if (verify != null)
+                {
+                    error = verify(value, child, pos);
+                }
+
+                if (error != null)
+                {
+                    break;
+                }
+
+                args.Add(value);
+                ++pos;
+            }
+
+            return (args, error);
+        }
+
+        public static void ValidateArityAndAnyType(Expression expression, int minArity, int maxArity, ReturnType returnType = ReturnType.Object)
+        {
+            if (expression.Children.Length < minArity)
+            {
+                throw new ArgumentException($"{expression} should have at least {minArity} children.");
+            }
+
+            if (expression.Children.Length > maxArity)
+            {
+                throw new ArgumentException($"{expression} can't have more than {maxArity} children.");
+            }
+
+            if ((returnType & ReturnType.Object) == 0)
+            {
+                foreach (var child in expression.Children)
+                {
+                    if ((child.ReturnType & ReturnType.Object) == 0 && (returnType & child.ReturnType) == 0)
+                    {
+                        throw new ArgumentException(BuildTypeValidatorError(returnType, child, expression));
+                    }
+                }
+            }
+        }
+
         public override string ToString() => $"{Type} => {ReturnType}";
 
         /// <summary>
@@ -117,5 +232,21 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression to validate.</param>
         public void ValidateExpression(Expression expression)
             => _validator(expression);
+
+        private static string BuildTypeValidatorError(ReturnType returnType, Expression childExpr, Expression expr)
+        {
+            string result;
+            var names = returnType.ToString();
+            if (!names.Contains(","))
+            {
+                result = $"{childExpr} is not a {names} expression in {expr}.";
+            }
+            else
+            {
+                result = $"{childExpr} in {expr} is not any of [{names}].";
+            }
+
+            return result;
+        }
     }
 }

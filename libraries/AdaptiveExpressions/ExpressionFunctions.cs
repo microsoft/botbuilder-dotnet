@@ -14,6 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using AdaptiveExpressions.BuiltinFunctions;
 using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
@@ -3382,11 +3383,7 @@ namespace AdaptiveExpressions
                     },
                     ReturnType.String,
                     expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Array, ReturnType.String)),
-                new ExpressionEvaluator(
-                    ExpressionType.NewGuid,
-                    Apply(args => Guid.NewGuid().ToString()),
-                    ReturnType.String,
-                    (exprssion) => ValidateArityAndAnyType(exprssion, 0, 0)),
+                new NewGuid(),
                 new ExpressionEvaluator(
                     ExpressionType.EOL,
                     Apply(args => Environment.NewLine),
