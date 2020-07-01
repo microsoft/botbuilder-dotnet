@@ -115,5 +115,52 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             // Assert
             Assert.Equal("skillBot", activity?.Recipient?.Id);
         }
+
+        [Fact]
+        public async void ARRAffinityActivity2Cookie()
+        {
+            Func<HttpRequestMessage, Task<HttpResponseMessage>> verifyRequestAndCreateResponse = (HttpRequestMessage request) =>
+            {
+                string affinity = null;
+                foreach (var cookie in request.Headers.GetValues("Cookie").FirstOrDefault()?.Split(';'))
+                {
+                    var i = cookie.IndexOf('=');
+                    var name = cookie.Substring(0, i);
+                    if (name == "ARRAffinity")
+                    {
+                        affinity = cookie.Substring(i + 1);
+                        break;
+                    }
+                }
+
+                Assert.Equal("1234567890", affinity);
+
+                var response = new HttpResponseMessage(HttpStatusCode.OK);
+                response.Content = new StringContent(new JObject { }.ToString());
+                return Task.FromResult(response);
+            };
+
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Returns((HttpRequestMessage request, CancellationToken cancellationToken) => verifyRequestAndCreateResponse(request))
+                .Verifiable();
+
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+            var mockCredentialProvider = new Mock<ICredentialProvider>();
+
+            var client = new BotFrameworkHttpClient(httpClient, mockCredentialProvider.Object);
+            var activity = new Activity
+            {
+                Conversation = new ConversationAccount(),
+                Recipient = new ChannelAccount("skillBot"),
+                Properties = new JObject()
+                {
+                    { "ARRAffinity", "1234567890" }
+                }
+            };
+
+            await client.PostActivityAsync(string.Empty, string.Empty, new Uri("https://skillbot.com/api/messages"), new Uri("https://parentbot.com/api/messages"), "NewConversationId", activity);
+        }
     }
 }
