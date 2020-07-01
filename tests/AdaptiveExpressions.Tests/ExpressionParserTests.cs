@@ -647,7 +647,7 @@ namespace AdaptiveExpressions.Tests
             Test("formatNumber(12.123, 2)", "12.12"),
             Test("formatNumber(1.551, 2)", "1.55"),
             Test("formatNumber(12.123, 4)", "12.1230"),
-            Test("formatNumber(12000.3, 4, 'fr-fr')", "12\x202F000,3000"),
+            Test("formatNumber(12000.3, 4, 'fr-fr') == '12\x00A0000,3000' || formatNumber(12000.3, 4, 'fr-fr') == '12\x202F000,3000'", true),
             #endregion
 
             #region  Math functions test
@@ -1056,7 +1056,7 @@ namespace AdaptiveExpressions.Tests
                 if (expectedRefs != null)
                 {
                     var actualRefs = parsed.References();
-                    Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} actual: {string.Join(',', actualRefs)}");
+                    Assert.True(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} actual: {string.Join(',', actualRefs)}");
                 }
 
                 // ToString re-parse
