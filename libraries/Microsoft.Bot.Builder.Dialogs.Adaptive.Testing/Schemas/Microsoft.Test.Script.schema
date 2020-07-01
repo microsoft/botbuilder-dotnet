@@ -23,6 +23,14 @@
                 "$kind": "Microsoft.Test.IHttpRequestMock"
             }
         },
+        "userTokenMocks": {
+            "type": "array",
+            "title": "User Token Mocks",
+            "description": "Mock data for Microsoft.OAuthInput.",
+            "items": {
+                "$kind": "Microsoft.Test.IUserTokenMock"
+            }
+        },
         "script": {
             "type": "array",
             "title": "Test actions",
