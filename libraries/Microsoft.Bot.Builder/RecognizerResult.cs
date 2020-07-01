@@ -38,7 +38,9 @@ namespace Microsoft.Bot.Builder
         /// Mapping from intent to information about the intent.
         /// </value>
         [JsonProperty("intents")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IDictionary<string, IntentScore> Intents { get; set; } = new Dictionary<string, IntentScore>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the recognized top-level entities.
@@ -47,7 +49,9 @@ namespace Microsoft.Bot.Builder
         /// Object with each top-level recognized entity as a key.
         /// </value>
         [JsonProperty("entities")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public JObject Entities { get; set; } = new JObject();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets properties that are not otherwise defined by the <see cref="RecognizerResult"/> type but that
@@ -58,7 +62,9 @@ namespace Microsoft.Bot.Builder
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
         [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <inheritdoc />
         public void Convert(dynamic result)

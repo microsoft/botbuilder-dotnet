@@ -50,6 +50,8 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
+#pragma warning disable CA1716 // Identifiers should not match keywords (we can't change this without breaking binary compat)
         Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken));
+#pragma warning restore CA1716 // Identifiers should not match keywords
     }
 }

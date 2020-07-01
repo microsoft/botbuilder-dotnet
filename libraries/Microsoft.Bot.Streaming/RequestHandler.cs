@@ -12,7 +12,6 @@ namespace Microsoft.Bot.Streaming
     /// </summary>
     public abstract class RequestHandler
     {
-    #pragma warning disable IDE0034
         /// <summary>
         /// The method that must be implemented in order to handle incoming requests.
         /// </summary>
@@ -22,6 +21,5 @@ namespace Microsoft.Bot.Streaming
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A <see cref="Task"/> that will produce a <see cref="StreamingResponse"/> on successful completion.</returns>
         public abstract Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger, object context = null, CancellationToken cancellationToken = default(CancellationToken));
-    #pragma warning restore IDE0034
     }
 }

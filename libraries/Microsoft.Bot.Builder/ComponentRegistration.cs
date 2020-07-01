@@ -4,10 +4,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
 
 namespace Microsoft.Bot.Builder
 {
@@ -33,9 +29,11 @@ namespace Microsoft.Bot.Builder
     ///      ComponentRegistration.Add(new MyComponentRegistration());
     /// </code>
     /// </remarks>
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class ComponentRegistration
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
-        private static ConcurrentDictionary<Type, ComponentRegistration> components = new ConcurrentDictionary<Type, ComponentRegistration>();
+        private static readonly ConcurrentDictionary<Type, ComponentRegistration> _components = new ConcurrentDictionary<Type, ComponentRegistration>();
 
         /// <summary>
         /// Gets list of all ComponentRegistration objects registered.
@@ -43,7 +41,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// A numeration of ComponentRegistration objects.
         /// </value>
-        public static IEnumerable<object> Components => components.Values;
+        public static IEnumerable<object> Components => _components.Values;
 
         /// <summary>
         /// Add a component which implements registration methods.
@@ -52,7 +50,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="componentRegistration">componentRegistration.</param>
         public static void Add(ComponentRegistration componentRegistration)
         {
-            components[componentRegistration.GetType()] = componentRegistration;
+            _components[componentRegistration.GetType()] = componentRegistration;
         }
     }
 }

@@ -1123,17 +1123,33 @@ namespace AdaptiveExpressions
         {
             object value = null;
             string error;
-            object instance;
+            object firstItem;
             object property;
 
             var children = expression.Children;
-            (instance, error) = children[0].TryEvaluate(state, options);
+            (firstItem, error) = children[0].TryEvaluate(state, options);
             if (error == null)
             {
-                (property, error) = children[1].TryEvaluate(state, options);
-                if (error == null)
+                if (children.Length == 1)
                 {
-                    (value, error) = WrapGetValue(MemoryFactory.Create(instance), (string)property, options);
+                    // get root value from memory
+                    if (!(firstItem is string))
+                    {
+                        error = $"Single parameter {children[0]} is not a string.";
+                    }
+                    else
+                    {
+                        (value, error) = WrapGetValue(state, (string)firstItem, options);
+                    }
+                }
+                else
+                {
+                    // get the peoperty value from the instance
+                    (property, error) = children[1].TryEvaluate(state, options);
+                    if (error == null)
+                    {
+                        (value, error) = WrapGetValue(MemoryFactory.Create(firstItem), (string)property, options);
+                    }
                 }
             }
 
@@ -4375,7 +4391,7 @@ namespace AdaptiveExpressions
 
                 // Misc
                 new ExpressionEvaluator(ExpressionType.Accessor, Accessor, ReturnType.Object, ValidateAccessor),
-                new ExpressionEvaluator(ExpressionType.GetProperty, GetProperty, ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.GetProperty, GetProperty, ReturnType.Object, (expr) => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object)),
                 new ExpressionEvaluator(ExpressionType.If, (expression, state, options) => If(expression, state, options), ReturnType.Object, (expression) => ValidateArityAndAnyType(expression, 3, 3)),
                 new ExpressionEvaluator(
                     ExpressionType.Rand,
