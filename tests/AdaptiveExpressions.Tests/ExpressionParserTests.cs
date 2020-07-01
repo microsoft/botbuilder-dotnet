@@ -666,7 +666,7 @@ namespace AdaptiveExpressions.Tests
             Test("formatNumber(12.123, 2)", "12.12"),
             Test("formatNumber(1.551, 2)", "1.55"),
             Test("formatNumber(12.123, 4)", "12.1230"),
-            Test("formatNumber(12000.3, 4, 'fr-fr')", "12\x00a0000,3000"),
+            Test("formatNumber(12000.3, 4, 'fr-fr') == '12\x00A0000,3000' || formatNumber(12000.3, 4, 'fr-fr') == '12\x202F000,3000'", true),
             #endregion
 
             #region  Math functions test
@@ -1067,7 +1067,7 @@ namespace AdaptiveExpressions.Tests
             var cultureList = new List<string>() { "de-DE", "fr-FR", "es-ES" };
             foreach (var newCultureInfo in cultureList)
             {
-                var originalCuture = Thread.CurrentThread.CurrentCulture;
+                var originalCulture = Thread.CurrentThread.CurrentCulture;
                 Thread.CurrentThread.CurrentCulture = new CultureInfo(newCultureInfo);
                 var parsed = Expression.Parse(input);
                 Assert.NotNull(parsed);
@@ -1077,7 +1077,7 @@ namespace AdaptiveExpressions.Tests
                 if (expectedRefs != null)
                 {
                     var actualRefs = parsed.References();
-                    Assert.True(expectedRefs.SetEquals(actualRefs));
+                    Assert.True(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} actual: {string.Join(',', actualRefs)}");
                 }
 
                 // ToString re-parse
@@ -1085,7 +1085,7 @@ namespace AdaptiveExpressions.Tests
                 var newActual = newExpression.TryEvaluate(scope).value;
                 AssertObjectEquals(actual, newActual);
 
-                Thread.CurrentThread.CurrentCulture = originalCuture;
+                Thread.CurrentThread.CurrentCulture = originalCulture;
             }
         }
 
