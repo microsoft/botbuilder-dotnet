@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// <summary>
     /// A Bot Builder Adapter implementation used to handled bot Framework HTTP requests.
     /// </summary>
-    public class BotFrameworkHttpAdapter : BotFrameworkHttpAdapterBase, IBotFrameworkHttpAdapter
+    public partial class BotFrameworkHttpAdapter : BotFrameworkHttpAdapterBase, IBotFrameworkHttpAdapter
     {
         private const string AuthHeaderName = "authorization";
         private const string ChannelIdHeaderName = "channelid";
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             : this(configuration, new ConfigurationCredentialProvider(configuration), new AuthenticationConfiguration(), new ConfigurationChannelProvider(configuration), logger: logger)
         {
         }
-        
+
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
         {
             if (httpRequest == null)
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 }
             }
         }
-        
+
         private static async Task WriteUnauthorizedResponseAsync(string headerName, HttpRequest httpRequest)
         {
             httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -189,7 +189,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                
+
+                bot = new BotAffinity(httpRequest.Cookies["ARRAffinity"], bot);
+
                 var requestHandler = new StreamingRequestHandler(bot, this, socket, Logger);
 
                 if (RequestHandlers == null)
@@ -237,7 +239,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                         return false;
                     }
-                    
+
                     // Add ServiceURL to the cache of trusted sites in order to allow token refreshing.
                     AppCredentials.TrustServiceUrl(claimsIdentity.FindFirst(AuthenticationConstants.ServiceUrlClaim).Value);
                     ClaimsIdentity = claimsIdentity;
