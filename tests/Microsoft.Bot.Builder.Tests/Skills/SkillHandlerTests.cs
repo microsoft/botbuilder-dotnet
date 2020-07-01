@@ -12,13 +12,12 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests.Skills
 {
-    [TestClass]
     public class SkillHandlerTests
     {
         private readonly ClaimsIdentity _claimsIdentity;
@@ -62,7 +61,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             _conversationId = _testConversationIdFactory.CreateSkillConversationIdAsync(options, CancellationToken.None).Result;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task LegacyConversationIdFactoryTest()
         {
             var legacyFactory = new TestLegacyConversationIdFactory();
@@ -90,11 +89,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             activity.ApplyConversationReference(conversationReference);
 
             await sut.TestOnSendToConversationAsync(_claimsIdentity, conversationId, (Activity)activity, CancellationToken.None);
-            Assert.IsNotNull(botCallback);
+            Assert.NotNull(botCallback);
             await botCallback.Invoke(new TurnContext(_mockAdapter.Object, (Activity)activity), CancellationToken.None);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnSendToConversationAsyncTest()
         {
             BotCallbackHandler botCallback = null;
@@ -109,14 +108,14 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             var activity = (Activity)Activity.CreateMessageActivity();
             activity.ApplyConversationReference(_conversationReference);
 
-            Assert.IsNull(activity.CallerId);
+            Assert.Null(activity.CallerId);
             await sut.TestOnSendToConversationAsync(_claimsIdentity, _conversationId, activity, CancellationToken.None);
-            Assert.IsNotNull(botCallback);
+            Assert.NotNull(botCallback);
             await botCallback.Invoke(new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity()), CancellationToken.None);
-            Assert.IsNull(activity.CallerId);
+            Assert.Null(activity.CallerId);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnOnReplyToActivityAsyncTest()
         {
             BotCallbackHandler botCallback = null;
@@ -133,28 +132,28 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             activity.ApplyConversationReference(_conversationReference);
 
             await sut.TestOnReplyToActivityAsync(_claimsIdentity, _conversationId, activityId, activity, CancellationToken.None);
-            Assert.IsNotNull(botCallback);
+            Assert.NotNull(botCallback);
             await botCallback.Invoke(new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity()), CancellationToken.None);
-            Assert.IsNull(activity.CallerId);
+            Assert.Null(activity.CallerId);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task EventActivityAsyncTest()
         {
             var activity = (Activity)Activity.CreateEventActivity();
             await TestActivityCallback(activity);
-            Assert.AreEqual($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
+            Assert.Equal($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task EndOfConversationActivityAsyncTest()
         {
             var activity = (Activity)Activity.CreateEndOfConversationActivity();
             await TestActivityCallback(activity);
-            Assert.AreEqual($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
+            Assert.Equal($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnUpdateActivityAsyncTest()
         {
             var sut = CreateSkillHandlerForTesting();
@@ -162,112 +161,92 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             var activityId = Guid.NewGuid().ToString("N");
             activity.ApplyConversationReference(_conversationReference);
 
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(async () =>
-            {
-                await sut.TestOnUpdateActivityAsync(_claimsIdentity, _conversationId, activityId, (Activity)activity, CancellationToken.None);
-            });
+            await Assert.ThrowsAsync<NotImplementedException>(() =>            
+                sut.TestOnUpdateActivityAsync(_claimsIdentity, _conversationId, activityId, (Activity)activity, CancellationToken.None));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnDeleteActivityAsyncTest()
         {
             var sut = CreateSkillHandlerForTesting();
             var activityId = Guid.NewGuid().ToString("N");
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(async () =>
-            {
-                await sut.TestOnDeleteActivityAsync(_claimsIdentity, _conversationId, activityId, CancellationToken.None);
-            });
+            await Assert.ThrowsAsync<NotImplementedException>(() =>
+                sut.TestOnDeleteActivityAsync(_claimsIdentity, _conversationId, activityId, CancellationToken.None));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnGetActivityMembersAsyncTest()
         {
             var sut = CreateSkillHandlerForTesting();
             var activityId = Guid.NewGuid().ToString("N");
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(async () =>
-            {
-                await sut.TestOnGetActivityMembersAsync(_claimsIdentity, _conversationId, activityId, CancellationToken.None);
-            });
+            await Assert.ThrowsAsync<NotImplementedException>(() =>
+                sut.TestOnGetActivityMembersAsync(_claimsIdentity, _conversationId, activityId, CancellationToken.None));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnCreateConversationAsyncTest()
         {
             var sut = CreateSkillHandlerForTesting();
             var conversationParameters = new ConversationParameters();
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(async () =>
-            {
-                await sut.TestOnCreateConversationAsync(_claimsIdentity, conversationParameters, CancellationToken.None);
-            });
+            await Assert.ThrowsAsync<NotImplementedException>(() =>
+                sut.TestOnCreateConversationAsync(_claimsIdentity, conversationParameters, CancellationToken.None));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnGetConversationsAsyncTest()
         {
             var sut = CreateSkillHandlerForTesting();
             var conversationId = Guid.NewGuid().ToString("N");
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(async () =>
-            {
-                await sut.TestOnGetConversationsAsync(_claimsIdentity, conversationId, string.Empty, CancellationToken.None);
-            });
+            await Assert.ThrowsAsync<NotImplementedException>(() =>
+                sut.TestOnGetConversationsAsync(_claimsIdentity, conversationId, string.Empty, CancellationToken.None));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnGetConversationMembersAsyncTest()
         {
             var sut = CreateSkillHandlerForTesting();
             var conversationId = Guid.NewGuid().ToString("N");
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(async () =>
-            {
-                await sut.TestOnGetConversationMembersAsync(_claimsIdentity, conversationId, CancellationToken.None);
-            });
+            await Assert.ThrowsAsync<NotImplementedException>(() =>
+                sut.TestOnGetConversationMembersAsync(_claimsIdentity, conversationId, CancellationToken.None));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnGetConversationPagedMembersAsyncTest()
         {
             var sut = CreateSkillHandlerForTesting();
             var conversationId = Guid.NewGuid().ToString("N");
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(async () =>
-            {
-                await sut.TestOnGetConversationPagedMembersAsync(_claimsIdentity, conversationId, null, null, CancellationToken.None);
-            });
+            await Assert.ThrowsAsync<NotImplementedException>(() =>
+                sut.TestOnGetConversationPagedMembersAsync(_claimsIdentity, conversationId, null, null, CancellationToken.None));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnDeleteConversationMemberAsyncTest()
         {
             var sut = CreateSkillHandlerForTesting();
             var conversationId = Guid.NewGuid().ToString("N");
             var memberId = Guid.NewGuid().ToString("N");
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(async () =>
-            {
-                await sut.TestOnDeleteConversationMemberAsync(_claimsIdentity, conversationId, memberId, CancellationToken.None);
-            });
+            await Assert.ThrowsAsync<NotImplementedException>(() =>
+                sut.TestOnDeleteConversationMemberAsync(_claimsIdentity, conversationId, memberId, CancellationToken.None));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnSendConversationHistoryAsyncTest()
         {
             var sut = CreateSkillHandlerForTesting();
             var conversationId = Guid.NewGuid().ToString("N");
             var transcript = new Transcript();
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(async () =>
-            {
-                await sut.TestOnSendConversationHistoryAsync(_claimsIdentity, conversationId, transcript, CancellationToken.None);
-            });
+            await Assert.ThrowsAsync<NotImplementedException>(() =>
+             sut.TestOnSendConversationHistoryAsync(_claimsIdentity, conversationId, transcript, CancellationToken.None));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OnUploadAttachmentAsyncTest()
         {
             var sut = CreateSkillHandlerForTesting();
             var conversationId = Guid.NewGuid().ToString("N");
             var attachmentData = new AttachmentData();
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(async () =>
-            {
-                await sut.TestOnUploadAttachmentAsync(_claimsIdentity, conversationId, attachmentData, CancellationToken.None);
-            });
+            await Assert.ThrowsAsync<NotImplementedException>(() =>
+                sut.TestOnUploadAttachmentAsync(_claimsIdentity, conversationId, attachmentData, CancellationToken.None));
         }
 
         private async Task TestActivityCallback(Activity activity)
@@ -286,7 +265,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             activity.ApplyConversationReference(_conversationReference);
 
             await sut.TestOnReplyToActivityAsync(_claimsIdentity, _conversationId, activityId, activity, CancellationToken.None);
-            Assert.IsNotNull(botCallback);
+            Assert.NotNull(botCallback);
             await botCallback.Invoke(new TurnContext(_mockAdapter.Object, activity), CancellationToken.None);
         }
 

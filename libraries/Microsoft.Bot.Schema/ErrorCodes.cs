@@ -6,7 +6,9 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Error codes to communicate when throwing an APIException.
     /// </summary>
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (this class should have been static but we can't change it without breaking binary compat)
     public class ErrorCodes
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
         /// Other error, not specified.

@@ -1,0 +1,18 @@
+
+[sandwichTest-CheeseEntity.en-us.lg](sandwichTest-CheeseEntity.en-us.lg)
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
+[sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
+
+# AskCheese
+- ${askEnum('Cheese')}
+
+
+> How to display the name of Cheese
+# CheeseName
+- cheese
+
+# Cheese(val)
+- ${CheeseEntity(val)}
+
+
+> Generator: a871122ed586abcd7fe4c86964b0c844

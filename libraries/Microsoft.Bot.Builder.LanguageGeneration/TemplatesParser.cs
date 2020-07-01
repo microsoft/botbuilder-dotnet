@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -26,6 +28,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public static class TemplatesParser
     {
+        /// <summary>
+        /// Inline text id.
+        /// </summary>
+        public const string InlineContentId = "inline content";
+
         /// <summary>
         /// option regex.
         /// </summary>
@@ -84,11 +91,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new ArgumentNullException(nameof(lg));
             }
 
-            var id = "inline content";
-            var newLG = new Templates(content: content, id: id, importResolver: lg.ImportResolver, options: lg.Options);
+            var newLG = new Templates(content: content, id: InlineContentId, importResolver: lg.ImportResolver, options: lg.Options);
             try
             {
-                newLG = new TemplatesTransformer(newLG).Transform(AntlrParseTemplates(content, id));
+                newLG = new TemplatesTransformer(newLG).Transform(AntlrParseTemplates(content, InlineContentId));
                 newLG.References = GetReferences(newLG)
                         .Union(lg.References)
                         .Union(new List<Templates> { lg })
@@ -102,6 +108,34 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return newLG;
+        }
+
+        /// <summary>
+        /// Parse LG content and achieve the AST.
+        /// </summary>
+        /// <param name="text">LG content.</param>
+        /// <param name="id">Source id.</param>
+        /// <returns>The abstract syntax tree of lg file.</returns>
+        public static IParseTree AntlrParseTemplates(string text, string id)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+
+            var input = new AntlrInputStream(text);
+            var lexer = new LGFileLexer(input);
+            lexer.RemoveErrorListeners();
+
+            var tokens = new CommonTokenStream(lexer);
+            var parser = new LGFileParser(tokens);
+            parser.RemoveErrorListeners();
+            var listener = new ErrorListener(id);
+
+            parser.AddErrorListener(listener);
+            parser.BuildParseTree = true;
+
+            return parser.file();
         }
 
         /// <summary>
@@ -164,28 +198,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return (File.ReadAllText(importPath), importPath);
         }
 
-        private static IParseTree AntlrParseTemplates(string text, string id)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return null;
-            }
-
-            var input = new AntlrInputStream(text);
-            var lexer = new LGFileLexer(input);
-            lexer.RemoveErrorListeners();
-
-            var tokens = new CommonTokenStream(lexer);
-            var parser = new LGFileParser(tokens);
-            parser.RemoveErrorListeners();
-            var listener = new ErrorListener(id);
-
-            parser.AddErrorListener(listener);
-            parser.BuildParseTree = true;
-
-            return parser.file();
-        }
-
         private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null)
         {
             var resourcesFound = new HashSet<Templates>();
@@ -209,7 +221,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 catch (Exception e)
                 {
-                    var diagnostic = new Diagnostic(import.SourceRange.ParseTree.ConvertToRange(), e.Message, DiagnosticSeverity.Error, start.Id);
+                    var diagnostic = new Diagnostic(import.SourceRange.Range, e.Message, DiagnosticSeverity.Error, start.Id);
                     throw new TemplateException(e.Message, new List<Diagnostic>() { diagnostic });
                 }
 
@@ -231,9 +243,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private class TemplatesTransformer : LGFileParserBaseVisitor<object>
+        /// <summary>
+        /// Templates transfeormer. Fullfill more details and body context into the templates object.
+        /// </summary>
+        public class TemplatesTransformer : LGFileParserBaseVisitor<object>
         {
             private static readonly Regex IdentifierRegex = new Regex(@"^[0-9a-zA-Z_]+$");
+            private static readonly Regex TemplateNamePartRegex = new Regex(@"^[a-zA-Z_][0-9a-zA-Z_]*$");
             private readonly Templates templates;
 
             public TemplatesTransformer(Templates templates)
@@ -241,11 +257,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 this.templates = templates;
             }
 
+            /// <summary>
+            /// Transform the parse tree into templates.
+            /// </summary>
+            /// <param name="parseTree">Input abstract syntax tree.</param>
+            /// <returns>Templates.</returns>
             public Templates Transform(IParseTree parseTree)
             {
                 if (parseTree != null)
                 {
                     Visit(parseTree);
+                }
+
+                for (var i = 0; i < templates.Count - 1; i++)
+                {
+                    templates[i].Body = RemoveTrailingNewline(templates[i].Body);
                 }
 
                 return this.templates;
@@ -256,7 +282,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var lineContent = context.INVALID_LINE().GetText();
                 if (!string.IsNullOrWhiteSpace(lineContent))
                 {
-                    this.templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError, context));
+                    this.templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError($"Unexpected content: '{lineContent}'"), context));
                 }
 
                 return null;
@@ -317,12 +343,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 else
                 {
                     var templateBody = context.templateBody().GetText();
-                    var file = context.Parent.Parent as LGFileParser.FileContext;
-                    var isLastTemplate = file.paragraph().Select(u => u.templateDefinition()).Where(u => u != null).Last() == context;
-                    if (!isLastTemplate)
-                    {
-                        templateBody = RemoveTrailingNewline(templateBody);
-                    }
 
                     var sourceRange = new SourceRange(context, this.templates.Id);
                     var template = new Template(templateName, parameters, templateBody, sourceRange);
@@ -365,7 +385,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (!IdentifierRegex.IsMatch(parameter))
                     {
-                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName, context);
+                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidParameter(parameter), context);
                         this.templates.Diagnostics.Add(diagnostic);
                     }
                 }
@@ -376,10 +396,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var functionNameSplitDot = templateName.Split('.');
                 foreach (var id in functionNameSplitDot)
                 {
-                    if (!IdentifierRegex.IsMatch(id))
+                    if (!TemplateNamePartRegex.IsMatch(id))
                     {
-                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName, context);
+                        var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName(templateName), context);
                         this.templates.Diagnostics.Add(diagnostic);
+                        break;
                     }
                 }
             }

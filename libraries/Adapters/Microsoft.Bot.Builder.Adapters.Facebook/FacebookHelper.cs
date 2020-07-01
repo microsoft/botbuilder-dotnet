@@ -15,6 +15,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
+    /// <summary>
+    /// Helper class for converting between Bot Framework objects and Facebook API objects.
+    /// </summary>
     public static class FacebookHelper
     {
         /// <summary>
@@ -58,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 }
             }
 
-            if (activity.Attachments != null && activity.Attachments.Count > 0)
+            if (activity.Attachments != null && activity.Attachments.Count > 0 && facebookMessage.Message != null)
             {
                 var payload = JsonConvert.DeserializeObject<AttachmentPayload>(JsonConvert.SerializeObject(
                     activity.Attachments[0].Content,

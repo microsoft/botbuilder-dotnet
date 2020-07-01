@@ -1,0 +1,17 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "ClearToppings",
+	"property": "Toppings",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${clearPropertyMessage('Toppings')}"
+		},
+		{
+			"$kind": "Microsoft.DeleteProperty",
+			"property": "$Toppings"
+		}
+	],
+	"$Generator": "468b63f51802452c7aa36c42d430bb2e"
+}

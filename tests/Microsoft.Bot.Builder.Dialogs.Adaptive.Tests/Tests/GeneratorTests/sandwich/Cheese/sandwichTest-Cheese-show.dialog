@@ -1,0 +1,13 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "ShowCheese",
+	"property": "Cheese",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${showPropertyMessage(@PROPERTYName)}"
+		}
+	],
+	"$Generator": "cb66b7e2b943c246d63666eaceb7fbf7"
+}

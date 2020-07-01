@@ -1,0 +1,296 @@
+
+@ list ToppingsEntity =
+  - tomato :
+		- tomato
+  - lettuce :
+		- lettuce
+  - pickles :
+		- pickles
+  - greenPeppers :
+		- green
+		- peppers
+		- green peppers
+  - redPepppers :
+		- red
+		- pepppers
+		- red pepppers
+  - whiteOnions :
+		- white
+		- onions
+		- white onions
+  - redOnions :
+		- red
+		- onions
+		- red onions
+
+> Define how Toppings is recognized as a property name
+@ list PROPERTYName
+    - Toppings:
+		- toppings
+
+
+> Define operations for property
+@ml AddToToppings = 
+    - @ToppingsEntity ToppingsEntity
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromToppings = 
+    - @ToppingsEntity ToppingsEntity
+    - @PROPERTYName PROPERTYName
+@ml ClearToppings =
+    - @PROPERTYName PROPERTYName
+@ml ShowToppings =
+    - @PROPERTYName PROPERTYName
+# sandwich
+> Add only
+- {@AddToToppings=add {@ToppingsEntity=onions}}
+- {@AddToToppings=add {@ToppingsEntity=red}}
+- {@AddToToppings=add {@ToppingsEntity=tomato}}
+- {@AddToToppings=with {@ToppingsEntity=red onions}}
+- {@AddToToppings=with {@ToppingsEntity=pepppers}}
+- {@AddToToppings=with {@ToppingsEntity=red}}
+- {@AddToToppings=add {@ToppingsEntity=onions} and {@ToppingsEntity=red}}
+- {@AddToToppings=add {@ToppingsEntity=white onions} and {@ToppingsEntity=pickles}}
+- {@AddToToppings=add {@ToppingsEntity=pepppers} and {@ToppingsEntity=tomato}}
+- {@AddToToppings=with {@ToppingsEntity=white} and {@ToppingsEntity=red}}
+- {@AddToToppings=with {@ToppingsEntity=tomato} and {@ToppingsEntity=lettuce}}
+- {@AddToToppings=with {@ToppingsEntity=red pepppers} and {@ToppingsEntity=red pepppers}}
+- {@AddToToppings=add {@ToppingsEntity=red pepppers}, {@ToppingsEntity=pepppers} and {@ToppingsEntity=green peppers}}
+- {@AddToToppings=add {@ToppingsEntity=green}, {@ToppingsEntity=red} and {@ToppingsEntity=peppers}}
+- {@AddToToppings=add {@ToppingsEntity=red pepppers}, {@ToppingsEntity=green peppers} and {@ToppingsEntity=onions}}
+- {@AddToToppings=with {@ToppingsEntity=pepppers}, {@ToppingsEntity=pickles} and {@ToppingsEntity=pickles}}
+- {@AddToToppings=with {@ToppingsEntity=white onions}, {@ToppingsEntity=pepppers} and {@ToppingsEntity=green peppers}}
+- {@AddToToppings=with {@ToppingsEntity=peppers}, {@ToppingsEntity=onions} and {@ToppingsEntity=red pepppers}}
+- {@AddToToppings={@PROPERTYName=toppings} is {@ToppingsEntity=green peppers}}
+- {@AddToToppings={@PROPERTYName=toppings} is {@ToppingsEntity=peppers}}
+- {@AddToToppings={@PROPERTYName=toppings} is {@ToppingsEntity=onions}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=white} and {@ToppingsEntity=tomato}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=white} and {@ToppingsEntity=onions}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=tomato} and {@ToppingsEntity=tomato}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=white onions}, {@ToppingsEntity=red onions} and {@ToppingsEntity=tomato}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=tomato}, {@ToppingsEntity=white onions} and {@ToppingsEntity=tomato}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=red}, {@ToppingsEntity=red} and {@ToppingsEntity=white onions}}
+- {@AddToToppings=add {@ToppingsEntity=white onions} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=onions} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=lettuce} {@PROPERTYName=toppings}}
+- {@AddToToppings=with {@ToppingsEntity=white onions} {@PROPERTYName=toppings}}
+- {@AddToToppings=with {@ToppingsEntity=white} {@PROPERTYName=toppings}}
+- {@AddToToppings=with {@ToppingsEntity=red} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=peppers} and {@ToppingsEntity=tomato} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=red} and {@ToppingsEntity=white onions} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=red} and {@ToppingsEntity=peppers} {@PROPERTYName=toppings}}
+- {@AddToToppings=with {@ToppingsEntity=green peppers} and {@ToppingsEntity=green} {@PROPERTYName=toppings}}
+- {@AddToToppings=with {@ToppingsEntity=onions} and {@ToppingsEntity=white} {@PROPERTYName=toppings}}
+- {@AddToToppings=with {@ToppingsEntity=white} and {@ToppingsEntity=red} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=onions}, {@ToppingsEntity=onions} and {@ToppingsEntity=onions} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=white onions}, {@ToppingsEntity=onions} and {@ToppingsEntity=pickles} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=tomato}, {@ToppingsEntity=white onions} and {@ToppingsEntity=pepppers} {@PROPERTYName=toppings}}
+- {@AddToToppings=with {@ToppingsEntity=peppers}, {@ToppingsEntity=white onions} and {@ToppingsEntity=pickles} {@PROPERTYName=toppings}}
+- {@AddToToppings=with {@ToppingsEntity=red onions}, {@ToppingsEntity=white} and {@ToppingsEntity=white} {@PROPERTYName=toppings}}
+- {@AddToToppings=with {@ToppingsEntity=red onions}, {@ToppingsEntity=red} and {@ToppingsEntity=tomato} {@PROPERTYName=toppings}}
+- {@AddToToppings={@PROPERTYName=toppings} is {@ToppingsEntity=white onions}}
+- {@AddToToppings={@PROPERTYName=toppings} is {@ToppingsEntity=pickles}}
+- {@AddToToppings={@PROPERTYName=toppings} is {@ToppingsEntity=pepppers}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=pepppers} and {@ToppingsEntity=pickles}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=white onions} and {@ToppingsEntity=peppers}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=white onions} and {@ToppingsEntity=green}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=red pepppers}, {@ToppingsEntity=onions} and {@ToppingsEntity=red}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=red}, {@ToppingsEntity=onions} and {@ToppingsEntity=pepppers}}
+- {@AddToToppings={@PROPERTYName=toppings} are {@ToppingsEntity=red onions}, {@ToppingsEntity=green} and {@ToppingsEntity=red}}
+> Remove only
+- {@RemoveFromToppings=remove {@ToppingsEntity=red onions}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=green}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=onions}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=green peppers} and {@ToppingsEntity=pickles}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=pepppers} and {@ToppingsEntity=pepppers}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red onions} and {@ToppingsEntity=white}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=white onions}, {@ToppingsEntity=red pepppers} and {@ToppingsEntity=green}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=pickles}, {@ToppingsEntity=green} and {@ToppingsEntity=red}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=pickles}, {@ToppingsEntity=white} and {@ToppingsEntity=red pepppers}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=white onions}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=red pepppers}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=red}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=red} and {@ToppingsEntity=green peppers}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=red} and {@ToppingsEntity=onions}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=red} and {@ToppingsEntity=peppers}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=lettuce}, {@ToppingsEntity=red} and {@ToppingsEntity=peppers}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=white}, {@ToppingsEntity=white onions} and {@ToppingsEntity=white}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=green}, {@ToppingsEntity=red onions} and {@ToppingsEntity=white}}
+- {@RemoveFromToppings=without {@ToppingsEntity=green peppers}}
+- {@RemoveFromToppings=without {@ToppingsEntity=white}}
+- {@RemoveFromToppings=without {@ToppingsEntity=red}}
+- {@RemoveFromToppings=without {@ToppingsEntity=green} and {@ToppingsEntity=onions}}
+- {@RemoveFromToppings=without {@ToppingsEntity=green peppers} and {@ToppingsEntity=peppers}}
+- {@RemoveFromToppings=without {@ToppingsEntity=onions} and {@ToppingsEntity=peppers}}
+- {@RemoveFromToppings=without {@ToppingsEntity=pepppers}, {@ToppingsEntity=white} and {@ToppingsEntity=red}}
+- {@RemoveFromToppings=without {@ToppingsEntity=pickles}, {@ToppingsEntity=green peppers} and {@ToppingsEntity=red}}
+- {@RemoveFromToppings=without {@ToppingsEntity=red}, {@ToppingsEntity=onions} and {@ToppingsEntity=red pepppers}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=red onions}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=pepppers}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=red pepppers}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=tomato} and {@ToppingsEntity=red onions}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=onions} and {@ToppingsEntity=onions}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=red} and {@ToppingsEntity=onions}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=white}, {@ToppingsEntity=green peppers} and {@ToppingsEntity=green}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=red onions}, {@ToppingsEntity=red onions} and {@ToppingsEntity=pickles}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=white}, {@ToppingsEntity=onions} and {@ToppingsEntity=red pepppers}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=lettuce} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red} and {@ToppingsEntity=red onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red} and {@ToppingsEntity=lettuce} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=white} and {@ToppingsEntity=red onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red}, {@ToppingsEntity=tomato} and {@ToppingsEntity=lettuce} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=lettuce}, {@ToppingsEntity=red} and {@ToppingsEntity=tomato} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=white onions}, {@ToppingsEntity=white onions} and {@ToppingsEntity=onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=white onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=green} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=pickles} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=onions} and {@ToppingsEntity=green} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=green peppers} and {@ToppingsEntity=onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=pepppers} and {@ToppingsEntity=onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=red}, {@ToppingsEntity=lettuce} and {@ToppingsEntity=peppers} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=peppers}, {@ToppingsEntity=red} and {@ToppingsEntity=green peppers} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=delete {@ToppingsEntity=onions}, {@ToppingsEntity=lettuce} and {@ToppingsEntity=white} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=without {@ToppingsEntity=peppers}}
+- {@RemoveFromToppings=without {@ToppingsEntity=white onions}}
+- {@RemoveFromToppings=without {@ToppingsEntity=green peppers}}
+- {@RemoveFromToppings=without {@ToppingsEntity=onions} and {@ToppingsEntity=pepppers} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=without {@ToppingsEntity=onions} and {@ToppingsEntity=green peppers} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=without {@ToppingsEntity=lettuce} and {@ToppingsEntity=peppers} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=without {@ToppingsEntity=red pepppers}, {@ToppingsEntity=green peppers} and {@ToppingsEntity=red onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=without {@ToppingsEntity=red}, {@ToppingsEntity=red} and {@ToppingsEntity=onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=without {@ToppingsEntity=pepppers}, {@ToppingsEntity=pepppers} and {@ToppingsEntity=green} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=peppers} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=white onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=red} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=red onions} and {@ToppingsEntity=lettuce} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=onions} and {@ToppingsEntity=red} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=green} and {@ToppingsEntity=red onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=red}, {@ToppingsEntity=red} and {@ToppingsEntity=lettuce} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=tomato}, {@ToppingsEntity=green} and {@ToppingsEntity=white} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=with no {@ToppingsEntity=red}, {@ToppingsEntity=white onions} and {@ToppingsEntity=white onions} {@PROPERTYName=toppings}}
+> Clear only
+- {@ClearToppings=clear {@PROPERTYName=toppings}}
+- {@ClearToppings=remove {@PROPERTYName=toppings}}
+- {@ClearToppings=empty {@PROPERTYName=toppings}}
+- {@ClearToppings=please clear {@PROPERTYName=toppings}}
+- {@ClearToppings=please remove {@PROPERTYName=toppings}}
+- {@ClearToppings=please empty {@PROPERTYName=toppings}}
+- {@ClearToppings=can you clear {@PROPERTYName=toppings}}
+- {@ClearToppings=can you remove {@PROPERTYName=toppings}}
+- {@ClearToppings=can you empty {@PROPERTYName=toppings}}
+> Show only
+- {@ShowToppings=value of {@PROPERTYName=toppings}}
+- {@ShowToppings=value for {@PROPERTYName=toppings}}
+- {@ShowToppings=selection of {@PROPERTYName=toppings}}
+- {@ShowToppings=selection for {@PROPERTYName=toppings}}
+- {@ShowToppings=display {@PROPERTYName=toppings}}
+- {@ShowToppings=show {@PROPERTYName=toppings}}
+- {@ShowToppings=value of {@PROPERTYName=toppings}}
+- {@ShowToppings=value for {@PROPERTYName=toppings}}
+- {@ShowToppings={@PROPERTYName=toppings} value}
+- {@ShowToppings={@PROPERTYName=toppings} values}
+- {@ShowToppings={@PROPERTYName=toppings} selection}
+> Combinations
+- {@AddToToppings=add {@ToppingsEntity=green peppers}} {@RemoveFromToppings=and remove {@ToppingsEntity=onions}}
+- {@AddToToppings=add {@ToppingsEntity=lettuce}} {@RemoveFromToppings=and remove {@ToppingsEntity=onions}}
+- {@AddToToppings=add {@ToppingsEntity=green}} {@RemoveFromToppings=and remove {@ToppingsEntity=red pepppers}}
+- {@AddToToppings=add {@ToppingsEntity=pepppers}} {@RemoveFromToppings=remove {@ToppingsEntity=green peppers}}
+- {@AddToToppings=add {@ToppingsEntity=onions}} {@RemoveFromToppings=remove {@ToppingsEntity=red}}
+- {@AddToToppings=add {@ToppingsEntity=lettuce}} {@RemoveFromToppings=remove {@ToppingsEntity=pickles}}
+- {@AddToToppings=add {@ToppingsEntity=red}}, {@RemoveFromToppings=remove {@ToppingsEntity=red pepppers}}
+- {@AddToToppings=add {@ToppingsEntity=pickles}}, {@RemoveFromToppings=remove {@ToppingsEntity=tomato}}
+- {@AddToToppings=add {@ToppingsEntity=peppers}}, {@RemoveFromToppings=remove {@ToppingsEntity=red}}
+- {@AddToToppings=add {@ToppingsEntity=red onions} and {@ToppingsEntity=white}} {@RemoveFromToppings=and remove {@ToppingsEntity=pickles}}
+- {@AddToToppings=add {@ToppingsEntity=pepppers} and {@ToppingsEntity=red}} {@RemoveFromToppings=and remove {@ToppingsEntity=red}}
+- {@AddToToppings=add {@ToppingsEntity=pepppers} and {@ToppingsEntity=white}} {@RemoveFromToppings=and remove {@ToppingsEntity=tomato}}
+- {@AddToToppings=add {@ToppingsEntity=pickles}, {@ToppingsEntity=red} and {@ToppingsEntity=white onions}} {@RemoveFromToppings=and remove {@ToppingsEntity=pickles} and {@ToppingsEntity=white onions}}
+- {@AddToToppings=add {@ToppingsEntity=red}, {@ToppingsEntity=pickles} and {@ToppingsEntity=onions}} {@RemoveFromToppings=and remove {@ToppingsEntity=pepppers} and {@ToppingsEntity=red pepppers}}
+- {@AddToToppings=add {@ToppingsEntity=peppers}, {@ToppingsEntity=red onions} and {@ToppingsEntity=onions}} {@RemoveFromToppings=and remove {@ToppingsEntity=red} and {@ToppingsEntity=onions}}
+- {@AddToToppings=add {@ToppingsEntity=onions}, {@ToppingsEntity=white onions} and {@ToppingsEntity=tomato}} {@RemoveFromToppings=remove {@ToppingsEntity=red onions} and {@ToppingsEntity=red}}
+- {@AddToToppings=add {@ToppingsEntity=white onions}, {@ToppingsEntity=green peppers} and {@ToppingsEntity=red onions}} {@RemoveFromToppings=remove {@ToppingsEntity=onions} and {@ToppingsEntity=lettuce}}
+- {@AddToToppings=add {@ToppingsEntity=red pepppers}, {@ToppingsEntity=red} and {@ToppingsEntity=pepppers}} {@RemoveFromToppings=remove {@ToppingsEntity=green} and {@ToppingsEntity=red pepppers}}
+- {@AddToToppings=add {@ToppingsEntity=peppers}}{@RemoveFromToppings=, remove {@ToppingsEntity=pickles}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=red}}{@RemoveFromToppings=, remove {@ToppingsEntity=red}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=white onions}}{@RemoveFromToppings=, remove {@ToppingsEntity=onions}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=green}} {@AddToToppings=and add {@ToppingsEntity=green peppers}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=onions}} {@AddToToppings=and add {@ToppingsEntity=onions}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=pickles}} {@AddToToppings=and add {@ToppingsEntity=onions}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=lettuce} and {@ToppingsEntity=white}} {@AddToToppings=and add {@ToppingsEntity=red}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=pickles} and {@ToppingsEntity=green peppers}} {@AddToToppings=and add {@ToppingsEntity=green}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red pepppers} and {@ToppingsEntity=red pepppers}} {@AddToToppings=and add {@ToppingsEntity=green peppers}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=onions}, {@ToppingsEntity=pickles} and {@ToppingsEntity=green}} {@AddToToppings=and add {@ToppingsEntity=green peppers} and {@ToppingsEntity=lettuce}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=white}, {@ToppingsEntity=onions} and {@ToppingsEntity=pickles}} {@AddToToppings=and add {@ToppingsEntity=lettuce} and {@ToppingsEntity=pickles}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=onions}, {@ToppingsEntity=lettuce} and {@ToppingsEntity=green peppers}} {@AddToToppings=and add {@ToppingsEntity=pepppers} and {@ToppingsEntity=pepppers}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red}}{@AddToToppings=, add {@ToppingsEntity=white}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=peppers}}{@AddToToppings=, add {@ToppingsEntity=tomato}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red}}{@AddToToppings=, add {@ToppingsEntity=onions}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=red}} {@AddToToppings=and add {@ToppingsEntity=red}}
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=red}} {@AddToToppings=and add {@ToppingsEntity=onions}}
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=onions}} {@AddToToppings=and add {@ToppingsEntity=lettuce}}
+- {@ShowToppings=show {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=red}} {@ShowToppings=and display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=pickles}} {@AddToToppings=and add {@ToppingsEntity=peppers}}
+- {@ShowToppings=show {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=lettuce}} {@ShowToppings=and display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=pickles}} {@AddToToppings=and add {@ToppingsEntity=pepppers}}
+- {@ShowToppings=show {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=onions}} {@ShowToppings=and display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=green}} {@AddToToppings=and add {@ToppingsEntity=white onions}}
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=onions}} {@AddToToppings=add {@ToppingsEntity=red pepppers}} 
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=tomato}} {@AddToToppings=add {@ToppingsEntity=red pepppers}} 
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=lettuce}} {@AddToToppings=add {@ToppingsEntity=peppers}} 
+- {@AddToToppings=add {@ToppingsEntity=green} {@PROPERTYName=toppings}} {@RemoveFromToppings=and remove {@ToppingsEntity=red} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=white onions} {@PROPERTYName=toppings}} {@RemoveFromToppings=and remove {@ToppingsEntity=green peppers} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=onions} {@PROPERTYName=toppings}} {@RemoveFromToppings=and remove {@ToppingsEntity=red pepppers} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=tomato} {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=lettuce} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=green peppers} {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=onions} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=tomato} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=red pepppers} {@PROPERTYName=toppings}}, {@RemoveFromToppings=remove {@ToppingsEntity=green peppers} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=pickles} {@PROPERTYName=toppings}}, {@RemoveFromToppings=remove {@ToppingsEntity=white onions} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=red} {@PROPERTYName=toppings}}, {@RemoveFromToppings=remove {@ToppingsEntity=red} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=onions} and {@ToppingsEntity=tomato} {@PROPERTYName=toppings}} {@RemoveFromToppings=and remove {@ToppingsEntity=red pepppers} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=white} and {@ToppingsEntity=pepppers} {@PROPERTYName=toppings}} {@RemoveFromToppings=and remove {@ToppingsEntity=green} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=onions} and {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@RemoveFromToppings=and remove {@ToppingsEntity=green} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=white onions}, {@ToppingsEntity=onions} and {@ToppingsEntity=red onions} {@PROPERTYName=toppings}} {@RemoveFromToppings=and remove {@ToppingsEntity=green peppers} and {@ToppingsEntity=green peppers} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=pepppers}, {@ToppingsEntity=pickles} and {@ToppingsEntity=lettuce} {@PROPERTYName=toppings}} {@RemoveFromToppings=and remove {@ToppingsEntity=onions} and {@ToppingsEntity=lettuce} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=red pepppers}, {@ToppingsEntity=pickles} and {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@RemoveFromToppings=and remove {@ToppingsEntity=lettuce} and {@ToppingsEntity=white} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=tomato}, {@ToppingsEntity=red} and {@ToppingsEntity=green peppers} {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=green peppers} and {@ToppingsEntity=red pepppers} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=pickles}, {@ToppingsEntity=green} and {@ToppingsEntity=pickles} {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=onions} and {@ToppingsEntity=green peppers} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=green peppers}, {@ToppingsEntity=onions} and {@ToppingsEntity=onions} {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=green peppers} and {@ToppingsEntity=peppers} {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=red} {@PROPERTYName=toppings}}{@RemoveFromToppings=, remove {@ToppingsEntity=white onions} {@PROPERTYName=toppings}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=green} {@PROPERTYName=toppings}}{@RemoveFromToppings=, remove {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@AddToToppings=add {@ToppingsEntity=pepppers} {@PROPERTYName=toppings}}{@RemoveFromToppings=, remove {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=white onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=pickles} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=red pepppers} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red onions} and {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@AddToToppings=and add **MISSING**}
+- {@RemoveFromToppings=remove {@ToppingsEntity=onions} and {@ToppingsEntity=white} {@PROPERTYName=toppings}} {@AddToToppings=and add **MISSING**}
+- {@RemoveFromToppings=remove {@ToppingsEntity=lettuce} and {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@AddToToppings=and add **MISSING**}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red}, {@ToppingsEntity=green} and {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=green} and {@ToppingsEntity=red onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=tomato}, {@ToppingsEntity=pepppers} and {@ToppingsEntity=pepppers} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=green peppers} and {@ToppingsEntity=pepppers} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red}, {@ToppingsEntity=lettuce} and {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=red} and {@ToppingsEntity=red onions} {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red onions} {@PROPERTYName=toppings}}{@AddToToppings=, add {@ToppingsEntity=red onions} {@PROPERTYName=toppings}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=red onions} {@PROPERTYName=toppings}}{@AddToToppings=, add {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@RemoveFromToppings=remove {@ToppingsEntity=tomato} {@PROPERTYName=toppings}}{@AddToToppings=, add {@ToppingsEntity=tomato} {@PROPERTYName=toppings}} {@ShowToppings=and show {@PROPERTYName=toppings}}
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=red onions} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=pepppers} {@PROPERTYName=toppings}}
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=tomato} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=red onions} {@PROPERTYName=toppings}}
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=onions} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=onions} {@PROPERTYName=toppings}}
+- {@ShowToppings=show {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=peppers} {@PROPERTYName=toppings}} {@ShowToppings=and display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=white onions} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=tomato} {@PROPERTYName=toppings}}
+- {@ShowToppings=show {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=green} {@PROPERTYName=toppings}} {@ShowToppings=and display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=white onions} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=white} {@PROPERTYName=toppings}}
+- {@ShowToppings=show {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@ShowToppings=and display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=green} {@PROPERTYName=toppings}} {@AddToToppings=and add {@ToppingsEntity=green peppers} {@PROPERTYName=toppings}}
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=red} {@PROPERTYName=toppings}} {@AddToToppings=add {@ToppingsEntity=tomato} {@PROPERTYName=toppings}} 
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=onions} {@PROPERTYName=toppings}} {@AddToToppings=add {@ToppingsEntity=pickles} {@PROPERTYName=toppings}} 
+- {@ShowToppings=display {@PROPERTYName=toppings}} {@RemoveFromToppings=remove {@ToppingsEntity=green} {@PROPERTYName=toppings}} {@AddToToppings=add {@ToppingsEntity=onions} {@PROPERTYName=toppings}} 
+- tomato
+- lettuce
+- pickles
+- green
+- peppers
+- green peppers
+- red
+- pepppers
+- red pepppers
+- white
+- onions
+- white onions
+- red onions
+
+- Toppings
+
+
+> Generator: f539fb555f8cfe61ff85d186b10e8aa8

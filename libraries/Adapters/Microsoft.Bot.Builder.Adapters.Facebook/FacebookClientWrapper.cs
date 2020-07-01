@@ -15,18 +15,21 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
+    /// <summary>
+    /// Client for interacting with the Facebook API.
+    /// </summary>
     public class FacebookClientWrapper
     {
         /// <summary>
-        /// An instance of the FacebookAdapterOptions class.
+        /// An instance of the FacebookClientWrapperOptions class.
         /// </summary>
-        private readonly FacebookAdapterOptions _options;
+        private readonly FacebookClientWrapperOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookClientWrapper"/> class.
         /// </summary>
         /// <param name="options">An object containing API credentials, a webhook verification token, and other options.</param>
-        public FacebookClientWrapper(FacebookAdapterOptions options)
+        public FacebookClientWrapper(FacebookClientWrapperOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }

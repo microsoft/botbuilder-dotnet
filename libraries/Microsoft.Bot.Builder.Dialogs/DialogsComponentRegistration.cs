@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             yield return new TurnMemoryScope();
             yield return new SettingsMemoryScope();
             yield return new DialogMemoryScope();
+            yield return new DialogContextMemoryScope();
             yield return new DialogClassMemoryScope();
             yield return new ClassMemoryScope();
             yield return new ThisMemoryScope();

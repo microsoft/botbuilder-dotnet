@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Integration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 /// <summary>
 /// Technically should be buried under Integration folder, but options are independent
@@ -10,31 +10,29 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 /// </summary>
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("BotFrameworkOptions")]
     public class BotFrameworkOptionsTests
     {
-        [TestMethod]
+        [Fact]
         public void EnsureProperties()
         {
             BotFrameworkOptions options = new BotFrameworkOptions();
-            Assert.IsNotNull(options.CredentialProvider);
-            Assert.IsNull(options.HttpClient);
-            Assert.IsNotNull(options.Middleware);
-            Assert.IsNull(options.OnTurnError);
-            Assert.IsNotNull(options.Paths);
+            Assert.NotNull(options.CredentialProvider);
+            Assert.Null(options.HttpClient);
+            Assert.NotNull(options.Middleware);
+            Assert.Null(options.OnTurnError);
+            Assert.NotNull(options.Paths);
 #pragma warning disable 0618 // Disable the warning, as this test needs to be here.
-            Assert.IsNotNull(options.State);
+            Assert.NotNull(options.State);
 #pragma warning restore 0618
-            Assert.IsNull(options.ConnectorClientRetryPolicy);
+            Assert.Null(options.ConnectorClientRetryPolicy);
         }
 
-        [TestMethod]
+        [Fact]
         public void EnsureDefaultPathsCorrect()
         {
             BotFrameworkOptions options = new BotFrameworkOptions();
-            Assert.AreSame("/api", options.Paths.BasePath);
-            Assert.AreSame("/messages", options.Paths.MessagesPath);
+            Assert.Same("/api", options.Paths.BasePath);
+            Assert.Same("/messages", options.Paths.MessagesPath);
         }
     }
 }

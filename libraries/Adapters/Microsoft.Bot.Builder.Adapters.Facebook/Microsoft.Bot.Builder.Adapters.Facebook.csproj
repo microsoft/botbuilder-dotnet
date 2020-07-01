@@ -6,6 +6,8 @@
     <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Microsoft.Bot.Builder.Adapters.Facebook.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -13,12 +15,6 @@
     <PackageId>Microsoft.Bot.Builder.Adapters.Facebook</PackageId>
     <Description>Library for connecting bots with Facebook.</Description>
     <Summary>This library implements C# classes for the Facebook adapter.</Summary>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Microsoft.Bot.Builder.Adapters.Facebook.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,7 +25,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

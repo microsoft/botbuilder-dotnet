@@ -1,0 +1,4 @@
+> !# @strict = false
+
+# StrictFalse
+- ${variable_not_defined}

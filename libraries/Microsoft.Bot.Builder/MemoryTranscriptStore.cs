@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder
         {
             if (activity == null)
             {
-                throw new ArgumentNullException("activity cannot be null for LogActivity()");
+                throw new ArgumentNullException(nameof(activity), "activity cannot be null for LogActivity()");
             }
 
             lock (_channels)
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder
                                 .Take(20)
                                 .ToArray();
 
-                            if (pagedResult.Items.Count() == 20)
+                            if (pagedResult.Items.Length == 20)
                             {
                                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
                             }
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder
                                 .Take(20)
                                 .ToArray();
 
-                            if (pagedResult.Items.Count() == 20)
+                            if (pagedResult.Items.Length == 20)
                             {
                                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
                             }
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder
                         .Take(20)
                         .ToArray();
 
-                        if (pagedResult.Items.Count() == 20)
+                        if (pagedResult.Items.Length == 20)
                         {
                             pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
                         }
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder
                             .Take(20)
                             .ToArray();
 
-                        if (pagedResult.Items.Count() == 20)
+                        if (pagedResult.Items.Length == 20)
                         {
                             pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
                         }

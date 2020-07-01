@@ -32,6 +32,7 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
+  SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  AzureDeploymentPassword: define this in Azure
 #  AzureDeploymentUser: define this in Azure
 #  AzureSubscription: define this in Azure
@@ -50,7 +51,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot'
+    arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false'
     zipAfterPublish: false
     modifyOutputPath: false
 

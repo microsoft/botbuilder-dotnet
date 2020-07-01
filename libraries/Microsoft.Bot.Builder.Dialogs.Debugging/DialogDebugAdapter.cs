@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -572,9 +575,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 var arguments = evaluate.Arguments;
                 DecodeFrame(arguments.FrameId, out var thread, out var frame);
                 var expression = arguments.Expression.Trim('"');
-                var result = frame.Evaluate(expression);
-                if (result != null)
+
+                try
                 {
+                    var result = frame.Evaluate(expression);
                     var body = new
                     {
                         result = dataModel.ToString(result),
@@ -583,9 +587,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                     return Protocol.Response.From(NextSeq, evaluate, body);
                 }
-                else
+                catch (Exception ex)
                 {
-                    return Protocol.Response.Fail(NextSeq, evaluate, string.Empty);
+                    return Protocol.Response.Fail(NextSeq, evaluate, ex.Message);
                 }
             }
             else if (message is Protocol.Request<Protocol.Continue> cont)

@@ -563,10 +563,12 @@ namespace Microsoft.Bot.Builder
             return Task.CompletedTask;
         }
 
+#pragma warning disable CA1064 // Exceptions should be public (we can't change this without breaking binary compat, we may consider making this type public in the future)
         protected class InvokeResponseException : Exception
+#pragma warning restore CA1064 // Exceptions should be public
         {
-            private HttpStatusCode _statusCode;
-            private object _body;
+            private readonly HttpStatusCode _statusCode;
+            private readonly object _body;
 
             public InvokeResponseException(HttpStatusCode statusCode, object body = null)
             {
@@ -574,9 +576,27 @@ namespace Microsoft.Bot.Builder
                 _body = body;
             }
 
+            public InvokeResponseException()
+            {
+            }
+
+            public InvokeResponseException(string message) 
+                : base(message)
+            {
+            }
+
+            public InvokeResponseException(string message, Exception innerException) 
+                : base(message, innerException)
+            {
+            }
+
             public InvokeResponse CreateInvokeResponse()
             {
-                return new InvokeResponse { Status = (int)_statusCode, Body = _body };
+                return new InvokeResponse
+                {
+                    Status = (int)_statusCode,
+                    Body = _body
+                };
             }
         }
     }

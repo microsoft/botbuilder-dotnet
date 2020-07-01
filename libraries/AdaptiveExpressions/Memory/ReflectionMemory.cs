@@ -47,7 +47,7 @@ namespace AdaptiveExpressions.Memory
 
         public string Version()
         {
-            return (string)this.methods.Version.Invoke(obj, Array.Empty<object>());
+            return (string)this.methods?.Version?.Invoke(obj, Array.Empty<object>());
         }
 
         internal static ReflectionMemory Create(object obj)

@@ -20,39 +20,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// If a value is pure Expression.
         /// </summary>
         /// <param name="context">Key value structure value context.</param>
-        /// <param name="expression">String expression.</param>
         /// <returns>Is pure expression or not.</returns>
-        public static bool IsPureExpression(this LGTemplateParser.KeyValueStructureValueContext context, out string expression)
+        public static bool IsPureExpression(this LGTemplateParser.KeyValueStructureValueContext context)
         {
-            expression = context.GetText();
-
-            var hasExpression = false;
-            foreach (ITerminalNode node in context.children)
+            if (context.expressionInStructure() == null
+                || context.expressionInStructure().Length != 1)
             {
-                switch (node.Symbol.Type)
-                {
-                    case LGTemplateParser.ESCAPE_CHARACTER_IN_STRUCTURE_BODY:
-                        return false;
-                    case LGTemplateParser.EXPRESSION_IN_STRUCTURE_BODY:
-                        if (hasExpression)
-                        {
-                            return false;
-                        }
-
-                        hasExpression = true;
-                        expression = node.GetText();
-                        break;
-                    default:
-                        if (!string.IsNullOrWhiteSpace(node.GetText()))
-                        {
-                            return false;
-                        }
-
-                        break;
-                }
+                return false;
             }
 
-            return hasExpression;
+            return context.expressionInStructure(0).GetText().Trim() == context.GetText().Trim();
         }
 
         /// <summary>
@@ -78,6 +55,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 // $ -> expression escape
                 if (value == "\\$")
+                {
+                    return value.Substring(1);
+                }
+                else if (value == "\\`")
                 {
                     return value.Substring(1);
                 }
@@ -137,7 +118,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var errorPrefix = string.Empty;
             if (context.Parent?.Parent?.Parent is LGTemplateParser.IfConditionRuleContext conditionContext)
             {
-                errorPrefix = "Condition '" + conditionContext.ifCondition()?.EXPRESSION(0)?.GetText() + "': ";
+                errorPrefix = "Condition '" + conditionContext.ifCondition()?.expression(0)?.GetText() + "': ";
             }
             else
             {
@@ -150,11 +131,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else if (state?.SWITCH() != null)
                     {
-                        errorPrefix = $"Switch '{state.EXPRESSION(0)?.GetText()}':";
+                        errorPrefix = $"Switch '{state.expression(0)?.GetText()}':";
                     }
                     else if (state?.CASE() != null)
                     {
-                        errorPrefix = $"Case '{state.EXPRESSION(0)?.GetText()}':";
+                        errorPrefix = $"Case '{state.expression(0)?.GetText()}':";
                     }
                 }
             }

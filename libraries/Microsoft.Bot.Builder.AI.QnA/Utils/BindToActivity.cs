@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
@@ -9,21 +10,21 @@ namespace Microsoft.Bot.Builder.AI.QnA.Utils
 {
     internal class BindToActivity : ITemplate<Activity>
     {
-        private Activity activity;
+        private readonly Activity _activity;
 
         public BindToActivity(Activity activity)
         {
-            this.activity = activity;
+            _activity = activity;
         }
 
         public Task<Activity> BindAsync(DialogContext context, object data = null, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(activity);
+            return Task.FromResult(_activity);
         }
 
         public override string ToString()
         {
-            return $"{this.activity.Text}";
+            return $"{_activity.Text}";
         }
     }
 }

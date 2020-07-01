@@ -1,0 +1,29 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "AddToSauces",
+	"entity": "SaucesEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${setArrayPropertyMessage('Sauces', @SaucesEntity)}"
+		},
+		{
+			"$kind": "Microsoft.EditArray",
+			"changeType": "push",
+			"itemsProperty": "$Sauces",
+			"value": "=@SaucesEntity"
+		},
+		{
+			"$kind": "Microsoft.IfCondition",
+			"condition": "$PropertyToChange == 'Sauces'",
+			"actions": [
+				{
+					"$kind": "Microsoft.DeleteProperty",
+					"property": "$PropertyToChange"
+				}
+			]
+		}
+	],
+	"$Generator": "eff2796dcbbc7c620dc7fc6e2cc43f60"
+}

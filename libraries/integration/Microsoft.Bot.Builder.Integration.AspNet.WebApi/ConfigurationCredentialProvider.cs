@@ -17,6 +17,9 @@ namespace Microsoft.Bot.Builder.BotFramework
     /// </remarks>
     public sealed class ConfigurationCredentialProvider : SimpleCredentialProvider
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationCredentialProvider"/> class.
+        /// </summary>
         public ConfigurationCredentialProvider()
         {
             this.AppId = ConfigurationManager.AppSettings[MicrosoftAppCredentials.MicrosoftAppIdKey];

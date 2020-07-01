@@ -13,6 +13,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 {
+    /// <summary>
+    /// Services collection extension methods for use when configuring Application Insights at startup.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>
