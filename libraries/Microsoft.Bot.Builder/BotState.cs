@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder
                     { key, cachedState.State },
                 };
                 await _storage.WriteAsync(changes).ConfigureAwait(false);
-                cachedState.Hash = cachedState.ComputeHash(cachedState.State);
+                cachedState.Hash = CachedBotState.ComputeHash(cachedState.State);
                 return;
             }
         }
@@ -230,7 +230,9 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the task is successful, the result contains the property value, otherwise it will be default(T).</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
+#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
         protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -287,7 +289,9 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
+#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
         protected Task DeletePropertyValueAsync(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -312,7 +316,9 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
+#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
         protected Task SetPropertyValueAsync(ITurnContext turnContext, string propertyName, object value, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -329,7 +335,9 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Internal cached bot state.
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat)
         public class CachedBotState
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             internal CachedBotState(IDictionary<string, object> state = null)
             {
@@ -337,18 +345,20 @@ namespace Microsoft.Bot.Builder
                 Hash = ComputeHash(State);
             }
 
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
             public IDictionary<string, object> State { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
             internal string Hash { get; set; }
+
+            internal static string ComputeHash(object obj)
+            {
+                return JsonConvert.SerializeObject(obj);
+            }
 
             internal bool IsChanged()
             {
                 return Hash != ComputeHash(State);
-            }
-
-            internal string ComputeHash(object obj)
-            {
-                return JsonConvert.SerializeObject(obj);
             }
         }
 
@@ -394,7 +404,10 @@ namespace Microsoft.Bot.Builder
             /// Get the property value. The semantics are intended to be lazy, note the use of LoadAsync at the start.
             /// </summary>
             /// <param name="turnContext">The context object for this turn.</param>
-            /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
+            /// <param name="defaultValueFactory">Defines the default value.
+            /// Invoked when no value been set for the requested state property.
+            /// If defaultValueFactory is defined as null in that case, the method returns null and
+            /// <see cref="SetAsync(ITurnContext, T, CancellationToken)">SetAsync</see> is not called.</param>
             /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
             public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory, CancellationToken cancellationToken)

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result indicates whether the prompt is still
         /// active after the turn has been processed by the prompt.</remarks>
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default)
         {
             if (dc == null)
             {
@@ -107,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// active after the turn has been processed by the dialog.
         /// <para>The prompt generally continues to receive the user's replies until it accepts the
         /// user's reply as valid input for the prompt.</para></remarks>
-        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             if (dc == null)
             {
@@ -122,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Increment attempt count
             // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
-            state[Prompt<int>.AttemptCountKey] = Convert.ToInt32(state[Prompt<int>.AttemptCountKey]) + 1;
+            state[Prompt<int>.AttemptCountKey] = Convert.ToInt32(state[Prompt<int>.AttemptCountKey], CultureInfo.InvariantCulture) + 1;
 
             // Validate the return value
             var isValid = false;
@@ -141,10 +142,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
             }
-            else
-            {
-                await OnPromptAsync(dc.Context, state, options, true, cancellationToken).ConfigureAwait(false);
-            }
+
+            await OnPromptAsync(dc.Context, state, options, true, cancellationToken).ConfigureAwait(false);
 
             return EndOfTurn;
         }
@@ -162,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result indicates whether the dialog is still
         /// active after the turn has been processed by the dialog.</remarks>
-        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
             if (result is CancellationToken)
             {
@@ -175,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
             await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            return EndOfTurn;
         }
 
         /// <summary>
@@ -186,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
@@ -203,7 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default)
             => await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
 
         protected virtual async Task OnPromptAsync(
@@ -211,7 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             IDictionary<string, object> state,
             PromptOptions options,
             bool isRetry,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (turnContext == null)
             {
@@ -244,7 +243,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result describes the result of the recognition attempt.</remarks>
-        protected virtual Task<PromptRecognizerResult<Activity>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual Task<PromptRecognizerResult<Activity>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(new PromptRecognizerResult<Activity>
             {

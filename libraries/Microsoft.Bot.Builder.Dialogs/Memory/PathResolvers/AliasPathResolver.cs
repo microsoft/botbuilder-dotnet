@@ -10,14 +10,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
     /// </summary>
     public class AliasPathResolver : IPathResolver
     {
-        private readonly string prefix;
-        private readonly string postfix;
+        private readonly string _postfix;
+        private readonly string _prefix;
 
         public AliasPathResolver(string alias, string prefix, string postfix = null)
         {
-            this.Alias = alias?.Trim() ?? throw new ArgumentNullException(nameof(alias));
-            this.prefix = prefix?.Trim() ?? throw new ArgumentNullException(nameof(prefix));
-            this.postfix = postfix ?? string.Empty;
+            Alias = alias?.Trim() ?? throw new ArgumentNullException(nameof(alias));
+            _prefix = prefix?.Trim() ?? throw new ArgumentNullException(nameof(prefix));
+            _postfix = postfix ?? string.Empty;
         }
 
         /// <summary>
@@ -36,19 +36,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
             }
 
             path = path.Trim();
-            if (path.StartsWith(Alias) && path.Length > Alias.Length && IsPathChar(path[Alias.Length]))
+            if (path.StartsWith(Alias, StringComparison.Ordinal) && path.Length > Alias.Length && IsPathChar(path[Alias.Length]))
             {
                 // here we only deals with trailing alias, alias in middle be handled in further breakdown
                 // $xxx -> path.xxx
-                return $"{this.prefix}{path.Substring(Alias.Length)}{this.postfix}".TrimEnd('.');
+                return $"{_prefix}{path.Substring(Alias.Length)}{_postfix}".TrimEnd('.');
             }
 
             return path;
         }
 
+#pragma warning disable CA1822 // Mark members as static (we can't change this without breaking binary compat)
         protected bool IsPathChar(char ch)
+#pragma warning restore CA1822 // Mark members as static
         {
-             return char.IsLetter(ch) || ch == '_';
+            return char.IsLetter(ch) || ch == '_';
         }
     }
 }

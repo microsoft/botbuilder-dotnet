@@ -133,6 +133,32 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        private static string OpenCommand(InspectionSessionsByStatus sessions, ConversationReference conversationReference)
+        {
+            var sessionId = Guid.NewGuid().ToString();
+            sessions.OpenedSessions.Add(sessionId, conversationReference);
+            return sessionId;
+        }
+
+        private static bool AttachCommand(string attachId, InspectionSessionsByStatus sessions, string sessionId)
+        {
+            if (sessions.OpenedSessions.TryGetValue(sessionId, out var inspectionSessionState))
+            {
+                sessions.AttachedSessions[attachId] = inspectionSessionState;
+                sessions.OpenedSessions.Remove(sessionId);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static string GetAttachId(Activity activity)
+        {
+            // If we are running in a Microsoft Teams Team the conversation Id will reflect a particular thread the bot is in.
+            // So if we are in a Team then we will associate the "attach" with the Team Id rather than the more restrictive conversation Id.
+            return activity.TeamsGetTeamInfo()?.Id ?? activity.Conversation.Id;
+        }
+
         private async Task ProcessOpenCommandAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var accessor = _inspectionState.CreateProperty<InspectionSessionsByStatus>(nameof(InspectionSessionsByStatus));
@@ -164,25 +190,6 @@ namespace Microsoft.Bot.Builder
             }
 
             await _inspectionState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
-        }
-
-        private string OpenCommand(InspectionSessionsByStatus sessions, ConversationReference conversationReference)
-        {
-            var sessionId = Guid.NewGuid().ToString();
-            sessions.OpenedSessions.Add(sessionId, conversationReference);
-            return sessionId;
-        }
-
-        private bool AttachCommand(string attachId, InspectionSessionsByStatus sessions, string sessionId)
-        {
-            if (sessions.OpenedSessions.TryGetValue(sessionId, out var inspectionSessionState))
-            {
-                sessions.AttachedSessions[attachId] = inspectionSessionState;
-                sessions.OpenedSessions.Remove(sessionId);
-                return true;
-            }
-
-            return false;
         }
 
         private async Task<InspectionSession> FindSessionAsync(ITurnContext turnContext, CancellationToken cancellationToken)
@@ -217,13 +224,6 @@ namespace Microsoft.Bot.Builder
             var openSessions = await accessor.GetAsync(turnContext, () => new InspectionSessionsByStatus(), cancellationToken).ConfigureAwait(false);
             openSessions.AttachedSessions.Remove(GetAttachId(turnContext.Activity));
             await _inspectionState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
-        }
-
-        private string GetAttachId(Activity activity)
-        {
-            // If we are running in a Microsoft Teams Team the conversation Id will reflect a particular thread the bot is in.
-            // So if we are in a Team then we will associate the "attach" with the Team Id rather than the more restrictive conversation Id.
-            return activity.TeamsGetTeamInfo()?.Id ?? activity.Conversation.Id;
         }
     }
 }

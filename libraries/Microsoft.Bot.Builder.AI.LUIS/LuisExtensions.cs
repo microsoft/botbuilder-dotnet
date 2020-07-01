@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
+    /// <summary>
+    /// Extension methods for LUIS.
+    /// </summary>
     public static class LuisExtensions
     {
         /// <summary>

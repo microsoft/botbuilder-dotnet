@@ -11,6 +11,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMakerOptions
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMakerOptions"/> class.
+        /// </summary>
         public QnAMakerOptions()
         {
             ScoreThreshold = 0.3f;
@@ -67,9 +70,21 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("qnAId")]
         public int QnAId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to filter results.
+        /// </summary>
+        /// <value>
+        /// An array of <see cref="Metadata"/>.
+        /// </value>
         [JsonProperty("strictFilters")]
-        public Metadata[] StrictFilters { get; set; }        
-        
+        public Metadata[] StrictFilters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
+        /// </summary>
+        /// <value>
+        /// An array of <see cref="Metadata"/>.
+        /// </value>
         [Obsolete("This property is no longer used and will be ignored")]
         [JsonIgnore]
         public Metadata[] MetadataBoost { get; set; }
@@ -92,14 +107,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to enable PreciseAnswer generation.
-        /// </summary>
-        /// <value>
-        /// Choice whether to generate precise answer or not.
-        /// </value>
-        [JsonProperty("enablePreciseAnswer")]
-        public bool EnablePreciseAnswer { get; set; }
     }
 }

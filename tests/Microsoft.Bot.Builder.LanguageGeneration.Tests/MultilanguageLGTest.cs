@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
 {
-    [TestClass]
     public class MultilanguageLGTest
     {
-        [TestMethod]
+        [Fact]
         public void EmptyFallbackLocale()
         {
             var localPerFile = new Dictionary<string, string>
@@ -21,22 +20,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
 
             // fallback to "a.en.lg"
             var result = generator.Generate("templatec", locale: "en-us");
-            Assert.AreEqual("from a.en.lg", result);
+            Assert.Equal("from a.en.lg", result);
 
             // "a.en.lg" is used
             result = generator.Generate("templatec", locale: "en");
-            Assert.AreEqual("from a.en.lg", result);
+            Assert.Equal("from a.en.lg", result);
 
             // locale "fr" has no entry file, default file "a.lg" is used
             result = generator.Generate("templatec", locale: "fr");
-            Assert.AreEqual("from a.lg", result);
+            Assert.Equal("from a.lg", result);
 
             // "a.lg" is used
             result = generator.Generate("templatec");
-            Assert.AreEqual("from a.lg", result);
+            Assert.Equal("from a.lg", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void SpecificFallbackLocale()
         {
             var localPerFile = new Dictionary<string, string>
@@ -48,22 +47,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
 
             // fallback to "a.en.lg"
             var result = generator.Generate("templatec", locale: "en-us");
-            Assert.AreEqual("from a.en.lg", result);
+            Assert.Equal("from a.en.lg", result);
 
             // "a.en.lg" is used
             result = generator.Generate("templatec", locale: "en");
-            Assert.AreEqual("from a.en.lg", result);
+            Assert.Equal("from a.en.lg", result);
 
             // locale "fr" has no entry file, default file "a.en.lg" is used
             result = generator.Generate("templatec", locale: "fr");
-            Assert.AreEqual("from a.en.lg", result);
+            Assert.Equal("from a.en.lg", result);
 
             // "a.en.lg" is used
             result = generator.Generate("templatec");
-            Assert.AreEqual("from a.en.lg", result);
+            Assert.Equal("from a.en.lg", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void TemplatesInputs()
         {
             var enTemplates = Templates.ParseText("[import](1.lg)\r\n # template\r\n - hi", "abc", ConstantResolver);
@@ -76,19 +75,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
 
             // fallback to "a.en.lg"
             var result = generator.Generate("myTemplate", locale: "en-us");
-            Assert.AreEqual("content with id: 1.lg from source: abc", result);
+            Assert.Equal("content with id: 1.lg from source: abc", result);
 
             // "a.en.lg" is used
             result = generator.Generate("myTemplate", locale: "en");
-            Assert.AreEqual("content with id: 1.lg from source: abc", result);
+            Assert.Equal("content with id: 1.lg from source: abc", result);
 
             // locale "fr" has no entry file, default file "a.en.lg" is used
             result = generator.Generate("myTemplate", locale: "fr");
-            Assert.AreEqual("content with id: 1.lg from source: abc", result);
+            Assert.Equal("content with id: 1.lg from source: abc", result);
 
             // "a.en.lg" is used
             result = generator.Generate("myTemplate");
-            Assert.AreEqual("content with id: 1.lg from source: abc", result);
+            Assert.Equal("content with id: 1.lg from source: abc", result);
         }
 
         private static (string content, string id) ConstantResolver(string sourceId, string resourceId)
