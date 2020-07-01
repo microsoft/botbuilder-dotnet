@@ -11,8 +11,20 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
 {
+    /// <summary>
+    /// A handler to process incoming http requests via using an adapter.
+    /// </summary>
     public class BotMessageHandler : BotMessageHandlerBase
     {
+        /// <summary>
+        /// Deserializes the incoming request using a BotMessageHandler, processes it with an <see cref="IAdapterIntegration"/>
+        /// and returns an <see cref="InvokeResponse"/>.
+        /// </summary>
+        /// <param name="request">A <see cref="HttpRequest"/>.</param>
+        /// <param name="adapter">An instance of <see cref="IAdapterIntegration"/>.</param>
+        /// <param name="botCallbackHandler">An instance of <see cref="BotCallbackHandler"/>.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
+        /// <returns>An <see cref="InvokeResponse"/> returned from the adapter.</returns>
         protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, IAdapterIntegration adapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken)
         {
             Activity activity;

@@ -10,6 +10,9 @@ using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
+    /// <summary>
+    /// Extension methods for <see cref="HttpConfiguration"/>.
+    /// </summary>
     public static class HttpConfigurationExtensions
     {
         /// <summary>
