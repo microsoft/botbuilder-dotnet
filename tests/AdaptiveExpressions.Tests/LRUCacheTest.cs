@@ -1,26 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace AdaptiveExpressions.Tests
 {
-    [TestClass]
     public class LRUCacheTest
     {
-        [TestMethod]
+        [Fact]
         public void TestBasic()
         {
             var cache = new LRUCache<int, string>(2);
             
-            Assert.IsFalse(cache.TryGet(1, out var result));
+            Assert.False(cache.TryGet(1, out var result));
 
             cache.Set(1, "num1");
 
-            Assert.IsTrue(cache.TryGet(1, out result));
-            Assert.AreEqual(result, "num1");
+            Assert.True(cache.TryGet(1, out result));
+            Assert.Equal("num1", result);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDiacardPolicy()
         {
             var cache = new LRUCache<int, string>(2);
@@ -29,16 +28,16 @@ namespace AdaptiveExpressions.Tests
             cache.Set(3, "num3");
 
             // should be {2,'num2'} and {3, 'num3'}
-            Assert.IsFalse(cache.TryGet(1, out var result));
+            Assert.False(cache.TryGet(1, out var result));
 
-            Assert.IsTrue(cache.TryGet(2, out result));
-            Assert.AreEqual(result, "num2");
+            Assert.True(cache.TryGet(2, out result));
+            Assert.Equal("num2", result);
 
-            Assert.IsTrue(cache.TryGet(3, out result));
-            Assert.AreEqual(result, "num3");
+            Assert.True(cache.TryGet(3, out result));
+            Assert.Equal("num3", result);
         }
 
-        [TestMethod]
+        [Fact]
         /*
          * The average time of this test is about 2ms. 
          */
@@ -57,16 +56,16 @@ namespace AdaptiveExpressions.Tests
                 cache.Set(i, prev1 + prev2);
             }
 
-            Assert.IsFalse(cache.TryGet(9998, out var result));
+            Assert.False(cache.TryGet(9998, out var result));
 
-            Assert.IsTrue(cache.TryGet(maxIdx - 1, out result));
-            Assert.AreEqual(result, fib9999);
+            Assert.True(cache.TryGet(maxIdx - 1, out result));
+            Assert.Equal(result, fib9999);
 
-            Assert.IsTrue(cache.TryGet(maxIdx, out result));
-            Assert.AreEqual(result, fib100000);
+            Assert.True(cache.TryGet(maxIdx, out result));
+            Assert.Equal(result, fib100000);
         }
 
-        [TestMethod]
+        [Fact]
         /*
          * The average time of this test is about 3ms. 
          */
@@ -85,16 +84,16 @@ namespace AdaptiveExpressions.Tests
                 cache.Set(i, prev1 + prev2);
             }
 
-            Assert.IsFalse(cache.TryGet(1, out var result));
+            Assert.False(cache.TryGet(1, out var result));
 
-            Assert.IsTrue(cache.TryGet(maxIdx - 1, out result));
-            Assert.AreEqual(result, fib9999);
+            Assert.True(cache.TryGet(maxIdx - 1, out result));
+            Assert.Equal(result, fib9999);
 
-            Assert.IsTrue(cache.TryGet(maxIdx, out result));
-            Assert.AreEqual(result, fib100000);
+            Assert.True(cache.TryGet(maxIdx, out result));
+            Assert.Equal(result, fib100000);
         }
 
-        [TestMethod]
+        [Fact]
         /*
          * The average time of this test is about 13ms(without the loop of Assert statements). 
          */
@@ -113,7 +112,7 @@ namespace AdaptiveExpressions.Tests
 
             for (var i = numOfOps - numOfThreads; i < numOfOps; i++)
             {
-               Assert.IsTrue(cache.TryGet(i, out var result));
+               Assert.True(cache.TryGet(i, out var result));
             }
         }
 

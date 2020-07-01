@@ -9,7 +9,9 @@ namespace Microsoft.Bot.Builder.Dialogs
     {
         public DialogTurnResult TurnResult { get; set; }
 
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public Activity[] Activities { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         public PersistedState NewState { get; set; }
     }

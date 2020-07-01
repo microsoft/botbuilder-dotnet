@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="messageOptions">An object containing the parameters for the message to send.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The SID of the Twilio message sent.</returns>
-        public virtual async Task<string> SendMessage(CreateMessageOptions messageOptions, CancellationToken cancellationToken)
+        public virtual async Task<string> SendMessageAsync(CreateMessageOptions messageOptions, CancellationToken cancellationToken)
         {
             var messageResource = await MessageResource.CreateAsync(messageOptions).ConfigureAwait(false);
             return messageResource.Sid;

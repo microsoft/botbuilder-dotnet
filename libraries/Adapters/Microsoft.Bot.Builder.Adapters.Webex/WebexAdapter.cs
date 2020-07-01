@@ -19,6 +19,9 @@ using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
+    /// <summary>
+    /// BotAdapter to allow for handling Webex Teams app payloads and responses via the Webex Teams API.
+    /// </summary>
     public class WebexAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private readonly WebexClientWrapper _webexClient;

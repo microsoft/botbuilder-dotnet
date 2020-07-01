@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Linq.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
 {
@@ -12,7 +11,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
     public class AtPathResolver : AliasPathResolver
     {
         private const string Prefix = "turn.recognized.entities.";
-        private static readonly char[] Delims = new char[] { '.', '[' };
+
+        private static readonly char[] _delims = { '.', '[' };
 
         public AtPathResolver()
             : base("@", string.Empty)
@@ -27,9 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
             }
 
             path = path.Trim();
-            if (path.StartsWith("@") && path.Length > 1 && IsPathChar(path[1]))
+            if (path.StartsWith("@", StringComparison.Ordinal) && path.Length > 1 && IsPathChar(path[1]))
             {
-                var end = path.IndexOfAny(Delims);
+                var end = path.IndexOfAny(_delims);
                 if (end == -1)
                 {
                     end = path.Length;

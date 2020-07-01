@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -29,11 +30,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             yield return new DeclarativeType<AssertReply>(AssertReply.Kind);
             yield return new DeclarativeType<AssertReplyOneOf>(AssertReplyOneOf.Kind);
             yield return new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.Kind);
+            yield return new DeclarativeType<HttpRequestSequenceMock>(HttpRequestSequenceMock.Kind);
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield return new InterfaceConverter<TestAction>(resourceExplorer, sourceContext);
+            yield return new InterfaceConverter<HttpRequestMock>(resourceExplorer, sourceContext);
         }
     }
 }

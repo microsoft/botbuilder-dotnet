@@ -3,14 +3,13 @@
 
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Teams.Tests
 {
-    [TestClass]
     public class TeamsActivityExtensionsTests
     {
-        [TestMethod]
+        [Fact]
         public void TeamsGetTeamId()
         {
             // Arrange
@@ -20,10 +19,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var teamId = activity.TeamsGetTeamInfo().Id;
 
             // Assert
-            Assert.AreEqual("team123", teamId);
+            Assert.Equal("team123", teamId);
         }
 
-        [TestMethod]
+        [Fact]
         public void TeamsGetTeamIdTyped()
         {
             // Arrange
@@ -33,10 +32,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var teamId = activity.TeamsGetTeamInfo().Id;
 
             // Assert
-            Assert.AreEqual("team123", teamId);
+            Assert.Equal("team123", teamId);
         }
 
-        [TestMethod]
+        [Fact]
         public void TeamsNotifyUser()
         {
             // Arrange
@@ -46,10 +45,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             activity.TeamsNotifyUser();
 
             // Assert
-            Assert.AreEqual(true, ((TeamsChannelData)activity.ChannelData).Notification.Alert);
+            Assert.Equal(true, ((TeamsChannelData)activity.ChannelData).Notification.Alert);
         }
 
-        [TestMethod]
+        [Fact]
         public void TeamsNotifyUserExistingNotification()
         {
             // Arrange
@@ -59,8 +58,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             activity.TeamsNotifyUser();
 
             // Assert
-            Assert.AreEqual(true, ((TeamsChannelData)activity.ChannelData).Notification.Alert);
-            Assert.AreEqual("team123", ((TeamsChannelData)activity.ChannelData).Team.Id);
+            Assert.Equal(true, ((TeamsChannelData)activity.ChannelData).Notification.Alert);
+            Assert.Equal("team123", ((TeamsChannelData)activity.ChannelData).Team.Id);
         }
     }
 }

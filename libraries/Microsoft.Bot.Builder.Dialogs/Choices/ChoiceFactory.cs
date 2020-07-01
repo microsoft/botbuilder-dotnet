@@ -11,7 +11,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
     /// <summary>
     /// Assists with formatting a message activity that contains a list of choices.
     /// </summary>
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class ChoiceFactory
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
         /// Creates a message activity that includes a list of choices formatted based on the capabilities of a given channel.
@@ -29,9 +31,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// list; otherwise, a numbered list.</para></remarks>
         public static IMessageActivity ForChannel(string channelId, IList<Choice> list, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
-            channelId = channelId ?? string.Empty;
-
-            list = list ?? new List<Choice>();
+            channelId ??= string.Empty;
+            list ??= new List<Choice>();
 
             // Find maximum title length
             var maxTitleLength = 0;
@@ -57,22 +58,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 // support them (e.g. Teams, Cortana) we should use a HeroCard with CardActions
                 return HeroCard(list, text, speak);
             }
-            else if (!longTitles && supportsSuggestedActions)
+
+            if (!longTitles && supportsSuggestedActions)
             {
                 // We always prefer showing choices using suggested actions. If the titles are too long, however,
                 // we'll have to show them as a text list.
                 return SuggestedAction(list, text, speak);
             }
-            else if (!longTitles && list.Count <= 3)
+
+            if (!longTitles && list.Count <= 3)
             {
                 // If the titles are short and there are 3 or less choices we'll use an inline list.
                 return Inline(list, text, speak, options);
             }
-            else
-            {
-                // Show a numbered list.
-                return List(list, text, speak, options);
-            }
+
+            // Show a numbered list.
+            return List(list, text, speak, options);
         }
 
         /// <summary>
@@ -85,8 +86,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <returns>The created message activity.</returns>
         public static Activity Inline(IList<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
-            choices = choices ?? new List<Choice>();
-            options = options ?? new ChoiceFactoryOptions();
+            choices ??= new List<Choice>();
+            options ??= new ChoiceFactoryOptions();
 
             var opt = new ChoiceFactoryOptions
             {
@@ -115,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 }
 
                 txtBuilder.Append(title);
-                if (index == (choices.Count - 2))
+                if (index == choices.Count - 2)
                 {
                     connector = (index == 0 ? opt.InlineOr : opt.InlineOrMore) ?? string.Empty;
                 }
@@ -144,8 +145,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         public static Activity List(IList<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
-            choices = choices ?? new List<Choice>();
-            options = options ?? new ChoiceFactoryOptions();
+            choices ??= new List<Choice>();
+            options ??= new ChoiceFactoryOptions();
 
             var includeNumbers = options.IncludeNumbers ?? true;
 
@@ -158,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             {
                 var choice = choices[index];
 
-                var title = choice.Action != null && choice.Action.Title != null ? choice.Action.Title : choice.Value;
+                var title = choice.Action?.Title ?? choice.Value;
 
                 txtBuilder.Append(connector);
                 if (includeNumbers)
@@ -204,33 +205,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         public static IList<Choice> ToChoices(IList<string> choices)
         {
-            return (choices == null)
-                    ?
-                new List<Choice>()
-                    :
-                choices.Select(choice => new Choice { Value = choice }).ToList();
+            return choices == null
+                ? new List<Choice>()
+                : choices.Select(choice => new Choice { Value = choice }).ToList();
         }
 
         private static List<CardAction> ExtractActions(IList<Choice> choices)
         {
-            choices = choices ?? new List<Choice>();
+            choices ??= new List<Choice>();
 
             // Map choices to actions
-            return choices.Select((choice) =>
+            return choices.Select(choice =>
             {
                 if (choice.Action != null)
                 {
                     return choice.Action;
                 }
-                else
+
+                return new CardAction
                 {
-                    return new CardAction
-                    {
-                        Type = ActionTypes.ImBack,
-                        Value = choice.Value,
-                        Title = choice.Value,
-                    };
-                }
+                    Type = ActionTypes.ImBack,
+                    Value = choice.Value,
+                    Title = choice.Value,
+                };
             }).ToList();
         }
     }
