@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             {
                 throw new ArgumentException($"{nameof(Date)} is invalid");
             }
-            
+
             date = date.ToUniversalTime();
             if (date <= DateTime.UtcNow)
             {
@@ -132,15 +132,20 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             var activity = dc.Context.Activity.GetConversationReference().GetContinuationActivity();
             activity.Value = value;
 
+            if (dc.Context.TurnState.ContainsKey("ARRAffinity"))
+            {
+                activity.Properties["ARRAffinity"] = dc.Context.TurnState.Get<string>("ARRAffinity");
+            }
+
             var message = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, jsonSettings)));
 
             QueueClient queueClient = new QueueClient(connectionString, queueName);
-            
+
             await queueClient.CreateIfNotExistsAsync().ConfigureAwait(false);
 
             // send ResumeConversation event, it will get posted back to us, giving us ability to process it and do the right thing.
             var reciept = await queueClient.SendMessageAsync(message, visibility, ttl, cancellationToken).ConfigureAwait(false);
-            
+
             // return the receipt as the result.
             return await dc.EndDialogAsync(result: reciept.Value, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
