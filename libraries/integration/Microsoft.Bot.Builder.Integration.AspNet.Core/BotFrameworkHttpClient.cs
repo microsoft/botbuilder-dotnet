@@ -29,6 +29,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// </remarks>
     public class BotFrameworkHttpClient : BotFrameworkClient
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpClient"/> class.
+        /// </summary>
+        /// <param name="httpClient">A <see cref="HttpClient"/>.</param>
+        /// <param name="credentialProvider">An instance of <see cref="ICredentialProvider"/>.</param>
+        /// <param name="channelProvider">An instance of <see cref="IChannelProvider"/>.</param>
+        /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
         public BotFrameworkHttpClient(
             HttpClient httpClient,
             ICredentialProvider credentialProvider,
@@ -42,16 +49,43 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             ConnectorClient.AddDefaultRequestHeaders(HttpClient);
         }
 
-        // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
-        // AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill)
+        /// <summary>
+        /// Gets the Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired).
+        /// AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill).
+        /// </summary>
+        /// <value>ConcurrentDictionary of <see cref="AppCredentials"/>.</value>
         protected static ConcurrentDictionary<string, AppCredentials> AppCredentialMapCache { get; } = new ConcurrentDictionary<string, AppCredentials>();
 
+        /// <summary>
+        /// Gets the channel provider for this adapter.
+        /// </summary>
+        /// <value>
+        /// The channel provider for this adapter.
+        /// </value>
         protected IChannelProvider ChannelProvider { get; }
 
+        /// <summary>
+        /// Gets the credential provider for this adapter.
+        /// </summary>
+        /// <value>
+        /// The credential provider for this adapter.
+        /// </value>
         protected ICredentialProvider CredentialProvider { get; }
 
+        /// <summary>
+        /// Gets the HttpClient for this adapter.
+        /// </summary>
+        /// <value>
+        /// The HttpClient for this adapter.
+        /// </value>
         protected HttpClient HttpClient { get; }
 
+        /// <summary>
+        /// Gets the logger for this adapter.
+        /// </summary>
+        /// <value>
+        /// The logger for this adapter.
+        /// </value>
         protected ILogger Logger { get; }
 
         /// <summary>

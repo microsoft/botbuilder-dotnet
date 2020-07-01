@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void GetDecryptedMessageAsyncShouldSucceed()
         {
-            var testOptions = new WebexAdapterOptions("Test", new Uri("http://contoso.com"), "Test");
+            var testOptions = new WebexClientWrapperOptions("Test", new Uri("http://contoso.com"), "Test");
             var payload = JsonConvert.DeserializeObject<WebhookEventData>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Payload.json")));
 
             var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Message.json")));
