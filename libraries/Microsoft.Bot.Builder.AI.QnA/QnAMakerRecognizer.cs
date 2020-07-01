@@ -1,5 +1,5 @@
-﻿// Licensed under the MIT License.
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -156,15 +156,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
 
         /// <summary>
-        /// Gets or sets a value indicating whether to enable PreciseAnswer generation. 
-        /// </summary>
-        /// <value>
-        /// Choice whether to generate precise answer or not.
-        /// </value>
-        [JsonProperty("enablePreciseAnswer")]
-        public BoolExpression EnablePreciseAnswer { get; set; } = false;
-
-        /// <summary>
         /// Return results of the call to QnA Maker.
         /// </summary>
         /// <param name="dialogContext">Context object containing information for a single turn of conversation with a user.</param>
@@ -176,7 +167,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             // Identify matched intents
-            var recognizerResult = new RecognizerResult()
+            var recognizerResult = new RecognizerResult
             {
                 Text = activity.Text,
                 Intents = new Dictionary<string, IntentScore>(),
@@ -188,14 +179,18 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 return recognizerResult;
             }
 
-            List<Metadata> filters = new List<Metadata>();
+            var filters = new List<Metadata>();
             if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
             {
-                filters.Add(new Metadata() { Name = "dialogName", Value = dialogContext.ActiveDialog.Id });
+                filters.Add(new Metadata
+                {
+                    Name = "dialogName",
+                    Value = dialogContext.ActiveDialog.Id
+                });
             }
 
             // if there is $qna.metadata set add to filters
-            var externalMetadata = this.Metadata?.GetValue(dialogContext.State);
+            var externalMetadata = Metadata?.GetValue(dialogContext.State);
             if (externalMetadata != null)
             {
                 filters.AddRange(externalMetadata);
@@ -207,14 +202,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 dialogContext.Context,
                 new QnAMakerOptions
                 {
-                    Context = this.Context?.GetValue(dialogContext.State),
-                    ScoreThreshold = this.Threshold.GetValue(dialogContext.State),
+                    Context = Context?.GetValue(dialogContext.State),
+                    ScoreThreshold = Threshold.GetValue(dialogContext.State),
                     StrictFilters = filters.ToArray(),
-                    Top = this.Top.GetValue(dialogContext.State),
-                    QnAId = this.QnAId.GetValue(dialogContext.State),
-                    RankerType = this.RankerType.GetValue(dialogContext.State),
-                    IsTest = this.IsTest,
-                    EnablePreciseAnswer = this.EnablePreciseAnswer.GetValue(dialogContext.State)
+                    Top = Top.GetValue(dialogContext.State),
+                    QnAId = QnAId.GetValue(dialogContext.State),
+                    RankerType = RankerType.GetValue(dialogContext.State),
+                    IsTest = IsTest
                 },
                 null).ConfigureAwait(false);
 
@@ -223,7 +217,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 QueryResult topAnswer = null;
                 foreach (var answer in answers)
                 {
-                    if ((topAnswer == null) || (answer.Score > topAnswer.Score))
+                    if (topAnswer == null || answer.Score > topAnswer.Score)
                     {
                         topAnswer = answer;
                     }
@@ -231,23 +225,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
 
                 if (topAnswer.Answer.Trim().ToLower().StartsWith(IntentPrefix))
                 {
-                    recognizerResult.Intents.Add(topAnswer.Answer.Trim().Substring(IntentPrefix.Length).Trim(), new IntentScore() { Score = topAnswer.Score });
+                    recognizerResult.Intents.Add(topAnswer.Answer.Trim().Substring(IntentPrefix.Length).Trim(), new IntentScore { Score = topAnswer.Score });
                 }
                 else
                 {
-                    recognizerResult.Intents.Add(QnAMatchIntent, new IntentScore() { Score = topAnswer.Score });
+                    recognizerResult.Intents.Add(QnAMatchIntent, new IntentScore { Score = topAnswer.Score });
                 }
 
                 var answerArray = new JArray();
                 answerArray.Add(topAnswer.Answer);
                 ObjectPath.SetPathValue(recognizerResult, "entities.answer", answerArray);
-
-                if (!string.IsNullOrEmpty(topAnswer.AnswerSpan?.Text))
-                {
-                    var answerSpanArray = new JArray();
-                    answerSpanArray.Add(topAnswer.AnswerSpan.Text);
-                    ObjectPath.SetPathValue(recognizerResult, "entities.answerspan", answerSpanArray);
-                }
 
                 var instance = new JArray();
                 instance.Add(JObject.FromObject(topAnswer));
@@ -257,10 +244,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             }
             else
             {
-                recognizerResult.Intents.Add("None", new IntentScore() { Score = 1.0f });
+                recognizerResult.Intents.Add("None", new IntentScore { Score = 1.0f });
             }
 
-            this.TrackRecognizerResult(dialogContext, "QnAMakerRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, "QnAMakerRecognizerResult", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
 
             return recognizerResult;
         }
@@ -279,19 +266,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 return Task.FromResult(qnaClient);
             }
 
-            var (epKey, error) = this.EndpointKey.TryGetValue(dc.State);
-            var (hn, error2) = this.HostName.TryGetValue(dc.State);
-            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dc.State);
-            var (logPersonalInfo, error4) = this.LogPersonalInformation.TryGetValue(dc.State);
+            var (epKey, error) = EndpointKey.TryGetValue(dc.State);
+            var (hn, error2) = HostName.TryGetValue(dc.State);
+            var (kbId, error3) = KnowledgeBaseId.TryGetValue(dc.State);
+            var (logPersonalInfo, error4) = LogPersonalInformation.TryGetValue(dc.State);
 
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = (string)epKey ?? throw new ArgumentNullException(nameof(EndpointKey), error),
-                Host = (string)hn ?? throw new ArgumentNullException(nameof(HostName), error2),
-                KnowledgeBaseId = (string)kbId ?? throw new ArgumentNullException(nameof(KnowledgeBaseId), error3)
+                EndpointKey = epKey ?? throw new ArgumentNullException(nameof(EndpointKey), error),
+                Host = hn ?? throw new ArgumentNullException(nameof(HostName), error2),
+                KnowledgeBaseId = kbId ?? throw new ArgumentNullException(nameof(KnowledgeBaseId), error3)
             };
 
-            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), this.HttpClient, this.TelemetryClient, (bool)logPersonalInfo));
+            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), HttpClient, TelemetryClient, logPersonalInfo));
         }
     }
 }

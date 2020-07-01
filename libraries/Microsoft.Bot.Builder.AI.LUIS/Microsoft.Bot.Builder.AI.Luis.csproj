@@ -23,7 +23,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-	<ItemGroup>
+  <ItemGroup>
     <Content Include="**/*.dialog" />
     <Content Include="**/*.lg" />
     <Content Include="**/*.lu" />

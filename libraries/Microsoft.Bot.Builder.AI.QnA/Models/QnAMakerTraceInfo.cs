@@ -113,15 +113,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [Obsolete("This property is no longer used and will be ignored")]
         [JsonIgnore]
         public Metadata[] MetadataBoost { get; set; }
-
-        /// <summary>
-        /// Gets or sets AnswerSpanRequest.
-        /// Users can request PreciseAnswer from QnAMaker using this configuration.
-        /// </summary>
-        /// <value>
-        /// AnswerSpanRequest for requesting PreciseAnswer.
-        /// </value>
-        [JsonProperty("answerSpanRequest")]
-        public AnswerSpanRequest AnswerSpanRequest { get; set; }
     }
 }
