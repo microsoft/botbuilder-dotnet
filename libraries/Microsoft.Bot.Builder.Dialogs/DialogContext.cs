@@ -693,7 +693,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     foreach (var item in currentDc.Stack)
                     {
                         // filter out ActionScope items because they are internal bookkeeping.
-                        if (!item.Id.StartsWith("ActionScope["))
+                        if (!item.Id.StartsWith("ActionScope[", StringComparison.InvariantCulture))
                         {
                             stack.Add(item.Id);
                         }
