@@ -33,19 +33,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             await TestUtils.RunTestScript(resourceExplorer, configuration: config);
         }
-
-        [TestMethod]
-        public async Task Generator_unittests()
-        {
-            var config = new ConfigurationBuilder()
-                .UseMockLuisSettings(unitTestsDirectory, "TestBot")
-                .Build();
-
-            var resourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(GeneratorTests)), monitorChanges: false)
-                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
-
-            await TestUtils.RunTestScript(resourceExplorer, configuration: config);
-        }
     }
 }

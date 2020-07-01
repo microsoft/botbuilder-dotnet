@@ -1,9 +1,0 @@
-[unittests-library.lg](unittests-library.lg)
-[unittests-library-Missing.lg](unittests-library-Missing.lg)
-
-# AskGeographyv2
-- ${askString('Geographyv2')}
-
-
-# Geographyv2Name
-- geographyv2

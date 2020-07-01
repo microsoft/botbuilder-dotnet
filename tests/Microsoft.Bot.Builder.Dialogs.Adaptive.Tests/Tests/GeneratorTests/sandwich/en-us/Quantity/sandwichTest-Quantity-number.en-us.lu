@@ -1,0 +1,262 @@
+
+@ prebuilt number hasRole Quantity
+
+> Define how Quantity is recognized as a property name
+@ list PROPERTYName
+    - Quantity:
+		- quantity
+
+
+> Define operations for property
+@ml AddToQuantity = 
+    - @number number
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromQuantity = 
+    - @number number
+    - @PROPERTYName PROPERTYName
+@ml ClearQuantity =
+    - @PROPERTYName PROPERTYName
+@ml ShowQuantity =
+    - @PROPERTYName PROPERTYName
+# sandwich
+> Add only
+- {@AddToQuantity=add {@number=1}}
+- {@AddToQuantity=add {@number=32.4}}
+- {@AddToQuantity=with {@number=1000}}
+- {@AddToQuantity=with {@number=99}}
+- {@AddToQuantity=with {@number=32.4}}
+- {@AddToQuantity=add {@number=215} and {@number=99}}
+- {@AddToQuantity=add {@number=32.4} and {@number=99}}
+- {@AddToQuantity=add {@number=99} and {@number=1}}
+- {@AddToQuantity=with {@number=1000} and {@number=99}}
+- {@AddToQuantity=with {@number=1} and {@number=32.4}}
+- {@AddToQuantity=with {@number=215} and {@number=215}}
+- {@AddToQuantity=add {@number=215}, {@number=99} and {@number=1}}
+- {@AddToQuantity=add {@number=215}, {@number=99} and {@number=1000}}
+- {@AddToQuantity=add {@number=215}, {@number=1} and {@number=1}}
+- {@AddToQuantity=with {@number=99}, {@number=99} and {@number=99}}
+- {@AddToQuantity=with {@number=32.4}, {@number=99} and {@number=1}}
+- {@AddToQuantity=with {@number=1000}, {@number=215} and {@number=215}}
+- {@AddToQuantity={@PROPERTYName=quantity} is {@number=1}}
+- {@AddToQuantity={@PROPERTYName=quantity} is {@number=1000}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=99} and {@number=1}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=1} and {@number=1000}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=1} and {@number=99}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=32.4}, {@number=1} and {@number=32.4}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=99}, {@number=32.4} and {@number=99}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=32.4}, {@number=32.4} and {@number=215}}
+- {@AddToQuantity=add {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=32.4} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1000} {@PROPERTYName=quantity}}
+- {@AddToQuantity=with {@number=32.4} {@PROPERTYName=quantity}}
+- {@AddToQuantity=with {@number=1000} {@PROPERTYName=quantity}}
+- {@AddToQuantity=with {@number=99} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1000} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1} and {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1000} and {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=with {@number=99} and {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=with {@number=32.4} and {@number=99} {@PROPERTYName=quantity}}
+- {@AddToQuantity=with {@number=215} and {@number=1000} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=215}, {@number=99} and {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=32.4}, {@number=99} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=32.4}, {@number=99} and {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=with {@number=1000}, {@number=1000} and {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=with {@number=32.4}, {@number=1} and {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=with {@number=32.4}, {@number=32.4} and {@number=215} {@PROPERTYName=quantity}}
+- {@AddToQuantity={@PROPERTYName=quantity} is {@number=99}}
+- {@AddToQuantity={@PROPERTYName=quantity} is {@number=32.4}}
+- {@AddToQuantity={@PROPERTYName=quantity} is {@number=215}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=215} and {@number=99}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=99} and {@number=215}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=1000} and {@number=1000}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=1}, {@number=1000} and {@number=32.4}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=1}, {@number=32.4} and {@number=1}}
+- {@AddToQuantity={@PROPERTYName=quantity} are {@number=99}, {@number=99} and {@number=32.4}}
+> Remove only
+- {@RemoveFromQuantity=remove {@number=1000}}
+- {@RemoveFromQuantity=remove {@number=32.4}}
+- {@RemoveFromQuantity=remove {@number=215}}
+- {@RemoveFromQuantity=remove {@number=99} and {@number=215}}
+- {@RemoveFromQuantity=remove {@number=1} and {@number=99}}
+- {@RemoveFromQuantity=remove {@number=215} and {@number=215}}
+- {@RemoveFromQuantity=remove {@number=215}, {@number=215} and {@number=99}}
+- {@RemoveFromQuantity=remove {@number=32.4}, {@number=32.4} and {@number=1}}
+- {@RemoveFromQuantity=remove {@number=1}, {@number=1} and {@number=99}}
+- {@RemoveFromQuantity=delete {@number=32.4}}
+- {@RemoveFromQuantity=delete {@number=1000}}
+- {@RemoveFromQuantity=delete {@number=1000} and {@number=1}}
+- {@RemoveFromQuantity=delete {@number=1000} and {@number=1000}}
+- {@RemoveFromQuantity=delete {@number=1} and {@number=215}}
+- {@RemoveFromQuantity=delete {@number=99}, {@number=99} and {@number=1}}
+- {@RemoveFromQuantity=delete {@number=1}, {@number=1000} and {@number=1}}
+- {@RemoveFromQuantity=delete {@number=215}, {@number=1} and {@number=1000}}
+- {@RemoveFromQuantity=without {@number=99}}
+- {@RemoveFromQuantity=without {@number=32.4}}
+- {@RemoveFromQuantity=without {@number=215} and {@number=1}}
+- {@RemoveFromQuantity=without {@number=99} and {@number=99}}
+- {@RemoveFromQuantity=without {@number=215} and {@number=1000}}
+- {@RemoveFromQuantity=without {@number=1000}, {@number=32.4} and {@number=215}}
+- {@RemoveFromQuantity=without {@number=32.4}, {@number=99} and {@number=1}}
+- {@RemoveFromQuantity=without {@number=1000}, {@number=1} and {@number=215}}
+- {@RemoveFromQuantity=with no {@number=1000}}
+- {@RemoveFromQuantity=with no {@number=99}}
+- {@RemoveFromQuantity=with no {@number=215}}
+- {@RemoveFromQuantity=with no {@number=32.4} and {@number=1}}
+- {@RemoveFromQuantity=with no {@number=1000} and {@number=1}}
+- {@RemoveFromQuantity=with no {@number=1} and {@number=32.4}}
+- {@RemoveFromQuantity=with no {@number=99}, {@number=1000} and {@number=215}}
+- {@RemoveFromQuantity=with no {@number=32.4}, {@number=32.4} and {@number=1}}
+- {@RemoveFromQuantity=with no {@number=1000}, {@number=1000} and {@number=1}}
+- {@RemoveFromQuantity=remove {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=99} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=1} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=1} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=215} and {@number=215} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=32.4} and {@number=99} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=1}, {@number=215} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=215}, {@number=215} and {@number=215} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=32.4}, {@number=99} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=delete {@number=1000} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=delete {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=delete {@number=215} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=delete {@number=1000} and {@number=215} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=delete {@number=1} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=delete {@number=1} and {@number=1} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=delete {@number=1000}, {@number=1} and {@number=1} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=delete {@number=32.4}, {@number=1000} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=delete {@number=1}, {@number=1000} and {@number=1000} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=without {@number=32.4}}
+- {@RemoveFromQuantity=without {@number=1000}}
+- {@RemoveFromQuantity=without {@number=99}}
+- {@RemoveFromQuantity=without {@number=215} and {@number=1000} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=without {@number=99} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=without {@number=32.4} and {@number=1000} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=without {@number=32.4}, {@number=32.4} and {@number=215} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=without {@number=1}, {@number=215} and {@number=215} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=without {@number=99}, {@number=32.4} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=with no {@number=1000} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=with no {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=with no {@number=215} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=with no {@number=32.4} and {@number=1000} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=with no {@number=99} and {@number=1} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=with no {@number=99} and {@number=99} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=with no {@number=1}, {@number=1000} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=with no {@number=1}, {@number=215} and {@number=1} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=with no {@number=32.4}, {@number=99} and {@number=32.4} {@PROPERTYName=quantity}}
+> Clear only
+- {@ClearQuantity=clear {@PROPERTYName=quantity}}
+- {@ClearQuantity=remove {@PROPERTYName=quantity}}
+- {@ClearQuantity=empty {@PROPERTYName=quantity}}
+- {@ClearQuantity=please clear {@PROPERTYName=quantity}}
+- {@ClearQuantity=please remove {@PROPERTYName=quantity}}
+- {@ClearQuantity=please empty {@PROPERTYName=quantity}}
+- {@ClearQuantity=can you clear {@PROPERTYName=quantity}}
+- {@ClearQuantity=can you remove {@PROPERTYName=quantity}}
+- {@ClearQuantity=can you empty {@PROPERTYName=quantity}}
+> Show only
+- {@ShowQuantity=value of {@PROPERTYName=quantity}}
+- {@ShowQuantity=value for {@PROPERTYName=quantity}}
+- {@ShowQuantity=selection of {@PROPERTYName=quantity}}
+- {@ShowQuantity=selection for {@PROPERTYName=quantity}}
+- {@ShowQuantity=display {@PROPERTYName=quantity}}
+- {@ShowQuantity=show {@PROPERTYName=quantity}}
+- {@ShowQuantity=value of {@PROPERTYName=quantity}}
+- {@ShowQuantity=value for {@PROPERTYName=quantity}}
+- {@ShowQuantity={@PROPERTYName=quantity} value}
+- {@ShowQuantity={@PROPERTYName=quantity} values}
+- {@ShowQuantity={@PROPERTYName=quantity} selection}
+> Combinations
+- {@AddToQuantity=add {@number=215}} {@RemoveFromQuantity=and remove {@number=1000}}
+- {@AddToQuantity=add {@number=99}} {@RemoveFromQuantity=and remove {@number=99}}
+- {@AddToQuantity=add {@number=215}} {@RemoveFromQuantity=and remove {@number=215}}
+- {@AddToQuantity=add {@number=1000}} {@RemoveFromQuantity=remove {@number=1}}
+- {@AddToQuantity=add {@number=99}} {@RemoveFromQuantity=remove {@number=32.4}}
+- {@AddToQuantity=add {@number=99}} {@RemoveFromQuantity=remove {@number=99}}
+- {@AddToQuantity=add {@number=99}}, {@RemoveFromQuantity=remove {@number=99}}
+- {@AddToQuantity=add {@number=215}}, {@RemoveFromQuantity=remove {@number=1000}}
+- {@AddToQuantity=add {@number=1}}, {@RemoveFromQuantity=remove {@number=32.4}}
+- {@AddToQuantity=add {@number=32.4} and {@number=215}} {@RemoveFromQuantity=and remove {@number=1}}
+- {@AddToQuantity=add {@number=1000} and {@number=99}} {@RemoveFromQuantity=and remove {@number=32.4}}
+- {@AddToQuantity=add {@number=1000} and {@number=1000}} {@RemoveFromQuantity=and remove {@number=32.4}}
+- {@AddToQuantity=add {@number=215}, {@number=32.4} and {@number=99}} {@RemoveFromQuantity=and remove {@number=215} and {@number=215}}
+- {@AddToQuantity=add {@number=1000}, {@number=99} and {@number=99}} {@RemoveFromQuantity=and remove {@number=32.4} and {@number=1000}}
+- {@AddToQuantity=add {@number=215}, {@number=99} and {@number=215}} {@RemoveFromQuantity=and remove {@number=215} and {@number=32.4}}
+- {@AddToQuantity=add {@number=1}, {@number=1} and {@number=215}} {@RemoveFromQuantity=remove {@number=215} and {@number=1}}
+- {@AddToQuantity=add {@number=1000}, {@number=1} and {@number=32.4}} {@RemoveFromQuantity=remove {@number=32.4} and {@number=99}}
+- {@AddToQuantity=add {@number=1}, {@number=99} and {@number=32.4}} {@RemoveFromQuantity=remove {@number=99} and {@number=99}}
+- {@AddToQuantity=add {@number=99}}{@RemoveFromQuantity=, remove {@number=215}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=215}}{@RemoveFromQuantity=, remove {@number=1}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=215}}{@RemoveFromQuantity=, remove {@number=1000}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=215}} {@AddToQuantity=and add {@number=1}}
+- {@RemoveFromQuantity=remove {@number=99}} {@AddToQuantity=and add {@number=215}}
+- {@RemoveFromQuantity=remove {@number=32.4}} {@AddToQuantity=and add {@number=215}}
+- {@RemoveFromQuantity=remove {@number=32.4} and {@number=1000}} {@AddToQuantity=and add {@number=1}}
+- {@RemoveFromQuantity=remove {@number=215} and {@number=1000}} {@AddToQuantity=and add {@number=99}}
+- {@RemoveFromQuantity=remove {@number=1} and {@number=1000}} {@AddToQuantity=and add {@number=215}}
+- {@RemoveFromQuantity=remove {@number=32.4}, {@number=1000} and {@number=32.4}} {@AddToQuantity=and add {@number=1} and {@number=1000}}
+- {@RemoveFromQuantity=remove {@number=1000}, {@number=215} and {@number=215}} {@AddToQuantity=and add {@number=99} and {@number=215}}
+- {@RemoveFromQuantity=remove {@number=32.4}, {@number=215} and {@number=99}} {@AddToQuantity=and add {@number=99} and {@number=1000}}
+- {@RemoveFromQuantity=remove {@number=1000}}{@AddToQuantity=, add {@number=99}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=1000}}{@AddToQuantity=, add {@number=1000}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=215}}{@AddToQuantity=, add {@number=1000}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1}} {@AddToQuantity=and add {@number=1}}
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=215}} {@AddToQuantity=and add {@number=215}}
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=215}} {@AddToQuantity=and add {@number=1000}}
+- {@ShowQuantity=show {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1}} {@ShowQuantity=and display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=32.4}} {@AddToQuantity=and add {@number=1000}}
+- {@ShowQuantity=show {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1000}} {@ShowQuantity=and display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1}} {@AddToQuantity=and add {@number=32.4}}
+- {@ShowQuantity=show {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=215}} {@ShowQuantity=and display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=32.4}} {@AddToQuantity=and add {@number=32.4}}
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=99}} {@AddToQuantity=add {@number=215}} 
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=215}} {@AddToQuantity=add {@number=1}} 
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1}} {@AddToQuantity=add {@number=1}} 
+- {@AddToQuantity=add {@number=215} {@PROPERTYName=quantity}} {@RemoveFromQuantity=and remove {@number=215} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=99} {@PROPERTYName=quantity}} {@RemoveFromQuantity=and remove {@number=99} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1000} {@PROPERTYName=quantity}} {@RemoveFromQuantity=and remove {@number=32.4} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=32.4} {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=99} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=215} {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1} {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1000} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1000} {@PROPERTYName=quantity}}, {@RemoveFromQuantity=remove {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=215} {@PROPERTYName=quantity}}, {@RemoveFromQuantity=remove {@number=32.4} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1} {@PROPERTYName=quantity}}, {@RemoveFromQuantity=remove {@number=215} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=32.4} and {@number=1} {@PROPERTYName=quantity}} {@RemoveFromQuantity=and remove {@number=1000} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1} and {@number=99} {@PROPERTYName=quantity}} {@RemoveFromQuantity=and remove {@number=1000} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=99} and {@number=32.4} {@PROPERTYName=quantity}} {@RemoveFromQuantity=and remove {@number=99} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1}, {@number=1} and {@number=99} {@PROPERTYName=quantity}} {@RemoveFromQuantity=and remove {@number=1} and {@number=215} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1}, {@number=1000} and {@number=32.4} {@PROPERTYName=quantity}} {@RemoveFromQuantity=and remove {@number=1} and {@number=1000} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1000}, {@number=32.4} and {@number=32.4} {@PROPERTYName=quantity}} {@RemoveFromQuantity=and remove {@number=1} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=215}, {@number=99} and {@number=99} {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=32.4} and {@number=32.4} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1}, {@number=32.4} and {@number=99} {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1000} and {@number=1} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1000}, {@number=32.4} and {@number=32.4} {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1000} and {@number=215} {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=1} {@PROPERTYName=quantity}}{@RemoveFromQuantity=, remove {@number=1} {@PROPERTYName=quantity}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=32.4} {@PROPERTYName=quantity}}{@RemoveFromQuantity=, remove {@number=32.4} {@PROPERTYName=quantity}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@AddToQuantity=add {@number=99} {@PROPERTYName=quantity}}{@RemoveFromQuantity=, remove {@number=99} {@PROPERTYName=quantity}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=99} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=99} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=1} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=99} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=32.4} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=32.4} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=1} and {@number=1000} {@PROPERTYName=quantity}} {@AddToQuantity=and add **MISSING**}
+- {@RemoveFromQuantity=remove {@number=99} and {@number=32.4} {@PROPERTYName=quantity}} {@AddToQuantity=and add **MISSING**}
+- {@RemoveFromQuantity=remove {@number=32.4} and {@number=1} {@PROPERTYName=quantity}} {@AddToQuantity=and add **MISSING**}
+- {@RemoveFromQuantity=remove {@number=215}, {@number=215} and {@number=1} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=1} and {@number=99} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=1000}, {@number=32.4} and {@number=1} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=215} and {@number=99} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=1000}, {@number=32.4} and {@number=1} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=1000} and {@number=99} {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=215} {@PROPERTYName=quantity}}{@AddToQuantity=, add {@number=215} {@PROPERTYName=quantity}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=215} {@PROPERTYName=quantity}}{@AddToQuantity=, add {@number=1} {@PROPERTYName=quantity}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@RemoveFromQuantity=remove {@number=1000} {@PROPERTYName=quantity}}{@AddToQuantity=, add {@number=215} {@PROPERTYName=quantity}} {@ShowQuantity=and show {@PROPERTYName=quantity}}
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=99} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=215} {@PROPERTYName=quantity}}
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1000} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=1000} {@PROPERTYName=quantity}}
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=32.4} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=215} {@PROPERTYName=quantity}}
+- {@ShowQuantity=show {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=99} {@PROPERTYName=quantity}} {@ShowQuantity=and display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=99} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=215} {@PROPERTYName=quantity}}
+- {@ShowQuantity=show {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=99} {@PROPERTYName=quantity}} {@ShowQuantity=and display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1000} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=32.4} {@PROPERTYName=quantity}}
+- {@ShowQuantity=show {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1000} {@PROPERTYName=quantity}} {@ShowQuantity=and display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=99} {@PROPERTYName=quantity}} {@AddToQuantity=and add {@number=99} {@PROPERTYName=quantity}}
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1} {@PROPERTYName=quantity}} {@AddToQuantity=add {@number=99} {@PROPERTYName=quantity}} 
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=215} {@PROPERTYName=quantity}} {@AddToQuantity=add {@number=1000} {@PROPERTYName=quantity}} 
+- {@ShowQuantity=display {@PROPERTYName=quantity}} {@RemoveFromQuantity=remove {@number=1} {@PROPERTYName=quantity}} {@AddToQuantity=add {@number=1} {@PROPERTYName=quantity}} 
+- 1
+- 32.4
+- 99
+- 215
+- 1000
+
+- Quantity
+
+
+> Generator: 9a43c1e1a85e1ce68be0d095484eaf36

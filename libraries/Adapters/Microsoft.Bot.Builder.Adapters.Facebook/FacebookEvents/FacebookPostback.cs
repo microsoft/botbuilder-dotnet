@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 {
+    /// <summary>
+    /// Represents a Facebook Post Back.
+    /// </summary>
     public class FacebookPostBack
     {
         /// <summary>

@@ -168,6 +168,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var activity = turnContext.Activity;
                 var utterance = activity.Text;
+                if (string.IsNullOrEmpty(utterance))
+                {
+                    return Task.FromResult(result);
+                }
+
                 var opt = RecognizerOptions ?? new FindChoicesOptions();
                 opt.Locale = DetermineCulture(activity, opt);
                 var results = ChoiceRecognizers.RecognizeChoices(utterance, choices, opt);

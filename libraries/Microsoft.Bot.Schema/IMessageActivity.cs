@@ -76,7 +76,9 @@ namespace Microsoft.Bot.Schema
         /// <value>
         /// Attachments.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         IList<Attachment> Attachments { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets suggestedActions are used to express actions for interacting with a card like keyboards/quickReplies.

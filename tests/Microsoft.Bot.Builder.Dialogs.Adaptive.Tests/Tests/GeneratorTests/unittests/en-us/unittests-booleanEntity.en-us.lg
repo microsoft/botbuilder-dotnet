@@ -1,9 +1,0 @@
-
-# boolean(value)
-- SWITCH: ${value}
-- CASE: ${'true'}
-    - true  
-- CASE: ${'false'}
-    - false
-- DEFAULT:
-    - Unknown boolean value

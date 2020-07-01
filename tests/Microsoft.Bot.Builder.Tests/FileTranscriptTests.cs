@@ -3,17 +3,21 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class FileTranscriptTests : TranscriptBaseTests
     {
         public FileTranscriptTests()
             : base()
         {
             this.Store = new FileTranscriptLogger(Folder);
+            var folder = Path.Combine(Path.GetTempPath(), nameof(FileTranscriptTests));
+            if (Directory.Exists(folder))
+            {
+                Directory.Delete(folder, true);
+            }
         }
 
         public static string Folder
@@ -21,52 +25,43 @@ namespace Microsoft.Bot.Builder.Tests
             get { return Path.Combine(Path.GetTempPath(), nameof(FileTranscriptTests)); }
         }
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            if (Directory.Exists(Folder))
-            {
-                Directory.Delete(Folder, true);
-            }
-        }
-
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_BadArgs()
         {
             await BadArgs();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_LogActivity()
         {
             await LogActivity();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_LogMultipleActivities()
         {
             await LogMultipleActivities();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_GetConversationActivities()
         {
             await GetTranscriptActivities();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_GetConversationActivitiesStartDate()
         {
             await GetTranscriptActivitiesStartDate();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_ListConversations()
         {
             await ListTranscripts();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileTranscript_DeleteConversation()
         {
             await DeleteTranscript();

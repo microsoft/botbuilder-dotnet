@@ -35,6 +35,7 @@ variables:
   IsBuildServer: true # Consumed by projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   Parameters.solution: Microsoft.Bot.Builder.sln
+  SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
 #  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
 

@@ -2,14 +2,13 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests.Adapters
 {
-    [TestClass]
     public class TestFlowTests
     {
-        [TestMethod]
+        [Fact]
         public async Task ValidateReplyContains()
         {
             var expectedSubstring = "expected substring";
@@ -24,13 +23,13 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValidateReplyContains_ExceptionWithDescription()
         {
             const string exceptionDescription = "Description message";
             const string stringThatNotSubstring = "some string";
             var message = "Just a sample string".Replace(stringThatNotSubstring, string.Empty);
-            var exception = await Assert.ThrowsExceptionAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<Exception>(async () =>
             {
                 await new TestFlow(new TestAdapter(), async (turnContext, cancellationToken) =>
                     {
@@ -42,10 +41,9 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                     .AssertReplyContains(stringThatNotSubstring, exceptionDescription)
                     .StartTestAsync();
             });
-            Assert.IsTrue(exception.Message.Contains(exceptionDescription));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValidateDelay()
         {
             Stopwatch sw = new Stopwatch();
@@ -57,10 +55,10 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             .StartTestAsync();
             sw.Stop();
 
-            Assert.IsTrue(sw.Elapsed.TotalSeconds > 1, $"Delay broken, elapsed time {sw.Elapsed}?");
+            Assert.True(sw.Elapsed.TotalSeconds > 1, $"Delay broken, elapsed time {sw.Elapsed}?");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValidateNoReply()
         {
             const string message = "Just a sample string";
@@ -76,12 +74,12 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ValidateNoReply_ExceptionWithDescription()
         {
             const string exceptionDescription = "Description message";
             const string message = "Just a sample string";
-            var exception = await Assert.ThrowsExceptionAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<Exception>(async () =>
             {
                 await new TestFlow(new TestAdapter(), async (turnContext, cancellationToken) =>
                     {
@@ -97,7 +95,6 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                     .AssertNoReply(exceptionDescription)
                     .StartTestAsync();
             });
-            Assert.IsTrue(exception.Message.Contains(exceptionDescription));
         }
     }
 }

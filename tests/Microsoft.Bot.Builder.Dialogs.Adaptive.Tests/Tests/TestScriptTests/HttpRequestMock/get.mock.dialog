@@ -1,0 +1,23 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "GET",
+    "url": "http://127.0.0.1",
+    "responses": [
+        {
+            "content": "string response"
+        },
+        {
+            "content": {
+                "data": "object response"
+            }
+        },
+        {
+            "contentType": "ByteArray",
+            "content": "Ynl0ZSBhcnJheSByZXNwb25zZQ=="
+        },
+        {
+            "content": "repeated response"
+        }
+    ]
+}

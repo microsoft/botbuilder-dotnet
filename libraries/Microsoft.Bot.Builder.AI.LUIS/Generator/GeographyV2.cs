@@ -47,10 +47,29 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         public static class Types
         {
+            /// <summary>
+            /// Constant for LUIS geographic location type of POI.
+            /// </summary>
             public const string POI = "poi";
+
+            /// <summary>
+            /// Constant for LUIS geographic location type of City.
+            /// </summary>
             public const string City = "city";
+
+            /// <summary>
+            /// Constant for LUIS geographic location type Country or Region.
+            /// </summary>
             public const string CountryRegion = "countryRegion";
+
+            /// <summary>
+            /// Constant for LUIS geographic location type of Continent.
+            /// </summary>
             public const string Continent = "continent";
+
+            /// <summary>
+            /// Constant for LUIS geographic location type of State.
+            /// </summary>
             public const string State = "state";
         }
     }

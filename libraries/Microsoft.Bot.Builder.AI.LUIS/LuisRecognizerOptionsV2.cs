@@ -15,6 +15,9 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
+    /// <summary>
+    /// Options for <see cref="LuisRecognizerOptionsV2"/>.
+    /// </summary>
     public class LuisRecognizerOptionsV2 : LuisRecognizerOptions
     {
         /// <summary>
@@ -62,9 +65,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 recognizerResult = new RecognizerResult
                 {
-                    Text = utterance,
-                    Intents = new Dictionary<string, IntentScore>() { { string.Empty, new IntentScore() { Score = 1.0 } } },
-                    Entities = new JObject(),
+                    Text = utterance
                 };
             }
             else

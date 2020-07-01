@@ -5,13 +5,20 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 {
+    /// <summary>
+    /// Abstract base class for a bot message handler.
+    /// </summary>
     public abstract class BotMessageHandlerBase : HttpMessageHandler
     {
+        /// <summary>
+        /// A <see cref="JsonMediaTypeFormatter"/> defining the support media types for bot messages.
+        /// </summary>
         public static readonly MediaTypeFormatter[] BotMessageMediaTypeFormatters = new[]
         {
             new JsonMediaTypeFormatter
@@ -19,19 +26,29 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 SerializerSettings = MessageSerializerSettings.Create(),
                 SupportedMediaTypes =
                 {
-                    new System.Net.Http.Headers.MediaTypeHeaderValue("application/json") { CharSet = "utf-8" },
-                    new System.Net.Http.Headers.MediaTypeHeaderValue("text/json") { CharSet = "utf-8" },
+                    new MediaTypeHeaderValue("application/json") { CharSet = "utf-8" },
+                    new MediaTypeHeaderValue("text/json") { CharSet = "utf-8" },
                 },
             },
         };
 
         private readonly IAdapterIntegration _adapter;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotMessageHandlerBase"/> class.
+        /// </summary>
+        /// <param name="adapter">An instance of <see cref="IAdapterIntegration"/>.</param>
         public BotMessageHandlerBase(IAdapterIntegration adapter)
         {
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
         }
 
+        /// <summary>
+        /// Processes the incoming request using the adapter and returns a response.
+        /// </summary>
+        /// <param name="request">An instance of <see cref="HttpRequestMessage"/>.</param>
+        /// <param name="cancellationToken">An instance of <see cref="CancellationToken"/>.</param>
+        /// <returns>A <see cref="HttpResponseMessage"/>.</returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if (request.Method != HttpMethod.Post)
@@ -53,7 +70,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
             try
             {
-#pragma warning disable UseConfigureAwait // Use ConfigureAwait
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     _adapter,
@@ -69,37 +85,34 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                         }
                         catch (Exception exception)
                         {
-                            throw new Exception($"An exception occurred attempting to resolve an {typeof(IBot).Name} service via the dependency resolver. Please check the inner exception for more details.", exception);
+                            throw new Exception($"An exception occurred attempting to resolve an {nameof(IBot)} service via the dependency resolver. Please check the inner exception for more details.", exception);
                         }
 
                         if (bot == null)
                         {
-                            throw new InvalidOperationException($"Did not find an {typeof(IBot).Name} service via the dependency resolver. Please make sure you have registered your bot with your dependency injection container.");
+                            throw new InvalidOperationException($"Did not find an {nameof(IBot)} service via the dependency resolver. Please make sure you have registered your bot with your dependency injection container.");
                         }
 
-                        return bot.OnTurnAsync(context);
+                        return bot.OnTurnAsync(context, ct);
                     },
-                    cancellationToken);
-#pragma warning restore UseConfigureAwait // Use ConfigureAwait
+                    cancellationToken).ConfigureAwait(false);
 
                 if (invokeResponse == null)
                 {
                     return request.CreateResponse(HttpStatusCode.OK);
                 }
-                else
+
+                var response = request.CreateResponse((HttpStatusCode)invokeResponse.Status);
+
+                if (invokeResponse.Body != null)
                 {
-                    var response = request.CreateResponse((HttpStatusCode)invokeResponse.Status);
-
-                    if (invokeResponse.Body != null)
-                    {
-                        response.Content = new ObjectContent(
-                            invokeResponse.Body.GetType(),
-                            invokeResponse.Body,
-                            BotMessageMediaTypeFormatters[0]);
-                    }
-
-                    return response;
+                    response.Content = new ObjectContent(
+                        invokeResponse.Body.GetType(),
+                        invokeResponse.Body,
+                        BotMessageMediaTypeFormatters[0]);
                 }
+
+                return response;
             }
             catch (UnauthorizedAccessException e)
             {
@@ -111,6 +124,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
             }
         }
 
+        /// <summary>
+        /// Abstract method to process the incoming request using the instance of <see cref="IAdapterIntegration"/>
+        /// and to return an <see cref="InvokeResponse"/>.
+        /// </summary>
+        /// <param name="request">A <see cref="HttpRequestMessage"/>.</param>
+        /// <param name="adapter">An instance of <see cref="IAdapterIntegration"/>.</param>
+        /// <param name="botCallbackHandler">An instance of <see cref="BotCallbackHandler"/>.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
+        /// <returns>An <see cref="InvokeResponse"/> returned from the adapter.</returns>
         protected abstract Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequestMessage request, IAdapterIntegration adapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken);
     }
 }

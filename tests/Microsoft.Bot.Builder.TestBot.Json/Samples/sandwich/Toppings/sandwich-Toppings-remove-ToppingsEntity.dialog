@@ -1,0 +1,19 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnAssignEntity",
+	"operation": "RemoveFromToppings",
+	"entity": "ToppingsEntity",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${removeArrayPropertyMessage('Toppings', @ToppingsEntity)}"
+		},
+		{
+			"$kind": "Microsoft.EditArray",
+			"changeType": "remove",
+			"itemsProperty": "$Toppings",
+			"value": "=@ToppingsEntity"
+		}
+	],
+	"$Generator": "b43a6132c852cc1ba0f812e998ef491b"
+}
