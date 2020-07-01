@@ -13,8 +13,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     internal class TrainUtils
     {
-        private QnAMakerEndpoint _endpoint;
-        private readonly HttpClient httpClient;
+        private readonly HttpClient _httpClient;
+        private readonly QnAMakerEndpoint _endpoint;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TrainUtils"/> class.
@@ -23,8 +23,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="httpClient">Http client.</param>
         public TrainUtils(QnAMakerEndpoint endpoint, HttpClient httpClient)
         {
-            this._endpoint = endpoint;
-            this.httpClient = httpClient;
+            _endpoint = endpoint;
+            _httpClient = httpClient;
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             // Call train
-            await this.QueryTrainAsync(feedbackRecords).ConfigureAwait(false);
+            await QueryTrainAsync(feedbackRecords).ConfigureAwait(false);
         }
 
         private async Task QueryTrainAsync(FeedbackRecords feedbackRecords)
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/train";
             var jsonRequest = JsonConvert.SerializeObject(feedbackRecords, Formatting.None);
 
-            var httpRequestHelper = new HttpRequestUtils(httpClient);
+            var httpRequestHelper = new HttpRequestUtils(_httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
         }
     }
