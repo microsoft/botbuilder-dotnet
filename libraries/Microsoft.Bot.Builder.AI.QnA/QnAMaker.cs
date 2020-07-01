@@ -36,8 +36,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private readonly QnAMakerEndpoint _endpoint;
 
-        private GenerateAnswerUtils generateAnswerHelper;
-        private TrainUtils activeLearningTrainHelper;
+        private readonly GenerateAnswerUtils _generateAnswerHelper;
+        private readonly TrainUtils _activeLearningTrainHelper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
@@ -84,8 +84,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
 
-            this.generateAnswerHelper = new GenerateAnswerUtils(TelemetryClient, _endpoint, options, _httpClient);
-            this.activeLearningTrainHelper = new TrainUtils(_endpoint, _httpClient);
+            this._generateAnswerHelper = new GenerateAnswerUtils(TelemetryClient, _endpoint, options, _httpClient);
+            this._activeLearningTrainHelper = new TrainUtils(_endpoint, _httpClient);
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Null or empty text");
             }
 
-            var result = await this.generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            var result = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
             await OnQnaResultsAsync(result.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 
@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
         {
-            await this.activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
+            await this._activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
         }
 
         /// <summary>
