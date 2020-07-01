@@ -9,7 +9,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
@@ -107,6 +106,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             }
         }
 
+        private static void WriteUnauthorizedResponse(string headerName, HttpResponseMessage httpResponse)
+        {
+            httpResponse.StatusCode = HttpStatusCode.Unauthorized;
+            httpResponse.Content = new StringContent($"Unable to authenticate. Missing header: {headerName}");
+        }
+
         /// <summary>
         /// Process the initial request to establish a long lived connection via a streaming server.
         /// </summary>
@@ -163,9 +168,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             catch (Exception ex)
             {
                 httpResponse.StatusCode = HttpStatusCode.InternalServerError;
-                httpResponse.Content = new StringContent($"Unable to create transport server. Error: {ex.ToString()}");
-
-                throw ex;
+                httpResponse.Content = new StringContent($"Unable to create transport server. Error: {ex}");
+                throw;
             }
         }
 
@@ -175,18 +179,20 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             {
                 if (!await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
                 {
+#pragma warning disable CA1308 // Normalize strings to uppercase (header names come in lowercase, ignoring)
                     var authHeader = httpRequest.Headers.GetValues(AuthHeaderName.ToLowerInvariant()).FirstOrDefault();
                     var channelId = httpRequest.Headers.GetValues(ChannelIdHeaderName.ToLowerInvariant()).FirstOrDefault();
+#pragma warning restore CA1308 // Normalize strings to uppercase
 
                     if (string.IsNullOrWhiteSpace(authHeader))
                     {
-                        WriteUnauthorizedResponse(AuthHeaderName, httpRequest, httpResponse);
+                        WriteUnauthorizedResponse(AuthHeaderName, httpResponse);
                         return false;
                     }
 
                     if (string.IsNullOrWhiteSpace(channelId))
                     {
-                        WriteUnauthorizedResponse(ChannelIdHeaderName, httpRequest, httpResponse);
+                        WriteUnauthorizedResponse(ChannelIdHeaderName, httpResponse);
                         return false;
                     }
 
@@ -196,7 +202,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                         httpResponse.StatusCode = HttpStatusCode.Unauthorized;
                         return false;
                     }
-                    
+
                     // Add ServiceURL to the cache of trusted sites in order to allow token refreshing.
                     AppCredentials.TrustServiceUrl(claimsIdentity.FindFirst(AuthenticationConstants.ServiceUrlClaim).Value);
                     ClaimsIdentity = claimsIdentity;
@@ -204,19 +210,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 httpResponse.StatusCode = HttpStatusCode.InternalServerError;
                 httpResponse.Content = new StringContent("Error while attempting to authorize connection.");
-
-                throw ex;
+                throw;
             }
-        }
-
-        private void WriteUnauthorizedResponse(string headerName, HttpRequestMessage httpRequest, HttpResponseMessage httpResponse)
-        {
-            httpResponse.StatusCode = HttpStatusCode.Unauthorized;
-            httpResponse.Content = new StringContent($"Unable to authenticate. Missing header: {headerName}");
         }
     }
 }

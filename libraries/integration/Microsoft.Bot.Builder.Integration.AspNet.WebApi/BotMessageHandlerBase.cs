@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,8 +26,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                 SerializerSettings = MessageSerializerSettings.Create(),
                 SupportedMediaTypes =
                 {
-                    new System.Net.Http.Headers.MediaTypeHeaderValue("application/json") { CharSet = "utf-8" },
-                    new System.Net.Http.Headers.MediaTypeHeaderValue("text/json") { CharSet = "utf-8" },
+                    new MediaTypeHeaderValue("application/json") { CharSet = "utf-8" },
+                    new MediaTypeHeaderValue("text/json") { CharSet = "utf-8" },
                 },
             },
         };
@@ -69,7 +70,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
 
             try
             {
-#pragma warning disable UseConfigureAwait // Use ConfigureAwait
                 var invokeResponse = await ProcessMessageRequestAsync(
                     request,
                     _adapter,
@@ -85,37 +85,34 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                         }
                         catch (Exception exception)
                         {
-                            throw new Exception($"An exception occurred attempting to resolve an {typeof(IBot).Name} service via the dependency resolver. Please check the inner exception for more details.", exception);
+                            throw new Exception($"An exception occurred attempting to resolve an {nameof(IBot)} service via the dependency resolver. Please check the inner exception for more details.", exception);
                         }
 
                         if (bot == null)
                         {
-                            throw new InvalidOperationException($"Did not find an {typeof(IBot).Name} service via the dependency resolver. Please make sure you have registered your bot with your dependency injection container.");
+                            throw new InvalidOperationException($"Did not find an {nameof(IBot)} service via the dependency resolver. Please make sure you have registered your bot with your dependency injection container.");
                         }
 
-                        return bot.OnTurnAsync(context);
+                        return bot.OnTurnAsync(context, ct);
                     },
-                    cancellationToken);
-#pragma warning restore UseConfigureAwait // Use ConfigureAwait
+                    cancellationToken).ConfigureAwait(false);
 
                 if (invokeResponse == null)
                 {
                     return request.CreateResponse(HttpStatusCode.OK);
                 }
-                else
+
+                var response = request.CreateResponse((HttpStatusCode)invokeResponse.Status);
+
+                if (invokeResponse.Body != null)
                 {
-                    var response = request.CreateResponse((HttpStatusCode)invokeResponse.Status);
-
-                    if (invokeResponse.Body != null)
-                    {
-                        response.Content = new ObjectContent(
-                            invokeResponse.Body.GetType(),
-                            invokeResponse.Body,
-                            BotMessageMediaTypeFormatters[0]);
-                    }
-
-                    return response;
+                    response.Content = new ObjectContent(
+                        invokeResponse.Body.GetType(),
+                        invokeResponse.Body,
+                        BotMessageMediaTypeFormatters[0]);
                 }
+
+                return response;
             }
             catch (UnauthorizedAccessException e)
             {

@@ -7,9 +7,15 @@ namespace Microsoft.Bot.Configuration
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Configuration properties for a connected Dispatch Service.
+    /// </summary>
     [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class DispatchService : LuisService
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DispatchService"/> class.
+        /// </summary>
         public DispatchService()
         {
             this.Type = ServiceTypes.Dispatch;

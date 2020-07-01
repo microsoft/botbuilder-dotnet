@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
         /// <returns>An <see cref="InvokeResponse"/> returned from the adapter.</returns>
         protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, IAdapterIntegration adapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken)
         {
-            var activity = default(Activity);
+            Activity activity;
 
             using (var memoryStream = new MemoryStream())
             {
@@ -47,17 +47,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
                 // NOTE: We explicitly leave the stream open here so others can still access it (in case buffering was enabled); ASP.NET runtime will always dispose of it anyway
                 using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true)))
                 {
-                    activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
+                    activity = BotMessageSerializer.Deserialize<Activity>(bodyReader);
                 }
             }
 
-#pragma warning disable UseConfigureAwait // Use ConfigureAwait
             var invokeResponse = await adapter.ProcessActivityAsync(
-                    request.Headers["Authorization"],
-                    activity,
-                    botCallbackHandler,
-                    cancellationToken);
-#pragma warning restore UseConfigureAwait // Use ConfigureAwait
+                request.Headers["Authorization"],
+                activity,
+                botCallbackHandler,
+                cancellationToken).ConfigureAwait(false);
 
             return invokeResponse;
         }

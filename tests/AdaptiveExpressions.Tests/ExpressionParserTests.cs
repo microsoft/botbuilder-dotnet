@@ -30,6 +30,9 @@ namespace AdaptiveExpressions.Tests
                 "alist", new List<A>() { new A("item1"), new A("item2") }
             },
             {
+                "a:b", "stringa:b"
+            },
+            {
                 "emptyList", new List<object>()
             },
             {
@@ -922,6 +925,9 @@ namespace AdaptiveExpressions.Tests
 
             #region  Memory access
             Test("getProperty(bag, concat('na','me'))", "mybag"),
+            Test("getProperty('bag').index", 3),
+            Test("getProperty('a:b')", "stringa:b"),
+            Test("getProperty(concat('he', 'llo'))", "hello"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> { "bag.list", "bag.index" }),
             Test("items[nestedItems[1].x]", "two", new HashSet<string> { "items", "nestedItems[1].x" }),

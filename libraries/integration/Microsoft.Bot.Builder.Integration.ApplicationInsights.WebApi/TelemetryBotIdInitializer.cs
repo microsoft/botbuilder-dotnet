@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
             }
         }
 
-        private void CacheBody()
+        private static void CacheBody()
         {
             var httpContext = HttpContext.Current;
             var request = httpContext.Request;

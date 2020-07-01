@@ -13,9 +13,9 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class TraceTranscriptLogger : ITranscriptLogger
     {
-        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
+        private static readonly JsonSerializerSettings _serializationSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
-        private bool traceActivity;
+        private readonly bool _traceActivity;
 
         public TraceTranscriptLogger()
             : this(true)
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder
 
         public TraceTranscriptLogger(bool traceActivity)
         {
-            this.traceActivity = traceActivity;
+            this._traceActivity = traceActivity;
         }
 
         /// <summary>
@@ -35,9 +35,9 @@ namespace Microsoft.Bot.Builder
         public Task LogActivityAsync(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
-            if (traceActivity)
+            if (_traceActivity)
             {
-                Trace.TraceInformation(JsonConvert.SerializeObject(activity, serializationSettings));
+                Trace.TraceInformation(JsonConvert.SerializeObject(activity, _serializationSettings));
             }
             else
             {

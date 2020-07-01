@@ -182,6 +182,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 }
             }
         }
+        
+        private static async Task WriteUnauthorizedResponseAsync(string headerName, HttpRequest httpRequest)
+        {
+            httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            await httpRequest.HttpContext.Response.WriteAsync($"Unable to authenticate. Missing header: {headerName}").ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Process the initial request to establish a long lived connection via a streaming server.
@@ -240,7 +246,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 await httpRequest.HttpContext.Response.WriteAsync($"Unable to create transport server. Error: {ex.ToString()}").ConfigureAwait(false);
 
-                throw ex;
+                throw;
             }
         }
 
@@ -250,8 +256,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 if (!await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
                 {
-                    var authHeader = httpRequest.Headers.First(x => x.Key.ToLower() == AuthHeaderName).Value.FirstOrDefault();
-                    var channelId = httpRequest.Headers.First(x => x.Key.ToLower() == ChannelIdHeaderName).Value.FirstOrDefault();
+                    var authHeader = httpRequest.Headers.First(x => string.Equals(x.Key, AuthHeaderName, StringComparison.OrdinalIgnoreCase)).Value.FirstOrDefault();
+                    var channelId = httpRequest.Headers.First(x => string.Equals(x.Key, ChannelIdHeaderName, StringComparison.OrdinalIgnoreCase)).Value.FirstOrDefault();
 
                     if (string.IsNullOrWhiteSpace(authHeader))
                     {
@@ -279,19 +285,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 await httpRequest.HttpContext.Response.WriteAsync("Error while attempting to authorize connection.").ConfigureAwait(false);
 
-                throw ex;
+                throw;
             }
-        }
-
-        private async Task WriteUnauthorizedResponseAsync(string headerName, HttpRequest httpRequest)
-        {
-            httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await httpRequest.HttpContext.Response.WriteAsync($"Unable to authenticate. Missing header: {headerName}").ConfigureAwait(false);
         }
     }
 }
