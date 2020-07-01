@@ -22,6 +22,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisRecognizer : ITelemetryRecognizer
     {
+        /// <summary>
+        /// The declarative type for this recognizer.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.LuisRecognizer";
 
@@ -123,6 +126,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
         }
 
+        /// <summary>
+        /// Gets the default HttpClient to be used when calling the LUIS API.
+        /// </summary>
+        /// <value>
+        /// A <see cref="HttpClient"/>.
+        /// </value>
         public static HttpClient DefaultHttpClient { get; private set; }
 
         /// <summary>
