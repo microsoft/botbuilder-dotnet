@@ -1,11 +1,11 @@
 <Project>
   
   <PropertyGroup>
-    <LocalPackageVersion>4.9.0-local</LocalPackageVersion>
+    <LocalPackageVersion>4.10.0-local</LocalPackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageOutputPath>$(MSBuildThisFileDirectory)outputpackages\</PackageOutputPath>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)outputpackages</PackageOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -13,7 +13,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <CodeAnalysisRuleSet>$(SolutionDir)\BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(OS)' == 'Windows_NT'">$(SolutionDir)\BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(OS)' != 'Windows_NT'">$(SolutionDir)/BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
@@ -58,7 +59,7 @@
       Suppress a warning about upcoming deprecation of PackageLicenseUrl. When embedding licenses are supported,
       replace PackageLicenseUrl with PackageLicenseExpression.
     -->
-    <NoWarn>NU5125</NoWarn>
+    <NoWarn>$(NoWarn);NU5125</NoWarn>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

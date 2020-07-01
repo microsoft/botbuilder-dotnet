@@ -5,16 +5,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("Middleware")]
     public class BotAdapterBracketingTest
     {
-        public TestContext TestContext { get; set; }
-
         /// <summary>
         /// Developer authored Middleware that looks like this:
         /// public async Task ReceiveActivityAsync(ITurnContext turnContext,
@@ -30,10 +26,10 @@ namespace Microsoft.Bot.Builder.Tests
         ///  AFTER.
         ///  </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [TestMethod]
+        [Fact]
         public async Task Middlware_BracketingValidation()
         {
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation("Middlware_BracketingValidation"))
                 .Use(new BeforeAFterMiddlware());
 
             async Task Echo(ITurnContext ctx, CancellationToken cancellationToken)
@@ -57,12 +53,12 @@ namespace Microsoft.Bot.Builder.Tests
         /// coming back is correct.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [TestMethod]
+        [Fact]
         public async Task Middlware_ThrowException()
         {
             string uniqueId = Guid.NewGuid().ToString();
 
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation("Middlware_ThrowException"))
                 .Use(new CatchExceptionMiddleware());
 
             async Task EchoWithException(ITurnContext ctx, CancellationToken cancellationToken)

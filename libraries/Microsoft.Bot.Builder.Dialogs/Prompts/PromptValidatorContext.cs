@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -58,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return 0;
                 }
 
-                return Convert.ToInt32(State[Prompt<T>.AttemptCountKey]);
+                return Convert.ToInt32(State[Prompt<T>.AttemptCountKey], CultureInfo.InvariantCulture);
             }
         }
     }

@@ -1,1 +1,0 @@
-for /r %%s in (*.chat) do chatdown %%s >  %%~ps\%%~ns.transcript
