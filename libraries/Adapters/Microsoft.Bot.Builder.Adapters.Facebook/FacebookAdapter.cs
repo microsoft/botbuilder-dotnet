@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             if (!_facebookClient.VerifySignature(httpRequest, stringifiedBody) && _options.VerifyIncomingRequests)
             {
                 await FacebookHelper.WriteAsync(httpResponse, HttpStatusCode.Unauthorized, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
-                throw new AuthenticationException("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                throw new AuthenticationException("Webhook received message with invalid signature. Potential malicious behavior!");
             }
 
             FacebookResponseEvent facebookResponseEvent = null;

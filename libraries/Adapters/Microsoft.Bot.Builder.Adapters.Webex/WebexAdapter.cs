@@ -254,7 +254,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             if (_options.ValidateIncomingRequests && !_webexClient.ValidateSignature(request, json))
             {
-                throw new AuthenticationException("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                throw new AuthenticationException("Webhook received message with invalid signature. Potential malicious behavior!");
             }
 
             Activity activity;

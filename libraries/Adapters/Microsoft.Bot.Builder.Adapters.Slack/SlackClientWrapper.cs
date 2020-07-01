@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (string.IsNullOrWhiteSpace(options.SlackVerificationToken) && string.IsNullOrWhiteSpace(options.SlackClientSigningSecret))
             {
-                const string warning = "****************************************************************************************" +
+                const string message = "****************************************************************************************" +
                                        "* WARNING: Your bot is operating without recommended security mechanisms in place.     *" +
                                        "* Initialize your adapter with a clientSigningSecret parameter to enable               *" +
                                        "* verification that all incoming webhooks originate with Slack:                        *" +
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                                        "****************************************************************************************" +
                                        ">> Slack docs: https://api.slack.com/docs/verifying-requests-from-slack";
 
-                throw new InvalidOperationException(warning + Environment.NewLine + "Required: include a verificationToken or clientSigningSecret to verify incoming Events API webhooks");
+                throw new InvalidOperationException(message + Environment.NewLine + "Required: include a verificationToken or clientSigningSecret to verify incoming Events API webhooks");
             }
 
             _api = new SlackTaskClient(options.SlackBotToken);
