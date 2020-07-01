@@ -18,25 +18,26 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
 {
     public class FacebookAdapterTests
     {
-        private readonly FacebookAdapterOptions _testOptions = new FacebookAdapterOptions("Test", "Test", "Test");
+        private readonly FacebookClientWrapperOptions _testOptions = new FacebookClientWrapperOptions("Test", "Test", "Test");
+        private readonly FacebookAdapterOptions _adapterOptions = new FacebookAdapterOptions() { VerifyIncomingRequests = false };
 
         [Fact]
         public void ConstructorWithArgumentsShouldSucceed()
         {
-            Assert.NotNull(new FacebookAdapter(new Mock<FacebookClientWrapper>(_testOptions).Object));
+            Assert.NotNull(new FacebookAdapter(new FacebookClientWrapper(_testOptions), _adapterOptions));
         }
 
         [Fact]
         public void ConstructorShouldFailWithNullClient()
         {
-            Assert.Throws<ArgumentNullException>(() => { new FacebookAdapter((FacebookClientWrapper)null); });
+            Assert.Throws<ArgumentNullException>(() => { new FacebookAdapter((FacebookClientWrapper)null, _adapterOptions); });
         }
 
         [Fact]
         public async void ContinueConversationAsyncShouldSucceed()
         {
             var callbackInvoked = false;
-            var facebookAdapter = new FacebookAdapter(new Mock<FacebookClientWrapper>(_testOptions).Object);
+            var facebookAdapter = new FacebookAdapter(new FacebookClientWrapper(_testOptions), _adapterOptions);
             var conversationReference = new ConversationReference();
             Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
             {
@@ -51,7 +52,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public async void ContinueConversationAsyncShouldFailWithNullConversationReference()
         {
-            var facebookAdapter = new FacebookAdapter(new Mock<FacebookClientWrapper>(_testOptions).Object);
+            var facebookAdapter = new FacebookAdapter(new FacebookClientWrapper(_testOptions), _adapterOptions);
             Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
             {
                 return Task.CompletedTask;
@@ -63,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public async void ContinueConversationAsyncShouldFailWithNullLogic()
         {
-            var facebookAdapter = new FacebookAdapter(new Mock<FacebookClientWrapper>(_testOptions).Object);
+            var facebookAdapter = new FacebookAdapter(new FacebookClientWrapper(_testOptions), _adapterOptions);
             var conversationReference = new ConversationReference();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookAdapter.ContinueConversationAsync(conversationReference, null, default); });
@@ -72,7 +73,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public async Task DeleteActivityAsyncShouldThrowNotImplementedException()
         {
-            var facebookAdapter = new FacebookAdapter(new FacebookClientWrapper(_testOptions));
+            var facebookAdapter = new FacebookAdapter(new FacebookClientWrapper(_testOptions), _adapterOptions);
             var activity = new Activity();
             var conversationReference = new ConversationReference();
             using (var turnContext = new TurnContext(facebookAdapter, activity))
@@ -86,13 +87,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/Payload.json");
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, _adapterOptions);
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
-
-            facebookClientWrapper.Setup(api => api.VerifySignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
 
             httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("test");
             httpRequest.SetupGet(req => req.Body).Returns(stream);
@@ -107,13 +106,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/PayloadWithStandby.json");
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, _adapterOptions);
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
-
-            facebookClientWrapper.Setup(api => api.VerifySignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
 
             httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("test");
             httpRequest.SetupGet(req => req.Body).Returns(stream);
@@ -125,14 +122,18 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public async void ProcessAsyncShouldVerifyWebhookOnHubModeSubscribe()
         {
+            var testOptionsVerifyEnabled = new FacebookAdapterOptions()
+            {
+                VerifyIncomingRequests = true
+            };
+
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, testOptionsVerifyEnabled);
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
 
             facebookClientWrapper.Setup(api => api.VerifyWebhookAsync(It.IsAny<HttpRequest>(), It.IsAny<HttpResponse>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-
             httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("subscribe");
 
             await facebookAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
@@ -142,8 +143,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public async Task ProcessAsyncShouldThrowExceptionWithUnverifiedSignature()
         {
+            var testOptionsVerifyEnabled = new FacebookAdapterOptions()
+            {
+                VerifyIncomingRequests = true
+            };
+
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, testOptionsVerifyEnabled);
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/Payload.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
             var httpRequest = new Mock<HttpRequest>();
@@ -170,7 +176,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, _adapterOptions);
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -199,7 +205,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, _adapterOptions);
             var attachments = new List<Attachment>();
             var activity = new Activity
             {
@@ -231,7 +237,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, _adapterOptions);
             var attachments = new List<Attachment>();
             var activity = new Activity
             {
@@ -263,7 +269,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, _adapterOptions);
             var activity = new Activity
             {
                 Type = ActivityTypes.Event,
@@ -295,7 +301,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, _adapterOptions);
             var activity = new Activity
             {
                 Type = ActivityTypes.Event,
@@ -327,7 +333,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         {
             const string testResponse = "Test Response";
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
-            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, _adapterOptions);
             var activity = new Activity
             {
                 Type = ActivityTypes.Event,
@@ -357,7 +363,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public async Task UpdateActivityAsyncShouldThrowNotImplementedException()
         {
-            var facebookAdapter = new FacebookAdapter(new FacebookClientWrapper(_testOptions));
+            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, _adapterOptions);
             var activity = new Activity();
 
             using (var turnContext = new TurnContext(facebookAdapter, activity))

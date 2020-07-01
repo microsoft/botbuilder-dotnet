@@ -2,14 +2,13 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Schema.Teams;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Schema.Tests.Teams
 {
-    [TestClass]
     public class TeamsChannelDataTests
     {
-        [TestMethod]
+        [Fact]
         public void GetAadGroupId()
         {
             // Arrange
@@ -20,7 +19,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             var channelData = activity.GetChannelData<TeamsChannelData>();
 
             // Assert
-            Assert.AreEqual(AadGroupId, channelData.Team.AadGroupId);
+            Assert.Equal(AadGroupId, channelData.Team.AadGroupId);
         }
     }
 }

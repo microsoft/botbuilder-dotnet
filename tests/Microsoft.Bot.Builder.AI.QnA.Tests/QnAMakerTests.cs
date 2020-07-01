@@ -40,51 +40,14 @@ namespace Microsoft.Bot.Builder.AI.Tests
         public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
                 .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
-               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));         
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+
             return CreateQnAMakerActionDialog(mockHttp);
-        }
-
-        [TestMethod]
-        public async Task QnaMaker_ReturnAnswer_WithDisplayPreciseAnswerOnly()
-        {
-           await QnAMaker_ReturnAnswer_PreciseAnswersValidate(true);
-        }
-
-        [TestMethod]
-        public async Task QnAMaker_ReturnAnswer_WithDisplayRegularAndPreciseAnswers()
-        {
-           await QnAMaker_ReturnAnswer_PreciseAnswersValidate(false);
-        }
-
-        public async Task QnAMaker_ReturnAnswer_PreciseAnswersValidate(bool displayPreciseAnswerOnly)
-        {
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"PreciseAnswerQuestion\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":true}}")
-                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswersWithPreciseAnswer.json"));
-            var rootDialog = CreateQnAMakerActionDialog(mockHttp, true, displayPreciseAnswerOnly);
-
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswersWithPreciseAnswer.json")));
-            var queryResult = response.Answers[0];
-
-            var preciseAnswerActivity = Activity.CreateMessageActivity();
-            preciseAnswerActivity.Text = queryResult.AnswerSpan.Text;
-
-            if (!displayPreciseAnswerOnly)
-            {
-                var plCard = new HeroCard();
-                plCard.Text = queryResult.Answer;
-                preciseAnswerActivity.Attachments.Add(plCard.ToAttachment());
-            }
-
-            await CreateFlow(rootDialog)
-            .Send("PreciseAnswerQuestion")
-                .AssertReply(preciseAnswerActivity, new QnAMakerCardEqualityComparer())
-            .StartTestAsync();
         }
 
         [TestMethod]
@@ -143,9 +106,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
         public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\",\"answerSpanRequest\":{\"enable\":false}}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\"}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -157,7 +120,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var rootDialog = QnAMakerAction_MultiTurnDialogBase();
 
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
-            var promptsActivity = QnACardBuilder.GetQnADefaultResponse(response.Answers[0], true);
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0], "None of the above.");
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
             await CreateFlow(rootDialog)
@@ -174,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var rootDialog = QnAMakerAction_MultiTurnDialogBase();
 
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
-            var promptsActivity = QnACardBuilder.GetQnADefaultResponse(response.Answers[0], true);
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0], "None of the above.");
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
             await CreateFlow(rootDialog)
@@ -1678,7 +1641,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             }
         }
 
-        private AdaptiveDialog CreateQnAMakerActionDialog(MockHttpMessageHandler mockHttp, bool enablePreciseAnswer = false, bool displayPreciseAnswerOnly = false)
+        private AdaptiveDialog CreateQnAMakerActionDialog(MockHttpMessageHandler mockHttp)
         {
             var client = new HttpClient(mockHttp);
 
@@ -1686,7 +1649,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
             var knowlegeBaseId = "dummy-id";
             var endpointKey = "dummy-key";
-            var activeLearningCardTitle = "Did you mean:";
+            var activeLearningCardTitle = "QnAMaker Active Learning";
 
             var outerDialog = new AdaptiveDialog("outer")
             {
@@ -1706,8 +1669,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
                                 NoAnswer = noAnswerActivity,
                                 ActiveLearningCardTitle = activeLearningCardTitle,
                                 CardNoMatchText = "None of the above.",
-                                EnablePreciseAnswer = enablePreciseAnswer,
-                                DisplayPreciseAnswerOnly = displayPreciseAnswerOnly
                             }
                         }
                     }

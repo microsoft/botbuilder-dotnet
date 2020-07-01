@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             var audience = claimsList.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
-            if (string.IsNullOrWhiteSpace(audience) || AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCulture))
+            if (string.IsNullOrWhiteSpace(audience) || AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.OrdinalIgnoreCase))
             {
                 // The audience is https://api.botframework.com and not an appId.
                 return false;
@@ -124,7 +124,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="channelId">The ID of the channel to validate.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <returns>A <see cref="ClaimsIdentity"/> instance if the validation is successful.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             if (authConfig == null)
             {

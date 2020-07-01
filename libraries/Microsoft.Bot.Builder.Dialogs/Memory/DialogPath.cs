@@ -1,8 +1,11 @@
-﻿using System.Data;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class DialogPath
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
         /// Counter of emitted events.

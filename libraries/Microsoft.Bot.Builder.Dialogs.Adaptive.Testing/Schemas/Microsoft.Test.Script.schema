@@ -15,6 +15,22 @@
             "title": "Description",
             "description": "Description of the test script"
         },
+        "httpRequestMocks": {
+            "type": "array",
+            "title": "Http Request Mocks",
+            "description": "Mock data for Microsoft.HttpRequest.",
+            "items": {
+                "$kind": "Microsoft.Test.IHttpRequestMock"
+            }
+        },
+        "userTokenMocks": {
+            "type": "array",
+            "title": "User Token Mocks",
+            "description": "Mock data for Microsoft.OAuthInput.",
+            "items": {
+                "$kind": "Microsoft.Test.IUserTokenMock"
+            }
+        },
         "script": {
             "type": "array",
             "title": "Test actions",

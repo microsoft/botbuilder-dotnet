@@ -179,7 +179,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// <returns>Normalized locale.</returns>
         public static string MapToNearestLanguage(string cultureCode)
         {
+#pragma warning disable CA1308 // Normalize strings to uppercase (culture codes are expected to be in lowercase, ignoring)
             cultureCode = cultureCode.ToLowerInvariant();
+#pragma warning restore CA1308 // Normalize strings to uppercase
 
             if (SupportedLocales.All(o => o != cultureCode))
             {

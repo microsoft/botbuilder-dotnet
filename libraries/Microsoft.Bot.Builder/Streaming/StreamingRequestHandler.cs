@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -30,8 +31,8 @@ namespace Microsoft.Bot.Builder.Streaming
         private readonly IStreamingActivityProcessor _activityProcessor;
         private readonly string _userAgent;
         private readonly IDictionary<string, DateTime> _conversations;
+        private readonly IStreamingTransportServer _server;
 
-        private IStreamingTransportServer _server;
         private bool _serverIsConnected;
 
         /// <summary>
@@ -92,7 +93,9 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <value>
         /// The URL of the channel endpoint this StreamingRequestHandler receives requests from.
         /// </value>
+#pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking binary compat)
         public string ServiceUrl { get; private set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Begins listening for incoming requests over this StreamingRequestHandler's server.
@@ -123,7 +126,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// the conversation was added to this <see cref="StreamingRequestHandler"/>.</returns>
         public DateTime ConversationAddedTime(string conversationId)
         {
-            if (!_conversations.TryGetValue(conversationId, out DateTime addedTime))
+            if (!_conversations.TryGetValue(conversationId, out var addedTime))
             {
                 addedTime = DateTime.MinValue;
             }
@@ -146,7 +149,7 @@ namespace Microsoft.Bot.Builder.Streaming
             var response = new StreamingResponse();
 
             // We accept all POSTs regardless of path, but anything else requires special treatment.
-            if (!string.Equals(request?.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(request?.Verb, StreamingRequest.POST, StringComparison.OrdinalIgnoreCase))
             {
                 return HandleCustomPaths(request, response);
             }
@@ -157,7 +160,9 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 body = request.ReadBodyAsString();
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we log the exception and continue execution)
             catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 _logger.LogError("Request body missing or malformed: " + ex.Message);
@@ -225,7 +230,9 @@ namespace Microsoft.Bot.Builder.Streaming
                     }
                 }
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we logging the error and we send it back in the body of the response)
             catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.SetBody(ex.ToString());
@@ -279,7 +286,9 @@ namespace Microsoft.Bot.Builder.Streaming
                     return serverResponse.ReadBodyAsJson<ResourceResponse>();
                 }
             }
+#pragma warning disable CA1031 // Do not catch general exception types (this should probably be addressed later, but for now we just log the error and continue the execution)
             catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 _logger.LogError(ex.Message);
             }
@@ -309,7 +318,9 @@ namespace Microsoft.Bot.Builder.Streaming
                     return serverResponse.ReadBodyAsJson<ReceiveResponse>();
                 }
             }
+#pragma warning disable CA1031 // Do not catch general exception types (this should probably be addressed later, but for now we just log the error and continue the execution)
             catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 _logger.LogError(ex.Message);
             }
@@ -327,15 +338,21 @@ namespace Microsoft.Bot.Builder.Streaming
         /// https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md.
         /// </summary>
         /// <returns>A string containing versioning information.</returns>
-        private static string GetUserAgent() =>
-            string.Format(
-                "Microsoft-BotFramework/3.1 Streaming-Extensions/1.0 BotBuilder/{0} ({1}; {2}; {3})",
-                ConnectorClient.GetClientVersion(new ConnectorClient(new Uri("http://localhost"))),
-                ConnectorClient.GetASPNetVersion(),
-                ConnectorClient.GetOsVersion(),
-                ConnectorClient.GetArchitecture());
+        private static string GetUserAgent()
+        {
+            using (var connectorClient = new ConnectorClient(new Uri("http://localhost")))
+            {
+                return string.Format(
+                    CultureInfo.InvariantCulture,
+                    "Microsoft-BotFramework/3.1 Streaming-Extensions/1.0 BotBuilder/{0} ({1}; {2}; {3})",
+                    ConnectorClient.GetClientVersion(connectorClient),
+                    ConnectorClient.GetASPNetVersion(),
+                    ConnectorClient.GetOsVersion(),
+                    ConnectorClient.GetArchitecture());
+            }
+        }
 
-        private IEnumerable<HttpContent> UpdateAttachmentStreams(Activity activity)
+        private static IEnumerable<HttpContent> UpdateAttachmentStreams(Activity activity)
         {
             if (activity == null || activity.Attachments == null)
             {
@@ -379,8 +396,8 @@ namespace Microsoft.Bot.Builder.Streaming
                 return response;
             }
 
-            if (string.Equals(request.Verb, StreamingRequest.GET, StringComparison.InvariantCultureIgnoreCase) &&
-                         string.Equals(request.Path, "/api/version", StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(request.Verb, StreamingRequest.GET, StringComparison.OrdinalIgnoreCase) &&
+                         string.Equals(request.Path, "/api/version", StringComparison.OrdinalIgnoreCase))
             {
                 response.StatusCode = (int)HttpStatusCode.OK;
                 response.SetBody(new VersionInfo() { UserAgent = _userAgent });

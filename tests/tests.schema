@@ -5,6 +5,9 @@
 	"description": "These are all of the kinds that can be created by the loader.",
 	"oneOf": [
 		{
+			"$ref": "#/definitions/AzureQueues.ContinueConversationLater"
+		},
+		{
 			"$ref": "#/definitions/CustomAction.dialog"
 		},
 		{
@@ -185,6 +188,9 @@
 			"$ref": "#/definitions/Microsoft.OnCondition"
 		},
 		{
+			"$ref": "#/definitions/Microsoft.OnContinueConversation"
+		},
+		{
 			"$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
 		},
 		{
@@ -308,6 +314,9 @@
 			"$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
 		},
 		{
+			"$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
+		},
+		{
 			"$ref": "#/definitions/Microsoft.Test.Script"
 		},
 		{
@@ -321,6 +330,9 @@
 		},
 		{
 			"$ref": "#/definitions/Microsoft.Test.UserSays"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
 		},
 		{
 			"$ref": "#/definitions/Microsoft.Test.UserTyping"
@@ -402,6 +414,81 @@
 		}
 	],
 	"definitions": {
+		"AzureQueues.ContinueConversationLater": {
+			"$role": "implements(Microsoft.IDialog)",
+			"title": "Continue Conversation Later (Queue)",
+			"description": "Continue conversation at later time (via Azure Storage Queue).",
+			"type": "object",
+			"required": [
+				"date",
+				"connectionString",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"id": {
+					"type": "string",
+					"title": "Id",
+					"description": "Optional id for the dialog"
+				},
+				"disabled": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Disabled",
+					"description": "Optional condition which if true will disable this action.",
+					"examples": [
+						"user.age > 3"
+					]
+				},
+				"date": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Date",
+					"description": "Date in the future as a ISO string when the conversation should continue.",
+					"examples": [
+						"=addHours(utcNow(), 1)"
+					]
+				},
+				"connectionString": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Connection String",
+					"description": "Connection string for connecting to an Azure Storage account.",
+					"examples": [
+						"=settings.connectionString"
+					]
+				},
+				"queueName": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Queue Name",
+					"description": "Name of the queue that your azure function is bound to.",
+					"examples": [
+						"activities"
+					],
+					"default": "activities"
+				},
+				"value": {
+					"$ref": "#/definitions/valueExpression",
+					"title": "Value",
+					"description": "Value to send in the activity.value."
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "AzureQueues.ContinueConversationLater"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
 		"CustomAction.dialog": {
 			"$role": "implements(Microsoft.IDialog)",
 			"title": "Custom Action",
@@ -4205,6 +4292,9 @@
 					"$ref": "#/definitions/Microsoft.QnAMakerDialog"
 				},
 				{
+					"$ref": "#/definitions/AzureQueues.ContinueConversationLater"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.AdaptiveDialog"
 				},
 				{
@@ -4501,6 +4591,9 @@
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnCondition"
+				},
+				{
+					"$ref": "#/definitions/Microsoft.OnContinueConversation"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
@@ -6125,6 +6218,71 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.OnCondition"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.OnContinueConversation": {
+			"$role": [
+				"implements(Microsoft.ITrigger)",
+				"extends(Microsoft.OnCondition)"
+			],
+			"title": "On Continue Conversation",
+			"description": "Actions to perform when a conversation is started up again from a ContinueConversationLater action.",
+			"type": "object",
+			"required": [
+				"actions",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"condition": {
+					"$ref": "#/definitions/condition",
+					"title": "Condition",
+					"description": "Condition (expression).",
+					"examples": [
+						"user.vip == true"
+					]
+				},
+				"actions": {
+					"type": "array",
+					"title": "Actions",
+					"description": "Sequence of actions to execute.",
+					"items": {
+						"$kind": "Microsoft.IDialog",
+						"$ref": "#/definitions/Microsoft.IDialog"
+					}
+				},
+				"priority": {
+					"$ref": "#/definitions/integerExpression",
+					"title": "Priority",
+					"description": "Priority for trigger with 0 being the highest and < 0 ignored."
+				},
+				"runOnce": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Run Once",
+					"description": "True if rule should run once per unique conditions",
+					"examples": [
+						true,
+						"=f(x)"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.OnContinueConversation"
 				},
 				"$designer": {
 					"title": "Designer information",
@@ -8715,6 +8873,125 @@
 				}
 			}
 		},
+		"Microsoft.Test.HttpRequestSequenceMock": {
+			"$role": "implements(Microsoft.Test.IHttpRequestMock)",
+			"title": "HttpRequest Sequence Mock",
+			"description": "Mock HttpRequest in sequence order.",
+			"type": "object",
+			"required": [
+				"url",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"method": {
+					"type": "string",
+					"title": "HTTP method",
+					"description": "HTTP method to match. If null, match to any method.",
+					"enum": [
+						"GET",
+						"POST",
+						"PATCH",
+						"PUT",
+						"DELETE"
+					],
+					"examples": [
+						"GET",
+						"POST"
+					]
+				},
+				"url": {
+					"type": "string",
+					"title": "Url",
+					"description": "URL to match. Absolute or relative, may contain * wildcards.",
+					"examples": [
+						"https://contoso.com"
+					]
+				},
+				"responses": {
+					"type": "array",
+					"title": "Responses",
+					"description": "Sequence of responses to reply. The last one will be repeated.",
+					"items": {
+						"type": "object",
+						"title": "HttpResponseMock",
+						"description": "Mocked http response.",
+						"properties": {
+							"contentType": {
+								"type": "string",
+								"title": "ContentType",
+								"description": "Content type of response.",
+								"enum": [
+									"String",
+									"ByteArray"
+								],
+								"examples": [
+									"String"
+								],
+								"default": "String"
+							},
+							"content": {
+								"title": "Content",
+								"description": "Content of response.",
+								"oneOf": [
+									{
+										"type": "string",
+										"title": "String content",
+										"description": "Use string as content.",
+										"examples": [
+											"string response"
+										]
+									},
+									{
+										"type": "object",
+										"title": "Object content",
+										"description": "Use object as content. It will be serialized to string.",
+										"examples": [
+											{
+												"data": "object response"
+											}
+										]
+									}
+								]
+							}
+						}
+					}
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.Test.HttpRequestSequenceMock"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.Test.IHttpRequestMock": {
+			"title": "Microsoft Test IHttpRequestMock",
+			"description": "Components which derive from HttpRequestMock class",
+			"$role": "interface",
+			"oneOf": [
+				{
+					"type": "string",
+					"title": "Reference to Microsoft.Test.IHttpRequestMock",
+					"description": "Reference to Microsoft.Test.IHttpRequestMock .dialog file."
+				},
+				{
+					"$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
+				}
+			]
+		},
 		"Microsoft.Test.ITestAction": {
 			"title": "Microsoft Test ITestAction",
 			"description": "Components which derive from TestAction class",
@@ -8751,6 +9028,21 @@
 				}
 			]
 		},
+		"Microsoft.Test.IUserTokenMock": {
+			"title": "Microsoft Test IUserTokenMock",
+			"description": "Components which derive from UserTokenMock class",
+			"$role": "interface",
+			"oneOf": [
+				{
+					"type": "string",
+					"title": "Reference to Microsoft.Test.IUserTokenMock",
+					"description": "Reference to Microsoft.Test.IUserTokenMock .dialog file."
+				},
+				{
+					"$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
+				}
+			]
+		},
 		"Microsoft.Test.Script": {
 			"$role": [],
 			"title": "Test Script",
@@ -8779,6 +9071,24 @@
 					"type": "string",
 					"title": "Description",
 					"description": "Description of the test script"
+				},
+				"httpRequestMocks": {
+					"type": "array",
+					"title": "Http Request Mocks",
+					"description": "Mock data for Microsoft.HttpRequest.",
+					"items": {
+						"$kind": "Microsoft.Test.IHttpRequestMock",
+						"$ref": "#/definitions/Microsoft.Test.IHttpRequestMock"
+					}
+				},
+				"userTokenMocks": {
+					"type": "array",
+					"title": "User Token Mocks",
+					"description": "Mock data for Microsoft.OAuthInput.",
+					"items": {
+						"$kind": "Microsoft.Test.IUserTokenMock",
+						"$ref": "#/definitions/Microsoft.Test.IUserTokenMock"
+					}
 				},
 				"script": {
 					"type": "array",
@@ -8976,6 +9286,78 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.Test.UserSays"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.Test.UserTokenBasicMock": {
+			"$role": "implements(Microsoft.Test.IUserTokenMock)",
+			"title": "Microsoft Test UserTokenBasicMock",
+			"description": "Mock Basic UserToken",
+			"type": "object",
+			"required": [
+				"connectionName",
+				"token",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"connectionName": {
+					"type": "string",
+					"title": "Connection Name",
+					"description": "The connection name.",
+					"examples": [
+						"graph"
+					]
+				},
+				"channelId": {
+					"type": "string",
+					"title": "Channel ID",
+					"description": "The channel ID. If empty, same as adapter.Conversation.ChannelId.",
+					"examples": [
+						"test"
+					]
+				},
+				"userId": {
+					"type": "string",
+					"title": "User ID",
+					"description": "The user ID. If empty, same as adapter.Conversation.User.Id.",
+					"examples": [
+						"user1"
+					]
+				},
+				"token": {
+					"type": "string",
+					"title": "Token",
+					"description": "The token to store.",
+					"examples": [
+						"token"
+					]
+				},
+				"magicCode": {
+					"type": "string",
+					"title": "Magic Code",
+					"description": "The optional magic code to associate with this token.",
+					"examples": [
+						"000000"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.Test.UserTokenBasicMock"
 				},
 				"$designer": {
 					"title": "Designer information",

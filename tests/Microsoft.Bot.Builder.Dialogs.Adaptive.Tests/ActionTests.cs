@@ -6,13 +6,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Schema;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 using HttpMethod = System.Net.Http.HttpMethod;
@@ -131,6 +135,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [TestMethod]
         public async Task Action_DynamicBeginDialog()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_EditActionInsertActions()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task Action_EditActionAppendActions()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }
@@ -382,6 +398,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .WithContent("[\r\n  {\r\n    \"text\": \"Joe is 52\",\r\n    \"age\": 52\r\n  },\r\n  {\r\n    \"text\": \"text\",\r\n    \"age\": 11\r\n  }\r\n]".Replace("\r\n", Environment.NewLine))
                 .Respond("plain/text", "array");
 
+            // Reply with a bytes array and this bytes array would be base64encoded by the sdk
+            handler
+                .When(HttpMethod.Get, "http://foo.com/image")
+                .Respond("image/jpeg", new MemoryStream(System.Text.Encoding.ASCII.GetBytes("TestImage")));
+
+            handler
+                .When(HttpMethod.Get, "http://foo.com/json")
+                .Respond("application/json", "{\"test\": \"test\"}");
+
+            var messageActivityWithText = Activity.CreateMessageActivity();
+            messageActivityWithText.Text = "testtest";
+            handler
+                .When(HttpMethod.Get, "http://foo.com/activity")
+                .Respond("application/vnd.microsoft.activity", JsonConvert.SerializeObject(messageActivityWithText));
+
+            var message1 = Activity.CreateMessageActivity();
+            message1.Text = "test1";
+
+            var message2 = Activity.CreateMessageActivity();
+            message2.Text = "test2";
+
+            var message3 = Activity.CreateMessageActivity();
+            message3.Text = "test3";
+
+            var listOfActivites = new Activity[]
+            {
+                (Activity)message1,
+                (Activity)message2,
+                (Activity)message3
+            };
+            handler
+                .When(HttpMethod.Get, "http://foo.com/activities")
+                .Respond("application/vnd.microsoft.activities", JsonConvert.SerializeObject(listOfActivites));
+
             var testAdapter = new TestAdapter()
                 .UseStorage(new MemoryStorage())
                 .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
@@ -447,6 +497,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 })
                             },
                             new SendActivity("${turn.lastresult.content}"),
+                            new HttpRequest()
+                            {
+                                Url = "http://foo.com/image",
+                                Method = HttpRequest.HttpMethod.GET,
+                                ResponseType = HttpRequest.ResponseTypes.Binary
+                            },
+                            new SendActivity("${turn.lastresult.content}"),
+                            new HttpRequest()
+                            {
+                                Url = "http://foo.com/json",
+                                Method = HttpRequest.HttpMethod.GET,
+                                ResponseType = HttpRequest.ResponseTypes.Json
+                            },
+                            new SendActivity("${turn.lastresult.content.test}"),
+                            new HttpRequest()
+                            {
+                                Url = "http://foo.com/activity",
+                                Method = HttpRequest.HttpMethod.GET,
+                                ResponseType = HttpRequest.ResponseTypes.Activity
+                            },
+                            new HttpRequest()
+                            {
+                                Url = "http://foo.com/activities",
+                                Method = HttpRequest.HttpMethod.GET,
+                                ResponseType = HttpRequest.ResponseTypes.Activities
+                            },
                             new SendActivity("done")
                         }
                     }
@@ -463,6 +539,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("string")
                     .AssertReply("object")
                     .AssertReply("array")
+                    .AssertReply("VGVzdEltYWdl")
+                    .AssertReply("test")
+                    .AssertReply("testtest")
+                    .AssertReply("test1")
+                    .AssertReply("test2")
+                    .AssertReply("test3")
                     .AssertReply("done")
                 .StartTestAsync();
         }

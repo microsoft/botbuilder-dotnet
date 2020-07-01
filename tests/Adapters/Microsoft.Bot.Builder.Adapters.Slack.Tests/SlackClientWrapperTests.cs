@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 {
     public class SlackClientWrapperTests
     {
-        private readonly SlackAdapterOptions _testOptions = new SlackAdapterOptions("VerificationToken", "ClientSigningSecret", "BotToken");
+        private readonly SlackClientWrapperOptions _testOptions = new SlackClientWrapperOptions("VerificationToken", "ClientSigningSecret", "BotToken");
 
         [Fact]
         public void VerifySignatureShouldReturnFalseWithNullParameters()

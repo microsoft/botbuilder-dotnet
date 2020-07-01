@@ -16,24 +16,6 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
 {
     public class TestAdapterTests
     {
-        public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            switch (turnContext.Activity.AsMessageActivity().Text)
-            {
-                case "count":
-                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
-                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("two"));
-                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("three"));
-                    break;
-                case "ignore":
-                    break;
-                default:
-                    await turnContext.SendActivityAsync(
-                        turnContext.Activity.CreateReply($"echo:{turnContext.Activity.AsMessageActivity().Text}"));
-                    break;
-            }
-        }
-
         [Fact]
         public async Task TestAdapter_ExceptionTypesOnTest()
         {
@@ -75,6 +57,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
                     .Send("foo")
                     .AssertReply(
                         (activity) => throw new Exception(uniqueExceptionId), "should throw")
+
                     .StartTestAsync());
         }
 
@@ -577,6 +560,24 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             var reply = sut.GetNextReply();
             Assert.Equal(targetChannel, receivedChannelId);
             Assert.Equal(targetChannel, reply.ChannelId);
+        }
+
+        private async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            switch (turnContext.Activity.AsMessageActivity().Text)
+            {
+                case "count":
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("two"));
+                    await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("three"));
+                    break;
+                case "ignore":
+                    break;
+                default:
+                    await turnContext.SendActivityAsync(
+                        turnContext.Activity.CreateReply($"echo:{turnContext.Activity.AsMessageActivity().Text}"));
+                    break;
+            }
         }
     }
 }

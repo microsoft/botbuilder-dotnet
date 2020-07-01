@@ -2,16 +2,14 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("Mention")]
     public class MentionTests
     {
-        [TestMethod]
+        [Fact]
         public void Mention_Skype()
         {
             // A Skype mention contains the user mention enclosed in <at> tags.  But the Activity.Text (as below)
@@ -33,10 +31,10 @@ namespace Microsoft.Bot.Builder.Tests
             // mention.
             activity.RemoveMentionText("recipientid");
 
-            Assert.AreEqual(activity.Text, "sometext");
+            Assert.Equal("sometext", activity.Text);
         }
 
-        [TestMethod]
+        [Fact]
         public void Mention_Teams()
         {
             var mentionJson = "{\"mentioned\": {\"id\": \"recipientid\"},\"text\": \"<at>botname</at>\"}";
@@ -48,10 +46,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             activity.RemoveMentionText("recipientid");
 
-            Assert.AreEqual(activity.Text, "sometext");
+            Assert.Equal("sometext", activity.Text);
         }
 
-        [TestMethod]
+        [Fact]
         public void Mention_slack()
         {
             var mentionJson = "{\"mentioned\": {\"id\": \"recipientid\"},\"text\": \"@botname\"}";
@@ -63,10 +61,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             activity.RemoveMentionText("recipientid");
 
-            Assert.AreEqual(activity.Text, "sometext");
+            Assert.Equal("sometext", activity.Text);
         }
 
-        [TestMethod]
+        [Fact]
         public void Mention_GroupMe()
         {
             var mentionJson = "{\"mentioned\": {\"id\": \"recipientid\"},\"text\": \"@bot name\"}";
@@ -78,10 +76,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             activity.RemoveMentionText("recipientid");
 
-            Assert.AreEqual(activity.Text, "sometext");
+            Assert.Equal("sometext", activity.Text);
         }
 
-        [TestMethod]
+        [Fact]
         public void Mention_Telegram()
         {
             var mentionJson = "{\"mentioned\": {\"id\": \"recipientid\"},\"text\": \"botname\"}";
@@ -93,37 +91,37 @@ namespace Microsoft.Bot.Builder.Tests
 
             activity.RemoveMentionText("recipientid");
 
-            Assert.AreEqual(activity.Text, "sometext");
+            Assert.Equal("sometext", activity.Text);
         }
 
-        [TestMethod]
+        [Fact]
         public void Mention_Facebook()
         {
-            // no-op for now: Facebook mentions unknown at this time
+            // TODO: for now: Facebook mentions unknown at this time
         }
 
-        [TestMethod]
+        [Fact]
         public void Mention_Email()
         {
-            // no-op for now: EMail mentions not included in Activity.Text?
+            // TODO: for now: Email mentions not included in Activity.Text?
         }
 
-        [TestMethod]
+        [Fact]
         public void Mention_Cortana()
         {
-            // no-op for now: Cortana mentions unknown at this time
+            // TODO: no-op for now: Cortana mentions unknown at this time
         }
 
-        [TestMethod]
+        [Fact]
         public void Mention_Kik()
         {
-            // no-op for now: bot mentions in Kik don't get Entity info and not included in Activity.Text
+            // TODO: for now: bot mentions in Kik don't get Entity info and not included in Activity.Text
         }
 
-        [TestMethod]
+        [Fact]
         public void Mention_Twilio()
         {
-            // no-op for now: Twilio mentions unknown at this time.  Could not determine if they are supported.
+            // TODO: no-op for now: Twilio mentions unknown at this time.  Could not determine if they are supported.
         }
     }
 }

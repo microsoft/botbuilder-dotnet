@@ -11,13 +11,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace AdaptiveExpressions.Tests
 {
-    [TestClass]
     public class ExpressionParserTests
     {
         private static readonly string NullStr = null;
@@ -30,6 +28,9 @@ namespace AdaptiveExpressions.Tests
             { "$index", "index" },
             {
                 "alist", new List<A>() { new A("item1"), new A("item2") }
+            },
+            {
+                "a:b", "stringa:b"
             },
             {
                 "emptyList", new List<object>()
@@ -114,6 +115,25 @@ namespace AdaptiveExpressions.Tests
             { "unixTimestamp", 1521118800 },
             { "unixTimestampFraction", 1521118800.5 },
             { "ticks", 637243624200000000 },
+            { 
+                "json1", @"{
+                          'FirstName': 'John',
+                          'LastName': 'Smith',
+                          'Enabled': false,
+                          'Roles': [ 'User' ]
+                        }"
+            },
+            { 
+                "json2", @"{
+                          'Enabled': true,
+                          'Roles': [ 'Customer', 'Admin' ]
+                        }"
+            },
+            {
+                "json3", @"{
+                          'Age': 36,
+                        }"
+            },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
             {
                 "jsonStr", @"{
@@ -920,10 +940,15 @@ namespace AdaptiveExpressions.Tests
             Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
             Test("setProperty({}, 'name', user.nickname).name", "John"),
             Test("addProperty({}, 'name', user.name).name", null),
+            Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"]}"),
+            Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"],\"Age\":36}"),
             #endregion
 
             #region  Memory access
             Test("getProperty(bag, concat('na','me'))", "mybag"),
+            Test("getProperty('bag').index", 3),
+            Test("getProperty('a:b')", "stringa:b"),
+            Test("getProperty(concat('he', 'llo'))", "hello"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> { "bag.list", "bag.index" }),
             Test("items[nestedItems[1].x]", "two", new HashSet<string> { "items", "nestedItems[1].x" }),
@@ -1014,19 +1039,19 @@ namespace AdaptiveExpressions.Tests
            || value is double
            || value is decimal;
 
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
+        [Theory]
+        [MemberData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
             var parsed = Expression.Parse(input);
-            Assert.IsNotNull(parsed);
+            Assert.NotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
-            Assert.AreEqual(null, msg);
+            Assert.Null(msg);
             AssertObjectEquals(expected, actual);
             if (expectedRefs != null)
             {
                 var actualRefs = parsed.References();
-                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+                Assert.True(expectedRefs.SetEquals(actualRefs));
             }
 
             // ToString re-parse
@@ -1035,8 +1060,8 @@ namespace AdaptiveExpressions.Tests
             AssertObjectEquals(actual, newActual);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
+        [Theory]
+        [MemberData(nameof(Data))]
         public void EvaluateInOtherCultures(string input, object expected, HashSet<string> expectedRefs)
         {
             var cultureList = new List<string>() { "de-DE", "fr-FR", "es-ES" };
@@ -1045,14 +1070,14 @@ namespace AdaptiveExpressions.Tests
                 var originalCuture = Thread.CurrentThread.CurrentCulture;
                 Thread.CurrentThread.CurrentCulture = new CultureInfo(newCultureInfo);
                 var parsed = Expression.Parse(input);
-                Assert.IsNotNull(parsed);
+                Assert.NotNull(parsed);
                 var (actual, msg) = parsed.TryEvaluate(scope);
-                Assert.AreEqual(null, msg);
+                Assert.Null(msg);
                 AssertObjectEquals(expected, actual);
                 if (expectedRefs != null)
                 {
                     var actualRefs = parsed.References();
-                    Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+                    Assert.True(expectedRefs.SetEquals(actualRefs));
                 }
 
                 // ToString re-parse
@@ -1064,36 +1089,24 @@ namespace AdaptiveExpressions.Tests
             }
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
+        [Theory]
+        [MemberData(nameof(Data))]
         public void EvaluateJson(string input, object expected, HashSet<string> expectedRefs)
         {
             var jsonScope = JToken.FromObject(scope);
             var parsed = Expression.Parse(input);
-            Assert.IsNotNull(parsed);
+            Assert.NotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(jsonScope);
-            Assert.AreEqual(null, msg);
+            Assert.Null(msg);
             AssertObjectEquals(expected, actual);
             if (expectedRefs != null)
             {
                 var actualRefs = parsed.References();
-                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+                Assert.True(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
-        [Ignore]
-        public void Roundtrip(string input, object expected, HashSet<string> expectedRefs)
-        {
-            var parsed = Expression.Parse(input);
-            var json = JsonConvert.SerializeObject(parsed);
-            var newExpression = JsonConvert.DeserializeObject<Expression>(json);
-
-            Assert.AreEqual(parsed.ToString(), newExpression.ToString(), $"{input} should have round tripped as string");
-        }
-
-        [TestMethod]
+        [Fact]
         public void TestAccumulatePath()
         {
             var memory = new SimpleObjectMemory(new
@@ -1110,25 +1123,25 @@ namespace AdaptiveExpressions.Tests
             // normal case, note, we doesn't append a " yet
             var exp = Expression.Parse("a[f].b[n].z");
             var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
-            Assert.AreEqual(path, "a['foo'].b[2].z");
+            Assert.Equal("a['foo'].b[2].z", path);
 
             // normal case
             exp = Expression.Parse("a[z.z][z.z].y");
             (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
-            Assert.AreEqual(path, "a['zar']['zar'].y");
+            Assert.Equal("a['zar']['zar'].y", path);
 
             // normal case
             exp = Expression.Parse("a.b[z.z]");
             (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
-            Assert.AreEqual(path, "a.b['zar']");
+            Assert.Equal("a.b['zar']", path);
 
             // stop evaluate at middle
             exp = Expression.Parse("json(x).b");
             (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
-            Assert.AreEqual(path, "b");
+            Assert.Equal("b", path);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTryEvaluateOfT()
         {
             AssertResult<bool>("true", true);
@@ -1145,7 +1158,7 @@ namespace AdaptiveExpressions.Tests
             AssertResult<double>(15.32322.ToString(CultureInfo.InvariantCulture), 15.32322);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestEvaluationOptions()
         {
             var mockMemory = new Dictionary<string, object>();
@@ -1201,15 +1214,15 @@ namespace AdaptiveExpressions.Tests
             // index is not boolean context, but it also requires raw value
             exp = Expression.Parse("a[b]");
             (value, error) = exp.TryEvaluate(mockMemory, options);
-            Assert.IsTrue(error != null);
+            Assert.True(error != null);
         }
 
         private void AssertResult<T>(string text, T expected)
         {
             var memory = new object();
             var (result, error) = Expression.Parse(text).TryEvaluate<T>(memory);
-            Assert.AreEqual(expected, result);
-            Assert.IsNull(error);
+            Assert.Equal(expected, result);
+            Assert.Null(error);
         }
 
         private void AssertObjectEquals(object expected, object actual)
@@ -1218,12 +1231,12 @@ namespace AdaptiveExpressions.Tests
             {
                 if (actual is int || actual is long)
                 {
-                    Assert.IsTrue(expected is int || expected is long);
-                    Assert.AreEqual(Convert.ToInt64(expected), Convert.ToInt64(actual));
+                    Assert.True(expected is int || expected is long);
+                    Assert.Equal(Convert.ToInt64(expected), Convert.ToInt64(actual));
                 }
                 else
                 {
-                    Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
+                    Assert.True(Convert.ToSingle(actual) == Convert.ToSingle(expected));
                 }
             }
 
@@ -1231,7 +1244,7 @@ namespace AdaptiveExpressions.Tests
             else if (expected is IList expectedList
                 && actual is IList actualList)
             {
-                Assert.AreEqual(expectedList.Count, actualList.Count);
+                Assert.Equal(expectedList.Count, actualList.Count);
                 for (var i = 0; i < expectedList.Count; i++)
                 {
                     AssertObjectEquals(ResolveValue(expectedList[i]), ResolveValue(actualList[i]));
@@ -1239,7 +1252,7 @@ namespace AdaptiveExpressions.Tests
             }
             else
             {
-                Assert.AreEqual(expected, actual);
+                Assert.Equal(expected, actual);
             }
         }
 
