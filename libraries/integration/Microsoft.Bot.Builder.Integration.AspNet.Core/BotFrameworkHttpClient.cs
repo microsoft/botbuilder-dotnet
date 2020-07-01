@@ -227,6 +227,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     }
 
+                    var affinity = activity.Properties["ARRAffinity"]?.ToString();
+                    if (affinity != null)
+                    {
+                        httpRequestMessage.Headers.Add("Cookie", $"ARRAffinity={affinity};");
+                    }
+
                     httpRequestMessage.Content = jsonContent;
 
                     using (var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
