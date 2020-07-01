@@ -603,6 +603,7 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.CompletedTask;
         }
         
+        /// <summary>
         /// Invoked when a Channel Restored event activity is received from the connector.
         /// Channel Restored correspond to the user restoring a previously deleted channel.
         /// </summary>
@@ -662,7 +663,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <summary>
         /// Invoked when a Team Renamed event activity is received from the connector.
         /// Team Renamed correspond to the user renaming an existing team.
-        ///</summary>
+        /// </summary>
         /// <param name="teamInfo">The team info object representing the team.</param>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -701,6 +702,7 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.CompletedTask;
         }
 
+        /// <summary>
         /// Safely casts an object to an object of type <typeparamref name="T"/> .
         /// </summary>
         /// <param name="value">The object to be casted.</param>
