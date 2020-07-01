@@ -190,9 +190,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
 
-                bot = new BotAffinity(httpRequest.Cookies["ARRAffinity"], bot);
-
                 var requestHandler = new StreamingRequestHandler(bot, this, socket, Logger);
+
+                requestHandler.ARRAffinity = httpRequest.Cookies["ARRAffinity"];
 
                 if (RequestHandlers == null)
                 {

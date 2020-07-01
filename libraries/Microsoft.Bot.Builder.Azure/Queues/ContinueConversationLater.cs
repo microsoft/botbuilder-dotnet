@@ -28,6 +28,26 @@ namespace Microsoft.Bot.Builder.Azure.Queues
     /// 
     /// This dialog returns the receipt information for the queued activity as the result of the dialog.
     /// </remarks>
+    /// <example>
+    /// Here is an example Azure Function for listening to the Queue and posting back to the bot to continue the conversation:
+    /// 
+    /// public static class SendQueuedActivityToBot
+    /// {
+    ///     private static Uri endpoint = new Uri(Environment.GetEnvironmentVariable("endpoint") ?? throw new ArgumentNullException("endpoint setting"));
+    ///     private static string botAppId = Environment.GetEnvironmentVariable(MicrosoftAppCredentials.MicrosoftAppIdKey) ?? throw new ArgumentNullException($"{MicrosoftAppCredentials.MicrosoftAppIdKey} setting");
+    ///     private static string botPassword = Environment.GetEnvironmentVariable(MicrosoftAppCredentials.MicrosoftAppPasswordKey) ?? throw new ArgumentNullException($"{MicrosoftAppCredentials.MicrosoftAppPasswordKey} setting");
+    ///     private static BotFrameworkHttpClient botClient = new BotFrameworkHttpClient(new HttpClient(), new SimpleCredentialProvider(botAppId, botPassword));
+    /// 
+    ///     [FunctionName("SendQueuedActivityToBot")]
+    ///     public static async Task Run([QueueTrigger(queueName: "activities", Connection = "AzureWebJobsStorage")] string activityJson, ILogger log)
+    ///     {
+    ///         log.LogInformation(activityJson);
+    ///         await botClient.PostActivityAsync(botAppId, endpoint, JsonConvert.DeserializeObject&lt;Activity&gt;(activityJson)).ConfigureAwait(false);
+    ///     }
+    /// }
+    /// 
+    /// While this is showing a function, any process can monitoring the queue and perform this task.
+    /// </example>
     public class ContinueConversationLater : Dialog
     {
         /// <summary>
@@ -132,9 +152,14 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             var activity = dc.Context.Activity.GetConversationReference().GetContinuationActivity();
             activity.Value = value;
 
-            if (dc.Context.TurnState.ContainsKey("ARRAffinity"))
+            // if we are in a persistent connection (websockets, etc.) we have affinity which needs to be 
+            // passed along with the activity so that when we post the activity back to us
+            // it will be routed correctly.
+            var affinity = dc.Context.TurnState.Get<string>("ARRAffinity");
+            if (!string.IsNullOrWhiteSpace(affinity))
             {
-                activity.Properties["ARRAffinity"] = dc.Context.TurnState.Get<string>("ARRAffinity");
+                // we need to pass along the affinity for continuation of this activity. BotFrameworkHttpClient will use this to post back to correct node.
+                activity.Properties["ARRAfinity"] = affinity;
             }
 
             var message = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, jsonSettings)));

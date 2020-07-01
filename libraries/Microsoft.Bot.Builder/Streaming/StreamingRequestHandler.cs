@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Streaming
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-            
+
             if (socket == null)
             {
                 throw new ArgumentNullException(nameof(socket));
@@ -96,6 +96,14 @@ namespace Microsoft.Bot.Builder.Streaming
 #pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking binary compat)
         public string ServiceUrl { get; private set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
+
+        /// <summary>
+        /// Gets or sets affinity token.
+        /// </summary>
+        /// <value>
+        /// Affinity token which is assiciated with this streaming connection.
+        /// </value>
+        public string ARRAffinity { get; set; }
 
         /// <summary>
         /// Begins listening for incoming requests over this StreamingRequestHandler's server.
@@ -213,8 +221,15 @@ namespace Microsoft.Bot.Builder.Streaming
                     }
                 }
 
+                BotCallbackHandler callback = (turnContext, cancellationToken) =>
+                {
+                    // capture affinity token into turn context for turns with activities received from this persistent connection.
+                    turnContext.TurnState.Set(nameof(ARRAffinity), ARRAffinity);
+                    return _bot.OnTurnAsync(turnContext, cancellationToken);
+                };
+
                 // Now that the request has been converted into an activity we can send it to the adapter.
-                var adapterResponse = await _activityProcessor.ProcessStreamingActivityAsync(activity, _bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                var adapterResponse = await _activityProcessor.ProcessStreamingActivityAsync(activity, callback, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // Now we convert the invokeResponse returned by the adapter into a StreamingResponse we can send back to the channel.
                 if (adapterResponse == null)

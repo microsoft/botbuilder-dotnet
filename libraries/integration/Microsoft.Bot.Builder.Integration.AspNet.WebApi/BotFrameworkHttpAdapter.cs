@@ -131,13 +131,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             {
                 HttpContext.Current.AcceptWebSocketRequest(async context =>
                 {
+                    var requestHandler = new StreamingRequestHandler(bot, this, context.WebSocket, Logger);
+
                     var cookie = httpRequest.Headers.GetCookies("ARRAffinity").FirstOrDefault();
                     if (cookie != null)
                     {
-                        bot = new BotAffinity(cookie["ARRAffinity"]?.Value, bot);
+                        requestHandler.ARRAffinity = cookie["ARRAffinity"]?.Value;
                     }
-
-                    var requestHandler = new StreamingRequestHandler(bot, this, context.WebSocket, Logger);
 
                     if (RequestHandlers == null)
                     {

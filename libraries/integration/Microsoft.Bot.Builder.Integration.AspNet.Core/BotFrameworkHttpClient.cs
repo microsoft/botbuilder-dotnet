@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
             return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
         }
-        
+
         private static T GetBodyContent<T>(string content)
         {
             return JsonConvert.DeserializeObject<T>(content);
@@ -208,6 +208,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     if (token != null)
                     {
                         httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+
+                    var affinity = activity.Properties["ARRAffinity"]?.ToString();
+                    if (affinity != null)
+                    {
+                        httpRequestMessage.Headers.Add("Cookie", $"ARRAffinity={affinity};");
                     }
 
                     httpRequestMessage.Content = jsonContent;
