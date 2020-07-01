@@ -20,13 +20,17 @@ namespace Microsoft.Bot.Builder.Teams
         public static async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
             var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
+#pragma warning disable CA2000 // Dispose objects before losing scope (we need to review this, disposing the connectorClient may have unintended consequences)
             return await GetTeamsConnectorClient(turnContext).Teams.FetchTeamDetailsAsync(t, cancellationToken).ConfigureAwait(false);
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
         public static async Task<IList<ChannelInfo>> GetTeamChannelsAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
             var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
+#pragma warning disable CA2000 // Dispose objects before losing scope (we need to review this, disposing the connectorClient may have unintended consequences)
             var channelList = await GetTeamsConnectorClient(turnContext).Teams.FetchChannelListAsync(t, cancellationToken).ConfigureAwait(false);
+#pragma warning restore CA2000 // Dispose objects before losing scope
             return channelList.Conversations;
         }
 
@@ -102,7 +106,7 @@ namespace Microsoft.Bot.Builder.Teams
 
             if (turnContext.Activity == null)
             {
-                throw new ArgumentNullException(nameof(turnContext.Activity));
+                throw new InvalidOperationException(nameof(turnContext.Activity));
             }
 
             if (string.IsNullOrEmpty(teamsChannelId))

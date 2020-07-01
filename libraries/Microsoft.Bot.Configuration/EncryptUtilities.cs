@@ -7,6 +7,9 @@ namespace Microsoft.Bot.Configuration.Encryption
     using System.IO;
     using System.Security.Cryptography;
 
+    /// <summary>
+    /// Helper methods to assist with encryption of connected service keys.
+    /// </summary>
     [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public static class EncryptUtilities
     {

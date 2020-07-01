@@ -62,7 +62,9 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <value>
         /// The request handlers for this adapter.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         protected IList<StreamingRequestHandler> RequestHandlers { get; set; } = new List<StreamingRequestHandler>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Primary adapter method for processing activities sent from streaming channel.
@@ -128,7 +130,7 @@ namespace Microsoft.Bot.Builder.Streaming
             // Check to see if any of this adapter's StreamingRequestHandlers is associated with this conversation.
             var possibleHandlers = RequestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id));
 
-            if (possibleHandlers.Count() > 0)
+            if (possibleHandlers.Any())
             {
                 if (possibleHandlers.Count() > 1)
                 {
@@ -147,32 +149,32 @@ namespace Microsoft.Bot.Builder.Streaming
 
                 return await possibleHandlers.First().SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             }
-            else
+
+            if (ConnectedBot != null)
             {
-                if (ConnectedBot != null)
+                // This is a proactive message that will need a new streaming connection opened.
+                // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
+#pragma warning disable CA2000 // Dispose objects before losing scope (we can't fix this without closing the socket connection, this should be addressed after we make StreamingRequestHandler disposable and we dispose the connector )
+                var connection = new ClientWebSocket();
+#pragma warning restore CA2000 // Dispose objects before losing scope
+                var uri = activity.ServiceUrl.Split(':');
+                var protocol = uri[uri.Length - 2];
+                var host = uri[uri.Length - 1];
+                await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken).ConfigureAwait(false);
+
+                var handler = new StreamingRequestHandler(ConnectedBot, this, connection, Logger);
+
+                if (RequestHandlers == null)
                 {
-                    // This is a proactive message that will need a new streaming connection opened.
-                    // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
-                    var connection = new ClientWebSocket();
-                    var uri = activity.ServiceUrl.Split(':');
-                    var protocol = uri[uri.Length - 2];
-                    var host = uri[uri.Length - 1];
-                    await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken).ConfigureAwait(false);
-
-                    var handler = new StreamingRequestHandler(ConnectedBot, this, connection, Logger);
-
-                    if (RequestHandlers == null)
-                    {
-                        RequestHandlers = new List<StreamingRequestHandler>();
-                    }
-
-                    RequestHandlers.Add(handler);
-
-                    return await handler.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                    RequestHandlers = new List<StreamingRequestHandler>();
                 }
 
-                return null;
+                RequestHandlers.Add(handler);
+
+                return await handler.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             }
+
+            return null;
         }
 
         /// <summary>
@@ -228,7 +230,7 @@ namespace Microsoft.Bot.Builder.Streaming
             // information unique to streaming connections. Now that we know that this is a streaming
             // activity, process it in the streaming pipeline.
             // Process streaming activity.
-            return await SendStreamingActivityAsync(activity).ConfigureAwait(false);
+            return await SendStreamingActivityAsync(activity, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -239,7 +241,9 @@ namespace Microsoft.Bot.Builder.Streaming
             var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
                     MicrosoftGovernmentAppCredentials.Empty :
                     MicrosoftAppCredentials.Empty;
+#pragma warning disable CA2000 // Dispose objects before losing scope (We need to make ConnectorClient disposable to fix this, ignoring it for now)
             var streamingClient = new StreamingHttpClient(requestHandler, Logger);
+#pragma warning restore CA2000 // Dispose objects before losing scope
             var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: streamingClient);
             return connectorClient;
         }

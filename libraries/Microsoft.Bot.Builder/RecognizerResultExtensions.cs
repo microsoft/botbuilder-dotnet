@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder
 
             if (result.Intents == null)
             {
-                throw new ArgumentNullException(nameof(result.Intents));
+                throw new InvalidOperationException(nameof(result.Intents));
             }
 
             var topIntent = (string.Empty, 0.0d);

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -125,8 +126,10 @@ namespace Microsoft.Bot.Builder.Adapters
                 ChannelId = "test",
                 ServiceUrl = "https://test.com",
                 Conversation = new ConversationAccount(false, name, name),
-                User = new ChannelAccount(id: user.ToLower(), name: user),
-                Bot = new ChannelAccount(id: bot.ToLower(), name: bot),
+#pragma warning disable CA1308 // Normalize strings to uppercase (it is safe to use lowercase here, this is just for display purposes)
+                User = new ChannelAccount(id: user.ToLowerInvariant(), name: user),
+                Bot = new ChannelAccount(id: bot.ToLowerInvariant(), name: bot),
+#pragma warning restore CA1308 // Normalize strings to uppercase
                 Locale = "en-us"
             };
         }
@@ -174,7 +177,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 activity.Conversation = Conversation.Conversation;
                 activity.ServiceUrl = Conversation.ServiceUrl;
 
-                var id = activity.Id = (_nextId++).ToString();
+                var id = activity.Id = (_nextId++).ToString(CultureInfo.InvariantCulture);
             }
 
             if (activity.Timestamp == null || activity.Timestamp == default(DateTimeOffset))
@@ -370,9 +373,12 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             ActiveQueue.Clear();
             var update = Activity.CreateConversationUpdateActivity();
-            update.Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") };
-            var context = new TurnContext(this, (Activity)update);
-            return callback(context, cancellationToken);
+            update.ChannelId = channelId;
+            update.Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("n") };
+            using (var context = new TurnContext(this, (Activity)update))
+            {
+                return callback(context, cancellationToken);
+            }
         }
 
         /// <summary>
@@ -435,7 +441,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 Recipient = Conversation.Bot,
                 Conversation = Conversation.Conversation,
                 ServiceUrl = Conversation.ServiceUrl,
-                Id = (_nextId++).ToString(),
+                Id = (_nextId++).ToString(CultureInfo.InvariantCulture),
                 Text = text,
             };
 
@@ -892,9 +898,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 var rhs = obj as UserTokenKey;
                 if (rhs != null)
                 {
-                    return string.Equals(this.ConnectionName, rhs.ConnectionName) &&
-                        string.Equals(this.UserId, rhs.UserId) &&
-                        string.Equals(this.ChannelId, rhs.ChannelId);
+                    return string.Equals(this.ConnectionName, rhs.ConnectionName, StringComparison.Ordinal) &&
+                        string.Equals(this.UserId, rhs.UserId, StringComparison.Ordinal) &&
+                        string.Equals(this.ChannelId, rhs.ChannelId, StringComparison.Ordinal);
                 }
 
                 return base.Equals(obj);
@@ -917,7 +923,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 var rhs = obj as ExchangableTokenKey;
                 if (rhs != null)
                 {
-                    return string.Equals(this.ExchangableItem, rhs.ExchangableItem) &&
+                    return string.Equals(this.ExchangableItem, rhs.ExchangableItem, StringComparison.Ordinal) &&
                         base.Equals(obj);
                 }
 

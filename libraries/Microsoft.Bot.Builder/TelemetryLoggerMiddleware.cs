@@ -324,7 +324,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="activity">The Activity object deleted by bot.</param>
         /// <param name="additionalProperties">Additional properties to add to the event.</param>
         /// <returns>The properties and their values to log when the bot deletes a message it sent previously.</returns>
+#pragma warning disable CA1822 // Mark members as static (can't change this without breaking binary compat)
         protected Task<Dictionary<string, string>> FillDeleteEventPropertiesAsync(IMessageDeleteActivity activity, Dictionary<string, string> additionalProperties = null)
+#pragma warning restore CA1822 // Mark members as static
         {
             var properties = new Dictionary<string, string>()
                 {

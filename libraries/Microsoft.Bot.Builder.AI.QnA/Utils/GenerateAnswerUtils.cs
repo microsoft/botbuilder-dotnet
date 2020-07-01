@@ -153,15 +153,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
             var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(this.Options));
-            
+
             if (queryOptions != null)
             {
-                if (queryOptions.ScoreThreshold != 0)
+                if (queryOptions.ScoreThreshold != hydratedOptions.ScoreThreshold && queryOptions.ScoreThreshold != 0)
                 {
                     hydratedOptions.ScoreThreshold = queryOptions.ScoreThreshold;
                 }
 
-                if (queryOptions.Top != 0)
+                if (queryOptions.Top != hydratedOptions.Top && queryOptions.Top != 0)
                 {
                     hydratedOptions.Top = queryOptions.Top;
                 }
@@ -169,13 +169,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 if (queryOptions.StrictFilters?.Length > 0)
                 {
                     hydratedOptions.StrictFilters = queryOptions.StrictFilters;
-                }
+                }         
 
                 hydratedOptions.Context = queryOptions.Context;
                 hydratedOptions.QnAId = queryOptions.QnAId;
                 hydratedOptions.IsTest = queryOptions.IsTest;
                 hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
-                hydratedOptions.EnablePreciseAnswer = queryOptions.EnablePreciseAnswer;
             }
 
             return hydratedOptions;
@@ -184,24 +183,17 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task<QueryResults> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
-            var answerSpanRequest = new AnswerSpanRequest();
-            if (options.EnablePreciseAnswer)
-            {
-                answerSpanRequest.Enable = options.EnablePreciseAnswer;
-            }
-
             var jsonRequest = JsonConvert.SerializeObject(
                 new
                 {
                     question = messageActivity.Text,
                     top = options.Top,
-                    strictFilters = options.StrictFilters,
+                    strictFilters = options.StrictFilters,                  
                     scoreThreshold = options.ScoreThreshold,
                     context = options.Context,
                     qnaId = options.QnAId,
                     isTest = options.IsTest,
-                    rankerType = options.RankerType,
-                    answerSpanRequest = answerSpanRequest
+                    rankerType = options.RankerType
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(httpClient);
@@ -214,12 +206,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
         {
-            var answerSpanRequest = new AnswerSpanRequest();
-            if (options.EnablePreciseAnswer)
-            {                
-                answerSpanRequest.Enable = options.EnablePreciseAnswer;
-            }
-
             var traceInfo = new QnAMakerTraceInfo
             {
                 Message = (Activity)messageActivity,
@@ -227,12 +213,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
                 ScoreThreshold = options.ScoreThreshold,
                 Top = options.Top,
-                StrictFilters = options.StrictFilters,
+                StrictFilters = options.StrictFilters,               
                 Context = options.Context,
                 QnAId = options.QnAId,
                 IsTest = options.IsTest,
-                RankerType = options.RankerType,
-                AnswerSpanRequest = answerSpanRequest
+                RankerType = options.RankerType
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);

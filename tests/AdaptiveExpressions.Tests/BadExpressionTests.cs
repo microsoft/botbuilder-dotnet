@@ -385,6 +385,7 @@ namespace AdaptiveExpressions.Tests
 
             #region Memory access test
             Test("getProperty(bag, 1)"), // second param should be string
+            Test("getProperty(1)"), // if getProperty contains only one parameter, the parameter should be string
             Test("Accessor(1)"), // first param should be string
             Test("Accessor(bag, 1)"), // second should be object
             Test("one[0]"),  // one is not list
