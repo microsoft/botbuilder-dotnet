@@ -202,9 +202,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="eventRequest">The data of the slack event.</param>
         /// <param name="client">The Slack client.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>An activity containing the event data.</returns>
-        public static async Task<Activity> EventToActivityAsync(EventRequest eventRequest, SlackClientWrapper client, CancellationToken cancellationToken)
+        public static Activity EventToActivity(EventRequest eventRequest, SlackClientWrapper client)
         {
             if (eventRequest == null)
             {
@@ -213,15 +212,16 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             var innerEvent = eventRequest.Event;
 
-            var activity = new Activity()
+            var activity = new Activity
             {
                 Id = innerEvent.EventTs,
                 Timestamp = default,
                 ChannelId = "slack",
-                Conversation = new ConversationAccount()
-                {
-                    Id = innerEvent.Channel ?? innerEvent.ChannelId ?? eventRequest.TeamId
-                },
+                Conversation =
+                    new ConversationAccount()
+                    {
+                        Id = innerEvent.Channel ?? innerEvent.ChannelId ?? eventRequest.TeamId
+                    },
                 From = new ChannelAccount()
                 {
                     Id = innerEvent.User ?? innerEvent.BotId ?? eventRequest.TeamId
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             activity.Recipient = new ChannelAccount()
             {
-                Id = await client.GetBotUserByTeamAsync(activity, cancellationToken).ConfigureAwait(false)
+                Id = client.GetBotUserIdentity(activity)
             };
 
             if (!string.IsNullOrEmpty(innerEvent.ThreadTs))
@@ -267,9 +267,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="commandRequest">The data of the slack command request.</param>
         /// <param name="client">The Slack client.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>An activity containing the event data.</returns>
-        public static async Task<Activity> CommandToActivityAsync(CommandPayload commandRequest, SlackClientWrapper client, CancellationToken cancellationToken)
+        public static Activity CommandToActivity(CommandPayload commandRequest, SlackClientWrapper client)
         {
             if (commandRequest == null)
             {
@@ -289,17 +288,16 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 {
                     Id = commandRequest.UserId,
                 },
-                Recipient = new ChannelAccount()
-                {
-                    Id = null,
-                },
                 ChannelData = commandRequest,
                 Type = ActivityTypes.Event,
                 Name = "Command",
                 Value = commandRequest.Command
             };
 
-            activity.Recipient.Id = await client.GetBotUserByTeamAsync(activity, cancellationToken).ConfigureAwait(false);
+            activity.Recipient = new ChannelAccount()
+            {
+                Id = client.GetBotUserIdentity(activity)
+            };
 
             activity.Conversation.Properties["team"] = commandRequest.TeamId;
 
