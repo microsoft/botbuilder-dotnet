@@ -91,6 +91,13 @@ namespace Microsoft.Bot.Builder.Azure
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
         }
 
+        /// <summary>
+        /// Reads one or more items with matching keys from the Cosmos DB container.
+        /// </summary>
+        /// <param name="keys">A collection of Ids for each item to be retrieved.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+        /// <returns>A dictionary containing the retrieved items.</returns>
+        /// <exception cref="ArgumentNullException">Exception thrown if the array of keys (Ids for the items to be retrieved) is null.</exception>
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)
@@ -151,6 +158,15 @@ namespace Microsoft.Bot.Builder.Azure
             return storeItems;
         }
 
+        /// <summary>
+        /// Inserts or updates one or more items into the Cosmos DB container. 
+        /// </summary>
+        /// <param name="changes">A dictionary of items to be inserted or updated. The dictionary item key
+        /// is used as the ID for the inserted / updated item.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
+        /// <returns>A Task representing the work to be executed.</returns>
+        /// <exception cref="ArgumentNullException">Exception thrown if the changes dictionary is null.</exception>
+        /// <exception cref="Exception">Exception thrown is the etag is empty on any of the items within the changes dictionary.</exception>
         public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (changes == null)
@@ -208,6 +224,13 @@ namespace Microsoft.Bot.Builder.Azure
             }
         }
 
+        /// <summary>
+        /// Deletes one or more items from the Cosmos DB container.
+        /// </summary>
+        /// <param name="keys">An array of Ids for the items to be deleted.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
+        /// <returns>A Task representing the work to be executed.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the array of Ids to be deleted is null.</exception>
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (keys == null)

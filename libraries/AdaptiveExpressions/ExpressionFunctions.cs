@@ -2374,7 +2374,7 @@ namespace AdaptiveExpressions
                     }
                     else
                     {
-                        error = $"there is no matching node for path: ${jpath} in the given JSON";
+                        error = $"there is no matching node for path: {jpath} in the given JSON";
                     }
                 }
             }
@@ -2943,7 +2943,7 @@ namespace AdaptiveExpressions
                             var count = Convert.ToInt32(args[1]);
                             if (count <= 0)
                             {
-                                error = $"The second parameter should be more than zero";
+                                error = $"The second parameter {args[1]} should be more than zero";
                             }
                             else
                             {
@@ -2970,7 +2970,7 @@ namespace AdaptiveExpressions
                         object result = null;
                         if (args.Count == 2 && !args[1].IsInteger())
                         {
-                            error = $"The second {args[1]} parameter must be an integer.";
+                            error = $"The second parameter {args[1]} must be an integer.";
                         }
 
                         if (error == null)
@@ -2978,7 +2978,7 @@ namespace AdaptiveExpressions
                             var digits = args.Count == 2 ? Convert.ToInt32(args[1]) : 0;
                             if (digits < 0 || digits > 15)
                             {
-                                error = $"The second parameter {args[1]} must be an integer between 0 and 15;";
+                                error = $"The second parameter {args[1]} must be an integer between 0 and 15.";
                             }
                             else
                             {
@@ -4359,15 +4359,15 @@ namespace AdaptiveExpressions
                             string error = null;
                             if (!args[0].IsNumber())
                             {
-                                error = $"formatNumber first argument ${args[0]} must be number";
+                                error = $"formatNumber first argument {args[0]} must be number";
                             }
                             else if (!args[1].IsInteger())
                             {
-                                error = $"formatNumber second argument ${args[1]} must be number";
+                                error = $"formatNumber second argument {args[1]} must be number";
                             }
                             else if (args.Count == 3 && !(args[2] is string))
                             {
-                                error = $"formatNumber third agument ${args[2]} must be a locale";
+                                error = $"formatNumber third agument {args[2]} must be a locale";
                             }
                             else
                             {
@@ -4526,6 +4526,30 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(ExpressionType.JPath, ApplyWithError(args => JPath(args[0], args[1].ToString())), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.Merge,
+                    ApplySequenceWithError(args =>
+                                {
+                                    object result = null;
+                                    string error = null;
+                                    if (args[0] is JObject && args[1] is JObject)
+                                    {
+                                        (args[0] as JObject).Merge(args[1] as JObject, new JsonMergeSettings
+                                        {
+                                            MergeArrayHandling = MergeArrayHandling.Replace
+                                        });
+
+                                        result = args[0];
+                                    }
+                                    else
+                                    {
+                                        error = $"The arguments {args[0]} and {args[1]} must be a JSON objects.";
+                                    }
+
+                                    return (result, error);
+                                }), 
+                    ReturnType.Object,
+                    (expression) => ValidateArityAndAnyType(expression, 2, int.MaxValue)),
 
                 // Regex expression
                 new ExpressionEvaluator(

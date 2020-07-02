@@ -335,6 +335,9 @@
 			"$ref": "#/definitions/Microsoft.Test.UserSays"
 		},
 		{
+			"$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
+		},
+		{
 			"$ref": "#/definitions/Microsoft.Test.UserTyping"
 		},
 		{
@@ -8876,7 +8879,7 @@
 		"Microsoft.Test.HttpRequestSequenceMock": {
 			"$role": "implements(Microsoft.Test.IHttpRequestMock)",
 			"title": "HttpRequest Sequence Mock",
-			"description": "Mock HttpRqeust in sequence order.",
+			"description": "Mock HttpRequest in sequence order.",
 			"type": "object",
 			"required": [
 				"url",
@@ -9043,6 +9046,21 @@
 				}
 			]
 		},
+		"Microsoft.Test.IUserTokenMock": {
+			"title": "Microsoft Test IUserTokenMock",
+			"description": "Components which derive from UserTokenMock class",
+			"$role": "interface",
+			"oneOf": [
+				{
+					"type": "string",
+					"title": "Reference to Microsoft.Test.IUserTokenMock",
+					"description": "Reference to Microsoft.Test.IUserTokenMock .dialog file."
+				},
+				{
+					"$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
+				}
+			]
+		},
 		"Microsoft.Test.Script": {
 			"$role": [],
 			"title": "Test Script",
@@ -9081,13 +9099,13 @@
 						"$ref": "#/definitions/Microsoft.Test.IHttpRequestMock"
 					}
 				},
-				"propertyMocks": {
+				"userTokenMocks": {
 					"type": "array",
-					"title": "Property Mocks",
-					"description": "A list of property mocks. In first match first use order.",
+					"title": "User Token Mocks",
+					"description": "Mock data for Microsoft.OAuthInput.",
 					"items": {
-						"$kind": "Microsoft.Test.IPropertyMock",
-						"$ref": "#/definitions/Microsoft.Test.IPropertyMock"
+						"$kind": "Microsoft.Test.IUserTokenMock",
+						"$ref": "#/definitions/Microsoft.Test.IUserTokenMock"
 					}
 				},
 				"script": {
@@ -9345,6 +9363,78 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.Test.UserSays"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.Test.UserTokenBasicMock": {
+			"$role": "implements(Microsoft.Test.IUserTokenMock)",
+			"title": "Microsoft Test UserTokenBasicMock",
+			"description": "Mock Basic UserToken",
+			"type": "object",
+			"required": [
+				"connectionName",
+				"token",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"connectionName": {
+					"type": "string",
+					"title": "Connection Name",
+					"description": "The connection name.",
+					"examples": [
+						"graph"
+					]
+				},
+				"channelId": {
+					"type": "string",
+					"title": "Channel ID",
+					"description": "The channel ID. If empty, same as adapter.Conversation.ChannelId.",
+					"examples": [
+						"test"
+					]
+				},
+				"userId": {
+					"type": "string",
+					"title": "User ID",
+					"description": "The user ID. If empty, same as adapter.Conversation.User.Id.",
+					"examples": [
+						"user1"
+					]
+				},
+				"token": {
+					"type": "string",
+					"title": "Token",
+					"description": "The token to store.",
+					"examples": [
+						"token"
+					]
+				},
+				"magicCode": {
+					"type": "string",
+					"title": "Magic Code",
+					"description": "The optional magic code to associate with this token.",
+					"examples": [
+						"000000"
+					]
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.Test.UserTokenBasicMock"
 				},
 				"$designer": {
 					"title": "Designer information",
