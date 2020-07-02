@@ -1,0 +1,40 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.SwitchCondition",
+    "condition": "user.age",
+    "default": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Who are you?"
+        }
+    ],
+    "cases": [
+        {
+            "value": "21",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Age is 21"
+                }
+            ]
+        },
+        {
+            "value": "22",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Age is 22"
+                }
+            ]
+        },
+        {
+            "value": "23",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Age is 23"
+                }
+            ]
+        }
+    ]
+} 

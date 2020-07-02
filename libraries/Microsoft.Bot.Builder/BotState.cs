@@ -404,7 +404,10 @@ namespace Microsoft.Bot.Builder
             /// Get the property value. The semantics are intended to be lazy, note the use of LoadAsync at the start.
             /// </summary>
             /// <param name="turnContext">The context object for this turn.</param>
-            /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
+            /// <param name="defaultValueFactory">Defines the default value.
+            /// Invoked when no value been set for the requested state property.
+            /// If defaultValueFactory is defined as null in that case, the method returns null and
+            /// <see cref="SetAsync(ITurnContext, T, CancellationToken)">SetAsync</see> is not called.</param>
             /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
             public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory, CancellationToken cancellationToken)
