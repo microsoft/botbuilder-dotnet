@@ -36,7 +36,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         /// <summary>
         /// Return the content in sequence order. The last one will be repeated.
         /// </summary>
-        /// <returns>The HttpContent.</returns>
+        /// <returns>
+        /// The HttpContent.
+        /// </returns>
         public HttpContent GetContent()
         {
             var result = _contents[_id];
