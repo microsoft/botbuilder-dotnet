@@ -232,7 +232,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 var requestHandler = new StreamingRequestHandler(bot, this, socket, Logger);
 
-                requestHandler.ARRAffinity = httpRequest.Cookies["ARRAffinity"];
+                if (httpRequest.Cookies != null && httpRequest.Cookies.TryGetValue("ARRAffinity", out string arrAffinity))
+                {
+                    requestHandler.ARRAffinity = arrAffinity;
+                }
 
                 if (RequestHandlers == null)
                 {
