@@ -9,10 +9,10 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -95,6 +95,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public List<HttpRequestMock> HttpRequestMocks { get; set; } = new List<HttpRequestMock>();
 
         /// <summary>
+        /// Gets or sets the mock data for Microsoft.OAuthInput.
+        /// </summary>
+        /// <value>
+        /// A list of mocks.
+        /// </value>
+        [JsonProperty("userTokenMocks")]
+        public List<UserTokenMock> UserTokenMocks { get; set; } = new List<UserTokenMock>();
+
+        /// <summary>
         /// Gets or sets the test script actions.
         /// </summary>
         /// <value>
@@ -152,6 +161,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             adapter.EnableTrace = this.EnableTrace;
             adapter.Locale = this.Locale;
             adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));
+
+            foreach (var userToken in UserTokenMocks)
+            {
+                userToken.Setup(adapter);
+            }
 
             if (callback != null)
             {
