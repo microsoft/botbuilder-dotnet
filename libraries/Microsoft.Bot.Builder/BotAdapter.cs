@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -217,6 +218,15 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivityAsync()
             if (turnContext.Activity != null)
             {
+                try
+                {
+                    Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
+                }
+                catch
+                {
+                    // do nothing if locale is null or illegal locale string
+                }
+                
                 try
                 {
                     await MiddlewareSet.ReceiveActivityWithStatusAsync(turnContext, callback, cancellationToken).ConfigureAwait(false);

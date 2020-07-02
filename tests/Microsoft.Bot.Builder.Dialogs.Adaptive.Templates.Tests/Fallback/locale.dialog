@@ -7,11 +7,6 @@
       "$kind": "Microsoft.OnBeginDialog",
       "actions": [
         {
-          "$kind": "Microsoft.SetProperty",
-          "property": "turn.activity.locale",
-          "value": "de-DE"
-        },
-        {
           "$kind": "Microsoft.SendActivity",
           "activity": "${string(1.122)}"
         },
@@ -24,15 +19,9 @@
           "activity": "${addDays('2018-01-02T02:00:00.000Z', 4, 'D')}"
         },
         {
-          "$kind": "Microsoft.SetProperty",
-          "property": "turn.activity.locale",
-          "value": "fr-FR"
-        },
-        {
           "$kind": "Microsoft.SendActivity",
-          "activity": "${addDays('2018-01-02T02:00:00.000Z', 4, 'D')}"
+          "activity": "${formatNumber(3.1415926, 5)}"
         }
-
       ]
     }
   ]

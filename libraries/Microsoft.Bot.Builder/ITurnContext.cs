@@ -124,6 +124,12 @@ namespace Microsoft.Bot.Builder
         Activity Activity { get; }
 
         /// <summary>
+        /// Gets or sets the locale on this context object.
+        /// </summary>
+        /// <value>The string of locale on this context object.</value>
+        public string Locale { get; set; }
+
+        /// <summary>
         /// Gets a value indicating whether at least one response was sent for the current turn.
         /// </summary>
         /// <value><c>true</c> if at least one response was sent for the current turn; otherwise, <c>false</c>.</value>

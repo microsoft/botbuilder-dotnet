@@ -707,10 +707,10 @@ namespace AdaptiveExpressions.Tests
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
             Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
             Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
-            Test("formatNumber(20.0000, 2)", "20.00"),
-            Test("formatNumber(12.123, 2)", "12.12"),
-            Test("formatNumber(1.551, 2)", "1.55"),
-            Test("formatNumber(12.123, 4)", "12.1230"),
+            Test("formatNumber(20.0000, 2, 'en-US')", "20.00"),
+            Test("formatNumber(12.123, 2, 'en-US')", "12.12"),
+            Test("formatNumber(1.551, 2, 'en-US')", "1.55"),
+            Test("formatNumber(12.123, 4, 'en-US')", "12.1230"),
             Test("formatNumber(12000.3, 4, 'fr-fr') == '12\x00A0000,3000' || formatNumber(12000.3, 4, 'fr-fr') == '12\x202F000,3000'", true),
             #endregion
 

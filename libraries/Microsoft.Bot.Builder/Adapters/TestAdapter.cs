@@ -445,7 +445,6 @@ namespace Microsoft.Bot.Builder.Adapters
                 Text = text,
             };
 
-            Thread.CurrentThread.CurrentCulture = new CultureInfo(activity.Locale);
             return activity;
         }
 

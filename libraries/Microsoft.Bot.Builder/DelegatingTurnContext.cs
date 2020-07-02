@@ -39,6 +39,19 @@ namespace Microsoft.Bot.Builder
 
         public bool Responded => _innerTurnContext.Responded;
 
+        public string Locale
+        {
+            get
+            {
+                return _innerTurnContext.Locale;
+            }
+
+            set
+            {
+                _innerTurnContext.Locale = value;
+            }
+        }
+
         public Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken))
             => _innerTurnContext.DeleteActivityAsync(activityId, cancellationToken);
 

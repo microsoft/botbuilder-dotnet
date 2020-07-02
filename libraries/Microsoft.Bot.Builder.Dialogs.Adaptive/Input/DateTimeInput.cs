@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.DateTime;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
@@ -68,8 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 if (OutputFormat != null)
                 {
-                    var opt = new Options() { Locale = dc.GetLocale() };
-                    var (outputValue, error) = this.OutputFormat.TryEvaluate(dc.State, opt);
+                    var (outputValue, error) = this.OutputFormat.TryEvaluate(dc.State);
                     if (error == null)
                     {
                         dc.State.SetValue(VALUE_PROPERTY, outputValue);

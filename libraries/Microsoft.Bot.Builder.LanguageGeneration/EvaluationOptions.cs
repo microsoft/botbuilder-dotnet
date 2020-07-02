@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -46,7 +47,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.StrictMode = opt.StrictMode;
             this.NullSubstitution = opt.NullSubstitution;
             this.LineBreakStyle = opt.LineBreakStyle;
-            this.Locale = opt.Locale;
+            this.Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
         }
 
         public EvaluationOptions(IList<string> optionsList)

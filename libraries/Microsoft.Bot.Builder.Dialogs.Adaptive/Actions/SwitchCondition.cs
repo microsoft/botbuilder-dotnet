@@ -3,14 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
@@ -154,8 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             foreach (var caseScope in this.Cases)
             {
-                var opt = new Options() { Locale = dc.GetLocale() };
-                var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dc.State, opt);
+                var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dc.State);
 
                 // Compare both expression results. The current switch case triggers if the comparison is true.
                 if (value != null && ((bool)value) == true)
