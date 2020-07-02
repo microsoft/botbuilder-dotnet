@@ -310,7 +310,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             using (var context = new TurnContext(this, activity))
             {
-                context.AppId = "UNKNOWN IDENTITY";
+                context.AppId = identity.Id;
                 await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
             }
         }

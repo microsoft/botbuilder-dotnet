@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             // create a conversation reference
             using (var context = new TurnContext(this, activity))
             {
-                context.AppId = "UNKNOWN IDENTITY";
+                context.AppId = _twilioClient.Options.TwilioNumber;
                 context.TurnState.Add("httpStatus", HttpStatusCode.OK.ToString("D"));
                 await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 

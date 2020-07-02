@@ -284,7 +284,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
                     using (var context = new TurnContext(this, activity))
                     {
-                        context.AppId = "UNKNOWN IDENTITY";
+                        // Recipient ID on the Activity is the Facebook Page ID
+                        context.AppId = activity.Recipient.Id;
 
                         await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
                     }

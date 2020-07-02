@@ -361,7 +361,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             {
                 using (var context = new TurnContext(this, activity))
                 {
-                    context.AppId = "UNKNOWN IDENTITY";
+                    context.AppId = _slackClient.Identity;
                     context.TurnState.Add("httpStatus", ((int)HttpStatusCode.OK).ToString(System.Globalization.CultureInfo.InvariantCulture));
 
                     await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
