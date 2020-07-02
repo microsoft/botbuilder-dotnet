@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Version Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</Version>
-    <Version Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</Version>
+    <Version Condition=" '$(IsBuildServer)' != '' ">$(PackageVersion)</Version>
     <PackageVersion Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</PackageVersion>
-    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

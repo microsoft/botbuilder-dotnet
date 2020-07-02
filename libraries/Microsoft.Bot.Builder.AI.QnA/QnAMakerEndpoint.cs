@@ -11,6 +11,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMakerEndpoint
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMakerEndpoint"/> class.
+        /// </summary>
         public QnAMakerEndpoint()
         {
         }

@@ -28,10 +28,10 @@ namespace Microsoft.Bot.Builder.Tests
         /// Loads a list of activities from a transcript file.
         /// Use the context of the test to find the transcript file.
         /// </summary>
-        /// <param name="className">className.</param>
-        /// <param name="testName">testName.</param>
+        /// <param name="className">Class name.</param>
+        /// <param name="testName">Test name.</param>
         /// <returns>A list of activities to test.</returns>
-        public static IEnumerable<IActivity> GetFromTestContext(string className, string testName)
+        public static IEnumerable<IActivity> GetActivitiesFromFile(string className, string testName)
         {
             // Use TestContext to find transcripts using the following naming convention:
             // {BOTBUILDER_TRANSCRIPTS_LOCATION}\{TestClassName}\{TestMethodName}.chat

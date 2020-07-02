@@ -9,13 +9,24 @@ using Microsoft.Rest.TransientFaultHandling;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
+    /// <summary>
+    /// Used to build the configuration settings for a bot application.
+    /// </summary>
     public class BotFrameworkConfigurationBuilder
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkConfigurationBuilder"/> class.
+        /// </summary>
+        /// <param name="botFrameworkOptions">An instance of <see cref="BotFrameworkOptions"/>.</param>
         public BotFrameworkConfigurationBuilder(BotFrameworkOptions botFrameworkOptions)
         {
             BotFrameworkOptions = botFrameworkOptions;
         }
 
+        /// <summary>
+        /// Gets the <see cref="BotFrameworkOptions"/>.
+        /// </summary>
+        /// <value>An instance of <see cref="BotFrameworkOptions"/>.</value>
         public BotFrameworkOptions BotFrameworkOptions { get; }
 
         /// <summary>

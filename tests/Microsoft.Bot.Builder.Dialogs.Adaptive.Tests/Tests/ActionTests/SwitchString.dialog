@@ -1,0 +1,49 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.SwitchCondition",
+    "condition": "user.name",
+    "default": [
+        {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Who are you?"
+        }
+    ],
+    "cases": [
+        {
+            "value": "susan",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "hi susan"
+                }
+            ]
+        },
+        {
+            "value": "bob",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "hi bob"
+                }
+            ]
+        },
+        {
+            "value": "frank",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "hi frank"
+                }
+            ]
+        },
+        {
+            "value": "23",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "hi 23"
+                }
+            ]
+        }
+    ]
+}

@@ -134,21 +134,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        [JsonIgnore]
-        public override IBotTelemetryClient TelemetryClient
-        {
-            get
-            {
-                return base.TelemetryClient;
-            }
-
-            set
-            {
-                base.TelemetryClient = value ?? NullBotTelemetryClient.Instance;
-                Dialogs.TelemetryClient = base.TelemetryClient;
-            }
-        }
-
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (options is CancellationToken)

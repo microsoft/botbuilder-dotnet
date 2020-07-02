@@ -15,6 +15,9 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
+    /// <summary>
+    /// Options for <see cref="LuisRecognizerOptionsV2"/>.
+    /// </summary>
     public class LuisRecognizerOptionsV2 : LuisRecognizerOptions
     {
         /// <summary>

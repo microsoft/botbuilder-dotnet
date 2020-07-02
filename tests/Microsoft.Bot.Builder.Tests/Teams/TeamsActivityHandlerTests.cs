@@ -309,6 +309,28 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
+        public async Task TestConversationUpdateTeamsChannelRestored()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                ChannelData = new TeamsChannelData { EventType = "channelRestored" },
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsChannelRestoredAsync", bot.Record[1]);
+        }
+
+        [Fact]
         public async Task TestConversationUpdateTeamsTeamRenamed()
         {
             // Arrange
@@ -898,6 +920,12 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsChannelRenamedAsync(channelInfo, teamInfo, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsChannelRestoredAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsChannelRestoredAsync(channelInfo, teamInfo, turnContext, cancellationToken);
             }
 
             protected override Task OnTeamsTeamRenamedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)

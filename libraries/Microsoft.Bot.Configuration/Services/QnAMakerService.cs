@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Configuration
 {
+    /// <summary>
+    /// Configuration properties for a connected LUIS service.
+    /// </summary>
     [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class QnAMakerService : ConnectedService
     {

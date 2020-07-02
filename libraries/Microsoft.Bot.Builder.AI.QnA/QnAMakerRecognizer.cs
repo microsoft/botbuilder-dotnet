@@ -1,5 +1,5 @@
-﻿// Licensed under the MIT License.
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -21,13 +21,22 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
     /// </summary>
     public class QnAMakerRecognizer : Recognizer
     {
+        /// <summary>
+        /// The declarative type for this recognizer.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.QnAMakerRecognizer";
 
+        /// <summary>
+        /// Key used when adding the intent to the <see cref="RecognizerResult"/> intents collection.
+        /// </summary>
         public const string QnAMatchIntent = "QnAMatch";
 
         private const string IntentPrefix = "intent=";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMakerRecognizer"/> class.
+        /// </summary>
         public QnAMakerRecognizer()
         {
         }
@@ -128,6 +137,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         [JsonProperty("qnaId")]
         public IntExpression QnAId { get; set; } = 0;
 
+        /// <summary>
+        /// Gets or sets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.
+        /// </summary>
+        /// <value>
+        /// A instance of <see cref="HttpClient"/>.
+        /// </value>
         [JsonIgnore]
         public HttpClient HttpClient { get; set; }
 
@@ -140,10 +155,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         [JsonProperty("logPersonalInformation")]
         public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
 
+        /// <summary>
+        /// Return results of the call to QnA Maker.
+        /// </summary>
+        /// <param name="dialogContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="activity">The incoming activity received from the user. The Text property value is used as the query text for QnA Maker.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <returns>A <see cref="RecognizerResult"/> containing the QnA Maker result.</returns>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             // Identify matched intents
-            var recognizerResult = new RecognizerResult()
+            var recognizerResult = new RecognizerResult
             {
                 Text = activity.Text,
                 Intents = new Dictionary<string, IntentScore>(),
@@ -155,7 +179,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 return recognizerResult;
             }
 
-            List<Metadata> filters = new List<Metadata>();
+            var filters = new List<Metadata>();
             if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
             {
                 filters.Add(new Metadata()
@@ -166,7 +190,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             }
 
             // if there is $qna.metadata set add to filters
-            var externalMetadata = this.Metadata?.GetValue(dialogContext.State);
+            var externalMetadata = Metadata?.GetValue(dialogContext.State);
             if (externalMetadata != null)
             {
                 filters.AddRange(externalMetadata);
@@ -178,13 +202,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 dialogContext.Context,
                 new QnAMakerOptions
                 {
-                    Context = this.Context?.GetValue(dialogContext.State),
-                    ScoreThreshold = this.Threshold.GetValue(dialogContext.State),
+                    Context = Context?.GetValue(dialogContext.State),
+                    ScoreThreshold = Threshold.GetValue(dialogContext.State),
                     StrictFilters = filters.ToArray(),
-                    Top = this.Top.GetValue(dialogContext.State),
-                    QnAId = this.QnAId.GetValue(dialogContext.State),
-                    RankerType = this.RankerType.GetValue(dialogContext.State),
-                    IsTest = this.IsTest
+                    Top = Top.GetValue(dialogContext.State),
+                    QnAId = QnAId.GetValue(dialogContext.State),
+                    RankerType = RankerType.GetValue(dialogContext.State),
+                    IsTest = IsTest
                 },
                 null).ConfigureAwait(false);
 
@@ -193,7 +217,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 QueryResult topAnswer = null;
                 foreach (var answer in answers)
                 {
-                    if ((topAnswer == null) || (answer.Score > topAnswer.Score))
+                    if (topAnswer == null || answer.Score > topAnswer.Score)
                     {
                         topAnswer = answer;
                     }
@@ -201,11 +225,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
 
                 if (topAnswer.Answer.Trim().ToLower().StartsWith(IntentPrefix))
                 {
-                    recognizerResult.Intents.Add(topAnswer.Answer.Trim().Substring(IntentPrefix.Length).Trim(), new IntentScore() { Score = topAnswer.Score });
+                    recognizerResult.Intents.Add(topAnswer.Answer.Trim().Substring(IntentPrefix.Length).Trim(), new IntentScore { Score = topAnswer.Score });
                 }
                 else
                 {
-                    recognizerResult.Intents.Add(QnAMatchIntent, new IntentScore() { Score = topAnswer.Score });
+                    recognizerResult.Intents.Add(QnAMatchIntent, new IntentScore { Score = topAnswer.Score });
                 }
 
                 var answerArray = new JArray();
@@ -220,14 +244,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
             }
             else
             {
-                recognizerResult.Intents.Add("None", new IntentScore() { Score = 1.0f });
+                recognizerResult.Intents.Add("None", new IntentScore { Score = 1.0f });
             }
 
-            this.TrackRecognizerResult(dialogContext, "QnAMakerRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, "QnAMakerRecognizerResult", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
 
             return recognizerResult;
         }
 
+        /// <summary>
+        /// Gets an instance of <see cref="IQnAMakerClient"/>.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> used to access state.</param>
+        /// <returns>An instance of <see cref="IQnAMakerClient"/>.</returns>
         protected virtual Task<IQnAMakerClient> GetQnAMakerClientAsync(DialogContext dc)
         {
             var qnaClient = dc.Context.TurnState.Get<IQnAMakerClient>();
@@ -237,19 +266,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 return Task.FromResult(qnaClient);
             }
 
-            var (epKey, error) = this.EndpointKey.TryGetValue(dc.State);
-            var (hn, error2) = this.HostName.TryGetValue(dc.State);
-            var (kbId, error3) = this.KnowledgeBaseId.TryGetValue(dc.State);
-            var (logPersonalInfo, error4) = this.LogPersonalInformation.TryGetValue(dc.State);
+            var (epKey, error) = EndpointKey.TryGetValue(dc.State);
+            var (hn, error2) = HostName.TryGetValue(dc.State);
+            var (kbId, error3) = KnowledgeBaseId.TryGetValue(dc.State);
+            var (logPersonalInfo, error4) = LogPersonalInformation.TryGetValue(dc.State);
 
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = (string)epKey ?? throw new ArgumentNullException(nameof(EndpointKey), error),
-                Host = (string)hn ?? throw new ArgumentNullException(nameof(HostName), error2),
-                KnowledgeBaseId = (string)kbId ?? throw new ArgumentNullException(nameof(KnowledgeBaseId), error3)
+                EndpointKey = epKey ?? throw new ArgumentNullException(nameof(EndpointKey), error),
+                Host = hn ?? throw new ArgumentNullException(nameof(HostName), error2),
+                KnowledgeBaseId = kbId ?? throw new ArgumentNullException(nameof(KnowledgeBaseId), error3)
             };
 
-            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), this.HttpClient, this.TelemetryClient, (bool)logPersonalInfo));
+            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), HttpClient, TelemetryClient, logPersonalInfo));
         }
     }
 }
