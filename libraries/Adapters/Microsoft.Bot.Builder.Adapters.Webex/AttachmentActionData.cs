@@ -5,6 +5,11 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
+    /// <summary>
+    /// Represents an Attachment Action - Users create attachment actions by interacting with
+    /// message attachments such as clicking on a submit button in a card.
+    /// https://developer.webex.com/docs/api/v1/attachment-actions.
+    /// </summary>
     public class AttachmentActionData
     {
         /// <summary>

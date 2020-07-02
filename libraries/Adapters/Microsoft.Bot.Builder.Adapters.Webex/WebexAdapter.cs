@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -19,10 +20,14 @@ using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
+    /// <summary>
+    /// BotAdapter to allow for handling Webex Teams app payloads and responses via the Webex Teams API.
+    /// </summary>
     public class WebexAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private readonly WebexClientWrapper _webexClient;
         private readonly ILogger _logger;
+        private readonly WebexAdapterOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexAdapter"/> class using configuration settings.
@@ -35,9 +40,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// WebexSecret: The secret used to validate incoming webhooks.
         /// WebexWebhookName: A name for the webhook subscription.
         /// </remarks>
+        /// <param name="options">An instance of <see cref="WebexAdapterOptions"/>.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public WebexAdapter(IConfiguration configuration, ILogger logger = null)
-            : this(new WebexClientWrapper(new WebexAdapterOptions(configuration["WebexAccessToken"], new Uri(configuration["WebexPublicAddress"]), configuration["WebexSecret"], configuration["WebexWebhookName"])), logger)
+        public WebexAdapter(IConfiguration configuration, WebexAdapterOptions options = null, ILogger logger = null)
+            : this(new WebexClientWrapper(new WebexClientWrapperOptions(configuration["WebexAccessToken"], new Uri(configuration["WebexPublicAddress"]), configuration["WebexSecret"], configuration["WebexWebhookName"])), options, logger)
         {
         }
 
@@ -46,10 +52,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Creates a Webex adapter.
         /// </summary>
         /// <param name="webexClient">A Webex API interface.</param>
+        /// <param name="options">An instance of <see cref="WebexAdapterOptions"/>.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public WebexAdapter(WebexClientWrapper webexClient, ILogger logger = null)
+        public WebexAdapter(WebexClientWrapper webexClient, WebexAdapterOptions options, ILogger logger = null)
         {
             _webexClient = webexClient ?? throw new ArgumentNullException(nameof(webexClient));
+            _options = options ?? new WebexAdapterOptions();
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -90,7 +98,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     }
                     else
                     {
-                        throw new Exception("No Person, Email or Room to send the message");
+                        throw new InvalidOperationException("No Person, Email or Room to send the message");
                     }
 
                     string responseId;
@@ -244,9 +252,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 payload = JsonConvert.DeserializeObject<WebhookEventData>(json);
             }
 
-            if (!_webexClient.ValidateSignature(request, json))
+            if (_options.ValidateIncomingRequests && !_webexClient.ValidateSignature(request, json))
             {
-                throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                throw new AuthenticationException("Webhook received message with invalid signature. Potential malicious behavior!");
             }
 
             Activity activity;

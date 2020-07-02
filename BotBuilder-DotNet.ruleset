@@ -6,11 +6,16 @@
     <Rule Id="UseAsyncSuffix" Action="Error" />
     <Rule Id="UseConfigureAwait" Action="Error" />
   </Rules>
-  
-  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
-    <Rule Id="IDE0003" Action="None" />
+  <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
+    <Rule Id="CA1054" Action="None" /> <!-- UriParametersShouldNotBeStrings -->
+    <Rule Id="CA1062" Action="None" /> <!-- ValidateArgumentsOfPublicMethods -->
   </Rules>
-
+  <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
+    <Rule Id="CA1303" Action="None" /> <!-- DoNotPassLiteralsAsLocalizedParameters -->
+  </Rules>
+  <Rules AnalyzerId="Microsoft.NetCore.CSharp.Analyzers" RuleNamespace="Microsoft.NetCore.CSharp.Analyzers">
+    <Rule Id="CA1309" Action="Error" /> <!-- Use ordinal StringComparison -->
+  </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA0001" Action="None" />
     <Rule Id="SA0002" Action="Error" />
@@ -186,15 +191,6 @@
     <Rule Id="SA1648" Action="Error" />
     <Rule Id="SA1649" Action="Error" />
     <Rule Id="SA1651" Action="Error" />
+    <Rule Id="SX1309" Action="Error" /> <!-- FieldNamesShouldBeginWithUnderscores -->
   </Rules>
-
-  <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
-	<Rule Id="CA1054" Action="None" /> <!-- UriParametersShouldNotBeStrings -->	
-	<Rule Id="CA1062" Action="None" /> <!-- ValidateArgumentsOfPublicMethods -->	
-  </Rules>
-
-  <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
-	<Rule Id="CA1303" Action="None" /> <!-- DoNotPassLiteralsAsLocalizedParameters -->
-  </Rules>  
-
 </RuleSet>

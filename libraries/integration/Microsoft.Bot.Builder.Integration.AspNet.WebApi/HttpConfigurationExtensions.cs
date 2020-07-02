@@ -10,6 +10,9 @@ using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
+    /// <summary>
+    /// Extension methods for <see cref="HttpConfiguration"/>.
+    /// </summary>
     public static class HttpConfigurationExtensions
     {
         /// <summary>
@@ -74,7 +77,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                     baseUrl.Trim('/') + "/" + options.Paths.MessagesPath.Trim('/'),
                     defaults: null,
                     constraints: null,
+#pragma warning disable CA2000 // Dispose objects before losing scope (we will let ASP.Net core deal with disposing this handler)
                     handler: new BotMessageHandler(adapter));
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
         private static ICredentialProvider ResolveCredentialProvider(BotFrameworkOptions options)

@@ -7,9 +7,16 @@ namespace Microsoft.Bot.Configuration
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
+    /// <summary>
+    /// Base configuration properties for a connected service.
+    /// </summary>
     [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class ConnectedService
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConnectedService"/> class.
+        /// </summary>
+        /// <param name="type">The connected service type.</param>
         public ConnectedService(string type)
         {
             this.Type = type;
