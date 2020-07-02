@@ -1,0 +1,7 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.UserTokenBasicMock",
+    "connectionName": "magiccode connection",
+    "token": "magiccode token",
+    "magicCode": "000000"
+}
