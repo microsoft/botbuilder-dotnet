@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var configBuilder = new ConfigurationBuilder();
             configBuilder.AddInMemoryCollection(new KeyValuePair<string, string>[]
             {
-                new KeyValuePair<string, string>("file", "file"),
+                new KeyValuePair<string, string>("file", "set settings.file"),
                 new KeyValuePair<string, string>("fileoverwrite", "this is overwritten")
             });
 
