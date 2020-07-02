@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections;
+using System.Linq;
+
+namespace AdaptiveExpressions.BuiltinFunctions
+{
+    public class Last : ExpressionEvaluator
+    {
+        public Last()
+            : base(ExpressionType.Last, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
+        {
+        }
+
+        private static EvaluateExpressionDelegate Evaluator()
+        {
+            return FunctionUtils.Apply(
+                        args =>
+                        {
+                            object last = null;
+                            if (args[0] is string string0 && string0.Length > 0)
+                            {
+                                last = string0.Last().ToString();
+                            }
+                            else if (FunctionUtils.TryParseList(args[0], out IList list) && list.Count > 0)
+                            {
+                                last = FunctionUtils.AccessIndex(list, list.Count - 1).value;
+                            }
+
+                            return last;
+                        });
+        }
+    }
+}

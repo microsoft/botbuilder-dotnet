@@ -2,16 +2,16 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
-    public class NewGuid : ExpressionEvaluator
+    public class EOL : ExpressionEvaluator
     {
-        public NewGuid()
-            : base(ExpressionType.NewGuid, Evaluator(), ReturnType.String, Validator)
+        public EOL()
+            : base(ExpressionType.EOL, Evaluator(), ReturnType.String, Validator)
         {
         }
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.Apply(args => Guid.NewGuid().ToString());
+            return FunctionUtils.Apply(args => Environment.NewLine);
         }
 
         private static void Validator(Expression expression)

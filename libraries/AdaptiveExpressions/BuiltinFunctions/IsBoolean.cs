@@ -1,0 +1,18 @@
+﻿using System;
+using Newtonsoft.Json.Linq;
+
+namespace AdaptiveExpressions.BuiltinFunctions
+{
+    public class IsBoolean : ExpressionEvaluator
+    {
+        public IsBoolean()
+            : base(ExpressionType.IsBoolean, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        {
+        }
+
+        private static EvaluateExpressionDelegate Evaluator()
+        {
+            return FunctionUtils.Apply(args => args[0] is bool);
+        }
+    }
+}
