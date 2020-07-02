@@ -8,9 +8,13 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -18,7 +22,6 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
@@ -89,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// Gets or sets the mock data for Microsoft.HttpRequest.
         /// </summary>
         /// <value>
-        /// A list of mocks.
+        /// A list of mocks. In first match first use order.
         /// </value>
         [JsonProperty("httpRequestMocks")]
         public List<HttpRequestMock> HttpRequestMocks { get; set; } = new List<HttpRequestMock>();
@@ -102,6 +105,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// </value>
         [JsonProperty("userTokenMocks")]
         public List<UserTokenMock> UserTokenMocks { get; set; } = new List<UserTokenMock>();
+
+        /// <summary>
+        /// Gets or sets the mock data for properties.
+        /// </summary>
+        /// <value>
+        /// A list of property mocks. In first match first use order.
+        /// </value>
+        [JsonProperty("propertyMocks")]
+        public List<PropertyMock> PropertyMocks { get; set; } = new List<PropertyMock>();
 
         /// <summary>
         /// Gets or sets the test script actions.
@@ -161,6 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             adapter.EnableTrace = this.EnableTrace;
             adapter.Locale = this.Locale;
             adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));
+            adapter.Use(new MockSettingsMiddleware(PropertyMocks));
 
             foreach (var userToken in UserTokenMocks)
             {
@@ -176,7 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             }
             else
             {
-                var dm = new DialogManager(this.Dialog)
+                var dm = new DialogManager(WrapDialogForPropertyMocks(this.Dialog))
                     .UseResourceExplorer(resourceExplorer)
                     .UseLanguageGeneration();
 
@@ -347,6 +360,58 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         {
             this.Script.Add(new AssertReplyOneOf(path: path, line: line) { Text = candidates.ToList<string>(), Description = description, Timeout = timeout, Exact = true });
             return this;
+        }
+
+        private Dialog WrapDialogForPropertyMocks(Dialog dialog)
+        {
+            string settingsPrefix = $"{ScopePath.Settings}.";
+            var setPropertiesDialog = new SetProperties();
+            var hasSet = new HashSet<string>();
+            foreach (var property in PropertyMocks)
+            {
+                if (property is PropertiesMock mock)
+                {
+                    foreach (var assignment in mock.Assignments)
+                    {
+                        // Note we only check if it is for settings here.
+                        if (!assignment.Property.StartsWith(settingsPrefix, StringComparison.Ordinal))
+                        {
+                            if (!hasSet.Contains(assignment.Property))
+                            {
+                                setPropertiesDialog.Assignments.Add(new Adaptive.Actions.PropertyAssignment
+                                {
+                                    Property = new StringExpression(assignment.Property),
+                                    Value = new ValueExpression(assignment.Value)
+                                });
+
+                                hasSet.Add(assignment.Property);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (hasSet.Count == 0)
+            {
+                return dialog;
+            }
+            else
+            {
+                var rootDialog = new AdaptiveDialog();
+                rootDialog.Triggers.Add(new OnBeginDialog
+                {
+                    Actions = new List<Dialog>
+                    {
+                        setPropertiesDialog,
+                        new ReplaceDialog
+                        {
+                            Dialog = dialog
+                        }
+                    }
+                });
+
+                return rootDialog;
+            }
         }
 
 #if SAVESCRIPT
