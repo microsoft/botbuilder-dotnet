@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
+    /// <summary>
+    /// Extension methods for LUIS.
+    /// </summary>
     public static class LuisExtensions
     {
         /// <summary>
@@ -21,14 +24,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// This will pick up --root as the root folder to run in.  
         /// </remarks>
         /// <param name="builder">Configuration builder to modify.</param>
-        /// <param name="botRoot">bot Root.</param>
-        /// <param name="luisRegion">luisRegion.</param>
-        /// <param name="environment">enviroment.</param>
         /// <returns>Modified configuration builder.</returns>
-        public static IConfigurationBuilder UseLuisSettings(this IConfigurationBuilder builder, string botRoot, string luisRegion, string environment)
+        public static IConfigurationBuilder UseLuisSettings(this IConfigurationBuilder builder)
         {
+            var configuration = builder.Build();
+            var botRoot = configuration.GetValue<string>("root") ?? ".";
+            var luisRegion = configuration.GetValue<string>("LUIS_AUTHORING_REGION") ?? configuration.GetValue<string>("region") ?? "westus";
+            var environment = configuration.GetValue<string>("environment") ?? Environment.UserName;
             var settings = new Dictionary<string, string>();
-            settings["luis:endpoint"] = $"https://{luisRegion}.api.cognitive.microsoft.com";
+            settings["luis:endpoint"] = configuration.GetValue<string>("luis:endpoint") ?? $"https://{luisRegion}.api.cognitive.microsoft.com";
             settings["BotRoot"] = botRoot;
             builder.AddInMemoryCollection(settings);
             if (environment == "Development")
