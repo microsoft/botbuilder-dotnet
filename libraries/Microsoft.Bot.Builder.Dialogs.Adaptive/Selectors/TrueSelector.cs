@@ -2,14 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
@@ -39,7 +36,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 foreach (var conditional in _conditionals)
                 {
                     var expression = conditional.GetExpression();
-                    var opt = new Options() { Locale = context.GetLocale() };
                     var (value, error) = expression.TryEvaluate(context.State);
                     var result = error == null && (bool)value;
                     if (result == true)

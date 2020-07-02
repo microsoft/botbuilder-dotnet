@@ -649,7 +649,7 @@ namespace AdaptiveExpressions
                 return (value, error);
             };
 
-        public static EvaluateExpressionDelegate ApplyWithErrorAndState(Func<IReadOnlyList<object>, IMemory, Options, (object, string)> function, VerifyExpression verify = null) 
+        public static EvaluateExpressionDelegate ApplyWithErrorAndState(Func<IReadOnlyList<object>, IMemory, Options, (object, string)> function, VerifyExpression verify = null)
             =>
             (expression, state, options) =>
             {
@@ -872,7 +872,7 @@ namespace AdaptiveExpressions
                     var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                     var format = DefaultDateTimeFormat;
                     (args, error) = EvaluateChildren(expr, state, options);
-                    
+
                     if (error == null)
                     {
                         (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
@@ -2309,7 +2309,7 @@ namespace AdaptiveExpressions
                     // if the number of args equals to the maxArgsLength - 1, the last one is format,
                     format = args[maxArgsLength - 2] as string;
                 }
-            }        
+            }
 
             return (format, locale, error);
         }
@@ -3399,7 +3399,7 @@ namespace AdaptiveExpressions
                                     string error = null;
                                     var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                                     (locale, error) = DetermineLocale(args, locale, 2);
-                                    
+
                                     if (error == null)
                                     {
                                         if (args[0] == null)
@@ -3440,7 +3440,7 @@ namespace AdaptiveExpressions
                 StringTransform(
                                 ExpressionType.Trim,
                                 args =>
-                                {                                                                        
+                                {
                                     if (args[0] == null)
                                     {
                                         return string.Empty;
@@ -3694,7 +3694,7 @@ namespace AdaptiveExpressions
                 new ExpressionEvaluator(
                     ExpressionType.UtcNow,
                     ApplyWithErrorAndState(
-                        (args, state, options) => 
+                        (args, state, options) =>
                         {
                             string error = null;
                             string format = DefaultDateTimeFormat;
@@ -3718,7 +3718,7 @@ namespace AdaptiveExpressions
                             var format = DefaultDateTimeFormat;
                             var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                             (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
-                            
+
                             if (error == null)
                             {
                                 if (timestamp is string tsString)
@@ -3779,7 +3779,7 @@ namespace AdaptiveExpressions
                             var format = DefaultDateTimeFormat;
                             var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                             (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 3);
-                            if (error == null) 
+                            if (error == null)
                             {
                                 if (timestamp.IsInteger())
                                 {
@@ -3914,11 +3914,11 @@ namespace AdaptiveExpressions
                         {
                             (format, locale, error) = DetermineFormatAndLocale(args, format, locale, 4);
                         }
-                        
+
                         if (error == null)
                         {
                             if (args[0].IsInteger() && args[1] is string string1)
-                            {                              
+                            {
                                 Func<DateTime, DateTime> timeConverter;
                                 (timeConverter, error) = DateTimeConverter(Convert.ToInt64(args[0]), string1, false);
                                 if (error == null)
@@ -4622,7 +4622,7 @@ namespace AdaptiveExpressions
                                     error = $"the second argument {args[1]} should be a locale string.";
                                 }
                                 else
-                                {                                    
+                                {
                                     (locale, error) = DetermineLocale(args, locale, 2);
                                 }
                             }
@@ -4644,7 +4644,7 @@ namespace AdaptiveExpressions
                                 }
 
                             return (result, error);
-                        }, 
+                        },
                     ReturnType.String,
                     expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object)),
                 Comparison(ExpressionType.Bool, args => IsLogicTrue(args[0]), ValidateUnary),
@@ -4669,18 +4669,18 @@ namespace AdaptiveExpressions
                             {
                                 error = $"formatNumber third agument {args[2]} must be a locale";
                             }
-                            
+
                             if (error == null)
                             {
                                 (locale, error) = DetermineLocale(args, locale, 3);
                             }
-                            
+
                             if (error == null)
                             {
                                 var number = Convert.ToDouble(args[0]);
                                 var precision = Convert.ToInt32(args[1]);
                                 result = number.ToString("N" + precision.ToString(), locale);
-                            }                           
+                            }
 
                             return (result, error);
                         }),

@@ -10,6 +10,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
     public class MyTurnContext : ITurnContext
     {
+        private const string TurnLocale = "turn.locale";
+
         public MyTurnContext(BotAdapter adapter, Activity activity)
         {
             Activity = activity;
@@ -23,6 +25,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         public Activity Activity { get; }
 
         public bool Responded => throw new NotImplementedException();
+
+        public string Locale
+        {
+            get => this.TurnState.Get<string>(TurnLocale);
+            set { this.TurnState.Set(TurnLocale, value); }
+        }
 
         public Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {

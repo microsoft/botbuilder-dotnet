@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -11,7 +10,6 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -20,9 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public static class DialogExtensions
     {
-        private const string Turn = "turn";
-        private const string LocalePath = "$.activity.locale";
-
         /// <summary>
         /// Creates a dialog stack and starts a dialog, pushing it onto the stack.
         /// </summary>
@@ -106,17 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A string representing the current locale.</returns>
         public static string GetLocale(this DialogContext dialogContext)
         {
-            string locale = null;
-            object turnContent = null;
-            var turnExists = dialogContext?.Context?.TurnState?.TryGetValue(Turn, out turnContent);
-            if (turnExists == true && turnContent != null)
-            {
-                if ((turnContent as JObject)?.SelectToken(LocalePath) is JValue localeValue)
-                {
-                    locale = localeValue.ToObject<string>();
-                }
-            }
-
+            var locale = (dialogContext.Context as TurnContext).Locale ?? null;
             return locale;
         }
 

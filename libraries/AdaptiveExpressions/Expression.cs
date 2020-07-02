@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using AdaptiveExpressions.Converters;
@@ -440,7 +439,9 @@ namespace AdaptiveExpressions
                     var iteratorName = (string)(children[1].Children[0] as Constant).Value;
 
                     // filter references found in children 2 with iterator name
+#pragma warning disable CA1309 // Use ordinal stringcomparison
                     var nonLocalRefs2 = refs2.Where(x => !(x.Equals(iteratorName) || x.StartsWith(iteratorName + '.') || x.StartsWith(iteratorName + '[')))
+#pragma warning restore CA1309 // Use ordinal stringcomparison
                                              .ToList();
 
                     refs.UnionWith(refs0);
@@ -530,11 +531,6 @@ namespace AdaptiveExpressions
         public (T value, string error) TryEvaluate<T>(IMemory state, Options options = null)
         {
             var opts = options ?? new Options();
-            if (opts.Locale != null)
-            {
-                new CultureInfo(opts.Locale);             
-            }
-
             var (result, error) = Evaluator.TryEvaluate(this, state, opts);
             if (error != null)
             {
