@@ -9,6 +9,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
 {
+    /// <summary>
+    /// Middleware used for mocking settings properties.
+    /// </summary>
     public class MockSettingsMiddleware : IMiddleware
     {
         private readonly string prefix = $"{ScopePath.Settings}.";
