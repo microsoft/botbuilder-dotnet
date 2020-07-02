@@ -4,7 +4,6 @@
 using System.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using static Microsoft.Bot.Builder.Dialogs.Adaptive.Actions.HttpRequest;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 {
