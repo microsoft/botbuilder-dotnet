@@ -20,7 +20,6 @@ namespace Microsoft.Bot.Builder
         /// <param name="turnContext">Turn Context.</param>
         /// <param name="defaultValueFactory">Function which defines the property value to be returned if no value has been set.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <exception cref="MissingMemberException">The property has no value and no <paramref name="defaultValueFactory"/>.</exception>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory = null, CancellationToken cancellationToken = default(CancellationToken));
 

@@ -12,6 +12,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisApplication
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisApplication"/> class.
+        /// </summary>
         public LuisApplication()
         {
         }

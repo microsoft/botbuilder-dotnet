@@ -19,6 +19,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisAdaptiveRecognizer : Recognizer
     {
+        /// <summary>
+        /// The Kind name for this recognizer.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.LuisRecognizer";
 
@@ -136,6 +139,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
             };
         }
 
+        /// <summary>
+        /// Uses the <see cref="RecognizerResult"/> returned from the <see cref="LuisRecognizer"/> and populates a dictionary of string
+        /// with properties to be logged into telemetry.  Including any additional properties that were passed into the method.
+        /// </summary>
+        /// <param name="recognizerResult">An instance of <see cref="RecognizerResult"/> to extract the telemetry properties from.</param>
+        /// <param name="telemetryProperties">A collection of additional properties to be added to the returned dictionary of properties.</param>
+        /// <param name="dc">An instance of <see cref="DialogContext"/>.</param>
+        /// <returns>The dictionary of properties to be logged with telemetry for the recongizer result.</returns>
         protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dc)
         {
             var (logPersonalInfo, error) = this.LogPersonalInformation.TryGetValue(dc.State);

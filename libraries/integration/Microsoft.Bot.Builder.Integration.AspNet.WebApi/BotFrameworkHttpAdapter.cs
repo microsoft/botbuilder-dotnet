@@ -23,17 +23,39 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         private const string AuthHeaderName = "authorization";
         private const string ChannelIdHeaderName = "channelid";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapter"/> class.
+        /// </summary>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapter> logger = null)
             : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, logger)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapter"/> class.
+        /// </summary>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="httpClient">The <see cref="HttpClient"/> used.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider, HttpClient httpClient, ILogger<BotFrameworkHttpAdapter> logger)
             : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, httpClient, logger)
         {
         }
 
-        public async Task ProcessAsync(HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// This method can be called from inside a POST method on any Controller implementation.
+        /// </summary>
+        /// <param name="httpRequest">The HTTP request object, typically in a POST handler by a Controller.</param>
+        /// <param name="httpResponse">The HTTP response object.</param>
+        /// <param name="bot">The bot implementation.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public async Task ProcessAsync(HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (httpRequest == null)
             {
