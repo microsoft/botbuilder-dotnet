@@ -21,6 +21,10 @@ namespace Microsoft.Bot.Builder.BotFramework
         /// </summary>
         public const string ChannelServiceKey = "ChannelService";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationChannelProvider"/> class.
+        /// </summary>
+        /// <param name="configuration">An instance of <see cref="IConfiguration"/>.</param>
         public ConfigurationChannelProvider(IConfiguration configuration)
         {
             this.ChannelService = configuration.GetSection(ChannelServiceKey)?.Value;

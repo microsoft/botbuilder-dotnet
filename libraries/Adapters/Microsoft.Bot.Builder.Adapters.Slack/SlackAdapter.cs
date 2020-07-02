@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
@@ -29,6 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
     {
         private readonly SlackClientWrapper _slackClient;
         private readonly ILogger _logger;
+        private readonly SlackAdapterOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SlackAdapter"/> class using configuration settings.
@@ -40,9 +42,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// SlackBotToken: A token for a bot to work on a single workspace.
         /// SlackClientSigningSecret: The token used to validate that incoming webhooks are originated from Slack.
         /// </remarks>
+        /// <param name="options">An instance of <see cref="SlackAdapterOptions"/>.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public SlackAdapter(IConfiguration configuration, ILogger logger = null)
-            : this(new SlackAdapterOptions(configuration["SlackVerificationToken"], configuration["SlackBotToken"], configuration["SlackClientSigningSecret"]), logger)
+        public SlackAdapter(IConfiguration configuration, SlackAdapterOptions options = null, ILogger logger = null)
+            : this(new SlackClientWrapper(new SlackClientWrapperOptions(configuration["SlackVerificationToken"], configuration["SlackBotToken"], configuration["SlackClientSigningSecret"])), options, logger)
         {
         }
 
@@ -53,10 +56,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="adapterOptions">The adapter options to be used when connecting to the Slack API.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <param name="slackClient">The SlackClientWrapper used to connect to the Slack API.</param>
-        public SlackAdapter(SlackAdapterOptions adapterOptions, ILogger logger = null, SlackClientWrapper slackClient = null)
+        public SlackAdapter(SlackClientWrapper slackClient, SlackAdapterOptions adapterOptions, ILogger logger = null)
         {
-            _slackClient = slackClient ?? new SlackClientWrapper(adapterOptions) ?? throw new ArgumentNullException(nameof(adapterOptions));
+            _slackClient = slackClient ?? throw new ArgumentNullException(nameof(adapterOptions));
             _logger = logger ?? NullLogger.Instance;
+            _options = adapterOptions ?? new SlackAdapterOptions();
         }
 
         /// <summary>
@@ -142,9 +146,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             var results = await _slackClient.UpdateAsync(message.Ts, message.Channel, message.Text, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            if (!results.ok)
+            if (!results.Ok)
             {
-                throw new Exception($"Error updating activity on Slack:{results}");
+                throw new InvalidOperationException($"Error updating activity on Slack:{results}");
             }
 
             return new ResourceResponse()
@@ -299,11 +303,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 body = await sr.ReadToEndAsync().ConfigureAwait(false);
             }
 
-            if (!_slackClient.VerifySignature(request, body))
+            if (_options.VerifyIncomingRequests && !_slackClient.VerifySignature(request, body))
             {
                 const string text = "Rejected due to mismatched header signature";
                 await SlackHelper.WriteAsync(response, HttpStatusCode.Unauthorized, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
-                throw new Exception(text);
+                throw new AuthenticationException(text);
             }
 
             var requestContentType = request.Headers["Content-Type"].ToString();
@@ -321,7 +325,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 {
                     var serializedPayload = JsonConvert.SerializeObject(postValues);
                     var payload = JsonConvert.DeserializeObject<CommandPayload>(serializedPayload);
-                    activity = await SlackHelper.CommandToActivityAsync(payload, _slackClient, cancellationToken).ConfigureAwait(false);
+                    activity = SlackHelper.CommandToActivity(payload, _slackClient);
                 }
             }
             else if (requestContentType.StartsWith("application/json", StringComparison.OrdinalIgnoreCase))
@@ -339,14 +343,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 {
                     var text = $"Rejected due to mismatched verificationToken:{bodyObject["token"]}";
                     await SlackHelper.WriteAsync(response, HttpStatusCode.Forbidden, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
-                    throw new Exception(text);
+                    throw new AuthenticationException(text);
                 }
 
                 if (bodyObject["type"]?.ToString() == "event_callback")
                 {
                     // this is an event api post
                     var eventRequest = bodyObject.ToObject<EventRequest>();
-                    activity = await SlackHelper.EventToActivityAsync(eventRequest, _slackClient, cancellationToken).ConfigureAwait(false);
+                    activity = SlackHelper.EventToActivity(eventRequest, _slackClient);
                 }
             }
 

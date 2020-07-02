@@ -17,14 +17,23 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
     /// </summary>
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
+        /// <summary>
+        /// Constant key used for storing activity information in turn state.
+        /// </summary>
         public static readonly string BotActivityKey = "BotBuilderActivity";
+
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryBotIdInitializer"/> class.
+        /// </summary>
+        /// <param name="httpContextAccessor">The HttpContextAccessor used to access the current HttpContext.</param>
         public TelemetryBotIdInitializer(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
+        /// <inheritdoc/>
         public void Initialize(ITelemetry telemetry)
         {
             if (telemetry == null)

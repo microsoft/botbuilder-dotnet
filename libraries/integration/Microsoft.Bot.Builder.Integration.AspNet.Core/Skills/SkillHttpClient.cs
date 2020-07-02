@@ -19,6 +19,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
     {
         private readonly SkillConversationIdFactoryBase _conversationIdFactory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillHttpClient"/> class.
+        /// </summary>
+        /// <param name="httpClient">A HttpClient.</param>
+        /// <param name="credentialProvider">An instance of <see cref="ICredentialProvider"/>.</param>
+        /// <param name="conversationIdFactory">An instance of a class derived from <see cref="SkillConversationIdFactoryBase"/>.</param>
+        /// <param name="channelProvider">An instance of <see cref="IChannelProvider"/>.</param>
+        /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
         public SkillHttpClient(HttpClient httpClient, ICredentialProvider credentialProvider, SkillConversationIdFactoryBase conversationIdFactory, IChannelProvider channelProvider = null, ILogger logger = null)
             : base(httpClient, credentialProvider, channelProvider, logger)
         {
@@ -61,11 +69,30 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             return await PostActivityAsync<T>(fromBotId, toSkill.AppId, toSkill.SkillEndpoint, callbackUrl, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Forwards an activity to a skill (bot).
+        /// </summary>
+        /// <param name="fromBotId">The MicrosoftAppId of the bot sending the activity.</param>
+        /// <param name="toSkill">An instance of <see cref="BotFrameworkSkill"/>.</param>
+        /// <param name="callbackUrl">The callback Uri.</param>
+        /// <param name="activity">activity to forward.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>Async task with optional invokeResponse.</returns>
         public async Task<InvokeResponse> PostActivityAsync(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
             return await PostActivityAsync<object>(fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Forwards an activity to a skill (bot).
+        /// </summary>
+        /// <param name="fromBotId">The MicrosoftAppId of the bot sending the activity.</param>
+        /// <param name="toSkill">An instance of <see cref="BotFrameworkSkill"/>.</param>
+        /// <param name="callbackUrl">The callback Uri.</param>
+        /// <param name="activity">activity to forward.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <typeparam name="T">type of the <see cref="InvokeResponse"/> result.</typeparam>
+        /// <returns>Async task with optional invokeResponse of type T.</returns>
         public async Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
             var originatingAudience = ChannelProvider != null && ChannelProvider.IsGovernment() ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope : AuthenticationConstants.ToChannelFromBotOAuthScope;

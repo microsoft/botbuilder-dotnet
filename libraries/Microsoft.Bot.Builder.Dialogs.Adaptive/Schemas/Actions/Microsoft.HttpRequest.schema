@@ -90,7 +90,8 @@
                         "none",
                         "json",
                         "activity",
-                        "activities"
+                        "activities",
+                        "binary"
                     ],
                     "default": "json"
                 },

@@ -167,6 +167,7 @@ namespace AdaptiveExpressions
         public const string XPath = "xPath";
         public const string SetPathToValue = "setPathToValue";
         public const string JPath = "jPath";
+        public const string Merge = "merge";
 
         // Regular expression
         public const string IsMatch = "isMatch";

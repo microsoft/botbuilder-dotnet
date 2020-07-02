@@ -14,6 +14,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public abstract class LuisRecognizerOptions
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisRecognizerOptions"/> class.
+        /// </summary>
+        /// <param name="application">An instance of <see cref="LuisApplication"/>.</param>
         protected LuisRecognizerOptions(LuisApplication application)
         {
             Application = application ?? throw new ArgumentNullException(nameof(application));
@@ -49,6 +53,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>If true, personal information is logged to Telemetry; otherwise the properties will be filtered.</value>
         public bool LogPersonalInformation { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether flag to indicate if full results from the LUIS API should be returned with the recognizer result.
+        /// </summary>
+        /// <value>A value indicating whether full results from the LUIS API should be returned with the recognizer result.</value>
         public bool IncludeAPIResults { get; set; } = false;
 
         // Support original ITurnContext
