@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Gets or sets the phone number associated with this Twilio app.
         /// </summary>
         /// <value>
-        /// The phone number, in the format 1XXXYYYZZZZ.
+        /// The phone number.
         /// </value>
         public string TwilioNumber { get; set; }
 
