@@ -5,6 +5,9 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
 {
+    /// <summary>
+    /// Base class for all property mocks.
+    /// </summary>
     public abstract class PropertyMock
     {
         protected void RegisterSourcePath(string path, int line)
