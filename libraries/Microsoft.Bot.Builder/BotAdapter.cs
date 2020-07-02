@@ -222,11 +222,13 @@ namespace Microsoft.Bot.Builder
                 {
                     Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch
                 {
                     // do nothing if locale is null or illegal locale string
                 }
-                
+#pragma warning restore CA1031 // Do not catch general exception types
+
                 try
                 {
                     await MiddlewareSet.ReceiveActivityWithStatusAsync(turnContext, callback, cancellationToken).ConfigureAwait(false);
