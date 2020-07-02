@@ -8,15 +8,15 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
 {
     /// <summary>
-    /// Mock one or more settings property values.
+    /// Mock one or more property values.
     /// </summary>
-    public class SettingsPropertiesMock : PropertyMock
+    public class PropertiesMock : PropertyMock
     {
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.Test.SettingsPropertiesMock";
+        public const string Kind = "Microsoft.Test.PropertiesMock";
 
         [JsonConstructor]
-        public SettingsPropertiesMock([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
+        public PropertiesMock([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
             RegisterSourcePath(path, line);
         }
@@ -25,9 +25,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
         /// Gets or sets property assignments.
         /// </summary>
         /// <value>
-        /// Property assignments as settings.property=value pairs. In first match first use order.
+        /// Property assignments as property=value pairs. In first match first use order.
         /// </value>
         [JsonProperty("assignments")]
-        public List<SettingsPropertyAssignment> Assignments { get; set; } = new List<SettingsPropertyAssignment>();
+        public List<PropertyAssignment> Assignments { get; set; } = new List<PropertyAssignment>();
     }
 }

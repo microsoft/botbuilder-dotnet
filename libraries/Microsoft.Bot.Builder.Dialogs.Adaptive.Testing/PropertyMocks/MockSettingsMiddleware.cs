@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,19 +11,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
 {
     public class MockSettingsMiddleware : IMiddleware
     {
+        private readonly string prefix = $"{ScopePath.Settings}.";
         private readonly Dictionary<string, string> mockData = new Dictionary<string, string>();
 
         public MockSettingsMiddleware(List<PropertyMock> properties)
         {
             foreach (var property in properties)
             {
-                if (property is SettingsPropertiesMock mock)
+                if (property is PropertiesMock mock)
                 {
                     foreach (var assignment in mock.Assignments)
                     {
-                        if (!mockData.ContainsKey(assignment.Property))
+                        if (assignment.Property.StartsWith(prefix, StringComparison.Ordinal))
                         {
-                            mockData.Add(assignment.Property.Replace('.', ':'), assignment.Value);
+                            if (assignment.Value is string value)
+                            {
+                                var path = assignment.Property.Substring(prefix.Length);
+
+                                if (!mockData.ContainsKey(path))
+                                {
+                                    // Note that settings use : as separator in ConfigurationBuilder.
+                                    mockData.Add(path.Replace('.', ':'), value);
+                                }
+                            }
+                            else
+                            {
+                                throw new NotSupportedException($"Only string is supported as value for mocking settings. {assignment.Value} is not supported.");
+                            }
                         }
                     }
                 }
