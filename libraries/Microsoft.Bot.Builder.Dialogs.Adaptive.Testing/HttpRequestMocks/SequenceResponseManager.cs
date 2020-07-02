@@ -8,30 +8,35 @@ using System.Net.Http;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 {
+    /// <summary>
+    /// Manage Sequence Response for HttpRequestSequenceMock.
+    /// </summary>
     public class SequenceResponseManager
     {
         private int _id;
-        private List<HttpResponseMockContent> _contents;
+        private List<HttpResponseMockContent> _contents = new List<HttpResponseMockContent>();
 
         public SequenceResponseManager(List<HttpResponseMock> responses)
         {
             _id = 0;
             if (responses == null || responses.Count == 0)
             {
-                _contents = new List<HttpResponseMockContent>()
-                {
-                    new HttpResponseMockContent()
-                };
+                // Create an empty content for response.
+                _contents.Add(new HttpResponseMockContent());
             }
             else
             {
-                _contents = responses.Select(r =>
+                foreach (var response in responses)
                 {
-                    return new HttpResponseMockContent(r);
-                }).ToList();
+                    _contents.Add(new HttpResponseMockContent(response));
+                }
             }
         }
 
+        /// <summary>
+        /// Return the content in sequence order. The last one will be repeated.
+        /// </summary>
+        /// <returns>The HttpContent.</returns>
         public HttpContent GetContent()
         {
             var result = _contents[_id];

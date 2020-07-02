@@ -11,6 +11,9 @@ using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 {
+    /// <summary>
+    /// Mock http request in sequence order. The last response will be repeated.
+    /// </summary>
     public class HttpRequestSequenceMock : HttpRequestMock
     {
         [JsonProperty("$kind")]
