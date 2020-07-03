@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Range : ExpressionEvaluator
     {
         public Range()
-            : base(ExpressionType.Range, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
+            : base(ExpressionType.Range, Evaluator(), ReturnType.Array, FunctionUtils.ValidateBinaryNumber)
         {
         }
 

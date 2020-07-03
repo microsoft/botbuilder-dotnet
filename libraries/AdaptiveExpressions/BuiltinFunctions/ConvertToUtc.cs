@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class ConvertToUtc : ExpressionEvaluator
     {
         public ConvertToUtc()
-            : base(ExpressionType.ConvertFromUtc, Evaluator, ReturnType.String, Validator)
+            : base(ExpressionType.ConvertToUtc, Evaluator, ReturnType.String, Validator)
         {
         }
 

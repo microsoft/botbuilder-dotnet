@@ -1,7 +1,6 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -9,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Ignore : ExpressionEvaluator
     {
         public Ignore()
-            : base(ExpressionType.Optional, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnaryBoolean)
+            : base(ExpressionType.Ignore, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnaryBoolean)
         {
             Negation = this;
         }

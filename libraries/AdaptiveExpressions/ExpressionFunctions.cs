@@ -19,11 +19,12 @@ namespace AdaptiveExpressions
     /// Evaluators are called to evaluate an expression and should try not to throw.
     /// There are some evaluators in this file that take in a verifier that is called at runtime to verify arguments are proper.
     /// </remarks>
-    public class ExpressionFunctions
+    public static class ExpressionFunctions
     {
-#pragma warning disable SA1401 // Fields should be private
-        public static IDictionary<string, ExpressionEvaluator> StandardFunctions = GetStandardFunctions();
-#pragma warning restore SA1401 // Fields should be private
+        /// <summary>
+        /// Read only Dictionary of built in functions.
+        /// </summary>
+        public static readonly IDictionary<string, ExpressionEvaluator> StandardFunctions = GetStandardFunctions();
 
         private static IDictionary<string, ExpressionEvaluator> GetStandardFunctions()
         {
@@ -58,6 +59,7 @@ namespace AdaptiveExpressions
                 new BuiltinFunctions.DataUriToBinary(),
                 new BuiltinFunctions.DataUriToString(),
                 new BuiltinFunctions.Date(),
+                new BuiltinFunctions.DateReadBack(),
                 new BuiltinFunctions.DateTimeDiff(),
                 new BuiltinFunctions.DayOfMonth(),
                 new BuiltinFunctions.DayOfWeek(),
