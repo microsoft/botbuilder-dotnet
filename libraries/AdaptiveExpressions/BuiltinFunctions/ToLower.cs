@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a string in lowercase format.
+    /// If a character in the string doesn't have a lowercase version, that character stays unchanged in the returned string.
+    /// </summary>
     public class ToLower : StringTransformEvaluator
     {
         public ToLower()

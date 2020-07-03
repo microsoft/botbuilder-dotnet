@@ -5,6 +5,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Retrieve the value of the specified property from the JSON object.
+    /// </summary>
     public class GetProperty : ExpressionEvaluator
     {
         public GetProperty()

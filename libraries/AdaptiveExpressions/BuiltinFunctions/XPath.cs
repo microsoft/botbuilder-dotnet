@@ -7,6 +7,10 @@ using System.Xml;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Check XML for nodes or values that match an XPath (XML Path Language) expression, and return the matching nodes or values.
+    /// An XPath expression (referred to as XPath) helps you navigate an XML document structure so that you can select nodes or compute values in the XML content.
+    /// </summary>
     public class XPath : ExpressionEvaluator
     {
         public XPath()

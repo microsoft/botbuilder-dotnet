@@ -7,6 +7,10 @@ using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return true if a given TimexProperty or Timex expression refers to a valid date.
+    /// Valid dates contain the month and dayOfMonth, or contain the dayOfWeek.
+    /// </summary>
     public class IsDate : ExpressionEvaluator
     {
         public IsDate()

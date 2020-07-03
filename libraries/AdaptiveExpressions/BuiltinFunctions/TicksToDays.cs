@@ -7,6 +7,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Convert ticks to days number.
+    /// </summary>
     public class TicksToDays : ExpressionEvaluator
     {
         private const long TicksPerDay = 24 * 60 * 60 * 10000000L;

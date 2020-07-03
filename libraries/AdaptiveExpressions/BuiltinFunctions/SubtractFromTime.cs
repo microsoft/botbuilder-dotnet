@@ -8,6 +8,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Subtract a number of time units from a timestamp.
+    /// </summary>
     public class SubtractFromTime : ExpressionEvaluator
     {
         public SubtractFromTime()

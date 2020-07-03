@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the length of a string.
+    /// </summary>
     public class Length : ExpressionEvaluator
     {
         public Length()

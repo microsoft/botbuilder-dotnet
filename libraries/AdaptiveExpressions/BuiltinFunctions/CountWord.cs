@@ -5,6 +5,9 @@ using System.Text.RegularExpressions;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the number of words in a string.
+    /// </summary>
     public class CountWord : ExpressionEvaluator
     {
         public CountWord()

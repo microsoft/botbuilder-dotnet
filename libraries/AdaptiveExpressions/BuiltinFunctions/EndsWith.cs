@@ -3,6 +3,11 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Check whether a string ends with a specific substring. Return true if the substring is found,
+    /// or return false if not found.
+    /// This function is case-insensitive.
+    /// </summary>
     public class EndsWith : ExpressionEvaluator
     {
         public EndsWith()

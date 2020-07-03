@@ -7,6 +7,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the path value of a unified resource identifier (URI).
+    /// </summary>
     public class UriPath : ExpressionEvaluator
     {
         public UriPath()

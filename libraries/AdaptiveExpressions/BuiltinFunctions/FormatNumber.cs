@@ -6,6 +6,9 @@ using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Format number into required decimal numbers.
+    /// </summary>
     public class FormatNumber : ExpressionEvaluator
     {
         public FormatNumber()

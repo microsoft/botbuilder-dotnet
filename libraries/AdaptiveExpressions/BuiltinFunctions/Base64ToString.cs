@@ -5,6 +5,10 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the string version of a base64-encoded string,
+    /// effectively decoding the base64 string.
+    /// </summary>
     public class Base64ToString : ExpressionEvaluator
     {
         public Base64ToString()

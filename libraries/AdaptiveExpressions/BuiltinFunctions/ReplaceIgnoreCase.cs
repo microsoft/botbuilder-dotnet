@@ -5,6 +5,10 @@ using System.Text.RegularExpressions;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Replace a substring with the specified string, and return the result string.
+    /// This function is case-insensitive.
+    /// </summary>
     public class ReplaceIgnoreCase : ExpressionEvaluator
     {
         public ReplaceIgnoreCase()

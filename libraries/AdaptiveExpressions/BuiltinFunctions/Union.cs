@@ -6,6 +6,11 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a collection that has all the items from the specified collections.
+    /// To appear in the result, an item can appear in any collection passed to this function.
+    /// If one or more items have the same name, the last item with that name appears in the result.
+    /// </summary>
     public class Union : ExpressionEvaluator
     {
         public Union()

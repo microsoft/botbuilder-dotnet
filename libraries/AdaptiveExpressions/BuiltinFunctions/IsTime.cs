@@ -7,6 +7,10 @@ using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return true if a given TimexProperty or Timex expression refers to a valid time.
+    /// Valid time contains hours, minutes and seconds.
+    /// </summary>
     public class IsTime : ExpressionEvaluator
     {
         public IsTime()

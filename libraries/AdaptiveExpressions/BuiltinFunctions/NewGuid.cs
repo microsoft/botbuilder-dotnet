@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a new Guid string.
+    /// </summary>
     public class NewGuid : ExpressionEvaluator
     {
         public NewGuid()

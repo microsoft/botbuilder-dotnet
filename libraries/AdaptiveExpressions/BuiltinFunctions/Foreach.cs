@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Operate on each element and return the new collection.
+    /// </summary>
     public class Foreach : ExpressionEvaluator
     {
         public Foreach()

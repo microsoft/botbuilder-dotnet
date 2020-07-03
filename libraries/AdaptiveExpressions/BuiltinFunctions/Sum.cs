@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the result from adding numbers in a list.
+    /// </summary>
     public class Sum : ExpressionEvaluator
     {
         public Sum()

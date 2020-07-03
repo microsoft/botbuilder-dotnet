@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the remainder from dividing two numbers. 
+    /// </summary>
     public class Mod : ExpressionEvaluator
     {
         public Mod()

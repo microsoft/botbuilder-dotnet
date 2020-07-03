@@ -6,6 +6,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Set the value of an object's property and return the updated object. 
+    /// </summary>
     public class SetProperty : ExpressionEvaluator
     {
         public SetProperty()

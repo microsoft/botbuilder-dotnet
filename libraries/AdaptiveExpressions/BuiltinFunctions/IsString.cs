@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return true if a given input is a string.
+    /// </summary>
     public class IsString : ExpressionEvaluator
     {
         public IsString()

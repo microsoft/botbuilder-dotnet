@@ -6,6 +6,9 @@ using System.Collections;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the lowest value from a set of numbers or an array.
+    /// </summary>
     public class Min : ExpressionEvaluator
     {
         public Min()

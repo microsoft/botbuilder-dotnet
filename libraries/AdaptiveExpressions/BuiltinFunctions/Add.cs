@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the result from adding two or more numbers (pure number case) or concatting two or more strings (other case).
+    /// </summary>
     public class Add : ExpressionEvaluator
     {
         public Add()

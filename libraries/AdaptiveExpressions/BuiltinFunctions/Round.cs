@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Rounds a number value to the nearest integer.
+    /// </summary>
     public class Round : ExpressionEvaluator
     {
         public Round()

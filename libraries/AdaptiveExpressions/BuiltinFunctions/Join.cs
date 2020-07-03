@@ -7,6 +7,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a string that has all the items from an array, with each character separated by a delimiter.
+    /// </summary>
     public class Join : ExpressionEvaluator
     {
         public Join()

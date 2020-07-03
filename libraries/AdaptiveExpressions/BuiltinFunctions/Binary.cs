@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the binary version of a string.
+    /// </summary>
     public class Binary : ExpressionEvaluator
     {
         public Binary()

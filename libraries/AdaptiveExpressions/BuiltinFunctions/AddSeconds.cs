@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Add a number of seconds to a timestamp.
+    /// </summary>
     public class AddSeconds : TimeTransformEvaluator
     {
         public AddSeconds()

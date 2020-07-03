@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return an array from multiple inputs.
+    /// </summary>
     public class CreateArray : ExpressionEvaluator
     {
         public CreateArray()

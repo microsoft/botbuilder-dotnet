@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Remove leading and trailing whitespace from a string, and return the updated string.
+    /// </summary>
     public class Trim : StringTransformEvaluator
     {
         public Trim()

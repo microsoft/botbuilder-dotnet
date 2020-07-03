@@ -6,6 +6,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the starting position or index value of a substring. This function is case-insensitive, and indexes start with the number 0.
+    /// </summary>
     public class IndexOf : ExpressionEvaluator
     {
         public IndexOf()

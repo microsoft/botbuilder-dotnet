@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a timestamp in the specified format.
+    /// </summary>
     public class FormatDateTime : ExpressionEvaluator
     {
         public FormatDateTime()

@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Combine two or more strings, and return the combined string.
+    /// </summary>
     public class Concat : ExpressionEvaluator
     {
         public Concat()

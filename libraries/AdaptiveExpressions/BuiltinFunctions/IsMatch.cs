@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return true if a given string is matches a specified regular expression pattern.
+    /// </summary>
     public class IsMatch : ExpressionEvaluator
     {
         public IsMatch()

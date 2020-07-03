@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the string version of a value.
+    /// </summary>
     public class String : ExpressionEvaluator
     {
         public String()

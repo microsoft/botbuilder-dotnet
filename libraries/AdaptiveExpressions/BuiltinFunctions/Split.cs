@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return an array that contains substrings, separated by commas, based on the specified delimiter character in the original string.
+    /// </summary>
     public class Split : ExpressionEvaluator
     {
         public Split()

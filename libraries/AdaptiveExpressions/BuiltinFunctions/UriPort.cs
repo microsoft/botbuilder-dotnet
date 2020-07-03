@@ -7,6 +7,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the port value of a unified resource identifier (URI).
+    /// </summary>
     public class UriPort : ExpressionEvaluator
     {
         public UriPort()

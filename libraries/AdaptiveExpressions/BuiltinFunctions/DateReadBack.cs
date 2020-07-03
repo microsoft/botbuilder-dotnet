@@ -6,6 +6,9 @@ using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Uses the date-time library to provide a date readback.
+    /// </summary>
     public class DateReadBack : ExpressionEvaluator
     {
         public DateReadBack()

@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the day of the year from a timestamp.
+    /// </summary>
     public class DayOfYear : ExpressionEvaluator
     {
         public DayOfYear()

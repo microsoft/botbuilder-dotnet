@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the day of the week from a timestamp.
+    /// </summary>
     public class DayOfWeek : ExpressionEvaluator
     {
         public DayOfWeek()

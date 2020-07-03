@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Evaluator that transforms a number to another number.
+    /// </summary>
     public class NumberTransformEvaluator : ExpressionEvaluator
     {
         public NumberTransformEvaluator(string type, Func<IReadOnlyList<object>, object> function)

@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the base64-encoded version of a string or byte array.
+    /// </summary>
     public class Base64 : ExpressionEvaluator
     {
         public Base64()

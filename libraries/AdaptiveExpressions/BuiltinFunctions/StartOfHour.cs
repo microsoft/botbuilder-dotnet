@@ -8,6 +8,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the start of the hour for a timestamp.
+    /// </summary>
     public class StartOfHour : ExpressionEvaluator
     {
         public StartOfHour()

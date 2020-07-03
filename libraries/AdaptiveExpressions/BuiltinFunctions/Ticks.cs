@@ -6,6 +6,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the ticks property value of a specified timestamp. A tick is 100-nanosecond interval.
+    /// </summary>
     public class Ticks : ExpressionEvaluator
     {
         public Ticks()

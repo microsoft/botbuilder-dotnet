@@ -6,6 +6,9 @@ using System.Collections;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the highest value from a list or array. The list or arary is inclusive at both ends.
+    /// </summary>
     public class Max : ExpressionEvaluator
     {
         public Max()

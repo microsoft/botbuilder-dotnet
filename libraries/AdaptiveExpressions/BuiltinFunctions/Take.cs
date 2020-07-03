@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return items from the front of a collection.
+    /// </summary>
     public class Take : ExpressionEvaluator
     {
         public Take()

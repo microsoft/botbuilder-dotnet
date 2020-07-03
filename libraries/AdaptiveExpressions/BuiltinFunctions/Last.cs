@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the last item from a collection.
+    /// </summary>
     public class Last : ExpressionEvaluator
     {
         public Last()

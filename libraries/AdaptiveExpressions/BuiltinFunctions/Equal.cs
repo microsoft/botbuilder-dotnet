@@ -9,6 +9,10 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Check whether both values, expressions, or objects are equivalent.
+    /// Return true if both are equivalent, or return false if they're not equivalent.
+    /// </summary>
     public class Equal : ComparisonEvaluator
     {
         public Equal()

@@ -8,6 +8,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the start of the month for a timestamp.
+    /// </summary>
     public class StartOfMonth : ExpressionEvaluator
     {
         public StartOfMonth()

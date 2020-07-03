@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the integer result from dividing two numbers. 
+    /// </summary>
     public class Divide : MultivariateNumericEvaluator
     {
         public Divide()

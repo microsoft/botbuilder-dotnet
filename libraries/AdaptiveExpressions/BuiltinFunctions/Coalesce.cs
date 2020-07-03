@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the first non-null value from one or more parameters.
+    /// Empty strings, empty arrays, and empty objects are not null.
+    /// </summary>
     public class Coalesce : ExpressionEvaluator
     {
         public Coalesce()

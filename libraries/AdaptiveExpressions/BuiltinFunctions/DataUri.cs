@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a data uniform resource identifier (URI) of a string.
+    /// </summary>
     public class DataUri : ExpressionEvaluator
     {
         public DataUri()

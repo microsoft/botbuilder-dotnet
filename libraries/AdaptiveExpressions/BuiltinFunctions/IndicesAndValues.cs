@@ -6,6 +6,11 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Turn an array or object into an array of objects with index (current index) and value properties.
+    /// For arrays, the index is the position in the array.
+    /// For objects, it is the key for the value.
+    /// </summary>
     public class IndicesAndValues : ExpressionEvaluator
     {
         public IndicesAndValues()

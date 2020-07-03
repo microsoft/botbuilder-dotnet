@@ -7,6 +7,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the JavaScript Object Notation (JSON) type value or object of a string or XML.
+    /// </summary>
     public class Json : ExpressionEvaluator
     {
         public Json()

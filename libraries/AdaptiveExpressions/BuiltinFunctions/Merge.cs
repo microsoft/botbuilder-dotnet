@@ -5,6 +5,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Merge two object(json) into one object(json).
+    /// </summary>
     public class Merge : ExpressionEvaluator
     {
         public Merge()

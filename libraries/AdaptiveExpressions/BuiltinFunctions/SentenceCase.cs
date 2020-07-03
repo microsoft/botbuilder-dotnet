@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Converts the specified string to sentence case
+    /// </summary>
     public class SentenceCase : StringTransformEvaluator
     {
         public SentenceCase()

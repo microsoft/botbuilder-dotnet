@@ -8,6 +8,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Filter on each element and return the new collection of filtered elements which match a specific condition.
+    /// </summary>
     public class Where : ExpressionEvaluator
     {
         public Where()

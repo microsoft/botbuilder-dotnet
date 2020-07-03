@@ -6,6 +6,11 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return true if a given input is a complex object or return false if it is a primitive object.
+    /// Primitive objects include strings, numbers, and Booleans;
+    /// complex types, like classes, contain properties.
+    /// </summary>
     public class IsObject : ExpressionEvaluator
     {
         public IsObject()

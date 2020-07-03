@@ -7,6 +7,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the scheme value of a unified resource identifier (URI).
+    /// </summary>
     public class UriScheme : ExpressionEvaluator
     {
         public UriScheme()

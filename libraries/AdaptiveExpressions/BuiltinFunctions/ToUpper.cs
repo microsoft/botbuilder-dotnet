@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a string in uppercase format.
+    /// If a character in the string doesn't have an uppercase version, that character stays unchanged in the returned string.
+    /// </summary>
     public class ToUpper : StringTransformEvaluator
     {
         public ToUpper()

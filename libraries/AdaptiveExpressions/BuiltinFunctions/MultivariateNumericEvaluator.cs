@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Numeric operators that can have 2 or more args.
+    /// </summary>
     public class MultivariateNumericEvaluator : ExpressionEvaluator
     {
         public MultivariateNumericEvaluator(string type, Func<IReadOnlyList<object>, object> function, FunctionUtils.VerifyExpression verify = null)

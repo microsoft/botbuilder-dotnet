@@ -5,6 +5,9 @@ using System.Collections;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the number of items in a collection.
+    /// </summary>
     public class Count : ExpressionEvaluator
     {
         public Count()

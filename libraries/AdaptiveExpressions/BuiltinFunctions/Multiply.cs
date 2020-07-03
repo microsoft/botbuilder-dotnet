@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the product from multiplying two numbers.
+    /// </summary>
     public class Multiply : MultivariateNumericEvaluator
     {
         public Multiply()

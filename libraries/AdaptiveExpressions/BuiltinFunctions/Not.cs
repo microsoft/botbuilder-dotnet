@@ -5,6 +5,10 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Check whether an expression is false.
+    /// Return true if the expression is false, or return false if true.
+    /// </summary>
     public class Not : ExpressionEvaluator
     {
         public Not()

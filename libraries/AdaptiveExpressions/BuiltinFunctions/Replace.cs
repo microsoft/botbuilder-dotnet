@@ -3,6 +3,11 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Replace a substring with the specified string,
+    /// and return the result string.
+    /// This function is case-sensitive.
+    /// </summary>
     public class Replace : ExpressionEvaluator
     {
         public Replace()

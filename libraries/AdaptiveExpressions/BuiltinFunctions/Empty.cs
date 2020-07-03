@@ -5,6 +5,13 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Check whether an instance is empty. Return true if the input is empty. Empty means:
+    /// 1.input is null or undefined
+    /// 2.input is a null or empty string
+    /// 3.input is zero size collection
+    /// 4.input is an object with no property.
+    /// </summary>
     public class Empty : ComparisonEvaluator
     {
         public Empty()

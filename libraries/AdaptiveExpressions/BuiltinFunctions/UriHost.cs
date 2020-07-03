@@ -7,6 +7,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the host value of a unified resource identifier (URI).
+    /// </summary>
     public class UriHost : ExpressionEvaluator
     {
         public UriHost()

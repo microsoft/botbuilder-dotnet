@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the ordinal number of the input number.
+    /// </summary>
     public class AddOrdinal : ExpressionEvaluator
     {
         public AddOrdinal()

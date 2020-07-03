@@ -5,6 +5,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Check whether an expression is true or false. Based on the result, return a specified value.
+    /// </summary>
     public class If : ExpressionEvaluator
     {
         public If()

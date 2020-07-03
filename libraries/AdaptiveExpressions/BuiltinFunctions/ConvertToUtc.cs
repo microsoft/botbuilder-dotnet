@@ -8,6 +8,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Convert a timestamp to Universal Time Coordinated (UTC) from the source time zone.
+    /// </summary>
     public class ConvertToUtc : ExpressionEvaluator
     {
         public ConvertToUtc()

@@ -5,6 +5,10 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Check whether at least one expression is true.
+    /// Return true if at least one expression is true, or return false if all are false.
+    /// </summary>
     public class Or : ExpressionEvaluator
     {
         public Or()

@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Flatten an array into non-array values. You can optionally set the maximum depth to flatten to.
+    /// </summary>
     public class Flatten : ExpressionEvaluator
     {
         public Flatten()

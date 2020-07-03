@@ -8,6 +8,9 @@ using System.Xml.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the XML version of a string that contains a JSON object.
+    /// </summary>
     public class Xml : ExpressionEvaluator
     {
         public Xml()

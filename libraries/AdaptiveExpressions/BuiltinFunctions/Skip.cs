@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Remove items from the front of a collection, and return all the other items.
+    /// </summary>
     public class Skip : ExpressionEvaluator
     {
         public Skip()

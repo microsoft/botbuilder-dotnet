@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Evaluator that transforms a date-time to another date-time.
+    /// </summary>
     public class TimeTransformEvaluator : ExpressionEvaluator
     {
         public TimeTransformEvaluator(string type, Func<DateTime, int, DateTime> function)

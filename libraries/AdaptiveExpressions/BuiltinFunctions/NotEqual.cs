@@ -9,6 +9,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// return true if the two items are not equal.
+    /// </summary>
     public class NotEqual : ComparisonEvaluator
     {
         public NotEqual()

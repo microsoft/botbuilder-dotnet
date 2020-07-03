@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return true if a given input is a Boolean.
+    /// </summary>
     public class IsBoolean : ExpressionEvaluator
     {
         public IsBoolean()

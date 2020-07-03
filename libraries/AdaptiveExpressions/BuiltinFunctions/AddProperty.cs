@@ -6,6 +6,10 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Add a property and its value, or name-value pair, to a JSON object, and return the updated object.
+    /// If the object already exists at runtime the function throws an error.
+    /// </summary>
     public class AddProperty : ExpressionEvaluator
     {
         public AddProperty()

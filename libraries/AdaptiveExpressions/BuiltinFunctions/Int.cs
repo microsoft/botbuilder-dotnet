@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the integer version of a string.
+    /// </summary>
     public class Int : ExpressionEvaluator
     {
         public Int()

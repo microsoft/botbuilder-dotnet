@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return true if a given input is an array.
+    /// </summary>
     public class IsArray : ExpressionEvaluator
     {
         public IsArray()

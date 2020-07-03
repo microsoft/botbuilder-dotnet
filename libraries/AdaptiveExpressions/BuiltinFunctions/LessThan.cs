@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Check whether the first value is less than the second value.
+    /// Return true if the first value is less, or return false if the first value is more.
+    /// </summary>
     public class LessThan : ComparisonEvaluator
     {
         public LessThan()

@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Comparison operators.
+    /// A comparison operator returns false if the comparison is false, or there is an error.  This prevents errors from short-circuiting boolean expressions.
+    /// </summary>
     public class ComparisonEvaluator : ExpressionEvaluator
     {
         public ComparisonEvaluator(string type, Func<IReadOnlyList<object>, bool> function, ValidateExpressionDelegate validator, FunctionUtils.VerifyExpression verify = null)

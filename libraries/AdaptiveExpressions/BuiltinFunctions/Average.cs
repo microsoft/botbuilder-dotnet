@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the number average of a numeric array.
+    /// </summary>
     public class Average : ExpressionEvaluator
     {
         public Average()

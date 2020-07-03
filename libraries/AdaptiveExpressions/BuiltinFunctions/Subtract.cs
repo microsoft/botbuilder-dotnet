@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the result from subtracting the second number from the first number.
+    /// </summary>
     public class Subtract : MultivariateNumericEvaluator
     {
         public Subtract()

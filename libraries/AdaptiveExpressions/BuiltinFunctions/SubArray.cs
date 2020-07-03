@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Returns a subarray from specified start and end positions. Index values start with the number 0.
+    /// </summary>
     public class SubArray : ExpressionEvaluator
     {
         public SubArray()

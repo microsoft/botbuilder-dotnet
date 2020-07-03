@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the year of the specified timestamp.
+    /// </summary>
     public class Year : ExpressionEvaluator
     {
         public Year()

@@ -7,6 +7,9 @@ using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return true if a given TimexProperty or Timex expression refers to a valid date range.
+    /// </summary>
     public class IsDateRange : ExpressionEvaluator
     {
         public IsDateRange()

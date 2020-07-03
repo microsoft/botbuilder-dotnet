@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the month of the specified timestamp.
+    /// </summary>
     public class Month : ExpressionEvaluator
     {
         public Month()

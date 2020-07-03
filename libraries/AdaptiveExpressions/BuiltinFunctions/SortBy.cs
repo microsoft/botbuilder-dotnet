@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Sort elements in the collection in ascending order and return the sorted collection.
+    /// </summary>
     public class SortBy : ExpressionEvaluator
     {
         public SortBy()

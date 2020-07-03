@@ -8,6 +8,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Add a number of time units to a timestamp. 
+    /// </summary>
     public class AddToTime : ExpressionEvaluator
     {
         public AddToTime()

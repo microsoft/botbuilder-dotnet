@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Evaluates an expression for truthiness.
+    /// </summary>
     public class Exists : ComparisonEvaluator
     {
         public Exists()

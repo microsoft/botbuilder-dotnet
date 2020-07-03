@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the current timestamp.
+    /// </summary>
     public class UtcNow : ExpressionEvaluator
     {
         public UtcNow()

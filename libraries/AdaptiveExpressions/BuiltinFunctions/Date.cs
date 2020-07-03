@@ -5,6 +5,9 @@ using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the date of a specified timestamp in m/dd/yyyy format.
+    /// </summary>
     public class Date : ExpressionEvaluator
     {
         public Date()

@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// End of line. Return \r\n in windows, and \r in unix.
+    /// </summary>
     public class EOL : ExpressionEvaluator
     {
         public EOL()

@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Numeric operators that can have 1 or more args.
+    /// </summary>
     public class NumericEvaluator : ExpressionEvaluator
     {
         public NumericEvaluator(string type, Func<IReadOnlyList<object>, object> function)

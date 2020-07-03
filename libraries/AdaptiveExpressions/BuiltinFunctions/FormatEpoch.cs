@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a timestamp in the specified format from UNIX time (also know as Epoch time, POSIX time, UNIX Epoch time).
+    /// </summary>
     public class FormatEpoch : ExpressionEvaluator
     {
         public FormatEpoch()

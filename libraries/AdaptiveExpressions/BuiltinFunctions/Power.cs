@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return exponentiation of one number to another.
+    /// </summary>
     public class Power : MultivariateNumericEvaluator
     {
         public Power()

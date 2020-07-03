@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a timestamp in the specified format from ticks.
+    /// </summary>
     public class FormatTicks : ExpressionEvaluator
     {
         public FormatTicks()

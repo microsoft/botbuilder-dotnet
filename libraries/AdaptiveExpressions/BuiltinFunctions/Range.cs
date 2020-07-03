@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return an integer array that starts from a specified integer.
+    /// </summary>
     public class Range : ExpressionEvaluator
     {
         public Range()

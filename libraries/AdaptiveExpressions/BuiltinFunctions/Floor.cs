@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Returns the largest integer less than or equal to the specified number.
+    /// </summary>
     public class Floor : NumberTransformEvaluator
     {
         public Floor()

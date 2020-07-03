@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Remove all duplicates from an array.
+    /// </summary>
     public class Unique : ExpressionEvaluator
     {
         public Unique()

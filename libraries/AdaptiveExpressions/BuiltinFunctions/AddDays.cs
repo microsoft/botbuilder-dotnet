@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Add a number of days to a timestamp.
+    /// </summary>
     public class AddDays : TimeTransformEvaluator
     {
         public AddDays()

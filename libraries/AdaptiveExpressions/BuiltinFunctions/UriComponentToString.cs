@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the string version of a uniform resource identifier (URI) encoded string, effectively decoding the URI-encoded string.
+    /// </summary>
     public class UriComponentToString : ExpressionEvaluator
     {
         public UriComponentToString()

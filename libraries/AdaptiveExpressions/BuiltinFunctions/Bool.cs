@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the Boolean version of a value.
+    /// </summary>
     public class Bool : ComparisonEvaluator
     {
         public Bool()

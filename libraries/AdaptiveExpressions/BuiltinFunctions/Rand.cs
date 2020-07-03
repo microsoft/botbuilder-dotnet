@@ -5,6 +5,9 @@ using System;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a random integer from a specified range, which is inclusive only at the starting end.
+    /// </summary>
     public class Rand : ExpressionEvaluator
     {
         public static readonly Random Randomizer = new Random();

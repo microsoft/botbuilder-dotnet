@@ -5,6 +5,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Remove a property from an object and return the updated object.
+    /// </summary>
     public class RemoveProperty : ExpressionEvaluator
     {
         public RemoveProperty()

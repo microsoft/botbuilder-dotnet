@@ -8,6 +8,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the current timestamp plus the specified time units.
+    /// </summary>
     public class GetFutureTime : ExpressionEvaluator
     {
         public GetFutureTime()

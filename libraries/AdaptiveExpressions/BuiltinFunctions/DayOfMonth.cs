@@ -3,6 +3,9 @@
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the day of the month from a timestamp.
+    /// </summary>
     public class DayOfMonth : ExpressionEvaluator
     {
         public DayOfMonth()

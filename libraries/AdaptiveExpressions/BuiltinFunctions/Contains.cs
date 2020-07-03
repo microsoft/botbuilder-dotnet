@@ -6,6 +6,11 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Check whether a collection has a specific item. Return true if the item is found,
+    /// or return false if not found.
+    /// This function is case-sensitive.
+    /// </summary>
     public class Contains : ExpressionEvaluator
     {
         public Contains()

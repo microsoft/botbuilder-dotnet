@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return the first item from a string or array.
+    /// </summary>
     public class First : ExpressionEvaluator
     {
         public First()
