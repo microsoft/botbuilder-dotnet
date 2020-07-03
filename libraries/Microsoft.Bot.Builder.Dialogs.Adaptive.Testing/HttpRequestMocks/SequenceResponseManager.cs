@@ -16,6 +16,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         private int _id;
         private List<HttpResponseMockContent> _contents = new List<HttpResponseMockContent>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SequenceResponseManager"/> class.
+        /// Return the list of mocks in sequence order. The last one will be repeated.
+        /// </summary>
+        /// <param name="responses">The list of HttpResponseMock.</param>
         public SequenceResponseManager(List<HttpResponseMock> responses)
         {
             _id = 0;

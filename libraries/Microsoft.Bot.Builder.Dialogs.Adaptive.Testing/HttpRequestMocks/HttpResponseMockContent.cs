@@ -15,12 +15,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 
         private readonly object content;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpResponseMockContent"/> class.
+        /// Contain an empty content.
+        /// </summary>
         public HttpResponseMockContent()
         {
             contentType = HttpResponseMock.ContentTypes.String;
             content = string.Empty;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpResponseMockContent"/> class.
+        /// </summary>
+        /// <param name="httpResponseMock">The mock that provides content.</param>
         public HttpResponseMockContent(HttpResponseMock httpResponseMock)
         {
             contentType = httpResponseMock.ContentType;
