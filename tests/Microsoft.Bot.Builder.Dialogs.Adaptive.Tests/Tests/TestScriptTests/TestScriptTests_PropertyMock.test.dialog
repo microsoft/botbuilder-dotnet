@@ -1,0 +1,153 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test Mock Settings",
+    "propertyMocks": [
+        "properties.mock",
+        "propertiesbase.mock"
+    ],
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.file}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.base}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.fileoverwrite}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.baseoverwrite}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.selfoverwrite}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.object.property}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.base}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.baseoverwrite}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.selfoverwrite}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.number + 1}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.object.property.value}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${conversation.base}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${conversation.baseoverwrite}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${conversation.selfoverwrite}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${conversation.number + 1}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${conversation.object.property.value}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "set settings.file"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "set settings.base"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "overwrite settings.fileoverwrite"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "overwrite settings.baseoverwrite"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "overwrite settings.selfoverwrite"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "set settings.object"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "set user.base"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "overwrite user.baseoverwrite"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "overwrite user.selfoverwrite"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "124"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "set user.object"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "set conversation.base"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "overwrite conversation.baseoverwrite"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "overwrite conversation.selfoverwrite"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "235"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "set conversation.object"
+        }
+    ]
+}
