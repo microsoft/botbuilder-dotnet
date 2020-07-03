@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Take : ExpressionEvaluator
     {
         public Take()
-            : base(ExpressionType.Take, EvalTake, ReturnType.Array, Validator)
+            : base(ExpressionType.Take, Evaluator, ReturnType.Array, Validator)
         {
         }
 
@@ -17,7 +17,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             FunctionUtils.ValidateOrder(expression, null, ReturnType.Array, ReturnType.Number);
         }
 
-        private static (object, string) EvalTake(Expression expression, object state, Options options)
+        private static (object, string) Evaluator(Expression expression, object state, Options options)
         {
             object result = null;
             string error;

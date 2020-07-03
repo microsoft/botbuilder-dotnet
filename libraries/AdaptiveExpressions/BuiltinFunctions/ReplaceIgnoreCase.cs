@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Text.RegularExpressions;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -20,8 +19,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         {
                             string error = null;
                             string result = null;
-                            string inputStr = FunctionUtils.ParseStringOrNull(args[0]);
-                            string oldStr = FunctionUtils.ParseStringOrNull(args[1]);
+                            var inputStr = FunctionUtils.ParseStringOrNull(args[0]);
+                            var oldStr = FunctionUtils.ParseStringOrNull(args[1]);
                             if (oldStr.Length == 0)
                             {
                                 error = $"{args[1]} the oldValue in replace function should be a string with at least length 1.";

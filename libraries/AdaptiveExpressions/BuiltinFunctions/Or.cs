@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -9,11 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Or : ExpressionEvaluator
     {
         public Or()
-            : base(ExpressionType.Or, EvalOr, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)
+            : base(ExpressionType.Or, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)
         {
         }
 
-        private static (object value, string error) EvalOr(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object result = false;
             string error = null;

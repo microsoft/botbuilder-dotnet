@@ -15,8 +15,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
             return FunctionUtils.Apply(
                         args =>
                         {
-                            string rawStr = FunctionUtils.ParseStringOrNull(args[0]);
-                            string seekStr = FunctionUtils.ParseStringOrNull(args[1]);
+                            var rawStr = FunctionUtils.ParseStringOrNull(args[0]);
+                            var seekStr = FunctionUtils.ParseStringOrNull(args[1]);
                             return rawStr.EndsWith(seekStr);
                         }, FunctionUtils.VerifyStringOrNull);
         }

@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                         return (changed, null);
                                     },
                                     ReturnType.Boolean,
-                                    ExpressionFunctions.ValidateUnary))));
+                                    FunctionUtils.ValidateUnary))));
                     }
                 }
             }

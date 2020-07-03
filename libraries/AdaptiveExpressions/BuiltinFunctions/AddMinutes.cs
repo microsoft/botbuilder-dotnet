@@ -8,11 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class AddMinutes : TimeTransformEvaluator
     {
         public AddMinutes()
-                : base(ExpressionType.AddMinutes, Evaluator)
+                : base(ExpressionType.AddMinutes, Function)
         {
         }
 
-        private static DateTime Evaluator(DateTime time, int interval)
+        private static DateTime Function(DateTime time, int interval)
         {
             return time.AddMinutes(interval);
         }

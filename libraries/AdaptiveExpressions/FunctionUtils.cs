@@ -65,22 +65,6 @@ namespace AdaptiveExpressions
             }
         }
 
-        public static (object, string) TicksWithError(object timestamp)
-        {
-            object result = null;
-            object parsed = null;
-            string error = null;
-            (parsed, error) = NormalizeToDateTime(timestamp);
-
-            if (error == null)
-            {
-                var ts = (DateTime)parsed;
-                result = ts.Ticks;
-            }
-
-            return (result, error);
-        }
-
         /// <summary>
         /// Validate the number and type of arguments to a function.
         /// </summary>
@@ -618,138 +602,6 @@ namespace AdaptiveExpressions
                 }, verify);
 
         /// <summary>
-        /// Lookup an index property of instance.
-        /// </summary>
-        /// <param name="instance">Instance with property.</param>
-        /// <param name="index">Property to lookup.</param>
-        /// <returns>Value and error information if any.</returns>
-        public static (object value, string error) AccessIndex(object instance, long index)
-        {
-            // NOTE: This returns null rather than an error if property is not present
-            if (instance == null)
-            {
-                return (null, null);
-            }
-
-            object value = null;
-            string error = null;
-
-            if (TryParseList(instance, out var list))
-            {
-                if (index >= 0 && index < list.Count)
-                {
-                    value = list[Convert.ToInt32(index)];
-                }
-                else
-                {
-                    error = $"Index was out of range.";
-                }
-            }
-            else
-            {
-                error = $"{instance} is not a collection.";
-            }
-
-            value = ResolveValue(value);
-
-            return (value, error);
-        }
-
-        /// <summary>
-        /// Lookup a property in IDictionary, JObject or through reflection.
-        /// </summary>
-        /// <param name="instance">Instance with property.</param>
-        /// <param name="property">Property to lookup.</param>
-        /// <param name="value">Value of property.</param>
-        /// <returns>True if property is present and binds value.</returns>
-        public static bool TryAccessProperty(object instance, string property, out object value)
-        {
-            var isPresent = false;
-            value = null;
-            if (instance != null)
-            {
-                property = property.ToLower();
-
-                // NOTE: what about other type of TKey, TValue?
-                if (instance is IDictionary<string, object> idict)
-                {
-                    if (!idict.TryGetValue(property, out value))
-                    {
-                        // fall back to case insensitive
-                        var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
-                        if (prop != null)
-                        {
-                            isPresent = idict.TryGetValue(prop, out value);
-                        }
-                    }
-                    else
-                    {
-                        isPresent = true;
-                    }
-                }
-                else if (instance is JObject jobj)
-                {
-                    value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
-                    isPresent = value != null;
-                }
-                else
-                {
-                    // Use reflection
-                    var type = instance.GetType();
-                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
-                    if (prop != null)
-                    {
-                        value = prop.GetValue(instance);
-                        isPresent = true;
-                    }
-                }
-
-                if (isPresent)
-                {
-                    value = ResolveValue(value);
-                }
-            }
-
-            return isPresent;
-        }
-
-        /// <summary>
-        /// Convert constant JValue to base type value.
-        /// </summary>
-        /// <param name="obj">Input object.</param>
-        /// <returns>Corresponding base type if input is a JValue.</returns>
-        public static object ResolveValue(object obj)
-        {
-            object value;
-            if (!(obj is JValue jval))
-            {
-                value = obj;
-            }
-            else
-            {
-                value = jval.Value;
-                if (jval.Type == JTokenType.Integer)
-                {
-                    value = jval.ToObject<long>();
-                }
-                else if (jval.Type == JTokenType.String)
-                {
-                    value = jval.ToObject<string>();
-                }
-                else if (jval.Type == JTokenType.Boolean)
-                {
-                    value = jval.ToObject<bool>();
-                }
-                else if (jval.Type == JTokenType.Float)
-                {
-                    value = jval.ToObject<double>();
-                }
-            }
-
-            return value;
-        }
-
-        /// <summary>
         /// Try to accumulate the path from an Accessor or Element, from right to left.
         /// </summary>
         /// <param name="expression">expression.</param>
@@ -809,7 +661,155 @@ namespace AdaptiveExpressions
             return (path, left, null);
         }
 
-        public static (object value, string error) WrapGetValue(IMemory memory, string property, Options options)
+        /// <summary>
+        /// Lookup an index property of instance.
+        /// </summary>
+        /// <param name="instance">Instance with property.</param>
+        /// <param name="index">Property to lookup.</param>
+        /// <returns>Value and error information if any.</returns>
+        internal static (object value, string error) AccessIndex(object instance, long index)
+        {
+            // NOTE: This returns null rather than an error if property is not present
+            if (instance == null)
+            {
+                return (null, null);
+            }
+
+            object value = null;
+            string error = null;
+
+            if (TryParseList(instance, out var list))
+            {
+                if (index >= 0 && index < list.Count)
+                {
+                    value = list[Convert.ToInt32(index)];
+                }
+                else
+                {
+                    error = $"Index was out of range.";
+                }
+            }
+            else
+            {
+                error = $"{instance} is not a collection.";
+            }
+
+            value = ResolveValue(value);
+
+            return (value, error);
+        }
+
+        internal static (object, string) TicksWithError(object timestamp)
+        {
+            object result = null;
+            object parsed = null;
+            string error = null;
+            (parsed, error) = NormalizeToDateTime(timestamp);
+
+            if (error == null)
+            {
+                var ts = (DateTime)parsed;
+                result = ts.Ticks;
+            }
+
+            return (result, error);
+        }
+
+        /// <summary>
+        /// Lookup a property in IDictionary, JObject or through reflection.
+        /// </summary>
+        /// <param name="instance">Instance with property.</param>
+        /// <param name="property">Property to lookup.</param>
+        /// <param name="value">Value of property.</param>
+        /// <returns>True if property is present and binds value.</returns>
+        internal static bool TryAccessProperty(object instance, string property, out object value)
+        {
+            var isPresent = false;
+            value = null;
+            if (instance != null)
+            {
+                property = property.ToLower();
+
+                // NOTE: what about other type of TKey, TValue?
+                if (instance is IDictionary<string, object> idict)
+                {
+                    if (!idict.TryGetValue(property, out value))
+                    {
+                        // fall back to case insensitive
+                        var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
+                        if (prop != null)
+                        {
+                            isPresent = idict.TryGetValue(prop, out value);
+                        }
+                    }
+                    else
+                    {
+                        isPresent = true;
+                    }
+                }
+                else if (instance is JObject jobj)
+                {
+                    value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
+                    isPresent = value != null;
+                }
+                else
+                {
+                    // Use reflection
+                    var type = instance.GetType();
+                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                    if (prop != null)
+                    {
+                        value = prop.GetValue(instance);
+                        isPresent = true;
+                    }
+                }
+
+                if (isPresent)
+                {
+                    value = ResolveValue(value);
+                }
+            }
+
+            return isPresent;
+        }
+
+        /// <summary>
+        /// Convert constant JValue to base type value.
+        /// </summary>
+        /// <param name="obj">Input object.</param>
+        /// <returns>Corresponding base type if input is a JValue.</returns>
+        internal static object ResolveValue(object obj)
+        {
+            object value;
+            if (!(obj is JValue jval))
+            {
+                value = obj;
+            }
+            else
+            {
+                value = jval.Value;
+                if (jval.Type == JTokenType.Integer)
+                {
+                    value = jval.ToObject<long>();
+                }
+                else if (jval.Type == JTokenType.String)
+                {
+                    value = jval.ToObject<string>();
+                }
+                else if (jval.Type == JTokenType.Boolean)
+                {
+                    value = jval.ToObject<bool>();
+                }
+                else if (jval.Type == JTokenType.Float)
+                {
+                    value = jval.ToObject<double>();
+                }
+            }
+
+            return value;
+        }
+
+        internal static (object value, string error) WrapGetValue(IMemory memory, string property, Options options)
         {
             if (memory.TryGetValue(property, out var result) && result != null)
             {
@@ -824,7 +824,7 @@ namespace AdaptiveExpressions
             return (null, null);
         }
 
-        public static string ParseStringOrNull(object value)
+        internal static string ParseStringOrNull(object value)
         {
             string result;
             if (value is string str)
@@ -844,7 +844,7 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="instance">List to resolve.</param>
         /// <returns>Resolved list.</returns>
-        public static IList ResolveListValue(object instance)
+        internal static IList ResolveListValue(object instance)
         {
             IList result = null;
             if (instance is JArray ja)
@@ -864,7 +864,7 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="instance">Computed value.</param>
         /// <returns>True if boolean true or non-null.</returns>
-        public static bool IsLogicTrue(object instance)
+        internal static bool IsLogicTrue(object instance)
         {
             var result = true;
             if (instance is bool instanceBool)
@@ -879,9 +879,9 @@ namespace AdaptiveExpressions
             return result;
         }
 
-        public static double CultureInvariantDoubleConvert(object numberObj) => Convert.ToDouble(numberObj, CultureInfo.InvariantCulture);
+        internal static double CultureInvariantDoubleConvert(object numberObj) => Convert.ToDouble(numberObj, CultureInfo.InvariantCulture);
 
-        public static (object value, string error) Foreach(Expression expression, IMemory state, Options options)
+        internal static (object value, string error) Foreach(Expression expression, IMemory state, Options options)
         {
             object result = null;
             string error;
@@ -942,7 +942,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        public static List<object> Object2KVPairList(JObject jobj)
+        internal static List<object> Object2KVPairList(JObject jobj)
         {
             var tempList = new List<object>();
             foreach (var item in jobj)
@@ -953,7 +953,7 @@ namespace AdaptiveExpressions
             return tempList;
         }
 
-        public static void ValidateForeach(Expression expression)
+        internal static void ValidateForeach(Expression expression)
         {
             if (expression.Children.Count() != 3)
             {
@@ -968,7 +968,7 @@ namespace AdaptiveExpressions
             }
         }
 
-        public static (Func<DateTime, DateTime>, string) DateTimeConverter(long interval, string timeUnit, bool isPast = true)
+        internal static (Func<DateTime, DateTime>, string) DateTimeConverter(long interval, string timeUnit, bool isPast = true)
         {
             Func<DateTime, DateTime> converter = (dateTime) => dateTime;
             string error = null;
@@ -988,7 +988,7 @@ namespace AdaptiveExpressions
             return (converter, error);
         }
 
-        public static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, object> transform = null)
+        internal static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, object> transform = null)
         {
             object result = null;
             string error = null;
@@ -1008,7 +1008,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        public static (object, string) ConvertTimeZoneFormat(string timezone)
+        internal static (object, string) ConvertTimeZoneFormat(string timezone)
         {
             object convertedTimeZone = null;
             string convertedTimeZoneStr;
@@ -1034,7 +1034,7 @@ namespace AdaptiveExpressions
             return (convertedTimeZone, error);
         }
 
-        public static (string, string) ReturnFormatTimeStampStr(DateTime datetime, string format)
+        internal static (string, string) ReturnFormatTimeStampStr(DateTime datetime, string format)
         {
             string result = null;
             string error = null;
@@ -1051,7 +1051,7 @@ namespace AdaptiveExpressions
         }
 
         // URI Parsing Functions
-        public static (object, string) ParseUri(string uri)
+        internal static (object, string) ParseUri(string uri)
         {
             object result = null;
             string error = null;
@@ -1067,7 +1067,7 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        public static (TimexProperty, string) ParseTimexProperty(object timexExpr)
+        internal static (TimexProperty, string) ParseTimexProperty(object timexExpr)
         {
             TimexProperty parsed = null;
             string error = null;
@@ -1092,7 +1092,7 @@ namespace AdaptiveExpressions
         }
 
         // conversion functions
-        public static byte[] ToBinary(string strToConvert)
+        internal static byte[] ToBinary(string strToConvert)
         {
             if (strToConvert == null)
             {
@@ -1102,14 +1102,14 @@ namespace AdaptiveExpressions
             return Encoding.UTF8.GetBytes(strToConvert);
         }
 
-        public static JToken ConvertToJToken(object value)
+        internal static JToken ConvertToJToken(object value)
         {
             return value == null ? JValue.CreateNull() : JToken.FromObject(value);
         }
 
         // collection functions
 
-        public static EvaluateExpressionDelegate SortBy(bool isDescending)
+        internal static EvaluateExpressionDelegate SortBy(bool isDescending)
            => (expression, state, options) =>
            {
                object result = null;
