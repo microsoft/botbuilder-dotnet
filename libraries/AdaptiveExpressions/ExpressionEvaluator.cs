@@ -41,9 +41,6 @@ namespace AdaptiveExpressions
         private readonly ValidateExpressionDelegate _validator;
         private readonly EvaluateExpressionDelegate _evaluator;
         private ExpressionEvaluator _negation;
-        private object p;
-        private ReturnType @object;
-        private ValidateExpressionDelegate validator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionEvaluator"/> class.
@@ -62,14 +59,6 @@ namespace AdaptiveExpressions
             _evaluator = evaluator;
             ReturnType = returnType;
             _validator = validator ?? new ValidateExpressionDelegate((expr) => { });
-        }
-
-        public ExpressionEvaluator(string type, object p, ReturnType @object, ValidateExpressionDelegate validator)
-        {
-            Type = type;
-            this.p = p;
-            this.@object = @object;
-            this.validator = validator;
         }
 
         /// <summary>
