@@ -408,7 +408,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("locale.dialog");
             await CreateFlow(async (turnContext, cancellationToken) =>
             {
-                turnContext.Locale = "de-DE";
+                (turnContext as TurnContext).Locale = "de-DE";
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hola")
