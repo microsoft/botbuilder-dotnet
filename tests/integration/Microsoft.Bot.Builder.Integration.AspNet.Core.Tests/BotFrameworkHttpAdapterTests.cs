@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -85,10 +86,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             // Arrange
             var headerDictionaryMock = new Mock<IHeaderDictionary>();
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
-
+            var cookies = new MockCookies()
+            {
+                { "ARRAffinity", "1234567890" }
+            };
             var httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
             httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.Cookies).Returns(cookies);
 
             httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Get);
 
@@ -278,6 +283,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 await turnContext.SendActivityAsync(MessageFactory.Text("rage.rage.against.the.dying.of.the.light"));
             }
+        }
+
+        private class MockCookies : Dictionary<string, string>, IRequestCookieCollection
+        {
+            ICollection<string> IRequestCookieCollection.Keys => this.Keys;
         }
     }
 }
