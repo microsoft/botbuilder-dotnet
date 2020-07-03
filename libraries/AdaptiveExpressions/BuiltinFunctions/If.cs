@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class If : ExpressionEvaluator
     {
-        public If()
-            : base(ExpressionType.If, Evaluator, ReturnType.Object, Validator)
+        public If(string alias = null)
+            : base(alias ?? ExpressionType.If, Evaluator, ReturnType.Object, Validator)
         {
         }
 

@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IndicesAndValues : ExpressionEvaluator
     {
-        public IndicesAndValues()
-            : base(ExpressionType.IndicesAndValues, EvalIndicesAndValues, ReturnType.Array, FunctionUtils.ValidateUnary)
+        public IndicesAndValues(string alias = null)
+            : base(alias ?? ExpressionType.IndicesAndValues, EvalIndicesAndValues, ReturnType.Array, FunctionUtils.ValidateUnary)
         {
         }
 
@@ -31,11 +31,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 }
                 else if (instance is JObject jobj)
                 {
-                    result = FunctionUtils.Object2List(jobj);
+                    result = Object2List(jobj);
                 }
                 else if (FunctionUtils.ConvertToJToken(instance) is JObject jobject)
                 {
-                    result = FunctionUtils.Object2List(jobject);
+                    result = Object2List(jobject);
                 }
                 else
                 {
@@ -44,6 +44,17 @@ namespace AdaptiveExpressions.BuiltinFunctions
             }
 
             return (result, error);
+        }
+
+        private static List<object> Object2List(JObject jobj)
+        {
+            var tempList = new List<object>();
+            foreach (var item in jobj)
+            {
+                tempList.Add(new { index = item.Key, value = item.Value });
+            }
+
+            return tempList;
         }
     }
 }

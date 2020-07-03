@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Floor : NumberTransformEvaluator
     {
-        public Floor()
-            : base(ExpressionType.Floor, Function)
+        public Floor(string alias = null)
+            : base(alias ?? ExpressionType.Floor, Function)
         {
         }
 

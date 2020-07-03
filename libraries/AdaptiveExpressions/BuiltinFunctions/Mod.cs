@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Mod : ExpressionEvaluator
     {
-        public Mod()
-            : base(ExpressionType.Mod, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
+        public Mod(string alias = null)
+            : base(alias ?? ExpressionType.Mod, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
         {
         }
 

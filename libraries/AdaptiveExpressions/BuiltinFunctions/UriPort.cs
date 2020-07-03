@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class UriPort : ExpressionEvaluator
     {
-        public UriPort()
-            : base(ExpressionType.UriPort, Evaluator, ReturnType.Number, FunctionUtils.ValidateUnary)
+        public UriPort(string alias = null)
+            : base(alias ?? ExpressionType.UriPort, Evaluator, ReturnType.Number, FunctionUtils.ValidateUnary)
         {
         }
 

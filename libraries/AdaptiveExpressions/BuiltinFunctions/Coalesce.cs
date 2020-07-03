@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Coalesce : ExpressionEvaluator
     {
-        public Coalesce(string alias = null))
-            : base(ExpressionType.Coalesce, Evaluator(), ReturnType.Object, FunctionUtils.ValidateAtLeastOne)
+        public Coalesce(string alias = null)
+            : base(alias ?? ExpressionType.Coalesce, Evaluator(), ReturnType.Object, FunctionUtils.ValidateAtLeastOne)
         {
         }
 

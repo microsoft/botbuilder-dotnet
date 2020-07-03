@@ -1,28 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
-    public class Divide : ExpressionEvaluator
+    public class Divide : MultivariateNumericEvaluator
     {
-        public Divide()
-            : base(ExpressionType.Divide, Evaluator(), ReturnType.Number, FunctionUtils.ValidateTwoOrMoreThanTwoNumbers)
+        public Divide(string alias = null)
+            : base(alias ?? ExpressionType.Divide, Evaluator, Verify)
         {
         }
 
-        private static EvaluateExpressionDelegate Evaluator()
+        private static object Evaluator(IReadOnlyList<object> args)
         {
-            return FunctionUtils.ApplySequence(
-                args => EvalDivide(args[0], args[1]),
-                (val, expression, pos) =>
-                {
-                    var error = FunctionUtils.VerifyNumber(val, expression, pos);
-                    if (error == null && (pos > 0 && Convert.ToSingle(val) == 0.0))
-                    {
-                        error = $"Cannot divide by 0 from {expression}";
-                    }
+            return EvalDivide(args[0], args[1]);
+        }
 
-                    return error;
-                });
+        private static string Verify(object val, Expression expression, int pos)
+        {
+            var error = FunctionUtils.VerifyNumber(val, expression, pos);
+            if (error == null && (pos > 0 && Convert.ToSingle(val) == 0.0))
+            {
+                error = $"Cannot divide by 0 from {expression}";
+            }
+
+            return error;
         }
 
         private static object EvalDivide(object a, object b)

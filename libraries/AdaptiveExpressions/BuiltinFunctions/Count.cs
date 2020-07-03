@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Count : ExpressionEvaluator
     {
-        public Count()
-            : base(ExpressionType.Count, Evaluator(), ReturnType.Number, Validator)
+        public Count(string alias = null)
+            : base(alias ?? ExpressionType.Count, Evaluator(), ReturnType.Number, Validator)
         {
         }
 

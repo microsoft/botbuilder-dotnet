@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
-    public class Subtract : ExpressionEvaluator
+    public class Subtract : MultivariateNumericEvaluator
     {
-        public Subtract()
-            : base(ExpressionType.Subtract, Evaluator(), ReturnType.Number, FunctionUtils.ValidateTwoOrMoreThanTwoNumbers)
+        public Subtract(string alias = null)
+            : base(alias ?? ExpressionType.Subtract, Evaluator)
         {
         }
 
-        private static EvaluateExpressionDelegate Evaluator()
+        private static object Evaluator(IReadOnlyList<object> args)
         {
-            return FunctionUtils.ApplySequence(args => EvalSubtract(args[0], args[1]), FunctionUtils.VerifyNumber);
+            return EvalSubtract(args[0], args[1]);
         }
 
         private static object EvalSubtract(object a, object b)

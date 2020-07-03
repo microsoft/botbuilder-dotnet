@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Foreach : ExpressionEvaluator
     {
-        public Foreach()
-            : base(ExpressionType.Foreach, FunctionUtils.Foreach, ReturnType.Array, FunctionUtils.ValidateForeach)
+        public Foreach(string alias = null)
+            : base(alias ?? ExpressionType.Foreach, FunctionUtils.Foreach, ReturnType.Array, FunctionUtils.ValidateForeach)
         {
         }
     }

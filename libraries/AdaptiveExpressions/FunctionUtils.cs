@@ -4,10 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Json;
 using System.Text;
-using System.Xml;
-using System.Xml.Linq;
 using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json.Linq;
@@ -17,35 +14,9 @@ namespace AdaptiveExpressions
     public static class FunctionUtils
     {
         /// <summary>
-        /// Random number generator used for expressions.
-        /// </summary>
-        /// <remarks>This is exposed so that you can explicitly seed the random number generator for tests.</remarks>
-        
-
-        /// <summary>
         /// The default date time format string.
         /// </summary>
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
-
-        /// <summary>
-        /// Ticks of one day.
-        /// </summary>
-        public const long TicksPerDay = 24 * 60 * 60 * 10000000L;
-
-        /// <summary>
-        /// Ticks of one Hour.
-        /// </summary>
-        public const long TicksPerHour = 60 * 60 * 10000000L;
-
-        /// <summary>
-        /// Ticks of one Minute.
-        /// </summary>
-        public const long TicksPerMinute = 60 * 10000000L;
-
-        /// <summary>
-        /// Object used to lock Randomizer.
-        /// </summary>
-        
 
         /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
@@ -96,7 +67,7 @@ namespace AdaptiveExpressions
             object result = null;
             object parsed = null;
             string error = null;
-            (parsed, error) = FunctionUtils.NormalizeToDateTime(timestamp);
+            (parsed, error) = NormalizeToDateTime(timestamp);
 
             if (error == null)
             {
@@ -489,23 +460,6 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
-        /// Verify value is boolean.
-        /// </summary>
-        /// <param name="value">Value to check.</param>
-        /// <param name="expression">Expression that led to value.</param>
-        /// <returns>Error or null if valid.</returns>
-        public static string VerifyBoolean(object value, Expression expression)
-        {
-            string error = null;
-            if (!(value is bool))
-            {
-                error = $"{expression} is not a boolean.";
-            }
-
-            return error;
-        }
-
-        /// <summary>
         /// Evaluate expression children and return them.
         /// </summary>
         /// <param name="expression">Expression with children.</param>
@@ -661,104 +615,6 @@ namespace AdaptiveExpressions
                 }, verify);
 
         /// <summary>
-        /// Numeric operators that can have 1 or more args.
-        /// </summary>
-        /// <param name="type">Expression type.</param>
-        /// <param name="function">Function to apply.</param>
-        /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator Numeric(string type, Func<IReadOnlyList<object>, object> function)
-            => new ExpressionEvaluator(type, ApplySequence(function, VerifyNumber), ReturnType.Number, ValidateNumber);
-
-        /// <summary>
-        /// Numeric or Collection operators that can have 1 or more args. It can be apply numeric values or a collection of numeric
-        /// values, or a mixing of  numeric values and a collection.
-        /// </summary>
-        /// <param name="type">Expression type.</param>
-        /// <param name="function">Function to apply.</param>
-        /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator NumericOrCollection(string type, Func<IReadOnlyList<object>, object> function)
-            => new ExpressionEvaluator(type, Apply(function, VerifyNumericListOrNumber), ReturnType.Number, ValidateAtLeastOne);
-
-        /// <summary>
-        /// Numeric operators that can have 2 or more args.
-        /// </summary>
-        /// <param name="type">Expression type.</param>
-        /// <param name="function">Function to apply.</param>
-        /// <param name="verify">Function to verify arguments.</param>
-        /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator MultivariateNumeric(string type, Func<IReadOnlyList<object>, object> function, VerifyExpression verify = null)
-            => new ExpressionEvaluator(type, ApplySequence(function, verify ?? VerifyNumber), ReturnType.Number, ValidateTwoOrMoreThanTwoNumbers);
-
-        /// <summary>
-        /// Comparison operators.
-        /// </summary>
-        /// <remarks>
-        /// A comparison operator returns false if the comparison is false, or there is an error.  This prevents errors from short-circuiting boolean expressions.
-        /// </remarks>
-        /// <param name="type">Expression type.</param>
-        /// <param name="function">Function to apply.</param>
-        /// <param name="validator">Function to validate expression.</param>
-        /// <param name="verify">Function to verify arguments to expression.</param>
-        /// <returns>Delegate for evaluating an expression.</returns>
-        public static ExpressionEvaluator Comparison(
-            string type,
-            Func<IReadOnlyList<object>, bool> function,
-            ValidateExpressionDelegate validator,
-            VerifyExpression verify = null)
-            => new ExpressionEvaluator(
-                type,
-                (expression, state, options) =>
-                {
-                    var result = false;
-                    string error = null;
-                    IReadOnlyList<object> args;
-                    (args, error) = EvaluateChildren(expression, state, new Options(options) { NullSubstitution = null }, verify);
-                    if (error == null)
-                    {
-                        // Ensure args are all of same type
-                        bool? isNumber = null;
-                        foreach (var arg in args)
-                        {
-                            var obj = arg;
-                            if (isNumber.HasValue)
-                            {
-                                if (obj != null && obj.IsNumber() != isNumber.Value)
-                                {
-                                    error = $"Arguments must either all be numbers or strings in {expression}";
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                isNumber = obj.IsNumber();
-                            }
-                        }
-
-                        if (error == null)
-                        {
-                            try
-                            {
-                                result = function(args);
-                            }
-                            catch (Exception e)
-                            {
-                                // NOTE: This should not happen in normal execution
-                                error = e.Message;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Swallow errors and treat as false
-                        error = null;
-                    }
-
-                    return (result, error);
-                },
-                ReturnType.Boolean,
-                validator);
-
-        /// <summary>
         /// Lookup an index property of instance.
         /// </summary>
         /// <param name="instance">Instance with property.</param>
@@ -852,51 +708,6 @@ namespace AdaptiveExpressions
             }
 
             return isPresent;
-        }
-
-        /// <summary>
-        /// Set the property into a given instance.
-        /// </summary>
-        /// <param name="instance">Given instance.</param>
-        /// <param name="property">Property be set.</param>
-        /// <param name="value">Value be set.</param>
-        /// <returns>Value and error information if any.</returns>
-        public static (object result, string error) SetProperty(object instance, string property, object value)
-        {
-            var result = value;
-            string error = null;
-
-            if (instance is IDictionary<string, object> idict)
-            {
-                idict[property] = value;
-            }
-            else if (instance is IDictionary dict)
-            {
-                dict[property] = value;
-            }
-            else if (instance is JObject jobj)
-            {
-                jobj[property] = ConvertToJToken(value);
-            }
-            else
-            {
-                // Use reflection
-                var type = instance.GetType();
-                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
-                if (prop != null)
-                {
-                    if (prop.CanWrite)
-                    {
-                        prop.SetValue(instance, value);
-                    }
-                    else
-                    {
-                        error = $"property {prop.Name} is read-only";
-                    }
-                }
-            }
-
-            return (result, error);
         }
 
         /// <summary>
@@ -995,27 +806,6 @@ namespace AdaptiveExpressions
             return (path, left, null);
         }
 
-        private static string BuildTypeValidatorError(ReturnType returnType, Expression childExpr, Expression expr)
-        {
-            string result;
-            var names = returnType.ToString();
-            if (!names.Contains(","))
-            {
-                result = $"{childExpr} is not a {names} expression in {expr}.";
-            }
-            else
-            {
-                result = $"{childExpr} in {expr} is not any of [{names}].";
-            }
-
-            return result;
-        }
-
-        
-
-        
-        
-
         public static (object value, string error) WrapGetValue(IMemory memory, string property, Options options)
         {
             if (memory.TryGetValue(property, out var result) && result != null)
@@ -1030,8 +820,6 @@ namespace AdaptiveExpressions
 
             return (null, null);
         }
-
-        
 
         public static string ParseStringOrNull(object value)
         {
@@ -1068,8 +856,6 @@ namespace AdaptiveExpressions
             return result;
         }
 
-        
-
         /// <summary>
         /// Test result to see if True in logical comparison functions.
         /// </summary>
@@ -1089,7 +875,6 @@ namespace AdaptiveExpressions
 
             return result;
         }
-
 
         public static double CultureInvariantDoubleConvert(object numberObj) => Convert.ToDouble(numberObj, CultureInfo.InvariantCulture);
 
@@ -1154,8 +939,6 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        
-
         public static List<object> Object2KVPairList(JObject jobj)
         {
             var tempList = new List<object>();
@@ -1182,8 +965,6 @@ namespace AdaptiveExpressions
             }
         }
 
-
-
         public static (Func<DateTime, DateTime>, string) DateTimeConverter(long interval, string timeUnit, bool isPast = true)
         {
             Func<DateTime, DateTime> converter = (dateTime) => dateTime;
@@ -1202,54 +983,6 @@ namespace AdaptiveExpressions
             }
 
             return (converter, error);
-        }
-
-        public static (object, string) ParseTimestamp(string timeStamp, Func<DateTime, object> transform = null)
-        {
-            object result = null;
-            string error = null;
-            if (DateTime.TryParse(
-                    s: timeStamp,
-                    provider: CultureInfo.InvariantCulture,
-                    styles: DateTimeStyles.RoundtripKind,
-                    result: out var parsed))
-            {
-                result = transform != null ? transform(parsed) : parsed;
-            }
-            else
-            {
-                error = $"Could not parse {timeStamp}";
-            }
-
-            return (result, error);
-        }
-
-        private static (object, string) ParseISOTimestamp(string timeStamp, Func<DateTime, object> transform = null)
-        {
-            object result = null;
-            string error = null;
-
-            if (DateTime.TryParse(
-                    s: timeStamp,
-                    provider: CultureInfo.InvariantCulture,
-                    styles: DateTimeStyles.RoundtripKind,
-                    result: out var parsed))
-            {
-                if (parsed.ToString(DefaultDateTimeFormat).Equals(timeStamp, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    result = transform != null ? transform(parsed) : parsed;
-                }
-                else
-                {
-                    error = $"{timeStamp} is not standard ISO format.";
-                }
-            }
-            else
-            {
-                error = $"Could not parse {timeStamp}";
-            }
-
-            return (result, error);
         }
 
         public static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, object> transform = null)
@@ -1314,8 +1047,6 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-
-
         // URI Parsing Functions
         public static (object, string) ParseUri(string uri)
         {
@@ -1332,8 +1063,6 @@ namespace AdaptiveExpressions
 
             return (result, error);
         }
-
-        
 
         public static (TimexProperty, string) ParseTimexProperty(object timexExpr)
         {
@@ -1359,12 +1088,6 @@ namespace AdaptiveExpressions
             return (parsed, error);
         }
 
-        // object manipulation
-        
-
-        
-        
-
         // conversion functions
         public static byte[] ToBinary(string strToConvert)
         {
@@ -1375,8 +1098,6 @@ namespace AdaptiveExpressions
 
             return Encoding.UTF8.GetBytes(strToConvert);
         }
-
-        
 
         public static JToken ConvertToJToken(object value)
         {
@@ -1437,16 +1158,48 @@ namespace AdaptiveExpressions
                return (result, error);
            };
 
-        // TODO we should uniform the list format
-        public static List<object> Object2List(JObject jobj)
+        private static (object, string) ParseISOTimestamp(string timeStamp, Func<DateTime, object> transform = null)
         {
-            var tempList = new List<object>();
-            foreach (var item in jobj)
+            object result = null;
+            string error = null;
+
+            if (DateTime.TryParse(
+                    s: timeStamp,
+                    provider: CultureInfo.InvariantCulture,
+                    styles: DateTimeStyles.RoundtripKind,
+                    result: out var parsed))
             {
-                tempList.Add(new { index = item.Key, value = item.Value });
+                if (parsed.ToString(DefaultDateTimeFormat).Equals(timeStamp, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    result = transform != null ? transform(parsed) : parsed;
+                }
+                else
+                {
+                    error = $"{timeStamp} is not standard ISO format.";
+                }
+            }
+            else
+            {
+                error = $"Could not parse {timeStamp}";
             }
 
-            return tempList;
+            return (result, error);
+        }
+
+        private static string BuildTypeValidatorError(ReturnType returnType, Expression childExpr, Expression expr)
+        {
+            string result;
+            var names = returnType.ToString();
+            if (!names.Contains(","))
+            {
+                result = $"{childExpr} is not a {names} expression in {expr}.";
+            }
+            else
+            {
+                result = $"{childExpr} in {expr} is not any of [{names}].";
+            }
+
+            return result;
         }
     }
 }

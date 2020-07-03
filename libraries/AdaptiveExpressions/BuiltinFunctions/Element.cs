@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Element : ExpressionEvaluator
     {
-        public Element()
-            : base(ExpressionType.Element, ExtractElement, ReturnType.Object, FunctionUtils.ValidateBinary)
+        public Element(string alias = null)
+            : base(alias ?? ExpressionType.Element, ExtractElement, ReturnType.Object, FunctionUtils.ValidateBinary)
         {
         }
 

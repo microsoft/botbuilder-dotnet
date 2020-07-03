@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Binary : ExpressionEvaluator
     {
-        public Binary(string alias = null))
-            : base(ExpressionType.Binary, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
+        public Binary(string alias = null)
+            : base(alias ?? ExpressionType.Binary, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
         {
         }
 

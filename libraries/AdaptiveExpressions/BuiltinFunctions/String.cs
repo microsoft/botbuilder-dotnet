@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class String : ExpressionEvaluator
     {
-        public String()
-            : base(ExpressionType.String, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
+        public String(string alias = null)
+            : base(alias ?? ExpressionType.String, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

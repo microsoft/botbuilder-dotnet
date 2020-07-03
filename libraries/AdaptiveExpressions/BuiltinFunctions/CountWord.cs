@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class CountWord : ExpressionEvaluator
     {
-        public CountWord()
-            : base(ExpressionType.CountWord, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnaryString)
+        public CountWord(string alias = null)
+            : base(alias ?? ExpressionType.CountWord, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnaryString)
         {
         }
 

@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class UriScheme : ExpressionEvaluator
     {
-        public UriScheme()
-            : base(ExpressionType.UriScheme, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
+        public UriScheme(string alias = null)
+            : base(alias ?? ExpressionType.UriScheme, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

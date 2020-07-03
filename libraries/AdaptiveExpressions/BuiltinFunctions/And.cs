@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class And : ExpressionEvaluator
     {
-        public And(string alias = null))
-            : base(ExpressionType.And, EvalAnd, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)
+        public And(string alias = null)
+            : base(alias ?? ExpressionType.And, EvalAnd, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)
         {
         }
 

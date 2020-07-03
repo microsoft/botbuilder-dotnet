@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsInteger : ExpressionEvaluator
     {
-        public IsInteger()
-            : base(ExpressionType.IsInteger, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsInteger(string alias = null)
+            : base(alias ?? ExpressionType.IsInteger, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

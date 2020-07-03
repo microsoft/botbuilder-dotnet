@@ -8,9 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class NotEqual : ComparisonEvaluator
     {
-        public NotEqual()
+        public NotEqual(string alias = null)
             : base(
-                  ExpressionType.NotEqual,
+                  alias ?? ExpressionType.NotEqual,
                   (args) => !Function(args),
                   FunctionUtils.ValidateBinary)
         {

@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class DayOfWeek : ExpressionEvaluator
     {
-        public DayOfWeek()
-            : base(ExpressionType.DayOfWeek, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
+        public DayOfWeek(string alias = null)
+            : base(alias ?? ExpressionType.DayOfWeek, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
         }
 

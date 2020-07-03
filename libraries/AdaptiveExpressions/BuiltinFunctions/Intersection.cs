@@ -1,12 +1,12 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Intersection : ExpressionEvaluator
     {
-        public Intersection()
-            : base(ExpressionType.Intersection, Evaluator(), ReturnType.Array, Validator)
+        public Intersection(string alias = null)
+            : base(alias ?? ExpressionType.Intersection, Evaluator(), ReturnType.Array, Validator)
         {
         }
 

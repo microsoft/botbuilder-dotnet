@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class LastIndexOf : ExpressionEvaluator
     {
-        public LastIndexOf()
-            : base(ExpressionType.LastIndexOf, EvalLastIndexOf, ReturnType.Number, Validator)
+        public LastIndexOf(string alias = null)
+            : base(alias ?? ExpressionType.LastIndexOf, EvalLastIndexOf, ReturnType.Number, Validator)
         {
         }
 

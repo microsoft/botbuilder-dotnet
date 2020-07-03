@@ -4,14 +4,14 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class DataUri : ExpressionEvaluator
     {
-        public DataUri()
-            : base(ExpressionType.DataUri, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
+        public DataUri(string alias = null)
+            : base(alias ?? ExpressionType.DataUri, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), VerifyString);
+            return FunctionUtils.Apply(args => "data:text/plain;charset=utf-8;base64," + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(args[0].ToString())), FunctionUtils.VerifyString);
         }
     }
 }

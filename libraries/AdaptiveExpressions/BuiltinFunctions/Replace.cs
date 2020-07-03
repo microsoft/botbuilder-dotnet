@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Replace : ExpressionEvaluator
     {
-        public Replace()
-            : base(ExpressionType.Replace, Evaluator(), ReturnType.String, Validator)
+        public Replace(string alias = null)
+            : base(alias ?? ExpressionType.Replace, Evaluator(), ReturnType.String, Validator)
         {
         }
 

@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class XPath : ExpressionEvaluator
     {
-        public XPath()
-            : base(ExpressionType.XPath, Evaluator(), ReturnType.Object, Validator)
+        public XPath(string alias = null)
+            : base(alias ?? ExpressionType.XPath, Evaluator(), ReturnType.Object, Validator)
         {
         }
 

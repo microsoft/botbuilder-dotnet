@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IndexOf : ExpressionEvaluator
     {
-        public IndexOf()
-            : base(ExpressionType.IndexOf, EvalIndexOf, ReturnType.Number, Validator)
+        public IndexOf(string alias = null)
+            : base(alias ?? ExpressionType.IndexOf, EvalIndexOf, ReturnType.Number, Validator)
         {
         }
 

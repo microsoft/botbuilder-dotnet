@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static readonly object _randomizerLock = new object();
 
-        public Rand()
-            : base(ExpressionType.Rand, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
+        public Rand(string alias = null)
+            : base(alias ?? ExpressionType.Rand, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
         {
         }
 

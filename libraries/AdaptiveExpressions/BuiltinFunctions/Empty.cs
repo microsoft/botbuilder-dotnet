@@ -4,9 +4,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Empty : ComparisonEvaluator
     {
-        public Empty()
+        public Empty(string alias = null)
             : base(
-                  ExpressionType.Empty,
+                  alias ?? ExpressionType.Empty,
                   Function,
                   FunctionUtils.ValidateBinaryNumberOrString,
                   FunctionUtils.VerifyNumberOrString)

@@ -6,7 +6,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class AddHours : TimeTransformEvaluator
     {
         public AddHours(string alias = null)
-                : base(ExpressionType.AddHours, Function)
+                : base(alias ?? ExpressionType.AddHours, Function)
         {
         }
 

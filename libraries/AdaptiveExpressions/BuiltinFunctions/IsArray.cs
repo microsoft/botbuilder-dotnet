@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsArray : ExpressionEvaluator
     {
-        public IsArray()
-            : base(ExpressionType.IsArray, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsArray(string alias = null)
+            : base(alias ?? ExpressionType.IsArray, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

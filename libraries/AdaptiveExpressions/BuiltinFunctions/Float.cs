@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Float : ExpressionEvaluator
     {
-        public Float()
-            : base(ExpressionType.Float, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
+        public Float(string alias = null)
+            : base(alias ?? ExpressionType.Float, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
         }
 

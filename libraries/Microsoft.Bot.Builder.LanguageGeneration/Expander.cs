@@ -497,11 +497,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (isExpander)
                 {
-                    return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateExpander(name)), ReturnType.Object, this.ValidTemplateReference);
+                    return new ExpressionEvaluator(name, FunctionUtils.Apply(this.TemplateExpander(name)), ReturnType.Object, this.ValidTemplateReference);
                 }
                 else
                 {
-                    return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
+                    return new ExpressionEvaluator(name, FunctionUtils.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
                 }
             }
 
@@ -509,14 +509,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (name.Equals(template))
             {
-                return new ExpressionEvaluator(template, ExpressionFunctions.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
+                return new ExpressionEvaluator(template, FunctionUtils.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
             }
 
             const string fromFile = "fromFile";
 
             if (name.Equals(fromFile))
             {
-                return new ExpressionEvaluator(fromFile, ExpressionFunctions.Apply(this.FromFile()), ReturnType.String, ExpressionFunctions.ValidateUnaryString);
+                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, FunctionUtils.ValidateUnaryString);
             }
 
             const string activityAttachment = "ActivityAttachment";
@@ -525,23 +525,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return new ExpressionEvaluator(
                     activityAttachment,
-                    ExpressionFunctions.Apply(this.ActivityAttachment()),
+                    FunctionUtils.Apply(this.ActivityAttachment()),
                     ReturnType.Object,
-                    (expr) => ExpressionFunctions.ValidateOrder(expr, null, ReturnType.Object, ReturnType.String));
+                    (expr) => FunctionUtils.ValidateOrder(expr, null, ReturnType.Object, ReturnType.String));
             }
 
             const string isTemplate = "isTemplate";
 
             if (name.Equals(isTemplate))
             {
-                return new ExpressionEvaluator(isTemplate, ExpressionFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
+                return new ExpressionEvaluator(isTemplate, FunctionUtils.Apply(this.IsTemplate()), ReturnType.Boolean, FunctionUtils.ValidateUnaryString);
             }
 
             const string expandText = "expandText";
 
             if (name.Equals(expandText))
             {
-                return new ExpressionEvaluator(expandText, ExpressionFunctions.Apply(this.ExpandText()), ReturnType.Object, ExpressionFunctions.ValidateUnaryString);
+                return new ExpressionEvaluator(expandText, FunctionUtils.Apply(this.ExpandText()), ReturnType.Object, FunctionUtils.ValidateUnaryString);
             }
 
             return null;
@@ -586,7 +586,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         // Validator for template(...)
         private void ValidateTemplateFunction(Expression expression)
         {
-            ExpressionFunctions.ValidateAtLeastOne(expression);
+            FunctionUtils.ValidateAtLeastOne(expression);
 
             var children0 = expression.Children[0];
 

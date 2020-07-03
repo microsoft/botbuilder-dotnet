@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
-    public class Multiply : ExpressionEvaluator
+    public class Multiply : MultivariateNumericEvaluator
     {
-        public Multiply()
-            : base(ExpressionType.Multiply, Evaluator(), ReturnType.Number, FunctionUtils.ValidateTwoOrMoreThanTwoNumbers)
+        public Multiply(string alias = null)
+            : base(alias ?? ExpressionType.Multiply, Evaluator)
         {
         }
 
-        private static EvaluateExpressionDelegate Evaluator()
+        private static object Evaluator(IReadOnlyList<object> args)
         {
-            return FunctionUtils.ApplySequence(args => EvalMultiply(args[0], args[1]), FunctionUtils.VerifyNumber);
+            return EvalMultiply(args[0], args[1]);
         }
 
         private static object EvalMultiply(object a, object b)

@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class SubArray : ExpressionEvaluator
     {
-        public SubArray()
-            : base(ExpressionType.SubArray, EvalSubArray, ReturnType.Array, Validator)
+        public SubArray(string alias = null)
+            : base(alias ?? ExpressionType.SubArray, EvalSubArray, ReturnType.Array, Validator)
         {
         }
 

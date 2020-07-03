@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class FormatDateTime : ExpressionEvaluator
     {
-        public FormatDateTime()
-            : base(ExpressionType.FormatDateTime, Evaluator(), ReturnType.String, Validator)
+        public FormatDateTime(string alias = null)
+            : base(alias ?? ExpressionType.FormatDateTime, Evaluator(), ReturnType.String, Validator)
         {
         }
 
@@ -21,7 +21,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             var timestamp = args[0];
                             if (timestamp is string tsString)
                             {
-                                (result, error) = FunctionUtils.ParseTimestamp(tsString, dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture));
+                                (result, error) = ParseTimestamp(tsString, dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture));
                             }
                             else if (timestamp is DateTime dt)
                             {
@@ -34,6 +34,26 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
                             return (result, error);
                         });
+        }
+
+        private static (object, string) ParseTimestamp(string timeStamp, Func<DateTime, object> transform = null)
+        {
+            object result = null;
+            string error = null;
+            if (DateTime.TryParse(
+                    s: timeStamp,
+                    provider: CultureInfo.InvariantCulture,
+                    styles: DateTimeStyles.RoundtripKind,
+                    result: out var parsed))
+            {
+                result = transform != null ? transform(parsed) : parsed;
+            }
+            else
+            {
+                error = $"Could not parse {timeStamp}";
+            }
+
+            return (result, error);
         }
 
         private static void Validator(Expression expression)

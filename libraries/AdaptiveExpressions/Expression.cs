@@ -754,7 +754,7 @@ namespace AdaptiveExpressions
 
             public void Add(string key, Func<IReadOnlyList<dynamic>, object> func)
             {
-                Add(key, new ExpressionEvaluator(key, ExpressionFunctions.Apply(func)));
+                Add(key, new ExpressionEvaluator(key, FunctionUtils.Apply(func)));
             }
 
             public void Add(KeyValuePair<string, ExpressionEvaluator> item) => this[item.Key] = item.Value;

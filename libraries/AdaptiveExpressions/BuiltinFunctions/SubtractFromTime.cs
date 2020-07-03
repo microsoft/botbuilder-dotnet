@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class SubtractFromTime : ExpressionEvaluator
     {
-        public SubtractFromTime()
-            : base(ExpressionType.SubtractFromTime, EvalSubtractFromTime, ReturnType.String, Validator)
+        public SubtractFromTime(string alias = null)
+            : base(alias ?? ExpressionType.SubtractFromTime, EvalSubtractFromTime, ReturnType.String, Validator)
         {
         }
 

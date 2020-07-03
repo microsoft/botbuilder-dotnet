@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class FormatTicks : ExpressionEvaluator
     {
-        public FormatTicks()
-            : base(ExpressionType.FormatTicks, Evaluator(), ReturnType.String, Validator)
+        public FormatTicks(string alias = null)
+            : base(alias ?? ExpressionType.FormatTicks, Evaluator(), ReturnType.String, Validator)
         {
         }
 

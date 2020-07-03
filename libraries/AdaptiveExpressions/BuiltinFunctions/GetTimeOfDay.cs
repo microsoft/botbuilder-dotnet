@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class GetTimeOfDay : ExpressionEvaluator
     {
-        public GetTimeOfDay()
-            : base(ExpressionType.GetTimeOfDay, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
+        public GetTimeOfDay(string alias = null)
+            : base(alias ?? ExpressionType.GetTimeOfDay, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

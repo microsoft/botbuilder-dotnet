@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class TitleCase : StringTransformEvaluator
     {
-        public TitleCase()
-            : base(ExpressionType.TitleCase, Function)
+        public TitleCase(string alias = null)
+            : base(alias ?? ExpressionType.TitleCase, Function)
         {
         }
 

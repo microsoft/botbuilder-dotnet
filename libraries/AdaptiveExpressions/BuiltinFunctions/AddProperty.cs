@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class AddProperty : ExpressionEvaluator
     {
         public AddProperty(string alias = null)
-            : base(ExpressionType.AddProperty, Evaluator(), ReturnType.Object, Validator)
+            : base(alias ?? ExpressionType.AddProperty, Evaluator(), ReturnType.Object, Validator)
         {
         }
 

@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class GetPastTime : ExpressionEvaluator
     {
-        public GetPastTime()
-            : base(ExpressionType.GetPastTime, EvalGetPastTime, ReturnType.String, Validator)
+        public GetPastTime(string alias = null)
+            : base(alias ?? ExpressionType.GetPastTime, EvalGetPastTime, ReturnType.String, Validator)
         {
         }
 

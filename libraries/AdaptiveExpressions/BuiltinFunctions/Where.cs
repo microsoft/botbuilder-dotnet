@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Where : ExpressionEvaluator
     {
-        public Where()
-            : base(ExpressionType.Where, Evaluator, ReturnType.Array, FunctionUtils.ValidateForeach)
+        public Where(string alias = null)
+            : base(alias ?? ExpressionType.Where, Evaluator, ReturnType.Array, FunctionUtils.ValidateForeach)
         {
         }
 

@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Skip : ExpressionEvaluator
     {
-        public Skip()
-            : base(ExpressionType.Skip, EvalSkip, ReturnType.Array, Validator)
+        public Skip(string alias = null)
+            : base(alias ?? ExpressionType.Skip, EvalSkip, ReturnType.Array, Validator)
         {
         }
 

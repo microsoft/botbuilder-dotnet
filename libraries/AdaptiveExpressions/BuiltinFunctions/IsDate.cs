@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsDate : ExpressionEvaluator
     {
-        public IsDate()
-            : base(ExpressionType.IsDate, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsDate(string alias = null)
+            : base(alias ?? ExpressionType.IsDate, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

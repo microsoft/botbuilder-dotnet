@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class UriComponentToString : ExpressionEvaluator
     {
-        public UriComponentToString()
-            : base(ExpressionType.UriComponentToString, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
+        public UriComponentToString(string alias = null)
+            : base(alias ?? ExpressionType.UriComponentToString, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

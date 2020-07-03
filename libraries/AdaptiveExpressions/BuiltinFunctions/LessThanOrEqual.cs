@@ -4,9 +4,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class LessThanOrEqual : ComparisonEvaluator
     {
-        public LessThanOrEqual()
+        public LessThanOrEqual(string alias = null)
             : base(
-                  ExpressionType.LessThanOrEqual,
+                  alias ?? ExpressionType.LessThanOrEqual,
                   Function,
                   FunctionUtils.ValidateBinaryNumberOrString,
                   FunctionUtils.VerifyNumberOrString)

@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Substring : ExpressionEvaluator
     {
-        public Substring()
-            : base(ExpressionType.Substring, EvalSubstring, ReturnType.String, Validator)
+        public Substring(string alias = null)
+            : base(alias ?? ExpressionType.Substring, EvalSubstring, ReturnType.String, Validator)
         {
         }
 

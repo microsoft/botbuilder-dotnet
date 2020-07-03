@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsObject : ExpressionEvaluator
     {
-        public IsObject()
-            : base(ExpressionType.IsObject, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsObject(string alias = null)
+            : base(alias ?? ExpressionType.IsObject, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

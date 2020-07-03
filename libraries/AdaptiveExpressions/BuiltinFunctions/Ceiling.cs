@@ -6,7 +6,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Ceiling : NumberTransformEvaluator
     {
         public Ceiling(string alias = null)
-                : base(ExpressionType.Ceiling, Function)
+                : base(alias ?? ExpressionType.Ceiling, Function)
         {
         }
 

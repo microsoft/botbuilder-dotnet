@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class First : ExpressionEvaluator
     {
-        public First()
-            : base(ExpressionType.First, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
+        public First(string alias = null)
+            : base(alias ?? ExpressionType.First, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
         {
         }
 

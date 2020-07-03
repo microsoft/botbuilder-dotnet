@@ -4,12 +4,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Exists : ComparisonEvaluator
     {
-        public Exists()
+        public Exists(string alias = null)
             : base(
-                  ExpressionType.Exists,
+                  alias ?? ExpressionType.Exists,
                   Function,
-                  FunctionUtils.ValidateBinaryNumberOrString,
-                  FunctionUtils.VerifyNumberOrString)
+                  FunctionUtils.ValidateUnary,
+                  FunctionUtils.VerifyNotNull)
         {
         }
 

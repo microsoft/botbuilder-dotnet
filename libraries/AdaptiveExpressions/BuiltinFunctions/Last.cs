@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Last : ExpressionEvaluator
     {
-        public Last()
-            : base(ExpressionType.Last, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
+        public Last(string alias = null)
+            : base(alias ?? ExpressionType.Last, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
         {
         }
 

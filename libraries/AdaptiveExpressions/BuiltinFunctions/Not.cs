@@ -6,7 +6,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Not : ExpressionEvaluator
     {
         public Not(string alias = null)
-            : base(ExpressionType.Not, EvalNot, ReturnType.Boolean, FunctionUtils.ValidateUnary)
+            : base(alias ?? ExpressionType.Not, EvalNot, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

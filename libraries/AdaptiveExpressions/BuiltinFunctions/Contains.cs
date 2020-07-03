@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Contains : ExpressionEvaluator
     {
-        public Contains()
-            : base(ExpressionType.Contains, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateBinary)
+        public Contains(string alias = null)
+            : base(alias ?? ExpressionType.Contains, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateBinary)
         {
         }
 

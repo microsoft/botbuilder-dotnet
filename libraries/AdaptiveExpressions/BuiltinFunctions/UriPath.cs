@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class UriPath : ExpressionEvaluator
     {
-        public UriPath()
-            : base(ExpressionType.UriPath, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
+        public UriPath(string alias = null)
+            : base(alias ?? ExpressionType.UriPath, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

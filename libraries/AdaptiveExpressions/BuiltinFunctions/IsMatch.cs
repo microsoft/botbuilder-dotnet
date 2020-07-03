@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsMatch : ExpressionEvaluator
     {
-        public IsMatch()
-            : base(ExpressionType.IsMatch, Evaluator(), ReturnType.Boolean, Validator)
+        public IsMatch(string alias = null)
+            : base(alias ?? ExpressionType.IsMatch, Evaluator(), ReturnType.Boolean, Validator)
         {
         }
 

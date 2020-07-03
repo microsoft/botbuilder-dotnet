@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Ignore : ExpressionEvaluator
     {
-        public Ignore()
-            : base(ExpressionType.Optional, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnaryBoolean)
+        public Ignore(string alias = null)
+            : base(alias ?? ExpressionType.Optional, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnaryBoolean)
         {
             Negation = this;
         }

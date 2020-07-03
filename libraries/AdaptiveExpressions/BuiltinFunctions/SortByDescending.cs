@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class SortByDescending : ExpressionEvaluator
     {
-        public SortByDescending()
-            : base(ExpressionType.SortByDescending, FunctionUtils.SortBy(true), ReturnType.Array, Validator)
+        public SortByDescending(string alias = null)
+            : base(alias ?? ExpressionType.SortByDescending, FunctionUtils.SortBy(true), ReturnType.Array, Validator)
         {
         }
 

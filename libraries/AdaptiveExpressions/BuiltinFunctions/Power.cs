@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
-    public class Power : ExpressionEvaluator
+    public class Power : MultivariateNumericEvaluator
     {
-        public Power()
-            : base(ExpressionType.Power, Evaluator(), ReturnType.Number, FunctionUtils.ValidateAtLeastOne)
+        public Power(string alias = null)
+            : base(alias ?? ExpressionType.Power, Evaluator, FunctionUtils.VerifyNumericListOrNumber)
         {
         }
 
-        private static EvaluateExpressionDelegate Evaluator()
+        private static object Evaluator(IReadOnlyList<object> args)
         {
-            return FunctionUtils.Apply(
-                args => Math.Pow(FunctionUtils.CultureInvariantDoubleConvert(args[0]), FunctionUtils.CultureInvariantDoubleConvert(args[1])),
-                FunctionUtils.VerifyNumericListOrNumber);
+            return Math.Pow(FunctionUtils.CultureInvariantDoubleConvert(args[0]), FunctionUtils.CultureInvariantDoubleConvert(args[1]));
         }
     }
 }

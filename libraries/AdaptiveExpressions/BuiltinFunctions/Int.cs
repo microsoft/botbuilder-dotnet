@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Int : ExpressionEvaluator
     {
-        public Int()
-            : base(ExpressionType.Int, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
+        public Int(string alias = null)
+            : base(alias ?? ExpressionType.Int, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
         }
 

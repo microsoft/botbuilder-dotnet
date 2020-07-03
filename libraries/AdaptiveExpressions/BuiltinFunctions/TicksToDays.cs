@@ -8,8 +8,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class TicksToDays : ExpressionEvaluator
     {
-        public TicksToDays()
-            : base(ExpressionType.TicksToDays, EvalTicksToDays, ReturnType.Number, FunctionUtils.ValidateUnaryNumber)
+        private const long TicksPerDay = 24 * 60 * 60 * 10000000L;
+
+        public TicksToDays(string alias = null)
+            : base(alias ?? ExpressionType.TicksToDays, EvalTicksToDays, ReturnType.Number, FunctionUtils.ValidateUnaryNumber)
         {
         }
 
@@ -23,7 +25,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 if (args[0].IsInteger())
                 {
-                    value = Convert.ToDouble(args[0]) / FunctionUtils.TicksPerDay;
+                    value = Convert.ToDouble(args[0]) / TicksPerDay;
                 }
                 else
                 {

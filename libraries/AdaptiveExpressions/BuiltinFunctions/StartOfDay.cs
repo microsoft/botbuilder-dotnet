@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class StartOfDay : ExpressionEvaluator
     {
-        public StartOfDay()
-            : base(ExpressionType.StartOfDay, EvalStartOfDay, ReturnType.String, Validator)
+        public StartOfDay(string alias = null)
+            : base(alias ?? ExpressionType.StartOfDay, EvalStartOfDay, ReturnType.String, Validator)
         {
         }
 

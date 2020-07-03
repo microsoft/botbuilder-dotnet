@@ -4,9 +4,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class GreaterThan : ComparisonEvaluator
     {
-        public GreaterThan()
+        public GreaterThan(string alias = null)
             : base(
-                  ExpressionType.GreaterThan,
+                  alias ?? ExpressionType.GreaterThan,
                   Function,
                   FunctionUtils.ValidateBinaryNumberOrString,
                   FunctionUtils.VerifyNumberOrString)

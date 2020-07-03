@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Year : ExpressionEvaluator
     {
-        public Year()
-            : base(ExpressionType.Year, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
+        public Year(string alias = null)
+            : base(alias ?? ExpressionType.Year, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
         }
 

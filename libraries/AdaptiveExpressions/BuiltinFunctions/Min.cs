@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Min : ExpressionEvaluator
     {
-        public Min()
-            : base(ExpressionType.Min, Evaluator(), ReturnType.Number, FunctionUtils.ValidateAtLeastOne)
+        public Min(string alias = null)
+            : base(alias ?? ExpressionType.Min, Evaluator(), ReturnType.Number, FunctionUtils.ValidateAtLeastOne)
         {
         }
 

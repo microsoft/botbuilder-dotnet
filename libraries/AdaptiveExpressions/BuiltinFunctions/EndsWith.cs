@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class EndsWith : ExpressionEvaluator
     {
-        public EndsWith()
-            : base(ExpressionType.EndsWith, Evaluator(), ReturnType.Boolean, Validator)
+        public EndsWith(string alias = null)
+            : base(alias ?? ExpressionType.EndsWith, Evaluator(), ReturnType.Boolean, Validator)
         {
         }
 

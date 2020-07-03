@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class SetProperty : ExpressionEvaluator
     {
-        public SetProperty()
-            : base(ExpressionType.SetProperty, Evaluator(), ReturnType.Object, Validator)
+        public SetProperty(string alias = null)
+            : base(alias ?? ExpressionType.SetProperty, Evaluator(), ReturnType.Object, Validator)
         {
         }
 
@@ -25,7 +25,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static void Validator(Expression expression)
         {
-            FunctionUtils.ValidateOrder(expr, null, ReturnType.Object, ReturnType.String, ReturnType.Object);
+            FunctionUtils.ValidateOrder(expression, null, ReturnType.Object, ReturnType.String, ReturnType.Object);
         }
     }
 }

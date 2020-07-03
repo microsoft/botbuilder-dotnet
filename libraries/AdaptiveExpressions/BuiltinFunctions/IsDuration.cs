@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsDuration : ExpressionEvaluator
     {
-        public IsDefIsDurationinite()
-            : base(ExpressionType.IsDuration, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsDuration(string alias = null)
+            : base(alias ?? ExpressionType.IsDuration, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

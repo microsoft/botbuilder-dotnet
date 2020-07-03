@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class StartOfMonth : ExpressionEvaluator
     {
-        public StartOfMonth()
-            : base(ExpressionType.StartOfMonth, EvalStartOfMonth, ReturnType.String, Validator)
+        public StartOfMonth(string alias = null)
+            : base(alias ?? ExpressionType.StartOfMonth, EvalStartOfMonth, ReturnType.String, Validator)
         {
         }
 

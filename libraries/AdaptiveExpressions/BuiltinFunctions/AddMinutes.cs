@@ -6,7 +6,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class AddMinutes : TimeTransformEvaluator
     {
         public AddMinutes(string alias = null)
-                : base(ExpressionType.AddMinutes, Function)
+                : base(alias ?? ExpressionType.AddMinutes, Function)
         {
         }
 

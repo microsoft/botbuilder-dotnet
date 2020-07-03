@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class AddToTime : ExpressionEvaluator
     {
-        public AddToTime(string alias = null))
-            : base(ExpressionType.AddToTime, EvalAddToTime, ReturnType.String, Validator)
+        public AddToTime(string alias = null)
+            : base(alias ?? ExpressionType.AddToTime, EvalAddToTime, ReturnType.String, Validator)
         {
         }
 

@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class RemoveProperty : ExpressionEvaluator
     {
-        public RemoveProperty()
-            : base(ExpressionType.RemoveProperty, Evaluator(), ReturnType.Object, Validator)
+        public RemoveProperty(string alias = null)
+            : base(alias ?? ExpressionType.RemoveProperty, Evaluator(), ReturnType.Object, Validator)
         {
         }
 

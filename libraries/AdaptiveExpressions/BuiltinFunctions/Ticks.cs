@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Ticks : ExpressionEvaluator
     {
-        public Ticks()
-            : base(ExpressionType.Ticks, EvalTicks, ReturnType.Number, Validator)
+        public Ticks(string alias = null)
+            : base(alias ?? ExpressionType.Ticks, EvalTicks, ReturnType.Number, Validator)
         {
         }
 

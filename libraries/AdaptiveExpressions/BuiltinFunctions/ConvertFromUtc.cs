@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class ConvertFromUtc : ExpressionEvaluator
     {
-        public ConvertFromUtc()
-            : base(ExpressionType.ConvertFromUtc, EvalConvertFromUtc, ReturnType.String, Validator)
+        public ConvertFromUtc(string alias = null)
+            : base(alias ?? ExpressionType.ConvertFromUtc, EvalConvertFromUtc, ReturnType.String, Validator)
         {
         }
 

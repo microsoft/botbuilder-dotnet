@@ -5,13 +5,13 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class AddOrdinal : ExpressionEvaluator
     {
         public AddOrdinal(string alias = null)
-            : base(ExpressionType.AddOrdinal, Evaluator(), ReturnType.String, Validator)
+            : base(alias ?? ExpressionType.AddOrdinal, Evaluator(), ReturnType.String, Validator)
         {
         }
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.Apply(args => EvalAddOrdinal(Convert.ToInt32(args[0])), FunctionUtils.VerifyInteger); ;
+            return FunctionUtils.Apply(args => EvalAddOrdinal(Convert.ToInt32(args[0])), FunctionUtils.VerifyInteger);
         }
 
         private static void Validator(Expression expression)

@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Date : ExpressionEvaluator
     {
-        public Date()
-            : base(ExpressionType.Date, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
+        public Date(string alias = null)
+            : base(alias ?? ExpressionType.Date, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

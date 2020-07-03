@@ -6,8 +6,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Unique : ExpressionEvaluator
     {
-        public Unique()
-            : base(ExpressionType.Unique, Evaluator(), ReturnType.Array, Validator)
+        public Unique(string alias = null)
+            : base(alias ?? ExpressionType.Unique, Evaluator(), ReturnType.Array, Validator)
         {
         }
 

@@ -2,14 +2,15 @@
 using System.Globalization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Xml : ExpressionEvaluator
     {
-        public Xml()
-            : base(ExpressionType.Xml, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
+        public Xml(string alias = null)
+            : base(alias ?? ExpressionType.Xml, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

@@ -4,9 +4,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Bool : ComparisonEvaluator
     {
-        public Bool(string alias = null))
+        public Bool(string alias = null)
             : base(
-                  ExpressionType.Bool,
+                  alias ?? ExpressionType.Bool,
                   Function,
                   FunctionUtils.ValidateBinaryNumberOrString,
                   FunctionUtils.VerifyNumberOrString)

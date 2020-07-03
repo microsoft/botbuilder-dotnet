@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Concat : ExpressionEvaluator
     {
-        public Concat()
-            : base(ExpressionType.Concat, Evaluator(), ReturnType.Array | ReturnType.String, FunctionUtils.ValidateAtLeastOne)
+        public Concat(string alias = null)
+            : base(alias ?? ExpressionType.Concat, Evaluator(), ReturnType.Array | ReturnType.String, FunctionUtils.ValidateAtLeastOne)
         {
         }
 

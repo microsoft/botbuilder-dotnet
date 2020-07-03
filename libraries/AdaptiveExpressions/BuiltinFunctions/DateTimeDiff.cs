@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class DateTimeDiff : ExpressionEvaluator
     {
-        public DateTimeDiff()
-            : base(ExpressionType.DateTimeDiff, EvalDateTimeDiff, ReturnType.Number, Validator)
+        public DateTimeDiff(string alias = null)
+            : base(alias ?? ExpressionType.DateTimeDiff, EvalDateTimeDiff, ReturnType.Number, Validator)
         {
         }
 

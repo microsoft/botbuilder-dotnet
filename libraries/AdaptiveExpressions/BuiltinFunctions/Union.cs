@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Union : ExpressionEvaluator
     {
-        public Union()
-            : base(ExpressionType.Union, Evaluator(), ReturnType.Array, Validator)
+        public Union(string alias = null)
+            : base(alias ?? ExpressionType.Union, Evaluator(), ReturnType.Array, Validator)
         {
         }
 

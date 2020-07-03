@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsDateTime : ExpressionEvaluator
     {
-        public IsDateTime()
-            : base(ExpressionType.IsDateTime, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsDateTime(string alias = null)
+            : base(alias ?? ExpressionType.IsDateTime, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

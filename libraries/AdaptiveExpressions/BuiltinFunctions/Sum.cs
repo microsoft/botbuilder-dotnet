@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Sum : ExpressionEvaluator
     {
-        public Sum()
-            : base(ExpressionType.Sum, Evaluator(), ReturnType.Number, Validator)
+        public Sum(string alias = null)
+            : base(alias ?? ExpressionType.Sum, Evaluator(), ReturnType.Number, Validator)
         {
         }
 

@@ -4,8 +4,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class DayOfMonth : ExpressionEvaluator
     {
-        public DayOfMonth()
-            : base(ExpressionType.DayOfMonth, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
+        public DayOfMonth(string alias = null)
+            : base(alias ?? ExpressionType.DayOfMonth, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
         }
 

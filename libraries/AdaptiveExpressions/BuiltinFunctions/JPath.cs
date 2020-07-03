@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class JPath : ExpressionEvaluator
     {
-        public JPath()
-            : base(ExpressionType.JPath, Evaluator(), ReturnType.Object, Validator)
+        public JPath(string alias = null)
+            : base(alias ?? ExpressionType.JPath, Evaluator(), ReturnType.Object, Validator)
         {
         }
 

@@ -5,8 +5,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class ReplaceIgnoreCase : ExpressionEvaluator
     {
-        public ReplaceIgnoreCase()
-            : base(ExpressionType.ReplaceIgnoreCase, Evaluator(), ReturnType.String, Validator)
+        public ReplaceIgnoreCase(string alias = null)
+            : base(alias ?? ExpressionType.ReplaceIgnoreCase, Evaluator(), ReturnType.String, Validator)
         {
         }
 
