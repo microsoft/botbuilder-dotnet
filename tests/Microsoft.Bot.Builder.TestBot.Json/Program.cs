@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 var configuration = builder.Build();
                 var botRoot = configuration.GetValue<string>("root") ?? ".";
-                var region =  configuration.GetValue<string>("region") ?? "westus";
+                var region = configuration.GetValue<string>("region") ?? "westus";
                 var environment = configuration.GetValue<string>("environment") ?? Environment.UserName;
 
                 builder.UseLuisSettings();
