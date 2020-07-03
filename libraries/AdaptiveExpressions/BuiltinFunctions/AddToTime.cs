@@ -10,12 +10,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class AddToTime : ExpressionEvaluator
     {
-        public AddToTime(string alias = null)
-            : base(alias ?? ExpressionType.AddToTime, EvalAddToTime, ReturnType.String, Validator)
+        public AddToTime()
+            : base(ExpressionType.AddToTime, Evaluator, ReturnType.String, Validator)
         {
         }
 
-        private static (object value, string error) EvalAddToTime(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error = null;
@@ -26,7 +26,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 var format = (args.Count() == 4) ? (string)args[3] : FunctionUtils.DefaultDateTimeFormat;
                 if (args[1].IsInteger() && args[2] is string timeUnit)
                 {
-                    (value, error) = AddToTimeWithError(args[0], Convert.ToInt64(args[1]), timeUnit, format);
+                    (value, error) = EvalAddToTime(args[0], Convert.ToInt64(args[1]), timeUnit, format);
                 }
                 else
                 {
@@ -37,7 +37,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             return (value, error);
         }
 
-        private static (string, string) AddToTimeWithError(object timestamp, long interval, string timeUnit, string format)
+        private static (string, string) EvalAddToTime(object timestamp, long interval, string timeUnit, string format)
         {
             string result = null;
             string error = null;

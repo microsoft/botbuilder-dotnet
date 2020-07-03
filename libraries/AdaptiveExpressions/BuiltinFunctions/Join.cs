@@ -10,8 +10,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Join : ExpressionEvaluator
     {
-        public Join(string alias = null)
-            : base(alias ?? ExpressionType.Join, EvalJoin, ReturnType.String, Validator)
+        public Join()
+            : base(ExpressionType.Join, EvalJoin, ReturnType.String, Validator)
         {
         }
 

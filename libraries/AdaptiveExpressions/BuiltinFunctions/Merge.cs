@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Merge : ExpressionEvaluator
     {
-        public Merge(string alias = null)
-            : base(alias ?? ExpressionType.Merge, Evaluator(), ReturnType.Object, Validator)
+        public Merge()
+            : base(ExpressionType.Merge, Evaluator(), ReturnType.Object, Validator)
         {
         }
 

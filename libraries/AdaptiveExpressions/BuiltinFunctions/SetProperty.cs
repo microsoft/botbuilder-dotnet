@@ -1,18 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class SetProperty : ExpressionEvaluator
     {
-        public SetProperty(string alias = null)
-            : base(alias ?? ExpressionType.SetProperty, Evaluator(), ReturnType.Object, Validator)
+        public SetProperty()
+            : base(ExpressionType.SetProperty, Evaluator(), ReturnType.Object, Validator)
         {
         }
 

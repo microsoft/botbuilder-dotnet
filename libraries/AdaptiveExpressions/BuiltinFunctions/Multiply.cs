@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Multiply : MultivariateNumericEvaluator
     {
-        public Multiply(string alias = null)
-            : base(alias ?? ExpressionType.Multiply, Evaluator)
+        public Multiply()
+            : base(ExpressionType.Multiply, Evaluator)
         {
         }
 

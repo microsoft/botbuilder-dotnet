@@ -1,20 +1,19 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
-using static AdaptiveExpressions.FunctionUtils;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class ComparisonEvaluator : ExpressionEvaluator
     {
-        public ComparisonEvaluator(string type, Func<IReadOnlyList<object>, bool> function, ValidateExpressionDelegate validator, VerifyExpression verify = null)
-            : base(type, Evaluator(function, verify), ReturnType.Object, validator)
+        public ComparisonEvaluator(string type, Func<IReadOnlyList<object>, bool> function, ValidateExpressionDelegate validator, FunctionUtils.VerifyExpression verify = null)
+            : base(type, Evaluator(function, verify), ReturnType.Boolean, validator)
         {
         }
 
-        private static EvaluateExpressionDelegate Evaluator(Func<IReadOnlyList<object>, bool> function, VerifyExpression verify)
+        private static EvaluateExpressionDelegate Evaluator(Func<IReadOnlyList<object>, bool> function, FunctionUtils.VerifyExpression verify)
         {
             return (expression, state, options) =>
             {

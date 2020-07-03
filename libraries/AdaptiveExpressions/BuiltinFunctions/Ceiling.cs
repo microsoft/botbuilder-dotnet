@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Ceiling : NumberTransformEvaluator
     {
-        public Ceiling(string alias = null)
-                : base(alias ?? ExpressionType.Ceiling, Function)
+        public Ceiling()
+                : base(ExpressionType.Ceiling, Function)
         {
         }
 

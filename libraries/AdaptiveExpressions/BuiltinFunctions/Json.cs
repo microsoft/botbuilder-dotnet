@@ -10,8 +10,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Json : ExpressionEvaluator
     {
-        public Json(string alias = null)
-            : base(alias ?? ExpressionType.Json, Evaluator(), ReturnType.Object, Validator)
+        public Json()
+            : base(ExpressionType.Json, Evaluator(), ReturnType.Object, Validator)
         {
         }
 

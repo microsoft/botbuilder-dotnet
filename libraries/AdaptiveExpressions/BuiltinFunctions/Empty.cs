@@ -7,12 +7,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Empty : ComparisonEvaluator
     {
-        public Empty(string alias = null)
+        public Empty()
             : base(
-                  alias ?? ExpressionType.Empty,
+                  ExpressionType.Empty,
                   Function,
-                  FunctionUtils.ValidateBinaryNumberOrString,
-                  FunctionUtils.VerifyNumberOrString)
+                  FunctionUtils.ValidateUnary,
+                  FunctionUtils.VerifyContainer)
         {
         }
 

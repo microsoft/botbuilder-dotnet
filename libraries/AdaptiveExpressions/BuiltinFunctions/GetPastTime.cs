@@ -10,12 +10,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class GetPastTime : ExpressionEvaluator
     {
-        public GetPastTime(string alias = null)
-            : base(alias ?? ExpressionType.GetPastTime, EvalGetPastTime, ReturnType.String, Validator)
+        public GetPastTime()
+            : base(ExpressionType.GetPastTime, Evaluator, ReturnType.String, Validator)
         {
         }
 
-        private static (object value, string error) EvalGetPastTime(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error = null;

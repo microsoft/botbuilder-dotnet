@@ -1,15 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Date : ExpressionEvaluator
     {
-        public Date(string alias = null)
-            : base(alias ?? ExpressionType.Date, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
+        public Date()
+            : base(ExpressionType.Date, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

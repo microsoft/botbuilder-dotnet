@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Power : MultivariateNumericEvaluator
     {
-        public Power(string alias = null)
-            : base(alias ?? ExpressionType.Power, Evaluator, FunctionUtils.VerifyNumericListOrNumber)
+        public Power()
+            : base(ExpressionType.Power, Evaluator, FunctionUtils.VerifyNumericListOrNumber)
         {
         }
 

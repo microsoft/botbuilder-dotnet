@@ -10,12 +10,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class ConvertToUtc : ExpressionEvaluator
     {
-        public ConvertToUtc(string alias = null)
-            : base(alias ?? ExpressionType.ConvertFromUtc, EvalConvertToUtc, ReturnType.String, Validator)
+        public ConvertToUtc()
+            : base(ExpressionType.ConvertFromUtc, Evaluator, ReturnType.String, Validator)
         {
         }
 
-        private static (object value, string error) EvalConvertToUtc(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error = null;
@@ -26,7 +26,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 var format = (args.Count() == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
                 if (args[1] is string sourceTimeZone)
                 {
-                    (value, error) = ConvertToUTC(args[0], sourceTimeZone, format);
+                    (value, error) = EvalConvertToUTC(args[0], sourceTimeZone, format);
                 }
                 else
                 {
@@ -37,7 +37,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             return (value, error);
         }
 
-        private static (string, string) ConvertToUTC(object sourceTimestamp, string sourceTimezone, string format)
+        private static (string, string) EvalConvertToUTC(object sourceTimestamp, string sourceTimezone, string format)
         {
             string error = null;
             string result = null;

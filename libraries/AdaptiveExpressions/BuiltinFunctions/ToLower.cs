@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class ToLower : StringTransformEvaluator
     {
-        public ToLower(string alias = null)
-            : base(alias ?? ExpressionType.ToLower, Function)
+        public ToLower()
+            : base(ExpressionType.ToLower, Function)
         {
         }
 

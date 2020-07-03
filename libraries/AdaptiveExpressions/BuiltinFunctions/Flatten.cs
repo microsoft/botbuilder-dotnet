@@ -9,8 +9,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Flatten : ExpressionEvaluator
     {
-        public Flatten(string alias = null)
-            : base(alias ?? ExpressionType.Flatten, Evaluator(), ReturnType.Array, Validator)
+        public Flatten()
+            : base(ExpressionType.Flatten, Evaluator(), ReturnType.Array, Validator)
         {
         }
 

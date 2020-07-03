@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class StartsWith : ExpressionEvaluator
     {
-        public StartsWith(string alias = null)
-            : base(alias ?? ExpressionType.StartsWith, Evaluator(), ReturnType.Boolean, Validator)
+        public StartsWith()
+            : base(ExpressionType.StartsWith, Evaluator(), ReturnType.Boolean, Validator)
         {
         }
 

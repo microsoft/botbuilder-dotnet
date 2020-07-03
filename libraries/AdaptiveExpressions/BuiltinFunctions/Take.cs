@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Take : ExpressionEvaluator
     {
-        public Take(string alias = null)
-            : base(alias ?? ExpressionType.Take, EvalTake, ReturnType.Array, Validator)
+        public Take()
+            : base(ExpressionType.Take, EvalTake, ReturnType.Array, Validator)
         {
         }
 

@@ -10,12 +10,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class StartOfHour : ExpressionEvaluator
     {
-        public StartOfHour(string alias = null)
-            : base(alias ?? ExpressionType.StartOfHour, EvalStartOfHour, ReturnType.String, Validator)
+        public StartOfHour()
+            : base(ExpressionType.StartOfHour, Evaluator, ReturnType.String, Validator)
         {
         }
 
-        private static (object value, string error) EvalStartOfHour(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error = null;

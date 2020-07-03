@@ -7,9 +7,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Exists : ComparisonEvaluator
     {
-        public Exists(string alias = null)
+        public Exists()
             : base(
-                  alias ?? ExpressionType.Exists,
+                  ExpressionType.Exists,
                   Function,
                   FunctionUtils.ValidateUnary,
                   FunctionUtils.VerifyNotNull)

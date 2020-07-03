@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class AddSeconds : TimeTransformEvaluator
     {
-        public AddSeconds(string alias = null)
-                : base(alias ?? ExpressionType.AddSeconds, Function)
+        public AddSeconds()
+                : base(ExpressionType.AddSeconds, Function)
         {
         }
 

@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Round : ExpressionEvaluator
     {
-        public Round(string alias = null)
-            : base(alias ?? ExpressionType.Round, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnaryOrBinaryNumber)
+        public Round()
+            : base(ExpressionType.Round, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnaryOrBinaryNumber)
         {
         }
 

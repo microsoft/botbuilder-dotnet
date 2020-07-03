@@ -1,22 +1,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class DateTimeDiff : ExpressionEvaluator
     {
-        public DateTimeDiff(string alias = null)
-            : base(alias ?? ExpressionType.DateTimeDiff, EvalDateTimeDiff, ReturnType.Number, Validator)
+        public DateTimeDiff()
+            : base(ExpressionType.DateTimeDiff, Evaluator, ReturnType.Number, Validator)
         {
         }
 
-        private static (object value, string error) EvalDateTimeDiff(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object dateTimeStart = null;
             object dateTimeEnd = null;

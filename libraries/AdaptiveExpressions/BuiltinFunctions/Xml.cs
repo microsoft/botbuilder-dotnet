@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Globalization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Xml;
@@ -12,8 +10,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Xml : ExpressionEvaluator
     {
-        public Xml(string alias = null)
-            : base(alias ?? ExpressionType.Xml, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
+        public Xml()
+            : base(ExpressionType.Xml, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

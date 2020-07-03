@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections;
 using AdaptiveExpressions.Memory;
 
@@ -9,12 +8,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IndexOf : ExpressionEvaluator
     {
-        public IndexOf(string alias = null)
-            : base(alias ?? ExpressionType.IndexOf, EvalIndexOf, ReturnType.Number, Validator)
+        public IndexOf()
+            : base(ExpressionType.IndexOf, Evaluator, ReturnType.Number, Validator)
         {
         }
 
-        private static (object value, string error) EvalIndexOf(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object result = -1;
             var (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);

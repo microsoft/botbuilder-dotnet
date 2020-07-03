@@ -9,8 +9,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class FormatEpoch : ExpressionEvaluator
     {
-        public FormatEpoch(string alias = null)
-            : base(alias ?? ExpressionType.FormatEpoch, Evaluator(), ReturnType.String, Validator)
+        public FormatEpoch()
+            : base(ExpressionType.FormatEpoch, Evaluator(), ReturnType.String, Validator)
         {
         }
 

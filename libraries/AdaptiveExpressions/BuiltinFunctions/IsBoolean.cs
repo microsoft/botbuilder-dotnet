@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsBoolean : ExpressionEvaluator
     {
-        public IsBoolean(string alias = null)
-            : base(alias ?? ExpressionType.IsBoolean, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsBoolean()
+            : base(ExpressionType.IsBoolean, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

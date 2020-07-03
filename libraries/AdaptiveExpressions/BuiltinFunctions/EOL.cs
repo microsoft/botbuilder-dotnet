@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class EOL : ExpressionEvaluator
     {
-        public EOL(string alias = null)
-            : base(alias ?? ExpressionType.EOL, Evaluator(), ReturnType.String, Validator)
+        public EOL()
+            : base(ExpressionType.EOL, Evaluator(), ReturnType.String, Validator)
         {
         }
 

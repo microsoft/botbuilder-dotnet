@@ -10,12 +10,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class StartOfMonth : ExpressionEvaluator
     {
-        public StartOfMonth(string alias = null)
-            : base(alias ?? ExpressionType.StartOfMonth, EvalStartOfMonth, ReturnType.String, Validator)
+        public StartOfMonth()
+            : base(ExpressionType.StartOfMonth, Evaluator, ReturnType.String, Validator)
         {
         }
 
-        private static (object value, string error) EvalStartOfMonth(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error = null;

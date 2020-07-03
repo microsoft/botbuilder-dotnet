@@ -11,8 +11,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsDuration : ExpressionEvaluator
     {
-        public IsDuration(string alias = null)
-            : base(alias ?? ExpressionType.IsDuration, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsDuration()
+            : base(ExpressionType.IsDuration, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

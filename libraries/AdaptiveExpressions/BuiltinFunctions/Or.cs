@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Or : ExpressionEvaluator
     {
-        public Or(string alias = null)
-            : base(alias ?? ExpressionType.Or, EvalOr, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)
+        public Or()
+            : base(ExpressionType.Or, EvalOr, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)
         {
         }
 

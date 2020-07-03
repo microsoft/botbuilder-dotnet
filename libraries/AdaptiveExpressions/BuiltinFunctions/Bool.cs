@@ -7,12 +7,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Bool : ComparisonEvaluator
     {
-        public Bool(string alias = null)
+        public Bool()
             : base(
-                  alias ?? ExpressionType.Bool,
+                  ExpressionType.Bool,
                   Function,
-                  FunctionUtils.ValidateBinaryNumberOrString,
-                  FunctionUtils.VerifyNumberOrString)
+                  FunctionUtils.ValidateUnary)
         {
         }
 

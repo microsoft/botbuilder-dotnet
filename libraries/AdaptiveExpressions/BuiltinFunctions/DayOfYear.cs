@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class DayOfYear : ExpressionEvaluator
     {
-        public DayOfYear(string alias = null)
-            : base(alias ?? ExpressionType.DayOfYear, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
+        public DayOfYear()
+            : base(ExpressionType.DayOfYear, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
         }
 

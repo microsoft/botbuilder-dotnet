@@ -11,9 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Equal : ComparisonEvaluator
     {
-        public Equal(string alias = null)
+        public Equal()
             : base(
-                  alias ?? ExpressionType.Equal,
+                  ExpressionType.Equal,
                   Function,
                   FunctionUtils.ValidateBinary)
         {

@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Unique : ExpressionEvaluator
     {
-        public Unique(string alias = null)
-            : base(alias ?? ExpressionType.Unique, Evaluator(), ReturnType.Array, Validator)
+        public Unique()
+            : base(ExpressionType.Unique, Evaluator(), ReturnType.Array, Validator)
         {
         }
 

@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Trim : StringTransformEvaluator
     {
-        public Trim(string alias = null)
-            : base(alias ?? ExpressionType.Trim, Function)
+        public Trim()
+            : base(ExpressionType.Trim, Function)
         {
         }
 

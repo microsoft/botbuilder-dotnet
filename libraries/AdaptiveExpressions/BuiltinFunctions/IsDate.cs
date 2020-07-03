@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 
@@ -11,8 +9,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsDate : ExpressionEvaluator
     {
-        public IsDate(string alias = null)
-            : base(alias ?? ExpressionType.IsDate, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsDate()
+            : base(ExpressionType.IsDate, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

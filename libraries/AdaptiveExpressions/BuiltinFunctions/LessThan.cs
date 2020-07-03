@@ -7,9 +7,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class LessThan : ComparisonEvaluator
     {
-        public LessThan(string alias = null)
+        public LessThan()
             : base(
-                  alias ?? ExpressionType.LessThan,
+                  ExpressionType.LessThan,
                   Function,
                   FunctionUtils.ValidateBinaryNumberOrString,
                   FunctionUtils.VerifyNumberOrString)

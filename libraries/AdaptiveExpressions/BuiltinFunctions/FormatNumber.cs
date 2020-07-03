@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class FormatNumber : ExpressionEvaluator
     {
-        public FormatNumber(string alias = null)
-            : base(alias ?? ExpressionType.FormatNumber, Evaluator(), ReturnType.String, Validator)
+        public FormatNumber()
+            : base(ExpressionType.FormatNumber, Evaluator(), ReturnType.String, Validator)
         {
         }
 

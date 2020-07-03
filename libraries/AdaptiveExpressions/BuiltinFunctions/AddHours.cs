@@ -2,14 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class AddHours : TimeTransformEvaluator
     {
-        public AddHours(string alias = null)
-                : base(alias ?? ExpressionType.AddHours, Function)
+        public AddHours()
+                : base(ExpressionType.AddHours, Function)
         {
         }
 

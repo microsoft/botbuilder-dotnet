@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -13,12 +11,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         private const long TicksPerDay = 24 * 60 * 60 * 10000000L;
 
-        public TicksToDays(string alias = null)
-            : base(alias ?? ExpressionType.TicksToDays, EvalTicksToDays, ReturnType.Number, FunctionUtils.ValidateUnaryNumber)
+        public TicksToDays()
+            : base(ExpressionType.TicksToDays, Evaluator, ReturnType.Number, FunctionUtils.ValidateUnaryNumber)
         {
         }
 
-        private static (object value, string error) EvalTicksToDays(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error = null;

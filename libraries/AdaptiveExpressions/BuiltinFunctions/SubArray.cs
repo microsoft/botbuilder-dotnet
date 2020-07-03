@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class SubArray : ExpressionEvaluator
     {
-        public SubArray(string alias = null)
-            : base(alias ?? ExpressionType.SubArray, EvalSubArray, ReturnType.Array, Validator)
+        public SubArray()
+            : base(ExpressionType.SubArray, EvalSubArray, ReturnType.Array, Validator)
         {
         }
 

@@ -9,8 +9,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class UriQuery : ExpressionEvaluator
     {
-        public UriQuery(string alias = null)
-            : base(alias ?? ExpressionType.UriQuery, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
+        public UriQuery()
+            : base(ExpressionType.UriQuery, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

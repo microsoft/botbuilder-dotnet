@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Divide : MultivariateNumericEvaluator
     {
-        public Divide(string alias = null)
-            : base(alias ?? ExpressionType.Divide, Evaluator, Verify)
+        public Divide()
+            : base(ExpressionType.Divide, Evaluator, Verify)
         {
         }
 

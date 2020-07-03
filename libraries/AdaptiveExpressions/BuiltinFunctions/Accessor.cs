@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Accessor : ExpressionEvaluator
     {
-        public Accessor(string alias = null)
-            : base(alias ?? ExpressionType.Accessor, Evaluator, ReturnType.Object, Validator)
+        public Accessor()
+            : base(ExpressionType.Accessor, Evaluator, ReturnType.Object, Validator)
         {
         }
 

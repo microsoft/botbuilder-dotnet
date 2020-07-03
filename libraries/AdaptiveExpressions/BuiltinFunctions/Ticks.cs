@@ -11,12 +11,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Ticks : ExpressionEvaluator
     {
-        public Ticks(string alias = null)
-            : base(alias ?? ExpressionType.Ticks, EvalTicks, ReturnType.Number, Validator)
+        public Ticks()
+            : base(ExpressionType.Ticks, Evaluator, ReturnType.Number, Validator)
         {
         }
 
-        private static (object value, string error) EvalTicks(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error = null;

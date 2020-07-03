@@ -11,8 +11,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsPresent : ExpressionEvaluator
     {
-        public IsPresent(string alias = null)
-            : base(alias ?? ExpressionType.IsPresent, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsPresent()
+            : base(ExpressionType.IsPresent, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

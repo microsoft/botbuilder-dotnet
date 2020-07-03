@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -9,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class TitleCase : StringTransformEvaluator
     {
-        public TitleCase(string alias = null)
-            : base(alias ?? ExpressionType.TitleCase, Function)
+        public TitleCase()
+            : base(ExpressionType.TitleCase, Function)
         {
         }
 

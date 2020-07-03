@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class DataUriToString : ExpressionEvaluator
     {
-        public DataUriToString(string alias = null)
-            : base(alias ?? ExpressionType.DataUriToString, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
+        public DataUriToString()
+            : base(ExpressionType.DataUriToString, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

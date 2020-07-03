@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class AddOrdinal : ExpressionEvaluator
     {
-        public AddOrdinal(string alias = null)
-            : base(alias ?? ExpressionType.AddOrdinal, Evaluator(), ReturnType.String, Validator)
+        public AddOrdinal()
+            : base(ExpressionType.AddOrdinal, Evaluator(), ReturnType.String, Validator)
         {
         }
 

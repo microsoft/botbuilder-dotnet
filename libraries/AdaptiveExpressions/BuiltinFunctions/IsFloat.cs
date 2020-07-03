@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsFloat : ExpressionEvaluator
     {
-        public IsFloat(string alias = null)
-            : base(alias ?? ExpressionType.IsFloat, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsFloat()
+            : base(ExpressionType.IsFloat, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

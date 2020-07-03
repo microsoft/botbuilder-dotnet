@@ -9,8 +9,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class UriHost : ExpressionEvaluator
     {
-        public UriHost(string alias = null)
-            : base(alias ?? ExpressionType.UriHost, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
+        public UriHost()
+            : base(ExpressionType.UriHost, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

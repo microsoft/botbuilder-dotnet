@@ -9,8 +9,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Range : ExpressionEvaluator
     {
-        public Range(string alias = null)
-            : base(alias ?? ExpressionType.Range, Evaluator(), ReturnType.Array, FunctionUtils.ValidateBinaryNumber)
+        public Range()
+            : base(ExpressionType.Range, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
         }
 

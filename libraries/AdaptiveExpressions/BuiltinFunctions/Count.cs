@@ -1,15 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Count : ExpressionEvaluator
     {
-        public Count(string alias = null)
-            : base(alias ?? ExpressionType.Count, Evaluator(), ReturnType.Number, Validator)
+        public Count()
+            : base(ExpressionType.Count, Evaluator(), ReturnType.Number, Validator)
         {
         }
 

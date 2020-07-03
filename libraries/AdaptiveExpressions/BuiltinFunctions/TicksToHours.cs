@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -13,12 +11,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         private const long TicksPerHour = 60 * 60 * 10000000L;
 
-        public TicksToHours(string alias = null)
-            : base(alias ?? ExpressionType.TicksToHours, EvalTicksToHours, ReturnType.Number, FunctionUtils.ValidateUnaryNumber)
+        public TicksToHours()
+            : base(ExpressionType.TicksToHours, Evaluator, ReturnType.Number, FunctionUtils.ValidateUnaryNumber)
         {
         }
 
-        private static (object value, string error) EvalTicksToHours(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error = null;

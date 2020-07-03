@@ -11,8 +11,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IsDefinite : ExpressionEvaluator
     {
-        public IsDefinite(string alias = null)
-            : base(alias ?? ExpressionType.IsDefinite, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public IsDefinite()
+            : base(ExpressionType.IsDefinite, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 

@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class GetProperty : ExpressionEvaluator
     {
-        public GetProperty(string alias = null)
-            : base(alias ?? ExpressionType.GetProperty, Evaluator, ReturnType.Object, Validator)
+        public GetProperty()
+            : base(ExpressionType.GetProperty, Evaluator, ReturnType.Object, Validator)
         {
         }
 

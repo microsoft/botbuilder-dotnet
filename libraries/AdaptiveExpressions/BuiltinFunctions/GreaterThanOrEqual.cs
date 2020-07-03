@@ -7,9 +7,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class GreaterThanOrEqual : ComparisonEvaluator
     {
-        public GreaterThanOrEqual(string alias = null)
+        public GreaterThanOrEqual()
             : base(
-                  alias ?? ExpressionType.GreaterThanOrEqual,
+                  ExpressionType.GreaterThanOrEqual,
                   Function,
                   FunctionUtils.ValidateBinaryNumberOrString,
                   FunctionUtils.VerifyNumberOrString)

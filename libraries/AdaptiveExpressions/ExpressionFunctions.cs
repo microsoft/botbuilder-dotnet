@@ -173,23 +173,6 @@ namespace AdaptiveExpressions
                 new BuiltinFunctions.Xml(),
                 new BuiltinFunctions.XPath(),
                 new BuiltinFunctions.Year(),
-                
-                // alias
-                new BuiltinFunctions.Add("add"),
-                new BuiltinFunctions.Divide("div"),
-                new BuiltinFunctions.Multiply("mul"),
-                new BuiltinFunctions.Subtract("sub"),
-                new BuiltinFunctions.Power("exp"),
-                new BuiltinFunctions.Mod("mod"),
-                new BuiltinFunctions.And("and"),
-                new BuiltinFunctions.Equal("equals"),
-                new BuiltinFunctions.GreaterThan("greater"),
-                new BuiltinFunctions.GreaterThanOrEqual("greaterOrEquals"),
-                new BuiltinFunctions.LessThan("less"),
-                new BuiltinFunctions.LessThanOrEqual("lessOrEquals"),
-                new BuiltinFunctions.Not("not"),
-                new BuiltinFunctions.Or("or"),
-                new BuiltinFunctions.Concat("&"),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();
@@ -202,6 +185,26 @@ namespace AdaptiveExpressions
             lookup[ExpressionType.LessThan].Negation = lookup[ExpressionType.GreaterThanOrEqual];
             lookup[ExpressionType.LessThanOrEqual].Negation = lookup[ExpressionType.GreaterThan];
             lookup[ExpressionType.Equal].Negation = lookup[ExpressionType.NotEqual];
+
+            // Math aliases
+            lookup.Add("add", lookup[ExpressionType.Add]); // more than 1 params
+            lookup.Add("div", lookup[ExpressionType.Divide]); // more than 1 params
+            lookup.Add("mul", lookup[ExpressionType.Multiply]); // more than 1 params
+            lookup.Add("sub", lookup[ExpressionType.Subtract]); // more than 1 params
+            lookup.Add("exp", lookup[ExpressionType.Power]); // more than 1 params
+            lookup.Add("mod", lookup[ExpressionType.Mod]);
+
+            // Comparison aliases
+            lookup.Add("and", lookup[ExpressionType.And]);
+            lookup.Add("equals", lookup[ExpressionType.Equal]);
+            lookup.Add("greater", lookup[ExpressionType.GreaterThan]);
+            lookup.Add("greaterOrEquals", lookup[ExpressionType.GreaterThanOrEqual]);
+            lookup.Add("less", lookup[ExpressionType.LessThan]);
+            lookup.Add("lessOrEquals", lookup[ExpressionType.LessThanOrEqual]);
+            lookup.Add("not", lookup[ExpressionType.Not]);
+            lookup.Add("or", lookup[ExpressionType.Or]);
+
+            lookup.Add("&", lookup[ExpressionType.Concat]);
 
             return new ReadOnlyDictionary<string, ExpressionEvaluator>(lookup);
         }

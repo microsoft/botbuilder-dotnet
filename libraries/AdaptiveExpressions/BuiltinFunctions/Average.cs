@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Average : ExpressionEvaluator
     {
-        public Average(string alias = null)
-            : base(alias ?? ExpressionType.Average, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
+        public Average()
+            : base(ExpressionType.Average, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
         }
 

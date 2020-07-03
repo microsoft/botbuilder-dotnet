@@ -10,12 +10,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class GetFutureTime : ExpressionEvaluator
     {
-        public GetFutureTime(string alias = null)
-            : base(alias ?? ExpressionType.GetFutureTime, EvalGetFutureTime, ReturnType.String, Validator)
+        public GetFutureTime()
+            : base(ExpressionType.GetFutureTime, Evaluator, ReturnType.String, Validator)
         {
         }
 
-        private static (object value, string error) EvalGetFutureTime(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error = null;

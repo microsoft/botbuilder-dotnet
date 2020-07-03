@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class CreateArray : ExpressionEvaluator
     {
-        public CreateArray(string alias = null)
-            : base(alias ?? ExpressionType.CreateArray, Evaluator(), ReturnType.Array)
+        public CreateArray()
+            : base(ExpressionType.CreateArray, Evaluator(), ReturnType.Array)
         {
         }
 

@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class UtcNow : ExpressionEvaluator
     {
-        public UtcNow(string alias = null)
-            : base(alias ?? ExpressionType.UtcNow, Evaluator(), ReturnType.String, Validator)
+        public UtcNow()
+            : base(ExpressionType.UtcNow, Evaluator(), ReturnType.String, Validator)
         {
         }
 

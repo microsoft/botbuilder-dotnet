@@ -1,19 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Not : ExpressionEvaluator
     {
-        public Not(string alias = null)
-            : base(alias ?? ExpressionType.Not, EvalNot, ReturnType.Boolean, FunctionUtils.ValidateUnary)
+        public Not()
+            : base(ExpressionType.Not, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
         }
 
-        private static (object value, string error) EvalNot(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object result;
             string error;

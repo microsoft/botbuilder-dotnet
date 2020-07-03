@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Intersection : ExpressionEvaluator
     {
-        public Intersection(string alias = null)
-            : base(alias ?? ExpressionType.Intersection, Evaluator(), ReturnType.Array, Validator)
+        public Intersection()
+            : base(ExpressionType.Intersection, Evaluator(), ReturnType.Array, Validator)
         {
         }
 

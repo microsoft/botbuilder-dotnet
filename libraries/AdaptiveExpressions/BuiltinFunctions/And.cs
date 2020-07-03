@@ -8,12 +8,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class And : ExpressionEvaluator
     {
-        public And(string alias = null)
-            : base(alias ?? ExpressionType.And, EvalAnd, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)
+        public And()
+            : base(ExpressionType.And, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)
         {
         }
 
-        private static (object value, string error) EvalAnd(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object result = true;
             string error = null;

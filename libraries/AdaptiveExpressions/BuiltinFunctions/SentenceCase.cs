@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class SentenceCase : StringTransformEvaluator
     {
-        public SentenceCase(string alias = null)
-            : base(alias ?? ExpressionType.SentenceCase, Function)
+        public SentenceCase()
+            : base(ExpressionType.SentenceCase, Function)
         {
         }
 

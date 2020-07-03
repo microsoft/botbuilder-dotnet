@@ -1,14 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class DayOfMonth : ExpressionEvaluator
     {
-        public DayOfMonth(string alias = null)
-            : base(alias ?? ExpressionType.DayOfMonth, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
+        public DayOfMonth()
+            : base(ExpressionType.DayOfMonth, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
         }
 

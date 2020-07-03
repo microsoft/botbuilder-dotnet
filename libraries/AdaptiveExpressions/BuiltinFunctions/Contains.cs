@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections;
 using AdaptiveExpressions.Memory;
 
@@ -9,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Contains : ExpressionEvaluator
     {
-        public Contains(string alias = null)
-            : base(alias ?? ExpressionType.Contains, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateBinary)
+        public Contains()
+            : base(ExpressionType.Contains, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateBinary)
         {
         }
 

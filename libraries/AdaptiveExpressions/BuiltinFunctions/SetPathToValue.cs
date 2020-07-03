@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class SetPathToValue : ExpressionEvaluator
     {
-        public SetPathToValue(string alias = null)
-            : base(alias ?? ExpressionType.SetPathToValue, Evaluator, ReturnType.Object, FunctionUtils.ValidateBinary)
+        public SetPathToValue()
+            : base(ExpressionType.SetPathToValue, Evaluator, ReturnType.Object, FunctionUtils.ValidateBinary)
         {
         }
 

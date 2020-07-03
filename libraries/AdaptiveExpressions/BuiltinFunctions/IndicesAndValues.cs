@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
@@ -9,12 +8,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class IndicesAndValues : ExpressionEvaluator
     {
-        public IndicesAndValues(string alias = null)
-            : base(alias ?? ExpressionType.IndicesAndValues, EvalIndicesAndValues, ReturnType.Array, FunctionUtils.ValidateUnary)
+        public IndicesAndValues()
+            : base(ExpressionType.IndicesAndValues, Evaluator, ReturnType.Array, FunctionUtils.ValidateUnary)
         {
         }
 
-        private static (object, string) EvalIndicesAndValues(Expression expression, object state, Options options)
+        private static (object, string) Evaluator(Expression expression, object state, Options options)
         {
             object result = null;
             string error;

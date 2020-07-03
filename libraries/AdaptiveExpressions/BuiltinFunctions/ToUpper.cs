@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class ToUpper : StringTransformEvaluator
     {
-        public ToUpper(string alias = null)
-            : base(alias ?? ExpressionType.ToUpper, Function)
+        public ToUpper()
+            : base(ExpressionType.ToUpper, Function)
         {
         }
 

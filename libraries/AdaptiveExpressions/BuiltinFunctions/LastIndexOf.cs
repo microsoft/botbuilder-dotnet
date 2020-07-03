@@ -10,12 +10,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class LastIndexOf : ExpressionEvaluator
     {
-        public LastIndexOf(string alias = null)
-            : base(alias ?? ExpressionType.LastIndexOf, EvalLastIndexOf, ReturnType.Number, Validator)
+        public LastIndexOf()
+            : base(ExpressionType.LastIndexOf, Evaluator, ReturnType.Number, Validator)
         {
         }
 
-        private static (object value, string error) EvalLastIndexOf(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object result = -1;
             var (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);

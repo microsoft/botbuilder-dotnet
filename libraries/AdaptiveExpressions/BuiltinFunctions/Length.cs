@@ -1,14 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Length : ExpressionEvaluator
     {
-        public Length(string alias = null)
-            : base(alias ?? ExpressionType.Length, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnaryString)
+        public Length()
+            : base(ExpressionType.Length, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnaryString)
         {
         }
 

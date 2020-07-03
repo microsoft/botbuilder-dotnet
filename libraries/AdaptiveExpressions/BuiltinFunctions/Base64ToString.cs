@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Base64ToString : ExpressionEvaluator
     {
-        public Base64ToString(string alias = null)
-            : base(alias ?? ExpressionType.Base64ToString, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
+        public Base64ToString()
+            : base(ExpressionType.Base64ToString, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {
         }
 

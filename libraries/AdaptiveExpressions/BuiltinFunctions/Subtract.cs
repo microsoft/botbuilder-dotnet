@@ -8,8 +8,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Subtract : MultivariateNumericEvaluator
     {
-        public Subtract(string alias = null)
-            : base(alias ?? ExpressionType.Subtract, Evaluator)
+        public Subtract()
+            : base(ExpressionType.Subtract, Evaluator)
         {
         }
 

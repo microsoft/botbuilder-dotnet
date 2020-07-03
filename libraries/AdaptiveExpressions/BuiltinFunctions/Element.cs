@@ -8,12 +8,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Element : ExpressionEvaluator
     {
-        public Element(string alias = null)
-            : base(alias ?? ExpressionType.Element, ExtractElement, ReturnType.Object, FunctionUtils.ValidateBinary)
+        public Element()
+            : base(ExpressionType.Element, Evaluator, ReturnType.Object, FunctionUtils.ValidateBinary)
         {
         }
 
-        private static (object value, string error) ExtractElement(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error;

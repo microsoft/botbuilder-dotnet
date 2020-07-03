@@ -9,8 +9,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class FormatDateTime : ExpressionEvaluator
     {
-        public FormatDateTime(string alias = null)
-            : base(alias ?? ExpressionType.FormatDateTime, Evaluator(), ReturnType.String, Validator)
+        public FormatDateTime()
+            : base(ExpressionType.FormatDateTime, Evaluator(), ReturnType.String, Validator)
         {
         }
 

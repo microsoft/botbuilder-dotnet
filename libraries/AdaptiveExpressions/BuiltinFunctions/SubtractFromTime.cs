@@ -11,12 +11,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class SubtractFromTime : ExpressionEvaluator
     {
-        public SubtractFromTime(string alias = null)
-            : base(alias ?? ExpressionType.SubtractFromTime, EvalSubtractFromTime, ReturnType.String, Validator)
+        public SubtractFromTime()
+            : base(ExpressionType.SubtractFromTime, Evaluator, ReturnType.String, Validator)
         {
         }
 
-        private static (object value, string error) EvalSubtractFromTime(Expression expression, IMemory state, Options options)
+        private static (object value, string error) Evaluator(Expression expression, IMemory state, Options options)
         {
             object value = null;
             string error = null;

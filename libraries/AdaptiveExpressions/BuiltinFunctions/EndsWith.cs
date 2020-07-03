@@ -1,14 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class EndsWith : ExpressionEvaluator
     {
-        public EndsWith(string alias = null)
-            : base(alias ?? ExpressionType.EndsWith, Evaluator(), ReturnType.Boolean, Validator)
+        public EndsWith()
+            : base(ExpressionType.EndsWith, Evaluator(), ReturnType.Boolean, Validator)
         {
         }
 

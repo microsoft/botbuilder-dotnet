@@ -2,18 +2,17 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class AddMinutes : TimeTransformEvaluator
     {
-        public AddMinutes(string alias = null)
-                : base(alias ?? ExpressionType.AddMinutes, Function)
+        public AddMinutes()
+                : base(ExpressionType.AddMinutes, Evaluator)
         {
         }
 
-        private static DateTime Function(DateTime time, int interval)
+        private static DateTime Evaluator(DateTime time, int interval)
         {
             return time.AddMinutes(interval);
         }

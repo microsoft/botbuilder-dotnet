@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class Split : ExpressionEvaluator
     {
-        public Split(string alias = null)
-            : base(alias ?? ExpressionType.Split, Evaluator(), ReturnType.Array, Validator)
+        public Split()
+            : base(ExpressionType.Split, Evaluator(), ReturnType.Array, Validator)
         {
         }
 

@@ -7,8 +7,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     public class NewGuid : ExpressionEvaluator
     {
-        public NewGuid(string alias = null)
-            : base(alias ?? ExpressionType.NewGuid, Evaluator(), ReturnType.String, Validator)
+        public NewGuid()
+            : base(ExpressionType.NewGuid, Evaluator(), ReturnType.String, Validator)
         {
         }
 
