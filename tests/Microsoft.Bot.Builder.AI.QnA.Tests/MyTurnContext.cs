@@ -26,12 +26,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
         public bool Responded => throw new NotImplementedException();
 
-        public string Locale
-        {
-            get => this.TurnState.Get<string>(TurnLocale);
-            set { this.TurnState.Set(TurnLocale, value); }
-        }
-
         public Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
             throw new NotImplementedException();
