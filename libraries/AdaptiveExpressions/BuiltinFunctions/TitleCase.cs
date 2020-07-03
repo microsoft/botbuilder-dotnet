@@ -7,7 +7,7 @@ using System.Globalization;
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
-    /// Converts the specified string to title case
+    /// Converts the specified string to title case.
     /// </summary>
     public class TitleCase : StringTransformEvaluator
     {
