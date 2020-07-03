@@ -39,7 +39,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static void Validator(Expression expression)
         {
-            FunctionUtils.ValidateArityAndAnyType(expression, 3, 3, ReturnType.String);
+            FunctionUtils.ValidateOrder(expression, null, ReturnType.String, ReturnType.String);
         }
     }
 }

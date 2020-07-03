@@ -18,7 +18,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             return FunctionUtils.Apply(
                 args =>
                 {
-                    object result = double.MaxValue;
+                    object result = double.MinValue;
                     if (args.Count == 1)
                     {
                         if (FunctionUtils.TryParseList(args[0], out IList ilist))
