@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder
                         else
                         {
                             // then it's image
-                            card[property] = NormalizedToMediaOrImage(value);
+                            card["image"] = NormalizedToMediaOrImage(value);
                         }
 
                         break;
