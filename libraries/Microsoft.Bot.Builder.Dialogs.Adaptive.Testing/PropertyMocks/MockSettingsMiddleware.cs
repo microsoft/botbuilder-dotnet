@@ -16,6 +16,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
     {
         private readonly string prefix = $"{ScopePath.Settings}.";
         private readonly Dictionary<string, string> mockData = new Dictionary<string, string>();
+        private bool configured = false;
+        private IConfiguration configuredConfiguration = null;
 
         public MockSettingsMiddleware(List<PropertyMock> properties)
         {
@@ -49,17 +51,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
 
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
-            if (mockData.Count != 0)
+            if (!configured)
             {
-                IConfigurationBuilder configBuilder = new ConfigurationBuilder();
-                var previousConfig = turnContext.TurnState.Get<IConfiguration>();
-                if (previousConfig != null)
+                if (mockData.Count != 0)
                 {
-                    configBuilder = configBuilder.AddConfiguration(previousConfig);
+                    IConfigurationBuilder configBuilder = new ConfigurationBuilder();
+
+                    // We assume bot will use TurnState to store settings' configuration.
+                    var previousConfig = turnContext.TurnState.Get<IConfiguration>();
+                    if (previousConfig != null)
+                    {
+                        configBuilder = configBuilder.AddConfiguration(previousConfig);
+                    }
+
+                    configBuilder.AddInMemoryCollection(mockData);
+                    configuredConfiguration = configBuilder.Build();
+                    mockData.Clear();
                 }
 
-                configBuilder.AddInMemoryCollection(mockData);
-                turnContext.TurnState.Set<IConfiguration>(configBuilder.Build());
+                configured = true;
+            }
+
+            if (configuredConfiguration != null)
+            {
+                turnContext.TurnState.Set<IConfiguration>(configuredConfiguration);
             }
 
             await next(cancellationToken).ConfigureAwait(false);

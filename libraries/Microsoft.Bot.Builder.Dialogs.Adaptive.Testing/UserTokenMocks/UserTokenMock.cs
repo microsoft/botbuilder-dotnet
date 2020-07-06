@@ -6,8 +6,15 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks
 {
+    /// <summary>
+    /// Base class for all user token mocks.
+    /// </summary>
     public abstract class UserTokenMock
     {
+        /// <summary>
+        /// This function will be called to setup the test adapter.
+        /// </summary>
+        /// <param name="adapter">The target test adapter.</param>
         public abstract void Setup(TestAdapter adapter);
 
         protected void RegisterSourcePath(string path, int line)

@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks
 {
+    /// <summary>
+    /// Basic way to mock one or more user tokens.
+    /// </summary>
     public class UserTokenBasicMock : UserTokenMock
     {
         [JsonProperty("$kind")]

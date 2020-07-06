@@ -37,6 +37,9 @@
                         "activity": "${settings.object.property}"
                     },
                     {
+                        "$kind": "Microsoft.EndTurn"
+                    },
+                    {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${user.base}"
                     },
@@ -55,6 +58,9 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${user.object.property.value}"
+                    },
+                    {
+                        "$kind": "Microsoft.EndTurn"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -110,6 +116,10 @@
             "text": "set settings.object"
         },
         {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "set user.base"
         },
@@ -128,6 +138,10 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "set user.object"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
