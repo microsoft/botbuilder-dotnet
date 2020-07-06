@@ -24,12 +24,12 @@
             ]
         },
         "outputFormat": {
-            "$ref": "schema:#/definitions/expression",
+            "$ref": "schema:#/definitions/numberExpression",
             "title": "Output format",
             "description": "Expression to format the number output.",
             "examples": [
                 "=this.value",
-                "=int(this.text)"
+                "=int(this.value)"
             ]
         },
         "defaultLocale": {
