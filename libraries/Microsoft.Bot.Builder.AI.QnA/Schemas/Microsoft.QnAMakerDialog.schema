@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "QnAMaker Dialog",
+    "title": "QnAMaker dialog",
     "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
     "type": "object",
     "additionalProperties": false,
@@ -14,7 +14,7 @@
         },
         "endpointKey": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Endpoint Key",
+            "title": "Endpoint key",
             "description": "Endpoint key for the QnA Maker KB.",
             "default": "=settings.qna.endpointkey"
         },
@@ -59,7 +59,7 @@
         },
         "strictFilters": {
             "$ref": "schema:#/definitions/arrayExpression",
-            "title": "Strict Filters",
+            "title": "Strict filters",
             "description": "Metadata filters to use when calling the QnA Maker KB.",
             "items": {
                 "type": "object",
@@ -95,7 +95,7 @@
         },
         "rankerType": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Ranker Type",
+            "title": "Ranker type",
             "description": "Type of Ranker.",
             "oneOf": [
                 {

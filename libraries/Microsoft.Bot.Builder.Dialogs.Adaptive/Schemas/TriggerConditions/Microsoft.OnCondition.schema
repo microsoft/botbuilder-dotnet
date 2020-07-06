@@ -28,7 +28,7 @@
         },
         "runOnce": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "Run Once",
+            "title": "Run once",
             "description": "True if rule should run once per unique conditions",
             "examples": [
                 true,

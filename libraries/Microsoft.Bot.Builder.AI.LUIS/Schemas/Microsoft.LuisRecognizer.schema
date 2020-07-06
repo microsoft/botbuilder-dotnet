@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IRecognizer)",
-    "title": "LUIS Recognizer",
+    "title": "LUIS recognizer",
     "description": "LUIS recognizer.",
     "type": "object",
     "additionalProperties": false,
@@ -13,12 +13,12 @@
         },
         "applicationId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "LUIS Application ID",
+            "title": "LUIS application ID",
             "description": "Application ID for your model from the LUIS service."
         },
         "endpoint": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "LUIS Endpoint",
+            "title": "LUIS endpoint",
             "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com."
         },
         "endpointKey": {
@@ -28,7 +28,7 @@
         },
         "externalEntityRecognizer": {
             "$kind": "Microsoft.IRecognizer",
-            "title": "External Entity Recognizer",
+            "title": "External entity recognizer",
             "description": "Entities recognized by this recognizer will be passed to LUIS as external entities."
         },
         "dynamicLists": {

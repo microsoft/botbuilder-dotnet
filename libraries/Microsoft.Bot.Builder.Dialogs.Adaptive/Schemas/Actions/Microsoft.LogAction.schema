@@ -34,7 +34,7 @@
         },
         "traceActivity": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "Send Trace Activity",
+            "title": "Send trace activity",
             "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator)."
         }
     }
