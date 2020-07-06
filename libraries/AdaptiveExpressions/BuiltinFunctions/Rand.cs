@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Rand : ExpressionEvaluator
     {
-        public static readonly Random Randomizer = new Random();
+        private static readonly Random Randomizer = new Random();
 
         private static readonly object _randomizerLock = new object();
 
