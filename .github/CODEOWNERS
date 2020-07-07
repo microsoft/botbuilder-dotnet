@@ -56,7 +56,6 @@
 /libraries/Microsoft.Bot.Builder.AI.QnA/**                                         @mrivera-ms @johnataylor
 /libraries/Microsoft.Bot.Builder.ApplicationInsights/**                            @garypretty
 /libraries/Microsoft.Bot.Builder.Azure/**                                          @mrivera-ms
-/libraries/Microsoft.Bot.Builder.Dialogs/**                                        @mrivera-ms @gabog @johnataylor
 /libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                              @mrivera-ms @tomlm @gabog
 /libraries/Microsoft.Bot.Builder.TemplateManager/**                                @mrivera-ms @tomlm
 /libraries/Microsoft.Bot.Builder.Testing/**                                        @gabog
@@ -74,6 +73,10 @@
 # BotBuilder library
 /libraries/Microsoft.Bot.Builder/**                                                @gabog @johnataylor
 /tests/Microsoft.Bot.Builder.Tests/**                                              @gabog @johnataylor
+
+# BotBuilder Dialogs
+/libraries/Microsoft.Bot.Builder.Dialogs/**                                        @microsoft/bf-dialogs
+/tests/Microsoft.Bot.Builder.Dialogs/**                                            @microsoft/bf-dialogs
 
 # Bot Framework Authentication
 /libraries/Microsoft.Bot.Connector/Authentication/**                               @microsoft/bf-auth
