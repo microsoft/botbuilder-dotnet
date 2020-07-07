@@ -73,6 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 Assert.IsNotNull(_eocSent, "Skills should send EndConversation to channel");
                 Assert.AreEqual(ActivityTypes.EndOfConversation, _eocSent.Type);
+                Assert.AreEqual(EndOfConversationCodes.CompletedSuccessfully, _eocSent.Code);
                 Assert.AreEqual("SomeName", _eocSent.Value);
                 Assert.AreEqual("en-GB", _eocSent.Locale);
             }
