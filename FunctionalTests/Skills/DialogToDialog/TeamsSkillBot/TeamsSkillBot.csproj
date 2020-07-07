@@ -3,15 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>Microsoft.BotBuilderSamples.SimpleRootBot</AssemblyName>
-    <RootNamespace>Microsoft.BotBuilderSamples.SimpleRootBot</RootNamespace>
+    <AssemblyName>Microsoft.BotBuilderSamples.TeamsSkillBot</AssemblyName>
+    <RootNamespace>Microsoft.BotBuilderSamples.TeamsSkillBot</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AdaptiveCards" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
   </ItemGroup>
 
@@ -20,4 +18,5 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
 </Project>

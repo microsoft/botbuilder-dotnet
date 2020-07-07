@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+//
+// Generated with Bot Builder V4 SDK Template for Visual Studio EchoSkillBot v4.7.0
 
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.BotBuilderSamples.DialogEchoSkillBot.Authentication
+namespace Microsoft.BotBuilderSamples.TeamsSkillBot.Authentication
 {
     /// <summary>
     /// Sample claims validator that loads an allowed list from configuration if present
@@ -26,27 +27,21 @@ namespace Microsoft.BotBuilderSamples.DialogEchoSkillBot.Authentication
                 throw new ArgumentNullException(nameof(config));
             }
 
-            // AllowedCallers is the setting in the appsettings.json file
-            // that consists of the list of parent bot IDs that are allowed to access the skill.
-            // To add a new parent bot, simply edit the AllowedCallers and add
-            // the parent bot's Microsoft app ID to the list.
-            // In this sample, we allow all callers if AllowedCallers contains an "*".
+            // AllowedCallers is the setting in appsettings.json file
+            // that consists of the list of parent bot ids that are allowed to access the skill
+            // to add a new parent bot simply go to the AllowedCallers and add
+            // the parent bot's microsoft app id to the list
             var section = config.GetSection(ConfigKey);
             var appsList = section.Get<string[]>();
-            if (appsList == null)
-            {
-                throw new ArgumentNullException($"\"{ConfigKey}\" not found in configuration.");
-            }
-
-            _allowedCallers = new List<string>(appsList);
+            _allowedCallers = appsList != null ? new List<string>(appsList) : null;
         }
 
         public override Task ValidateClaimsAsync(IList<Claim> claims)
         {
-            // If _allowedCallers contains an "*", we allow all callers.
-            if (SkillValidation.IsSkillClaim(claims) && !_allowedCallers.Contains("*"))
+            // if _allowedCallers is null we allow all calls
+            if (_allowedCallers != null && _allowedCallers.Count > 0 && SkillValidation.IsSkillClaim(claims))
             {
-                // Check that the appId claim in the skill request is in the list of callers configured for this bot.
+                // Check that the appId claim in the skill request is in the list of skills configured for this bot.
                 var appId = JwtTokenValidation.GetAppIdFromClaims(claims);
                 if (!_allowedCallers.Contains(appId))
                 {

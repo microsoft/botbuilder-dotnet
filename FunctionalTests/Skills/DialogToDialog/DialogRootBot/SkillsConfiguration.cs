@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.BotBuilderSamples.DialogRootBot.Skills;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.BotBuilderSamples.DialogRootBot
@@ -21,7 +23,7 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot
             {
                 foreach (var skill in skills)
                 {
-                    Skills.Add(skill.Id, skill);
+                    Skills.Add(skill.Id, CreateSkillDefinition(skill));
                 }
             }
 
@@ -34,6 +36,30 @@ namespace Microsoft.BotBuilderSamples.DialogRootBot
 
         public Uri SkillHostEndpoint { get; }
 
-        public Dictionary<string, BotFrameworkSkill> Skills { get; } = new Dictionary<string, BotFrameworkSkill>();
+        public Dictionary<string, SkillDefinition> Skills { get; } = new Dictionary<string, SkillDefinition>();
+
+        private static SkillDefinition CreateSkillDefinition(BotFrameworkSkill skill)
+        {
+            // Note: we hard code this for now, we should dynamically create instances based on the manifests.
+            // For now, this code creates a strong typed version of the SkillDefinition and copies the info from
+            // settings into it. 
+            SkillDefinition skillDefinition;
+            switch (skill.Id)
+            {
+                case "EchoSkillBot":
+                    skillDefinition = ObjectPath.Assign<EchoSkill>(new EchoSkill(), skill);
+                    break;
+                case "DialogSkillBot":
+                    skillDefinition = ObjectPath.Assign<DialogSkill>(new DialogSkill(), skill);
+                    break;
+                case "TeamsSkillBot":
+                    skillDefinition = ObjectPath.Assign<TeamsSkill>(new TeamsSkill(), skill);
+                    break;
+                default:
+                    throw new Exception($"Unable to find definition class for {skill.Id}.");
+            }
+
+            return skillDefinition;
+        }
     }
 }

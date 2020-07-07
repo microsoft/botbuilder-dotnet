@@ -44,7 +44,7 @@
     "dialogEchoSkillBot": {
       "description": "Calls the Echo Skill Bot from a skill",
       "type": "event",
-      "name": "EchoSkillBot"
+      "name": "EchoSkill"
     },
     "getWeather": {
       "description": "Retrieves and returns the weather for the user's location.",

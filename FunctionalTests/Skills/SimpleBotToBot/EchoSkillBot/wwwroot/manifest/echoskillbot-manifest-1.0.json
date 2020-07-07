@@ -19,7 +19,7 @@
       "protocol": "BotFrameworkV3",
       "description": "Default endpoint for the skill",
       "endpointUrl": "https://ggechoskillbot.azurewebsites.net/api/messages",
-      "msAppId": "0be01cfa-478e-4ec2-b2cc-9a4ec02f101b"
+      "msAppId": "f3fe8762-e50c-4688-b202-a040f522d916"
     }
   ]
 }
