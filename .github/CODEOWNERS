@@ -74,3 +74,7 @@
 # BotBuilder library
 /libraries/Microsoft.Bot.Builder/**                                                @gabog @johnataylor
 /tests/Microsoft.Bot.Builder.Tests/**                                              @gabog @johnataylor
+
+# Bot Framework Authentication
+/libraries/Microsoft.Bot.Connector/Authentication/**                               @microsoft/bf-auth
+/tests/Microsoft.Bot.Connector.Tests/Authentication/**                             @microsoft/bf-auth
