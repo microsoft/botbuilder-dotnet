@@ -5,6 +5,10 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    ///  Mark a clause so that MostSpecificSelector will ignore it.
+    ///  MostSpecificSelector considers A &amp; B to be more specific than A, but some clauses are unique and incomparable.
+    /// </summary>
     public class Ignore : ExpressionEvaluator
     {
         public Ignore()

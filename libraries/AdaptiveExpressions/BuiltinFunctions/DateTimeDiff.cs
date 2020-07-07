@@ -6,6 +6,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Return a number of ticks that the two timestamp differs.
+    /// </summary>
     public class DateTimeDiff : ExpressionEvaluator
     {
         public DateTimeDiff()

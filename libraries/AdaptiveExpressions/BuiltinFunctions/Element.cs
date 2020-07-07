@@ -6,6 +6,10 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// The indexing operator ([ ]) selects a single element from a sequence.
+    /// Support number index for list or string index for object.
+    /// </summary>
     public class Element : ExpressionEvaluator
     {
         public Element()

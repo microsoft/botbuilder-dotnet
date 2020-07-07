@@ -6,6 +6,9 @@ using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
+    /// <summary>
+    /// Used to access the variable value corresponding to the path.
+    /// </summary>
     public class Accessor : ExpressionEvaluator
     {
         public Accessor()
