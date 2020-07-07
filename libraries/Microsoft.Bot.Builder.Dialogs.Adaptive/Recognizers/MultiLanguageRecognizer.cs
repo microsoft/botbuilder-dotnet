@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             var policy = new List<string>();
-            if (LanguagePolicy.TryGetValue(activity.Locale, out string[] targetpolicy))
+            if (activity.Locale != null && LanguagePolicy.TryGetValue(activity.Locale, out string[] targetpolicy))
             {
                 policy.AddRange(targetpolicy);
             }
