@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover
 {
+    /// <summary>
+    /// Constants used as part of the Facebook handover protocol.
+    /// </summary>
     public static class HandoverConstants
     {
         /// <summary>

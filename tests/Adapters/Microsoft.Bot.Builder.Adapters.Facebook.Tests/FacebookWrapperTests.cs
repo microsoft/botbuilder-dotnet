@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
 {
     public class FacebookWrapperTests
     {
-        private readonly FacebookAdapterOptions _testOptions = new FacebookAdapterOptions("TestVerifyToken", "TestAppSecret", "TestAccessToken");
+        private readonly FacebookClientWrapperOptions _testOptions = new FacebookClientWrapperOptions("TestVerifyToken", "TestAppSecret", "TestAccessToken");
 
         [Fact]
         public void GetAppSecretProofShouldAlwaysReturnAStringWith64Characters()

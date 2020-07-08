@@ -1,4 +1,5 @@
-﻿#pragma warning disable SA1201 // Elements should appear in the correct order
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections;
@@ -16,49 +17,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </remarks>
     internal class ReadOnlyObject : IDictionary<string, object>
     {
-        private const string NOTSUPPORTED = "This object is readonly.";
-        private readonly object obj;
+        private const string Notsupported = "This object is readonly.";
+        private readonly object _obj;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReadOnlyObject"/> class.
         /// </summary>
-        /// <param name="dialogContext">dialog context for evalutation of expression properties.</param>
         /// <param name="obj">object to wrap.  Any expression properties on it will be evaluated using the dc.</param>
         public ReadOnlyObject(object obj)
         {
-            this.obj = obj;
+            _obj = obj;
         }
 
-        public object this[string key] { get => GetValue(key); set => throw new NotSupportedException(NOTSUPPORTED); }
+        public ICollection<string> Keys => ObjectPath.GetProperties(_obj).ToList();
 
-        public ICollection<string> Keys => ObjectPath.GetProperties(this.obj).ToList();
+        public ICollection<object> Values => ObjectPath.GetProperties(_obj).Select(propertyName => GetValue(propertyName)).ToList();
 
-        public ICollection<object> Values => ObjectPath.GetProperties(this.obj).Select(propertyName => GetValue(propertyName)).ToList();
-
-        public int Count => ObjectPath.GetProperties(this.obj).Count();
+        public int Count => ObjectPath.GetProperties(_obj).Count();
 
         public bool IsReadOnly => true;
 
+        public object this[string key] { get => GetValue(key); set => throw new NotSupportedException(Notsupported); }
+
         public void Add(string key, object value)
         {
-            throw new NotSupportedException(NOTSUPPORTED);
+            throw new NotSupportedException(Notsupported);
         }
 
         public void Add(KeyValuePair<string, object> item)
         {
-            throw new NotSupportedException(NOTSUPPORTED);
+            throw new NotSupportedException(Notsupported);
         }
 
         public void Clear()
         {
-            throw new NotSupportedException(NOTSUPPORTED);
+            throw new NotSupportedException(Notsupported);
         }
 
         public override bool Equals(object other)
         {
             if (other is ReadOnlyObject esp)
             {
-                return this.obj.Equals(esp.obj);
+                return _obj.Equals(esp._obj);
             }
 
             return false;
@@ -66,42 +66,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         public override int GetHashCode()
         {
-            return this.obj.GetHashCode();
+            return _obj.GetHashCode();
         }
 
         public bool Contains(KeyValuePair<string, object> item)
         {
-            throw new NotSupportedException(NOTSUPPORTED);
+            throw new NotSupportedException(Notsupported);
         }
 
         public bool ContainsKey(string key)
         {
-            return ObjectPath.GetProperties(this.obj).Any(propertyName => propertyName.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+            return ObjectPath.GetProperties(_obj).Any(propertyName => propertyName.Equals(key, StringComparison.OrdinalIgnoreCase));
         }
 
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
         {
-            throw new NotSupportedException(NOTSUPPORTED);
+            throw new NotSupportedException(Notsupported);
         }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
-            return ObjectPath.GetProperties(this.obj).Select(propertyName => new KeyValuePair<string, object>(propertyName, GetValue(propertyName))).GetEnumerator();
+            return ObjectPath.GetProperties(_obj).Select(propertyName => new KeyValuePair<string, object>(propertyName, GetValue(propertyName))).GetEnumerator();
         }
 
         public bool Remove(string key)
         {
-            throw new NotSupportedException(NOTSUPPORTED);
+            throw new NotSupportedException(Notsupported);
         }
 
         public bool Remove(KeyValuePair<string, object> item)
         {
-            throw new NotSupportedException(NOTSUPPORTED);
+            throw new NotSupportedException(Notsupported);
         }
 
         public bool TryGetValue(string name, out object value)
         {
-            return ObjectPath.TryGetPathValue<object>(this.obj, name, out value);
+            return ObjectPath.TryGetPathValue(_obj, name, out value);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -111,8 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         private object GetValue(string name)
         {
-            object val;
-            if (TryGetValue(name, out val))
+            if (TryGetValue(name, out var val))
             {
                 return new ReadOnlyObject(val);
             }

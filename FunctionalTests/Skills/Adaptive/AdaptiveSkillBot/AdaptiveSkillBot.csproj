@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
     <ProjectReference Include="..\..\..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
+    <ProjectReference Include="..\..\..\..\libraries\Microsoft.Bot.Builder.AI.LUIS\Microsoft.Bot.Builder.AI.Luis.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -68,27 +68,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 {
                     startInfo = new ProcessStartInfo("cmd.exe", $"/C bf.cmd dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath}");
                     startInfo.WorkingDirectory = projectPath;
-                }
-                else
-                {
-                    startInfo = new ProcessStartInfo("bf", $"dialog:merge **/*.schema -o {schemaPath}");
-                    startInfo.WorkingDirectory = solutionPath;
-                }
+                    startInfo.UseShellExecute = false;
+                    startInfo.CreateNoWindow = false;
+                    startInfo.RedirectStandardError = true;
 
-                startInfo.UseShellExecute = false;
-                startInfo.CreateNoWindow = false;
-                startInfo.RedirectStandardError = true;
+                    // startInfo.RedirectStandardOutput = true;
+                    // string output = process.StandardOutput.ReadToEnd();
 
-                // startInfo.RedirectStandardOutput = true;
-                // string output = process.StandardOutput.ReadToEnd();
+                    var process = Process.Start(startInfo);
+                    string error = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
 
-                var process = Process.Start(startInfo);
-                string error = process.StandardError.ReadToEnd();
-                process.WaitForExit();
-
-                if (!string.IsNullOrEmpty(error))
-                {
-                    Trace.TraceError(error);
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        Trace.TraceError(error);
+                    }
                 }
             }
             catch (Exception err)

@@ -8,7 +8,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
     /// <summary>
     /// Methods for determining channel specific functionality.
     /// </summary>
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class Channel
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
         /// Determine if a number of Suggested Actions are supported by a Channel.
@@ -33,10 +35,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Connector.Channels.Kik:
                     return buttonCnt <= 20;
 
-                case Connector.Channels.Slack:
                 case Connector.Channels.Telegram:
                 case Connector.Channels.Emulator:
                 case Connector.Channels.Directline:
+                case Connector.Channels.DirectlineSpeech:
                 case Connector.Channels.Webchat:
                     return buttonCnt <= 100;
 
@@ -66,6 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Connector.Channels.Slack:
                 case Connector.Channels.Emulator:
                 case Connector.Channels.Directline:
+                case Connector.Channels.DirectlineSpeech:
                 case Connector.Channels.Webchat:
                 case Connector.Channels.Cortana:
                     return buttonCnt <= 100;
@@ -97,7 +100,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// </summary>
         /// <param name="channelId">The Channel to determine Maximum Action Title Length.</param>
         /// <returns>The total number of characters allowed for an Action Title on a specific Channel.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the channelId parameter without breaking binary compatibility)
         public static int MaxActionTitleLength(string channelId) => 20;
+#pragma warning restore CA1801 // Review unused parameters
 
         /// <summary>
         /// Get the Channel Id from the current Activity on the Turn Context.
@@ -105,13 +110,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <param name="turnContext">The Turn Context to retrieve the Activity's Channel Id from.</param>
         /// <returns>The Channel Id from the Turn Context's Activity.</returns>
         public static string GetChannelId(ITurnContext turnContext) => string.IsNullOrEmpty(turnContext.Activity.ChannelId)
-            ? string.Empty : turnContext.Activity.ChannelId;
+            ? string.Empty
+            : turnContext.Activity.ChannelId;
 
         // This class has been deprecated in favor of the class in Microsoft.Bot.Connector.Channels located
         // at https://github.com/Microsoft/botbuilder-dotnet/libraries/Microsoft.Bot.Connector/Channels.cs.
         // This change is non-breaking and this class now inherits from the class in the connector library.
         [Obsolete("This class is deprecated. Please use Microsoft.Bot.Connector.Channels.")]
+#pragma warning disable CA1034 // Nested types should not be visible (this type is deprecated, ignoring)
+#pragma warning disable CA1724 // Namespace name conflict (this type is deprecated, ignoring)
         public class Channels : Connector.Channels
+#pragma warning restore CA1724 // Namespace name conflict
+#pragma warning restore CA1034 // Nested types should not be visible
         {
         }
     }

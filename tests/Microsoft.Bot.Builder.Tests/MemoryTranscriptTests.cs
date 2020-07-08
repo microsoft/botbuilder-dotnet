@@ -1,57 +1,62 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.IO;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class MemoryTranscriptTests : TranscriptBaseTests
     {
         public MemoryTranscriptTests()
             : base()
         {
             this.Store = new MemoryTranscriptStore();
+            var folder = Path.Combine(Path.GetTempPath(), nameof(MemoryTranscriptTests));
+            if (Directory.Exists(folder))
+            {
+                Directory.Delete(folder, true);
+            }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_BadArgs()
         {
             await BadArgs();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_LogActivity()
         {
             await LogActivity();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_LogMultipleActivities()
         {
             await LogMultipleActivities();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_GetConversationActivities()
         {
             await GetTranscriptActivities();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_GetConversationActivitiesStartDate()
         {
             await GetTranscriptActivitiesStartDate();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_ListConversations()
         {
             await ListTranscripts();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryTranscript_DeleteConversation()
         {
             await DeleteTranscript();

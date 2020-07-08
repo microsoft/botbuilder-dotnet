@@ -1,9 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,9 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public static class ObjectPath
     {
-        private static JsonSerializerSettings cloneSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+        private static readonly JsonSerializerSettings _cloneSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
 
-        private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _expressionCaseSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
             NullValueHandling = NullValueHandling.Ignore,
@@ -80,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>true if successful.</returns>
         public static bool TryGetPathValue<T>(object obj, string path, out T value)
         {
-            value = default(T);
+            value = default;
 
             if (obj == null)
             {
@@ -92,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return false;
             }
 
-            if (path == string.Empty)
+            if (path.Length == 0)
             {
                 value = MapValueTo<T>(obj);
                 return true;
@@ -112,10 +113,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             // NOTE: this bit of duck typing keeps us from adding dependency between adaptiveExpressions and Dialogs.
             if (result.GetType().GetProperty("ExpressionText") != null)
             {
-                var method = result.GetType().GetMethod("GetValue", new Type[] { typeof(object) });
+                var method = result.GetType().GetMethod("GetValue", new[] { typeof(object) });
                 if (method != null)
                 {
-                    result = method.Invoke(result, new object[] { obj });
+                    result = method.Invoke(result, new[] { obj });
                 }
             }
 
@@ -138,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             dynamic current = obj;
-            for (var i = 0; i < segments.Count() - 1; i++)
+            for (var i = 0; i < segments.Count - 1; i++)
             {
                 var segment = segments[i];
                 dynamic next;
@@ -200,7 +201,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             dynamic current = obj;
-            for (var i = 0; i < segments.Count() - 1; i++)
+            for (var i = 0; i < segments.Count - 1; i++)
             {
                 var segment = segments[i];
                 if (!ResolveSegment(ref current, segment))
@@ -277,7 +278,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (obj == null)
             {
-                yield break;
             }
             else if (obj is IDictionary<string, object> dict)
             {
@@ -314,18 +314,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return false;
             }
-            else if (obj is IDictionary<string, object> dict)
+
+            if (obj is IDictionary<string, object> dict)
             {
                 return dict.ContainsKey(name);
             }
-            else if (obj is JObject jobj)
+
+            if (obj is JObject jobj)
             {
                 return jobj.ContainsKey(name);
             }
-            else
-            {
-                return obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Any(property => property.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-            }
+
+            return obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Any(property => property.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -336,7 +336,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The object as Json.</returns>
         public static T Clone<T>(T obj)
         {
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj, ObjectPath.cloneSettings), ObjectPath.cloneSettings);
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj, _cloneSettings), _cloneSettings);
         }
 
         /// <summary>
@@ -377,10 +377,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (startObject != null && overlayObject != null)
             {
                 // make a deep clone JObject of the startObject
-                var jsMerged = (startObject is JObject) ? (JObject)(startObject as JObject).DeepClone() : JObject.FromObject(startObject);
+                var jsMerged = startObject is JObject ? (JObject)(startObject as JObject).DeepClone() : JObject.FromObject(startObject);
 
                 // get a JObject of the overlay object
-                var jsOverlay = (overlayObject is JObject) ? (overlayObject as JObject) : JObject.FromObject(overlayObject);
+                var jsOverlay = overlayObject is JObject ? overlayObject as JObject : JObject.FromObject(overlayObject);
 
                 jsMerged.Merge(jsOverlay, new JsonMergeSettings
                 {
@@ -417,38 +417,43 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return ((JValue)val).ToObject<T>();
             }
-            else if (typeof(T) == typeof(object))
-            {
-                return (T)(object)val;
-            }
-            else if (val is JArray)
-            {
-                return ((JArray)val).ToObject<T>();
-            }
-            else if (val is JObject)
-            {
-                return ((JObject)val).ToObject<T>();
-            }
-            else if (typeof(T) == typeof(JObject))
-            {
-                return (T)(object)JObject.FromObject(val);
-            }
-            else if (typeof(T) == typeof(JArray))
-            {
-                return (T)(object)JArray.FromObject(val);
-            }
-            else if (typeof(T) == typeof(JValue))
-            {
-                return (T)(object)JValue.FromObject(val);
-            }
-            else if (val is T)
+
+            if (typeof(T) == typeof(object))
             {
                 return (T)val;
             }
-            else
+
+            if (val is JArray)
             {
-                return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(val, expressionCaseSettings));
+                return ((JArray)val).ToObject<T>();
             }
+
+            if (val is JObject)
+            {
+                return ((JObject)val).ToObject<T>();
+            }
+
+            if (typeof(T) == typeof(JObject))
+            {
+                return (T)(object)JObject.FromObject(val);
+            }
+
+            if (typeof(T) == typeof(JArray))
+            {
+                return (T)(object)JArray.FromObject(val);
+            }
+
+            if (typeof(T) == typeof(JValue))
+            {
+                return (T)(object)JValue.FromObject(val);
+            }
+
+            if (val is T)
+            {
+                return (T)val;
+            }
+
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(val, _expressionCaseSettings));
         }
 
         /// <summary>
@@ -467,7 +472,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var first = propertyPath.Length > 0 ? propertyPath[0] : ' ';
             if (first == '\'' || first == '"')
             {
-                if (!propertyPath.EndsWith(first.ToString()))
+                if (!propertyPath.EndsWith(first.ToString(), StringComparison.Ordinal))
                 {
                     return false;
                 }
@@ -533,22 +538,20 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                         var expr = propertyPath.Substring(start, i - start);
                         start = i + 1;
-                        if (!TryResolvePath(obj, expr, out List<object> indexer, true) || indexer.Count() != 1)
+                        if (!TryResolvePath(obj, expr, out var indexer, true) || indexer.Count != 1)
                         {
                             // Could not resolve bracket expression
                             return false;
                         }
+
+                        var result = MapValueTo<string>(indexer.First());
+                        if (int.TryParse(result, out var index))
+                        {
+                            soFar.Add(index);
+                        }
                         else
                         {
-                            var result = MapValueTo<string>(indexer.First());
-                            if (int.TryParse(result, out var index))
-                            {
-                                soFar.Add(index);
-                            }
-                            else
-                            {
-                                soFar.Add(result);
-                            }
+                            soFar.Add(result);
                         }
                     }
                 }
@@ -620,7 +623,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (obj is IDictionary<string, object> dict)
             {
-                var key = dict.Keys.Where(k => k.ToLower() == property.ToLower()).FirstOrDefault() ?? property;
+                var key = dict.Keys.Where(key => string.Equals(key, property, StringComparison.OrdinalIgnoreCase)).FirstOrDefault() ?? property;
                 if (dict.TryGetValue(key, out var value))
                 {
                     return value;
@@ -641,7 +644,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return GetObjectProperty(jval.Value, property);
             }
 
-            var prop = obj.GetType().GetProperties().Where(p => p.Name.ToLower() == property.ToLower()).FirstOrDefault();
+            var prop = obj.GetType().GetProperties().Where(p => string.Equals(p.Name, property, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
             if (prop != null)
             {
                 return prop.GetValue(obj);
@@ -665,7 +668,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (segment is int index)
             {
                 var jar = obj as JArray;
-                for (int i = jar.Count; i <= index; i++)
+                for (var i = jar.Count; i <= index; i++)
                 {
                     jar.Add(null);
                 }
@@ -677,15 +680,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             var property = segment as string;
             if (obj is IDictionary<string, object> dict)
             {
-                var key = dict.Keys.Where(k => k.ToLower() == property.ToLower()).FirstOrDefault() ?? property;
+                var key = dict.Keys.Where(k => string.Equals(k, property, StringComparison.OrdinalIgnoreCase)).FirstOrDefault() ?? property;
                 dict[key] = val;
                 return;
             }
 
             if (obj is JObject jobj)
             {
-                var key = jobj.Properties().Where(p => p.Name.ToLower() == property.ToLower()).FirstOrDefault()?.Name ?? property;
-                jobj[key] = (val != null) ? JToken.FromObject(val) : null;
+                var key = jobj.Properties().Where(p => string.Equals(p.Name, property, StringComparison.OrdinalIgnoreCase)).FirstOrDefault()?.Name ?? property;
+                jobj[key] = val != null ? JToken.FromObject(val) : null;
                 return;
             }
 
@@ -716,16 +719,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                     val = null;
                 }
                 else if (value is string || value is byte || value is bool ||
-                       value is DateTime || value is DateTimeOffset ||
-                       value is short || value is int || value is long ||
-                       value is ushort || value is uint || value is ulong ||
-                       value is decimal || value is float || value is double)
+                         value is DateTime || value is DateTimeOffset ||
+                         value is short || value is int || value is long ||
+                         value is ushort || value is uint || value is ulong ||
+                         value is decimal || value is float || value is double)
                 {
                     val = JValue.FromObject(value);
                 }
                 else
                 {
-                    val = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
+                    val = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, _expressionCaseSettings));
                 }
             }
             else

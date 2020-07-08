@@ -13,45 +13,19 @@
                         "property": "user.name",
                         "value": "='frank'"
                     },
+                    "SwitchString",
                     {
-                        "$kind": "Microsoft.SwitchCondition",
-                        "condition": "user.name",
-                        "default": [
-                            {
-                                "$kind": "Microsoft.SendActivity",
-                                "activity": "Who are you?"
-                            }
-                        ],
-                        "cases": [
-                            {
-                                "value": "susan",
-                                "actions": [
-                                    {
-                                        "$kind": "Microsoft.SendActivity",
-                                        "activity": "hi susan"
-                                    }
-                                ]
-                            },
-                            {
-                                "value": "bob",
-                                "actions": [
-                                    {
-                                        "$kind": "Microsoft.SendActivity",
-                                        "activity": "hi bob"
-                                    }
-                                ]
-                            },
-                            {
-                                "value": "frank",
-                                "actions": [
-                                    {
-                                        "$kind": "Microsoft.SendActivity",
-                                        "activity": "hi frank"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.name",
+                        "value": "frank"
+                    },
+                    "SwitchString",
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.name",
+                        "value": "23"
+                    },
+                    "SwitchString"
                 ]
             }
         ],
@@ -66,6 +40,14 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "hi frank"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "hi frank"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "hi 23"
         }
     ]
 }

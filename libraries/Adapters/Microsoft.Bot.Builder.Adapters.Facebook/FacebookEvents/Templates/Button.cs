@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates
 {
+    /// <summary>
+    /// Facebook button object.
+    /// </summary>
     public class Button
     {
         /// <summary>

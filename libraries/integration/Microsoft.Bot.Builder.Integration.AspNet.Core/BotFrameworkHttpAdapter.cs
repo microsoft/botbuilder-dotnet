@@ -56,16 +56,42 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapter"/> class,
+        /// using a credential provider.
+        /// </summary>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapter> logger = null)
             : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, null, null, logger)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapter"/> class,
+        /// using a credential provider.
+        /// </summary>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="httpClient">The <see cref="HttpClient"/> used.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider, HttpClient httpClient, ILogger<BotFrameworkHttpAdapter> logger)
             : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, httpClient, null, logger)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapter"/> class.
+        /// </summary>
+        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="authConfig">The authentication configuration.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
+        /// <param name="customHttpClient">The HTTP client.</param>
+        /// <param name="middleware">The middleware to initially add to the adapter.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         protected BotFrameworkHttpAdapter(
             IConfiguration configuration,
             ICredentialProvider credentialProvider,
@@ -87,11 +113,25 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapter"/> class.
+        /// </summary>
+        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         protected BotFrameworkHttpAdapter(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger = null)
             : this(configuration, new ConfigurationCredentialProvider(configuration), new AuthenticationConfiguration(), new ConfigurationChannelProvider(configuration), logger: logger)
         {
         }
 
+        /// <summary>
+        /// This method can be called from inside a POST method on any Controller implementation.
+        /// </summary>
+        /// <param name="httpRequest">The HTTP request object, typically in a POST handler by a Controller.</param>
+        /// <param name="httpResponse">The HTTP response object.</param>
+        /// <param name="bot">The bot implementation.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
         {
             if (httpRequest == null)
@@ -141,6 +181,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
                 }
             }
+        }
+        
+        private static async Task WriteUnauthorizedResponseAsync(string headerName, HttpRequest httpRequest)
+        {
+            httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            await httpRequest.HttpContext.Response.WriteAsync($"Unable to authenticate. Missing header: {headerName}").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -200,7 +246,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 await httpRequest.HttpContext.Response.WriteAsync($"Unable to create transport server. Error: {ex.ToString()}").ConfigureAwait(false);
 
-                throw ex;
+                throw;
             }
         }
 
@@ -210,8 +256,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 if (!await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
                 {
-                    var authHeader = httpRequest.Headers.First(x => x.Key.ToLower() == AuthHeaderName).Value.FirstOrDefault();
-                    var channelId = httpRequest.Headers.First(x => x.Key.ToLower() == ChannelIdHeaderName).Value.FirstOrDefault();
+                    var authHeader = httpRequest.Headers.First(x => string.Equals(x.Key, AuthHeaderName, StringComparison.OrdinalIgnoreCase)).Value.FirstOrDefault();
+                    var channelId = httpRequest.Headers.First(x => string.Equals(x.Key, ChannelIdHeaderName, StringComparison.OrdinalIgnoreCase)).Value.FirstOrDefault();
 
                     if (string.IsNullOrWhiteSpace(authHeader))
                     {
@@ -239,19 +285,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 await httpRequest.HttpContext.Response.WriteAsync("Error while attempting to authorize connection.").ConfigureAwait(false);
 
-                throw ex;
+                throw;
             }
-        }
-
-        private async Task WriteUnauthorizedResponseAsync(string headerName, HttpRequest httpRequest)
-        {
-            httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await httpRequest.HttpContext.Response.WriteAsync($"Unable to authenticate. Missing header: {headerName}").ConfigureAwait(false);
         }
     }
 }

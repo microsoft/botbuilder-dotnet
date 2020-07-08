@@ -57,8 +57,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             var recognizerResult = new RecognizerResult()
             {
                 Text = text,
-                Intents = new Dictionary<string, IntentScore>(),
             };
+            
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                // nothing to recognize, return empty recognizerResult
+                return recognizerResult;
+            }
 
             // add entities from regexrecgonizer to the entities pool
             var entityPool = new List<Entity>();

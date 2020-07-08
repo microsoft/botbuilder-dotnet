@@ -42,7 +42,7 @@ namespace AdaptiveExpressions.Properties
             : base(value)
         {
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ValueExpression"/> class.
         /// </summary>
@@ -54,8 +54,20 @@ namespace AdaptiveExpressions.Properties
 
         public static implicit operator ValueExpression(string valueOrExpression) => new ValueExpression(valueOrExpression);
 
+        public static implicit operator ValueExpression(int value) => new ValueExpression(value);
+
+        public static implicit operator ValueExpression(long value) => new ValueExpression(value);
+
+        public static implicit operator ValueExpression(float value) => new ValueExpression(value);
+
+        public static implicit operator ValueExpression(double value) => new ValueExpression(value);
+
+        public static implicit operator ValueExpression(DateTime value) => new ValueExpression(value);
+
+        public static implicit operator ValueExpression(bool value) => new ValueExpression(value);
+
         public static implicit operator ValueExpression(JToken valueOrExpression) => new ValueExpression(valueOrExpression);
-        
+
         public static implicit operator ValueExpression(Expression expression) => new ValueExpression(expression);
 
         public override void SetValue(object value)
@@ -79,7 +91,7 @@ namespace AdaptiveExpressions.Properties
                 }
 
                 // keep the string as quoted expression, which will be literal unless string interpolation is used.
-                this.ExpressionText = $"=`{stringOrExpression}`";
+                this.ExpressionText = $"=`{stringOrExpression.Replace("\\", "\\\\")}`";
                 return;
             }
 

@@ -11,8 +11,10 @@ namespace Microsoft.Bot.Builder.Integration
     {
         public static JsonSerializerSettings Create()
         {
-            var connector = new ConnectorClient(new Uri("http://localhost/"));
-            return connector.DeserializationSettings;
+            using (var connector = new ConnectorClient(new Uri("http://localhost/")))
+            {
+                return connector.DeserializationSettings;
+            }
         }
     }
 }

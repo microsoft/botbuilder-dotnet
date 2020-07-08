@@ -5,28 +5,24 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class ShowTyping_MiddlewareTests
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task ShowTyping_TestMiddleware_1_Second_Interval()
         {
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation("ShowTyping_TestMiddleware_1_Second_Interval"))
                 .Use(new ShowTypingMiddleware(100, 1000));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(2500));
+                await Task.Delay(TimeSpan.FromMilliseconds(2800));
 
                 // note the ShowTypingMiddleware should not cause the Responded flag to be set
-                Assert.IsFalse(context.Responded);
+                Assert.False(context.Responded);
 
                 await context.SendActivityAsync("Message sent after delay");
                 await Task.CompletedTask;
@@ -39,11 +35,10 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task ShowTyping_TestMiddleware_Context_Completes_Before_Typing_Interval()
         {
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation("ShowTyping_TestMiddleware_Context_Completes_Before_Typing_Interval"))
                 .Use(new ShowTypingMiddleware(100, 5000));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -58,11 +53,10 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task ShowTyping_TestMiddleware_ImmediateResponse_5SecondInterval()
         {
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation("ShowTyping_TestMiddleware_ImmediateResponse_5SecondInterval"))
                 .Use(new ShowTypingMiddleware(2000, 5000));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -75,33 +69,31 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public void ShowTyping_TestMiddleware_NegativeDelay()
         {
             try
             {
-                TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation("ShowTyping_TestMiddleware_NegativeDelay"))
                     .Use(new ShowTypingMiddleware(-100, 1000));
             }
             catch (Exception ex)
             {
-                Assert.IsInstanceOfType(ex, typeof(ArgumentOutOfRangeException));
+                Assert.IsType<ArgumentOutOfRangeException>(ex);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public void ShowTyping_TestMiddleware_ZeroFrequency()
         {
             try
             {
-                TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation("ShowTyping_TestMiddleware_ZeroFrequency"))
                     .Use(new ShowTypingMiddleware(-100, 0));
             }
             catch (Exception ex)
             {
-                Assert.IsInstanceOfType(ex, typeof(ArgumentOutOfRangeException));
+                Assert.IsType<ArgumentOutOfRangeException>(ex);
             }
         }
 
