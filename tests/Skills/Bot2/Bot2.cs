@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
@@ -141,10 +143,20 @@ namespace Bot2
             await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
 
             // route the activity to the skill
-            var response = await _skillClient.PostActivityAsync(_botId, targetSkill, _skillsConfig.SkillHostEndpoint, turnContext.Activity, cancellationToken);
+            InvokeResponse response;
+            if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity && SkillValidation.IsSkillClaim(claimIdentity.Claims))
+            {
+                // Check that the appId claim in the skill request is in the list of skills configured for this bot.
+                var appId = JwtTokenValidation.GetAppIdFromClaims(claimIdentity.Claims);
+                response = await _skillClient.PostActivityAsync<InvokeResponse>(appId, _botId, targetSkill, _skillsConfig.SkillHostEndpoint, turnContext.Activity, cancellationToken);
+            }
+            else
+            {
+                response = await _skillClient.PostActivityAsync<InvokeResponse>(_botId, targetSkill, _skillsConfig.SkillHostEndpoint, turnContext.Activity, cancellationToken);
+            }
 
             // Check response status
-            if (!(response.Status >= 200 && response.Status <= 299))
+            if (!response.IsSuccessStatusCode())
             {
                 throw new HttpRequestException($"Error invoking the skill id: \"{targetSkill.Id}\" at \"{targetSkill.SkillEndpoint}\" (status is {response.Status}). \r\n {response.Body}");
             }

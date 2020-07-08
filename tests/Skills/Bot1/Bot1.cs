@@ -144,7 +144,7 @@ namespace Bot1
             var response = await _skillClient.PostActivityAsync(_botId, targetSkill, _skillsConfig.SkillHostEndpoint, turnContext.Activity, cancellationToken);
 
             // Check response status
-            if (!(response.Status >= 200 && response.Status <= 299))
+            if (!response.IsSuccessStatusCode())
             {
                 throw new HttpRequestException($"Error invoking the skill id: \"{targetSkill.Id}\" at \"{targetSkill.SkillEndpoint}\" (status is {response.Status}). \r\n {response.Body}");
             }
