@@ -5,6 +5,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD743B78-D61F-4FBF-B620-FA83CE599A50}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Directory.Build.props = tests\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj", "{3CF175CF-1AF4-4109-96CB-221684DCED7D}"
 EndProject
@@ -69,6 +72,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot", "tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj", "{C113E0AE-5564-4389-BA39-183A8D574210}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionalTests", "FunctionalTests", "{8667F820-8ADA-4498-91AE-AE95DEE5227E}"
+	ProjectSection(SolutionItems) = preProject
+		FunctionalTests\Directory.Build.props = FunctionalTests\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Testing", "libraries\Microsoft.Bot.Builder.Testing\Microsoft.Bot.Builder.Testing.csproj", "{060F070A-BBFA-490E-BE89-3844C857B771}"
 EndProject
@@ -94,22 +100,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Langu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B6AFE9D-6FA5-4699-B0EB-62335FD431C8}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		bot.png = bot.png
 		bot_icon.png = bot_icon.png
 		BotBuilder-DotNet.ruleset = BotBuilder-DotNet.ruleset
 		CodeCoverage.runsettings = CodeCoverage.runsettings
 		Directory.Build.props = Directory.Build.props
 		tests\tests.schema = tests\tests.schema
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schemas", "Schemas", "{EE56F2B6-4995-4E8F-ACFF-310AF0A4DA0F}"
-	ProjectSection(SolutionItems) = preProject
-		schemas\baseComponent.schema = schemas\baseComponent.schema
-		schemas\component.schema = schemas\component.schema
-		schemas\readme.md = schemas\readme.md
-		schemas\sdk.schema = schemas\sdk.schema
-		schemas\update.cmd = schemas\update.cmd
-		schemas\updateBranch.cmd = schemas\updateBranch.cmd
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.Json", "tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj", "{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}"
@@ -152,9 +149,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EchoSkillBot", "FunctionalTests\Skills\SimpleBotToBot\EchoSkillBot\EchoSkillBot.csproj", "{C8F3C6E5-6A21-4F77-ADF7-30119D836A4D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DialogToDialog", "DialogToDialog", "{3E023AB7-FE1F-41B1-9EF4-1550BCE1DC37}"
-	ProjectSection(SolutionItems) = preProject
-		FunctionalTests\Skills\DialogToDialog\README.md = FunctionalTests\Skills\DialogToDialog\README.md
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogRootBot", "FunctionalTests\Skills\DialogToDialog\DialogRootBot\DialogRootBot.csproj", "{E65DC262-CA77-41F6-8439-02C1917874DD}"
 EndProject
@@ -169,6 +163,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveRootBot", "FunctionalTests\Skills\Adaptive\AdaptiveRootBot\AdaptiveRootBot.csproj", "{1E638E89-43B9-4381-8CC7-B65548DB0070}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveSkillBot", "FunctionalTests\Skills\Adaptive\AdaptiveSkillBot\AdaptiveSkillBot.csproj", "{3EA28B80-440E-4919-9850-31236968BC04}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamsSkillBot", "FunctionalTests\Skills\DialogToDialog\TeamsSkillBot\TeamsSkillBot.csproj", "{9CE278DD-0560-4D4B-B6BB-D118FBA20D4E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -658,6 +654,14 @@ Global
 		{3EA28B80-440E-4919-9850-31236968BC04}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3EA28B80-440E-4919-9850-31236968BC04}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{3EA28B80-440E-4919-9850-31236968BC04}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{9CE278DD-0560-4D4B-B6BB-D118FBA20D4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CE278DD-0560-4D4B-B6BB-D118FBA20D4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CE278DD-0560-4D4B-B6BB-D118FBA20D4E}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CE278DD-0560-4D4B-B6BB-D118FBA20D4E}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{9CE278DD-0560-4D4B-B6BB-D118FBA20D4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CE278DD-0560-4D4B-B6BB-D118FBA20D4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CE278DD-0560-4D4B-B6BB-D118FBA20D4E}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{9CE278DD-0560-4D4B-B6BB-D118FBA20D4E}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -731,6 +735,7 @@ Global
 		{AE7143FE-C460-449D-AA50-EFA4820EBADE} = {3C16F609-61D8-49C5-A243-9D32B9491D91}
 		{1E638E89-43B9-4381-8CC7-B65548DB0070} = {AE7143FE-C460-449D-AA50-EFA4820EBADE}
 		{3EA28B80-440E-4919-9850-31236968BC04} = {AE7143FE-C460-449D-AA50-EFA4820EBADE}
+		{9CE278DD-0560-4D4B-B6BB-D118FBA20D4E} = {3E023AB7-FE1F-41B1-9EF4-1550BCE1DC37}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
