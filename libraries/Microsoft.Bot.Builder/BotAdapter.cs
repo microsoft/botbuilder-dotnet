@@ -220,8 +220,18 @@ namespace Microsoft.Bot.Builder
             {
                 if (turnContext.Activity.Locale != null)
                 {
-                    Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
-                    (turnContext as TurnContext).Locale = turnContext.Activity.Locale;
+                    try
+                    {
+                        Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
+                        (turnContext as TurnContext).Locale = turnContext.Activity.Locale;
+                    }
+#pragma warning disable CA1031 // Do not catch general exception types
+                    catch
+                    {
+                        // if turnContext.Activity.Locale is illegal, then TurnContext.Locale will set to en-US as default. 
+                        (turnContext as TurnContext).Locale = "en-US";
+                    }
+#pragma warning restore CA1031 // Do not catch general exception types
                 }
 
                 try
