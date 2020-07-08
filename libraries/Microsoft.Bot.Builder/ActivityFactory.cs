@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -21,14 +18,8 @@ namespace Microsoft.Bot.Builder
     {
 #pragma warning disable CA1308 // Normalize strings to uppercase (LG is heavily invested in lowercase, ignoring this rule in this class)
         private const string LGType = "lgType";
-        private const string ErrorPrefix = "[ERROR]";
-        private const string WarningPrefix = "[WARNING]";
         private const string AdaptiveCardType = "application/vnd.microsoft.card.adaptive";
 
-        private static readonly IList<string> AllActivityTypes = GetAllPublicConstantValues<string>(typeof(ActivityTypes));
-        private static readonly IList<string> AllActivityProperties = GetAllProperties(typeof(Activity));
-        private static readonly IList<string> AllCardActionTypes = GetAllPublicConstantValues<string>(typeof(ActionTypes));
-        private static readonly IList<string> AllCardActionProperties = GetAllProperties(typeof(CardAction));
         private static readonly Dictionary<string, string> GenericCardTypeMapping = new Dictionary<string, string>
         {
             { nameof(HeroCard).ToLowerInvariant(), HeroCard.ContentType },
@@ -49,14 +40,6 @@ namespace Microsoft.Bot.Builder
         /// <returns>activity.</returns>
         public static Activity FromObject(object lgResult)
         {
-            var diagnostics = CheckLGResult(lgResult);
-            var errors = diagnostics.Where(u => u.StartsWith(ErrorPrefix, StringComparison.Ordinal));
-
-            if (errors.Any())
-            {
-                throw new Exception(string.Join("\n", errors));
-            }
-
             if (lgResult is string lgStringResult)
             {
                 return BuildActivityFromText(lgStringResult?.Trim());
@@ -72,57 +55,6 @@ namespace Microsoft.Bot.Builder
 #pragma warning restore CA1031 // Do not catch general exception types
             {
                 return BuildActivityFromText(lgResult?.ToString()?.Trim());
-            }
-        }
-
-        /// <summary>
-        /// check the LG result before generate an Activity.
-        /// </summary>
-        /// <param name="lgResult">lg output.</param>
-        /// <returns>Diagnostic list.</returns>
-        public static IList<string> CheckLGResult(object lgResult)
-        {
-            if (lgResult is string lgStringResult)
-            {
-                if (string.IsNullOrWhiteSpace(lgStringResult))
-                {
-                    return new List<string> { BuildDiagnostic("LG output is empty", false) };
-                }
-
-                if (!lgStringResult.StartsWith("{", StringComparison.Ordinal) || !lgStringResult.EndsWith("}", StringComparison.Ordinal))
-                {
-                    return new List<string> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
-                }
-
-                JObject lgStructuredResult;
-                try
-                {
-                    lgStructuredResult = JObject.Parse(lgStringResult);
-                }
-#pragma warning disable CA1031 // Do not catch general exception types (we should narrow down the exception being caught but for now we just show an error message)
-                catch
-#pragma warning restore CA1031 // Do not catch general exception types
-                {
-                    return new List<string> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
-                }
-
-                return CheckStructuredResult(lgStructuredResult);
-            }
-            else
-            {
-                JObject lgStructuredResult;
-                try
-                {
-                    lgStructuredResult = JObject.FromObject(lgResult);
-                }
-#pragma warning disable CA1031 // Do not catch general exception types (we should narrow down the exception being caught but for now we just show an error message)
-                catch
-#pragma warning restore CA1031 // Do not catch general exception types
-                {
-                    return new List<string> { BuildDiagnostic("LG output is not a json object, and will fallback to string format.", false) };
-                }
-
-                return CheckStructuredResult(lgStructuredResult);
             }
         }
 
@@ -347,7 +279,7 @@ namespace Microsoft.Bot.Builder
                 switch (property)
                 {
                     case "tap":
-                        card[property] = JObject.FromObject(GetCardAction(value));
+                        card[property] = JToken.FromObject(GetCardAction(value));
                         break;
 
                     case "image":
@@ -360,14 +292,13 @@ namespace Microsoft.Bot.Builder
                                 card["images"] = new JArray();
                             }
 
-                            var imageList = NormalizedToList(value).Select(u => u.ToString()).ToList();
-                            imageList.ForEach(u => ((JArray)card["images"]).Add(new JObject() { { "url", u } }));
+                            var imageList = NormalizedToList(value).ToList();
+                            imageList.ForEach(u => ((JArray)card["images"]).Add(NormalizedToMediaOrImage(u)));
                         }
                         else
                         {
                             // then it's image
-                            var urlObj = new JObject() { { "url", value.ToString() } };
-                            card["image"] = urlObj;
+                            card["image"] = NormalizedToMediaOrImage(value);
                         }
 
                         break;
@@ -378,9 +309,9 @@ namespace Microsoft.Bot.Builder
                             card[property] = new JArray();
                         }
 
-                        var mediaList = NormalizedToList(value).Select(u => u.ToString()).ToList();
+                        var mediaList = NormalizedToList(value).ToList();
 
-                        mediaList.ForEach(u => ((JArray)card[property]).Add(new JObject() { { "url", u } }));
+                        mediaList.ForEach(u => ((JArray)card[property]).Add(NormalizedToMediaOrImage(u)));
                         break;
 
                     case "buttons":
@@ -395,9 +326,13 @@ namespace Microsoft.Bot.Builder
                     case "autostart":
                     case "shareable":
                     case "autoloop":
-                        if (IsValidBooleanValue(value.ToString(), out var result))
+                        if (IsValidBooleanValue(value, out var result))
                         {
                             card[property] = result;
+                        }
+                        else
+                        {
+                            card[property] = value;
                         }
 
                         break;
@@ -410,27 +345,29 @@ namespace Microsoft.Bot.Builder
             return new Attachment(type, content: card);
         }
 
-        private static bool IsValidBooleanValue(string boolValue, out bool boolResult)
+        private static bool IsValidBooleanValue(JToken value, out bool boolResult)
         {
             boolResult = false;
-            if (string.IsNullOrWhiteSpace(boolValue))
-            {
-                return false;
-            }
 
-            if (boolValue.ToLowerInvariant() == "true")
+            if (value is JValue jValue && jValue.Type == JTokenType.Boolean)
             {
-                boolResult = true;
+                boolResult = jValue.ToObject<bool>();
                 return true;
             }
 
-            if (boolValue.ToLowerInvariant() == "false")
+            if (IsStringValue(value, out var stringValue))
             {
-                boolResult = false;
-                return true;
+                return bool.TryParse(stringValue, out boolResult);
             }
 
             return false;
+        }
+
+        private static JToken NormalizedToMediaOrImage(JToken item)
+        {
+            return item == null ?
+                new JObject() : IsStringValue(item, out var url) ?
+                new JObject() { { "url", url } } : item;
         }
 
         private static IList<JToken> NormalizedToList(JToken item)
@@ -454,267 +391,6 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private static IList<string> CheckStructuredResult(JObject lgJObj)
-        {
-            var result = new List<string>();
-            var type = GetStructureType(lgJObj);
-
-            //if type is empty, just parse it to text activity
-            if (string.IsNullOrWhiteSpace(type))
-            {
-                return result;
-            }
-
-            if (GenericCardTypeMapping.ContainsKey(type)
-                || type == nameof(Attachment).ToLowerInvariant())
-            {
-                result.AddRange(CheckAttachment(lgJObj));
-            }
-            else if (type == nameof(Activity).ToLowerInvariant())
-            {
-                result.AddRange(CheckActivity(lgJObj));
-            }
-            else
-            {
-                result.Add(BuildDiagnostic($"Type '{type}' is not supported currently.", false));
-            }
-
-            return result;
-        }
-
-        private static IList<string> CheckActivity(JObject lgJObj)
-        {
-            var result = new List<string>();
-
-            var activityType = lgJObj["type"]?.ToString()?.Trim();
-
-            result.AddRange(CheckActivityType(activityType));
-            result.AddRange(CheckPropertyName(lgJObj, typeof(Activity)));
-            result.AddRange(CheckActivityProperties(lgJObj));
-
-            return result;
-        }
-
-        private static IList<string> CheckActivityType(string activityType)
-        {
-            var result = new List<string>();
-
-            if (!string.IsNullOrEmpty(activityType))
-            {
-                if (AllActivityTypes.All(u => u.ToLowerInvariant() != activityType.ToLowerInvariant()))
-                {
-                    result.Add(BuildDiagnostic($"'{activityType}' is not a valid activity type."));
-                }
-            }
-
-            return result;
-        }
-
-        private static IList<string> CheckActivityProperties(JObject lgJObj)
-        {
-            var result = new List<string>();
-
-            foreach (var item in lgJObj)
-            {
-                var property = item.Key.Trim();
-                var value = item.Value;
-
-                switch (property.ToLowerInvariant())
-                {
-                    case "attachments":
-                        result.AddRange(CheckAttachments(value));
-                        break;
-                    case "suggestedactions":
-                        result.AddRange(CheckSuggestions(value));
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            return result;
-        }
-
-        private static IList<string> CheckSuggestions(JToken value)
-        {
-            var actions = NormalizedToList(value);
-            return CheckCardActions(actions);
-        }
-
-        private static IList<string> CheckButtons(JToken value)
-        {
-            var actions = NormalizedToList(value);
-            return CheckCardActions(actions);
-        }
-
-        private static IList<string> CheckCardActions(IList<JToken> actions)
-        {
-            var result = new List<string>();
-
-            foreach (var action in actions)
-            {
-                result.AddRange(CheckCardAction(action));
-            }
-
-            return result;
-        }
-
-        private static IList<string> CheckCardAction(JToken cardActionJtoken)
-        {
-            var result = new List<string>();
-
-            if (!IsStringValue(cardActionJtoken))
-            {
-                if (cardActionJtoken is JObject actionJObj)
-                {
-                    var type = GetStructureType(actionJObj);
-                    if (type != nameof(CardAction).ToLowerInvariant())
-                    {
-                        result.Add(BuildDiagnostic($"'{type}' is not card action type.", false));
-                    }
-                    else
-                    {
-                        result.AddRange(CheckPropertyName(actionJObj, typeof(CardAction)));
-                        var cardActionType = actionJObj["type"]?.ToString()?.Trim();
-
-                        result.AddRange(CheckCardActionType(cardActionType));
-                    }
-                }
-                else
-                {
-                    result.Add(BuildDiagnostic($"'{cardActionJtoken}' is not a valid card action format.", false));
-                }
-            }
-
-            return result;
-        }
-
-        private static IList<string> CheckCardActionType(string cardActionType)
-        {
-            var result = new List<string>();
-
-            if (!string.IsNullOrEmpty(cardActionType))
-            {
-                if (AllCardActionTypes.All(u => u.ToLowerInvariant() != cardActionType.ToLowerInvariant()))
-                {
-                    result.Add(BuildDiagnostic($"'{cardActionType}' is not a valid card action type."));
-                }
-            }
-
-            return result;
-        }
-
-        private static IList<string> CheckAttachments(JToken value)
-        {
-            var result = new List<string>();
-
-            var attachmentsJsonList = NormalizedToList(value);
-
-            foreach (var attachmentsJson in attachmentsJsonList)
-            {
-                if (attachmentsJson is JObject attachmentsJsonJObj)
-                {
-                    result.AddRange(CheckAttachment(attachmentsJsonJObj));
-                }
-            }
-
-            return result;
-        }
-
-        private static IList<string> CheckAttachment(JObject lgJObj)
-        {
-            var result = new List<string>();
-
-            var type = GetStructureType(lgJObj);
-
-            if (GenericCardTypeMapping.ContainsKey(type))
-            {
-                result.AddRange(CheckCardAtttachment(lgJObj));
-            }
-            else if (type == "adaptivecard")
-            {
-                // TODO
-                // check adaptivecard format
-                // it is hard to check the adaptive card without AdaptiveCards package
-            }
-            else if (type == nameof(Attachment).ToLowerInvariant())
-            {
-                // TODO
-                // Check attachment format
-            }
-            else
-            {
-                result.Add(BuildDiagnostic($"'{type}' is not an attachment type.", false));
-            }
-
-            return result;
-        }
-
-        private static IList<string> CheckCardAtttachment(JObject lgJObj)
-        {
-            var result = new List<string>();
-
-            foreach (var item in lgJObj)
-            {
-                var property = item.Key.Trim().ToLowerInvariant();
-                var value = item.Value;
-
-                switch (property)
-                {
-                    case "buttons":
-                        result.AddRange(CheckButtons(value));
-                        break;
-
-                    case "autostart":
-                    case "shareable":
-                    case "autoloop":
-                        if (!IsValidBooleanValue(value.ToString()))
-                        {
-                            result.Add(BuildDiagnostic($"'{value.ToString()}' is not a boolean value."));
-                        }
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            return result;
-        }
-
-        private static IList<string> CheckPropertyName(JObject value, Type type)
-        {
-            var result = new List<string>();
-            if (value == null)
-            {
-                return result;
-            }
-
-            var properties = value.Properties().Select(u => u.Name.ToLowerInvariant()).Where(u => u != LGType.ToLowerInvariant());
-            IList<string> objectProperties;
-
-            if (type == typeof(Activity))
-            {
-                objectProperties = AllActivityProperties;
-            }
-            else if (type == typeof(CardAction))
-            {
-                objectProperties = AllCardActionProperties;
-            }
-            else
-            {
-                objectProperties = GetAllProperties(type);
-            }
-
-            var additionalProperties = properties.Where(u => !objectProperties.Contains(u));
-            if (additionalProperties.Any())
-            {
-                result.Add(BuildDiagnostic($"'{string.Join(",", additionalProperties)}' not support in {type.Name}.", false));
-            }
-
-            return result;
-        }
-
         private static string GetStructureType(JObject jObj)
         {
             if (jObj == null)
@@ -730,42 +406,6 @@ namespace Microsoft.Bot.Builder
             }
 
             return type?.ToLowerInvariant() ?? string.Empty;
-        }
-
-        private static bool IsStringValue(JToken value)
-        {
-            return value is JValue jValue && jValue.Type == JTokenType.String;
-        }
-
-        private static bool IsValidBooleanValue(string boolStr)
-        {
-            if (string.IsNullOrWhiteSpace(boolStr))
-            {
-                return false;
-            }
-
-            return boolStr.ToLowerInvariant() == "true" || boolStr.ToLowerInvariant() == "false";
-        }
-
-        private static string BuildDiagnostic(string message, bool isError = true)
-        {
-            message = message ?? string.Empty;
-
-            return isError ? ErrorPrefix + message : WarningPrefix + message;
-        }
-
-        private static IList<T> GetAllPublicConstantValues<T>(Type type)
-        {
-            return type
-                .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(T))
-                .Select(x => (T)x.GetRawConstantValue())
-                .ToList();
-        }
-
-        private static IList<string> GetAllProperties(Type type)
-        {
-            return type.GetProperties().Select(u => u.Name.ToLowerInvariant()).ToList();
         }
 #pragma warning restore CA1308 // Normalize strings to uppercase
     }
