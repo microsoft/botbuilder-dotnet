@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -192,14 +191,19 @@ namespace Microsoft.Bot.Builder
         /// <returns>The properties and their values to log when a message is received from the user.</returns>
         protected Task<Dictionary<string, string>> FillReceiveEventPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
         {
+            if (activity == null)
+            {
+                return Task.FromResult(new Dictionary<string, string>());
+            }
+
             var properties = new Dictionary<string, string>()
-                {
-                    { TelemetryConstants.FromIdProperty, activity.From?.Id },
-                    { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
-                    { TelemetryConstants.LocaleProperty, activity.Locale },
-                    { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
-                    { TelemetryConstants.RecipientNameProperty, activity.Recipient.Name },
-                };
+            {
+                { TelemetryConstants.FromIdProperty, activity.From?.Id },
+                { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
+                { TelemetryConstants.LocaleProperty, activity.Locale },
+                { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
+                { TelemetryConstants.RecipientNameProperty, activity.Recipient.Name },
+            };
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
             if (LogPersonalInformation)
@@ -224,8 +228,8 @@ namespace Microsoft.Bot.Builder
             if (additionalProperties != null)
             {
                 return Task.FromResult(additionalProperties.Concat(properties)
-                           .GroupBy(kv => kv.Key)
-                           .ToDictionary(g => g.Key, g => g.First().Value));
+                    .GroupBy(kv => kv.Key)
+                    .ToDictionary(g => g.Key, g => g.First().Value));
             }
 
             return Task.FromResult(properties);
@@ -241,6 +245,11 @@ namespace Microsoft.Bot.Builder
         /// <returns>The properties and their values to log when the bot sends the user a message.</returns>
         protected Task<Dictionary<string, string>> FillSendEventPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
         {
+            if (activity == null)
+            {
+                return Task.FromResult(new Dictionary<string, string>());
+            }
+
             var properties = new Dictionary<string, string>()
                 {
                     { TelemetryConstants.ReplyActivityIDProperty, activity.ReplyToId },
@@ -293,6 +302,11 @@ namespace Microsoft.Bot.Builder
         /// <returns>The properties and their values to log when the bot updates a message it sent previously.</returns>
         protected Task<Dictionary<string, string>> FillUpdateEventPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
         {
+            if (activity == null)
+            {
+                return Task.FromResult(new Dictionary<string, string>());
+            }
+
             var properties = new Dictionary<string, string>()
                 {
                     { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
@@ -328,6 +342,11 @@ namespace Microsoft.Bot.Builder
         protected Task<Dictionary<string, string>> FillDeleteEventPropertiesAsync(IMessageDeleteActivity activity, Dictionary<string, string> additionalProperties = null)
 #pragma warning restore CA1822 // Mark members as static
         {
+            if (activity == null)
+            {
+                return Task.FromResult(new Dictionary<string, string>());
+            }
+
             var properties = new Dictionary<string, string>()
                 {
                     { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
