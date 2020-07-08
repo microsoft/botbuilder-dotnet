@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
+    /// <summary>
+    /// Extension methods for QnA.
+    /// </summary>
     public static class QnAMakerExtensions
     {
         /// <summary>
