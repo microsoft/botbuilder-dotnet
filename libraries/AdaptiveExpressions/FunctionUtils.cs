@@ -187,6 +187,13 @@ namespace AdaptiveExpressions
             => ValidateArityAndAnyType(expression, 1, 1, ReturnType.String);
 
         /// <summary>
+        /// Validate 1 or 2 string arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateUnaryOrBinaryString(Expression expression)
+            => ValidateArityAndAnyType(expression, 1, 2, ReturnType.String);
+
+        /// <summary>
         /// Validate there is a single number argument.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
