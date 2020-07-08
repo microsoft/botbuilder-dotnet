@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder
     public class RegisterClassMiddleware<T> : IMiddleware
         where T : class
     {
-        private string key;
+        private readonly string _key;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegisterClassMiddleware{T}"/> class.
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder
         public RegisterClassMiddleware(T service, string key)
         {
             this.Service = service;
-            this.key = key;
+            this._key = key;
         }
 
         /// <summary>
@@ -53,9 +53,9 @@ namespace Microsoft.Bot.Builder
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
             // Register service
-            if (this.key != null)
+            if (this._key != null)
             {
-                turnContext.TurnState.Add(this.key, this.Service);
+                turnContext.TurnState.Add(this._key, this.Service);
             }
             else
             {

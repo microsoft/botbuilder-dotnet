@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,18 +21,19 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
     {
         private static readonly Uri _testPublicAddress = new Uri("http://contoso.com");
         private readonly Person _identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Person.json")));
-        private readonly WebexAdapterOptions _testOptions = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
+        private readonly WebexClientWrapperOptions _testOptions = new WebexClientWrapperOptions("Test", _testPublicAddress, "Test");
+        private readonly WebexAdapterOptions _adapterOptions = new WebexAdapterOptions();
 
         [Fact]
         public void ConstructorWithArgumentsShouldSucceed()
         {
-            Assert.NotNull(new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object));
+            Assert.NotNull(new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions));
         }
 
         [Fact]
         public void ConstructorShouldFailWithNullClient()
         {
-            Assert.Throws<ArgumentNullException>(() => { new WebexAdapter((WebexClientWrapper)null); });
+            Assert.Throws<ArgumentNullException>(() => { new WebexAdapter((WebexClientWrapper)null, _adapterOptions); });
         }
 
         [Fact]
@@ -39,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             var callbackInvoked = false;
 
-            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
             var conversationReference = new ConversationReference();
             Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
             {
@@ -54,7 +56,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ContinueConversationAsyncShouldFailWithNullConversationReference()
         {
-            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
 
             Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
             {
@@ -67,7 +69,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ContinueConversationAsyncShouldFailWithNullLogic()
         {
-            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
             var conversationReference = new ConversationReference();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => { await webexAdapter.ContinueConversationAsync(conversationReference, null, default); });
@@ -87,7 +89,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             webexApi.Setup(x => x.ValidateSignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
             webexApi.Setup(x => x.GetMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(message));
 
-            var webexAdapter = new WebexAdapter(webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(req => req.Body).Returns(stream);
@@ -112,7 +114,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(_identity));
             webexApi.Setup(x => x.ValidateSignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
 
-            var webexAdapter = new WebexAdapter(webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 
             var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Payload2.json"));
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
@@ -147,7 +149,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             webexApi.Setup(x => x.ValidateSignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
             webexApi.Setup(x => x.GetAttachmentActionAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(message));
 
-            var webexAdapter = new WebexAdapter(webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(req => req.Body).Returns(stream);
@@ -167,7 +169,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ProcessAsyncShouldFailWithNullHttpRequest()
         {
-            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
 
@@ -180,7 +182,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ProcessAsyncShouldFailWithNullHttpResponse()
         {
-            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
             var httpRequest = new Mock<HttpRequest>();
             var bot = new Mock<IBot>();
 
@@ -193,7 +195,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ProcessAsyncShouldFailWithNullBot()
         {
-            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
 
@@ -210,7 +212,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             webexApi.SetupAllProperties();
             webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(_identity));
 
-            var webexAdapter = new WebexAdapter(webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 
             var payload = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"/Files/Payload2.json"));
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
@@ -223,7 +225,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
 
-            await Assert.ThrowsAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<AuthenticationException>(async () =>
             {
                 await webexAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default);
             });
@@ -232,7 +234,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void UpdateActivityAsyncShouldThrowNotSupportedException()
         {
-            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object, _adapterOptions);
 
             var activity = new Activity();
 
@@ -253,7 +255,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
-            var webexAdapter = new WebexAdapter(webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Type = "message";
@@ -277,7 +279,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
-            var webexAdapter = new WebexAdapter(webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Type = "message";
@@ -303,7 +305,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
-            var webexAdapter = new WebexAdapter(webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Type = "message";
@@ -328,7 +330,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
-            var webexAdapter = new WebexAdapter(webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Type = ActivityTypes.Trace;
@@ -351,14 +353,14 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<MessageTextType>(), It.IsAny<MessageTarget>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
-            var webexAdapter = new WebexAdapter(webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Type = "message";
             activity.Object.Text = "Hello, Bot!";
 
             var turnContext = new TurnContext(webexAdapter, activity.Object);
 
-            await Assert.ThrowsAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default);
             });
@@ -372,7 +374,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.Setup(x => x.DeleteMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Callback(() => { deletedMessages++; });
 
-            var webexAdapter = new WebexAdapter(webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object, _adapterOptions);
 
             var activity = new Activity();
 

@@ -18,8 +18,24 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
+    /// <summary>
+    /// Class for posting activities securely to a bot using BotFramework HTTP protocol.
+    /// </summary>
+    /// <remarks>
+    /// This class can be used to securely post activities to a bot using the Bot Framework HTTP protocol. There are 2 usage patterns:
+    /// * Forwarding activity to a Skill (Bot => Bot as a Skill) which is done via PostActivityAsync(fromBotId, toBotId, endpoint, serviceUrl, activity);
+    /// * Posting an activity to yourself (External service => Bot) which is done via PostActivityAsync(botId, endpoint, activity)
+    /// The latter is used by external services such as webjobs that need to post activities to the bot using the bots own credentials.
+    /// </remarks>
     public class BotFrameworkHttpClient : BotFrameworkClient
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpClient"/> class.
+        /// </summary>
+        /// <param name="httpClient">A <see cref="HttpClient"/>.</param>
+        /// <param name="credentialProvider">An instance of <see cref="ICredentialProvider"/>.</param>
+        /// <param name="channelProvider">An instance of <see cref="IChannelProvider"/>.</param>
+        /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
         public BotFrameworkHttpClient(
             HttpClient httpClient,
             ICredentialProvider credentialProvider,
@@ -33,18 +49,57 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             ConnectorClient.AddDefaultRequestHeaders(HttpClient);
         }
 
-        // Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired)
-        // AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill)
+        /// <summary>
+        /// Gets the Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired).
+        /// AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill).
+        /// </summary>
+        /// <value>ConcurrentDictionary of <see cref="AppCredentials"/>.</value>
         protected static ConcurrentDictionary<string, AppCredentials> AppCredentialMapCache { get; } = new ConcurrentDictionary<string, AppCredentials>();
 
+        /// <summary>
+        /// Gets the channel provider for this adapter.
+        /// </summary>
+        /// <value>
+        /// The channel provider for this adapter.
+        /// </value>
         protected IChannelProvider ChannelProvider { get; }
 
+        /// <summary>
+        /// Gets the credential provider for this adapter.
+        /// </summary>
+        /// <value>
+        /// The credential provider for this adapter.
+        /// </value>
         protected ICredentialProvider CredentialProvider { get; }
 
+        /// <summary>
+        /// Gets the HttpClient for this adapter.
+        /// </summary>
+        /// <value>
+        /// The HttpClient for this adapter.
+        /// </value>
         protected HttpClient HttpClient { get; }
 
+        /// <summary>
+        /// Gets the logger for this adapter.
+        /// </summary>
+        /// <value>
+        /// The logger for this adapter.
+        /// </value>
         protected ILogger Logger { get; }
 
+        /// <summary>
+        /// Forwards an activity to a skill (bot).
+        /// </summary>
+        /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
+        /// <param name="fromBotId">The MicrosoftAppId of the bot sending the activity.</param>
+        /// <param name="toBotId">The MicrosoftAppId of the bot receiving the activity.</param>
+        /// <param name="toUrl">The URL of the bot receiving the activity.</param>
+        /// <param name="serviceUrl">The callback Url for the skill host.</param>
+        /// <param name="conversationId">A conversation ID to use for the conversation with the skill.</param>
+        /// <param name="activity">activity to forward.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>Async task with optional invokeResponse.</returns>
         public override async Task<InvokeResponse> PostActivityAsync(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
             return await PostActivityAsync<object>(fromBotId, toBotId, toUrl, serviceUrl, conversationId, activity, cancellationToken).ConfigureAwait(false);
@@ -62,82 +117,83 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="conversationId">A conversation ID to use for the conversation with the skill.</param>
         /// <param name="activity">activity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
-        /// <returns>Async task with optional invokeResponse.</returns>
+        /// <returns>Async task with optional invokeResponse<typeparamref name="T"/>.</returns>
         public override async Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
             var appCredentials = await GetAppCredentialsAsync(fromBotId, toBotId).ConfigureAwait(false);
             if (appCredentials == null)
             {
+                Logger.LogError("Unable to get appCredentials to connect to the skill");
                 throw new InvalidOperationException("Unable to get appCredentials to connect to the skill");
             }
 
             // Get token for the skill call
             var token = appCredentials == MicrosoftAppCredentials.Empty ? null : await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
-            // Capture current activity settings before changing them.
-            var originalConversationId = activity.Conversation.Id;
-            var originalServiceUrl = activity.ServiceUrl;
-            var originalRelatesTo = activity.RelatesTo;
-            var originalRecipient = activity.Recipient;
-            try
+            // Clone the activity so we can modify it before sending without impacting the original object.
+            var activityClone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+            activityClone.RelatesTo = new ConversationReference
             {
-                activity.RelatesTo = new ConversationReference()
+                ServiceUrl = activityClone.ServiceUrl,
+                ActivityId = activityClone.Id,
+                ChannelId = activityClone.ChannelId,
+                Locale = activityClone.Locale,
+                Conversation = new ConversationAccount
                 {
-                    ServiceUrl = activity.ServiceUrl,
-                    ActivityId = activity.Id,
-                    ChannelId = activity.ChannelId,
-                    Conversation = new ConversationAccount()
-                    {
-                        Id = activity.Conversation.Id,
-                        Name = activity.Conversation.Name,
-                        ConversationType = activity.Conversation.ConversationType,
-                        AadObjectId = activity.Conversation.AadObjectId,
-                        IsGroup = activity.Conversation.IsGroup,
-                        Properties = activity.Conversation.Properties,
-                        Role = activity.Conversation.Role,
-                        TenantId = activity.Conversation.TenantId,
-                    },
-                    Locale = activity.Locale
-                };
-                activity.Conversation.Id = conversationId;
-                activity.ServiceUrl = serviceUrl.ToString();
-                if (activity.Recipient == null)
-                {
-                    activity.Recipient = new ChannelAccount();
+                    Id = activityClone.Conversation.Id,
+                    Name = activityClone.Conversation.Name,
+                    ConversationType = activityClone.Conversation.ConversationType,
+                    AadObjectId = activityClone.Conversation.AadObjectId,
+                    IsGroup = activityClone.Conversation.IsGroup,
+                    Properties = activityClone.Conversation.Properties,
+                    Role = activityClone.Conversation.Role,
+                    TenantId = activityClone.Conversation.TenantId,
                 }
+            };
+            activityClone.Conversation.Id = conversationId;
+            activityClone.ServiceUrl = serviceUrl.ToString();
+            activityClone.Recipient ??= new ChannelAccount();
 
-                using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
-                {
-                    using (var httpRequestMessage = new HttpRequestMessage())
-                    {
-                        httpRequestMessage.Method = HttpMethod.Post;
-                        httpRequestMessage.RequestUri = toUrl;
-                        if (token != null)
-                        {
-                            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        }
+            return await SecurePostActivityAsync<T>(toUrl, activityClone, token, cancellationToken).ConfigureAwait(false);
+        }
 
-                        httpRequestMessage.Content = jsonContent;
+        /// <summary>
+        /// Post Activity to the bot using the bot's credentials.
+        /// </summary>
+        /// <param name="botId">The MicrosoftAppId of the bot.</param>
+        /// <param name="botEndpoint">The URL of the bot.</param>
+        /// <param name="activity">activity to post.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>InvokeResponse.</returns>
+        public virtual async Task<InvokeResponse> PostActivityAsync(string botId, Uri botEndpoint, Activity activity, CancellationToken cancellationToken = default)
+        {
+            return await PostActivityAsync<object>(botId, botEndpoint, activity, cancellationToken).ConfigureAwait(false);
+        }
 
-                        var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
-
-                        var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        return new InvokeResponse<T>
-                        {
-                            Status = (int)response.StatusCode,
-                            Body = content.Length > 0 ? GetBodyContent<T>(content) : default
-                        };
-                    }
-                }
-            }
-            finally
+        /// <summary>
+        /// Post Activity to the bot using the bot's credentials.
+        /// </summary>
+        /// <typeparam name="T">type of invokeResponse body.</typeparam>
+        /// <param name="botId">The MicrosoftAppId of the bot.</param>
+        /// <param name="botEndpoint">The URL of the bot.</param>
+        /// <param name="activity">activity to post.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>InvokeResponse<typeparamref name="T"/>.</returns>
+        public virtual async Task<InvokeResponse<T>> PostActivityAsync<T>(string botId, Uri botEndpoint, Activity activity, CancellationToken cancellationToken = default)
+        {
+            // From BotId => BotId
+            var appCredentials = await GetAppCredentialsAsync(botId, botId).ConfigureAwait(false);
+            if (appCredentials == null)
             {
-                // Restore activity properties.
-                activity.Conversation.Id = originalConversationId;
-                activity.ServiceUrl = originalServiceUrl;
-                activity.RelatesTo = originalRelatesTo;
-                activity.Recipient = originalRecipient;
+                throw new InvalidOperationException($"Unable to get appCredentials for the bot Id={botId}");
             }
+
+            // Get token for the bot to call itself
+            var token = appCredentials == MicrosoftAppCredentials.Empty ? null : await appCredentials.GetTokenAsync().ConfigureAwait(false);
+
+            // post the activity to the url using the bot's credentials.
+            Logger.LogInformation($"Posting activity. ActivityId: {activity.Id} from BotId: {botId}");
+            return await SecurePostActivityAsync<T>(botEndpoint, activity, token, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -156,6 +212,34 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         private static T GetBodyContent<T>(string content)
         {
             return JsonConvert.DeserializeObject<T>(content);
+        }
+
+        private async Task<InvokeResponse<T>> SecurePostActivityAsync<T>(Uri toUrl, Activity activity, string token, CancellationToken cancellationToken)
+        {
+            using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
+            {
+                using (var httpRequestMessage = new HttpRequestMessage())
+                {
+                    httpRequestMessage.Method = HttpMethod.Post;
+                    httpRequestMessage.RequestUri = toUrl;
+                    if (token != null)
+                    {
+                        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+
+                    httpRequestMessage.Content = jsonContent;
+
+                    using (var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
+                    {
+                        var content = response.Content != null ? await response.Content.ReadAsStringAsync().ConfigureAwait(false) : null;
+                        return new InvokeResponse<T>
+                        {
+                            Status = (int)response.StatusCode,
+                            Body = content?.Length > 0 ? GetBodyContent<T>(content) : default
+                        };
+                    }
+                }
+            }
         }
 
         /// <summary>

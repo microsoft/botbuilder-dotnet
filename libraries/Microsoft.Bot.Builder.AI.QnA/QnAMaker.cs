@@ -17,16 +17,27 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMaker : IQnAMakerClient, ITelemetryQnAMaker
     {
+        /// <summary>
+        /// The name of the QnAMaker class. 
+        /// </summary>
         public static readonly string QnAMakerName = nameof(QnAMaker);
+
+        /// <summary>
+        /// The type used when logging QnA Maker trace.
+        /// </summary>
         public static readonly string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
+
+        /// <summary>
+        /// The label used when logging QnA Maker trace.
+        /// </summary>
         public static readonly string QnAMakerTraceLabel = "QnAMaker Trace";
 
         private readonly HttpClient _httpClient;
 
         private readonly QnAMakerEndpoint _endpoint;
 
-        private GenerateAnswerUtils generateAnswerHelper;
-        private TrainUtils activeLearningTrainHelper;
+        private readonly GenerateAnswerUtils _generateAnswerHelper;
+        private readonly TrainUtils _activeLearningTrainHelper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
@@ -73,8 +84,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
 
-            this.generateAnswerHelper = new GenerateAnswerUtils(TelemetryClient, _endpoint, options, _httpClient);
-            this.activeLearningTrainHelper = new TrainUtils(_endpoint, _httpClient);
+            this._generateAnswerHelper = new GenerateAnswerUtils(TelemetryClient, _endpoint, options, _httpClient);
+            this._activeLearningTrainHelper = new TrainUtils(_endpoint, _httpClient);
         }
 
         /// <summary>
@@ -115,6 +126,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
         }
 
+        /// <summary>
+        /// Gets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.
+        /// </summary>
+        /// <value>
+        /// A instance of <see cref="HttpClient"/>.
+        /// </value>
         public static HttpClient DefaultHttpClient { get; } = new HttpClient();
 
         /// <summary>
@@ -195,7 +212,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Null or empty text");
             }
 
-            var result = await this.generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            var result = await this._generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
             await OnQnaResultsAsync(result.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 
@@ -219,9 +236,18 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
         {
-            await this.activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
+            await this._activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Executed when a result is returned from QnA Maker.
+        /// </summary>
+        /// <param name="queryResults">An array of <see cref="QueryResult"/>.</param>
+        /// <param name="turnContext">The <see cref="TurnContext"/>.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
+        /// <returns>A Task representing the work to be executed.</returns>
         protected virtual async Task OnQnaResultsAsync(
                    QueryResult[] queryResults,
                    ITurnContext turnContext,

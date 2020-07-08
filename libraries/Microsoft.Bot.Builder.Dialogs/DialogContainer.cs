@@ -20,6 +20,28 @@ namespace Microsoft.Bot.Builder.Dialogs
         [JsonIgnore]
         public DialogSet Dialogs { get; set; } = new DialogSet();
 
+        /// <summary>
+        /// Gets or sets the <see cref="IBotTelemetryClient"/> to use for logging.
+        /// When setting this property, all of the contained dialogs' <see cref="Dialog.TelemetryClient"/>
+        /// properties are also set.
+        /// </summary>
+        /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
+        /// <seealso cref="DialogSet.TelemetryClient"/>
+        [JsonIgnore]
+        public override IBotTelemetryClient TelemetryClient
+        {
+            get
+            {
+                return base.TelemetryClient;
+            }
+
+            set
+            {
+                base.TelemetryClient = value ?? NullBotTelemetryClient.Instance;
+                Dialogs.TelemetryClient = base.TelemetryClient;
+            }
+        }
+
         public abstract DialogContext CreateChildContext(DialogContext dc);
 
         public virtual Dialog FindDialog(string dialogId)

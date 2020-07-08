@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -16,8 +17,8 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class TranscriptLoggerMiddleware : IMiddleware
     {
-        private static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
-        private ITranscriptLogger logger;
+        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
+        private readonly ITranscriptLogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranscriptLoggerMiddleware"/> class.
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="transcriptLogger">The conversation store to use.</param>
         public TranscriptLoggerMiddleware(ITranscriptLogger transcriptLogger)
         {
-            logger = transcriptLogger ?? throw new ArgumentNullException("TranscriptLoggerMiddleware requires a ITranscriptLogger implementation.  ");
+            _logger = transcriptLogger ?? throw new ArgumentNullException(nameof(transcriptLogger), "TranscriptLoggerMiddleware requires a ITranscriptLogger implementation.  ");
         }
 
         /// <summary>
@@ -108,26 +109,34 @@ namespace Microsoft.Bot.Builder
             await nextTurn(cancellationToken).ConfigureAwait(false);
 
             // flush transcript at end of turn
+            var logTasks = new List<Task>();
             while (transcript.Count > 0)
             {
+                // Process the queue and log all the activities in parallel.
                 var activity = transcript.Dequeue();
 
-                // As we are deliberately not using await, disable the associated warning.
-#pragma warning disable 4014
-                logger.LogActivityAsync(activity).ContinueWith(
-                    task =>
-                    {
-                        try
-                        {
-                            task.Wait();
-                        }
-                        catch (Exception err)
-                        {
-                            Trace.TraceError($"Transcript logActivity failed with {err}");
-                        }
-                    },
-                    cancellationToken);
-#pragma warning restore 4014
+                // Add the logging task to the list (we don't call await here, we await all the calls together later).
+                logTasks.Add(TryLogActivityAsync(_logger, activity));
+            }
+
+            if (logTasks.Any())
+            {
+                // Wait for all the activities to be logged before continuing.
+                await Task.WhenAll(logTasks).ConfigureAwait(false);
+            }
+        }
+
+        private static async Task TryLogActivityAsync(ITranscriptLogger logger, IActivity activity)
+        {
+            try
+            {
+                await logger.LogActivityAsync(activity).ConfigureAwait(false);
+            }
+#pragma warning disable CA1031 // Do not catch general exception types (this should probably be addressed later, but for now we just log the error and continue the execution)
+            catch (Exception ex)
+#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
+            {
+                Trace.TraceError($"Transcript logActivity failed with {ex}");
             }
         }
 
@@ -145,7 +154,7 @@ namespace Microsoft.Bot.Builder
 
             if (activity == null)
             {
-                throw new ArgumentNullException("Cannot check or add Id on a null Activity.");
+                throw new ArgumentNullException(nameof(activity), "Cannot check or add Id on a null Activity.");
             }
 
             if (activity.Id == null)
@@ -157,7 +166,7 @@ namespace Microsoft.Bot.Builder
             return activityWithId;
         }
 
-        private void LogActivity(Queue<IActivity> transcript, IActivity activity)
+        private static void LogActivity(Queue<IActivity> transcript, IActivity activity)
         {
             if (activity.Timestamp == null)
             {

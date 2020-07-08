@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Streaming
 {
     internal class StreamingHttpClient : HttpClient
     {
-        private StreamingRequestHandler _requestHandler;
+        private readonly StreamingRequestHandler _requestHandler;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -29,19 +29,19 @@ namespace Microsoft.Bot.Builder.Streaming
             _logger = logger ?? NullLogger.Instance;
         }
 
-        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var streamingRequest = new StreamingRequest
             {
-                Path = request.RequestUri.OriginalString.Substring(request.RequestUri.OriginalString.IndexOf("/v3")),
+                Path = request.RequestUri.OriginalString.Substring(request.RequestUri.OriginalString.IndexOf("/v3", StringComparison.Ordinal)),
                 Verb = request.Method.ToString(),
             };
             streamingRequest.SetBody(request.Content);
 
-            return await this.SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken).ConfigureAwait(false);
+            return await SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<ReceiveResponse> SendAsync(StreamingRequest streamingRequest, CancellationToken cancellationToken = default) => await this._requestHandler.SendStreamingRequestAsync(streamingRequest, cancellationToken).ConfigureAwait(false);
+        public async Task<ReceiveResponse> SendAsync(StreamingRequest streamingRequest, CancellationToken cancellationToken = default) => await _requestHandler.SendStreamingRequestAsync(streamingRequest, cancellationToken).ConfigureAwait(false);
 
         private async Task<T> SendRequestAsync<T>(StreamingRequest request, CancellationToken cancellation = default)
         {
@@ -59,9 +59,11 @@ namespace Microsoft.Bot.Builder.Streaming
                     return serverResponse.ReadBodyAsJson<T>();
                 }
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we just log the exception and continue)
             catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
-                this._logger.LogError(ex.ToString());
+                _logger.LogError(ex.ToString());
             }
 
             return default;

@@ -24,7 +24,7 @@
             ]
         },
         "outputFormat": {
-            "$ref": "schema:#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/expression",
             "title": "Output format",
             "description": "Expression to use for formatting the output.",
             "examples": [

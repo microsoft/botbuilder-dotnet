@@ -18,8 +18,15 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
     /// </summary>
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
+        /// <summary>
+        /// Constant key used for storing activity information in turn state.
+        /// </summary>
         public static readonly string BotActivityKey = "BotBuilderActivity";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryBotIdInitializer"/> class.
+        /// </summary>
+        /// <param name="telemetry">The telemetry item to be logged to Application Insights.</param>
         public void Initialize(ITelemetry telemetry)
         {
             var httpContext = HttpContext.Current;
@@ -80,7 +87,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
             }
         }
 
-        private void CacheBody()
+        private static void CacheBody()
         {
             var httpContext = HttpContext.Current;
             var request = httpContext.Request;

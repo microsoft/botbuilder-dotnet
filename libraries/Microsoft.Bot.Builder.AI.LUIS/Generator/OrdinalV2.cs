@@ -47,8 +47,19 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         public static class Anchor
         {
+            /// <summary>
+            /// Constant for Offset anchor type of Current.
+            /// </summary>
             public const string Current = "current";
+
+            /// <summary>
+            /// Constant for Offset anchor type of End.
+            /// </summary>
             public const string End = "end";
+
+            /// <summary>
+            /// Constant for Offset anchor type of Start.
+            /// </summary>
             public const string Start = "start";
         }
     }

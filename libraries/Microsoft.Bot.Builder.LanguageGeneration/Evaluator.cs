@@ -23,9 +23,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public const string LGType = "lgType";
 
-        // PCRE: (?<!\\)\${(('(\\('|\\)|[^'])*?')|("(\\("|\\)|[^"])*?")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'"`])|({\s*}))+}?
-        public static readonly string RegexString = @"(?<!\\)\${(('(\\('|\\)|[^'])*?')|(""(\\(""|\\)|[^""])*?"")|(`(\\(`|\\)|[^`])*?`)|([^\r\n{}'""`])|({\s*}))+}?";
-        public static readonly Regex ExpressionRecognizeRegex = new Regex(RegexString, RegexOptions.Compiled);
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions lgOptions;
@@ -431,7 +428,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 CheckExpressionResult(exp, error, result, templateName, lineContent, errorPrefix);
             }
-            else if (result == null && lgOptions.StrictMode != false)
+            else if (result == null && lgOptions.StrictMode != true)
             {
                 result = "null";
             }
@@ -472,21 +469,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (this.TemplateMap.ContainsKey(templateName))
             {
-                return new ExpressionEvaluator(templateName, ExpressionFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
+                return new ExpressionEvaluator(templateName, FunctionUtils.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
             }
 
             const string template = "template";
 
             if (name.Equals(template))
             {
-                return new ExpressionEvaluator(template, ExpressionFunctions.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
+                return new ExpressionEvaluator(template, FunctionUtils.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
             }
 
             const string fromFile = "fromFile";
 
             if (name.Equals(fromFile))
             {
-                return new ExpressionEvaluator(fromFile, ExpressionFunctions.Apply(this.FromFile()), ReturnType.String, ExpressionFunctions.ValidateUnaryString);
+                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, FunctionUtils.ValidateUnaryString);
             }
 
             const string activityAttachment = "ActivityAttachment";
@@ -495,20 +492,37 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return new ExpressionEvaluator(
                     activityAttachment,
-                    ExpressionFunctions.Apply(this.ActivityAttachment()),
+                    FunctionUtils.Apply(this.ActivityAttachment()),
                     ReturnType.Object,
-                    (expr) => ExpressionFunctions.ValidateOrder(expr, null, ReturnType.Object, ReturnType.String));
+                    (expr) => FunctionUtils.ValidateOrder(expr, null, ReturnType.Object, ReturnType.String));
             }
 
             const string isTemplate = "isTemplate";
 
             if (name.Equals(isTemplate))
             {
-                return new ExpressionEvaluator(isTemplate, ExpressionFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
+                return new ExpressionEvaluator(isTemplate, FunctionUtils.Apply(this.IsTemplate()), ReturnType.Boolean, FunctionUtils.ValidateUnaryString);
+            }
+
+            const string expandText = "expandText";
+
+            if (name.Equals(expandText))
+            {
+                return new ExpressionEvaluator(expandText, FunctionUtils.Apply(this.ExpandText()), ReturnType.Object, FunctionUtils.ValidateUnaryString);
             }
 
             return null;
         };
+
+        private Func<IReadOnlyList<object>, object> ExpandText()
+       => (IReadOnlyList<object> args) =>
+       {
+           var stringContent = args[0].ToString();
+           
+           var newScope = evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
+           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+           return newTemplates.EvaluateText(stringContent, newScope, lgOptions);
+       };
 
         private Func<IReadOnlyList<object>, object> IsTemplate()
        => (IReadOnlyList<object> args) =>
@@ -536,9 +550,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
 
-           var evaluator = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-           var result = ExpressionRecognizeRegex.Replace(stringContent, evaluator);
-           return result.Escape();
+           var newScope = evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
+           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+           return newTemplates.EvaluateText(stringContent, newScope, lgOptions);
        };
 
         private string GetResourcePath(string filePath)
@@ -578,7 +592,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         // Validator for template(...)
         private void ValidateTemplateFunction(Expression expression)
         {
-            ExpressionFunctions.ValidateAtLeastOne(expression);
+            FunctionUtils.ValidateAtLeastOne(expression);
 
             var children0 = expression.Children[0];
 

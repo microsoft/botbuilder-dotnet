@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -64,7 +66,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             /// <summary>
             /// Json Array of activity objects to send to the user
             /// </summary>
-            Activities
+            Activities,
+
+            /// <summary>
+            /// Binary data parsing from http response content
+            /// </summary>
+            Binary
         }
 
         /// <summary>
@@ -124,7 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the content type for the body of the http operation.
         /// </summary>
-        /// <value>Content type such as "application/json" or "test/plain".  Default is "application/json".</value>
+        /// <value>Content type such as "application/json" or "text/plain".  Default is "application/json".</value>
         [DefaultValue("application/json")]
         [JsonProperty("contentType")]
         public StringExpression ContentType { get; set; } = "application/json";
@@ -189,7 +196,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var client = new HttpClient();
+            var client = dc.Context.TurnState.Get<HttpClient>() ?? new HttpClient();
 
             // Single command running with a copy of the original data
             client.DefaultRequestHeaders.Clear();
@@ -217,7 +224,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Bind each string token to the data in state
             if (instanceBody != null)
             {
-                await ReplaceJTokenRecursivelyAsync(dc, instanceBody, cancellationToken).ConfigureAwait(false);
+                instanceBody = await ReplaceJTokenRecursivelyAsync(dc.State, instanceBody, cancellationToken).ConfigureAwait(false);
             }
 
             // Set headers
@@ -314,7 +321,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 case ResponseTypes.Activities:
                     var activities = JsonConvert.DeserializeObject<Activity[]>((string)content);
-                    requestResult.Content = JObject.FromObject(activities);
+                    requestResult.Content = JArray.FromObject(activities);
                     await dc.Context.SendActivitiesAsync(activities, cancellationToken: cancellationToken).ConfigureAwait(false);
                     break;
 
@@ -332,6 +339,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     requestResult.Content = content;
                     break;
 
+                case ResponseTypes.Binary:
+                    // Try to resolve binary data
+                    var bytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                    requestResult.Content = bytes;
+                    break;
+                   
                 case ResponseTypes.None:
                 default:
                     break;
@@ -356,14 +369,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return $"{this.GetType().Name}[{Method} {Url?.ToString()}]";
         }
 
-        private async Task ReplaceJTokenRecursivelyAsync(DialogContext dc, JToken token, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<JToken> ReplaceJTokenRecursivelyAsync(object state, JToken token, CancellationToken cancellationToken = default(CancellationToken))
         {
             switch (token.Type)
             {
                 case JTokenType.Object:
-                    foreach (var child in token.Children<JProperty>())
+                    // NOTE: ToList() is required because JToken.Replace will break the enumeration.
+                    foreach (var child in token.Children<JProperty>().ToList())
                     {
-                        await ReplaceJTokenRecursivelyAsync(dc, child, cancellationToken).ConfigureAwait(false);
+                        child.Replace(await ReplaceJTokenRecursivelyAsync(state, child, cancellationToken).ConfigureAwait(false));
                     }
 
                     break;
@@ -372,30 +386,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     // NOTE: ToList() is required because JToken.Replace will break the enumeration.
                     foreach (var child in token.Children().ToList())
                     {
-                        await ReplaceJTokenRecursivelyAsync(dc, child, cancellationToken).ConfigureAwait(false);
+                        child.Replace(await ReplaceJTokenRecursivelyAsync(state, child, cancellationToken).ConfigureAwait(false));
                     }
 
                     break;
 
                 case JTokenType.Property:
-                    await ReplaceJTokenRecursivelyAsync(dc, ((JProperty)token).Value, cancellationToken).ConfigureAwait(false);
+                    JProperty property = (JProperty)token;
+                    property.Value = await ReplaceJTokenRecursivelyAsync(state, property.Value, cancellationToken).ConfigureAwait(false);
                     break;
 
                 default:
                     if (token.Type == JTokenType.String)
                     {
-                        var text = token.ToString();
-
                         // if it is a "{bindingpath}" then run through expression parser and treat as a value
-                        var (result, error) = new ValueExpression(text).TryGetValue(dc.State);
+                        var (result, error) = new ValueExpression(token).TryGetValue(state);
                         if (error == null)
                         {
-                            token.Replace(JToken.FromObject(result));
+                            token = JToken.FromObject(result);
                         }
                     }
 
                     break;
             }
+
+            return token;
         }
 
         /// <summary>
