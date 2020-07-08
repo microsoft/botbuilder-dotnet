@@ -23,11 +23,19 @@ namespace Microsoft.BotBuilderSamples.DialogEchoSkillBot.Bots
             }
             else
             {
-                var messageText = $"Echo (dotnet core 3.1) : {turnContext.Activity.Text}";
+                var messageText = $"Echo: {turnContext.Activity.Text}";
                 await turnContext.SendActivityAsync(MessageFactory.Text(messageText, messageText, InputHints.IgnoringInput), cancellationToken);
                 messageText = "Say \"end\" or \"stop\" and I'll end the conversation and back to the parent.";
                 await turnContext.SendActivityAsync(MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput), cancellationToken);
             }
+        }
+
+        protected override Task OnEndOfConversationActivityAsync(ITurnContext<IEndOfConversationActivity> turnContext, CancellationToken cancellationToken)
+        {
+            // This will be called if the root bot is ending the conversation.  Sending additional messages should be
+            // avoided as the conversation may have been deleted.
+            // Perform cleanup of resources if needed.
+            return Task.CompletedTask;
         }
     }
 }

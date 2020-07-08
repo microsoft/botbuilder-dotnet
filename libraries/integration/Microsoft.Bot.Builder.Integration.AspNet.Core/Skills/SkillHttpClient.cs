@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <param name="activity">The activity to send.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>Async task with invokeResponse.</returns>
-        public async Task<InvokeResponse<T>> PostActivityAsync<T>(string originatingAudience, string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
+        public virtual async Task<InvokeResponse<T>> PostActivityAsync<T>(string originatingAudience, string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
             string skillConversationId;
             try
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <param name="activity">activity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>Async task with optional invokeResponse.</returns>
-        public async Task<InvokeResponse> PostActivityAsync(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
+        public virtual async Task<InvokeResponse> PostActivityAsync(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
             return await PostActivityAsync<object>(fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
         }
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <typeparam name="T">type of the <see cref="InvokeResponse"/> result.</typeparam>
         /// <returns>Async task with optional invokeResponse of type T.</returns>
-        public async Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
+        public virtual async Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
             var originatingAudience = ChannelProvider != null && ChannelProvider.IsGovernment() ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope : AuthenticationConstants.ToChannelFromBotOAuthScope;
             return await PostActivityAsync<T>(originatingAudience, fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);

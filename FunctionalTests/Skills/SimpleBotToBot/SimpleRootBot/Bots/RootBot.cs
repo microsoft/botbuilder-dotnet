@@ -116,6 +116,9 @@ namespace Microsoft.BotBuilderSamples.SimpleRootBot.Bots
 
             // We are back at the root
             await turnContext.SendActivityAsync(MessageFactory.Text("Back in the root bot. Say \"skill\" and I'll patch you through"), cancellationToken);
+
+            // Save conversation state
+            await _conversationState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
         }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
@@ -124,7 +127,7 @@ namespace Microsoft.BotBuilderSamples.SimpleRootBot.Bots
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text("Hello and welcome! (dotnet core 3.1)"), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text("Hello and welcome!"), cancellationToken);
                 }
             }
         }
