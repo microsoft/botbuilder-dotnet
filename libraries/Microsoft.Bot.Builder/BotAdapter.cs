@@ -218,16 +218,11 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivityAsync()
             if (turnContext.Activity != null)
             {
-                try
+                if (turnContext.Activity.Locale != null)
                 {
                     Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
+                    (turnContext as TurnContext).Locale = turnContext.Activity.Locale;
                 }
-#pragma warning disable CA1031 // Do not catch general exception types
-                catch
-                {
-                    // do nothing if locale is null or illegal locale string
-                }
-#pragma warning restore CA1031 // Do not catch general exception types
 
                 try
                 {

@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -23,24 +25,30 @@ namespace AdaptiveExpressions.BuiltinFunctions
             object value = null;
             string error = null;
             IReadOnlyList<object> args;
+            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
+            var format = FunctionUtils.DefaultDateTimeFormat;
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
             if (error == null)
             {
-                var format = (args.Count() == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
+                (format, locale, error) = FunctionUtils.DetermineFormatAndLocale(args, format, locale, 4);
+            }
+
+            if (error == null)
+            {
                 if (args[1] is string targetTimeZone)
                 {
-                    (value, error) = EvalConvertFromUTC(args[0], targetTimeZone, format);
+                    (value, error) = EvalConvertFromUTC(args[0], targetTimeZone, format, locale);
                 }
                 else
                 {
-                    error = $"{expression} should contain an ISO format timestamp, a destination time zone string and an optional output format string.";
+                    error = $"{expression} should contain an ISO format timestamp, a destination time zone string, an optional output format string and an optional locale string.";
                 }
             }
 
             return (value, error);
         }
 
-        private static (string, string) EvalConvertFromUTC(object utcTimestamp, string timezone, string format)
+        private static (string, string) EvalConvertFromUTC(object utcTimestamp, string timezone, string format, CultureInfo locale)
         {
             string error = null;
             string result = null;
@@ -60,16 +68,16 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 if (error == null)
                 {
                     var convertedDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDt, (TimeZoneInfo)convertedTimeZone);
-                    (result, error) = FunctionUtils.ReturnFormatTimeStampStr(convertedDateTime, format);
+                    (result, error) = FunctionUtils.ReturnFormatTimeStampStr(convertedDateTime, format, locale);
                 }
             }
-
+             
             return (result, error);
         }
 
         private static void Validator(Expression expression)
         {
-            FunctionUtils.ValidateArityAndAnyType(expression, 2, 3, ReturnType.String);
+            FunctionUtils.ValidateArityAndAnyType(expression, 2, 4, ReturnType.String);
         }
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -19,21 +20,27 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.ApplyWithError(
-                        args =>
+            return FunctionUtils.ApplyWithOptionsAndError(
+                        (args, options) =>
                         {
                             object result = null;
                             string error = null;
                             var timestamp = args[0];
-                            if (timestamp.IsInteger())
+                            var format = FunctionUtils.DefaultDateTimeFormat;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
+                            (format, locale, error) = FunctionUtils.DetermineFormatAndLocale(args, format, locale, 3);
+                            if (error == null)
                             {
-                                var ticks = Convert.ToInt64(timestamp);
-                                var dateTime = new DateTime(ticks);
-                                result = dateTime.ToString(args.Count() == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
-                            }
-                            else
-                            {
-                                error = $"formatTicks first arugment {timestamp} must be an integer";
+                                if (timestamp.IsInteger())
+                                {
+                                    var ticks = Convert.ToInt64(timestamp);
+                                    var dateTime = new DateTime(ticks);
+                                    result = dateTime.ToString(format, locale);
+                                }
+                                else
+                                {
+                                    error = $"formatTicks first arugment {timestamp} must be an integer";
+                                }
                             }
 
                             return (result, error);
@@ -42,7 +49,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static void Validator(Expression expression)
         {
-            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Number);
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String, ReturnType.String }, ReturnType.Number);
         }
     }
 }
