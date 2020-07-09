@@ -229,7 +229,6 @@ namespace Microsoft.Bot.Builder
                     catch
                     {
                         // if turnContext.Activity.Locale is illegal, then TurnContext.Locale will set to en-US as default. 
-                        Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
                         (turnContext as TurnContext).Locale = "en-US";
                     }
 #pragma warning restore CA1031 // Do not catch general exception types
