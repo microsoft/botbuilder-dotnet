@@ -74,8 +74,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private const string DefaultCardNoMatchText = "None of the above.";
         private const string DefaultCardNoMatchResponse = "Thanks for the feedback.";
 
-        private float _maximumScoreForLowScoreVariation = 0.95F;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
         /// </summary>
@@ -479,8 +477,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             stepContext.Values[ValueProperty.QnAData] = new List<QueryResult>(response.Answers);
 
             // Check if active learning is enabled.
-            // _maximumScoreForLowScoreVariation is the score above which no need to check for feedback.
-            if (response.Answers.Any() && response.Answers.First().Score <= _maximumScoreForLowScoreVariation)
+            // MaximumScoreForLowScoreVariation is the score above which no need to check for feedback.
+            if (response.Answers.Any() && response.Answers.First().Score <= ActiveLearningUtils.MaximumScoreForLowScoreVariation / 100)
             {
                 // Get filtered list of the response that support low score variation criteria.
                 response.Answers = qnaClient.GetLowScoreVariation(response.Answers);
