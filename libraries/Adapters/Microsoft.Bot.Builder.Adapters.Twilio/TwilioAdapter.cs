@@ -231,7 +231,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
             using (var context = new TurnContext(this, request))
             {
-                context.AppId = botId;
+                context.AppId = _options.AppId ?? botId;
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
         }
