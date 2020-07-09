@@ -11,38 +11,15 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.isVip",
-                        "value": "=true"
+                        "value": true
                     },
+                    "SwitchBool",
                     {
-                        "$kind": "Microsoft.SwitchCondition",
-                        "condition": "user.isVip",
-                        "default": [
-                            {
-                                "$kind": "Microsoft.SendActivity",
-                                "activity": "Who are you?"
-                            }
-                        ],
-                        "cases": [
-                            {
-                                "value": "true",
-                                "actions": [
-                                    {
-                                        "$kind": "Microsoft.SendActivity",
-                                        "activity": "User is VIP"
-                                    }
-                                ]
-                            },
-                            {
-                                "value": "false",
-                                "actions": [
-                                    {
-                                        "$kind": "Microsoft.SendActivity",
-                                        "activity": "User is NOT VIP"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.isVip",
+                        "value": "=false"
+                    },
+                    "SwitchBool"
                 ]
             }
         ],
@@ -57,6 +34,10 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "User is VIP"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "User is NOT VIP"
         }
     ]
 }

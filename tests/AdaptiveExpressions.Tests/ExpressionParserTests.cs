@@ -115,6 +115,25 @@ namespace AdaptiveExpressions.Tests
             { "unixTimestamp", 1521118800 },
             { "unixTimestampFraction", 1521118800.5 },
             { "ticks", 637243624200000000 },
+            { 
+                "json1", @"{
+                          'FirstName': 'John',
+                          'LastName': 'Smith',
+                          'Enabled': false,
+                          'Roles': [ 'User' ]
+                        }"
+            },
+            { 
+                "json2", @"{
+                          'Enabled': true,
+                          'Roles': [ 'Customer', 'Admin' ]
+                        }"
+            },
+            {
+                "json3", @"{
+                          'Age': 36,
+                        }"
+            },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
             {
                 "jsonStr", @"{
@@ -648,7 +667,7 @@ namespace AdaptiveExpressions.Tests
             Test("formatNumber(12.123, 2)", "12.12"),
             Test("formatNumber(1.551, 2)", "1.55"),
             Test("formatNumber(12.123, 4)", "12.1230"),
-            Test("formatNumber(12000.3, 4, 'fr-fr')", "12\x00a0000,3000"),
+            Test("formatNumber(12000.3, 4, 'fr-fr') == '12\x00A0000,3000' || formatNumber(12000.3, 4, 'fr-fr') == '12\x202F000,3000'", true),
             #endregion
 
             #region  Math functions test
@@ -922,6 +941,8 @@ namespace AdaptiveExpressions.Tests
             Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
             Test("setProperty({}, 'name', user.nickname).name", "John"),
             Test("addProperty({}, 'name', user.name).name", null),
+            Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"]}"),
+            Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"],\"Age\":36}"),
             #endregion
 
             #region  Memory access
@@ -1047,7 +1068,7 @@ namespace AdaptiveExpressions.Tests
             var cultureList = new List<string>() { "de-DE", "fr-FR", "es-ES" };
             foreach (var newCultureInfo in cultureList)
             {
-                var originalCuture = Thread.CurrentThread.CurrentCulture;
+                var originalCulture = Thread.CurrentThread.CurrentCulture;
                 Thread.CurrentThread.CurrentCulture = new CultureInfo(newCultureInfo);
                 var parsed = Expression.Parse(input);
                 Assert.NotNull(parsed);
@@ -1057,7 +1078,7 @@ namespace AdaptiveExpressions.Tests
                 if (expectedRefs != null)
                 {
                     var actualRefs = parsed.References();
-                    Assert.True(expectedRefs.SetEquals(actualRefs));
+                    Assert.True(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} actual: {string.Join(',', actualRefs)}");
                 }
 
                 // ToString re-parse
@@ -1065,7 +1086,7 @@ namespace AdaptiveExpressions.Tests
                 var newActual = newExpression.TryEvaluate(scope).value;
                 AssertObjectEquals(actual, newActual);
 
-                Thread.CurrentThread.CurrentCulture = originalCuture;
+                Thread.CurrentThread.CurrentCulture = originalCulture;
             }
         }
 
@@ -1102,22 +1123,22 @@ namespace AdaptiveExpressions.Tests
 
             // normal case, note, we doesn't append a " yet
             var exp = Expression.Parse("a[f].b[n].z");
-            var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            var (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("a['foo'].b[2].z", path);
 
             // normal case
             exp = Expression.Parse("a[z.z][z.z].y");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("a['zar']['zar'].y", path);
 
             // normal case
             exp = Expression.Parse("a.b[z.z]");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("a.b['zar']", path);
 
             // stop evaluate at middle
             exp = Expression.Parse("json(x).b");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("b", path);
         }
 

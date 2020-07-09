@@ -8,6 +8,19 @@
 > ---------------------Normal card samples-------------------------------
 > -----------------------------------------------------------------------
 
+# customizedCardActionActivity
+[Activity
+  Attachments = ${customizedCardActionType()}
+]
+
+# customizedCardActionType
+[CardAction
+    Type = yyy
+    Title = title
+    Value = value
+    Text = text
+]
+
 ﻿# HeroCardTemplate(type)
 [HeroCard 
         title=Cheese gromit!
@@ -84,12 +97,11 @@
         Title=Animation Card
         Subtitle=look at it animate 
         autostart=true
-        autoloop=true
-        Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
-        Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
-        Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
-        Media=http://oi42.tinypic.com/1rchlx.jpg
+        autoloop=${true}
+        Image= ${{url:'https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png'}}
+        Media= ${{url:'http://oi42.tinypic.com/1rchlx.jpg'}}
 ]
+
 
 > ------------------------Activity samples----------------------------
 > Various types of activities. Support all activity types, including:
@@ -102,6 +114,12 @@
     Name = ${text}
     Value = ${text}
     Type = event
+]
+
+# customizedActivityType
+[Activity
+    type = xxx
+    Name = hi
 ]
 
 # handoffActivity(text)
