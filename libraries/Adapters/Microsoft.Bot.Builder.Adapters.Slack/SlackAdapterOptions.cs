@@ -15,5 +15,17 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// A value indicating whether the signatures of incoming requests should be verified.
         /// </value>
         public bool VerifyIncomingRequests { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value for an Id used to represent your bot application and
+        /// it should be consistent across all adapters. If you are using Azure Bot Service
+        /// channels then you should use your MicrosoftAppId.
+        /// </summary>
+        /// <value>
+        /// A value for an Id used to represent your bot application and
+        /// it should be consistent across all adapters. If you are using Azure Bot Service
+        /// channels then you should use your MicrosoftAppId.
+        /// </value>
+        public string AppId { get; set; } = null;
     }
 }
