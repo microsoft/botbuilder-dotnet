@@ -1,0 +1,67 @@
+﻿{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.Test.IPropertyMock)",
+    "title": "Mock Properties",
+    "description": "Mock one or more property values.",
+    "type": "object",
+    "required": [
+        "assignments"
+    ],
+    "properties": {
+        "assignments": {
+            "type": "array",
+            "title": "Assignments",
+            "description": "Property assignments as property=value pairs. In first match first use order.",
+            "items": {
+                "type": "object",
+                "title": "Property Assignment",
+                "description": "Property Assignment (used in PropertiesMock).",
+                "properties": {
+                    "property": {
+                        "type": "string",
+                        "title": "Property",
+                        "description": "A property path.",
+                        "examples": [
+                            "settings.connectionName",
+                            "user.name",
+                            "conversation.destination"
+                        ]
+                    },
+                    "value": {
+                        "title": "Value",
+                        "description": "The value. In settings, it could only be string.",
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "title": "String value",
+                                "description": "Use string as value.",
+                                "examples": [
+                                    "Graph"
+                                ]
+                            },
+                            {
+                                "type": "number",
+                                "title": "Number value",
+                                "description": "Use number as value.",
+                                "examples": [
+                                    1,
+                                    2.0
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "title": "Object value",
+                                "description": "Use object as value.",
+                                "examples": [
+                                    {
+                                        "city": "Seattle"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

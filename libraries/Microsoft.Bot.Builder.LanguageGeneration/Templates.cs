@@ -402,7 +402,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     if (curTemplates.Any(u => u.Name == templateName))
                     {
                         var newGlobalName = $"{curTemplates.Namespace}.{templateName}";
-                        Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, ExpressionFunctions.Apply(this.GlobalTemplateFunction(templateName)), ReturnType.Object));
+                        Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, FunctionUtils.Apply(this.GlobalTemplateFunction(templateName)), ReturnType.Object));
                     }
                 }
             }

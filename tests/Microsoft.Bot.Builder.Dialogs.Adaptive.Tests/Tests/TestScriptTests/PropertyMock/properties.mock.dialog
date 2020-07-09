@@ -1,0 +1,70 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.PropertiesMock",
+    "assignments": [
+        {
+            "property": "settings.fileoverwrite",
+            "value": "overwrite settings.fileoverwrite"
+        },
+        {
+            "property": "settings.baseoverwrite",
+            "value": "overwrite settings.baseoverwrite"
+        },
+        {
+            "property": "settings.selfoverwrite",
+            "value": "overwrite settings.selfoverwrite"
+        },
+        {
+            "property": "settings.selfoverwrite",
+            "value": "this is overwritten"
+        },
+        {
+            "property": "settings.object.property",
+            "value": "set settings.object"
+        },
+        {
+            "property": "user.baseoverwrite",
+            "value": "overwrite user.baseoverwrite"
+        },
+        {
+            "property": "user.selfoverwrite",
+            "value": "overwrite user.selfoverwrite"
+        },
+        {
+            "property": "user.selfoverwrite",
+            "value": "this is overwritten"
+        },
+        {
+            "property": "user.number",
+            "value": 123
+        },
+        {
+            "property": "user.object.property",
+            "value": {
+                "value": "set user.object"
+            }
+        },
+        {
+            "property": "conversation.baseoverwrite",
+            "value": "overwrite conversation.baseoverwrite"
+        },
+        {
+            "property": "conversation.selfoverwrite",
+            "value": "overwrite conversation.selfoverwrite"
+        },
+        {
+            "property": "conversation.selfoverwrite",
+            "value": "this is overwritten"
+        },
+        {
+            "property": "conversation.number",
+            "value": 234
+        },
+        {
+            "property": "conversation.object.property",
+            "value": {
+                "value": "set conversation.object"
+            }
+        }
+    ]
+}

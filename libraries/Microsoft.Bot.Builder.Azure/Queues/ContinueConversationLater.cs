@@ -26,15 +26,23 @@ namespace Microsoft.Bot.Builder.Azure.Queues
     ///   - processing the activity directly via adapter.ProcessActivity(activity, ...); 
     ///     NOTE: adapter.ProcessActivity() understands that EventActivity(Name=ConversationUpdate) should be processed as ContinueConversation() pipeline.
     /// 
-    /// This dialog returns the reciept information for the queued activity as the result of the dialog.
+    /// This dialog returns the receipt information for the queued activity as the result of the dialog.
     /// </remarks>
     public class ContinueConversationLater : Dialog
     {
+        /// <summary>
+        /// The Kind name for this dialog.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "AzureQueues.ContinueConversationLater";
 
         private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContinueConversationLater"/> class.
+        /// </summary>
+        /// <param name="callerPath">The full path of the source file that contains this called.</param>
+        /// <param name="callerLine">The line within the source file that contains this caller.</param>
         [JsonConstructor]
         public ContinueConversationLater([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -87,6 +95,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
         [JsonProperty("queueName")]
         public StringExpression QueueName { get; set; } = "activities";
 
+        /// <inheritdoc/>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
@@ -136,6 +145,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             return await dc.EndDialogAsync(result: reciept.Value, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}({Date?.ToString()}s)";

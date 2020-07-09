@@ -1,0 +1,106 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test UserTokenMock",
+    "userTokenMocks": [
+        "magiccode.mock",
+        "nomagiccode.mock"
+    ],
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.OAuthInput",
+                        "connectionName": "magiccode connection",
+                        "text": "Please sign in",
+                        "title": "Login",
+                        "property": "dialog.token"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.token.token}"
+                    },
+                    {
+                        "$kind": "Microsoft.OAuthInput",
+                        "connectionName": "nomagiccode connection",
+                        "text": "Please sign in",
+                        "title": "Login",
+                        "property": "dialog.token"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.token.token}"
+                    },
+                    {
+                        "$kind": "Microsoft.OAuthInput",
+                        "connectionName": "magiccode connection",
+                        "text": "Please sign in",
+                        "title": "Login",
+                        "property": "dialog.token"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "No prompt. ${dialog.token.token}"
+                    },
+                    {
+                        "$kind": "Microsoft.SignOutUser",
+                        "connectionName": "magiccode connection"
+                    },
+                    {
+                        "$kind": "Microsoft.OAuthInput",
+                        "connectionName": "magiccode connection",
+                        "text": "Please sign in",
+                        "title": "Login",
+                        "property": "dialog.token",
+                        "invalidPrompt": "Sign in failed."
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "attachments[0].contentType == 'application/vnd.microsoft.card.oauth'"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "000000"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "magiccode token"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "nomagiccode token"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "No prompt. magiccode token"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "attachments[0].contentType == 'application/vnd.microsoft.card.oauth'"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "000000"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Sign in failed."
+        }
+    ]
+}

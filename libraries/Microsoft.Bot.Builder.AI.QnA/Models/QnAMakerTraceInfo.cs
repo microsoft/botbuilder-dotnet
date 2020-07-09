@@ -103,7 +103,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
+        /// </summary>
+        /// <value>
+        /// An array of <see cref="Metadata"/>.
+        /// </value>
         [Obsolete("This property is no longer used and will be ignored")]
         [JsonIgnore]
         public Metadata[] MetadataBoost { get; set; }

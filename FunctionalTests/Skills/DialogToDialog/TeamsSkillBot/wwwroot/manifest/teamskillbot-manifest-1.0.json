@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schemas.botframework.com/schemas/skills/skill-manifest-2.0.0.json",
+  "$id": "TeamsSkillBot",
+  "name": "Skill bot for Teams",
+  "version": "1.0",
+  "description": "This is a of a bot with skills for teams",
+  "publisherName": "Microsoft",
+  "privacyUrl": "https://teamsskillbot.contoso.com/privacy.html",
+  "copyright": "Copyright (c) Microsoft Corporation. All rights reserved.",
+  "license": "",
+  "iconUrl": "https://teamsskillbot.contoso.com/icon.png",
+  "tags": [
+    "sample",
+    "teams"
+  ],
+  "endpoints": [
+    {
+      "name": "default",
+      "protocol": "BotFrameworkV3",
+      "description": "Default endpoint for the skill",
+      "endpointUrl": "http://teamsskillbot.contoso.com/api/messages",
+      "msAppId": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "activities": {
+    "taskModule": {
+      "description": "Task module sample.",
+      "type": "invoke",
+      "name": "TeamsTaskModule"
+    },
+    "cardAction": {
+      "description": "Card action sample.",
+      "type": "invoke",
+      "name": "TeamsCardAction"
+    }
+  }
+}
