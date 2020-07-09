@@ -33,7 +33,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     (timeConverter, error) = FunctionUtils.DateTimeConverter(Convert.ToInt64(args[1]), string2);
                     if (error == null)
                     {
-                        (value, error) = FunctionUtils.NormalizeToDateTime(args[0], dt => timeConverter(dt).ToString(format));
+                        (value, error) = FunctionUtils.NormalizeToDateTime(args[0], dt => (timeConverter(dt).ToString(format), null));
                     }
                 }
                 else

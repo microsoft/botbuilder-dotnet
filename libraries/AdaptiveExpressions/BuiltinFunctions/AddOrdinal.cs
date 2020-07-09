@@ -17,7 +17,20 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.Apply(args => EvalAddOrdinal(Convert.ToInt32(args[0])), FunctionUtils.VerifyInteger);
+            return FunctionUtils.ApplyWithError(
+                args => 
+                {
+                    object result = null;
+                    string error = null;
+                    var input = 0;
+                    (input, error) = FunctionUtils.ParseInt32(args[0]);
+                    if (error == null)
+                    {
+                        result = EvalAddOrdinal(input);
+                    }
+
+                    return (result, error);
+                }, FunctionUtils.VerifyInteger);
         }
 
         private static void Validator(Expression expression)
