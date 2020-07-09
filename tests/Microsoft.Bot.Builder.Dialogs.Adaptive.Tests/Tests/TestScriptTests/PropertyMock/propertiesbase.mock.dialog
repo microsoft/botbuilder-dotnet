@@ -1,0 +1,30 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.PropertiesMock",
+    "assignments": [
+        {
+            "property": "settings.base",
+            "value": "set settings.base"
+        },
+        {
+            "property": "settings.baseoverwrite",
+            "value": "this is overwritten"
+        },
+        {
+            "property": "user.base",
+            "value": "set user.base"
+        },
+        {
+            "property": "user.baseoverwrite",
+            "value": "this is overwritten"
+        },
+        {
+            "property": "conversation.base",
+            "value": "set conversation.base"
+        },
+        {
+            "property": "conversation.baseoverwrite",
+            "value": "this is overwritten"
+        }
+    ]
+}

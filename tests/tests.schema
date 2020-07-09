@@ -1,5 +1,5 @@
 {
-	"$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+	"$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
 	"type": "object",
 	"title": "Component kinds",
 	"description": "These are all of the kinds that can be created by the loader.",
@@ -315,6 +315,9 @@
 		},
 		{
 			"$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
+		},
+		{
+			"$ref": "#/definitions/Microsoft.Test.PropertiesMock"
 		},
 		{
 			"$ref": "#/definitions/Microsoft.Test.Script"
@@ -3732,7 +3735,8 @@
 								"none",
 								"json",
 								"activity",
-								"activities"
+								"activities",
+								"binary"
 							],
 							"default": "json"
 						},
@@ -4526,10 +4530,10 @@
 					"type": "string"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.LuisRecognizer"
+					"$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+					"$ref": "#/definitions/Microsoft.LuisRecognizer"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
@@ -8992,6 +8996,21 @@
 				}
 			]
 		},
+		"Microsoft.Test.IPropertyMock": {
+			"title": "Microsoft Test IPropertyMock",
+			"description": "Components which derive from PropertyMock class",
+			"$role": "interface",
+			"oneOf": [
+				{
+					"type": "string",
+					"title": "Reference to Microsoft.Test.IPropertyMock",
+					"description": "Reference to Microsoft.Test.IPropertyMock .dialog file."
+				},
+				{
+					"$ref": "#/definitions/Microsoft.Test.PropertiesMock"
+				}
+			]
+		},
 		"Microsoft.Test.ITestAction": {
 			"title": "Microsoft Test ITestAction",
 			"description": "Components which derive from TestAction class",
@@ -9043,6 +9062,92 @@
 				}
 			]
 		},
+		"Microsoft.Test.PropertiesMock": {
+			"$role": "implements(Microsoft.Test.IPropertyMock)",
+			"title": "Mock Properties",
+			"description": "Mock one or more property values.",
+			"type": "object",
+			"required": [
+				"assignments",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"assignments": {
+					"type": "array",
+					"title": "Assignments",
+					"description": "Property assignments as property=value pairs. In first match first use order.",
+					"items": {
+						"type": "object",
+						"title": "Property Assignment",
+						"description": "Property Assignment (used in PropertiesMock).",
+						"properties": {
+							"property": {
+								"type": "string",
+								"title": "Property",
+								"description": "A property path.",
+								"examples": [
+									"settings.connectionName",
+									"user.name",
+									"conversation.destination"
+								]
+							},
+							"value": {
+								"title": "Value",
+								"description": "The value. In settings, it could only be string.",
+								"oneOf": [
+									{
+										"type": "string",
+										"title": "String value",
+										"description": "Use string as value.",
+										"examples": [
+											"Graph"
+										]
+									},
+									{
+										"type": "number",
+										"title": "Number value",
+										"description": "Use number as value.",
+										"examples": [
+											1,
+											2
+										]
+									},
+									{
+										"type": "object",
+										"title": "Object value",
+										"description": "Use object as value.",
+										"examples": [
+											{
+												"city": "Seattle"
+											}
+										]
+									}
+								]
+							}
+						}
+					}
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.Test.PropertiesMock"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
 		"Microsoft.Test.Script": {
 			"$role": [],
 			"title": "Test Script",
@@ -9088,6 +9193,15 @@
 					"items": {
 						"$kind": "Microsoft.Test.IUserTokenMock",
 						"$ref": "#/definitions/Microsoft.Test.IUserTokenMock"
+					}
+				},
+				"propertyMocks": {
+					"type": "array",
+					"title": "Property Mocks",
+					"description": "A list of property mocks. In first match first use order.",
+					"items": {
+						"$kind": "Microsoft.Test.IPropertyMock",
+						"$ref": "#/definitions/Microsoft.Test.IPropertyMock"
 					}
 				},
 				"script": {

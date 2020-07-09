@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.InputDialog)" ],
     "title": "Date/time input dialog",
     "description": "Collect information - Ask for date and/ or time",
@@ -24,7 +24,7 @@
             ]
         },
         "outputFormat": {
-            "$ref": "schema:#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/expression",
             "title": "Output format",
             "description": "Expression to use for formatting the output.",
             "examples": [
