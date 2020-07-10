@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Cancel all dialogs",
     "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",

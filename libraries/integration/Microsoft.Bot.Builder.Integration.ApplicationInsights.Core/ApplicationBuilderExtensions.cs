@@ -6,8 +6,14 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 {
+    /// <summary>
+    /// ApplicationBuilder extension methods for use when registering Application Insights services at startup.
+    /// </summary>
     public static class ApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Constant key used for Application Insights Instrumentation Key.
+        /// </summary>
         public const string AppInsightsInstrumentationKey = "ApplicationInsights:InstrumentationKey";
 
         /// <summary>

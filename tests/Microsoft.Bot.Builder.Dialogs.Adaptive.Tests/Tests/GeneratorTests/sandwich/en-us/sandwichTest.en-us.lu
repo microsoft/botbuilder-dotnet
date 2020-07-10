@@ -1,0 +1,21 @@
+
+> !# @app.culture = en-us
+[sandwichTest-Quantity-number.en-us.lu](Quantity\sandwichTest-Quantity-number.en-us.lu)
+[sandwichTest-Length-dimension.en-us.lu](Length\sandwichTest-Length-dimension.en-us.lu)
+[sandwichTest-NameEntity.en-us.lu](Name\sandwichTest-NameEntity.en-us.lu)
+[sandwichTest-Name-personName.en-us.lu](Name\sandwichTest-Name-personName.en-us.lu)
+[sandwichTest-BreadEntity.en-us.lu](Bread\sandwichTest-BreadEntity.en-us.lu)
+[sandwichTest-MeatEntity.en-us.lu](Meat\sandwichTest-MeatEntity.en-us.lu)
+[sandwichTest-CheeseEntity.en-us.lu](Cheese\sandwichTest-CheeseEntity.en-us.lu)
+[sandwichTest-ToppingsEntity.en-us.lu](Toppings\sandwichTest-ToppingsEntity.en-us.lu)
+[sandwichTest-SaucesEntity.en-us.lu](Sauces\sandwichTest-SaucesEntity.en-us.lu)
+[sandwichTest-Price-money.en-us.lu](Price\sandwichTest-Price-money.en-us.lu)
+[sandwichTest-booleanEntity.en-us.lu](library\sandwichTest-booleanEntity.en-us.lu)
+[sandwichTest-library-HelpIntent.en-us.lu](library\sandwichTest-library-HelpIntent.en-us.lu)
+[sandwichTest-library-CancelIntent.en-us.lu](library\sandwichTest-library-CancelIntent.en-us.lu)
+[sandwichTest-library-NoneIntent.en-us.lu](library\sandwichTest-library-NoneIntent.en-us.lu)
+[sandwichTest-trigger.en-us.lu](library\sandwichTest-trigger.en-us.lu)
+[sandwichTest-library-ShowFormIntent.en-us.lu](library\sandwichTest-library-ShowFormIntent.en-us.lu)
+[sandwichTest-library-PROPERTYName.en-us.lu](library\sandwichTest-library-PROPERTYName.en-us.lu)
+
+> Generator: 22b19123f0666982bc0ce71074ca591c

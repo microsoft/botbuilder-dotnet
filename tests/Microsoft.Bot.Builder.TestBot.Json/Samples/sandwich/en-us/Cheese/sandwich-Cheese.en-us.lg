@@ -1,0 +1,18 @@
+
+[sandwich-CheeseEntity.en-us.lg](sandwich-CheeseEntity.en-us.lg)
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+[sandwich-library-Missing.en-us.lg](sandwich-library-Missing.en-us.lg)
+
+# AskCheese
+- ${askEnum('Cheese')}
+
+
+> How to display the name of Cheese
+# CheeseName
+- cheese
+
+# Cheese(val)
+- ${CheeseEntity(val)}
+
+
+> Generator: 2174fb941f4f7030a4dd605811090a46

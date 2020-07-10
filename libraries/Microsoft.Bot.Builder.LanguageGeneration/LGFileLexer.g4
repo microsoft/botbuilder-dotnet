@@ -17,8 +17,18 @@ COMMENT : WHITESPACE* '>' ~('\r'|'\n')* { !startTemplate }?;
 
 IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' WHITESPACE* { !startTemplate }?;
 
-TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { startTemplate = true; };
+TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { _tokenStartCharPositionInLine == 0}? { startTemplate = true; };
 
-TEMPLATE_BODY_LINE : ~('\r'|'\n')+ { startTemplate }?;
+MULTILINE_PREFIX: WHITESPACE* '-' WHITESPACE* '```' { startTemplate && _tokenStartCharPositionInLine == 0 }? -> pushMode(MULTILINE_MODE);
+
+TEMPLATE_BODY : ~('\r'|'\n')+ { startTemplate }?;
 
 INVALID_LINE :  ~('\r'|'\n')+ { !startTemplate }?;
+
+
+mode MULTILINE_MODE;
+MULTILINE_SUFFIX : '```' -> popMode;
+
+ESCAPE_CHARACTER : '\\' ~[\r\n]?;
+
+MULTILINE_TEXT : .+?;

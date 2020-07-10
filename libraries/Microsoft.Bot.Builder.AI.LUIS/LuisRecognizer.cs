@@ -22,6 +22,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisRecognizer : ITelemetryRecognizer
     {
+        /// <summary>
+        /// The declarative type for this recognizer.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string DeclarativeType = "Microsoft.LuisRecognizer";
 
@@ -123,6 +126,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
         }
 
+        /// <summary>
+        /// Gets the default HttpClient to be used when calling the LUIS API.
+        /// </summary>
+        /// <value>
+        /// A <see cref="HttpClient"/>.
+        /// </value>
         public static HttpClient DefaultHttpClient { get; private set; }
 
         /// <summary>
@@ -462,6 +471,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="predictionOptions">LuisRecognizerOptions implementation to override current properties.</param>
         /// <param name="telemetryProperties"> Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>RecognizerResult object.</returns>
         private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, LuisRecognizerOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {

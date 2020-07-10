@@ -1,0 +1,9 @@
+
+> How to display an QuantityEntiy value
+# QuantityEntity(val)
+ - IF: ${val}
+ - ${val}
+ - ELSE:
+ - no value
+
+> Generator: 539017f205508973a26a770d553ba0cb

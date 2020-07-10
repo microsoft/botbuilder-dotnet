@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
 
             IReadOnlyList<OnCondition> selections = matches;
-            if (Selector != null)
+            if (matches.Count > 0 && Selector != null)
             {
                 Selector.Initialize(matches, false);
                 selections = await Selector.SelectAsync(context, cancellationToken).ConfigureAwait(false);

@@ -1,18 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Version Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</Version>
-    <Version Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</Version>
+    <Version Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</Version>
     <PackageVersion Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</PackageVersion>
-    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Microsoft.Bot.Builder.Adapters.Twilio.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Bot.Builder.Adapters.Twilio</PackageId>
     <Description>Library for connecting bots with Twilio SMS API.</Description>
     <Summary>This library implements C# classes for Twilio adapter.</Summary>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -21,22 +27,11 @@
     <NoWarn>$(NoWarn),CS8002</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Microsoft.Bot.Builder.Adapters.Twilio.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>Full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Twilio" Version="5.33.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

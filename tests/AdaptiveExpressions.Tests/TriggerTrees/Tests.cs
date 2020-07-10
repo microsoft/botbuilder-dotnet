@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AdaptiveExpressions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace AdaptiveExpressions.TriggerTrees.Tests
 {
-    [TestClass]
     public class Tests
     {
         private readonly Generator _generator;
@@ -15,17 +13,17 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
             _generator = new Generator();
         }
 
-        [TestMethod]
+        [Fact]
         public void TestRoot()
         {
             var tree = new TriggerTree();
             tree.AddTrigger("true", "root");
             var matches = tree.Matches(new Dictionary<string, object>());
-            Assert.AreEqual(1, matches.Count());
-            Assert.AreEqual("root", matches.First().Action);
+            Assert.Single(matches);
+            Assert.Equal("root", matches.First().Action);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIgnore()
         {
             var tree = new TriggerTree();
@@ -35,12 +33,12 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
             tree.AddTrigger("exists(blah) && woof == 3 && ignore(!exists(foo2))", 2);
             var frame = new Dictionary<string, object> { { "blah", 1 }, { "woof", 3 } };
             var matches = tree.Matches(frame).ToList();
-            Assert.AreEqual(2, matches.Count);
-            Assert.AreEqual(2, matches[0].Action);
-            Assert.AreEqual(3, matches[1].Action);
+            Assert.Equal(2, matches.Count);
+            Assert.Equal(2, matches[0].Action);
+            Assert.Equal(3, matches[1].Action);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestOr()
         {
             var tree = new TriggerTree();
@@ -49,12 +47,12 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
             tree.AddTrigger("exists(blah) && exists(foo)", 3);
             var frame = new Dictionary<string, object> { { "blah", 1 }, { "woof", 3 } };
             var matches = tree.Matches(frame).ToList();
-            Assert.AreEqual(2, matches.Count);
-            Assert.AreEqual(1, matches[0].Action);
-            Assert.AreEqual(2, matches[1].Action);
+            Assert.Equal(2, matches.Count);
+            Assert.Equal(1, matches[0].Action);
+            Assert.Equal(2, matches[1].Action);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTrueFalse()
         {
             var tree = new TriggerTree();
@@ -66,17 +64,17 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
             var memory = new Dictionary<string, object>();
 
             var matches = tree.Matches(memory).ToList();
-            Assert.AreEqual(1, matches.Count);
-            Assert.AreEqual(4, matches[0].Action);
+            Assert.Single(matches);
+            Assert.Equal(4, matches[0].Action);
 
             memory.Add("blah", 1);
             matches = tree.Matches(memory).ToList();
-            Assert.AreEqual(2, matches.Count());
-            Assert.AreEqual(1, matches[0].Action);
-            Assert.AreEqual(3, matches[1].Action);
+            Assert.Equal(2, matches.Count());
+            Assert.Equal(1, matches[0].Action);
+            Assert.Equal(3, matches[1].Action);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTree()
         {
             var numPredicates = 100;
@@ -102,7 +100,7 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                 triggers.Add(tree.AddTrigger(predicate.Expression, predicate.Bindings));
             }
 
-            Assert.AreEqual(numSingletons, tree.TotalTriggers);
+            Assert.Equal(numSingletons, tree.TotalTriggers);
 
             // Add conjunctions and test matches
             var conjunctions = _generator.GenerateConjunctions(predicates, numConjunctions, minClause, maxClause);
@@ -117,15 +115,15 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                 var trigger = tree.AddTrigger(conjunction.Expression, conjunction.Bindings);
                 var matches = tree.Matches(memory);
                 triggers.Add(trigger);
-                Assert.IsTrue(matches.Count() >= 1);
+                Assert.True(matches.Count() >= 1);
                 var first = matches.First().Clauses.First();
                 foreach (var match in matches)
                 {
-                    Assert.AreEqual(RelationshipType.Equal, first.Relationship(match.Clauses.First(), tree.Comparers));
+                    Assert.Equal(RelationshipType.Equal, first.Relationship(match.Clauses.First(), tree.Comparers));
                 }
             }
 
-            Assert.AreEqual(numSingletons + numConjunctions, tree.TotalTriggers);
+            Assert.Equal(numSingletons + numConjunctions, tree.TotalTriggers);
 
             // Add disjunctions
             predicates.AddRange(conjunctions);
@@ -135,7 +133,7 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                 triggers.Add(tree.AddTrigger(disjunction.Expression, disjunction.Bindings));
             }
 
-            Assert.AreEqual(numSingletons + numConjunctions + numDisjunctions, tree.TotalTriggers);
+            Assert.Equal(numSingletons + numConjunctions + numDisjunctions, tree.TotalTriggers);
 
             var all = new List<ExpressionInfo>(predicates);
             all.AddRange(disjunctions);
@@ -147,7 +145,7 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                 triggers.Add(tree.AddTrigger(optional.Expression, optional.Bindings));
             }
 
-            Assert.AreEqual(numSingletons + numConjunctions + numDisjunctions + numOptionals, tree.TotalTriggers);
+            Assert.Equal(numSingletons + numConjunctions + numDisjunctions + numOptionals, tree.TotalTriggers);
             all.AddRange(optionals);
 
             // Add quantifiers
@@ -157,7 +155,7 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                 triggers.Add(tree.AddTrigger(expr.Expression, expr.Bindings, expr.Quantifiers.ToArray()));
             }
 
-            Assert.AreEqual(numSingletons + numConjunctions + numDisjunctions + numOptionals + numQuantifiers, tree.TotalTriggers);
+            Assert.Equal(numSingletons + numConjunctions + numDisjunctions + numOptionals + numQuantifiers, tree.TotalTriggers);
             all.AddRange(quantified);
 
             var nots = _generator.GenerateNots(all, numNots);
@@ -166,7 +164,7 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                 triggers.Add(tree.AddTrigger(expr.Expression, expr.Bindings, expr.Quantifiers.ToArray()));
             }
 
-            Assert.AreEqual(numSingletons + numConjunctions + numDisjunctions + numOptionals + numQuantifiers + numNots, tree.TotalTriggers);
+            Assert.Equal(numSingletons + numConjunctions + numDisjunctions + numOptionals + numQuantifiers + numNots, tree.TotalTriggers);
             all.AddRange(nots);
 
             VerifyTree(tree);
@@ -217,7 +215,7 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
                             }
                         }
 
-                        Assert.IsTrue(found);
+                        Assert.True(found);
                     }
                 }
             }
@@ -226,13 +224,13 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
             // tree.GenerateGraph("tree.dot");
 
             // Delete triggers
-            Assert.AreEqual(triggers.Count, tree.TotalTriggers);
+            Assert.Equal(triggers.Count, tree.TotalTriggers);
             foreach (var trigger in triggers)
             {
                 tree.RemoveTrigger(trigger);
             }
 
-            Assert.AreEqual(0, tree.TotalTriggers);
+            Assert.Equal(0, tree.TotalTriggers);
             VerifyTree(tree);
         }
 
@@ -246,7 +244,7 @@ namespace AdaptiveExpressions.TriggerTrees.Tests
         private void VerifyTree(TriggerTree tree)
         {
             var badNode = tree.VerifyTree();
-            Assert.AreEqual(null, badNode);
+            Assert.Null(badNode);
         }
     }
 }

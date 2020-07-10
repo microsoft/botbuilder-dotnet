@@ -1,0 +1,11 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.LuisRecognizer",
+	"applicationId": "=settings.luis.sandwichTest_en_us_lu",
+	"endpoint": "=settings.luis.endpoint",
+	"endpointKey": "=settings.luis.endpointKey",
+	"predictionOptions": {
+		"includeInstanceData": true
+	},
+	"$Generator": "f536ef5b798e992b05049bc44ef2aa8b"
+}

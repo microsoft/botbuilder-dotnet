@@ -9,7 +9,9 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     public static class Retry
     {
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<TResult> Run<TResult>(Func<Task<TResult>> task, Func<Exception, int, RetryParams> retryExceptionHandler)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             RetryParams retry;
             var exceptions = new List<Exception>();
@@ -21,10 +23,11 @@ namespace Microsoft.Bot.Connector.Authentication
                 {
                     return await task().ConfigureAwait(false);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (this is a generic catch all to handle retries)
                 catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     exceptions.Add(ex);
-
                     retry = retryExceptionHandler(ex, currentRetryCount);
                 }
 

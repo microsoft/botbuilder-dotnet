@@ -1,19 +1,13 @@
 ﻿#pragma warning disable SA1124 // Do not use regions
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using AdaptiveExpressions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace AdaptiveExpressions.Tests
 {
-    [TestClass]
     public class BadExpressionTests
     {
-        private TestContext testContextInstance;
-
         public static IEnumerable<object[]> SyntaxErrorExpressions => new[]
         {
             Test("hello world"),
@@ -87,6 +81,7 @@ namespace AdaptiveExpressions.Tests
             Test("addOrdinal(one)"), // should have Integer param
             Test("addOrdinal(one, two)"), // should have one param
             Test("newGuid(one)"), // should have no parameters
+            Test("EOL(one)"), // should have no parameters
             Test("indexOf(hello)"), // should have two parameters
             Test("indexOf(hello, world, one)"), // should have two parameters
             Test("indexOf(hello, one)"), // second parameter should be string
@@ -95,6 +90,10 @@ namespace AdaptiveExpressions.Tests
             Test("lastIndexOf(hello, world, one)"), // should have two parameters
             Test("lastIndexOf(hello, one)"), // second parameter should be string
             Test("lastIndexOf(one, hello)"), // first parameter should be list or string
+            Test("sentenceCase(hello, hello)"), // should have one parameters
+            Test("sentenceCase(one)"), // first parameter should be string
+            Test("titleCase(hello, hello)"), // should have one parameters
+            Test("titleCase(one)"), // first parameter should be string
             #endregion
 
             #region Logical comparison functions test
@@ -173,6 +172,16 @@ namespace AdaptiveExpressions.Tests
             Test("sum(items)"), //  should have number parameters
             Test("range(hello,one)"), // params should be integer
             Test("range(one,0)"), // the second param should be more than 0
+            Test("floor(hello)"), // should have a number parameter
+            Test("floor(1.2, 2.1)"), // should have one parameter
+            Test("ceiling(hello)"), // should have a number parameter
+            Test("ceiling(1.2, 2.1)"), // should have one parameter
+            Test("round(hello)"), // should have number parameters
+            Test("round(1.2, hello)"), // should have a number as the 2nd parameter
+            Test("round(1.2, 2.1)"), // should have integer as the 2nd parameter
+            Test("round(1.2, -2)"), // the 2nd parameter should not less than 0
+            Test("round(1.2, 16)"), // the 2nd parameter should not greater than 15
+            Test("round(1.2, 2, 3)"), // should have one or two number parameters
             #endregion
             
             #region Date and time function test
@@ -283,6 +292,12 @@ namespace AdaptiveExpressions.Tests
             Test("startOfMonth(notValidTimeStamp)"), // not valid timestamp
             Test("startOfMonth(timeStamp, 'A')"), // not valid format
             Test("ticks(notValidTimeStamp)"), // not valid timestamp
+            Test("ticksToDays(12.12)"), // not an integer
+            Test("ticksToHours(timestamp)"), // not an integer
+            Test("ticksToMinutes(timestamp)"), // not an integer
+            Test("dateTimeDiff(notValidTimeStamp,'2018-01-01T08:00:00.000Z')"), // the first parameter is not a valid timestamp
+            Test("dateTimeDiff('2017-01-01T08:00:00.000Z',notValidTimeStamp)"), // the second parameter is not a valid timestamp
+            Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z', 'years')"), // should only have 2 parameters
             #endregion
 
             #region uri parsing function test
@@ -366,10 +381,14 @@ namespace AdaptiveExpressions.Tests
             Test("jPath(hello,'Manufacturers[0].Products[0].Price')"), // not a valid json
             Test("jPath(hello,'Manufacturers[0]/Products[0]/Price')"), // not a valid path
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
+            Test("merge(json(json1))"), // should have at least two arguments
+            Test("merge(json(json1), json(jarray1))"), // arguments should all be JSON objects
+            Test("merge(json(jarray1), json(json1))"), // arguments should all be JSON objects
             #endregion
 
             #region Memory access test
             Test("getProperty(bag, 1)"), // second param should be string
+            Test("getProperty(1)"), // if getProperty contains only one parameter, the parameter should be string
             Test("Accessor(1)"), // first param should be string
             Test("Accessor(bag, 1)"), // second should be object
             Test("one[0]"),  // one is not list
@@ -410,36 +429,22 @@ namespace AdaptiveExpressions.Tests
         ///  Gets or sets the test context which provides
         ///  information about and functionality for the current test run.
         /// </summary>
-        /// <value>The TestContext.</value>
-        public TestContext TestContext
-        {
-            get { return testContextInstance; }
-            set { testContextInstance = value; }
-        }
-
+        /// <param name="input">Input.</param>
+        /// <returns>object[].</returns>
         public static object[] Test(string input) => new object[] { input };
                 
-        [DataTestMethod]
-        [DynamicData(nameof(SyntaxErrorExpressions))]
-        [ExpectedException(typeof(SyntaxErrorException))]
+        [Theory]
+        [MemberData(nameof(SyntaxErrorExpressions))]
         public void ParseSyntaxErrors(string exp)
         {
-            try
-            {
-                Expression.Parse(exp);
-            }
-            catch (Exception e)
-            {
-                TestContext.WriteLine(e.Message);
-                throw;
-            }
+            Assert.Throws<SyntaxErrorException>(() => Expression.Parse(exp));
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(BadExpressions))]
+        [Theory]
+        [MemberData(nameof(BadExpressions))]
         public void Evaluate(string exp)
         {
-            var isFail = false;
+            var passed = false;
             object scope = new
             {
                 one = 1.0,
@@ -477,6 +482,11 @@ namespace AdaptiveExpressions.Tests
                 notValidTimestamp2 = "1521118800",
                 notValidTimestamp3 = "20181115",
                 relativeUri = "../catalog/shownew.htm?date=today",
+                json1 = @"{
+                          'Enabled': true,
+                          'Roles': [ 'User', 'Admin' ]
+                        }",
+                jarray1 = @"['a', 'b']",
                 turn = new
                 {
                     recognized = new
@@ -506,23 +516,15 @@ namespace AdaptiveExpressions.Tests
                 var (value, error) = Expression.Parse(exp).TryEvaluate(scope);
                 if (error != null)
                 {
-                    isFail = true;
-                }
-                else
-                {
-                    TestContext.WriteLine(error);
+                    passed = true;
                 }
             }
-            catch (Exception e)
+            catch
             {
-                isFail = true;
-                TestContext.WriteLine(e.Message);
+                passed = true;
             }
 
-            if (isFail == false)
-            {
-                Assert.Fail("Test method did not throw expected exception");
-            }
+            Assert.True(passed);
         }
     }
 }

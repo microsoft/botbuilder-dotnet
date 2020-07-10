@@ -345,7 +345,6 @@ namespace AdaptiveExpressions
         /// Return all static paths to memory.  If there is a computed element index, then the path is terminated there,
         /// but you might get other paths from the computed part as well.
         /// </remarks>
-        /// <param name="expression">Expression to get references from.</param>
         /// <returns>List of the static reference paths.</returns>
         public IReadOnlyList<string> References()
         {
@@ -755,7 +754,7 @@ namespace AdaptiveExpressions
 
             public void Add(string key, Func<IReadOnlyList<dynamic>, object> func)
             {
-                Add(key, new ExpressionEvaluator(key, ExpressionFunctions.Apply(func)));
+                Add(key, new ExpressionEvaluator(key, FunctionUtils.Apply(func)));
             }
 
             public void Add(KeyValuePair<string, ExpressionEvaluator> item) => this[item.Key] = item.Value;

@@ -1,0 +1,26 @@
+[sandwich-library.en-us.lg](sandwich-library.en-us.lg)
+
+[sandwich-library-DisplayOperation.en-us.lg](sandwich-library-DisplayOperation.en-us.lg)
+
+[sandwich-library-Help.en-us.lg](sandwich-library-Help.en-us.lg)
+
+
+# chooseEnumEntity(property)
+- ```
+${askHelp()}
+Please choose a value for ${displayName(property)} from [${join(foreach(turn.dialogEvent.value.entity.value, val, enumEntityValue(property, val)), ', ')}]
+```
+
+# chooseEnumArrayEntity(property)
+- ```
+${askHelp()}
+Please choose a value for ${displayName(property)} from [${join(foreach(turn.dialogEvent.value.entity.value, val, enumEntityValue(property, val)), ', ')}]
+``` 
+
+# chooseProperties
+- Did you mean ${join(foreach(turn.dialogevent.value, choice, choosePropertyEntity(choice)), " or ")}?
+
+# choosePropertyEntity(property)
+- "${property.entity.text}" as ${displayOperation(property.operation)}
+
+> Generator: 45eccf7d7cea6631ac13f9f858c25295

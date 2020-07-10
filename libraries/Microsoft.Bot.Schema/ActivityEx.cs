@@ -51,7 +51,9 @@ namespace Microsoft.Bot.Schema
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
         [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public JObject Properties { get; set; } = new JObject();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Creates an instance of the <see cref="Activity"/> class as an <see cref="IMessageActivity"/> object.
@@ -378,8 +380,8 @@ namespace Microsoft.Bot.Schema
         /// <seealso cref="Mention"/>
         public Mention[] GetMentions()
         {
-            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", ignoreCase: true) == 0)
-                .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? new Mention[0];
+            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", StringComparison.OrdinalIgnoreCase) == 0)
+                .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? Array.Empty<Mention>();
         }
 
         /// <summary>
@@ -389,7 +391,9 @@ namespace Microsoft.Bot.Schema
         /// <returns>The strongly-typed object; or the type's default value, if the <see cref="ChannelData"/> is null.</returns>
         /// <seealso cref="ChannelData"/>
         /// <seealso cref="TryGetChannelData{TypeT}(out TypeT)"/>
+#pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change it without breaking binary compatibility)
         public TypeT GetChannelData<TypeT>()
+#pragma warning restore CA1715 // Identifiers should have correct prefix
         {
             if (this.ChannelData == null)
             {
@@ -416,7 +420,9 @@ namespace Microsoft.Bot.Schema
         /// </returns>
         /// <seealso cref="ChannelData"/>
         /// <seealso cref="GetChannelData{TypeT}"/>
+#pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change it without breaking binary compatibility)
         public bool TryGetChannelData<TypeT>(out TypeT instance)
+#pragma warning restore CA1715 // Identifiers should have correct prefix
         {
             instance = default(TypeT);
 
@@ -430,7 +436,9 @@ namespace Microsoft.Bot.Schema
                 instance = this.GetChannelData<TypeT>();
                 return true;
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we just return false here if the conversion fails for any reason)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 return false;
             }
@@ -442,7 +450,7 @@ namespace Microsoft.Bot.Schema
         /// <returns>A conversation reference for the conversation that contains this activity.</returns>
         public ConversationReference GetConversationReference()
         {
-            ConversationReference reference = new ConversationReference
+            var reference = new ConversationReference
             {
                 ActivityId = this.Id,
                 User = this.From,
@@ -567,10 +575,6 @@ namespace Microsoft.Bot.Schema
             }
 
             return result;
-        }
-
-        partial void CustomInit()
-        {
         }
     }
 }

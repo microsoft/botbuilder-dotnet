@@ -5,7 +5,6 @@
     <LangVersion>latest</LangVersion>
     <AssemblyName>Microsoft.BotBuilderSamples.DialogEchoSkillBot</AssemblyName>
     <RootNamespace>Microsoft.BotBuilderSamples.DialogEchoSkillBot</RootNamespace>
-    <UserSecretsId>a6aa19d1-4134-48c1-8970-8404e694e003</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

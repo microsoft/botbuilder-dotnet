@@ -1,0 +1,22 @@
+
+[sandwichTest-QuantityEntity.en-us.lg](sandwichTest-QuantityEntity.en-us.lg)
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
+[sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
+
+# AskQuantity
+- ${askNumber('Quantity')}
+
+
+> How to display the name of Quantity
+# QuantityName
+- quantity
+
+> How to display a Quantity value
+# Quantity(val)
+ - IF: ${val}
+ - ${val}
+ - ELSE:
+ - no value
+
+
+> Generator: 8e12a6fa544757126209ad660c57e96a

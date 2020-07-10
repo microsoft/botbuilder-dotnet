@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": [],
     "title": "Test Script",
     "description": "Defines a sequence of test actions to perform to validate the behavior of dialogs.",
@@ -14,6 +14,30 @@
             "type": "string",
             "title": "Description",
             "description": "Description of the test script"
+        },
+        "httpRequestMocks": {
+            "type": "array",
+            "title": "Http Request Mocks",
+            "description": "Mock data for Microsoft.HttpRequest.",
+            "items": {
+                "$kind": "Microsoft.Test.IHttpRequestMock"
+            }
+        },
+        "userTokenMocks": {
+            "type": "array",
+            "title": "User Token Mocks",
+            "description": "Mock data for Microsoft.OAuthInput.",
+            "items": {
+                "$kind": "Microsoft.Test.IUserTokenMock"
+            }
+        },
+        "propertyMocks": {
+            "type": "array",
+            "title": "Property Mocks",
+            "description": "A list of property mocks. In first match first use order.",
+            "items": {
+                "$kind": "Microsoft.Test.IPropertyMock"
+            }
         },
         "script": {
             "type": "array",

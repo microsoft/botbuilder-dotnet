@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
 {
+    /// <summary>
+    /// Represents a Facebook Message Entry.
+    /// </summary>
     public class FacebookEntry
     {
         /// <summary>

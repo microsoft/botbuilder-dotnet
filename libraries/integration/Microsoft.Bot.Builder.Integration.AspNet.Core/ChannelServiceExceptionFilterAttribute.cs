@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
+    [AttributeUsage(AttributeTargets.Class)]
     internal class ChannelServiceExceptionFilterAttribute : Attribute, IExceptionFilter
     {
         public void OnException(ExceptionContext context)

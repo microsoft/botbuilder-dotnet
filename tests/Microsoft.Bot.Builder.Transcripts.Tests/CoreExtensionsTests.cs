@@ -5,24 +5,24 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Transcripts.Tests
 {
-    [TestClass]
     public class CoreExtensionsTests
     {
-        public TestContext TestContext { get; set; }
+        public static readonly string ClassName = "CoreExtensionsTests";
 
-        [TestMethod]
+        [Fact]
         public async Task UserStateTest()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var testName = "UserStateTest";
+            var activities = TranscriptUtilities.GetActivitiesFromFile(ClassName, testName);
 
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<UserStateObject>("test");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(testName))
                 .Use(new AutoSaveStateMiddleware(userState));
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
@@ -60,17 +60,18 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             await flow.Test(activities).StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConversationStateTest()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var testName = "ConversationStateTest";
+            var activities = TranscriptUtilities.GetActivitiesFromFile(ClassName, testName);
 
             var storage = new MemoryStorage();
 
             var convoState = new ConversationState(new MemoryStorage());
             var testProperty = convoState.CreateProperty<ConversationStateObject>("test");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(testName))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>
@@ -108,15 +109,16 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             await flow.Test(activities).StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CustomStateTest()
         {
-            var activities = TranscriptUtilities.GetFromTestContext(TestContext);
+            var testName = "CustomStateTest";
+            var activities = TranscriptUtilities.GetActivitiesFromFile(ClassName, testName);
 
             var storage = new MemoryStorage();
             var customState = new CustomState(storage);
             var testProperty = customState.CreateProperty<CustomStateObject>("Test");
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(testName))
                 .Use(new AutoSaveStateMiddleware(customState));
 
             var flow = new TestFlow(adapter, async (context, cancellationToken) =>

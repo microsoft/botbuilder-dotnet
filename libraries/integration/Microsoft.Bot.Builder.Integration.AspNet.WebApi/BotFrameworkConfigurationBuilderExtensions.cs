@@ -5,6 +5,9 @@ using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
+    /// <summary>
+    /// Extension methods for <see cref="BotFrameworkConfigurationBuilder"/>.
+    /// </summary>
     public static class BotFrameworkConfigurationBuilderExtensions
     {
         /// <summary>

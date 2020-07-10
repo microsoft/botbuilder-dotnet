@@ -3,17 +3,21 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Defines extension methods for the <see cref="BotAdapter"/> class.
+    /// </summary>
     public static class AdapterExtensions
     {
         /// <summary>
-        /// Registers a storage layer with the adapter. The storage object will be available via the turn context's
-        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{IStorage}()"/> method.
+        /// Adds middleware to the adapter to register an <see cref="IStorage"/> object on the turn context.
+        /// The middleware registers the state objects on the turn context at the start of each turn.
         /// </summary>
-        /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the storage object.</param>
-        /// <param name="storage">The <see cref="IStorage"/> object to register.</param>
+        /// <param name="botAdapter">The adapter on which to register the storage object.</param>
+        /// <param name="storage">The storage object to register.</param>
         /// <returns>The updated adapter.</returns>
         /// <remarks>
-        /// This adds <see cref="IMiddleware"/> to the adapter to register the storage layer.
+        /// To get the storage object, use the turn context's <see cref="ITurnContext.TurnState"/>
+        /// property's <see cref="TurnContextStateCollection.Get{T}()"/> method.
         /// </remarks>
         public static BotAdapter UseStorage(this BotAdapter botAdapter, IStorage storage)
         {
@@ -21,14 +25,16 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Registers bot state object into the TurnContext. The botstate will be available via the turn context's
-        /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{typeof(instance)}()"/> method.
+        /// Adds middleware to the adapter to register one or more <see cref="BotState"/> objects on the turn context.
+        /// The middleware registers the state objects on the turn context at the start of each turn.
         /// </summary>
-        /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the storage object.</param>
-        /// <param name="botStates">One or <see cref="BotState"/> object to register.</param>
+        /// <param name="botAdapter">The adapter on which to register the state objects.</param>
+        /// <param name="botStates">The state objects to register.</param>
         /// <returns>The updated adapter.</returns>
         /// <remarks>
-        /// This adds <see cref="IMiddleware"/> to register the a BotState object into turnstate.
+        /// To get the state objects, use the turn context's <see cref="ITurnContext.TurnState"/>
+        /// property's <see cref="TurnContextStateCollection.Get{T}(string)"/> method, where the `key`
+        /// parameter is the fully qualified name of the type of bot state to get.
         /// </remarks>
         public static BotAdapter UseBotState(this BotAdapter botAdapter, params BotState[] botStates)
         {
@@ -49,7 +55,7 @@ namespace Microsoft.Bot.Builder
         /// Registers user and conversation state objects with the adapter. These objects will be available via the turn context's
         /// <see cref="TurnContext.TurnState"/>.<see cref="TurnContextStateCollection.Get{T}()"/> method.
         /// </summary>
-        /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the storage object.</param>
+        /// <param name="botAdapter">The <see cref="BotAdapter"/> on which to register the objects.</param>
         /// <param name="userState">The <see cref="UserState"/> object to register.</param>
         /// <param name="conversationState">The <see cref="ConversationState"/> object to register.</param>
         /// <param name="auto">`true` to automatically persist state each turn; otherwise, `false`.

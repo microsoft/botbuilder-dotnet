@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Memory;
+using static Microsoft.Bot.Builder.LanguageGeneration.TemplatesParser;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -22,6 +23,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </remarks>
     public class Templates : List<Template>
     {
+        /// <summary>
+        /// Temp Template ID for inline content.
+        /// </summary>
+        public const string InlineTemplateId = "__temp__";
         private readonly string newLine = Environment.NewLine;
         private readonly Regex newLineRegex = new Regex("(\r?\n)");
         private readonly string namespaceKey = "@namespace";
@@ -222,17 +227,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             CheckErrors();
 
             // wrap inline string with "# name and -" to align the evaluation process
-            var fakeTemplateId = "__temp__";
             var multiLineMark = "```";
 
             text = !text.Trim().StartsWith(multiLineMark) && text.Contains('\n')
                    ? $"{multiLineMark}{text}{multiLineMark}" : text;
 
-            var newContent = $"# {fakeTemplateId} {newLine} - {text}";
+            var newContent = $"# {InlineTemplateId} {newLine} - {text}";
 
             var newLG = TemplatesParser.ParseTextWithRef(newContent, this);
 
-            return newLG.Evaluate(fakeTemplateId, scope, evalOpt);
+            return newLG.Evaluate(InlineTemplateId, scope, evalOpt);
         }
 
         /// <summary>
@@ -277,15 +281,31 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
+                ClearDiagnostics();
+
                 var templateNameLine = BuildTemplateNameLine(newTemplateName, parameters);
                 var newTemplateBody = ConvertTemplateBody(templateBody);
                 var content = $"{templateNameLine}{newLine}{newTemplateBody}";
 
-                var startLine = template.SourceRange.Range.Start.Line - 1;
-                var stopLine = template.SourceRange.Range.End.Line - 1;
+                // update content
+                this.Content = ReplaceRangeContent(
+                    this.Content,
+                    template.SourceRange.Range.Start.Line - 1,
+                    template.SourceRange.Range.End.Line - 1,
+                    content);
 
-                var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
-                Initialize(ParseText(newContent, Id, ImportResolver));
+                var updatedTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
+                updatedTemplates = new TemplatesTransformer(updatedTemplates).Transform(AntlrParseTemplates(content, Id));
+
+                var originStartLine = template.SourceRange.Range.Start.Line - 1;
+                AppendDiagnosticsWithOffset(updatedTemplates.Diagnostics, originStartLine);
+
+                var newTemplate = updatedTemplates.FirstOrDefault();
+                if (newTemplate != null)
+                {
+                    AdjustRangeForUpdateTemplate(template, newTemplate);
+                    new StaticChecker(this).Check().ForEach(u => this.Diagnostics.Add(u));
+                }
             }
 
             return this;
@@ -306,10 +326,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception(TemplateErrors.TemplateExist(templateName));
             }
 
+            ClearDiagnostics();
+
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
-            var newContent = $"{Content}{newLine}{templateNameLine}{newLine}{newTemplateBody}";
-            Initialize(ParseText(newContent, Id, ImportResolver));
+            var content = $"{templateNameLine}{newLine}{newTemplateBody}";
+
+            var originStartLine = GetLinesOfText(this.Content).Length;
+
+            // update content
+            this.Content = $"{Content}{newLine}{templateNameLine}{newLine}{newTemplateBody}";
+
+            var newTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
+            newTemplates = new TemplatesTransformer(newTemplates).Transform(AntlrParseTemplates(content, Id));
+
+            AppendDiagnosticsWithOffset(newTemplates.Diagnostics, originStartLine);
+
+            var newTemplate = newTemplates.FirstOrDefault();
+            if (newTemplate != null)
+            {
+                AdjustRangeForAddTemplate(newTemplate, originStartLine);
+                this.Add(newTemplate);
+                new StaticChecker(this).Check().ForEach(u => this.Diagnostics.Add(u));
+            }
 
             return this;
         }
@@ -324,10 +363,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
+                ClearDiagnostics();
+
                 var startLine = template.SourceRange.Range.Start.Line - 1;
                 var stopLine = template.SourceRange.Range.End.Line - 1;
-                var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
-                Initialize(ParseText(newContent, Id, ImportResolver));
+                this.Content = ReplaceRangeContent(Content, startLine, stopLine, null);
+
+                AdjustRangeForDeleteTemplate(template);
+                this.Remove(template);
+                new StaticChecker(this).Check().ForEach(u => this.Diagnostics.Add(u));
             }
 
             return this;
@@ -358,12 +402,80 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     if (curTemplates.Any(u => u.Name == templateName))
                     {
                         var newGlobalName = $"{curTemplates.Namespace}.{templateName}";
-                        Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, ExpressionFunctions.Apply(this.GlobalTemplateFunction(templateName)), ReturnType.Object));
+                        Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, FunctionUtils.Apply(this.GlobalTemplateFunction(templateName)), ReturnType.Object));
                     }
                 }
             }
 
             return this;
+        }
+
+        private void AppendDiagnosticsWithOffset(IList<Diagnostic> diagnostics, int offset)
+        {
+            if (diagnostics != null)
+            {
+                diagnostics.ToList().ForEach(u =>
+                {
+                    u.Range.Start.Line += offset;
+                    u.Range.End.Line += offset;
+                    this.Diagnostics.Add(u);
+                });
+            }
+        }
+
+        private void AdjustRangeForUpdateTemplate(Template oldTemplate, Template newTemplate)
+        {
+            var newRange = newTemplate.SourceRange.Range.End.Line - newTemplate.SourceRange.Range.Start.Line;
+            var oldRange = oldTemplate.SourceRange.Range.End.Line - oldTemplate.SourceRange.Range.Start.Line;
+            var lineOffset = newRange - oldRange;
+
+            var hasFound = false;
+
+            for (var i = 0; i < this.Count; i++)
+            {
+                if (hasFound)
+                {
+                    this[i].SourceRange.Range.Start.Line += lineOffset;
+                    this[i].SourceRange.Range.End.Line += lineOffset;
+                }
+                else if (this[i].Name == oldTemplate.Name)
+                {
+                    hasFound = true;
+                    newTemplate.SourceRange.Range.Start.Line = oldTemplate.SourceRange.Range.Start.Line;
+                    newTemplate.SourceRange.Range.End.Line = oldTemplate.SourceRange.Range.End.Line + lineOffset;
+                    this[i] = newTemplate;
+                }
+            }
+        }
+
+        private void AdjustRangeForAddTemplate(Template newTemplate, int lineOffset)
+        {
+            var lineLength = newTemplate.SourceRange.Range.End.Line - newTemplate.SourceRange.Range.Start.Line;
+            newTemplate.SourceRange.Range.Start.Line = lineOffset + 1;
+            newTemplate.SourceRange.Range.End.Line = lineLength + lineOffset + 1;
+        }
+
+        private void AdjustRangeForDeleteTemplate(Template oldTemplate)
+        {
+            var lineOffset = oldTemplate.SourceRange.Range.End.Line - oldTemplate.SourceRange.Range.Start.Line + 1;
+            var hasFound = false;
+            for (var i = 0; i < this.Count; i++)
+            {
+                if (hasFound)
+                {
+                    this[i].SourceRange.Range.Start.Line -= lineOffset;
+                    this[i].SourceRange.Range.End.Line -= lineOffset;
+                }
+                else if (this[i].Name == oldTemplate.Name)
+                {
+                    hasFound = true;
+                }
+            }
+        }
+
+        private void ClearDiagnostics()
+        {
+            this.Diagnostics = new List<Diagnostic>();
         }
 
         private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
@@ -378,7 +490,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var destList = new List<string>();
 
             destList.AddRange(originList.Take(startLine));
-            destList.Add(replaceString);
+            
+            if (replaceString != null)
+            {
+                destList.Add(replaceString);
+            }
+
             destList.AddRange(originList.Skip(stopLine + 1));
 
             return string.Join(newLine, destList);
@@ -386,13 +503,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private string ConvertTemplateBody(string templateBody)
         {
-            var lines = templateBody.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
+            var lines = GetLinesOfText(templateBody);
             var destList = lines.Select(u =>
             {
                 return u.TrimStart().StartsWith("#") ? $"- {u.TrimStart()}" : u;
             });
 
             return string.Join(newLine, destList);
+        }
+
+        private string[] GetLinesOfText(string text)
+        {
+            if (text == null)
+            {
+                return new string[0];
+            }
+
+            return text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
         }
 
         private string BuildTemplateNameLine(string templateName, List<string> parameters)
@@ -405,23 +532,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return $"# {templateName}({string.Join(", ", parameters)})";
             }
-        }
-
-        /// <summary>
-        /// Use an existing LG file to override current object.
-        /// </summary>
-        /// <param name="templates">Existing LG file.</param>
-        private void Initialize(Templates templates)
-        {
-            this.Clear();
-            this.AddRange(templates);
-            Imports = templates.Imports;
-            Diagnostics = templates.Diagnostics;
-            References = templates.References;
-            Content = templates.Content;
-            ImportResolver = templates.ImportResolver;
-            Id = templates.Id;
-            ExpressionParser = templates.ExpressionParser;
         }
 
         private void CheckErrors()

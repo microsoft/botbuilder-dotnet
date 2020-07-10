@@ -30,7 +30,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the claims-based
         /// identity for the request.</remarks>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateRequest(IActivity activity, string authHeader, ICredentialProvider credentials, IChannelProvider provider, HttpClient httpClient = null)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             return await AuthenticateRequest(activity, authHeader, credentials, provider, new AuthenticationConfiguration(), httpClient).ConfigureAwait(false);
         }
@@ -48,7 +50,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the claims-based
         /// identity for the request.</remarks>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateRequest(IActivity activity, string authHeader, ICredentialProvider credentials, IChannelProvider provider, AuthenticationConfiguration authConfig, HttpClient httpClient = null)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             if (authConfig == null)
             {
@@ -89,7 +93,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the claims-based
         /// identity for the request.</remarks>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, string serviceUrl = null, HttpClient httpClient = null)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             return await ValidateAuthHeader(authHeader, credentials, channelProvider, channelId, new AuthenticationConfiguration(), serviceUrl, httpClient).ConfigureAwait(false);
         }
@@ -107,7 +113,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task completes successfully, the result contains the claims-based
         /// identity for the request.</remarks>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> ValidateAuthHeader(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, AuthenticationConfiguration authConfig, string serviceUrl = null, HttpClient httpClient = null)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             if (string.IsNullOrEmpty(authHeader))
             {
@@ -121,7 +129,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             httpClient = httpClient ?? _httpClient;
 
-            var identity = await AuthenticateToken(authHeader, credentials, channelProvider, channelId, authConfig, serviceUrl, httpClient);
+            var identity = await AuthenticateTokenAsync(authHeader, credentials, channelProvider, channelId, authConfig, serviceUrl, httpClient).ConfigureAwait(false);
 
             await ValidateClaimsAsync(authConfig, identity.Claims).ConfigureAwait(false);
 
@@ -210,7 +218,7 @@ namespace Microsoft.Bot.Connector.Authentication
             // [0] = "Bearer"
             // [1] = "[Big Long String]"
             var authScheme = parts[0];
-            if (!authScheme.Equals("Bearer", StringComparison.InvariantCultureIgnoreCase))
+            if (!authScheme.Equals("Bearer", StringComparison.OrdinalIgnoreCase))
             {
                 // The scheme MUST be "Bearer"
                 return false;
@@ -222,7 +230,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Authenticates the auth header token from the request.
         /// </summary>
-        private static async Task<ClaimsIdentity> AuthenticateToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, AuthenticationConfiguration authConfig, string serviceUrl, HttpClient httpClient)
+        private static async Task<ClaimsIdentity> AuthenticateTokenAsync(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, AuthenticationConfiguration authConfig, string serviceUrl, HttpClient httpClient)
         {
             if (SkillValidation.IsSkillToken(authHeader))
             {

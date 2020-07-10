@@ -1,0 +1,13 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/master/experimental/generation/runbot/runbot.schema",
+	"$kind": "Microsoft.OnIntent",
+	"intent": "Help",
+	"condition": "turn.recognized.score > 0.5",
+	"actions": [
+		{
+			"$kind": "Microsoft.SendActivity",
+			"activity": "${help(@PropertyName)}"
+		}
+	],
+	"$Generator": "39fbfaa6c1ee789971f88b5556bdfcee"
+}

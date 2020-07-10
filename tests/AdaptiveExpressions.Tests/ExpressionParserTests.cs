@@ -7,16 +7,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Threading;
 using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace AdaptiveExpressions.Tests
 {
-    [TestClass]
     public class ExpressionParserTests
     {
         private static readonly string NullStr = null;
@@ -29,6 +28,9 @@ namespace AdaptiveExpressions.Tests
             { "$index", "index" },
             {
                 "alist", new List<A>() { new A("item1"), new A("item2") }
+            },
+            {
+                "a:b", "stringa:b"
             },
             {
                 "emptyList", new List<object>()
@@ -108,9 +110,30 @@ namespace AdaptiveExpressions.Tests
             { "validNow", new TimexProperty() { Now = true } },
             { "invalidHourTimex", new TimexProperty("2001-02-20") },
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
+            { "timestampObj2", DateTime.Parse("2018-01-02T02:00:00.000Z").ToUniversalTime() },
+            { "timestampObj3", DateTime.Parse("2018-01-01T08:00:00.000Z").ToUniversalTime() },
             { "unixTimestamp", 1521118800 },
             { "unixTimestampFraction", 1521118800.5 },
             { "ticks", 637243624200000000 },
+            { 
+                "json1", @"{
+                          'FirstName': 'John',
+                          'LastName': 'Smith',
+                          'Enabled': false,
+                          'Roles': [ 'User' ]
+                        }"
+            },
+            { 
+                "json2", @"{
+                          'Enabled': true,
+                          'Roles': [ 'Customer', 'Admin' ]
+                        }"
+            },
+            {
+                "json3", @"{
+                          'Age': 36,
+                        }"
+            },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
             {
                 "jsonStr", @"{
@@ -488,6 +511,11 @@ namespace AdaptiveExpressions.Tests
             Test("addOrdinal(11 + 13)", "24th"),
             Test("addOrdinal(-1)", "-1"), // original string value
             Test("join(createArray('a','b', 'c', 'd'), '\n')", "a\nb\nc\nd"),
+            Test("sentenceCase('a')", "A"),
+            Test("sentenceCase('abc')", "Abc"),
+            Test("sentenceCase('aBC')", "Abc"),
+            Test("titleCase('a')", "A"),
+            Test("titleCase('abc dEF')", "Abc Def"),
             #endregion
 
             #region  Logical comparison functions test
@@ -587,12 +615,15 @@ namespace AdaptiveExpressions.Tests
             Test("[] == []", true),
             Test("{} != []", true),
             Test("[] == {}", false),
+            Test("null < 1", false),
+            Test("null >= 1", false),
             #endregion
 
             #region  Conversion functions test
             Test("float('10.333')", 10.333f),
             Test("float('10')", 10.0f),
             Test("int('10')", 10),
+            Test("int(12345678912345678 + 1)", 12345678912345679),
             Test("string('str')", "str"),
             Test("string(one)", "1.0"),
             Test("string(bool(1))", "true"),
@@ -635,7 +666,7 @@ namespace AdaptiveExpressions.Tests
             Test("formatNumber(12.123, 2)", "12.12"),
             Test("formatNumber(1.551, 2)", "1.55"),
             Test("formatNumber(12.123, 4)", "12.1230"),
-            Test("formatNumber(12000.3, 4, 'fr-fr')", "12\x00a0000,3000"),
+            Test("formatNumber(12000.3, 4, 'fr-fr') == '12\x00A0000,3000' || formatNumber(12000.3, 4, 'fr-fr') == '12\x202F000,3000'", true),
             #endregion
 
             #region  Math functions test
@@ -669,6 +700,13 @@ namespace AdaptiveExpressions.Tests
             Test("rand(2, 3)", 2),
             Test("range(1,4)", new[] { 1, 2, 3, 4 }),
             Test("range(-1,6)", new[] { -1, 0, 1, 2, 3, 4 }),
+            Test("floor(3.51)", 3),
+            Test("floor(4.00)", 4),
+            Test("ceiling(3.51)", 4),
+            Test("ceiling(4.00)", 4),
+            Test("round(3.51)", 4),
+            Test("round(3.55, 1)", 3.6),
+            Test("round(3.12134, 3)", 3.121),
             #endregion
 
             #region  Date and time function test
@@ -692,19 +730,29 @@ namespace AdaptiveExpressions.Tests
             Test("isPresent('PT30M')", false),
             Test("isPresent(validNow)", true),
             Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
+            Test("addDays(timestampObj, 1)", "2018-03-16T13:00:00.000Z"),
             Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
             Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.000Z"),
+            Test("addHours(timestampObj, 1)", "2018-03-15T14:00:00.000Z"),
             Test("addHours(timestamp, 1,'MM-dd-yy hh-mm')", "03-15-18 02-00"),
             Test("addMinutes(timestamp, 1)", "2018-03-15T13:01:00.000Z"),
+            Test("addMinutes(timestampObj, 1)", "2018-03-15T13:01:00.000Z"),
             Test("addMinutes(timestamp, 1, 'MM-dd-yy hh-mm')", "03-15-18 01-01"),
             Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.000Z"),
+            Test("addSeconds(timestampObj, 1)", "2018-03-15T13:00:01.000Z"),
             Test("addSeconds(timestamp, 1, 'MM-dd-yy hh-mm-ss')", "03-15-18 01-00-01"),
             Test("dayOfMonth(timestamp)", 15),
+            Test("dayOfMonth(timestampObj)", 15),
             Test("dayOfWeek(timestamp)", 4), // Thursday
+            Test("dayOfWeek(timestampObj)", 4), // Thursday
             Test("dayOfYear(timestamp)", 74),
+            Test("dayOfYear(timestampObj)", 74),
             Test("month(timestamp)", 3),
+            Test("month(timestampObj)", 3),
             Test("date(timestamp)", "3/15/2018"), // Default. TODO
+            Test("date(timestampObj)", "3/15/2018"),
             Test("year(timestamp)", 2018),
+            Test("year(timestampObj)", 2018),
             Test("length(utcNow())", 24),
             Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")), 
             Test("formatDateTime(notISOTimestamp)", "2018-03-15T13:00:00.000Z"),
@@ -715,6 +763,7 @@ namespace AdaptiveExpressions.Tests
             Test("formatEpoch(unixTimestampFraction)", "2018-03-15T13:00:00.500Z"),
             Test("formatTicks(ticks)", "2020-05-06T11:47:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Year')", "2017-03-15T13:00:00.000Z"),
+            Test("subtractFromTime(timestampObj, 1, 'Year')", "2017-03-15T13:00:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Month')", "2018-02-15T13:00:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Week')", "2018-03-08T13:00:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.000Z"),
@@ -722,31 +771,45 @@ namespace AdaptiveExpressions.Tests
             Test("subtractFromTime(timestamp, 1, 'Minute')", "2018-03-15T12:59:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Second')", "2018-03-15T12:59:59.000Z"),
             Test("dateReadBack(timestamp, addDays(timestamp, 1))", "tomorrow"),
+            Test("dateReadBack(timestampObj, addDays(timestamp, 1))", "tomorrow"),
             Test("dateReadBack(addDays(timestamp, 1),timestamp)", "yesterday"),
             Test("getTimeOfDay('2018-03-15T00:00:00.000Z')", "midnight"),
+            Test("getTimeOfDay(timestampObj)", "afternoon"),
             Test("getTimeOfDay('2018-03-15T08:00:00.000Z')", "morning"),
             Test("getTimeOfDay('2018-03-15T12:00:00.000Z')", "noon"),
             Test("getTimeOfDay('2018-03-15T13:00:00.000Z')", "afternoon"),
             Test("getTimeOfDay('2018-03-15T18:00:00.000Z')", "evening"),
             Test("getTimeOfDay('2018-03-15T22:00:00.000Z')", "evening"),
             Test("getTimeOfDay('2018-03-15T23:00:00.000Z')", "night"),
-            Test("getPastTime(1,'Year','MM-dd-yy')", DateTime.Now.AddYears(-1).ToString("MM-dd-yy")),
-            Test("getPastTime(1,'Month','MM-dd-yy')", DateTime.Now.AddMonths(-1).ToString("MM-dd-yy")),
-            Test("getPastTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(-7).ToString("MM-dd-yy")),
-            Test("getPastTime(1,'Day','MM-dd-yy')", DateTime.Now.AddDays(-1).ToString("MM-dd-yy")),
-            Test("getFutureTime(1,'Year','MM-dd-yy')", DateTime.Now.AddYears(1).ToString("MM-dd-yy")),
-            Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.Now.AddMonths(1).ToString("MM-dd-yy")),
-            Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(7).ToString("MM-dd-yy")),
-            Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.Now.AddDays(1).ToString("MM-dd-yy")),
+            Test("getPastTime(1,'Year','MM-dd-yy')", DateTime.UtcNow.AddYears(-1).ToString("MM-dd-yy")),
+            Test("getPastTime(1,'Month','MM-dd-yy')", DateTime.UtcNow.AddMonths(-1).ToString("MM-dd-yy")),
+            Test("getPastTime(1,'Week','MM-dd-yy')", DateTime.UtcNow.AddDays(-7).ToString("MM-dd-yy")),
+            Test("getPastTime(1,'Day','MM-dd-yy')", DateTime.UtcNow.AddDays(-1).ToString("MM-dd-yy")),
+            Test("getFutureTime(1,'Year','MM-dd-yy')", DateTime.UtcNow.AddYears(1).ToString("MM-dd-yy")),
+            Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.UtcNow.AddMonths(1).ToString("MM-dd-yy")),
+            Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.UtcNow.AddDays(7).ToString("MM-dd-yy")),
+            Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.UtcNow.AddDays(1).ToString("MM-dd-yy")),
             Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D')", "Monday, 01 January 2018"),
+            Test("convertFromUTC(timestampObj2, 'Pacific Standard Time', 'D')", "Monday, 01 January 2018"),
             Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D')", "Monday, 01 January 2018"),
             Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time')", "2018-01-01T08:00:00.000Z"),
             Test("addToTime('2018-01-01T08:00:00.000Z', 1, 'Day', 'D')", "Tuesday, 02 January 2018"),
             Test("addToTime('2018-01-01T00:00:00.000Z', 1, 'Week')", "2018-01-08T00:00:00.000Z"),
+            Test("addToTime(timestampObj2, 1, 'Week')", "2018-01-09T02:00:00.000Z"),
             Test("startOfDay('2018-03-15T13:30:30.000Z')", "2018-03-15T00:00:00.000Z"),
+            Test("startOfDay(timestampObj2)", "2018-01-02T00:00:00.000Z"),
             Test("startOfHour('2018-03-15T13:30:30.000Z')", "2018-03-15T13:00:00.000Z"),
+            Test("startOfHour(timestampObj)", "2018-03-15T13:00:00.000Z"),
             Test("startOfMonth('2018-03-15T13:30:30.000Z')", "2018-03-01T00:00:00.000Z"),
+            Test("startOfMonth(timestampObj)", "2018-03-01T00:00:00.000Z"),
             Test("ticks('2018-01-01T08:00:00.000Z')", 636503904000000000),
+            Test("dateTimeDiff('2019-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z')", 315360000000000),
+            Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z')", -315360000000000),
+            Test("dateTimeDiff(timestampObj,timestampObj2)", 62604000000000),
+            Test("ticks(timestampObj3)", 636503904000000000),
+            Test("ticksToDays(2193385800000000)", 2538.64097222),
+            Test("ticksToHours(2193385800000000)", 60927.383333333331),
+            Test("ticksToMinutes(2193385811100000)", 3655643.0185), 
             #endregion
 
             #region uri parsing function test
@@ -770,6 +833,9 @@ namespace AdaptiveExpressions.Tests
             Test("contains(items, 'hi')", false),
             Test("contains(bag, 'three')", true),
             Test("contains(bag, 'xxx')", false),
+            Test("concat(null, [1, 2], null)", new List<object> { 1, 2 }),
+            Test("concat(createArray(1, 2), createArray(3, 4))", new List<object> { 1, 2, 3, 4 }),
+            Test("concat(['a', 'b'], ['b', 'c'], ['c', 'd'])", new List<object> { "a", "b", "b", "c", "c", "d" }),
             Test("count(split(hello,'e'))", 2),
             Test("count(createArray('h', 'e', 'l', 'l', 'o'))", 5),
             Test("empty('')", true),
@@ -787,15 +853,20 @@ namespace AdaptiveExpressions.Tests
             Test("join(createArray('a', 'b'), ',', ' and ')", "a and b"),
             Test("join(createArray(\r\n'a',\r\n 'b'), ','\r\n,\r\n ' and ')", "a and b"),
             Test("join(foreach(dialog, item, item.key), ',')", "x,instance,options,title,subTitle"),
+            Test("join(foreach(dialog, item => item.key), ',')", "x,instance,options,title,subTitle"),
             Test("foreach(dialog, item, item.value)[1].xxx", "instance"),
+            Test("foreach(dialog, item=>item.value)[1].xxx", "instance"),
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
+            Test("join(foreach(items, item=>item), ',')", "zero,one,two"),
             Test("join(foreach(indicesAndValues(items), item, item.value), ',')", "zero,one,two"),
             Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string> { "nestedItems" }),
             Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string> { "items" }),
             Test("join(select(items, item, item), ',')", "zero,one,two"),
+            Test("join(select(items, item=> item), ',')", "zero,one,two"),
             Test("join(select(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string> { "nestedItems" }),
             Test("join(select(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string> { "items" }),
             Test("join(where(items, item, item == 'two'), ',')", "two"),
+            Test("join(where(items, item => item == 'two'), ',')", "two"),
             Test("string(where(dialog, item, item.value=='Dialog Title'))", "{\"title\":\"Dialog Title\"}"),
             Test("first(where(indicesAndValues(items), elt, elt.index > 1)).value", "two"),
             Test("first(where(indicesAndValues(bag), elt, elt.index == \"three\")).value", 3),
@@ -817,6 +888,7 @@ namespace AdaptiveExpressions.Tests
             Test("subArray(createArray('H','e','l','l','o'),2,5)", new List<object> { "l", "l", "o" }),
             Test("count(newGuid())", 36),
             Test("indexOf(newGuid(), '-')", 8),
+            Test("EOL()", RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "\r\n" : "\n"),
             Test("indexOf(nullObj, '-')", -1),
             Test("indexOf(hello, nullObj)", 0),
             Test("indexOf(hello, '-')", -1),
@@ -855,6 +927,7 @@ namespace AdaptiveExpressions.Tests
             Test("{text: 'hello'}.text", "hello"),
             Test("string(addProperty({'key1':'value1'}, 'key2','value2'))", "{\"key1\":\"value1\",\"key2\":\"value2\"}"),
             Test("foreach(items, x, addProperty({}, 'a', x))[0].a", "zero"),
+            Test("foreach(items, x => addProperty({}, 'a', x))[0].a", "zero"),
             Test("string(setProperty({'key1':'value1'}, 'key1','value2'))", "{\"key1\":\"value2\"}"),
             Test("string(setProperty({}, 'key1','value2'))", "{\"key1\":\"value2\"}"),
             Test("string([{a: 1}, {b: 2}, {c: 3}][0])", "{\"a\":1}"),
@@ -867,10 +940,15 @@ namespace AdaptiveExpressions.Tests
             Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
             Test("setProperty({}, 'name', user.nickname).name", "John"),
             Test("addProperty({}, 'name', user.name).name", null),
+            Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"]}"),
+            Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"],\"Age\":36}"),
             #endregion
 
             #region  Memory access
             Test("getProperty(bag, concat('na','me'))", "mybag"),
+            Test("getProperty('bag').index", 3),
+            Test("getProperty('a:b')", "stringa:b"),
+            Test("getProperty(concat('he', 'llo'))", "hello"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> { "bag.list", "bag.index" }),
             Test("items[nestedItems[1].x]", "two", new HashSet<string> { "items", "nestedItems[1].x" }),
@@ -913,19 +991,27 @@ namespace AdaptiveExpressions.Tests
             #region type checking
             Test("isString('abc')", true),
             Test("isString(123)", false),
+            Test("isString(null)", false),
             Test("isInteger('abc')", false),
             Test("isInteger(123)", true),
+            Test("isInteger(null)", false),
             Test("isFloat('abc')", false),
             Test("isFloat(123.234)", true),
+            Test("isFloat(null)", false),
             Test("isArray(createArray(1,2,3))", true),
             Test("isArray(123.234)", false),
+            Test("isArray(null)", false),
+            Test("isObject(null)", false),
             Test("isObject(emptyJObject)", true),
             Test("isObject(dialog)", true),
             Test("isObject(123.234)", false),
+            Test("isBoolean(null)", false),
             Test("isBoolean(2 + 3)", false),
             Test("isBoolean(2 > 1)", true),
             Test("isDateTime(2 + 3)", false),
+            Test("isDateTime(null)", false),
             Test("isDateTime(timestamp)", true),
+            Test("isDateTime(timestampObj)", true),
             #endregion
 
             #region Empty expression
@@ -953,19 +1039,19 @@ namespace AdaptiveExpressions.Tests
            || value is double
            || value is decimal;
 
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
+        [Theory]
+        [MemberData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
             var parsed = Expression.Parse(input);
-            Assert.IsNotNull(parsed);
+            Assert.NotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
-            Assert.AreEqual(null, msg);
+            Assert.Null(msg);
             AssertObjectEquals(expected, actual);
             if (expectedRefs != null)
             {
                 var actualRefs = parsed.References();
-                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+                Assert.True(expectedRefs.SetEquals(actualRefs));
             }
 
             // ToString re-parse
@@ -974,24 +1060,24 @@ namespace AdaptiveExpressions.Tests
             AssertObjectEquals(actual, newActual);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
+        [Theory]
+        [MemberData(nameof(Data))]
         public void EvaluateInOtherCultures(string input, object expected, HashSet<string> expectedRefs)
         {
             var cultureList = new List<string>() { "de-DE", "fr-FR", "es-ES" };
             foreach (var newCultureInfo in cultureList)
             {
-                var originalCuture = Thread.CurrentThread.CurrentCulture;
+                var originalCulture = Thread.CurrentThread.CurrentCulture;
                 Thread.CurrentThread.CurrentCulture = new CultureInfo(newCultureInfo);
                 var parsed = Expression.Parse(input);
-                Assert.IsNotNull(parsed);
+                Assert.NotNull(parsed);
                 var (actual, msg) = parsed.TryEvaluate(scope);
-                Assert.AreEqual(null, msg);
+                Assert.Null(msg);
                 AssertObjectEquals(expected, actual);
                 if (expectedRefs != null)
                 {
                     var actualRefs = parsed.References();
-                    Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+                    Assert.True(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} actual: {string.Join(',', actualRefs)}");
                 }
 
                 // ToString re-parse
@@ -999,40 +1085,28 @@ namespace AdaptiveExpressions.Tests
                 var newActual = newExpression.TryEvaluate(scope).value;
                 AssertObjectEquals(actual, newActual);
 
-                Thread.CurrentThread.CurrentCulture = originalCuture;
+                Thread.CurrentThread.CurrentCulture = originalCulture;
             }
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
+        [Theory]
+        [MemberData(nameof(Data))]
         public void EvaluateJson(string input, object expected, HashSet<string> expectedRefs)
         {
             var jsonScope = JToken.FromObject(scope);
             var parsed = Expression.Parse(input);
-            Assert.IsNotNull(parsed);
+            Assert.NotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(jsonScope);
-            Assert.AreEqual(null, msg);
+            Assert.Null(msg);
             AssertObjectEquals(expected, actual);
             if (expectedRefs != null)
             {
                 var actualRefs = parsed.References();
-                Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+                Assert.True(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
-        [Ignore]
-        public void Roundtrip(string input, object expected, HashSet<string> expectedRefs)
-        {
-            var parsed = Expression.Parse(input);
-            var json = JsonConvert.SerializeObject(parsed);
-            var newExpression = JsonConvert.DeserializeObject<Expression>(json);
-
-            Assert.AreEqual(parsed.ToString(), newExpression.ToString(), $"{input} should have round tripped as string");
-        }
-
-        [TestMethod]
+        [Fact]
         public void TestAccumulatePath()
         {
             var memory = new SimpleObjectMemory(new
@@ -1048,26 +1122,26 @@ namespace AdaptiveExpressions.Tests
 
             // normal case, note, we doesn't append a " yet
             var exp = Expression.Parse("a[f].b[n].z");
-            var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
-            Assert.AreEqual(path, "a['foo'].b[2].z");
+            var (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
+            Assert.Equal("a['foo'].b[2].z", path);
 
             // normal case
             exp = Expression.Parse("a[z.z][z.z].y");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
-            Assert.AreEqual(path, "a['zar']['zar'].y");
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
+            Assert.Equal("a['zar']['zar'].y", path);
 
             // normal case
             exp = Expression.Parse("a.b[z.z]");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
-            Assert.AreEqual(path, "a.b['zar']");
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
+            Assert.Equal("a.b['zar']", path);
 
             // stop evaluate at middle
             exp = Expression.Parse("json(x).b");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
-            Assert.AreEqual(path, "b");
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
+            Assert.Equal("b", path);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTryEvaluateOfT()
         {
             AssertResult<bool>("true", true);
@@ -1084,7 +1158,7 @@ namespace AdaptiveExpressions.Tests
             AssertResult<double>(15.32322.ToString(CultureInfo.InvariantCulture), 15.32322);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestEvaluationOptions()
         {
             var mockMemory = new Dictionary<string, object>();
@@ -1140,29 +1214,29 @@ namespace AdaptiveExpressions.Tests
             // index is not boolean context, but it also requires raw value
             exp = Expression.Parse("a[b]");
             (value, error) = exp.TryEvaluate(mockMemory, options);
-            Assert.IsTrue(error != null);
+            Assert.True(error != null);
         }
 
         private void AssertResult<T>(string text, T expected)
         {
             var memory = new object();
             var (result, error) = Expression.Parse(text).TryEvaluate<T>(memory);
-            Assert.AreEqual(expected, result);
-            Assert.IsNull(error);
+            Assert.Equal(expected, result);
+            Assert.Null(error);
         }
 
         private void AssertObjectEquals(object expected, object actual)
         {
             if (IsNumber(actual) && IsNumber(expected))
             {
-                if (actual is int)
+                if (actual is int || actual is long)
                 {
-                    Assert.IsTrue(expected is int);
-                    Assert.AreEqual(expected, actual);
+                    Assert.True(expected is int || expected is long);
+                    Assert.Equal(Convert.ToInt64(expected), Convert.ToInt64(actual));
                 }
                 else
                 {
-                    Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
+                    Assert.True(Convert.ToSingle(actual) == Convert.ToSingle(expected));
                 }
             }
 
@@ -1170,7 +1244,7 @@ namespace AdaptiveExpressions.Tests
             else if (expected is IList expectedList
                 && actual is IList actualList)
             {
-                Assert.AreEqual(expectedList.Count, actualList.Count);
+                Assert.Equal(expectedList.Count, actualList.Count);
                 for (var i = 0; i < expectedList.Count; i++)
                 {
                     AssertObjectEquals(ResolveValue(expectedList[i]), ResolveValue(actualList[i]));
@@ -1178,7 +1252,7 @@ namespace AdaptiveExpressions.Tests
             }
             else
             {
-                Assert.AreEqual(expected, actual);
+                Assert.Equal(expected, actual);
             }
         }
 

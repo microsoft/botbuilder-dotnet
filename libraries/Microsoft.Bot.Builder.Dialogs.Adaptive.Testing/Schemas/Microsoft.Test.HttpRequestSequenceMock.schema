@@ -1,0 +1,85 @@
+﻿{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.Test.IHttpRequestMock)",
+    "title": "HttpRequest Sequence Mock",
+    "description": "Mock HttpRequest in sequence order.",
+    "type": "object",
+    "required": [
+        "url"
+    ],
+    "properties": {
+        "method": {
+            "type": "string",
+            "title": "HTTP method",
+            "description": "HTTP method to match. If null, match to any method.",
+            "enum": [
+                "GET",
+                "POST",
+                "PATCH",
+                "PUT",
+                "DELETE"
+            ],
+            "examples": [
+                "GET",
+                "POST"
+            ]
+        },
+        "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL to match. Absolute or relative, may contain * wildcards.",
+            "examples": [
+                "https://contoso.com"
+            ]
+        },
+        "responses": {
+            "type": "array",
+            "title": "Responses",
+            "description": "Sequence of responses to reply. The last one will be repeated.",
+            "items": {
+                "type": "object",
+                "title": "HttpResponseMock",
+                "description": "Mocked http response.",
+                "properties": {
+                    "contentType": {
+                        "type": "string",
+                        "title": "ContentType",
+                        "description": "Content type of response.",
+                        "enum": [
+                            "String",
+                            "ByteArray"
+                        ],
+                        "examples": [
+                            "String"
+                        ],
+                        "default": "String"
+                    },
+                    "content": {
+                        "title": "Content",
+                        "description": "Content of response.",
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "title": "String content",
+                                "description": "Use string as content.",
+                                "examples": [
+                                    "string response"
+                                ]
+                            },
+                            {
+                                "type": "object",
+                                "title": "Object content",
+                                "description": "Use object as content. It will be serialized to string.",
+                                "examples": [
+                                    {
+                                        "data": "object response"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

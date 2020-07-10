@@ -24,29 +24,20 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Initializes a new instance of the <see cref="TwilioClientWrapper"/> class.
         /// </summary>
         /// <param name="options">An object containing API credentials, a webhook verification token and other options.</param>
-        public TwilioClientWrapper(TwilioAdapterOptions options)
+        public TwilioClientWrapper(TwilioClientWrapperOptions options)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
-
-            if (string.IsNullOrWhiteSpace(options.TwilioNumber))
-            {
-                throw new ArgumentException(nameof(options.TwilioNumber));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.TwilioAccountSid))
-            {
-                throw new ArgumentException(nameof(options.TwilioAccountSid));
-            }
-
-            if (string.IsNullOrWhiteSpace(options.TwilioAuthToken))
-            {
-                throw new ArgumentException(nameof(options.TwilioAuthToken));
-            }
-
+            
             TwilioClient.Init(Options.TwilioAccountSid, Options.TwilioAuthToken);
         }
 
-        public TwilioAdapterOptions Options { get; }
+        /// <summary>
+        /// Gets the <see cref="TwilioClientWrapperOptions"/> for the wrapper. 
+        /// </summary>
+        /// <value>
+        /// The <see cref="TwilioClientWrapperOptions"/> for the wrapper.
+        /// </value>
+        public TwilioClientWrapperOptions Options { get; }
 
         /// <summary>
         /// Sends a Twilio SMS message.
@@ -54,9 +45,17 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="messageOptions">An object containing the parameters for the message to send.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The SID of the Twilio message sent.</returns>
-        public virtual async Task<string> SendMessage(CreateMessageOptions messageOptions, CancellationToken cancellationToken)
+        public virtual async Task<string> SendMessageAsync(TwilioMessageOptions messageOptions, CancellationToken cancellationToken)
         {
-            var messageResource = await MessageResource.CreateAsync(messageOptions).ConfigureAwait(false);
+            var createMessageOptions = new CreateMessageOptions(messageOptions.To)
+            {
+                ApplicationSid = messageOptions.ApplicationSid,
+                MediaUrl = messageOptions.MediaUrl,
+                Body = messageOptions.Body,
+                From = messageOptions.From
+            };
+
+            var messageResource = await MessageResource.CreateAsync(createMessageOptions).ConfigureAwait(false);
             return messageResource.Sid;
         }
 
