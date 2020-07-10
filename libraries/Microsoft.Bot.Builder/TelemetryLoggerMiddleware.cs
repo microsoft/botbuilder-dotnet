@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -220,12 +222,14 @@ namespace Microsoft.Bot.Builder
                 }
             }
 
+            PopulateAdditionalChannelProperties(activity, properties);
+            
             // Additional Properties can override "stock" properties.
             if (additionalProperties != null)
             {
                 return Task.FromResult(additionalProperties.Concat(properties)
-                           .GroupBy(kv => kv.Key)
-                           .ToDictionary(g => g.Key, g => g.First().Value));
+                    .GroupBy(kv => kv.Key)
+                    .ToDictionary(g => g.Key, g => g.First().Value));
             }
 
             return Task.FromResult(properties);
@@ -344,6 +348,25 @@ namespace Microsoft.Bot.Builder
             }
 
             return Task.FromResult(properties);
+        }
+
+        private static void PopulateAdditionalChannelProperties(Activity activity, Dictionary<string, string> properties)
+        {
+            switch (activity.ChannelId)
+            {
+                case Channels.Msteams:
+                    var teamsChannelData = activity.GetChannelData<TeamsChannelData>();
+                    
+                    properties.Add("TeamsTenantId", teamsChannelData?.Tenant?.Id);
+                    properties.Add("TeamsUserAadObjectId", activity.From?.AadObjectId);
+
+                    if (teamsChannelData?.Team != null)
+                    {
+                        properties.Add("TeamsTeamInfo", JsonConvert.SerializeObject(teamsChannelData.Team));
+                    }
+
+                    break;
+            }
         }
     }
 }
