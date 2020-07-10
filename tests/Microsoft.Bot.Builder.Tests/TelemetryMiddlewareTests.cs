@@ -561,6 +561,40 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("text"));
         }
 
+        [Fact]
+        public async Task DoNotThrowOnNullActivity()
+        {
+            // Arrange
+            var mockTelemetryClient = new Mock<IBotTelemetryClient>();
+            
+            var middleware = new OverriddenOnTurnLogger(mockTelemetryClient.Object, true);
+
+            await middleware.OnTurnAsync(null, null, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(4, mockTelemetryClient.Invocations.Count);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count == 0);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).Count == 0);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).Count == 0);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count == 0);
+        }
+
+        public class OverriddenOnTurnLogger : TelemetryLoggerMiddleware
+        {
+            public OverriddenOnTurnLogger(IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
+                : base(telemetryClient, logPersonalInformation)
+            {
+            }
+
+            public override async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
+            {
+                await OnReceiveActivityAsync(null, cancellationToken);
+                await OnUpdateActivityAsync(null, cancellationToken);
+                await OnSendActivityAsync(null, cancellationToken);
+                await OnDeleteActivityAsync(null, cancellationToken);
+            }
+        }
+
         public class OverrideReceiveLogger : TelemetryLoggerMiddleware
         {
             public OverrideReceiveLogger(IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
