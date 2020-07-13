@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
-        public virtual IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<IDialog> GetDependencies()
         {
             yield return this.DefaultScope;
 

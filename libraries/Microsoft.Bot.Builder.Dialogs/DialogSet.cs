@@ -11,11 +11,11 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// A collection of <see cref="Dialog"/> objects that can all call each other.
+    /// A collection of <see cref="IDialog"/> objects that can all call each other.
     /// </summary>
     public class DialogSet
     {
-        private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
+        private readonly IDictionary<string, IDialog> _dialogs = new Dictionary<string, IDialog>();
         private readonly IStatePropertyAccessor<DialogState> _dialogState;
         private IBotTelemetryClient _telemetryClient;
         private string _version;
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>The dialog set after the operation is complete.</returns>
         /// <remarks>The added dialog's <see cref="Dialog.TelemetryClient"/> is set to the
         /// <see cref="TelemetryClient"/> of the dialog set.</remarks>
-        public DialogSet Add(Dialog dialog)
+        public DialogSet Add(IDialog dialog)
         {
             // Ensure new version hash is computed
             _version = null;
@@ -181,11 +181,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Searches the current <see cref="DialogSet"/> for a <see cref="Dialog"/> by its ID.
+        /// Searches the current <see cref="DialogSet"/> for a <see cref="IDialog"/> by its ID.
         /// </summary>
         /// <param name="dialogId">ID of the dialog to search for.</param>
         /// <returns>The dialog if found; otherwise <c>null</c>.</returns>
-        public Dialog Find(string dialogId)
+        public IDialog Find(string dialogId)
         {
             if (string.IsNullOrWhiteSpace(dialogId))
             {
@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return null;
         }
 
-        public IEnumerable<Dialog> GetDialogs()
+        public IEnumerable<IDialog> GetDialogs()
         {
             return _dialogs.Values;
         }

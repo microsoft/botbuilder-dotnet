@@ -249,7 +249,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             return $"{this.GetType().Name}()";
         }
 
-        public virtual IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<IDialog> GetDependencies()
         {
             yield return this.ActionScope;
         }

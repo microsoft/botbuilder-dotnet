@@ -297,7 +297,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return null;
         }
 
-        public IEnumerable<Dialog> GetDependencies()
+        public IEnumerable<IDialog> GetDependencies()
         {
             EnsureDependenciesInstalled();
 

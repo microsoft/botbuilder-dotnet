@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// <param name="more">label.</param>
         /// <param name="cancellationToken">cancellation token for async operations.</param>
         /// <returns>async task.</returns>
-        public static async Task DebuggerStepAsync(this DialogContext context, Dialog dialog, string more, CancellationToken cancellationToken)
+        public static async Task DebuggerStepAsync(this DialogContext context, IDialog dialog, string more, CancellationToken cancellationToken)
         {
             await context.GetDebugger().StepAsync(context, dialog, more, cancellationToken).ConfigureAwait(false);
         }

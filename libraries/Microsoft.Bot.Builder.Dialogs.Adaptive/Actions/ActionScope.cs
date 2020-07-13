@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return StringUtils.Hash(sb.ToString());
         }
 
-        public virtual IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<IDialog> GetDependencies()
         {
             foreach (var action in Actions)
             {

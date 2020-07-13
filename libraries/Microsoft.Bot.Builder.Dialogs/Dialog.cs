@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Base class for all dialogs.
     /// </summary>
     [DebuggerDisplay("{Id}")]
-    public abstract class Dialog
+    public abstract class Dialog : IDialog
     {
         /// <summary>
         /// A <see cref="DialogTurnResult"/> that indicates that the current dialog is still

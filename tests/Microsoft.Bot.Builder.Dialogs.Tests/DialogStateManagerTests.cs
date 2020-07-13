@@ -462,7 +462,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 return await dc.BeginDialogAsync("d2", options: new { test = "123" });
             }
 
-            public IEnumerable<Dialog> GetDependencies()
+            public IEnumerable<IDialog> GetDependencies()
             {
                 return this.Dialogs.GetDialogs();
             }
@@ -562,7 +562,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 return await dc.BeginDialogAsync("d1");
             }
 
-            public IEnumerable<Dialog> GetDependencies()
+            public IEnumerable<IDialog> GetDependencies()
             {
                 return Dialogs.GetDialogs();
             }

@@ -208,6 +208,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Adds a new <see cref="IDialog"/> to the component dialog and returns the updated component.
+        /// </summary>
+        /// <param name="dialog">The dialog to add.</param>
+        /// <returns>The <see cref="ComponentDialog"/> after the operation is complete.</returns>
+        /// <remarks>The added dialog's <see cref="Dialog.TelemetryClient"/> is set to the
+        /// <see cref="DialogContainer.TelemetryClient"/> of the component dialog.</remarks>
+        public ComponentDialog AddDialog(IDialog dialog)
+        {
+            this.Dialogs.Add(dialog);
+
+            if (this.InitialDialogId == null)
+            {
+                this.InitialDialogId = dialog.Id;
+            }
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a new <see cref="Dialog"/> to the component dialog and returns the updated component.
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>

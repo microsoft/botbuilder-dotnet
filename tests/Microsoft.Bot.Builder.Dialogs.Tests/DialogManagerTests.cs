@@ -425,7 +425,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     .ConfigureAwait(false);
             }
 
-            public IEnumerable<Dialog> GetDependencies()
+            public IEnumerable<IDialog> GetDependencies()
             {
                 return Dialogs.GetDialogs();
             }

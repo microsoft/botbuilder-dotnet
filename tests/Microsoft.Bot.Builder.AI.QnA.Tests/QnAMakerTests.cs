@@ -1625,7 +1625,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 }
             }
 
-            public IEnumerable<Dialog> GetDependencies()
+            public IEnumerable<IDialog> GetDependencies()
             {
                 return Dialogs.GetDialogs();
             }

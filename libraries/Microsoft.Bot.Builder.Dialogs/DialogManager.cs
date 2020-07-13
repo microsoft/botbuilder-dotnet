@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// Root dialog to use to start conversation.
         /// </value>
-        public Dialog RootDialog
+        public IDialog RootDialog
         {
             get
             {

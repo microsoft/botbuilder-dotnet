@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("changeType")]
         public EnumExpression<ActionChangeType> ChangeType { get; set; } = new EnumExpression<ActionChangeType>();
 
-        public virtual IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<IDialog> GetDependencies()
         {
             return this.Actions;
         }

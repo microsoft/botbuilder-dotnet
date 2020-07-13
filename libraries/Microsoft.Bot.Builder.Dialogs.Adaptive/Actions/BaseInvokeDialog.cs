@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("activityProcessed")]
         public BoolExpression ActivityProcessed { get; set; } = true;
 
-        public virtual IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<IDialog> GetDependencies()
         {
             if (Dialog?.Value != null)
             {
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         /// <param name="dc">dialogcontext.</param>
         /// <returns>dialog.</returns>
-        protected virtual Dialog ResolveDialog(DialogContext dc)
+        protected virtual IDialog ResolveDialog(DialogContext dc)
         {
             if (this.Dialog?.Value != null)
             {

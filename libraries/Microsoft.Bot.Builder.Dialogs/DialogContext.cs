@@ -561,7 +561,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">dialog id to find.</param>
         /// <returns>dialog with that id.</returns>
-        public Dialog FindDialog(string dialogId)
+        public IDialog FindDialog(string dialogId)
         {
             try
             {

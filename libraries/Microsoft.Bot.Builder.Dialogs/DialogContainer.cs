@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public abstract DialogContext CreateChildContext(DialogContext dc);
 
-        public virtual Dialog FindDialog(string dialogId)
+        public virtual IDialog FindDialog(string dialogId)
         {
             return this.Dialogs.Find(dialogId);
         }
