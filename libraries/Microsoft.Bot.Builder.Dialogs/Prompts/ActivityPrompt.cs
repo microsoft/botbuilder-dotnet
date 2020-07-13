@@ -15,10 +15,10 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     /// <remarks>
     /// This prompt requires a validator be passed in and is useful when waiting for non-message
-    /// activities like an event to be received.The validator can ignore received activities until
+    /// activities like an event to be received. The validator can ignore received activities until
     /// the expected activity type is received.
     /// </remarks>
-    public abstract class ActivityPrompt : Dialog
+    public class ActivityPrompt : Dialog
     {
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
