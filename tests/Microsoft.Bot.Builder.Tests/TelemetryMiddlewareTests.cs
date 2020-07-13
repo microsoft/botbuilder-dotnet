@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -562,6 +563,33 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task Telemetry_LogTeamsProperties()
+        {
+            // Arrange
+            var mockTelemetryClient = new Mock<IBotTelemetryClient>();
+
+            var adapter = new TestAdapter(Channels.Msteams)
+                .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object));
+
+            var teamInfo = new TeamInfo("teamId", "teamName");
+            var channelData = new TeamsChannelData(null, null, teamInfo, null, new TenantInfo("tenantId"));
+            var activity = MessageFactory.Text("test");
+
+            activity.ChannelData = channelData;
+            activity.From = new ChannelAccount("userId", "userName", null, "aadId");
+
+            // Act
+            await new TestFlow(adapter)
+                .Send(activity)
+                .StartTestAsync();
+
+            // Assert
+            Assert.Equal("BotMessageReceived", mockTelemetryClient.Invocations[0].Arguments[0]);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["TeamsUserAadObjectId"] == "aadId");
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["TeamsTenantId"] == "tenantId");
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["TeamsTeamInfo"] == JsonConvert.SerializeObject(teamInfo));
+        }
+      
         public async Task DoNotThrowOnNullActivity()
         {
             // Arrange
