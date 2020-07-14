@@ -64,8 +64,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Trace unhandled "versionChanged" and "error" events.
             if (!handled && (e.Name == DialogEvents.VersionChanged || e.Name == DialogEvents.Error))
             {
-                dc.Dialogs.TelemetryClient.TrackTrace($"Unhandled dialog event: {e.Name}. Active Dialog: {dc.ActiveDialog.Id}", Severity.Warning, null);
-                await dc.Context.TraceActivityAsync($"Unhandled dialog event: {e.Name}. Active Dialog: {dc.ActiveDialog.Id}", cancellationToken: cancellationToken)
+                var traceMessage = $"Unhandled dialog event: {e.Name}. Active Dialog: {dc.ActiveDialog.Id}";
+
+                dc.Dialogs.TelemetryClient.TrackTrace(traceMessage, Severity.Warning, null);
+
+                await dc.Context.TraceActivityAsync(traceMessage, cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
             }
 
