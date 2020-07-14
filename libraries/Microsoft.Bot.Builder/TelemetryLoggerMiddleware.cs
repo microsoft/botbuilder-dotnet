@@ -257,8 +257,8 @@ namespace Microsoft.Bot.Builder
             var properties = new Dictionary<string, string>()
                 {
                     { TelemetryConstants.ReplyActivityIDProperty, activity.ReplyToId },
-                    { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
-                    { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
+                    { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
+                    { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
                     { TelemetryConstants.LocaleProperty, activity.Locale },
                 };
 
@@ -313,9 +313,9 @@ namespace Microsoft.Bot.Builder
 
             var properties = new Dictionary<string, string>()
                 {
-                    { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
-                    { TelemetryConstants.ConversationIdProperty, activity.Conversation.Id },
-                    { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
+                    { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
+                    { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
+                    { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
                     { TelemetryConstants.LocaleProperty, activity.Locale },
                 };
 
@@ -353,9 +353,9 @@ namespace Microsoft.Bot.Builder
 
             var properties = new Dictionary<string, string>()
                 {
-                    { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
-                    { TelemetryConstants.ConversationIdProperty, activity.Conversation.Id },
-                    { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
+                    { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
+                    { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
+                    { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
                 };
 
             // Additional Properties can override "stock" properties.
