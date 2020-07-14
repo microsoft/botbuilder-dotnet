@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.TraceExtensions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -47,6 +48,21 @@ namespace Microsoft.Bot.Builder.Dialogs
         public virtual Dialog FindDialog(string dialogId)
         {
             return this.Dialogs.Find(dialogId);
+        }
+
+        public override async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            var handled = await base.OnDialogEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
+
+            // Trace unhandled "versionChanged" and "error" events.
+            if (!handled && (e.Name == DialogEvents.VersionChanged || e.Name == DialogEvents.Error))
+            {
+                dc.Dialogs.TelemetryClient.TrackTrace($"Unhandled dialog event: {e.Name}. Active Dialog: {dc.ActiveDialog.Id}", Severity.Warning, null);
+                await dc.Context.TraceActivityAsync($"Unhandled dialog event: {e.Name}. Active Dialog: {dc.ActiveDialog.Id}", cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
+            return handled;
         }
 
         /// <summary>
