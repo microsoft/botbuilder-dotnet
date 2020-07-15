@@ -17,7 +17,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The list of questions indexed in the QnA Service for the given answer.
         /// </value>
         [JsonProperty("questions")]
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public string[] Questions { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets or sets the answer text.
@@ -46,7 +48,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Metadata that is associated with the answer.
         /// </value>
         [JsonProperty(PropertyName = "metadata")]
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public Metadata[] Metadata { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets or sets the source from which the QnA was extracted.
