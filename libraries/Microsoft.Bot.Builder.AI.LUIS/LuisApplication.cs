@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             if (!Uri.TryCreate(applicationEndpoint, UriKind.Absolute, out var uri))
             {
-                throw new ArgumentException(nameof(applicationEndpoint));
+                throw new ArgumentException($"Unable to create the LUIS endpoint with the given {applicationEndpoint}.", nameof(applicationEndpoint));
             }
 
             var applicationId = string.Empty;
