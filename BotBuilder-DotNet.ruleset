@@ -9,6 +9,7 @@
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
     <Rule Id="CA1054" Action="None" /> <!-- UriParametersShouldNotBeStrings -->
     <Rule Id="CA1062" Action="None" /> <!-- ValidateArgumentsOfPublicMethods -->
+    <Rule Id="CA1822" Action="None" /> <!-- Mark members as static -->
   </Rules>
   <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
     <Rule Id="CA1303" Action="None" /> <!-- DoNotPassLiteralsAsLocalizedParameters -->

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -38,14 +39,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
 
-#pragma warning disable CS0169 // Field is never used
-        [Obsolete]
-        private readonly LuisApplication _application;
-        [Obsolete]
-        private readonly LuisPredictionOptions _options;
-        [Obsolete]
-        private readonly bool _includeApiResults;
-#pragma warning restore CS0169 // Field is never used
         private readonly LuisRecognizerOptions _luisRecognizerOptions;
 
         /// <summary>
@@ -62,12 +55,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             var delegatingHandler = new LuisDelegatingHandler();
             var httpClientHandler = clientHandler ?? CreateRootHandler();
+#pragma warning disable CA2000 // Dispose objects before losing scope (suppressing this warning, for now! we will address this once we implement HttpClientFactory in a future release)
             var currentHandler = CreateHttpHandlerPipeline(httpClientHandler, delegatingHandler);
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
-            DefaultHttpClient = new HttpClient(currentHandler, false)
+            HttpClient = new HttpClient(currentHandler, false)            
             {
                 Timeout = TimeSpan.FromMilliseconds(recognizerOptions.Timeout),
             };
+
+#pragma warning disable 618 // Reference to obsolete property, this is here only for backward compat and should be removed when DefaultHttpClient is removed.
+            DefaultHttpClient = HttpClient;
+#pragma warning restore 618
         }
 
         /// <summary>
@@ -132,6 +131,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// A <see cref="HttpClient"/>.
         /// </value>
+        [Obsolete("This property is deprecated and will be removed in future versions of the SDK.")]
         public static HttpClient DefaultHttpClient { get; private set; }
 
         /// <summary>
@@ -146,6 +146,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>The <see cref="IBotTelemetryClient"/> being used to log events.</value>
         [JsonIgnore]
         public IBotTelemetryClient TelemetryClient { get; }
+
+        /// <summary>
+        /// Gets the HttpClient used when calling the LUIS API.
+        /// </summary>
+        /// <value>
+        /// A <see cref="HttpClient"/>.
+        /// </value>
+        /// <remarks>
+        /// This property is internal only and intended to support unit tests. 
+        /// </remarks>
+        [JsonIgnore]
+        internal HttpClient HttpClient { get; }
 
         /// <summary>
         /// Returns the name of the top scoring intent from a set of LUIS results.
@@ -383,7 +395,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// additionalProperties
         /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageSend event.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat).
         protected Task<Dictionary<string, string>> FillLuisEventPropertiesAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
         {
             var topTwoIntents = (recognizerResult.Intents.Count > 0) ? recognizerResult.Intents.OrderByDescending(x => x.Value.Score).Take(2).ToArray() : null;
 
@@ -392,9 +406,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 { LuisTelemetryConstants.ApplicationIdProperty, _luisRecognizerOptions.Application.ApplicationId },
                 { LuisTelemetryConstants.IntentProperty, topTwoIntents?[0].Key ?? string.Empty },
-                { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2") ?? "0.00" },
-                { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
-                { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2") ?? "0.00" : "0.00" },
+                { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2", CultureInfo.InvariantCulture) ?? "0.00" },
+                { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Length > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
+                { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Length > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2", CultureInfo.InvariantCulture) ?? "0.00" : "0.00" },
                 { LuisTelemetryConstants.FromIdProperty, turnContext.Activity.From.Id },
             };
 
@@ -476,7 +490,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, LuisRecognizerOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
             var recognizer = predictionOptions ?? _luisRecognizerOptions;
-            var result = await recognizer.RecognizeInternalAsync(turnContext, DefaultHttpClient, cancellationToken).ConfigureAwait(false);
+            var result = await recognizer.RecognizeInternalAsync(turnContext, HttpClient, cancellationToken).ConfigureAwait(false);
             await OnRecognizerResultAsync(result, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
             return result;
         }
@@ -509,7 +523,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
             // Now, the RetryAfterDelegatingHandler should be the absolute outermost handler
             // because it's extremely lightweight and non-interfering
             DelegatingHandler currentHandler =
+#pragma warning disable CA2000 // Dispose objects before losing scope (suppressing this warning, for now! we will address this once we implement HttpClientFactory in a future release)
                 new RetryDelegatingHandler(new RetryAfterDelegatingHandler { InnerHandler = httpClientHandler });
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
             if (handlers != null)
             {
