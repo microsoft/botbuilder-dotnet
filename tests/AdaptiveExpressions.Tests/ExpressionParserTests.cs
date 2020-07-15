@@ -324,7 +324,6 @@ namespace AdaptiveExpressions.Tests
         {
             //locale specific tests, on Mac OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
-            Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("replace(addHours(timestamp, 2, '', 'de-DE'), '20', '')", "15.03.18 15:00:00"),
             Test("replace(addMinutes(timestamp, 30, '', 'de-DE'), '20', '')", "15.03.18 13:30:00"),
             Test("replace(addToTime('2018-01-01T00:00:00.000Z', 1, 'Week', '', 'de-DE'), '20', '')", "08.01.18 00:00:00"),
