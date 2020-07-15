@@ -17,7 +17,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.ApplyWithError(args => FunctionUtils.NormalizeToDateTime(args[0], dt => Convert.ToInt32(dt.DayOfWeek)));
+            return FunctionUtils.ApplyWithError(args => FunctionUtils.NormalizeToDateTime(args[0], dt => FunctionUtils.ParseInt32(dt.DayOfWeek)));
         }
     }
 }

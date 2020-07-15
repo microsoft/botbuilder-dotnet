@@ -682,7 +682,12 @@ namespace AdaptiveExpressions
             {
                 if (index >= 0 && index < list.Count)
                 {
-                    value = list[Convert.ToInt32(index)];
+                    var newIndex = 0;
+                    (newIndex, error) = ParseInt32(index);
+                    if (error == null)
+                    {
+                        value = list[newIndex];
+                    }
                 }
                 else
                 {
@@ -771,6 +776,27 @@ namespace AdaptiveExpressions
             }
 
             return isPresent;
+        }
+
+        /// <summary>
+        /// Convert an input object to 32-bit signed interger. If failed, an error messgage will returned.
+        /// </summary>
+        /// <param name="obj">Input object.</param>
+        /// <returns>A tuple of an integer and a string.</returns>
+        internal static (int, string) ParseInt32(object obj)
+        {
+            int result = 0;
+            string error = null;
+            try
+            {
+                result = Convert.ToInt32(obj);
+            }
+            catch
+            {
+                error = $"{obj} must be a 32-bit signed integer.";
+            }
+
+            return (result, error);
         }
 
         /// <summary>
@@ -988,7 +1014,7 @@ namespace AdaptiveExpressions
             return (converter, error);
         }
 
-        internal static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, object> transform = null)
+        internal static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, (object, string)> transform = null)
         {
             object result = null;
             string error = null;
@@ -998,7 +1024,7 @@ namespace AdaptiveExpressions
             }
             else if (timestamp is DateTime dt)
             {
-                result = transform != null ? transform(dt) : dt;
+                (result, error) = transform != null ? transform(dt) : (dt, null);
             }
             else
             {
@@ -1161,7 +1187,7 @@ namespace AdaptiveExpressions
                return (result, error);
            };
 
-        private static (object, string) ParseISOTimestamp(string timeStamp, Func<DateTime, object> transform = null)
+        private static (object, string) ParseISOTimestamp(string timeStamp, Func<DateTime, (object, string)> transform = null)
         {
             object result = null;
             string error = null;
@@ -1174,7 +1200,7 @@ namespace AdaptiveExpressions
             {
                 if (parsed.ToString(DefaultDateTimeFormat).Equals(timeStamp, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    result = transform != null ? transform(parsed) : parsed;
+                    (result, error) = transform != null ? transform(parsed) : (parsed, null);
                 }
                 else
                 {
