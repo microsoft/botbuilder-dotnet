@@ -156,6 +156,3 @@ csharp_preserve_single_line_blocks = true
 
 # CS0618: Type or member is obsolete
 dotnet_diagnostic.CS0618.severity = none
-
-# CA1309: Use ordinal stringcomparison
-dotnet_diagnostic.CA1309.severity = warning
