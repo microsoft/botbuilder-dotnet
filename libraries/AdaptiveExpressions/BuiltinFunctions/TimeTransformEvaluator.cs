@@ -43,7 +43,22 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     if (args[1].IsInteger())
                     {
-                        (value, error) = FunctionUtils.NormalizeToDateTime(args[0], dt => function(dt, Convert.ToInt32(args[1])).ToString(format, locale));
+                        (value, error) = FunctionUtils.NormalizeToDateTime(args[0], dt => 
+                        {
+                            var result = dt;
+                            var (interval, error) = FunctionUtils.ParseInt32(args[1]);
+                            if (error == null)
+                            {
+                                result = function(dt, interval);
+                            }
+
+                            return (result, error);
+                        });
+
+                        if (error == null)
+                        {
+                            value = Convert.ToDateTime(value).ToString(format, locale);
+                        }
                     }
                     else
                     {

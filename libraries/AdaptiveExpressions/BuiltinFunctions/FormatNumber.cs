@@ -45,8 +45,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
                             if (error == null)
                             {
-                                var number = Convert.ToDouble(args[0]);
-                                var precision = Convert.ToInt32(args[1]);
+                                var precision = 0;
+                                (precision, error) = FunctionUtils.ParseInt32(args[1]);
                                 result = number.ToString("N" + precision.ToString(), locale);
                             }
 

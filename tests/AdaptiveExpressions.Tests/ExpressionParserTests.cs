@@ -349,6 +349,7 @@ namespace AdaptiveExpressions.Tests
             Test("sentenceCase('aBC', 'fr-FR')", "Abc"),
             Test("titleCase('a', 'en-US')", "A"),
             Test("titleCase('abc dEF', 'en-US')", "Abc Def"),
+
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -559,6 +560,67 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("recipientName"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("fromName"));
             Assert.False(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).ContainsKey("text"));
+        }
+
+        [Fact]
+        public async Task Telemetry_LogTeamsProperties()
+        {
+            // Arrange
+            var mockTelemetryClient = new Mock<IBotTelemetryClient>();
+
+            var adapter = new TestAdapter(Channels.Msteams)
+                .Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object));
+
+            var teamInfo = new TeamInfo("teamId", "teamName");
+            var channelData = new TeamsChannelData(null, null, teamInfo, null, new TenantInfo("tenantId"));
+            var activity = MessageFactory.Text("test");
+
+            activity.ChannelData = channelData;
+            activity.From = new ChannelAccount("userId", "userName", null, "aadId");
+
+            // Act
+            await new TestFlow(adapter)
+                .Send(activity)
+                .StartTestAsync();
+
+            // Assert
+            Assert.Equal("BotMessageReceived", mockTelemetryClient.Invocations[0].Arguments[0]);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["TeamsUserAadObjectId"] == "aadId");
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["TeamsTenantId"] == "tenantId");
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["TeamsTeamInfo"] == JsonConvert.SerializeObject(teamInfo));
+        }
+      
+        public async Task DoNotThrowOnNullActivity()
+        {
+            // Arrange
+            var mockTelemetryClient = new Mock<IBotTelemetryClient>();
+            
+            var middleware = new OverriddenOnTurnLogger(mockTelemetryClient.Object, true);
+
+            await middleware.OnTurnAsync(null, null, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(4, mockTelemetryClient.Invocations.Count);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1]).Count == 0);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[1].Arguments[1]).Count == 0);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[2].Arguments[1]).Count == 0);
+            Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[3].Arguments[1]).Count == 0);
+        }
+
+        public class OverriddenOnTurnLogger : TelemetryLoggerMiddleware
+        {
+            public OverriddenOnTurnLogger(IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
+                : base(telemetryClient, logPersonalInformation)
+            {
+            }
+
+            public override async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
+            {
+                await OnReceiveActivityAsync(null, cancellationToken);
+                await OnUpdateActivityAsync(null, cancellationToken);
+                await OnSendActivityAsync(null, cancellationToken);
+                await OnDeleteActivityAsync(null, cancellationToken);
+            }
         }
 
         public class OverrideReceiveLogger : TelemetryLoggerMiddleware
