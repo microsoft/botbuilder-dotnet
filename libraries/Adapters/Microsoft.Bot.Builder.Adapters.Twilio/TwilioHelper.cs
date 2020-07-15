@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Twilio.Rest.Api.V2010.Account;
 
 #if SIGNASSEMBLY
 [assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Twilio.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
@@ -34,7 +33,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="twilioNumber">The Twilio phone number assigned to the bot.</param>
         /// <returns>The Twilio message options object.</returns>
         /// <seealso cref="TwilioAdapter.SendActivitiesAsync(ITurnContext, Activity[], System.Threading.CancellationToken)"/>
-        public static CreateMessageOptions ActivityToTwilio(Activity activity, string twilioNumber)
+        public static TwilioMessageOptions ActivityToTwilio(Activity activity, string twilioNumber)
         {
             if (activity == null)
             {
@@ -52,13 +51,15 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 mediaUrls.AddRange(activity.Attachments.Select(attachment => new Uri(attachment.ContentUrl)));
             }
 
-            var messageOptions = new CreateMessageOptions(activity.Conversation.Id)
+            var messageOptions = new TwilioMessageOptions()
             {
+                To = activity.Conversation.Id,
                 ApplicationSid = activity.Conversation.Id,
                 From = twilioNumber,
-                Body = activity.Text,
-                MediaUrl = mediaUrls,
+                Body = activity.Text
             };
+
+            messageOptions.MediaUrl.AddRange(mediaUrls);
 
             return messageOptions;
         }

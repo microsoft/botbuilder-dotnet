@@ -12,6 +12,7 @@
                     {
                         "$kind": "Microsoft.AdaptiveDialog",
                         "autoEndDialog": false,
+                        "id": "innerDialog",
                         "recognizer": {
                             "$kind": "Microsoft.RegexRecognizer",
                             "intents": [
@@ -61,6 +62,14 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${turn.dialogEvent.value.message}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${turn.dialogEvent.value.data.dialogcontext.activedialog}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${turn.dialogEvent.value.data.dialogcontext.parent}"
                     }
                 ]
             },
@@ -94,7 +103,15 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Specified argument was out of the range of valid values."
+            "text": "'foo' does not match memory scopes:[turn,settings,dialog,dialogContext,dialogclass,class,this,conversation,user]"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "SetProperty[=`foo`]"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "innerDialog"
         },
         {
             "$kind": "Microsoft.Test.UserSays",

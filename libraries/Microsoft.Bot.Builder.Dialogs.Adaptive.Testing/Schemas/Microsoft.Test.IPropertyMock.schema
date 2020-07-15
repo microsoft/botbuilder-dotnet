@@ -1,0 +1,6 @@
+﻿{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "title": "Microsoft Test IPropertyMock",
+    "description": "Components which derive from PropertyMock class",
+    "$role": "interface"
+}

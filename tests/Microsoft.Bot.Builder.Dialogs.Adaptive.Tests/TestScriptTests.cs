@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -85,7 +86,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task TestScriptTests_PropertyMock()
+        {
+            var configBuilder = new ConfigurationBuilder();
+            configBuilder.AddInMemoryCollection(new KeyValuePair<string, string>[]
+            {
+                new KeyValuePair<string, string>("file", "set settings.file"),
+                new KeyValuePair<string, string>("fileoverwrite", "this is overwritten")
+            });
+
+            await TestUtils.RunTestScript(ResourceExplorer, configuration: configBuilder.Build());
+        }
+
+        [TestMethod]
         public async Task TestScriptTests_UserConversationUpdate()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task TestScriptTests_UserTokenMock()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }

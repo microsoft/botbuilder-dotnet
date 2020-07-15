@@ -1,8 +1,8 @@
 ﻿{
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.Test.IHttpRequestMock)",
     "title": "HttpRequest Sequence Mock",
-    "description": "Mock HttpRqeust in sequence order.",
+    "description": "Mock HttpRequest in sequence order.",
     "type": "object",
     "required": [
         "url"

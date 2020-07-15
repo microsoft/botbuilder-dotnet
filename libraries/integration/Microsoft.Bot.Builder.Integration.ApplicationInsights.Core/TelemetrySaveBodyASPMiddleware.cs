@@ -12,8 +12,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 {
-    // This class has been deprecated in favor of using TelemetryInitializerMiddleware in
-    // Microsoft.Bot.Integration.ApplicationInsights.Core and Microsoft.Bot.Integration.ApplicationInsights.WebApi
+    /// <summary>
+    /// Middleware to store the incoming activity request body into the HttpContext items collection.
+    /// This class has been deprecated in favor of using TelemetryInitializerMiddleware in
+    /// Microsoft.Bot.Integration.ApplicationInsights.Core and Microsoft.Bot.Integration.ApplicationInsights.WebApi.
+    /// </summary>
     [Obsolete("This class is deprecated. Please add TelemetryInitializerMiddleware to your adapter's middleware pipeline instead.")]
     [SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "This class is deprecated, we won't fix FxCop issues")]
     [SuppressMessage("AsyncUsage.CSharp.Naming", "UseAsyncSuffix:Use Async suffix", Justification = "This class is deprecated, we won't fix FxCop issues")]
@@ -21,11 +24,20 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
     {
         private readonly RequestDelegate _next;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetrySaveBodyASPMiddleware"/> class.
+        /// </summary>
+        /// <param name="next">The delegate to the next piece of middleware in the pipeline.</param>
         public TelemetrySaveBodyASPMiddleware(RequestDelegate next)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
         }
 
+        /// <summary>
+        /// Invokes the TelemetrySaveBodyASPMiddleware middleware.
+        /// </summary>
+        /// <param name="httpContext">The HttpContext.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task Invoke(HttpContext httpContext)
         {
             var request = httpContext.Request;
