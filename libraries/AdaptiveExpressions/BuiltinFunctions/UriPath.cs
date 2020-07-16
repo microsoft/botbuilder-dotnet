@@ -49,7 +49,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     var uriBase = (Uri)result;
                     result = uriBase.AbsolutePath.ToString();
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (return generic error if the operation fails for whatever reason)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = "invalid operation, input uri should be an absolute URI";
                 }

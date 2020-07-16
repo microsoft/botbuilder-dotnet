@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections;
 using System.Linq;
 using AdaptiveExpressions.Memory;
@@ -28,7 +29,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     if (args[1] is string || args[1] == null)
                     {
-                        result = FunctionUtils.ParseStringOrNull(args[0]).LastIndexOf(FunctionUtils.ParseStringOrNull(args[1]));
+                        result = FunctionUtils.ParseStringOrNull(args[0]).LastIndexOf(FunctionUtils.ParseStringOrNull(args[1]), StringComparison.Ordinal);
                     }
                     else
                     {

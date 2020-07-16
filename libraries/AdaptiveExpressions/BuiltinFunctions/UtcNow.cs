@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Linq;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -18,7 +18,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.Apply(args => DateTime.UtcNow.ToString(args.Count() == 1 ? args[0].ToString() : FunctionUtils.DefaultDateTimeFormat));
+            return FunctionUtils.Apply(args => DateTime.UtcNow.ToString(args.Count == 1 ? args[0].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture));
         }
 
         private static void Validator(Expression expression)

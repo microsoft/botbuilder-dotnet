@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -18,7 +19,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static object Function(IReadOnlyList<object> args)
         {
-            return Math.Ceiling(Convert.ToDouble(args[0]));
+            return Math.Ceiling(Convert.ToDouble(args[0], CultureInfo.InvariantCulture));
         }
     }
 }
