@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             dc.State.SetValue(TurnPath.ActivityProcessed, this.ActivityProcessed.GetValue(dc.State));
 
             // replace dialog with bound options passed in as the options
-            return await dc.ReplaceDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await dc.Parent.ReplaceDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }
