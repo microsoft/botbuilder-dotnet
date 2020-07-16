@@ -115,7 +115,7 @@ namespace AdaptiveExpressions.Tests
             { "unixTimestamp", 1521118800 },
             { "unixTimestampFraction", 1521118800.5 },
             { "ticks", 637243624200000000 },
-            { 
+            {
                 "json1", @"{
                           'FirstName': 'John',
                           'LastName': 'Smith',
@@ -123,7 +123,7 @@ namespace AdaptiveExpressions.Tests
                           'Roles': [ 'User' ]
                         }"
             },
-            { 
+            {
                 "json2", @"{
                           'Enabled': true,
                           'Roles': [ 'Customer', 'Admin' ]
@@ -299,13 +299,57 @@ namespace AdaptiveExpressions.Tests
             }
         };
 
+        private readonly object scopeForThreadLocale = new Dictionary<string, object>
+        {
+            { "timestamp", "2018-03-15T13:00:00.000Z" },
+            { "unixTimestamp", 1521118800 },
+            { "ticks", 637243624200000000 },
+            {
+                "turn",
+                new
+                {
+                    activity = new
+                    {
+                        locale = "es-ES"
+                    }
+                }
+            }
+        };
+
         public static HashSet<string> One { get; set; } = new HashSet<string> { "one" };
 
         public static HashSet<string> OneTwo { get; set; } = new HashSet<string> { "one", "two" };
 
         public static IEnumerable<object[]> Data => new[]
         {
-            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
+            //locale specific tests, on Mac OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
+            Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
+            Test("replace(addHours(timestamp, 2, '', 'de-DE'), '20', '')", "15.03.18 15:00:00"),
+            Test("replace(addMinutes(timestamp, 30, '', 'de-DE'), '20', '')", "15.03.18 13:30:00"),
+            Test("replace(addToTime('2018-01-01T00:00:00.000Z', 1, 'Week', '', 'de-DE'), '20', '')", "08.01.18 00:00:00"),
+            Test("startOfDay('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "15/03/2018 00:00:00"),
+            Test("startOfHour('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "15/03/2018 13:00:00"),
+            Test("startOfMonth('2018-03-15T13:30:30.000Z', '', 'fr-FR')", "01/03/2018 00:00:00"),
+            Test("replace(convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', '', 'de-DE'), '20', '')", "01.01.18 08:00:00"),
+            Test("replace(convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '', 'de-DE'), '20', '')", "01.01.18 18:00:00"),
+            Test("substring(utcNow('', 'de-DE'), 0, 6)", DateTime.UtcNow.ToString(new CultureInfo("de-DE")).Substring(0, 6)),
+            Test("substring(getPastTime(1,'Day', '', 'de-DE'), 0, 6)", DateTime.UtcNow.AddDays(-1).ToString(new CultureInfo("de-DE")).Substring(0, 6)),
+            Test("replace(subtractFromTime(timestamp, 1, 'Hour', '', 'de-DE'), '20', '')", "15.03.18 12:00:00"),
+            Test("replace(formatEpoch(unixTimestamp, '', 'de-DE'), '20', '')", "15.03.18 13:00:00"),
+            Test("replace(formatTicks(ticks, '', 'de-DE'), '2020', '20')", "06.05.20 11:47:00"),
+            Test("replace(formatDateTime('2018-03-15', '', 'de-DE'), '20', '')", "15.03.18 00:00:00"),
+            Test("substring(getFutureTime(1,'Year', '', 'de-DE'), 0, 10)", DateTime.UtcNow.AddYears(1).ToString(new CultureInfo("de-DE")).Substring(0, 10)),
+            Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
+            Test("toUpper('lowercase', 'en-US')", "LOWERCASE"),
+            Test("toLower('I AM WHAT I AM', 'fr-FR')", "i am what i am"),
+            Test("string(user.income, 'fr-FR')", "100,1"),
+            Test("string(user.income, 'en-US')", "100.1"),
+            Test("sentenceCase('a', 'fr-FR')", "A"),
+            Test("sentenceCase('abc', 'en-US')", "Abc"),
+            Test("sentenceCase('aBC', 'fr-FR')", "Abc"),
+            Test("titleCase('a', 'en-US')", "A"),
+            Test("titleCase('abc dEF', 'en-US')", "Abc Def"),
+
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
@@ -626,7 +670,7 @@ namespace AdaptiveExpressions.Tests
             Test("int('10')", 10),
             Test("int(12345678912345678 + 1)", 12345678912345679),
             Test("string('str')", "str"),
-            Test("string(one)", "1.0"),
+            Test("string(one)", "1"),
             Test("string(bool(1))", "true"),
             Test("string(bag.set)", "{\"four\":4.0}"),
             Test("bool(1)", true),
@@ -654,7 +698,7 @@ namespace AdaptiveExpressions.Tests
             Test("base64(byteArr)", "AwUBDA=="),
             Test("base64ToBinary(base64(byteArr))", new byte[] { 3, 5, 1, 12 }),
             Test("base64ToString(base64(hello))", "hello"),
-            Test("base64(base64ToBinary(\"AwUBDA==\"))", "AwUBDA=="), 
+            Test("base64(base64ToBinary(\"AwUBDA==\"))", "AwUBDA=="),
             Test("dataUri(hello)", "data:text/plain;charset=utf-8;base64,aGVsbG8="),
             Test("dataUriToBinary(base64(hello))", new byte[] { 97, 71, 86, 115, 98, 71, 56, 61 }),
             Test("dataUriToString(dataUri(hello))", "hello"),
@@ -663,10 +707,10 @@ namespace AdaptiveExpressions.Tests
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
             Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
             Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
-            Test("formatNumber(20.0000, 2)", "20.00"),
-            Test("formatNumber(12.123, 2)", "12.12"),
-            Test("formatNumber(1.551, 2)", "1.55"),
-            Test("formatNumber(12.123, 4)", "12.1230"),
+            Test("formatNumber(20.0000, 2, 'en-US')", "20.00"),
+            Test("formatNumber(12.123, 2, 'en-US')", "12.12"),
+            Test("formatNumber(1.551, 2, 'en-US')", "1.55"),
+            Test("formatNumber(12.123, 4, 'en-US')", "12.1230"),
             Test("formatNumber(12000.3, 4, 'fr-fr') == '12\x00A0000,3000' || formatNumber(12000.3, 4, 'fr-fr') == '12\x202F000,3000'", true),
             #endregion
 
@@ -755,7 +799,7 @@ namespace AdaptiveExpressions.Tests
             Test("year(timestamp)", 2018),
             Test("year(timestampObj)", 2018),
             Test("length(utcNow())", 24),
-            Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")), 
+            Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")),
             Test("formatDateTime(notISOTimestamp)", "2018-03-15T13:00:00.000Z"),
             Test("formatDateTime(notISOTimestamp, 'MM-dd-yy')", "03-15-18"),
             Test("formatDateTime('2018-03-15')", "2018-03-15T00:00:00.000Z"),
@@ -790,11 +834,11 @@ namespace AdaptiveExpressions.Tests
             Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.UtcNow.AddMonths(1).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.UtcNow.AddDays(7).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.UtcNow.AddDays(1).ToString("MM-dd-yy")),
-            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D')", "Monday, 01 January 2018"),
-            Test("convertFromUTC(timestampObj2, 'Pacific Standard Time', 'D')", "Monday, 01 January 2018"),
-            Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D')", "Monday, 01 January 2018"),
+            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D', 'en-US')", "Monday, January 1, 2018"),
+            Test("convertFromUTC(timestampObj2, 'Pacific Standard Time', 'D', 'en-US')", "Monday, January 1, 2018"),
+            Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D', 'en-US')", "Monday, January 1, 2018"),
             Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time')", "2018-01-01T08:00:00.000Z"),
-            Test("addToTime('2018-01-01T08:00:00.000Z', 1, 'Day', 'D')", "Tuesday, 02 January 2018"),
+            Test("addToTime('2018-01-01T08:00:00.000Z', 1, 'Day', 'D', 'en-US')", "Tuesday, January 2, 2018"),
             Test("addToTime('2018-01-01T00:00:00.000Z', 1, 'Week')", "2018-01-08T00:00:00.000Z"),
             Test("addToTime(timestampObj2, 1, 'Week')", "2018-01-09T02:00:00.000Z"),
             Test("startOfDay('2018-03-15T13:30:30.000Z')", "2018-03-15T00:00:00.000Z"),
@@ -1025,6 +1069,36 @@ namespace AdaptiveExpressions.Tests
             #endregion
         };
 
+        public static IEnumerable<object[]> DataForThreadLocale => new[]
+        {
+            Test("replace(addDays(timestamp, 1, '', 'en-US'), '20', '')", "3/16/18 1:00:00 PM"),
+            Test("addDays(timestamp, 1, 'D')", "vendredi 16 mars 2018"),
+            Test("addHours(timestamp, 2, 'D')", "jeudi 15 mars 2018"),
+            Test("addMinutes(timestamp, 30, '')", "15/03/2018 13:30:00"),
+            Test("addToTime('2018-01-01T00:00:00.000Z', 1, 'Week', 'D')", "lundi 8 janvier 2018"),
+            Test("startOfDay('2018-03-15T13:30:30.000Z', 'D')", "jeudi 15 mars 2018"),
+            Test("startOfHour('2018-03-15T13:30:30.000Z', '')", "15/03/2018 13:00:00"),
+            Test("startOfMonth('2018-03-15T13:30:30.000Z', '')", "01/03/2018 00:00:00"),
+            Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time', 'D')", "lundi 1 janvier 2018"),
+            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', '')", "01/01/2018 18:00:00"),
+            Test("utcNow('D')", DateTime.UtcNow.ToString("D", new CultureInfo("fr-FR"))),
+            Test("getPastTime(1,'Day', 'D')", DateTime.UtcNow.AddDays(-1).ToString("D", new CultureInfo("fr-FR"))),
+            Test("subtractFromTime(timestamp, 1, 'Hour', '')", "15/03/2018 12:00:00"),
+            Test("formatEpoch(unixTimestamp, '')", "15/03/2018 13:00:00"),
+            Test("formatTicks(ticks, '')", "06/05/2020 11:47:00"),
+            Test("formatDateTime('2018-03-15', 'D')", "jeudi 15 mars 2018"),
+            Test("getFutureTime(1, 'Year', 'D')", DateTime.UtcNow.AddYears(1).ToString("D", new CultureInfo("fr-FR"))),
+            Test("addDays(timestamp, 1, '')", "16/03/2018 13:00:00"),
+            Test("toUpper('lowercase')", "LOWERCASE"),
+            Test("toLower('I AM WHAT I AM')", "i am what i am"),
+            Test("string(100.1)", "100,1"),
+            Test("sentenceCase('a')", "A"),
+            Test("sentenceCase('abc')", "Abc"),
+            Test("sentenceCase('aBC')", "Abc"),
+            Test("titleCase('a')", "A"),
+            Test("titleCase('abc dEF')", "Abc Def")
+        };
+
         public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
 
         public static bool IsNumber(object value) =>
@@ -1058,6 +1132,29 @@ namespace AdaptiveExpressions.Tests
             // ToString re-parse
             var newExpression = Expression.Parse(parsed.ToString());
             var newActual = newExpression.TryEvaluate(scope).value;
+            AssertObjectEquals(actual, newActual);
+        }
+
+        [Theory]
+        [MemberData(nameof(DataForThreadLocale))]
+        public void EvaluateWithLocale(string input, object expected, HashSet<string> expectedRefs)
+        {
+            var parsed = Expression.Parse(input);
+            Assert.NotNull(parsed);
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            var opts = new Options() { Locale = "fr-FR" };
+            var (actual, msg) = parsed.TryEvaluate(scopeForThreadLocale, opts);
+            Assert.Null(msg);
+            AssertObjectEquals(expected, actual);
+            if (expectedRefs != null)
+            {
+                var actualRefs = parsed.References();
+                Assert.True(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
+            }
+
+            // ToString re-parse
+            var newExpression = Expression.Parse(parsed.ToString());
+            var newActual = newExpression.TryEvaluate(scopeForThreadLocale, opts).value;
             AssertObjectEquals(actual, newActual);
         }
 

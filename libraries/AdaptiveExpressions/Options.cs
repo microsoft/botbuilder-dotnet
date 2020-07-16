@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace AdaptiveExpressions
 {
@@ -10,11 +11,13 @@ namespace AdaptiveExpressions
         public Options()
         {
             this.NullSubstitution = null;
+            this.Locale = Thread.CurrentThread.CurrentCulture.Name;
         }
 
         public Options(Options opt)
         {
             this.NullSubstitution = opt.NullSubstitution;
+            this.Locale = opt.Locale;
         }
 
         /// <summary>
@@ -24,5 +27,13 @@ namespace AdaptiveExpressions
         /// The function delegate.
         /// </value>
         public Func<string, object> NullSubstitution { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets a value, a locale of CultureInfo.
+        /// </summary>
+        /// <value>
+        /// The locale info.
+        /// </value>
+        public string Locale { get; set; } = Thread.CurrentThread.CurrentCulture.Name;
     }
 }

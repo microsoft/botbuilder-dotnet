@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -38,6 +39,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.StrictMode = null;
             this.NullSubstitution = null;
             this.LineBreakStyle = null;
+            this.Locale = null;
         }
 
         public EvaluationOptions(EvaluationOptions opt)
@@ -45,6 +47,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.StrictMode = opt.StrictMode;
             this.NullSubstitution = opt.NullSubstitution;
             this.LineBreakStyle = opt.LineBreakStyle;
+            this.Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
         }
 
         public EvaluationOptions(IList<string> optionsList)
@@ -93,6 +96,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// A boolean or null value.
         /// </value>
         public bool? StrictMode { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the locale for evaluating LG.
+        /// </summary>
+        /// <value>
+        /// A CultureInfo or null object.
+        /// </value>
+        public string Locale { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the option of a function to replace a null value. If nullSubstitution is specified,

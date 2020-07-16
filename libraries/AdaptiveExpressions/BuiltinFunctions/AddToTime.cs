@@ -3,7 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
+using System.Threading;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -23,24 +24,31 @@ namespace AdaptiveExpressions.BuiltinFunctions
             object value = null;
             string error = null;
             IReadOnlyList<object> args;
+            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
+            var format = FunctionUtils.DefaultDateTimeFormat;
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+
             if (error == null)
             {
-                var format = (args.Count() == 4) ? (string)args[3] : FunctionUtils.DefaultDateTimeFormat;
+                (format, locale, error) = FunctionUtils.DetermineFormatAndLocale(args, format, locale, 5);
+            }
+
+            if (error == null)
+            {
                 if (args[1].IsInteger() && args[2] is string timeUnit)
                 {
-                    (value, error) = EvalAddToTime(args[0], Convert.ToInt64(args[1]), timeUnit, format);
+                    (value, error) = EvalAddToTime(args[0], Convert.ToInt64(args[1]), timeUnit, format, locale);
                 }
                 else
                 {
-                    error = $"{expression} should contain an ISO format timestamp, a time interval integer, a string unit of time and an optional output format string.";
+                    error = $"{expression} should contain an ISO format timestamp, a time interval integer, a string unit of time, an optional output format string and an optional locale string.";
                 }
             }
 
             return (value, error);
         }
 
-        private static (string, string) EvalAddToTime(object timestamp, long interval, string timeUnit, string format)
+        private static (string, string) EvalAddToTime(object timestamp, long interval, string timeUnit, string format, CultureInfo locale)
         {
             string result = null;
             string error = null;
@@ -54,7 +62,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 if (error == null)
                 {
                     var addedTimeStamp = converter(ts);
-                    (result, error) = FunctionUtils.ReturnFormatTimeStampStr(addedTimeStamp, format);
+                    (result, error) = FunctionUtils.ReturnFormatTimeStampStr(addedTimeStamp, format, locale);
                 }
             }
 
@@ -63,7 +71,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static void Validator(Expression expression)
         {
-            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object, ReturnType.Number, ReturnType.String);
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String, ReturnType.String }, ReturnType.Object, ReturnType.Number, ReturnType.String);
         }
     }
 }

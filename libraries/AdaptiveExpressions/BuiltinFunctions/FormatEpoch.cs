@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -19,21 +20,27 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.ApplyWithError(
-                        args =>
+            return FunctionUtils.ApplyWithOptionsAndError(
+                        (args, options) =>
                         {
                             object result = null;
                             string error = null;
                             var timestamp = args[0];
-                            if (timestamp.IsNumber())
+                            var format = FunctionUtils.DefaultDateTimeFormat;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
+                            (format, locale, error) = FunctionUtils.DetermineFormatAndLocale(args, format, locale, 3);
+                            if (error == null)
                             {
-                                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                                dateTime = dateTime.AddSeconds(Convert.ToDouble(timestamp));
-                                result = dateTime.ToString(args.Count() == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
-                            }
-                            else
-                            {
-                                error = $"formatEpoch first argument {timestamp} is not a number";
+                                if (timestamp.IsNumber())
+                                {
+                                    var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                                    dateTime = dateTime.AddSeconds(Convert.ToDouble(timestamp));
+                                    result = dateTime.ToString(format, locale);
+                                }
+                                else
+                                {
+                                    error = $"formatEpoch first argument {timestamp} is not a number";
+                                }
                             }
 
                             return (result, error);
@@ -42,7 +49,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static void Validator(Expression expression)
         {
-            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Number);
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String, ReturnType.String }, ReturnType.Number);
         }
     }
 }

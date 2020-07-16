@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -18,11 +19,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.ApplyWithError(
-                        args =>
+            return FunctionUtils.ApplyWithOptionsAndError(
+                        (args, options) =>
                         {
                             string result = null;
                             string error = null;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                             if (!args[0].IsNumber())
                             {
                                 error = $"formatNumber first argument {args[0]} must be number";
@@ -35,19 +37,20 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             {
                                 error = $"formatNumber third agument {args[2]} must be a locale";
                             }
-                            else
+
+                            if (error == null)
+                            {
+                                (locale, error) = FunctionUtils.DetermineLocale(args, locale, 3);
+                            }
+
+                            if (error == null)
                             {
                                 var precision = 0;
                                 (precision, error) = FunctionUtils.ParseInt32(args[1]);
-                                try
+                                if (error == null)
                                 {
                                     var number = Convert.ToDouble(args[0]);
-                                    var locale = args.Count == 3 ? new CultureInfo(args[2] as string) : CultureInfo.InvariantCulture;
                                     result = number.ToString("N" + precision.ToString(), locale);
-                                }
-                                catch
-                                {
-                                    error = $"{args[3]} is not a valid locale for formatNumber";
                                 }
                             }
 

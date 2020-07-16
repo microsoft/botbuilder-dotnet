@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -23,22 +25,29 @@ namespace AdaptiveExpressions.BuiltinFunctions
             object value = null;
             string error = null;
             IReadOnlyList<object> args;
+            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
+            var format = FunctionUtils.DefaultDateTimeFormat;
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+
+            if (error == null)
+            {
+                (format, locale, error) = FunctionUtils.DetermineFormatAndLocale(args, format, locale, 4);
+            }
+
             if (error == null)
             {
                 if (args[0].IsInteger() && args[1] is string string1)
                 {
-                    var format = (args.Count() == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
                     Func<DateTime, DateTime> timeConverter;
                     (timeConverter, error) = FunctionUtils.DateTimeConverter(Convert.ToInt64(args[0]), string1, false);
                     if (error == null)
                     {
-                        value = timeConverter(DateTime.UtcNow).ToString(format);
+                        value = timeConverter(DateTime.UtcNow).ToString(format, locale);
                     }
                 }
                 else
                 {
-                    error = $"{expression} should contain a time interval integer, a string unit of time and an optional output format string.";
+                    error = $"{expression} should contain a time interval integer, a string unit of time, an optional output format string and an optional locale string.";
                 }
             }
 
@@ -47,7 +56,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static void Validator(Expression expression)
         {
-            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Number, ReturnType.String);
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String, ReturnType.String }, ReturnType.Number, ReturnType.String);
         }
     }
 }

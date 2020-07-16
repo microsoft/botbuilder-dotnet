@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -217,6 +218,22 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivityAsync()
             if (turnContext.Activity != null)
             {
+                if (turnContext.Activity.Locale != null)
+                {
+                    try
+                    {
+                        Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
+                        (turnContext as TurnContext).Locale = turnContext.Activity.Locale;
+                    }
+#pragma warning disable CA1031 // Do not catch general exception types
+                    catch
+                    {
+                        // if turnContext.Activity.Locale is illegal, then TurnContext.Locale will set to en-US as default. 
+                        (turnContext as TurnContext).Locale = "en-US";
+                    }
+#pragma warning restore CA1031 // Do not catch general exception types
+                }
+
                 try
                 {
                     await MiddlewareSet.ReceiveActivityWithStatusAsync(turnContext, callback, cancellationToken).ConfigureAwait(false);

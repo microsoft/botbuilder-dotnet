@@ -550,6 +550,37 @@ namespace AdaptiveExpressions
             };
 
         /// <summary>
+        /// Generate an expression delegate that applies function after verifying all children.
+        /// </summary>
+        /// <param name="function">Function to apply.</param>
+        /// <param name="verify">Function to check each arg for validity.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static EvaluateExpressionDelegate ApplyWithOptionsAndError(Func<IReadOnlyList<object>, Options, (object, string)> function, VerifyExpression verify = null)
+            =>
+            (expression, state, options) =>
+            {
+                object value = null;
+                string error = null;
+                IReadOnlyList<object> args;
+                (args, error) = EvaluateChildren(expression, state, options, verify);
+                if (error == null)
+                {
+                    try
+                    {
+                        (value, error) = function(args, options);
+                    }
+                    catch (Exception e)
+                    {
+                        error = e.Message;
+                    }
+                }
+
+                value = ResolveValue(value);
+
+                return (value, error);
+            };
+
+        /// <summary>
         /// Generate an expression delegate that applies function on the accumulated value after verifying all children.
         /// </summary>
         /// <param name="function">Function to apply.</param>
@@ -1034,6 +1065,57 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
+        internal static (CultureInfo, string) TryParseLocale(string localeStr)
+        {
+            CultureInfo result = null;
+            string error = null;
+            try
+            {
+                result = new CultureInfo(localeStr);
+            }
+            catch (Exception e)
+            {
+                error = e.Message;
+            }
+
+            return (result, error);
+        }
+
+        internal static (string, CultureInfo, string) DetermineFormatAndLocale(IReadOnlyList<object> args, string format, CultureInfo locale, int maxArgsLength)
+        {
+            string error = null;
+            if (maxArgsLength >= 2)
+            {
+                if (args.Count == maxArgsLength)
+                {
+                    // if the number of args equals to the maxArgsLength, the second last one is format, and the last one is locale
+                    format = args[maxArgsLength - 2] as string;
+                    (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
+                }
+                else if (args.Count == maxArgsLength - 1)
+                {
+                    // if the number of args equals to the maxArgsLength - 1, the last one is format,
+                    format = args[maxArgsLength - 2] as string;
+                }
+            }
+
+            return (format, locale, error);
+        }
+
+        internal static (CultureInfo, string) DetermineLocale(IReadOnlyList<object> args, CultureInfo locale, int maxArgsLength)
+        {
+            string error = null;
+            if (maxArgsLength >= 2)
+            {
+                if (args.Count == maxArgsLength)
+                {
+                    (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
+                }
+            }
+
+            return (locale, error);
+        }
+
         internal static (object, string) ConvertTimeZoneFormat(string timezone)
         {
             object convertedTimeZone = null;
@@ -1060,13 +1142,13 @@ namespace AdaptiveExpressions
             return (convertedTimeZone, error);
         }
 
-        internal static (string, string) ReturnFormatTimeStampStr(DateTime datetime, string format)
+        internal static (string, string) ReturnFormatTimeStampStr(DateTime datetime, string format, CultureInfo locale)
         {
             string result = null;
             string error = null;
             try
             {
-                result = datetime.ToString(format, CultureInfo.InvariantCulture.DateTimeFormat);
+                result = datetime.ToString(format, locale);
             }
             catch
             {
