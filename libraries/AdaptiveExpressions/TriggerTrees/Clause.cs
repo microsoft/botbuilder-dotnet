@@ -41,7 +41,9 @@ namespace AdaptiveExpressions.TriggerTrees
         {
         }
 
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public Dictionary<string, string> AnyBindings { get => anyBindings; set => anyBindings = value; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         internal bool Subsumed { get; set; } = false;
 
@@ -94,9 +96,9 @@ namespace AdaptiveExpressions.TriggerTrees
         {
             var soFar = RelationshipType.Incomparable;
             var shorter = this;
-            var shorterCount = shorter.Children.Count();
+            var shorterCount = shorter.Children.Length;
             var longer = other;
-            var longerCount = longer.Children.Count();
+            var longerCount = longer.Children.Length;
             var swapped = false;
             if (longerCount < shorterCount)
             {

@@ -27,13 +27,13 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             var timestamp = args[0];
                             if (timestamp.IsInteger())
                             {
-                                var ticks = Convert.ToInt64(timestamp);
+                                var ticks = Convert.ToInt64(timestamp, CultureInfo.InvariantCulture);
                                 var dateTime = new DateTime(ticks);
-                                result = dateTime.ToString(args.Count() == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
+                                result = dateTime.ToString(args.Count == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
                             }
                             else
                             {
-                                error = $"formatTicks first arugment {timestamp} must be an integer";
+                                error = $"formatTicks first argument {timestamp} must be an integer";
                             }
 
                             return (result, error);

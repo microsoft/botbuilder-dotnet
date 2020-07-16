@@ -27,11 +27,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             var timestamp = args[0];
                             if (timestamp is string tsString)
                             {
-                                (result, error) = ParseTimestamp(tsString, dt => dt.ToString(args.Count() == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture));
+                                (result, error) = ParseTimestamp(tsString, dt => dt.ToString(args.Count == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture));
                             }
                             else if (timestamp is DateTime dt)
                             {
-                                result = dt.ToString(args.Count() == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
+                                result = dt.ToString(args.Count == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
                             }
                             else
                             {

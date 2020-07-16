@@ -50,7 +50,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     var scheme = uriBase.Scheme;
                     result = scheme.ToString();
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic error)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = "invalid operation, input uri should be an absolute URI";
                 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -23,19 +24,22 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static object EvalMultiply(object a, object b)
         {
-            if (a == null || b == null)
+            if (a == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(a));
+            }
+
+            if (b == null)
+            {
+                throw new ArgumentNullException(nameof(b));
             }
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt64(a) * Convert.ToInt64(b);
+                return Convert.ToInt64(a, CultureInfo.InvariantCulture) * Convert.ToInt64(b, CultureInfo.InvariantCulture);
             }
-            else
-            {
-                return FunctionUtils.CultureInvariantDoubleConvert(a) * FunctionUtils.CultureInvariantDoubleConvert(b);
-            }
+
+            return FunctionUtils.CultureInvariantDoubleConvert(a) * FunctionUtils.CultureInvariantDoubleConvert(b);
         }
     }
 }
