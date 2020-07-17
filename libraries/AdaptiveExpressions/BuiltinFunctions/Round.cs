@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -43,7 +44,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                                     }
                                     else
                                     {
-                                        result = Math.Round(Convert.ToDouble(args[0]), digits);
+                                        result = Math.Round(Convert.ToDouble(args[0], CultureInfo.InvariantCulture), digits);
                                     }
                                 }
                             }

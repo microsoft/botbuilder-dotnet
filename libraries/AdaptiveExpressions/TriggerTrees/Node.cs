@@ -175,7 +175,7 @@ namespace AdaptiveExpressions.TriggerTrees
             var op = Operation.None;
             if (!ops.TryGetValue(this, out op))
             {
-                var trigger = triggerNode.Triggers.First();
+                var trigger = triggerNode.Triggers[0];
                 var relationship = Relationship(triggerNode);
 #if TraceTree
                 if (Node.ShowTrace)
@@ -212,7 +212,7 @@ namespace AdaptiveExpressions.TriggerTrees
                             {
                                 _allTriggers.Add(trigger);
                                 var add = true;
-                                for (var i = 0; i < _triggers.Count();)
+                                for (var i = 0; i < _triggers.Count;)
                                 {
                                     var existing = _triggers[i];
                                     var reln = trigger.Relationship(existing, Tree.Comparers);

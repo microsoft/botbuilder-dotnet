@@ -9,7 +9,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// For the MostSpecificSelector, this is a short hand so that instead of having to do A &amp; B and A you can do A &amp; optional(B) to mean the same thing.
     /// </summary>
+#pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
     public class Optional : ExpressionEvaluator
+#pragma warning restore CA1716 // Identifiers should not match keywords
     {
         public Optional()
             : base(ExpressionType.Optional, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnaryBoolean)

@@ -2,13 +2,16 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the remainder from dividing two numbers. 
     /// </summary>
+#pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
     public class Mod : ExpressionEvaluator
+#pragma warning restore CA1716 // Identifiers should not match keywords
     {
         public Mod()
             : base(ExpressionType.Mod, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
@@ -22,7 +25,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         {
                             object value = null;
                             string error;
-                            if (Convert.ToInt64(args[1]) == 0)
+                            if (Convert.ToInt64(args[1], CultureInfo.InvariantCulture) == 0)
                             {
                                 error = $"Cannot mod by 0";
                             }
@@ -39,19 +42,22 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static object EvalMod(object a, object b)
         {
-            if (a == null || b == null)
+            if (a == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(a));
+            }
+
+            if (b == null)
+            {
+                throw new ArgumentNullException(nameof(b));
             }
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt64(a) % Convert.ToInt64(b);
+                return Convert.ToInt64(a, CultureInfo.InvariantCulture) % Convert.ToInt64(b, CultureInfo.InvariantCulture);
             }
-            else
-            {
-                return FunctionUtils.CultureInvariantDoubleConvert(a) % FunctionUtils.CultureInvariantDoubleConvert(b);
-            }
+
+            return FunctionUtils.CultureInvariantDoubleConvert(a) % FunctionUtils.CultureInvariantDoubleConvert(b);
         }
     }
 }

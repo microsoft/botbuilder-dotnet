@@ -58,14 +58,16 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 if (sourceTimestamp is string st)
                 {
-                    srcDt = DateTime.Parse(st);
+                    srcDt = DateTime.Parse(st, CultureInfo.InvariantCulture);
                 }
                 else
                 {
                     srcDt = (DateTime)sourceTimestamp;
                 }
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we should probably do something about this but ignoring it for not)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 error = $"illegal time-stamp representation {sourceTimestamp}";
             }

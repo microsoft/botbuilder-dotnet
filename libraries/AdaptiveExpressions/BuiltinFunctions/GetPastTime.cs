@@ -38,7 +38,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 if (args[0].IsInteger() && args[1] is string string1)
                 {
                     Func<DateTime, DateTime> timeConverter;
-                    (timeConverter, error) = FunctionUtils.DateTimeConverter(Convert.ToInt64(args[0]), string1);
+                    (timeConverter, error) = FunctionUtils.DateTimeConverter(Convert.ToInt64(args[0], CultureInfo.InvariantCulture), string1);
                     if (error == null)
                     {
                         value = timeConverter(DateTime.UtcNow).ToString(format, locale);

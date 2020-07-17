@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -41,7 +42,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
         private static string EvalAddOrdinal(int num)
         {
             var hasResult = false;
-            var ordinalResult = num.ToString();
+            var ordinalResult = num.ToString(CultureInfo.InvariantCulture);
             if (num > 0)
             {
                 switch (num % 100)

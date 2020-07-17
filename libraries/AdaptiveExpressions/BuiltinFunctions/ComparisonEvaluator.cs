@@ -52,7 +52,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         {
                             result = function(args);
                         }
+#pragma warning disable CA1031 // Do not catch general exception types (we are capturing the exception and returning it)
                         catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
                         {
                             // NOTE: This should not happen in normal execution
                             error = e.Message;
