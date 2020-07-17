@@ -1139,13 +1139,17 @@ namespace AdaptiveExpressions
             string error = null;
             if (maxArgsLength >= 2)
             {
-                if (args.Count == maxArgsLength && args[maxArgsLength - 1] is string)
+                // if the number of args equals to the maxArgsLength, the last one is locale
+                if (args.Count == maxArgsLength)
                 {
-                    (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
-                }
-                else
-                {
-                    error = $"the {args[maxArgsLength - 1]} should be a locale string.";
+                    if (args[maxArgsLength - 1] is string)
+                    {
+                        (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
+                    } 
+                    else
+                    {
+                        error = $"the {args[maxArgsLength - 1]} should be a locale string.";
+                    }
                 }
             }
 

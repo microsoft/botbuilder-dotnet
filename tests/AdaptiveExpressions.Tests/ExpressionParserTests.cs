@@ -322,7 +322,8 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
-            //locale specific tests, on Mac OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
+            #region locale specific tests
+            //on *nix OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("replace(addHours(timestamp, 2, '', 'de-DE'), '20', '')", "15.03.18 15:00:00"),
             Test("replace(addMinutes(timestamp, 30, '', 'de-DE'), '20', '')", "15.03.18 13:30:00"),
@@ -349,6 +350,7 @@ namespace AdaptiveExpressions.Tests
             Test("sentenceCase('aBC', 'fr-FR')", "Abc"),
             Test("titleCase('a', 'en-US')", "A"),
             Test("titleCase('abc dEF', 'en-US')", "Abc Def"),
+            #endregion
 
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
