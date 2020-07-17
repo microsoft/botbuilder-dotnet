@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var actionScopeResult = new ActionScopeResult()
             {
                 ActionScopeCommand = ActionScopeCommands.GotoAction,
-                ActionId = this.ActionId?.GetValue(dc.State) ?? throw new ArgumentNullException(nameof(ActionId))
+                ActionId = this.ActionId?.GetValue(dc.State) ?? throw new InvalidOperationException($"Unable to get a {nameof(ActionId)} from state.")
             };
 
             return await dc.EndDialogAsync(result: actionScopeResult, cancellationToken: cancellationToken).ConfigureAwait(false);

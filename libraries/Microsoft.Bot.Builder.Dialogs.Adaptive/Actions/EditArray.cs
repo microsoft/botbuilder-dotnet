@@ -205,7 +205,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     if (error == null && itemResult != null)
                     {
                         result = false;
-                        for (var i = 0; i < array.Count(); ++i)
+                        for (var i = 0; i < array.Count; ++i)
                         {
                             if (array[i].ToString() == itemResult.ToString() || JToken.DeepEquals(array[i], JToken.FromObject(itemResult)))
                             {

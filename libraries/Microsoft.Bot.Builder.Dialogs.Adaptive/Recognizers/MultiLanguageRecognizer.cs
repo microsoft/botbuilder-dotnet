@@ -32,7 +32,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// Policy for languages fallback. 
         /// </value>
         [JsonProperty("languagePolicy")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public LanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets map of languages -> IRecognizer.
@@ -41,7 +43,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// Map of languages -> IRecognizer.
         /// </value>
         [JsonProperty("recognizers")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IDictionary<string, Recognizer> Recognizers { get; set; } = new Dictionary<string, Recognizer>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
@@ -51,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 policy.AddRange(targetpolicy);
             }
 
-            if (activity.Locale != string.Empty && LanguagePolicy.TryGetValue(string.Empty, out string[] defaultPolicy))
+            if (activity.Locale.Length != 0 && LanguagePolicy.TryGetValue(string.Empty, out string[] defaultPolicy))
             {
                 // we now explictly add defaultPolicy instead of coding that into target's policy
                 policy.AddRange(defaultPolicy);

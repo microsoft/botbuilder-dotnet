@@ -7,7 +7,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
+#pragma warning disable CA1716 // Identifiers should not match keywords (by design and we can't change this without breaking binary compat)
     public class Case : ActionScope
+#pragma warning restore CA1716 // Identifiers should not match keywords
     {
         public Case(string value = null, IEnumerable<Dialog> actions = null)
             : base(actions)

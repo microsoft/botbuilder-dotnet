@@ -3,7 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class ActionScopeCommands
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
         /// Change execution order to the action by id.
