@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -67,7 +68,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException(nameof(endpoint.EndpointKey));
             }
 
-            if (_endpoint.Host.EndsWith("v2.0") || _endpoint.Host.EndsWith("v3.0"))
+            if (_endpoint.Host.EndsWith("v2.0", StringComparison.Ordinal) || _endpoint.Host.EndsWith("v3.0", StringComparison.Ordinal))
             {
                 throw new NotSupportedException("v2.0 and v3.0 of QnA Maker service is no longer supported in the QnA Maker.");
             }
@@ -109,10 +110,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// If null, a default client is used for this instance.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
         /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
+        [Obsolete("Constructor is deprecated, please use QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient).")]
+#pragma warning disable CS0618 // Type or member is obsolete, this is here only for backward compat and should be removed when QnAMakerService is removed.
         public QnAMaker(QnAMakerService service, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
             : this(new QnAMakerEndpoint(service), options, httpClient, telemetryClient, logPersonalInformation)
         {
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
@@ -121,10 +125,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="options">The options for the QnA Maker knowledge base.</param>
         /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
+        [Obsolete("Constructor is deprecated, please use QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient).")]
+#pragma warning disable CS0618 // Type or member is obsolete, this is here only for backward compat and should be removed when QnAMakerService is removed.
         public QnAMaker(QnAMakerService service, QnAMakerOptions options = null, HttpClient httpClient = null)
             : this(new QnAMakerEndpoint(service), options, httpClient, null)
         {
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
         /// <summary>
         /// Gets the <see cref="HttpClient"/> to be used when calling the QnA Maker API.
@@ -198,7 +205,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (turnContext.Activity == null)
             {
-                throw new ArgumentNullException(nameof(turnContext.Activity));
+                throw new ArgumentException($"The {nameof(turnContext.Activity)} property for {nameof(turnContext)} can't be null.", nameof(turnContext));
             }
 
             var messageActivity = turnContext.Activity.AsMessageActivity();
@@ -272,7 +279,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// additionalProperties
         /// <returns>A tuple of Properties and Metrics that will be sent to the IBotTelemetryClient.TrackEvent method for the QnAMessage event.  The properties and metrics returned the standard properties logged with any properties passed from the GetAnswersAsync method.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat) 
         protected Task<(Dictionary<string, string> Properties, Dictionary<string, double> Metrics)> FillQnAEventAsync(QueryResult[] queryResults, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
         {
             var properties = new Dictionary<string, string>();
             var metrics = new Dictionary<string, double>();
@@ -301,7 +310,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 var queryResult = queryResults[0];
                 properties.Add(QnATelemetryConstants.MatchedQuestionProperty, JsonConvert.SerializeObject(queryResult.Questions));
-                properties.Add(QnATelemetryConstants.QuestionIdProperty, queryResult.Id.ToString());
+                properties.Add(QnATelemetryConstants.QuestionIdProperty, queryResult.Id.ToString(CultureInfo.InvariantCulture));
                 properties.Add(QnATelemetryConstants.AnswerProperty, queryResult.Answer);
                 metrics.Add(QnATelemetryConstants.ScoreProperty, queryResult.Score);
                 properties.Add(QnATelemetryConstants.ArticleFoundProperty, "true");

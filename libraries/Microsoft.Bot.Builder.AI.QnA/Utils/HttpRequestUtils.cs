@@ -55,19 +55,20 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentNullException(nameof(endpoint));
             }
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+            using (var request = new HttpRequestMessage(HttpMethod.Post, requestUrl))
+            {
+                request.Content = new StringContent(payloadBody, Encoding.UTF8, "application/json");
 
-            request.Content = new StringContent(payloadBody, Encoding.UTF8, "application/json");
+                SetHeaders(request, endpoint);
 
-            SetHeaders(request, endpoint);
+                var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
 
-            var response = await this._httpClient.SendAsync(request).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-
-            return response;
+                return response;
+            }
         }
 
-        private void SetHeaders(HttpRequestMessage request, QnAMakerEndpoint endpoint)
+        private static void SetHeaders(HttpRequestMessage request, QnAMakerEndpoint endpoint)
         {
             request.Headers.Add("Authorization", $"EndpointKey {endpoint.EndpointKey}");
             request.Headers.Add("Ocp-Apim-Subscription-Key", endpoint.EndpointKey); 

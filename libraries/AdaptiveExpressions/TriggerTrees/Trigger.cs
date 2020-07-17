@@ -221,7 +221,7 @@ namespace AdaptiveExpressions.TriggerTrees
                     foreach (var child in expression.Children)
                     {
                         var clauses = GenerateClauses(child);
-                        if (clauses.Count() == 0)
+                        if (!clauses.Any())
                         {
                             // Encountered false
                             soFar.Clear();
@@ -301,15 +301,15 @@ namespace AdaptiveExpressions.TriggerTrees
         private void RemoveDuplicatedPredicates()
         {
             // Rewrite clauses to remove duplicated tests
-            for (var i = 0; i < _clauses.Count(); ++i)
+            for (var i = 0; i < _clauses.Count; ++i)
             {
                 var clause = _clauses[i];
                 var children = new List<Expression>();
-                for (var p = 0; p < clause.Children.Count(); ++p)
+                for (var p = 0; p < clause.Children.Length; ++p)
                 {
                     var pred = clause.Children[p];
                     var found = false;
-                    for (var q = p + 1; q < clause.Children.Count(); ++q)
+                    for (var q = p + 1; q < clause.Children.Length; ++q)
                     {
                         if (pred.DeepEquals(clause.Children[q]))
                         {
@@ -331,12 +331,12 @@ namespace AdaptiveExpressions.TriggerTrees
         // Mark clauses that are more specific than another clause as subsumed and also remove any = clauses.
         private void MarkSubsumedClauses()
         {
-            for (var i = 0; i < _clauses.Count(); ++i)
+            for (var i = 0; i < _clauses.Count; ++i)
             {
                 var clause = _clauses[i];
                 if (!clause.Subsumed)
                 {
-                    for (var j = i + 1; j < _clauses.Count(); ++j)
+                    for (var j = i + 1; j < _clauses.Count; ++j)
                     {
                         var other = _clauses[j];
                         if (!other.Subsumed)
@@ -407,7 +407,7 @@ namespace AdaptiveExpressions.TriggerTrees
             var newExpr = expression;
             changed = false;
             if (expression.Type == ExpressionType.Accessor
-                && expression.Children.Count() == 1
+                && expression.Children.Length == 1
                 && expression.Children[0] is Constant cnst
                 && cnst.Value is string str
                 && str == variable)
@@ -526,10 +526,10 @@ namespace AdaptiveExpressions.TriggerTrees
             {
                 // NOTE: This is quadratic in clause length but GetHashCode is not equal for expressions and we expect the number of clauses to be small.
                 var predicates = new List<Expression>(clause.Children);
-                for (var i = 0; i < predicates.Count(); ++i)
+                for (var i = 0; i < predicates.Count; ++i)
                 {
                     var first = predicates[i];
-                    for (var j = i + 1; j < predicates.Count();)
+                    for (var j = i + 1; j < predicates.Count;)
                     {
                         var second = predicates[j];
                         if (first.DeepEquals(second))

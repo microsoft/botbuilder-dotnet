@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -23,6 +24,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
     [Obsolete("Class is deprecated, please use Microsoft.Bot.Builder.AI.Luis.LuisRecognizer(LuisRecognizerOptions recognizer).")]
     public class LuisRecognizer : LuisV2.ITelemetryRecognizer
     {
+#pragma warning disable CA2000 // Dispose objects before losing scope (class is deprecated, we won't be fixing dispose issues here)
         /// <summary>
         /// The value type for a LUIS trace activity.
         /// </summary>
@@ -52,7 +54,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
             LogPersonalInformation = recognizerOptions.LogPersonalInformation;
 
             var delegatingHandler = new LuisV2.LuisDelegatingHandler();
-            var httpClientHandler = recognizerOptions.HttpClient ?? CreateRootHandler();
+            var httpClientHandler = recognizerOptions.HttpClient ?? new HttpClientHandler();
             var currentHandler = CreateHttpHandlerPipeline(httpClientHandler, delegatingHandler);
 
             DefaultHttpClient = new HttpClient(currentHandler, false)
@@ -245,9 +247,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
             {
                 { LuisV2.LuisTelemetryConstants.ApplicationIdProperty, _application.ApplicationId },
                 { LuisV2.LuisTelemetryConstants.IntentProperty, topTwoIntents?[0].Key ?? string.Empty },
-                { LuisV2.LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2") ?? "0.00" },
-                { LuisV2.LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
-                { LuisV2.LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2") ?? "0.00" : "0.00" },
+                { LuisV2.LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2", CultureInfo.InvariantCulture) ?? "0.00" },
+                { LuisV2.LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Length > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
+                { LuisV2.LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Length > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2", CultureInfo.InvariantCulture) ?? "0.00" : "0.00" },
                 { LuisV2.LuisTelemetryConstants.FromIdProperty, turnContext.Activity.From.Id },
             };
 
@@ -284,7 +286,35 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
             return properties;
         }
 
-        private string AddParam(string query, string prop, bool? val)
+        private static DelegatingHandler CreateHttpHandlerPipeline(HttpClientHandler httpClientHandler, params DelegatingHandler[] handlers)
+        {
+            // Now, the RetryAfterDelegatingHandler should be the absolute outermost handler
+            // because it's extremely lightweight and non-interfering
+            DelegatingHandler currentHandler =
+                new RetryDelegatingHandler(new RetryAfterDelegatingHandler { InnerHandler = httpClientHandler });
+
+            if (handlers != null)
+            {
+                for (var i = handlers.Length - 1; i >= 0; --i)
+                {
+                    var handler = handlers[i];
+
+                    // Non-delegating handlers are ignored since we always
+                    // have RetryDelegatingHandler as the outer-most handler
+                    while (handler.InnerHandler is DelegatingHandler)
+                    {
+                        handler = handler.InnerHandler as DelegatingHandler;
+                    }
+
+                    handler.InnerHandler = currentHandler;
+                    currentHandler = handlers[i];
+                }
+            }
+
+            return currentHandler;
+        }
+
+        private static string AddParam(string query, string prop, bool? val)
         {
             var result = query;
             if (val.HasValue)
@@ -412,35 +442,6 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
             await turnContext.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, cancellationToken).ConfigureAwait(false);
             return recognizerResult;
         }
-
-        private DelegatingHandler CreateHttpHandlerPipeline(HttpClientHandler httpClientHandler, params DelegatingHandler[] handlers)
-        {
-            // Now, the RetryAfterDelegatingHandler should be the absolute outermost handler
-            // because it's extremely lightweight and non-interfering
-            DelegatingHandler currentHandler =
-                new RetryDelegatingHandler(new RetryAfterDelegatingHandler { InnerHandler = httpClientHandler });
-
-            if (handlers != null)
-            {
-                for (var i = handlers.Length - 1; i >= 0; --i)
-                {
-                    var handler = handlers[i];
-
-                    // Non-delegating handlers are ignored since we always
-                    // have RetryDelegatingHandler as the outer-most handler
-                    while (handler.InnerHandler is DelegatingHandler)
-                    {
-                        handler = handler.InnerHandler as DelegatingHandler;
-                    }
-
-                    handler.InnerHandler = currentHandler;
-                    currentHandler = handlers[i];
-                }
-            }
-
-            return currentHandler;
-        }
-
-        private HttpClientHandler CreateRootHandler() => new HttpClientHandler();
+#pragma warning restore CA2000 // Dispose objects before losing scope
     }
 }

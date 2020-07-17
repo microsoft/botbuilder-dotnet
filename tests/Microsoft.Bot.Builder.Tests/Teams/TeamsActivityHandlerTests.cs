@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Arrange
             var activity = new Activity
             {
-                Type = ActivityTypes.ConversationUpdate,
+                Type = ActivityTypes.ConversationUpdate,               
                 ChannelData = new TeamsChannelData { EventType = "channelRestored" },
                 ChannelId = Channels.Msteams,
             };
@@ -328,6 +328,72 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
             Assert.Equal("OnTeamsChannelRestoredAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestConversationUpdateTeamsTeamArchived()
+        {
+          // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                ChannelData = new TeamsChannelData { EventType = "teamArchived" },
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTeamArchivedAsync", bot.Record[1]);
+        }
+        
+        [Fact]
+        public async Task TestConversationUpdateTeamsTeamDeleted()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                ChannelData = new TeamsChannelData { EventType = "teamDeleted" },
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTeamDeletedAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestConversationUpdateTeamsTeamHardDeleted()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                ChannelData = new TeamsChannelData { EventType = "teamHardDeleted" },
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTeamHardDeletedAsync", bot.Record[1]);
         }
 
         [Fact]
@@ -350,6 +416,50 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
             Assert.Equal("OnTeamsTeamRenamedAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestConversationUpdateTeamsTeamRestored()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                ChannelData = new TeamsChannelData { EventType = "teamRestored" },
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTeamRestoredAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestConversationUpdateTeamsTeamUnarchived()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.ConversationUpdate,
+                ChannelData = new TeamsChannelData { EventType = "teamUnarchived" },
+                ChannelId = Channels.Msteams,
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTeamUnarchivedAsync", bot.Record[1]);
         }
 
         [Fact]
@@ -921,17 +1031,47 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsChannelRenamedAsync(channelInfo, teamInfo, turnContext, cancellationToken);
             }
-
+          
             protected override Task OnTeamsChannelRestoredAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsChannelRestoredAsync(channelInfo, teamInfo, turnContext, cancellationToken);
             }
 
+            protected override Task OnTeamsTeamArchivedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsTeamArchivedAsync(teamInfo, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsTeamDeletedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsTeamDeletedAsync(teamInfo, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsTeamHardDeletedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsTeamHardDeletedAsync(teamInfo, turnContext, cancellationToken);
+            }            
+
             protected override Task OnTeamsTeamRenamedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsTeamRenamedAsync(teamInfo, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsTeamRestoredAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsTeamRestoredAsync(teamInfo, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsTeamUnarchivedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsTeamUnarchivedAsync(teamInfo, turnContext, cancellationToken);
             }
 
             protected override Task OnTeamsMembersAddedAsync(IList<TeamsChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)

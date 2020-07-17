@@ -305,6 +305,7 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
@@ -1122,22 +1123,22 @@ namespace AdaptiveExpressions.Tests
 
             // normal case, note, we doesn't append a " yet
             var exp = Expression.Parse("a[f].b[n].z");
-            var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            var (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("a['foo'].b[2].z", path);
 
             // normal case
             exp = Expression.Parse("a[z.z][z.z].y");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("a['zar']['zar'].y", path);
 
             // normal case
             exp = Expression.Parse("a.b[z.z]");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("a.b['zar']", path);
 
             // stop evaluate at middle
             exp = Expression.Parse("json(x).b");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("b", path);
         }
 

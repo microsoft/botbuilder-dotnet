@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Version Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</Version>
-    <Version Condition=" '$(IsBuildServer)' != '' ">$(PackageVersion)</Version>
+    <Version Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</Version>
     <PackageVersion Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</PackageVersion>
-    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PackageVersion)</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(ReleasePackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -12,7 +12,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Bot.Builder.Adapters.Facebook</PackageId>
     <Description>Library for connecting bots with Facebook.</Description>
     <Summary>This library implements C# classes for the Facebook adapter.</Summary>
   </PropertyGroup>
