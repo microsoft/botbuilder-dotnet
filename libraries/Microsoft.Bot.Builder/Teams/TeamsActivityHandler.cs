@@ -423,8 +423,23 @@ namespace Microsoft.Bot.Builder.Teams
                         case "channelRestored":
                             return OnTeamsChannelRestoredAsync(channelData.Channel, channelData.Team, turnContext, cancellationToken);
 
+                        case "teamArchived":
+                            return OnTeamsTeamArchivedAsync(channelData.Team, turnContext, cancellationToken);
+
+                        case "teamDeleted":
+                            return OnTeamsTeamDeletedAsync(channelData.Team, turnContext, cancellationToken);
+
+                        case "teamHardDeleted":
+                            return OnTeamsTeamHardDeletedAsync(channelData.Team, turnContext, cancellationToken);
+
                         case "teamRenamed":
                             return OnTeamsTeamRenamedAsync(channelData.Team, turnContext, cancellationToken);
+
+                        case "teamRestored":
+                            return OnTeamsTeamRestoredAsync(channelData.Team, turnContext, cancellationToken);
+
+                        case "teamUnarchived":
+                            return OnTeamsTeamUnarchivedAsync(channelData.Team, turnContext, cancellationToken);
 
                         default:
                             return base.OnConversationUpdateActivityAsync(turnContext, cancellationToken);
@@ -587,7 +602,7 @@ namespace Microsoft.Bot.Builder.Teams
         {
             return Task.CompletedTask;
         }
-
+        
         /// <summary>
         /// Invoked when a Channel Restored event activity is received from the connector.
         /// Channel Restored correspond to the user restoring a previously deleted channel.
@@ -604,6 +619,48 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
+        /// Invoked when a Team Archived event activity is received from the connector.
+        /// Team Archived correspond to the user archiving a team.
+        /// </summary>
+        /// <param name="teamInfo">The team info object representing the team.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsTeamArchivedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a Team Deleted event activity is received from the connector.
+        /// Team Deleted corresponds to the user deleting a team.
+        /// </summary>
+        /// <param name="teamInfo">The team info object representing the team.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsTeamDeletedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a Team Hard Deleted event activity is received from the connector.
+        /// Team Hard Deleted corresponds to the user hard deleting a team.
+        /// </summary>
+        /// <param name="teamInfo">The team info object representing the team.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsTeamHardDeletedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Invoked when a Team Renamed event activity is received from the connector.
         /// Team Renamed correspond to the user renaming an existing team.
         /// </summary>
@@ -613,6 +670,34 @@ namespace Microsoft.Bot.Builder.Teams
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual Task OnTeamsTeamRenamedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a Team Restored event activity is received from the connector.
+        /// Team Restored corresponds to the user restoring a team.
+        /// </summary>
+        /// <param name="teamInfo">The team info object representing the team.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsTeamRestoredAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a Team Unarchived event activity is received from the connector.
+        /// Team Unarchived correspond to the user unarchiving a team.
+        /// </summary>
+        /// <param name="teamInfo">The team info object representing the team.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsTeamUnarchivedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

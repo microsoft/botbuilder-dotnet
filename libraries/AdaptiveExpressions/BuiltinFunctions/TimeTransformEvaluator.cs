@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -34,8 +35,23 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     if (args[1].IsInteger())
                     {
-                        var formatString = (args.Count() == 3 && args[2] is string string1) ? string1 : FunctionUtils.DefaultDateTimeFormat;
-                        (value, error) = FunctionUtils.NormalizeToDateTime(args[0], dt => function(dt, Convert.ToInt32(args[1])).ToString(formatString));
+                        var formatString = (args.Count == 3 && args[2] is string string1) ? string1 : FunctionUtils.DefaultDateTimeFormat;
+                        (value, error) = FunctionUtils.NormalizeToDateTime(args[0], dt => 
+                        {
+                            var result = dt;
+                            var (interval, error) = FunctionUtils.ParseInt32(args[1]);
+                            if (error == null)
+                            {
+                                result = function(dt, interval);
+                            }
+
+                            return (result, error);
+                        });
+
+                        if (error == null)
+                        {
+                            value = Convert.ToDateTime(value, CultureInfo.InvariantCulture).ToString(formatString, CultureInfo.InvariantCulture);
+                        }
                     }
                     else
                     {

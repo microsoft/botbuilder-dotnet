@@ -79,12 +79,12 @@ namespace AdaptiveExpressions.Properties
             if (stringOrExpression != null)
             {
                 // if it starts with = it always is an expression
-                if (stringOrExpression.StartsWith("="))
+                if (stringOrExpression.StartsWith("=", StringComparison.Ordinal))
                 {
                     ExpressionText = stringOrExpression;
                     return;
                 }
-                else if (stringOrExpression.StartsWith("\\="))
+                else if (stringOrExpression.StartsWith("\\=", StringComparison.Ordinal))
                 {
                     // then trim off the escape char for equals (\=foo) should simply be the string (=foo), and not an expression (but it could still be stringTemplate)
                     stringOrExpression = stringOrExpression.TrimStart('\\');

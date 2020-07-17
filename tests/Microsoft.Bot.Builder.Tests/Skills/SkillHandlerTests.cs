@@ -96,12 +96,17 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         [Fact]
         public async Task OnSendToConversationAsyncTest()
         {
-            BotCallbackHandler botCallback = null;
             _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
                 .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
                 {
-                    botCallback = callback;
+                    callback(new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity()), CancellationToken.None).Wait();
                 });
+
+            _mockAdapter.Setup(x => x.SendActivitiesAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity[]>(), It.IsAny<CancellationToken>()))
+                .Callback<ITurnContext, Activity[], CancellationToken>((turnContext, activities, cancellationToken) =>
+                {
+                })
+                .Returns(Task.FromResult(new[] { new ResourceResponse { Id = "resourceId" } }));
 
             var sut = CreateSkillHandlerForTesting();
 
@@ -109,10 +114,9 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             activity.ApplyConversationReference(_conversationReference);
 
             Assert.Null(activity.CallerId);
-            await sut.TestOnSendToConversationAsync(_claimsIdentity, _conversationId, activity, CancellationToken.None);
-            Assert.NotNull(botCallback);
-            await botCallback.Invoke(new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity()), CancellationToken.None);
+            var resourceResponse = await sut.TestOnSendToConversationAsync(_claimsIdentity, _conversationId, activity, CancellationToken.None);
             Assert.Null(activity.CallerId);
+            Assert.Equal("resourceId", resourceResponse.Id);
         }
 
         [Fact]

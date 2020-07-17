@@ -9,7 +9,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Check whether at least one expression is true.
     /// Return true if at least one expression is true, or return false if all are false.
     /// </summary>
+#pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
     public class Or : ExpressionEvaluator
+#pragma warning restore CA1716 // Identifiers should not match keywords
     {
         public Or()
             : base(ExpressionType.Or, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)

@@ -53,7 +53,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 return args[0] == args[1] || (args[0] != null && args[0].Equals(args[1]));
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we return false if it fails for whatever reason)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 return false;
             }

@@ -26,7 +26,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
             if (error == null)
             {
-                var format = (args.Count() == 2) ? (string)args[1] : FunctionUtils.DefaultDateTimeFormat;
+                var format = (args.Count == 2) ? (string)args[1] : FunctionUtils.DefaultDateTimeFormat;
                 (value, error) = StartOfDayWithError(args[0], format);
             }
 

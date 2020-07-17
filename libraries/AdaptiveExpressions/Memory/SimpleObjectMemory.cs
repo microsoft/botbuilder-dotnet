@@ -210,7 +210,7 @@ namespace AdaptiveExpressions.Memory
             {
                 // Use reflection
                 var type = instance.GetType();
-                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                var prop = type.GetProperties().Where(p => p.Name.ToLowerInvariant() == property).SingleOrDefault();
                 if (prop != null)
                 {
                     if (prop.CanWrite)

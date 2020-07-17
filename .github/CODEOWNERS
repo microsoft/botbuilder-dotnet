@@ -116,3 +116,10 @@
 /libraries/Microsoft.Bot.Builder/Teams/**                                           @microsoft/bf-teams
 /tests/Microsoft.Bot.Builder.Tests/Teams/**                                         @microsoft/bf-teams
 /tests/Teams/**                                                                     @microsoft/bf-teams
+
+# Ownership by specific files or file types
+# This section MUST stay at the bottom of the CODEOWNERS file. For more information, see
+# https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners#example-of-a-codeowners-file
+
+# .schema files
+/**/*.schema                                                                        @chrimc62 @tomlm

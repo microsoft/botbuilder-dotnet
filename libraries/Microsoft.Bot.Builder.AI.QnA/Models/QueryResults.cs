@@ -19,7 +19,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// sorted in decreasing order of ranking score.
         /// </value>
         [JsonProperty("answers")]
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public QueryResult[] Answers { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or set for the active learning enable flag.
