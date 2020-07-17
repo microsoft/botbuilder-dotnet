@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
     /// </remarks>
     public class TemplateManager
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateManager"/> class.
+        /// </summary>
         public TemplateManager()
         {
         }
@@ -35,6 +38,12 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// </value>
         public List<string> LanguageFallback { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Creates an Activity object of type equal to "Template" and value equal to a new TemplateOptions object.
+        /// </summary>
+        /// <param name="templateId">The template Id to use in the new TemplateOptions object.</param>
+        /// <param name="data">The data to use in teh new TemplateOptions object.</param>
+        /// <returns>An Activity object.</returns>
         public static Activity CreateTemplateActivity(string templateId, object data)
         {
             return new Activity()
@@ -72,11 +81,19 @@ namespace Microsoft.Bot.Builder.TemplateManager
             return this.Renderers;
         }
 
+        /// <summary>
+        /// Initializes the LanguageFallback property of the current instance.
+        /// </summary>
+        /// <param name="languageFallback">A list of strings that define the LanguageFallback property.</param>
         public void SetLanguagePolicy(IEnumerable<string> languageFallback)
         {
             LanguageFallback = new List<string>(languageFallback);
         }
 
+        /// <summary>
+        /// Gets the value of the LanguageFallback property of the current instance.
+        /// </summary>
+        /// <returns>A list of strings equal to the LanguageFallback property.</returns>
         public IEnumerable<string> GetLanguagePolicy()
         {
             return LanguageFallback;

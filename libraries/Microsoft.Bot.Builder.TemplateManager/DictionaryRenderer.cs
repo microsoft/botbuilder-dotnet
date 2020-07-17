@@ -21,11 +21,16 @@ namespace Microsoft.Bot.Builder.TemplateManager
     {
         private LanguageTemplateDictionary _languages;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DictionaryRenderer"/> class.
+        /// </summary>
+        /// <param name="templates">The language template dictionary to use.</param>
         public DictionaryRenderer(LanguageTemplateDictionary templates)
         {
             _languages = templates;
         }
 
+        /// <inheritdoc/>
         public Task<object> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data)
         {
             if (_languages.TryGetValue(language, out var templates))
