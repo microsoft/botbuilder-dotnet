@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// Creates an Activity object of type equal to "Template" and value equal to a new TemplateOptions object.
         /// </summary>
         /// <param name="templateId">The template Id to use in the new TemplateOptions object.</param>
-        /// <param name="data">The data to use in teh new TemplateOptions object.</param>
+        /// <param name="data">The data to use in the new TemplateOptions object.</param>
         /// <returns>An Activity object.</returns>
         public static Activity CreateTemplateActivity(string templateId, object data)
         {
