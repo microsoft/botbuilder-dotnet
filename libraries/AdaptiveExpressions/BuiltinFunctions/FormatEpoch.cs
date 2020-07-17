@@ -34,7 +34,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                                 if (timestamp.IsNumber())
                                 {
                                     var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                                    dateTime = dateTime.AddSeconds(Convert.ToDouble(timestamp));
+                                    dateTime = dateTime.AddSeconds(Convert.ToDouble(timestamp, CultureInfo.InvariantCulture));
                                     result = dateTime.ToString(format, locale);
                                 }
                                 else

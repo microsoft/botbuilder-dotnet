@@ -57,7 +57,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
                         if (error == null)
                         {
-                            value = Convert.ToDateTime(value).ToString(format, locale);
+                            value = Convert.ToDateTime(value, CultureInfo.InvariantCulture).ToString(format, locale);
                         }
                     }
                     else

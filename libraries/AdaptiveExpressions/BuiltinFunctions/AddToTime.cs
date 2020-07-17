@@ -37,7 +37,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 if (args[1].IsInteger() && args[2] is string timeUnit)
                 {
-                    (value, error) = EvalAddToTime(args[0], Convert.ToInt64(args[1]), timeUnit, format, locale);
+                    (value, error) = EvalAddToTime(args[0], Convert.ToInt64(args[1], CultureInfo.InvariantCulture), timeUnit, format, locale);
                 }
                 else
                 {

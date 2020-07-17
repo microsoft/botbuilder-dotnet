@@ -33,7 +33,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             {
                                 if (timestamp.IsInteger())
                                 {
-                                    var ticks = Convert.ToInt64(timestamp);
+                                    var ticks = Convert.ToInt64(timestamp, CultureInfo.InvariantCulture);
                                     var dateTime = new DateTime(ticks);
                                     result = dateTime.ToString(format, locale);
                                 }

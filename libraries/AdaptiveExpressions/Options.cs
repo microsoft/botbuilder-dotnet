@@ -34,6 +34,6 @@ namespace AdaptiveExpressions
         /// <value>
         /// The locale info.
         /// </value>
-        public string Locale { get; set; } = Thread.CurrentThread.CurrentCulture.Name;
+        public string Locale { get; set; }
     }
 }

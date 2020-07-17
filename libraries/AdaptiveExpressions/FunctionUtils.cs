@@ -595,7 +595,9 @@ namespace AdaptiveExpressions
                     {
                         (value, error) = function(args, options);
                     }
+#pragma warning disable CA1031 // Do not catch general exception types
                     catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         error = e.Message;
                     }
@@ -1101,7 +1103,9 @@ namespace AdaptiveExpressions
             {
                 result = new CultureInfo(localeStr);
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 error = e.Message;
             }
@@ -1135,9 +1139,13 @@ namespace AdaptiveExpressions
             string error = null;
             if (maxArgsLength >= 2)
             {
-                if (args.Count == maxArgsLength)
+                if (args.Count == maxArgsLength && args[maxArgsLength - 1] is string)
                 {
                     (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
+                }
+                else
+                {
+                    error = $"the {args[maxArgsLength - 1]} should be a locale string.";
                 }
             }
 

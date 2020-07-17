@@ -32,21 +32,14 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                     if (error == null)
                     {
-                        if (args.Count == 2 && !(args[1] is string))
-                        {
-                            error = $"the second argument {args[1]} should be a locale string.";
-                        }
-                        else
-                        {
-                            (locale, error) = FunctionUtils.DetermineLocale(args, locale, 2);
-                        }
+                        (locale, error) = FunctionUtils.DetermineLocale(args, locale, 2);
                     }
 
                     if (error == null)
                     {
                         if (args[0].IsNumber())
                         {
-                            result = Convert.ToDouble(args[0]).ToString(locale);
+                            result = Convert.ToDouble(args[0], CultureInfo.InvariantCulture).ToString(locale);
                         }
                         else if (args[0] is DateTime dt)
                         {

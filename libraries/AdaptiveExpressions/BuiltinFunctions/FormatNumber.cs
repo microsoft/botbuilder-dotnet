@@ -49,8 +49,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
                                 (precision, error) = FunctionUtils.ParseInt32(args[1]);
                                 if (error == null)
                                 {
-                                    var number = Convert.ToDouble(args[0]);
-                                    result = number.ToString("N" + precision.ToString(), locale);
+                                    var number = Convert.ToDouble(args[0], CultureInfo.InvariantCulture);
+                                    result = number.ToString("N" + precision.ToString(CultureInfo.InvariantCulture), locale);
                                 }
                             }
 
