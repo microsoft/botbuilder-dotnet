@@ -56,13 +56,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     // Map submitted values to a recognizer result, value : { "foo": 13} => Entities { "foo": [ 13 ] } 
                     foreach (var property in value.Properties())
                     {
-                        if (property.Name.ToLower() == "intent")
+                        if (property.Name.ToLowerInvariant() == "intent")
                         {
                             recognized.Intents[property.Value.ToString()] = new IntentScore { Score = 1.0 };
                         }
                         else
                         {
-                            if (recognized.Entities.Property(property.Name) == null)
+                            if (recognized.Entities.Property(property.Name, StringComparison.Ordinal) == null)
                             {
                                 recognized.Entities[property.Name] = new JArray(property.Value);
                             }

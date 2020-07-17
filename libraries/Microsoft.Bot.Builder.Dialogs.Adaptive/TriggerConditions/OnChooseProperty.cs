@@ -33,14 +33,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </summary>
         /// <value>List of property names.</value>
         [JsonProperty("properties")]
+#pragma warning disable CA2227 // Collection properties should be read only
         public List<string> Properties { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the entities being chosen between to filter events.
         /// </summary>
         /// <value>List of entity names.</value>
         [JsonProperty("entities")]
+#pragma warning disable CA2227 // Collection properties should be read only
         public List<string> Entities { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         public override string GetIdentity()
             => $"{this.GetType().Name}([{string.Join(",", this.Properties)}], {this.Entities})";

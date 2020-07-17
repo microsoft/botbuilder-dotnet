@@ -126,10 +126,8 @@ namespace Microsoft.Bot.Builder.Adapters
                 ChannelId = "test",
                 ServiceUrl = "https://test.com",
                 Conversation = new ConversationAccount(false, name, name),
-#pragma warning disable CA1308 // Normalize strings to uppercase (it is safe to use lowercase here, this is just for display purposes)
                 User = new ChannelAccount(id: user.ToLowerInvariant(), name: user),
                 Bot = new ChannelAccount(id: bot.ToLowerInvariant(), name: bot),
-#pragma warning restore CA1308 // Normalize strings to uppercase
                 Locale = "en-us"
             };
         }

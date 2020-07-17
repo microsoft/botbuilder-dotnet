@@ -21,9 +21,7 @@
     <!-- SX1309: FieldNamesShouldBeginWithUnderscores should be fixed as part of https://github.com/microsoft/botframework-sdk/issues/5933 -->
     <!-- CA2225: Operator overloads have named alternates, excluding for now, we should address this if we want to support other platforms than C#
     see https://docs.microsoft.com/en-us/visualstudio/code-quality/ca2225?view=vs-2019 .-->
-    <!-- CA1308: Normalize strings to uppercase. AdaptiveExpressions assumes all strings are normalized to lowercase 
-    (see for details on this https://docs.microsoft.com/en-us/visualstudio/code-quality/ca1308?view=vs-2019 rule) -->
-    <NoWarn>$(NoWarn);CS1591;SX1309;CA2225;CA1308</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;SX1309;CA2225</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
