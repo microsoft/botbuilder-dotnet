@@ -66,6 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return new MemoryStream(content);
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return this.Id;

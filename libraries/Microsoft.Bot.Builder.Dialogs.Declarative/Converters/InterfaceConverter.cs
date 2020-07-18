@@ -12,6 +12,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
+    /// <summary>
+    /// Converts an object to and from JSON.
+    /// </summary>
+    /// <typeparam name="T">The object type.</typeparam>
     public class InterfaceConverter<T> : JsonConverter, IObservableConverter
         where T : class
     {
@@ -19,19 +23,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         private readonly List<IConverterObserver> observers = new List<IConverterObserver>();
         private readonly SourceContext sourceContext;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InterfaceConverter{T}"/> class.
+        /// </summary>
+        /// <param name="resourceExplorer">A ResourceExplorer object to initialize the current instance.</param>
+        /// <param name="sourceContext">A SourceContext object to initialize the current instance.</param>
         public InterfaceConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(InterfaceConverter<T>.resourceExplorer));
             this.sourceContext = sourceContext ?? throw new ArgumentNullException(nameof(sourceContext));
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="InterfaceConverter{T}"/> can read JSON.
+        /// </summary>
+        /// /// <value><c>true</c> if this <see cref="InterfaceConverter{T}"/> can read JSON; otherwise, <c>false</c>.</value>
         public override bool CanRead => true;
 
+        /// <inheritdoc/>
         public override bool CanConvert(Type objectType)
         {
             return typeof(T) == objectType;
         }
 
+        /// <inheritdoc/>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var (jToken, range) = SourceScope.ReadTokenRange(reader, sourceContext);
@@ -91,11 +106,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             }
         }
 
+        /// <summary>
+        /// Performs an action on an unknown object.
+        /// </summary>
+        /// <param name="jToken">The unkonw object to resolve.</param>
+        /// <returns>An object value.</returns>
         public virtual object ResolveUnknownObject(JToken jToken)
         {
             return null;
         }
 
+        /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             serializer.Serialize(writer, value);

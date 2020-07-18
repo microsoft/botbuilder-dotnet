@@ -62,6 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </value>
         public bool IncludeSubFolders { get; set; }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             lock (Directory)
@@ -127,6 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return this.Id;
