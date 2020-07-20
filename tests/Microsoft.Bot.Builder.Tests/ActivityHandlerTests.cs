@@ -767,7 +767,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         private class TestDelegatingTurnContextActivityHandler : ActivityHandler
-    {
+        {
             protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
             {
                 // touch every
