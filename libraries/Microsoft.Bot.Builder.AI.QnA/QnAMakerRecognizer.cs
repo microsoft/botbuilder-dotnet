@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 return recognizerResult;
             }
 
-              var filters = new List<Metadata>();
+            var filters = new List<Metadata>();
             if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
             {
                 filters.Add(new Metadata
@@ -189,7 +189,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     Value = dialogContext.ActiveDialog.Id
                 });
             }
-            
             // if there is $qna.metadata set add to filters
             var externalMetadata = Metadata?.GetValue(dialogContext.State);
             if (externalMetadata != null)
