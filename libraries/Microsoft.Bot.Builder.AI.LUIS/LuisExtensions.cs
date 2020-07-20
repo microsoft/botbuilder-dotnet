@@ -39,9 +39,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             var di = new DirectoryInfo(botRoot);
-#pragma warning disable CA1308 // Normalize strings to uppercase (file names are normalized as lowercase, ignoring)
             foreach (var file in di.GetFiles($"luis.settings.{environment.ToLowerInvariant()}.{luisRegion}.json", SearchOption.AllDirectories))
-#pragma warning restore CA1308 // Normalize strings to uppercase
             {
                 var relative = file.FullName.Substring(di.FullName.Length);
                 if (!relative.Contains("bin\\") && !relative.Contains("obj\\"))

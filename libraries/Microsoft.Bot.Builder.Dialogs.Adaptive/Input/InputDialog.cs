@@ -17,8 +17,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     public abstract class InputDialog : Dialog
     {
 #pragma warning disable SA1310 // Field should not contain underscore.
+#pragma warning disable CA1707 // Identifiers should not contain underscores (we shouldn't use screaming caps, but we can't change this without breaking binary compat)
         protected const string TURN_COUNT_PROPERTY = "this.turnCount";
         protected const string VALUE_PROPERTY = "this.value";
+#pragma warning restore CA1707 // Identifiers should not contain underscores
 #pragma warning restore SA1310 // Field should not contain underscore.
 
         /// <summary>
@@ -126,7 +128,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// The expressions to run to validate the input.
         /// </value>
         [JsonProperty("validations")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<BoolExpression> Validations { get; set; } = new List<BoolExpression>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets maximum number of times to ask the user for this value before the dialog gives up.

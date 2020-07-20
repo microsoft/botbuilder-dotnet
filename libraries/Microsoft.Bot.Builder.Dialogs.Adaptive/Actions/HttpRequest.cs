@@ -46,7 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+#pragma warning disable CA1717 // Only FlagsAttribute enums should have plural names (we can't change this without breaking binary compat).
         public enum ResponseTypes
+#pragma warning restore CA1717 // Only FlagsAttribute enums should have plural names
         {
             /// <summary>
             /// No response expected
@@ -150,7 +152,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Headers.
         /// </value>
         [JsonProperty("headers")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public Dictionary<string, StringExpression> Headers { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets body payload.
@@ -196,7 +200,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
+#pragma warning disable CA2000 // Dispose objects before losing scope (excluding for now, to fix this we would need to understand better how HttpClient gets into turn state and determine if we should dispose it or not, this should also be analyzed once we start using HttpClientFactory).
             var client = dc.Context.TurnState.Get<HttpClient>() ?? new HttpClient();
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
             // Single command running with a copy of the original data
             client.DefaultRequestHeaders.Clear();
@@ -254,10 +260,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                     else
                     {
-                        var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
-                        traceInfo.request.content = instanceBody.ToString();
-                        traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await client.PostAsync(instanceUrl, postContent, cancellationToken).ConfigureAwait(false);
+                        using (var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType))
+                        {
+                            traceInfo.request.content = instanceBody.ToString();
+                            traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                            response = await client.PostAsync(instanceUrl, postContent, cancellationToken).ConfigureAwait(false);
+                        }
                     }
 
                     break;
@@ -265,16 +273,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case HttpMethod.PATCH:
                     if (instanceBody == null)
                     {
-                        var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                        using (var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl))
+                        {
+                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                        }
                     }
                     else
                     {
-                        var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
-                        traceInfo.request.content = instanceBody.ToString();
-                        traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                        using (var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl))
+                        {
+                            request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
+                            traceInfo.request.content = instanceBody.ToString();
+                            traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                        }
                     }
 
                     break;
@@ -286,10 +298,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                     else
                     {
-                        var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
-                        traceInfo.request.content = instanceBody.ToString();
-                        traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await client.PutAsync(instanceUrl, putContent, cancellationToken).ConfigureAwait(false);
+                        using (var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType))
+                        {
+                            traceInfo.request.content = instanceBody.ToString();
+                            traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                            response = await client.PutAsync(instanceUrl, putContent, cancellationToken).ConfigureAwait(false);
+                        }
                     }
 
                     break;
@@ -303,7 +317,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
             }
 
-            Result requestResult = new Result(response.Headers)
+            var requestResult = new Result(response.Headers)
             {
                 StatusCode = (int)response.StatusCode,
                 ReasonPhrase = response.ReasonPhrase,
@@ -326,12 +340,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
 
                 case ResponseTypes.Json:
-                    // Try set with JOjbect for further retreiving
+                    // Try set with JOjbect for further retrieving
                     try
                     {
                         content = JToken.Parse((string)content);
                     }
+#pragma warning disable CA1031 // Do not catch general exception types (just stringify the content if we can't parse the content).
                     catch
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         content = content.ToString();
                     }
@@ -416,7 +432,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Result data of the the http operation.
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible (this should have been a separate class but we can't change it without breaking binary compat).
         public class Result
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             public Result()
             {

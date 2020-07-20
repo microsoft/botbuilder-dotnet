@@ -65,7 +65,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// The input recognizers.
         /// </value>
         [JsonProperty("recognizers")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
@@ -226,7 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
         private bool IsRedirect(string intent)
         {
-            return intent.StartsWith(DeferPrefix);
+            return intent.StartsWith(DeferPrefix, StringComparison.Ordinal);
         }
 
         private string GetRedirectId(string intent)
@@ -238,7 +240,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         {
             if (this.Recognizers.Any(recognizer => string.IsNullOrEmpty(recognizer.Id)))
             {
-                throw new ArgumentNullException("This recognizer requires that each recognizer in the set have an .Id value.");
+                throw new InvalidOperationException("This recognizer requires that each recognizer in the set have an .Id value.");
             }
         }
     }

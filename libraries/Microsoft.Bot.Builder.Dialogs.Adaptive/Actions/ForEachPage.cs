@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -20,9 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.ForeachPage";
-
-        private const string FOREACHPAGE = "dialog.foreach.page";
-        private const string FOREACHPAGEINDEX = "dialog.foreach.pageindex";
 
         [JsonConstructor]
         public ForeachPage([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -132,9 +130,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 for (int i = index; i < end; i++)
                 {
-                    if (((JObject)list).SelectToken(i.ToString()).HasValues)
+                    if (((JObject)list).SelectToken(i.ToString(CultureInfo.InvariantCulture)).HasValues)
                     {
-                        page.Add(((JObject)list).SelectToken(i.ToString()));
+                        page.Add(((JObject)list).SelectToken(i.ToString(CultureInfo.InvariantCulture)));
                     }
                 }
             }
