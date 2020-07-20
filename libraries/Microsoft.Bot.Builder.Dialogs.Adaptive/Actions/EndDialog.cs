@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
@@ -65,7 +66,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.Value != null)
             {
+                JToken value;
                 var (result, error) = this.Value.TryGetValue(dc.State);
+
+                if (error != null)
+                {
+                    throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {error}");
+                }
+
+                value = JToken.FromObject(result).DeepClone();
+
+                if (value != null)
+                {
+                    value = await value.ReplaceJTokenRecursivelyAsync(dc.State, cancellationToken).ConfigureAwait(false);
+                }
+
                 return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
             }
 
