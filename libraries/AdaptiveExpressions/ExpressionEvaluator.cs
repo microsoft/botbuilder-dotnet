@@ -99,6 +99,10 @@ namespace AdaptiveExpressions
             }
         }
 
+        /// <summary>
+        /// ToString method of ExpressionEvaluator.
+        /// </summary>
+        /// <returns>String value represents the function signature. </returns>
         public override string ToString() => $"{Type} => {ReturnType}";
 
         /// <summary>

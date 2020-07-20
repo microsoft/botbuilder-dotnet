@@ -11,6 +11,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class ReplaceIgnoreCase : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReplaceIgnoreCase"/> class.
+        /// Built-in function ReplaceIgnoreCase constructor.
+        /// </summary>
         public ReplaceIgnoreCase()
             : base(ExpressionType.ReplaceIgnoreCase, Evaluator(), ReturnType.String, Validator)
         {

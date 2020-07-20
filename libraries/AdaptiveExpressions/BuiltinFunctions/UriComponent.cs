@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriComponent : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriComponent"/> class.
+        /// Built-in function UriComponent constructor.
+        /// </summary>
         public UriComponent()
             : base(ExpressionType.UriComponent, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {

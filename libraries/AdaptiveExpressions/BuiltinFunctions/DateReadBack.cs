@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class DateReadBack : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DateReadBack"/> class.
+        /// Built-in function DateReadBack constructor.
+        /// </summary>
         public DateReadBack()
             : base(ExpressionType.DateReadBack, Evaluator(), ReturnType.String, Validator)
         {

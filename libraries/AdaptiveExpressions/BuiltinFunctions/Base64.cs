@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Base64 : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Base64"/> class.
+        /// Built-in function Base64 constructor.
+        /// </summary>
         public Base64()
             : base(ExpressionType.Base64, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {

@@ -13,6 +13,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Mod : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Mod"/> class.
+        /// Built-in function Mod constructor.
+        /// </summary>
         public Mod()
             : base(ExpressionType.Mod, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
         {

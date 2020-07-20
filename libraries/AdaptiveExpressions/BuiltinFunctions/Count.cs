@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Count : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Count"/> class.
+        /// Built-in function Count constructor.
+        /// </summary>
         public Count()
             : base(ExpressionType.Count, Evaluator(), ReturnType.Number, Validator)
         {

@@ -8,6 +8,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class DayOfMonth : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DayOfMonth"/> class.
+        /// Built-in function DayOfMonth constructor.
+        /// </summary>
         public DayOfMonth()
             : base(ExpressionType.DayOfMonth, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {

@@ -8,6 +8,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsString : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsString"/> class.
+        /// Built-in function IsString constructor.
+        /// </summary>
         public IsString()
             : base(ExpressionType.IsString, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

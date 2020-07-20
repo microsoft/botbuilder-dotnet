@@ -11,6 +11,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Ignore : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ignore"/> class.
+        /// Built-in function Ignore constructor.
+        /// </summary>
         public Ignore()
             : base(ExpressionType.Ignore, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnaryBoolean)
         {

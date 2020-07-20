@@ -11,6 +11,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class DateTimeDiff : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DateTimeDiff"/> class.
+        /// Built-in function DateTimeDiff constructor.
+        /// </summary>
         public DateTimeDiff()
             : base(ExpressionType.DateTimeDiff, Evaluator, ReturnType.Number, Validator)
         {

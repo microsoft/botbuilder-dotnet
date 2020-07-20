@@ -11,6 +11,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Last : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Last"/> class.
+        /// Built-in function Last constructor.
+        /// </summary>
         public Last()
             : base(ExpressionType.Last, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
         {

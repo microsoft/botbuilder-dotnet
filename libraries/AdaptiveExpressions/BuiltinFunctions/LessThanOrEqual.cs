@@ -11,6 +11,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class LessThanOrEqual : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LessThanOrEqual"/> class.
+        /// Built-in function LessThanOrEqual constructor.
+        /// </summary>
         public LessThanOrEqual()
             : base(
                   ExpressionType.LessThanOrEqual,

@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class If : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="If"/> class.
+        /// Built-in function If constructor.
+        /// </summary>
         public If()
             : base(ExpressionType.If, Evaluator, ReturnType.Object, Validator)
         {

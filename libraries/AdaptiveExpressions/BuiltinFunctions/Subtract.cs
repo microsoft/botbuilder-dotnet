@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Subtract : MultivariateNumericEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Subtract"/> class.
+        /// Built-in function Subtract constructor.
+        /// </summary>
         public Subtract()
             : base(ExpressionType.Subtract, Evaluator)
         {

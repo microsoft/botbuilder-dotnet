@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class AddDays : TimeTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddDays"/> class.
+        /// Built-in function AddDays constructor.
+        /// </summary>
         public AddDays()
                 : base(ExpressionType.AddDays, Function)
         {

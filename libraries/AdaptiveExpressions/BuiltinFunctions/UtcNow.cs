@@ -11,6 +11,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UtcNow : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UtcNow"/> class.
+        /// Built-in function UtcNow constructor.
+        /// </summary>
         public UtcNow()
             : base(ExpressionType.UtcNow, Evaluator(), ReturnType.String, Validator)
         {

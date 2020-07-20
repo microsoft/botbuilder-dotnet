@@ -13,6 +13,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class And : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="And"/> class.
+        /// Built-in function And constructor.
+        /// </summary>
         public And()
             : base(ExpressionType.And, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)
         {

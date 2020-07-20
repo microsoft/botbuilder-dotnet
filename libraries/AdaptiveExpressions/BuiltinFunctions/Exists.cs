@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Exists : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Exists"/> class.
+        /// Built-in function Exists constructor.
+        /// </summary>
         public Exists()
             : base(
                   ExpressionType.Exists,

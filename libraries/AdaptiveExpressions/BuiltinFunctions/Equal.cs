@@ -15,6 +15,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Equal : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Equal"/> class.
+        /// Built-in function Equal constructor.
+        /// </summary>
         public Equal()
             : base(
                   ExpressionType.Equal,

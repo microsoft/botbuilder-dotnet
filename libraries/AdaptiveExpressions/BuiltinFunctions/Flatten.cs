@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Flatten : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Flatten"/> class.
+        /// Built-in function Flattern constructor.
+        /// </summary>
         public Flatten()
             : base(ExpressionType.Flatten, Evaluator(), ReturnType.Array, Validator)
         {

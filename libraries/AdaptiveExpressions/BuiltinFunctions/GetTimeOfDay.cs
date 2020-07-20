@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class GetTimeOfDay : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetTimeOfDay"/> class.
+        /// Built-in function GetTimeOfDay constructor.
+        /// </summary>
         public GetTimeOfDay()
             : base(ExpressionType.GetTimeOfDay, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {

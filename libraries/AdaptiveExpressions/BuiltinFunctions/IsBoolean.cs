@@ -8,6 +8,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsBoolean : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsBoolean"/> class.
+        /// Built-in function IsBoolean constructor.
+        /// </summary>
         public IsBoolean()
             : base(ExpressionType.IsBoolean, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

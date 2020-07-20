@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class AddHours : TimeTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddHours"/> class.
+        /// Built-in function AddHours constructor.
+        /// </summary>
         public AddHours()
                 : base(ExpressionType.AddHours, Function)
         {

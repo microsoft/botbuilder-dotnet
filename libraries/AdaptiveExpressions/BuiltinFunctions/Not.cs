@@ -13,6 +13,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Not : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Not"/> class.
+        /// Built-in function Not constructor.
+        /// </summary>
         public Not()
             : base(ExpressionType.Not, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

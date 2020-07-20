@@ -11,6 +11,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Unique : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Unique"/> class.
+        /// Built-in function Unique constructor.
+        /// </summary>
         public Unique()
             : base(ExpressionType.Unique, Evaluator(), ReturnType.Array, Validator)
         {

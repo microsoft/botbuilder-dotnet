@@ -14,6 +14,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Intersection : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Intersection"/> class.
+        /// Built-in function Intersection constructor.
+        /// </summary>
         public Intersection()
             : base(ExpressionType.Intersection, Evaluator(), ReturnType.Array, Validator)
         {

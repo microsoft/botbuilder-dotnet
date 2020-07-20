@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Concat : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Concat"/> class.
+        /// Built-in function Concat constructor.
+        /// </summary>
         public Concat()
             : base(ExpressionType.Concat, Evaluator(), ReturnType.Array | ReturnType.String, FunctionUtils.ValidateAtLeastOne)
         {

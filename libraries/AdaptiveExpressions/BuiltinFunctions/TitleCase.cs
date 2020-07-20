@@ -11,6 +11,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class TitleCase : StringTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TitleCase"/> class.
+        /// Built-in function TitleCase constructor.
+        /// </summary>
         public TitleCase()
             : base(ExpressionType.TitleCase, Function)
         {

@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class EndsWith : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EndsWith"/> class.
+        /// Built-in function EndsWith constructor.
+        /// </summary>
         public EndsWith()
             : base(ExpressionType.EndsWith, Evaluator(), ReturnType.Boolean, Validator)
         {

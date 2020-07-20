@@ -13,6 +13,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Union : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Union"/> class.
+        /// Built-in function Union constructor.
+        /// </summary>
         public Union()
             : base(ExpressionType.Union, Evaluator(), ReturnType.Array, Validator)
         {

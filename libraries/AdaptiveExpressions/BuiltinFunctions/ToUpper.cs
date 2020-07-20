@@ -11,6 +11,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class ToUpper : StringTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToUpper"/> class.
+        /// Built-in function ToUpper constructor.
+        /// </summary>
         public ToUpper()
             : base(ExpressionType.ToUpper, Function)
         {

@@ -638,6 +638,10 @@ namespace AdaptiveExpressions
             }
         }
 
+        /// <summary>
+        /// The ToString method of an Expression.
+        /// </summary>
+        /// <returns>A string value of this Expression.</returns>
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -728,13 +732,17 @@ namespace AdaptiveExpressions
 #pragma warning restore CA1710 // Identifiers should have correct suffix
 #pragma warning restore CA1034 // Nested types should not be visible
         {
-            private readonly ConcurrentDictionary<string, ExpressionEvaluator> customFunctions = new ConcurrentDictionary<string, ExpressionEvaluator>(StringComparer.InvariantCultureIgnoreCase);
+            private readonly ConcurrentDictionary<string, ExpressionEvaluator> _customFunctions = new ConcurrentDictionary<string, ExpressionEvaluator>(StringComparer.InvariantCultureIgnoreCase);
 
-            public ICollection<string> Keys => ExpressionFunctions.StandardFunctions.Keys.Concat(this.customFunctions.Keys).ToList();
+            /// <summary>
+            /// Gets a value of keys in standard functions. 
+            /// </summary>
+            /// <value> A list of string values.</value>
+            public ICollection<string> Keys => ExpressionFunctions.StandardFunctions.Keys.Concat(this._customFunctions.Keys).ToList();
 
-            public ICollection<ExpressionEvaluator> Values => ExpressionFunctions.StandardFunctions.Values.Concat(this.customFunctions.Values).ToList();
+            public ICollection<ExpressionEvaluator> Values => ExpressionFunctions.StandardFunctions.Values.Concat(this._customFunctions.Values).ToList();
 
-            public int Count => ExpressionFunctions.StandardFunctions.Count + this.customFunctions.Count;
+            public int Count => ExpressionFunctions.StandardFunctions.Count + this._customFunctions.Count;
 
             public bool IsReadOnly => false;
 
@@ -747,7 +755,7 @@ namespace AdaptiveExpressions
                         return function;
                     }
 
-                    if (customFunctions.TryGetValue(key, out function))
+                    if (_customFunctions.TryGetValue(key, out function))
                     {
                         return function;
                     }
@@ -762,7 +770,7 @@ namespace AdaptiveExpressions
                         throw new NotSupportedException("You can't overwrite a built in function.");
                     }
 
-                    customFunctions[key] = value;
+                    _customFunctions[key] = value;
                 }
             }
 
@@ -775,17 +783,17 @@ namespace AdaptiveExpressions
 
             public void Add(KeyValuePair<string, ExpressionEvaluator> item) => this[item.Key] = item.Value;
 
-            public void Clear() => this.customFunctions.Clear();
+            public void Clear() => this._customFunctions.Clear();
 
-            public bool Contains(KeyValuePair<string, ExpressionEvaluator> item) => ExpressionFunctions.StandardFunctions.Contains(item) || this.customFunctions.Contains(item);
+            public bool Contains(KeyValuePair<string, ExpressionEvaluator> item) => ExpressionFunctions.StandardFunctions.Contains(item) || this._customFunctions.Contains(item);
 
-            public bool ContainsKey(string key) => ExpressionFunctions.StandardFunctions.ContainsKey(key) || this.customFunctions.ContainsKey(key);
+            public bool ContainsKey(string key) => ExpressionFunctions.StandardFunctions.ContainsKey(key) || this._customFunctions.ContainsKey(key);
 
             public void CopyTo(KeyValuePair<string, ExpressionEvaluator>[] array, int arrayIndex) => throw new NotImplementedException();
 
-            public IEnumerator<KeyValuePair<string, ExpressionEvaluator>> GetEnumerator() => ExpressionFunctions.StandardFunctions.Concat(this.customFunctions).GetEnumerator();
+            public IEnumerator<KeyValuePair<string, ExpressionEvaluator>> GetEnumerator() => ExpressionFunctions.StandardFunctions.Concat(this._customFunctions).GetEnumerator();
 
-            public bool Remove(string key) => this.customFunctions.TryRemove(key, out var oldVal);
+            public bool Remove(string key) => this._customFunctions.TryRemove(key, out var oldVal);
 
             public bool Remove(KeyValuePair<string, ExpressionEvaluator> item) => Remove(item.Key);
 
@@ -796,7 +804,7 @@ namespace AdaptiveExpressions
                     return true;
                 }
 
-                if (this.customFunctions.TryGetValue(key, out value))
+                if (this._customFunctions.TryGetValue(key, out value))
                 {
                     return true;
                 }
@@ -804,7 +812,12 @@ namespace AdaptiveExpressions
                 return false;
             }
 
-            IEnumerator IEnumerable.GetEnumerator() => ExpressionFunctions.StandardFunctions.Concat(this.customFunctions).GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator() => ExpressionFunctions.StandardFunctions.Concat(this._customFunctions).GetEnumerator();
+        }
+
+        public Expression ToExpression()
+        {
+            throw new NotImplementedException();
         }
     }
 }

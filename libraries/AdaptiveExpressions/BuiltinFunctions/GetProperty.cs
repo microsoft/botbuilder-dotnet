@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class GetProperty : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetProperty"/> class.
+        /// Built-in function GetProperty constructor.
+        /// </summary>
         public GetProperty()
             : base(ExpressionType.GetProperty, Evaluator, ReturnType.Object, Validator)
         {

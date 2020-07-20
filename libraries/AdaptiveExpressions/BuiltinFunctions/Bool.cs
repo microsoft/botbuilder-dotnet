@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Bool : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Bool"/> class.
+        /// Built-in function Bool constructor.
+        /// </summary>
         public Bool()
             : base(
                   ExpressionType.Bool,

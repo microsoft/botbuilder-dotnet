@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Replace : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Replace"/> class.
+        /// Built-in function Replace constructor.
+        /// </summary>
         public Replace()
             : base(ExpressionType.Replace, Evaluator(), ReturnType.String, Validator)
         {

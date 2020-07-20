@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Floor : NumberTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Floor"/> class.
+        /// Built-in function Floor constructor.
+        /// </summary>
         public Floor()
             : base(ExpressionType.Floor, Function)
         {

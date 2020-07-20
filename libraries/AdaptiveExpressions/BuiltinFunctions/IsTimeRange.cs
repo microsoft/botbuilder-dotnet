@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsTimeRange : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsTimeRange"/> class.
+        /// Built-in function IsTimeRange constructor.
+        /// </summary>
         public IsTimeRange()
             : base(ExpressionType.IsTimeRange, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

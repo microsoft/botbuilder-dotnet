@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Sum : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Sum"/> class.
+        /// Built-in function Sum constructor.
+        /// </summary>
         public Sum()
             : base(ExpressionType.Sum, Evaluator(), ReturnType.Number, Validator)
         {

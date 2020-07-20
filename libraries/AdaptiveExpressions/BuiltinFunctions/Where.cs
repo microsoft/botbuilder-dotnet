@@ -13,6 +13,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Where : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Where"/> class.
+        /// Built-in function Where constructor.
+        /// </summary>
         public Where()
             : base(ExpressionType.Where, Evaluator, ReturnType.Array, FunctionUtils.ValidateForeach)
         {

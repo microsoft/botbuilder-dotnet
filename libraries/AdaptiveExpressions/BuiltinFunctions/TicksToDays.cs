@@ -15,6 +15,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         private const long TicksPerDay = 24 * 60 * 60 * 10000000L;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TicksToDays"/> class.
+        /// Built-in function TicksToDays constructor.
+        /// </summary>
         public TicksToDays()
             : base(ExpressionType.TicksToDays, Evaluator, ReturnType.Number, FunctionUtils.ValidateUnaryNumber)
         {

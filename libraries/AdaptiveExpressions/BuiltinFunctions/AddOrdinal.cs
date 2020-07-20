@@ -11,6 +11,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class AddOrdinal : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddOrdinal"/> class.
+        /// Built-in function AddOrdinal constructor.
+        /// </summary>
         public AddOrdinal()
             : base(ExpressionType.AddOrdinal, Evaluator(), ReturnType.String, Validator)
         {

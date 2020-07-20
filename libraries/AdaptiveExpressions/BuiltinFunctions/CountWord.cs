@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class CountWord : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CountWord"/> class.
+        /// Built-in function CountWord constructor.
+        /// </summary>
         public CountWord()
             : base(ExpressionType.CountWord, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnaryString)
         {

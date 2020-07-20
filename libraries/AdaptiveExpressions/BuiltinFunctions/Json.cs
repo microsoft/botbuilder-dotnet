@@ -14,6 +14,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Json : ExpressionEvaluator
 #pragma warning restore CA1724 // Type names should not match namespaces
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Json"/> class.
+        /// Built-in function Json constructor.
+        /// </summary>
         public Json()
             : base(ExpressionType.Json, Evaluator(), ReturnType.Object, Validator)
         {

@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Divide : MultivariateNumericEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Divide"/> class.
+        /// Built-in function Divide constructor.
+        /// </summary>
         public Divide()
             : base(ExpressionType.Divide, Evaluator, Verify)
         {

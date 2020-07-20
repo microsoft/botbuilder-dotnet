@@ -12,6 +12,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsDefinite : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsDefinite"/> class.
+        /// Built-in function IsDefinite constructor.
+        /// </summary>
         public IsDefinite()
             : base(ExpressionType.IsDefinite, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

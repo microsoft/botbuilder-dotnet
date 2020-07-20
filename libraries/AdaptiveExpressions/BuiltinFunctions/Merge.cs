@@ -10,6 +10,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Merge : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Merge"/> class.
+        /// Built-in function Merge constructor.
+        /// </summary>
         public Merge()
             : base(ExpressionType.Merge, Evaluator(), ReturnType.Object, Validator)
         {
