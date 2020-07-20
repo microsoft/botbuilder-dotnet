@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 return recognizerResult;
             }
 
-            var filters = new List<Metadata>();
+              var filters = new List<Metadata>();
             if (IncludeDialogNameInMetadata.GetValue(dialogContext.State))
             {
                 filters.Add(new Metadata
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     Value = dialogContext.ActiveDialog.Id
                 });
             }
-
+            
             // if there is $qna.metadata set add to filters
             var externalMetadata = Metadata?.GetValue(dialogContext.State);
             if (externalMetadata != null)
@@ -238,7 +238,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 ObjectPath.SetPathValue(recognizerResult, "entities.answer", answerArray);
 
                 var instance = new JArray();
-                instance.Add(JObject.FromObject(topAnswer));
+                var data = JObject.FromObject(topAnswer);
+                data["startIndex"] = 0;
+                data["endIndex"] = activity.Text.Length;
+                instance.Add(data);
                 ObjectPath.SetPathValue(recognizerResult, "entities.$instance.answer", instance);
 
                 recognizerResult.Properties["answers"] = answers;
