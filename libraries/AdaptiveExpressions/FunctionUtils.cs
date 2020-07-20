@@ -207,8 +207,11 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyNumber(object value, Expression expression)
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
+        public static string VerifyNumber(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (!value.IsNumber())
