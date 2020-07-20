@@ -28,10 +28,14 @@
                                 "value": "='billybob'"
                             },
                             {
+                                "property": "user.profile.userName",
+                                "value": "jack"
+                            },
+                            {
                                 "property": "user.profile",
                                 "value":
                                 {
-                                    "name": "${sentenceCase('jack')}",
+                                    "name": "${sentenceCase(user.profile.userName)}",
                                     "age": "${10 * 2}"
                                 }
                             }
