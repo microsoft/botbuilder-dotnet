@@ -64,14 +64,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             foreach (var propValue in this.Assignments)
             {
-                JToken value;
+                JToken value = null;
                 var (val, valueError) = propValue.Value.TryGetValue(dc.State);
                 if (valueError != null)
                 {
                     throw new Exception($"Expression evaluation resulted in an error. Expression: {propValue.Value.ToString()}. Error: {valueError}");
                 }
 
-                value = JToken.FromObject(val).DeepClone();
+                if (val != null)
+                {
+                    value = JToken.FromObject(val).DeepClone();
+                }
 
                 if (value != null)
                 {

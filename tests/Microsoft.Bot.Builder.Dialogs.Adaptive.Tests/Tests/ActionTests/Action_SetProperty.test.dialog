@@ -70,6 +70,18 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${user.$instance.name}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.profile",
+                        "value": {
+                            "name": "${sentenceCase('jack')}",
+                            "age": "${10 * 2}"
+                        }
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.profile.name}"
                     }
                 ]
             }
@@ -90,6 +102,10 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "name"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Jack"
         }
     ]
 }

@@ -78,7 +78,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {valueError}");
                 }
 
-                value = JToken.FromObject(val).DeepClone();
+                if (val != null)
+                {
+                    value = JToken.FromObject(val).DeepClone();
+                }
             }
 
             if (value != null)

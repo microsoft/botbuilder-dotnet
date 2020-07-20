@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.Value != null)
             {
-                JToken value;
+                JToken value = null;
                 var (result, error) = this.Value.TryGetValue(dc.State);
 
                 if (error != null)
@@ -74,14 +74,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {error}");
                 }
 
-                value = JToken.FromObject(result).DeepClone();
+                if (result != null)
+                {
+                    value = JToken.FromObject(result).DeepClone();
+                }
 
                 if (value != null)
                 {
                     value = await value.ReplaceJTokenRecursivelyAsync(dc.State, cancellationToken).ConfigureAwait(false);
                 }
 
-                return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
+                return await EndParentDialogAsync(dc, value, cancellationToken).ConfigureAwait(false);
             }
 
             return await EndParentDialogAsync(dc, result: null, cancellationToken: cancellationToken).ConfigureAwait(false);

@@ -26,6 +26,14 @@
                             {
                                 "property": "$p4",
                                 "value": "='billybob'"
+                            },
+                            {
+                                "property": "user.profile",
+                                "value":
+                                {
+                                    "name": "${sentenceCase('jack')}",
+                                    "age": "${10 * 2}"
+                                }
                             }
                         ]
                     },
@@ -44,6 +52,10 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${$p4}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.profile.name}"
                     }
                 ]
             }
@@ -68,6 +80,10 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "billybob"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Jack"
         }
     ]
 }
