@@ -10,6 +10,7 @@ using System.Reflection.Emit;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
@@ -35,7 +36,13 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((hostingContext, builder) =>
             {
+                var configuration = builder.Build();
+                var botRoot = configuration.GetValue<string>("root") ?? ".";
+                var region = configuration.GetValue<string>("region") ?? "westus";
+                var environment = configuration.GetValue<string>("environment") ?? Environment.UserName;
+
                 builder.UseLuisSettings();
+                builder.UseQnAMakerSettings(botRoot, region, environment);
                 builder.AddUserSecrets("TestBot");
             })
             .ConfigureWebHostDefaults(webBuilder =>
