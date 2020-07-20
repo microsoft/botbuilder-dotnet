@@ -207,11 +207,8 @@ namespace AdaptiveExpressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
-        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking backward compat)
-        public static string VerifyNumber(object value, Expression expression, int number)
-#pragma warning restore CA1801 // Review unused parameters
+        public static string VerifyNumber(object value, Expression expression)
         {
             string error = null;
             if (!value.IsNumber())
@@ -1044,7 +1041,7 @@ namespace AdaptiveExpressions
         {
             if (expression.Children.Length != 3)
             {
-                throw new Exception($"foreach expect 3 parameters, found {expression.Children.Length}");
+                throw new Exception($"foreach expects 3 parameters, found {expression.Children.Length}");
             }
 
             var second = expression.Children[1];
@@ -1148,7 +1145,7 @@ namespace AdaptiveExpressions
                     } 
                     else
                     {
-                        error = $"the {args[maxArgsLength - 1]} should be a locale string.";
+                        error = $"{args[maxArgsLength - 1]} should be a locale string.";
                     }
                 }
             }

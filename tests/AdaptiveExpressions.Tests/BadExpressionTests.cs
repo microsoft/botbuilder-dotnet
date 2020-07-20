@@ -23,6 +23,7 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> BadExpressions => new[]
         {
+            Test("formatNumber(1.12, 2, asss)"),
             #region General test
             Test("length(func())"), // no such function in children
             Test("func()"), // no such func
