@@ -84,10 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
             }
 
-            if (value != null)
-            {
-                value = await value.ReplaceJTokenRecursivelyAsync(dc.State, cancellationToken).ConfigureAwait(false);
-            }
+            value = value?.ReplaceJTokenRecursively(dc.State);
 
             dc.State.SetValue(this.Property.GetValue(dc.State), value);
 

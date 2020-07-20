@@ -228,10 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // Bind each string token to the data in state
-            if (instanceBody != null)
-            {
-                instanceBody = await instanceBody.ReplaceJTokenRecursivelyAsync(dc.State, cancellationToken).ConfigureAwait(false);
-            }
+            instanceBody = instanceBody?.ReplaceJTokenRecursively(dc.State);
 
             // Set headers
             if (instanceHeaders != null)

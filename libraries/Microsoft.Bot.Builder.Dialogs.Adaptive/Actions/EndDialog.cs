@@ -79,10 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     value = JToken.FromObject(result).DeepClone();
                 }
 
-                if (value != null)
-                {
-                    value = await value.ReplaceJTokenRecursivelyAsync(dc.State, cancellationToken).ConfigureAwait(false);
-                }
+                value = value?.ReplaceJTokenRecursively(dc.State);
 
                 return await EndParentDialogAsync(dc, value, cancellationToken).ConfigureAwait(false);
             }

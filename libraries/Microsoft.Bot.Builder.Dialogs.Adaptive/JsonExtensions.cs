@@ -28,9 +28,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="token">Input token.</param>
         /// <param name="state">Memory scope.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Deep data binding result.</returns>
-        public static async Task<JToken> ReplaceJTokenRecursivelyAsync(this JToken token, object state, CancellationToken cancellationToken = default(CancellationToken))
+        public static JToken ReplaceJTokenRecursively(this JToken token, object state)
         {
             switch (token.Type)
             {
@@ -38,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // NOTE: ToList() is required because JToken.Replace will break the enumeration.
                     foreach (var child in token.Children<JProperty>().ToList())
                     {
-                        child.Replace(await child.ReplaceJTokenRecursivelyAsync(state, cancellationToken).ConfigureAwait(false));
+                        child.Replace(child.ReplaceJTokenRecursively(state));
                     }
 
                     break;
@@ -47,14 +46,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // NOTE: ToList() is required because JToken.Replace will break the enumeration.
                     foreach (var child in token.Children().ToList())
                     {
-                        child.Replace(await child.ReplaceJTokenRecursivelyAsync(state, cancellationToken).ConfigureAwait(false));
+                        child.Replace(child.ReplaceJTokenRecursively(state));
                     }
 
                     break;
 
                 case JTokenType.Property:
                     JProperty property = (JProperty)token;
-                    property.Value = await property.Value.ReplaceJTokenRecursivelyAsync(state, cancellationToken).ConfigureAwait(false);
+                    property.Value = property.Value.ReplaceJTokenRecursively(state);
                     break;
 
                 default:

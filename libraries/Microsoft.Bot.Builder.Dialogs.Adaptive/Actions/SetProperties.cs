@@ -76,10 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     value = JToken.FromObject(val).DeepClone();
                 }
 
-                if (value != null)
-                {
-                    value = await value.ReplaceJTokenRecursivelyAsync(dc.State, cancellationToken).ConfigureAwait(false);
-                }
+                value = value?.ReplaceJTokenRecursively(dc.State);
 
                 dc.State.SetValue(propValue.Property.GetValue(dc.State), value);
             }
