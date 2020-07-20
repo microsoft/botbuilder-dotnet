@@ -209,7 +209,7 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking backward compat)
         public static string VerifyNumber(object value, Expression expression, int number)
 #pragma warning restore CA1801 // Review unused parameters
         {
