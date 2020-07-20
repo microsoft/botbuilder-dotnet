@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
@@ -68,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-            object value = null;
+            JToken value = null;
             if (this.Value != null)
             {
                 var (val, valueError) = this.Value.TryGetValue(dc.State);
@@ -77,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {valueError}");
                 }
 
-                value = val;
+                value = JToken.FromObject(val).DeepClone();
             }
 
             dc.State.SetValue(this.Property.GetValue(dc.State), value);
