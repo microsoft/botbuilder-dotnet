@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder.Adapters;
@@ -27,6 +28,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string CosmosCollectionName = "bot-storage";
 
         private const string _noEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
+        private static CosmosTestRecorder _testRecorder;
         private static readonly string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
         private static readonly Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
         {
@@ -94,14 +96,27 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (_hasEmulator.Value)
             {
-                _storage = new CosmosDbPartitionedStorage(
-                    new CosmosDbPartitionedStorageOptions
-                    {
-                        AuthKey = CosmosAuthKey,
-                        ContainerId = CosmosCollectionName,
-                        CosmosDbEndpoint = CosmosServiceEndpoint,
-                        DatabaseId = CosmosDatabaseName,
-                    });
+                var options = new CosmosDbPartitionedStorageOptions()
+                {
+                    AuthKey = CosmosAuthKey,
+                    ContainerId = CosmosCollectionName,
+                    CosmosDbEndpoint = CosmosServiceEndpoint,
+                    DatabaseId = CosmosDatabaseName,
+                };
+
+                Environment.SetEnvironmentVariable("COSMOS_RECORDING_MODE", nameof(RecordingMode.Playback));
+                if (Enum.TryParse(Environment.GetEnvironmentVariable("COSMOS_RECORDING_MODE"), out RecordingMode mode))
+                {
+                    _testRecorder = new CosmosTestRecorder(mode);
+                    options.CosmosClientOptions = new CosmosClientOptions();
+                    options.CosmosClientOptions.CustomHandlers.Add(_testRecorder);
+                    options.CompatibilityMode = false;
+                }
+
+                // TODO: DELETE ME
+                //_testRecorder.QuickTest();
+
+                _storage = new CosmosDbPartitionedStorage(options);
             }
         }
 
@@ -109,6 +124,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public async Task TestCleanUp()
         {
             _storage = null;
+            if (_testRecorder?.Mode == RecordingMode.Record)
+            {
+                await _testRecorder.WriteRecordingsToFiles().ConfigureAwait(false);
+            }
         }
 
         [TestMethod]
@@ -181,6 +200,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 await CreateObjectTest(_storage);
             }
         }
@@ -191,6 +211,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 await ReadUnknownTest(_storage);
             }
         }
@@ -201,6 +222,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 await UpdateObjectTest(_storage);
             }
         }
@@ -211,6 +233,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 await DeleteObjectTest(_storage);
             }
         }
@@ -221,6 +244,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 await _storage.DeleteAsync(new[] { "unknown_delete" });
             }
         }
@@ -231,6 +255,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 await HandleCrazyKeys(_storage);
             }
         }
@@ -241,6 +266,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 var state = await _storage.ReadAsync(new string[] { });
                 Assert.IsInstanceOfType(state, typeof(Dictionary<string, object>));
                 Assert.AreEqual(state.Count, 0);
@@ -253,6 +279,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _storage.ReadAsync(null));
             }
         }
@@ -263,6 +290,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _storage.WriteAsync(null));
             }
         }
@@ -273,6 +301,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 var changes = new Dictionary<string, object>();
                 await _storage.WriteAsync(changes);
             }
@@ -293,6 +322,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
+                _testRecorder.RecordingFileName = GetActualAsyncMethodName();
                 var convoState = new ConversationState(_storage);
 
                 var adapter = new TestAdapter()
@@ -381,5 +411,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             return _hasEmulator.Value;
         }
+
+        private static string GetActualAsyncMethodName([CallerMemberName] string name = null) => name;
     }
 }
