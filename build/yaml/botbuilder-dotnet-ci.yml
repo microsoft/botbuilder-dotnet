@@ -69,7 +69,7 @@ stages:
   - job: Release_Windows_Configuration_31
     variables:
       BuildConfiguration: Release-Windows
-      BuildTarget: 'netcoreapp31' #set the TargetFramework property for tests to use netcoreapp3.1
+      BuildTarget: 'netcoreapp31' # set the TargetFramework property for tests to use netcoreapp3.1
       NoCoverageUpload: true
     steps:
     - template: ci-build-steps.yml
