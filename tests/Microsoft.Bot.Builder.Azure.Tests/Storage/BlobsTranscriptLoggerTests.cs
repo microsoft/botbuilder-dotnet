@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
-        public async Task BlobTranscriptParamTest()
+        public void BlobTranscriptParamTest()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
