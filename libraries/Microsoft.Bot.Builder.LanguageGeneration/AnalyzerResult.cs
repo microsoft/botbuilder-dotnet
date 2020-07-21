@@ -29,7 +29,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Variables that this template contains.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
         public List<string> Variables { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets template references that this template contains.
@@ -37,7 +39,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Template references that this template contains.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
         public List<string> TemplateReferences { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Combine two analyzer results.
