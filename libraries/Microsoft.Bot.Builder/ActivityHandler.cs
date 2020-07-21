@@ -111,6 +111,11 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        /// <summary>
+        /// An <see cref="InvokeResponse"/> factory that initializes the body to the parameter passed and status equal to OK.
+        /// </summary>
+        /// <param name="body">JSON serialized content from a POST response.</param>
+        /// <returns>A new <see cref="InvokeResponse"/> object.</returns>
         protected static InvokeResponse CreateInvokeResponse(object body = null)
         {
             return new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = body };

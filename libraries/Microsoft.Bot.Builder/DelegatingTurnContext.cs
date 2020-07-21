@@ -31,38 +31,51 @@ namespace Microsoft.Bot.Builder
         /// <value>The inner context's activity.</value>
         T ITurnContext<T>.Activity => (T)(IActivity)_innerTurnContext.Activity;
 
+        /// <inheritdoc/>
         public BotAdapter Adapter => _innerTurnContext.Adapter;
 
+        /// <inheritdoc/>
         public TurnContextStateCollection TurnState => _innerTurnContext.TurnState;
 
+        /// <inheritdoc/>
         public Activity Activity => _innerTurnContext.Activity;
 
+        /// <inheritdoc/>
         public bool Responded => _innerTurnContext.Responded;
 
+        /// <inheritdoc/>
         public Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken))
             => _innerTurnContext.DeleteActivityAsync(activityId, cancellationToken);
 
+        /// <inheritdoc/>
         public Task DeleteActivityAsync(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken))
             => _innerTurnContext.DeleteActivityAsync(conversationReference, cancellationToken);
 
+        /// <inheritdoc/>
         public ITurnContext OnDeleteActivity(DeleteActivityHandler handler)
             => _innerTurnContext.OnDeleteActivity(handler);
 
+        /// <inheritdoc/>
         public ITurnContext OnSendActivities(SendActivitiesHandler handler)
             => _innerTurnContext.OnSendActivities(handler);
 
+        /// <inheritdoc/>
         public ITurnContext OnUpdateActivity(UpdateActivityHandler handler)
             => _innerTurnContext.OnUpdateActivity(handler);
 
+        /// <inheritdoc/>
         public Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken))
             => _innerTurnContext.SendActivitiesAsync(activities, cancellationToken);
 
+        /// <inheritdoc/>
         public Task<ResourceResponse> SendActivityAsync(string textReplyToSend, string speak = null, string inputHint = InputHints.AcceptingInput, CancellationToken cancellationToken = default(CancellationToken))
             => _innerTurnContext.SendActivityAsync(textReplyToSend, speak, inputHint, cancellationToken);
 
+        /// <inheritdoc/>
         public Task<ResourceResponse> SendActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
             => _innerTurnContext.SendActivityAsync(activity, cancellationToken);
 
+        /// <inheritdoc/>
         public Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
             => _innerTurnContext.UpdateActivityAsync(activity, cancellationToken);
     }
