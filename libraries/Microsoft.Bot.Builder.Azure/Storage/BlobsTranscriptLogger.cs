@@ -153,25 +153,22 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                     string token = null;
                     do
                     {
-                        var resultSegment = _containerClient.GetBlobs(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}")
-                                                            .AsPages(token, 5);
+                        var resultSegment = _containerClient.GetBlobs(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{SanitizeKey(activity.Id)}-")
+                                                            .AsPages(token, 1);
 
                         foreach (var blobPage in resultSegment)
                         {
                             foreach (BlobItem blobItem in blobPage.Values)
                             {
-                                if (blobItem.Metadata.TryGetValue("Id", out string id))
+                                if (blobItem.Metadata.TryGetValue("Id", out string id) && id == activity.Id)
                                 {
-                                    if (id == activity.Id)
+                                    var blobClient = _containerClient.GetBlobClient(blobItem.Name);
+                                    using (BlobDownloadInfo download = await blobClient.DownloadAsync().ConfigureAwait(false))
                                     {
-                                        var blobClient = _containerClient.GetBlobClient(blobItem.Name);
-                                        using (BlobDownloadInfo download = await blobClient.DownloadAsync().ConfigureAwait(false))
+                                        using (var jsonReader = new JsonTextReader(new StreamReader(download.Content)))
                                         {
-                                            using (var jsonReader = new JsonTextReader(new StreamReader(download.Content)))
-                                            {
-                                                var resultActivity = _jsonSerializer.Deserialize(jsonReader, typeof(Activity)) as Activity;
-                                                return (resultActivity, blobClient);
-                                            }
+                                            var resultActivity = _jsonSerializer.Deserialize(jsonReader, typeof(Activity)) as Activity;
+                                            return (resultActivity, blobClient);
                                         }
                                     }
                                 }
@@ -224,7 +221,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
 
         private string GetBlobName(IActivity activity)
         {
-            var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{activity.Timestamp.Value.Ticks.ToString("x")}-{SanitizeKey(activity.Id)}.json";
+            var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{SanitizeKey(activity.Id)}-{activity.Timestamp.Value.Ticks.ToString("x")}.json";
             return blobName;
         }
 

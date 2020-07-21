@@ -263,6 +263,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     if (context.Activity.Text == "update")
                     {
                         activityToUpdate.Text = "new response";
+                        
+                        // Set the Timestamp before calling update, to ensure the test
+                        // finds the activity based on channel/conversation.id/activity.id
+                        activityToUpdate.Timestamp = DateTimeOffset.UtcNow;
                         await context.UpdateActivityAsync(activityToUpdate);
                     }
                     else
