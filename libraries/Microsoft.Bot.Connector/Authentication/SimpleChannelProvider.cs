@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// A simple channel provider with basic configuration parameters to connect to a Bot Framework channel service.
+    /// </summary>
     public class SimpleChannelProvider : IChannelProvider
     {
         /// <summary>
@@ -25,7 +28,12 @@ namespace Microsoft.Bot.Connector.Authentication
             this.ChannelService = channelService;
         }
 
+        /// <summary>
+        /// Gets or sets the channel service.
+        /// </summary>
+#pragma warning disable SA1609 // Property documentation should have value
         public string ChannelService { get; set; }
+#pragma warning restore SA1609 // Property documentation should have value
 
         /// <summary>
         /// Gets the channel service property for this channel provider.
