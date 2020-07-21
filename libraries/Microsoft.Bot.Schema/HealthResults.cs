@@ -6,47 +6,49 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Defines health check result values.
+    /// Defines the structure that is returned as the result of a health check on the bot.
+    /// The health check is sent to the bot as an InvokeActivity and this class along with <see cref="HealthCheckResponse"/> defines the structure of the body of the response.
     /// </summary>
     public class HealthResults
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the health check is success.
+        /// Gets or sets a value indicating whether the health check has succeeded and the bot is healthy.
         /// </summary>
+        /// <value>A boolean value indicating health status.</value>
         [JsonProperty(PropertyName = "success")]
 #pragma warning disable SA1609 // Property documentation should have value
         public bool Success { get; set; }
 #pragma warning restore SA1609 // Property documentation should have value
 
         /// <summary>
-        /// Gets or sets the authorization property of a health result.
+        /// Gets or sets a value that is exactly the same as the Authorization header that would have been added to an HTTP POST back.
         /// </summary>
+        /// <value>An Authorization header value.</value>
         [JsonProperty(PropertyName = "authorization")]
 #pragma warning disable SA1609 // Property documentation should have value
         public string Authorization { get; set; }
 #pragma warning restore SA1609 // Property documentation should have value
 
         /// <summary>
-        /// Gets or sets the user agent of a health result.
+        /// Gets or sets a value that is exactly the same as the User-Agent header that would have been added to an HTTP POST back.
         /// </summary>
+        /// <value>A User-Agent header value.</value>
         [JsonProperty(PropertyName = "user-agent")]
-#pragma warning disable SA1609 // Property documentation should have value
         public string UserAgent { get; set; }
-#pragma warning restore SA1609 // Property documentation should have value
 
         /// <summary>
-        /// Gets or sets the collection of messages of a health result.
+        /// Gets or sets informational messages that can be optionally included in the health check response.
         /// </summary>
+        /// <value>An array of informational message strings.</value>
         [JsonProperty(PropertyName = "messages")]
 #pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat).
-#pragma warning disable SA1609 // Property documentation should have value
         public string[] Messages { get; set; }
-#pragma warning restore SA1609 // Property documentation should have value
 #pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
-        /// Gets or sets a diagnostics object for a health result.
+        /// Gets or sets diagnostic data that can be optionally included in the health check response. 
         /// </summary>
+        /// <value>Arbitrary diagnostic data that will be serialized to JSON.</value>
         [JsonProperty(PropertyName = "diagnostics")]
 #pragma warning disable SA1609 // Property documentation should have value
         public object Diagnostics { get; set; }
