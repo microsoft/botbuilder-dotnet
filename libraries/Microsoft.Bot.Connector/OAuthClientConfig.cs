@@ -16,9 +16,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector
 {
-    /// <summary>
-    /// A class containing OAuthClient configuration values.
-    /// </summary>
     public static class OAuthClientConfig
     {
         /// <summary>
