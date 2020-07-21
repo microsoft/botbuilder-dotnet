@@ -29,9 +29,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
                 {
                     switch (r.ContentType)
                     {
-                        case HttpResponseMock.ContentTypes.String:
+                        case HttpResponseMock.ResponseContentType.String:
                             return (HttpContent)new StringContent(r.Content == null ? string.Empty : r.Content.ToString());
-                        case HttpResponseMock.ContentTypes.ByteArray:
+                        case HttpResponseMock.ResponseContentType.ByteArray:
                             var bytes = Convert.FromBase64String(r.Content == null ? string.Empty : r.Content.ToString());
                             return (HttpContent)new ByteArrayContent(bytes);
                         default:
