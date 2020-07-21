@@ -13,11 +13,6 @@ namespace Microsoft.Bot.Builder
 {
     internal class HealthCheck
     {
-        /// <summary>
-        /// Creates a <see cref="HealthCheckResponse"/> containing the results of a bot health check.
-        /// </summary>
-        /// <param name="connector">The connector client used to perform a bot health check.</param>
-        /// <returns>A <see cref="HealthCheckResponse"/> object.</returns>
         public static HealthCheckResponse CreateHealthCheckResponse(IConnectorClient connector)
         {
             // A derived class may override this, however, the default is that the bot is healthy given we have got to here.
