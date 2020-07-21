@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
     /// </summary>
     /// <remarks>
     /// Each activity is stored as json blob in structure of
-    /// container/{channelId]/{conversationId}/{Timestamp.ticks}-{activity.id}.json.
+    /// container/{channelId]/{conversationId}/{activity.id}-{Timestamp.ticks}.json.
     /// </remarks>
     public class BlobsTranscriptLogger : ITranscriptLogger
     {
