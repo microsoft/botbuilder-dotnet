@@ -105,6 +105,12 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                 throw new ArgumentNullException(nameof(keys));
             }
 
+            // this should only happen once - assuming this is a singleton
+            if (Interlocked.CompareExchange(ref _checkforContainerExistance, 0, 1) == 1)
+            {
+                await _containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
             var items = new Dictionary<string, object>();
 
             foreach (var key in keys)

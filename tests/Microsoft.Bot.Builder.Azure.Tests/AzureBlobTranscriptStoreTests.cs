@@ -285,17 +285,19 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
-        public async Task NullBlobTest()
+        public async Task NullParameterTests()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
                 ContainerInit();
-                AzureBlobTranscriptStore store = null;
+                AzureBlobTranscriptStore store = TranscriptStore;
 
-                await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
-                    await store.LogActivityAsync(CreateActivity(0, 0, ConversationIds)));
-                await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
-                    await store.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[0]));
+                await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+                    await store.LogActivityAsync(null));
+                await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+                    await store.GetTranscriptActivitiesAsync(null, ConversationIds[0]));
+                await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+                    await store.GetTranscriptActivitiesAsync(ChannelId, null));
             }
         }
 
