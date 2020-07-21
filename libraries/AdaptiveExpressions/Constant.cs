@@ -12,7 +12,7 @@ namespace AdaptiveExpressions
     /// </summary>
     public class Constant : Expression
     {
-        private readonly Regex singleQuotRegex = new Regex(@"(?<!\\)'");
+        private readonly Regex _singleQuotRegex = new Regex(@"(?<!\\)'");
         private object _value;
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace AdaptiveExpressions
             {
                 var result = value.Replace(@"\", @"\\");
 
-                result = singleQuotRegex.Replace(result, new MatchEvaluator(m =>
+                result = _singleQuotRegex.Replace(result, new MatchEvaluator(m =>
                 {
                     var value = m.Value;
 

@@ -134,7 +134,9 @@ namespace AdaptiveExpressions
         /// allow a string to be implicitly assigned to an expression property.
         /// </summary>
         /// <param name="expression">string expression.</param>
+#pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator Expression(string expression) => Expression.Parse(expression?.TrimStart('='));
+#pragma warning restore CA2225 // Operator overloads have named alternates
 
         /// <summary>
         /// Parse an expression string into an expression object.
@@ -735,17 +737,34 @@ namespace AdaptiveExpressions
             private readonly ConcurrentDictionary<string, ExpressionEvaluator> _customFunctions = new ConcurrentDictionary<string, ExpressionEvaluator>(StringComparer.InvariantCultureIgnoreCase);
 
             /// <summary>
-            /// Gets a value of keys in standard functions. 
+            /// Gets a collection of string values which is the keys of the StandardFunctions. 
             /// </summary>
             /// <value> A list of string values.</value>
             public ICollection<string> Keys => ExpressionFunctions.StandardFunctions.Keys.Concat(this._customFunctions.Keys).ToList();
 
+            /// <summary>
+            /// Gets a collection of ExpressionEvaluator which is the value of the StandardFunctions.
+            /// </summary>
+            /// <value>A list of ExpressionEvaluator.</value>
             public ICollection<ExpressionEvaluator> Values => ExpressionFunctions.StandardFunctions.Values.Concat(this._customFunctions.Values).ToList();
 
+            /// <summary>
+            /// Gets a value of the total number of StandardFunctions and user customed functions.
+            /// </summary>
+            /// <value>An integer value.</value>
             public int Count => ExpressionFunctions.StandardFunctions.Count + this._customFunctions.Count;
 
+            /// <summary>
+            /// Gets a value indicating whether the FunctionTable is readonly.
+            /// </summary>
+            /// <value>A boolean value.</value>
             public bool IsReadOnly => false;
 
+            /// <summary>
+            /// Gets a value of ExpressionEvaluator corresponding the given key.
+            /// </summary>
+            /// <param name="key">A string value of function name.</param>
+            /// <returns>An ExpressionEvaluator.</returns>
             public ExpressionEvaluator this[string key]
             {
                 get
@@ -774,29 +793,82 @@ namespace AdaptiveExpressions
                 }
             }
 
+            /// <summary>
+            /// Insert a mapping of a string key to ExpressionEvaluator into FunctionTable.
+            /// </summary>
+            /// <param name="key">The key of function name to be added.</param>
+            /// <param name="value">The value of the ExpressionEvaluator to add.</param>
             public void Add(string key, ExpressionEvaluator value) => this[key] = value;
 
+            /// <summary>
+            /// Insert a mapping of a string key to user customized function into FunctionTable.
+            /// </summary>
+            /// <param name="key">The key of function name to be added.</param>
+            /// <param name="func">The value of the user customized function to add.</param>
             public void Add(string key, Func<IReadOnlyList<dynamic>, object> func)
             {
                 Add(key, new ExpressionEvaluator(key, FunctionUtils.Apply(func)));
             }
 
+            /// <summary>
+            /// Insert a mapping of a string key to ExpressionEvaluator into FunctionTable from a key value pair.
+            /// </summary>
+            /// <param name="item">A key value pair of string to ExpressionEvaluator.</param>
             public void Add(KeyValuePair<string, ExpressionEvaluator> item) => this[item.Key] = item.Value;
 
+            /// <summary>
+            /// Clear the user customized functions.
+            /// </summary>
             public void Clear() => this._customFunctions.Clear();
 
+            /// <summary>
+            /// Determine whether FunctionTable contains a given key value pair of string to ExpressionEvaluator.
+            /// </summary>
+            /// <param name="item">A key value pair of string to ExpressionEvaluator.</param>
+            /// <returns>A boolean value.</returns>
             public bool Contains(KeyValuePair<string, ExpressionEvaluator> item) => ExpressionFunctions.StandardFunctions.Contains(item) || this._customFunctions.Contains(item);
 
+            /// <summary>
+            /// Determine whether FunctionTable contains a given string key.
+            /// </summary>
+            /// <param name="key">A string key.</param>
+            /// <returns>A boolean value.</returns>
             public bool ContainsKey(string key) => ExpressionFunctions.StandardFunctions.ContainsKey(key) || this._customFunctions.ContainsKey(key);
 
+            /// <summary>
+            /// Not implemented.
+            /// </summary>
+            /// <param name="array">An array of string values.</param>
+            /// <param name="arrayIndex">An integer of index.</param>
             public void CopyTo(KeyValuePair<string, ExpressionEvaluator>[] array, int arrayIndex) => throw new NotImplementedException();
 
+            /// <summary>
+            /// Generate an enumator through all standard functions.
+            /// </summary>
+            /// <returns>An enmurator of standard functions.</returns>
             public IEnumerator<KeyValuePair<string, ExpressionEvaluator>> GetEnumerator() => ExpressionFunctions.StandardFunctions.Concat(this._customFunctions).GetEnumerator();
 
+            /// <summary>
+            /// Remove a specified key from user customized functions.
+            /// </summary>
+            /// <param name="key">A string key of function name.</param>
+            /// <returns>A boolean value.</returns>
             public bool Remove(string key) => this._customFunctions.TryRemove(key, out var oldVal);
 
+            /// <summary>
+            /// Remove a specified key value pair from user customized functions.
+            /// </summary>
+            /// <param name="item">A key value pair of string to ExpressionEvaluator.</param>
+            /// <returns>A boolean value.</returns>
             public bool Remove(KeyValuePair<string, ExpressionEvaluator> item) => Remove(item.Key);
 
+            /// <summary>
+            /// Attempts to get the value associated with the specified key from the FunctionTable.
+            /// </summary>
+            /// <param name="key">The key of the value to get.</param>
+            /// <param name="value">When this method returns, contains the object from the FunctionTable
+            /// that has the specified key, or the default value of the type if the operation failed.</param>
+            /// <returns> A boolean value. </returns>
             public bool TryGetValue(string key, out ExpressionEvaluator value)
             {
                 if (ExpressionFunctions.StandardFunctions.TryGetValue(key, out value))
@@ -813,11 +885,6 @@ namespace AdaptiveExpressions
             }
 
             IEnumerator IEnumerable.GetEnumerator() => ExpressionFunctions.StandardFunctions.Concat(this._customFunctions).GetEnumerator();
-        }
-
-        public Expression ToExpression()
-        {
-            throw new NotImplementedException();
         }
     }
 }
