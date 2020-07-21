@@ -47,6 +47,7 @@ namespace Microsoft.Bot.Schema
             this.Properties = entity.Properties;
         }
 
+        /// <inheritdoc/>
         public bool Equals(Entity other)
         {
             if (other == null)
@@ -57,6 +58,7 @@ namespace Microsoft.Bot.Schema
             return JsonConvert.SerializeObject(this).Equals(JsonConvert.SerializeObject(other), StringComparison.Ordinal);
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -77,6 +79,7 @@ namespace Microsoft.Bot.Schema
             return Equals(obj as Entity);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return base.GetHashCode();

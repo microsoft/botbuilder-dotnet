@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Schema
 {
+    /// <summary>
+    /// A type used to return health check results.
+    /// </summary>
     public class HealthCheckResponse
     {
         /// <summary>
