@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
     /// </summary>
     /// <remarks>
     /// Each activity is stored as json blob in structure of
-    /// container/{channelId]/{conversationId}/{activity.id}-{Timestamp.ticks}.json.
+    /// container/{channelId]/{conversationId}/{Timestamp.ticks}-{activity.id}.json.
     /// </remarks>
     public class BlobsTranscriptLogger : ITranscriptLogger
     {
@@ -153,8 +153,8 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                     string token = null;
                     do
                     {
-                        var resultSegment = _containerClient.GetBlobs(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{SanitizeKey(activity.Id)}-")
-                                                            .AsPages(token, 1);
+                        var resultSegment = _containerClient.GetBlobs(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/")
+                                                            .AsPages(token);
 
                         foreach (var blobPage in resultSegment)
                         {
@@ -221,7 +221,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
 
         private string GetBlobName(IActivity activity)
         {
-            var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{SanitizeKey(activity.Id)}-{activity.Timestamp.Value.Ticks.ToString("x")}.json";
+            var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{activity.Timestamp.Value.Ticks.ToString("x")}-{SanitizeKey(activity.Id)}.json";
             return blobName;
         }
 
