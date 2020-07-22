@@ -18,13 +18,12 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.Tests
 {
-    [TestClass]
     public class QnAMakerRecognizerTests
     {
         private const string _knowledgeBaseId = "dummy-id";
@@ -33,10 +32,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
         public static ResourceExplorer ResourceExplorer { get; set; }
 
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public static void ClassInitialize()
         {
             var parent = Environment.CurrentDirectory;
             while (!string.IsNullOrEmpty(parent))
@@ -74,7 +70,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return CreateQnAMakerActionDialog(mockHttp);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerRecognizer_WithTopNAnswer()
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
@@ -88,7 +84,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerRecognizer_WithAnswer()
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
@@ -104,7 +100,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerRecognizer_WithNoAnswer()
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
@@ -116,7 +112,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerRecognizer_WithIntent()
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
@@ -133,7 +129,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var userState = new UserState(storage);
             var conversationState = new ConversationState(storage);
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("CreateFlow"));
             adapter
                 .UseStorage(storage)
                 .UseBotState(userState, conversationState)
