@@ -64,6 +64,10 @@ namespace AdaptiveExpressions.TriggerTrees
         /// </value>
         public IEnumerable<string> Bindings { get; }
 
+        /// <summary>
+        /// ToString method of Quantifier class.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             return $"{Type} {Variable} {Bindings.Count()}";

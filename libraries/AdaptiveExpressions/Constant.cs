@@ -51,6 +51,10 @@ namespace AdaptiveExpressions
             }
         }
 
+        /// <summary>
+        /// ToString method of Constant class.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             if (Value == null)
@@ -81,6 +85,11 @@ namespace AdaptiveExpressions
             }
         }
 
+        /// <summary>
+        /// Determine current Expression instance are deep euqal to another one.
+        /// </summary>
+        /// <param name="other">The other Expression instance to compare.</param>
+        /// <returns>A boolean value.</returns>
         public override bool DeepEquals(Expression other)
         {
             bool eq;

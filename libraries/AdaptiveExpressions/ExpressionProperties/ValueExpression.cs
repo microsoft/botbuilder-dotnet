@@ -52,24 +52,66 @@ namespace AdaptiveExpressions.Properties
         {
         }
 
+        /// <summary>
+        /// Convert a string value to a ValueExpression instance.
+        /// </summary>
+        /// <param name="valueOrExpression">A string value to convert.</param>
+#pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator ValueExpression(string valueOrExpression) => new ValueExpression(valueOrExpression);
 
+        /// <summary>
+        /// Convert an integer value to a ValueExpression instance.
+        /// </summary>
+        /// <param name="value">An integer value to convert.</param>
         public static implicit operator ValueExpression(int value) => new ValueExpression(value);
 
+        /// <summary>
+        /// Convert a long integer value to a ValueExpression instance.
+        /// </summary>
+        /// <param name="value">A long integer value to convert.</param>
         public static implicit operator ValueExpression(long value) => new ValueExpression(value);
 
+        /// <summary>
+        /// Convert a float number value to a ValueExpression instance.
+        /// </summary>
+        /// <param name="value">A floating number value to convert.</param>
         public static implicit operator ValueExpression(float value) => new ValueExpression(value);
 
+        /// <summary>
+        /// Convert a double precision floating number value to a ValueExpression instance.
+        /// </summary>
+        /// <param name="value">A double precision floating number value to convert.</param>
         public static implicit operator ValueExpression(double value) => new ValueExpression(value);
 
+        /// <summary>
+        /// Convert a DateTime value to a ValueExpression instance.
+        /// </summary>
+        /// <param name="value">A DateTime value to convert.</param>
         public static implicit operator ValueExpression(DateTime value) => new ValueExpression(value);
 
+        /// <summary>
+        /// Convert a boolean value to a ValueExpression instance.
+        /// </summary>
+        /// <param name="value">A boolean value to convert.</param>
         public static implicit operator ValueExpression(bool value) => new ValueExpression(value);
 
+        /// <summary>
+        /// Convert a JSON Token to a ValueExpression instance.
+        /// </summary>
+        /// <param name="valueOrExpression">A JSON Token to convert.</param>
         public static implicit operator ValueExpression(JToken valueOrExpression) => new ValueExpression(valueOrExpression);
 
+        /// <summary>
+        /// Convert an Expression instance to a ValueExpression instance.
+        /// </summary>
+        /// <param name="expression">An Expression instance to convert.</param>
         public static implicit operator ValueExpression(Expression expression) => new ValueExpression(expression);
+#pragma warning restore CA2225 // Operator overloads have named alternates
 
+        /// <summary>
+        /// Set the value.
+        /// </summary>
+        /// <param name="value">value to set.</param>
         public override void SetValue(object value)
         {
             var stringOrExpression = (value as string) ?? (value as JValue)?.Value as string;

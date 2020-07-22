@@ -74,6 +74,10 @@ namespace AdaptiveExpressions.TriggerTrees
         /// </value>
         public IReadOnlyList<Clause> Clauses => _clauses;
 
+        /// <summary>
+        /// ToString method if Trigger clasee.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -81,6 +85,12 @@ namespace AdaptiveExpressions.TriggerTrees
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Determine the relationship between current instance and an other Trigger instance.
+        /// </summary>
+        /// <param name="other">The other Trigger instance.</param>
+        /// <param name="comparers">The comparer dictionary.</param>
+        /// <returns>A RelationshipType value.</returns>
         public RelationshipType Relationship(Trigger other, Dictionary<string, IPredicateComparer> comparers)
         {
             RelationshipType result;
@@ -118,6 +128,12 @@ namespace AdaptiveExpressions.TriggerTrees
             return result;
         }
 
+        /// <summary>
+        /// Determine whether is there any member in current clauses matches an other Clause instance. 
+        /// </summary>
+        /// <param name="nodeClause">The other Clause instance to match.</param>
+        /// <param name="state">The scope.</param>
+        /// <returns>A boolean value.</returns>
         public bool Matches(Clause nodeClause, object state)
         {
             var found = false;
@@ -133,6 +149,11 @@ namespace AdaptiveExpressions.TriggerTrees
             return found;
         }
 
+        /// <summary>
+        /// ToString method of Trigger class.
+        /// </summary>
+        /// <param name="builder">A StringBuilder object.</param>
+        /// <param name="indent">An integer of indent.</param>
         protected void ToString(StringBuilder builder, int indent = 0)
         {
             builder.Append(' ', indent);

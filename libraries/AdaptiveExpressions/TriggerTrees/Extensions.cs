@@ -5,6 +5,11 @@
     /// </summary>
     public static partial class Extensions
     {
+        /// <summary>
+        /// Swap operation between RelationshipType.Generalizes and RelationshipType.Specializes.
+        /// </summary>
+        /// <param name="original">The original RelationType.</param>
+        /// <returns>The RelationshipType after swap.</returns>
         public static RelationshipType Swap(this RelationshipType original)
         {
             var relationship = original;

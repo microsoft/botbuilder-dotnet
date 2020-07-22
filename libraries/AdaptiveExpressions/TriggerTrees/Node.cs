@@ -108,6 +108,10 @@ namespace AdaptiveExpressions.TriggerTrees
         public static bool ShowTrace = true;
 #endif
 
+        /// <summary>
+        /// ToString method of Node class.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -115,6 +119,11 @@ namespace AdaptiveExpressions.TriggerTrees
             return builder.ToString();
         }
 
+        /// <summary>
+        /// ToString method of Node class.
+        /// </summary>
+        /// <param name="builder">A StringBuilder object.</param>
+        /// <param name="indent">An integer of indent.</param>
         public void ToString(StringBuilder builder, int indent = 0)
             => Clause.ToString(builder, indent);
 

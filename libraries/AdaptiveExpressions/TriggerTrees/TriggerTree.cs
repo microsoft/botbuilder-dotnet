@@ -66,14 +66,34 @@ namespace AdaptiveExpressions.TriggerTrees
             Root = new Node(new Clause(), this);
         }
 
+        /// <summary>
+        /// Gets a value of IOptimizer list.
+        /// </summary>
+        /// <value>A value of IOptimizer list.</value>
         public List<IOptimizer> Optimizers { get; } = new List<IOptimizer>();
 
+        /// <summary>
+        /// Gets a value of a dictionary, which has IPredicateComparer values, with string keys.
+        /// </summary>
+        /// <value>A dictionary of IPredicateComparer values, with string keys.</value>
         public Dictionary<string, IPredicateComparer> Comparers { get; } = new Dictionary<string, IPredicateComparer>();
 
+        /// <summary>
+        /// Gets or sets a value of root node.
+        /// </summary>
+        /// <value>A Node instance.</value>
         public Node Root { get; set; }
 
+        /// <summary>
+        /// Gets or sets the total number of triggers.
+        /// </summary>
+        /// <value>An integet number.</value>
         public int TotalTriggers { get; set; }
 
+        /// <summary>
+        /// ToString method of TriggerTree class.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString() => $"TriggerTree with {TotalTriggers} triggers";
 
         /// <summary>
@@ -145,6 +165,10 @@ namespace AdaptiveExpressions.TriggerTrees
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Generate a graph to given path.
+        /// </summary>
+        /// <param name="outPath">The path to save the graph.</param>
         public void GenerateGraph(string outPath)
         {
             using (var output = new StreamWriter(outPath))

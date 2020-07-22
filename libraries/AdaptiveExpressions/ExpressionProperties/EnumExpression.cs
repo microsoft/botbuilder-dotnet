@@ -66,14 +66,36 @@ namespace AdaptiveExpressions.Properties
         {
         }
 
+        /// <summary>
+        /// Convert a value to an EnumExpression instance.
+        /// </summary>
+        /// <param name="value"> A value of generic type T.</param>
+#pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator EnumExpression<T>(T value) => new EnumExpression<T>(value);
 
+        /// <summary>
+        /// Convert a string value to an EnumExpression instance.
+        /// </summary>
+        /// <param name="expressionOrValue"> A string value.</param>
         public static implicit operator EnumExpression<T>(string expressionOrValue) => new EnumExpression<T>(expressionOrValue);
 
+        /// <summary>
+        /// Convert an Expression instance to an EnumExpression instance.
+        /// </summary>
+        /// <param name="expression">An Expression instance.</param>
         public static implicit operator EnumExpression<T>(Expression expression) => new EnumExpression<T>(expression);
 
+        /// <summary>
+        /// Convert a JToken to an EnumExpression instance.
+        /// </summary>
+        /// <param name="value"> A JSON Token to convert.</param>
         public static implicit operator EnumExpression<T>(JToken value) => new EnumExpression<T>(value);
+#pragma warning restore CA2225 // Operator overloads have named alternates
 
+        /// <summary>
+        /// Set the value.
+        /// </summary>
+        /// <param name="value">value to set.</param>
         public override void SetValue(object value)
         {
             if (value is string stringOrExpression)

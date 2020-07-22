@@ -67,12 +67,30 @@ namespace AdaptiveExpressions.Properties
         {
         }
 
+        /// <summary>
+        /// Convert a float value to a NumberExpression instance.
+        /// </summary>
+        /// <param name="value">A float number to convert.</param>
+#pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator NumberExpression(float value) => new NumberExpression(value);
-        
+
+        /// <summary>
+        /// Convert a string value to a NumberExpression instance.
+        /// </summary>
+        /// <param name="expression">A string value to convert.</param>
         public static implicit operator NumberExpression(string expression) => new NumberExpression(expression);
-        
+
+        /// <summary>
+        /// Convert an Expression instance to a NumberExpression instance.
+        /// </summary>
+        /// <param name="expression">An Expression instance to convert.</param>
         public static implicit operator NumberExpression(Expression expression) => new NumberExpression(expression);
 
+        /// <summary>
+        /// Convert a JSON Token to an NumberExpression instance.
+        /// </summary>
+        /// <param name="expressionOrValue">A JSON Token to convert.</param>
         public static implicit operator NumberExpression(JToken expressionOrValue) => new NumberExpression(expressionOrValue);
+#pragma warning restore CA2225 // Operator overloads have named alternates
     }
 }

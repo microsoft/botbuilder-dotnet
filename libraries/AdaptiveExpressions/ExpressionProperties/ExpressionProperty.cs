@@ -16,10 +16,17 @@ namespace AdaptiveExpressions.Properties
     {
         private Expression _expression;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExpressionProperty{T}"/> class.
+        /// </summary>
         public ExpressionProperty()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExpressionProperty{T}"/> class.
+        /// </summary>
+        /// <param name="value">An object.</param>
         public ExpressionProperty(object value)
         {
 #pragma warning disable CA2214 // Do not call overridable methods in constructors (fixing this would require further redesign of this class and derived types, excluding it for now).
@@ -45,12 +52,30 @@ namespace AdaptiveExpressions.Properties
         /// </value>
         public string ExpressionText { get; set; }
 
+        /// <summary>
+        /// Convert a value of generic type T to an ExpressionProperty instance.
+        /// </summary>
+        /// <param name="value">A value to convert.</param>
+#pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator ExpressionProperty<T>(T value) => new ExpressionProperty<T>(value);
 
+        /// <summary>
+        /// Convert a string value to an ExpressionProperty instance.
+        /// </summary>
+        /// <param name="expression">A string value to convert.</param>
         public static implicit operator ExpressionProperty<T>(string expression) => new ExpressionProperty<T>(expression);
 
+        /// <summary>
+        /// Convert an Expression instance to an ExpressionProperty instance.
+        /// </summary>
+        /// <param name="expression">An Expression instance to convert.</param>
         public static implicit operator ExpressionProperty<T>(Expression expression) => new ExpressionProperty<T>(expression);
+#pragma warning restore CA2225 // Operator overloads have named alternates
 
+        /// <summary>
+        /// ToString method of ExpressionProperty class.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             if (this.ExpressionText != null)

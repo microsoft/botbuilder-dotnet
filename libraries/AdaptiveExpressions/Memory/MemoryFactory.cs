@@ -4,6 +4,9 @@ using System.Reflection;
 
 namespace AdaptiveExpressions.Memory
 {
+    /// <summary>
+    /// Memory Factory for creating IMemory object.
+    /// </summary>
     public static class MemoryFactory
     {
         /// <summary>
