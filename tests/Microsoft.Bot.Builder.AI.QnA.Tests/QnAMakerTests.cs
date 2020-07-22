@@ -70,7 +70,8 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var queryResult = response.Answers[0];
 
             var preciseAnswerActivity = Activity.CreateMessageActivity();
-            preciseAnswerActivity.Text = queryResult.Answer.ToString();
+
+            preciseAnswerActivity.Text = queryResult.Answer;
 
             if (!displayPreciseAnswerOnly)
             {
