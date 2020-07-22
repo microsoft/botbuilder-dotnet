@@ -89,7 +89,7 @@ namespace AdaptiveExpressions.Properties
         /// <summary>
         /// Convert a JSON Token to BoolExpression.
         /// </summary>
-        /// <param name="expressionOrValue">A JToken to Convert.</param>
+        /// <param name="expressionOrValue">A JSON Token to Convert.</param>
         public static implicit operator BoolExpression(JToken expressionOrValue) => new BoolExpression(expressionOrValue);
 #pragma warning restore CA2225 // Operator overloads have named alternates
     }

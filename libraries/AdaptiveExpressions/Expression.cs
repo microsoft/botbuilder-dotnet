@@ -641,7 +641,7 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
-        /// The ToString method of an Expression.
+        /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string value of this Expression.</returns>
         public override string ToString()

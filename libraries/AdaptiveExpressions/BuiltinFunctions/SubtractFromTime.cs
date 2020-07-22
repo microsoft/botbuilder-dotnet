@@ -16,7 +16,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SubtractFromTime"/> class.
-        /// Built-in function SubtractFromTime constructor.
         /// </summary>
         public SubtractFromTime()
             : base(ExpressionType.SubtractFromTime, Evaluator, ReturnType.String, Validator)

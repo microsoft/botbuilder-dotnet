@@ -53,7 +53,7 @@ namespace AdaptiveExpressions.Properties
         public string ExpressionText { get; set; }
 
         /// <summary>
-        /// Convert a value of generic type T to an ExpressionProperty instance.
+        /// Convert a value to an ExpressionProperty instance.
         /// </summary>
         /// <param name="value">A value to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
@@ -73,7 +73,7 @@ namespace AdaptiveExpressions.Properties
 #pragma warning restore CA2225 // Operator overloads have named alternates
 
         /// <summary>
-        /// ToString method of ExpressionProperty class.
+        /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string value.</returns>
         public override string ToString()

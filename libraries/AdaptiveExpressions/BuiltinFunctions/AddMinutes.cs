@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AddMinutes"/> class.
-        /// Built-in function AddMinutes constructor.
         /// </summary>
         public AddMinutes()
                 : base(ExpressionType.AddMinutes, Function)

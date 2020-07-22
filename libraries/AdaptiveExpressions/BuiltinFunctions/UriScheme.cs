@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UriScheme"/> class.
-        /// Built-in function UriScheme constructor.
         /// </summary>
         public UriScheme()
             : base(ExpressionType.UriScheme, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)

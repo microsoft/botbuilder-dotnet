@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Trim"/> class.
-        /// Built-in function Trim constructor.
         /// </summary>
         public Trim()
             : base(ExpressionType.Trim, Function)

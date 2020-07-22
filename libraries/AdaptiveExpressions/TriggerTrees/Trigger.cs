@@ -150,7 +150,7 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// ToString method of Trigger class.
+        /// Returns a string that represents the current object.
         /// </summary>
         /// <param name="builder">A StringBuilder object.</param>
         /// <param name="indent">An integer of indent.</param>

@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Accessor"/> class.
-        /// Built-in function Accessor constructor.
         /// </summary>
         public Accessor()
             : base(ExpressionType.Accessor, Evaluator, ReturnType.Object, Validator)

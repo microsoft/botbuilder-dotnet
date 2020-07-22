@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UriPathAndQuery"/> class.
-        /// Built-in function UriPathAndQuery constructor.
         /// </summary>
         public UriPathAndQuery()
             : base(ExpressionType.UriPathAndQuery, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)

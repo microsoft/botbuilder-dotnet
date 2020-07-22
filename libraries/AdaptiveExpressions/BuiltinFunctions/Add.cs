@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Add"/> class.
-        /// Built-in function Add constructor.
         /// </summary>
         public Add()
             : base(ExpressionType.Add, Evaluator(), ReturnType.String | ReturnType.Number, Validator)

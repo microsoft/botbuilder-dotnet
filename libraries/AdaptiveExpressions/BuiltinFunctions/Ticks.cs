@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Ticks"/> class.
-        /// Built-in function Ticks constructor.
         /// </summary>
         public Ticks()
             : base(ExpressionType.Ticks, Evaluator, ReturnType.Number, Validator)

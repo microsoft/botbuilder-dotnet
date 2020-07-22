@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Ceiling"/> class.
-        /// Built-in function Ceiling constructor.
         /// </summary>
         public Ceiling()
                 : base(ExpressionType.Ceiling, Function)

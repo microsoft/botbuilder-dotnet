@@ -15,7 +15,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Or"/> class.
-        /// Built-in function Or constructor.
         /// </summary>
         public Or()
             : base(ExpressionType.Or, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)

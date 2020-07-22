@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Average"/> class.
-        /// Built-in function Average constructor.
         /// </summary>
         public Average()
             : base(ExpressionType.Average, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)

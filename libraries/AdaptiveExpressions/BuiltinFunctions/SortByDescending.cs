@@ -10,7 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SortByDescending"/> class.
-        /// Built-in function SortByDescending constructor.
         /// </summary>
         public SortByDescending()
             : base(ExpressionType.SortByDescending, FunctionUtils.SortBy(true), ReturnType.Array, Validator)

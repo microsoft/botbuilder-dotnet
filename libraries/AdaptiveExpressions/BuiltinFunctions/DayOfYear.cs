@@ -10,7 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DayOfYear"/> class.
-        /// Built-in function DayOfYear constructor.
         /// </summary>
         public DayOfYear()
             : base(ExpressionType.DayOfYear, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)

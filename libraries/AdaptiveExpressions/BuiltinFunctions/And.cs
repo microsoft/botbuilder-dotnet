@@ -15,7 +15,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="And"/> class.
-        /// Built-in function And constructor.
         /// </summary>
         public And()
             : base(ExpressionType.And, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)

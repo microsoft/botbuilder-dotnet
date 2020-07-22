@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Binary"/> class.
-        /// Built-in function Binary constructor.
         /// </summary>
         public Binary()
             : base(ExpressionType.Binary, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)

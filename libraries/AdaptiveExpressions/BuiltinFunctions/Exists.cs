@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Exists"/> class.
-        /// Built-in function Exists constructor.
         /// </summary>
         public Exists()
             : base(

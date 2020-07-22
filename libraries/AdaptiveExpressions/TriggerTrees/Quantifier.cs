@@ -65,7 +65,7 @@ namespace AdaptiveExpressions.TriggerTrees
         public IEnumerable<string> Bindings { get; }
 
         /// <summary>
-        /// ToString method of Quantifier class.
+        /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string value.</returns>
         public override string ToString()

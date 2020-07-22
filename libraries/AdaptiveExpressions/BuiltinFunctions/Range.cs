@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Range"/> class.
-        /// Built-in function Range constructor.
         /// </summary>
         public Range()
             : base(ExpressionType.Range, Evaluator(), ReturnType.Array, FunctionUtils.ValidateBinaryNumber)

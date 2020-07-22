@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ToLower"/> class.
-        /// Built-in function ToLower constructor.
         /// </summary>
         public ToLower()
             : base(ExpressionType.ToLower, Function)

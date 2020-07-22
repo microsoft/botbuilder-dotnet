@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Split"/> class.
-        /// Built-in function Split constructor.
         /// </summary>
         public Split()
             : base(ExpressionType.Split, Evaluator(), ReturnType.Array, Validator)

@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Floor"/> class.
-        /// Built-in function Floor constructor.
         /// </summary>
         public Floor()
             : base(ExpressionType.Floor, Function)

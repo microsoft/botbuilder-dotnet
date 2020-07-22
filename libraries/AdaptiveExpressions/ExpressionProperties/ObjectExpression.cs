@@ -66,9 +66,9 @@ namespace AdaptiveExpressions.Properties
         }
 
         /// <summary>
-        /// Convert a value of generic type T to an ObjectExpression instance.
+        /// Convert a value to an ObjectExpression instance.
         /// </summary>
-        /// <param name="value">A value of generic type T to convert.</param>
+        /// <param name="value">A value to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator ObjectExpression<T>(T value) => new ObjectExpression<T>(value);
 
@@ -85,9 +85,9 @@ namespace AdaptiveExpressions.Properties
         public static implicit operator ObjectExpression<T>(Expression expression) => new ObjectExpression<T>(expression);
 
         /// <summary>
-        /// Convert a JSON token to an ObjectExpression instance.
+        /// Convert a JSON Token to an ObjectExpression instance.
         /// </summary>
-        /// <param name="expressionOrvalue">An JSON token to convert.</param>
+        /// <param name="expressionOrvalue">An JSON Token to convert.</param>
         public static implicit operator ObjectExpression<T>(JToken expressionOrvalue) => new ObjectExpression<T>(expressionOrvalue);
 #pragma warning restore CA2225 // Operator overloads have named alternates
     }

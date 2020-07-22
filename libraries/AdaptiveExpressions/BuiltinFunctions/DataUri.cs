@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DataUri"/> class.
-        /// Built-in function DataUri constructor.
         /// </summary>
         public DataUri()
             : base(ExpressionType.DataUri, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)

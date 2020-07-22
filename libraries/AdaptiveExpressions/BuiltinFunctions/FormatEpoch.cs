@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatEpoch"/> class.
-        /// Built-in function FormatEpoch constructor.
         /// </summary>
         public FormatEpoch()
             : base(ExpressionType.FormatEpoch, Evaluator(), ReturnType.String, Validator)

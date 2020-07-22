@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StringTransformEvaluator"/> class.
-        /// Built-in function Coalesce constructor.
         /// </summary>
         /// <param name="type">Name of the built-in function.</param>
         /// <param name="function">The string transformation function, it takes a list of objects and returns an object.</param>

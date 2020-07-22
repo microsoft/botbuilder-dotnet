@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatNumber"/> class.
-        /// Built-in function FormatNumber constructor.
         /// </summary>
         public FormatNumber()
             : base(ExpressionType.FormatNumber, Evaluator(), ReturnType.String, Validator)

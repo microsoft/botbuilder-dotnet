@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AddProperty"/> class.
-        /// Built-in function AddProperty constructor.
         /// </summary>
         public AddProperty()
             : base(ExpressionType.AddProperty, Evaluator(), ReturnType.Object, Validator)

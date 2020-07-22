@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UriComponentToString"/> class.
-        /// Built-in function UriComponentToString constructor.
         /// </summary>
         public UriComponentToString()
             : base(ExpressionType.UriComponentToString, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)

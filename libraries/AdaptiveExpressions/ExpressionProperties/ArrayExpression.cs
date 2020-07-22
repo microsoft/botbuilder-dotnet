@@ -95,7 +95,7 @@ namespace AdaptiveExpressions.Properties
         /// <summary>
         /// Convert a JSON Token to ArrayExpression.
         /// </summary>
-        /// <param name="expressionOrValue">A JToken to Convert.</param>
+        /// <param name="expressionOrValue">A JSON Token to Convert.</param>
         public static implicit operator ArrayExpression<T>(JToken expressionOrValue) => new ArrayExpression<T>(expressionOrValue);
 #pragma warning restore CA2225 // Operator overloads have named alternates
     }

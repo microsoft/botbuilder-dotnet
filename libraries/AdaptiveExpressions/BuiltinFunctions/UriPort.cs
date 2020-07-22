@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UriPort"/> class.
-        /// Built-in function UriPort constructor.
         /// </summary>
         public UriPort()
             : base(ExpressionType.UriPort, Evaluator, ReturnType.Number, FunctionUtils.ValidateUnary)

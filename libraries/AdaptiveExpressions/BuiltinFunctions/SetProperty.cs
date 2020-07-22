@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SetProperty"/> class.
-        /// Built-in function SetProperty constructor.
         /// </summary>
         public SetProperty()
             : base(ExpressionType.SetProperty, Evaluator(), ReturnType.Object, Validator)

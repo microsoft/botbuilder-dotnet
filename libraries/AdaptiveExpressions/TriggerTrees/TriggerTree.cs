@@ -91,7 +91,7 @@ namespace AdaptiveExpressions.TriggerTrees
         public int TotalTriggers { get; set; }
 
         /// <summary>
-        /// ToString method of TriggerTree class.
+        /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string value.</returns>
         public override string ToString() => $"TriggerTree with {TotalTriggers} triggers";

@@ -16,7 +16,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="String"/> class.
-        /// Built-in function String constructor.
         /// </summary>
         public String()
             : base(ExpressionType.String, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)

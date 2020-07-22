@@ -10,7 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsMatch"/> class.
-        /// Built-in function IsMatch constructor.
         /// </summary>
         public IsMatch()
             : base(ExpressionType.IsMatch, Evaluator(), ReturnType.Boolean, Validator)

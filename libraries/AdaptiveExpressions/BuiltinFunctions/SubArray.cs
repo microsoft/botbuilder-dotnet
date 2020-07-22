@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SubArray"/> class.
-        /// Built-in function SubArray constructor.
         /// </summary>
         public SubArray()
             : base(ExpressionType.SubArray, EvalSubArray, ReturnType.Array, Validator)

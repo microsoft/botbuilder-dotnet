@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Coalesce"/> class.
-        /// Built-in function Coalesce constructor.
         /// </summary>
         public Coalesce()
             : base(ExpressionType.Coalesce, Evaluator(), ReturnType.Object, FunctionUtils.ValidateAtLeastOne)

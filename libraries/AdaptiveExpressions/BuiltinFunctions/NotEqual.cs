@@ -16,7 +16,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NotEqual"/> class.
-        /// Built-in function NotEqual constructor.
         /// </summary>
         public NotEqual()
             : base(

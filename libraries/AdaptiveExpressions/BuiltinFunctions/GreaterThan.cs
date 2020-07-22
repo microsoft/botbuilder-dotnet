@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GreaterThan"/> class.
-        /// Built-in function GreaterThan constructor.
         /// </summary>
         public GreaterThan()
             : base(

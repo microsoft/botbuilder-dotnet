@@ -10,7 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Month"/> class.
-        /// Built-in function Month constructor.
         /// </summary>
         public Month()
             : base(ExpressionType.Month, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)

@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IndexOf"/> class.
-        /// Built-in function IndexOf constructor.
         /// </summary>
         public IndexOf()
             : base(ExpressionType.IndexOf, Evaluator, ReturnType.Number, Validator)

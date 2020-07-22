@@ -16,7 +16,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Rand"/> class.
-        /// Built-in function Rand constructor.
         /// </summary>
         public Rand()
             : base(ExpressionType.Rand, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)

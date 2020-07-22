@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RemoveProperty"/> class.
-        /// Built-in function RemoveProperty constructor.
         /// </summary>
         public RemoveProperty()
             : base(ExpressionType.RemoveProperty, Evaluator(), ReturnType.Object, Validator)

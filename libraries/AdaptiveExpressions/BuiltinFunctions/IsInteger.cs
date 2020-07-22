@@ -10,7 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsInteger"/> class.
-        /// Built-in function IsInteger constructor.
         /// </summary>
         public IsInteger()
             : base(ExpressionType.IsInteger, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)

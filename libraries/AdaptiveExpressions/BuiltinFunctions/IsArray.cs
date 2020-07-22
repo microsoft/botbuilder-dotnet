@@ -10,7 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsArray"/> class.
-        /// Built-in function IsArray constructor.
         /// </summary>
         public IsArray()
             : base(ExpressionType.IsArray, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)

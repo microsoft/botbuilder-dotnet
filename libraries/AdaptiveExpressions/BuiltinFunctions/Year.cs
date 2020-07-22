@@ -10,7 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Year"/> class.
-        /// Built-in function Year constructor.
         /// </summary>
         public Year()
             : base(ExpressionType.Year, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)

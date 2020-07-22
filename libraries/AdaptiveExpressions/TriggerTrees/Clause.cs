@@ -55,7 +55,7 @@ namespace AdaptiveExpressions.TriggerTrees
         internal bool Subsumed { get; set; } = false;
 
         /// <summary>
-        /// ToString method of Clause.
+        /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string value.</returns>
         public override string ToString()
@@ -66,7 +66,7 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// ToString method of Clause.
+        /// Returns a string that represents the current object.
         /// </summary>
         /// <param name="builder">A StringBuilder object.</param>
         /// <param name="indent">An integer of indent.</param>

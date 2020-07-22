@@ -10,7 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsDateTime"/> class.
-        /// Built-in function IsDateTime constructor.
         /// </summary>
         public IsDateTime()
             : base(ExpressionType.IsDateTime, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)

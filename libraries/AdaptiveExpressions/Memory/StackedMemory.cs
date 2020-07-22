@@ -18,9 +18,9 @@ namespace AdaptiveExpressions.Memory
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     {
         /// <summary>
-        /// Wrap IMemory interface into a StackedMemory object.
+        /// Wrap an object implementes IMemory interface into a StackedMemory object.
         /// </summary>
-        /// <param name="memory">An IMemory object.</param>
+        /// <param name="memory">An object that implements IMemory.</param>
         /// <returns>A StackedMemory object.</returns>
         public static StackedMemory Wrap(IMemory memory)
         {

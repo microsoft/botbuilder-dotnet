@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Base64ToString"/> class.
-        /// Built-in function Base64ToString constructor.
         /// </summary>
         public Base64ToString()
             : base(ExpressionType.Base64ToString, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)

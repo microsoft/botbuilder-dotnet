@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsDateRange"/> class.
-        /// Built-in function IsDateRange constructor.
         /// </summary>
         public IsDateRange()
             : base(ExpressionType.IsDateRange, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)

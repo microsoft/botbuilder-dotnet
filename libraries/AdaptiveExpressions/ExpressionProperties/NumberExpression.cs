@@ -68,9 +68,9 @@ namespace AdaptiveExpressions.Properties
         }
 
         /// <summary>
-        /// Convert a float value to a NumberExpression instance.
+        /// Convert a floating point number value to a NumberExpression instance.
         /// </summary>
-        /// <param name="value">A float number to convert.</param>
+        /// <param name="value">A floating point number number to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator NumberExpression(float value) => new NumberExpression(value);
 

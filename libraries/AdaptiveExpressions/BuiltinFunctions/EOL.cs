@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EOL"/> class.
-        /// Built-in function EOL constructor.
         /// </summary>
         public EOL()
             : base(ExpressionType.EOL, Evaluator(), ReturnType.String, Validator)

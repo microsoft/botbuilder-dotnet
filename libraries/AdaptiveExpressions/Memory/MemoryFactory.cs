@@ -5,7 +5,7 @@ using System.Reflection;
 namespace AdaptiveExpressions.Memory
 {
     /// <summary>
-    /// Memory Factory for creating IMemory object.
+    /// Memory Factory for creating an object that implements IMemory interface.
     /// </summary>
     public static class MemoryFactory
     {

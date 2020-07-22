@@ -52,7 +52,7 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
-        /// ToString method of Constant class.
+        /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string value.</returns>
         public override string ToString()

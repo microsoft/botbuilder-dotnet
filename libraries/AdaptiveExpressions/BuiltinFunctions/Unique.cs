@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Unique"/> class.
-        /// Built-in function Unique constructor.
         /// </summary>
         public Unique()
             : base(ExpressionType.Unique, Evaluator(), ReturnType.Array, Validator)

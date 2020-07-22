@@ -16,7 +16,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GetPastTime"/> class.
-        /// Built-in function GetPastTime constructor.
         /// </summary>
         public GetPastTime()
             : base(ExpressionType.GetPastTime, Evaluator, ReturnType.String, Validator)

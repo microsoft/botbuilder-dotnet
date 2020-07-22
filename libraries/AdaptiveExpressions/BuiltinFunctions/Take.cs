@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Take"/> class.
-        /// Built-in function Take constructor.
         /// </summary>
         public Take()
             : base(ExpressionType.Take, Evaluator, ReturnType.Array, Validator)

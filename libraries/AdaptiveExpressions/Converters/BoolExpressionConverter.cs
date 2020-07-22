@@ -34,7 +34,7 @@ namespace AdaptiveExpressions.Converters
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="hasExistingValue">A boolean value indicating whether there is an existing value of object to be read.</param>
         /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
+        /// <returns>A BoolExpression instance.</returns>
         public override BoolExpression ReadJson(JsonReader reader, Type objectType, BoolExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.ValueType == typeof(string))

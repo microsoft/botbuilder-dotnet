@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatTicks"/> class.
-        /// Built-in function FormatTicks constructor.
         /// </summary>
         public FormatTicks()
             : base(ExpressionType.FormatTicks, Evaluator(), ReturnType.String, Validator)

@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Element"/> class.
-        /// Built-in function Element constructor.
         /// </summary>
         public Element()
             : base(ExpressionType.Element, Evaluator, ReturnType.Object, FunctionUtils.ValidateBinary)

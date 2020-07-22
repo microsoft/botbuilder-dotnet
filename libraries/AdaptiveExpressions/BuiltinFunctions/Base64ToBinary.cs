@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Base64ToBinary"/> class.
-        /// Built-in function Base64ToBinary constructor.
         /// </summary>
         public Base64ToBinary()
             : base(ExpressionType.Base64ToBinary, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)

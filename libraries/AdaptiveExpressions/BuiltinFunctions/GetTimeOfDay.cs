@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GetTimeOfDay"/> class.
-        /// Built-in function GetTimeOfDay constructor.
         /// </summary>
         public GetTimeOfDay()
             : base(ExpressionType.GetTimeOfDay, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)

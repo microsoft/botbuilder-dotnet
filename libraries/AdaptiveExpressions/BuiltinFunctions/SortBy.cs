@@ -10,7 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SortBy"/> class.
-        /// Built-in function SortBy constructor.
         /// </summary>
         public SortBy()
             : base(ExpressionType.SortBy, FunctionUtils.SortBy(false), ReturnType.Array, Validator)

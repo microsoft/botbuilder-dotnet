@@ -186,7 +186,7 @@ namespace AdaptiveExpressions.Memory
         }
 
         /// <summary>
-        /// ToString method of SimpleObjectMemory.
+        /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string value.</returns>
         public override string ToString()

@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Min"/> class.
-        /// Built-in function Min constructor.
         /// </summary>
         public Min()
             : base(ExpressionType.Min, Evaluator(), ReturnType.Number, FunctionUtils.ValidateAtLeastOne)

@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Float"/> class.
-        /// Built-in function Float constructor.
         /// </summary>
         public Float()
             : base(ExpressionType.Float, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)

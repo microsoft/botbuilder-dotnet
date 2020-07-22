@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatDateTime"/> class.
-        /// Built-in function FormatDateTime constructor.
         /// </summary>
         public FormatDateTime()
             : base(ExpressionType.FormatDateTime, Evaluator(), ReturnType.String, Validator)

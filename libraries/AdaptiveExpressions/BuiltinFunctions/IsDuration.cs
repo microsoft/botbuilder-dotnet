@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsDuration"/> class.
-        /// Built-in function Accessor constructor.
         /// </summary>
         public IsDuration()
             : base(ExpressionType.IsDuration, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)

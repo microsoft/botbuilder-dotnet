@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Substring"/> class.
-        /// Built-in function Substring constructor.
         /// </summary>
         public Substring()
             : base(ExpressionType.Substring, EvalSubstring, ReturnType.String, Validator)

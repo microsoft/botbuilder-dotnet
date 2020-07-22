@@ -16,7 +16,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Json"/> class.
-        /// Built-in function Json constructor.
         /// </summary>
         public Json()
             : base(ExpressionType.Json, Evaluator(), ReturnType.Object, Validator)

@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GreaterThanOrEqual"/> class.
-        /// Built-in function GreaterThanOrEqual constructor.
         /// </summary>
         public GreaterThanOrEqual()
             : base(

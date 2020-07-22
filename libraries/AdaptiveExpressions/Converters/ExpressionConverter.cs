@@ -27,7 +27,7 @@ namespace AdaptiveExpressions.Converters
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="hasExistingValue">A boolean value indicating whether there is an existing value of object to be read.</param>
         /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
+        /// <returns>An Expression instance.</returns>
         public override Expression ReadJson(JsonReader reader, Type objectType, Expression existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             return Expression.Parse((string)reader.Value);

@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SetPathToValue"/> class.
-        /// Built-in function SetPathToValue constructor.
         /// </summary>
         public SetPathToValue()
             : base(ExpressionType.SetPathToValue, Evaluator, ReturnType.Object, FunctionUtils.ValidateBinary)

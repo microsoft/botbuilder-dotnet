@@ -16,7 +16,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LastIndexOf"/> class.
-        /// Built-in function LastIndexOf constructor.
         /// </summary>
         public LastIndexOf()
             : base(ExpressionType.LastIndexOf, Evaluator, ReturnType.Number, Validator)

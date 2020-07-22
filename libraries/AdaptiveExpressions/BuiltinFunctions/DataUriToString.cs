@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DataUriToString"/> class.
-        /// Built-in function DataUriToString constructor.
         /// </summary>
         public DataUriToString()
             : base(ExpressionType.DataUriToString, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)

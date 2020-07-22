@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NewGuid"/> class.
-        /// Built-in function NewGuid constructor.
         /// </summary>
         public NewGuid()
             : base(ExpressionType.NewGuid, Evaluator(), ReturnType.String, Validator)

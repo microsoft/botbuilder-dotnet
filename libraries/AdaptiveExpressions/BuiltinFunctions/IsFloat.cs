@@ -11,7 +11,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsFloat"/> class.
-        /// Built-in function IsFloat constructor.
         /// </summary>
         public IsFloat()
             : base(ExpressionType.IsFloat, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)

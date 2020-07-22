@@ -15,7 +15,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Contains"/> class.
-        /// Built-in function Contains constructor.
         /// </summary>
         public Contains()
             : base(ExpressionType.Contains, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateBinary)

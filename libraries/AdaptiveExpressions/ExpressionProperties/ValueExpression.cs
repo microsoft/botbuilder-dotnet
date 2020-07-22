@@ -72,9 +72,9 @@ namespace AdaptiveExpressions.Properties
         public static implicit operator ValueExpression(long value) => new ValueExpression(value);
 
         /// <summary>
-        /// Convert a float number value to a ValueExpression instance.
+        /// Convert a floating point number value to a ValueExpression instance.
         /// </summary>
-        /// <param name="value">A floating number value to convert.</param>
+        /// <param name="value">A floating ponit number value to convert.</param>
         public static implicit operator ValueExpression(float value) => new ValueExpression(value);
 
         /// <summary>

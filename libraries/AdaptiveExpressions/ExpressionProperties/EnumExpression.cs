@@ -69,7 +69,7 @@ namespace AdaptiveExpressions.Properties
         /// <summary>
         /// Convert a value to an EnumExpression instance.
         /// </summary>
-        /// <param name="value"> A value of generic type T.</param>
+        /// <param name="value"> A value to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator EnumExpression<T>(T value) => new EnumExpression<T>(value);
 
@@ -86,7 +86,7 @@ namespace AdaptiveExpressions.Properties
         public static implicit operator EnumExpression<T>(Expression expression) => new EnumExpression<T>(expression);
 
         /// <summary>
-        /// Convert a JToken to an EnumExpression instance.
+        /// Convert a JSON Token to an EnumExpression instance.
         /// </summary>
         /// <param name="value"> A JSON Token to convert.</param>
         public static implicit operator EnumExpression<T>(JToken value) => new EnumExpression<T>(value);

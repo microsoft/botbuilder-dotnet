@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UriQuery"/> class.
-        /// Built-in function UriQuery constructor.
         /// </summary>
         public UriQuery()
             : base(ExpressionType.UriQuery, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)

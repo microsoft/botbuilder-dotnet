@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Skip"/> class.
-        /// Built-in function Skip constructor.
         /// </summary>
         public Skip()
             : base(ExpressionType.Skip, EvalSkip, ReturnType.Array, Validator)

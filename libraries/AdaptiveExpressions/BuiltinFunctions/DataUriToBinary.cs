@@ -10,7 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DataUriToBinary"/> class.
-        /// Built-in function DataUriBinary constructor.
         /// </summary>
         public DataUriToBinary()
             : base(ExpressionType.DataUriToBinary, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)

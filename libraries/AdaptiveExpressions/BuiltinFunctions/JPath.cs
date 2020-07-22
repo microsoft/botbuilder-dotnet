@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="JPath"/> class.
-        /// Built-in function JPath constructor.
         /// </summary>
         public JPath()
             : base(ExpressionType.JPath, Evaluator(), ReturnType.Object, Validator)

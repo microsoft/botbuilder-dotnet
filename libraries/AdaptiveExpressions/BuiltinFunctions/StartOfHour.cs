@@ -15,7 +15,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StartOfHour"/> class.
-        /// Built-in function StartOfHour constructor.
         /// </summary>
         public StartOfHour()
             : base(ExpressionType.StartOfHour, Evaluator, ReturnType.String, Validator)

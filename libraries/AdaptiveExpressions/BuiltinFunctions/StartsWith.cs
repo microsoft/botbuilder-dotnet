@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StartsWith"/> class.
-        /// Built-in function StartsWith constructor.
         /// </summary>
         public StartsWith()
             : base(ExpressionType.StartsWith, Evaluator(), ReturnType.Boolean, Validator)

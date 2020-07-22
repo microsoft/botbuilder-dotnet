@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SentenceCase"/> class.
-        /// Built-in function SentenceCase constructor.
         /// </summary>
         public SentenceCase()
             : base(ExpressionType.SentenceCase, Function)

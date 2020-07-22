@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Bool"/> class.
-        /// Built-in function Bool constructor.
         /// </summary>
         public Bool()
             : base(

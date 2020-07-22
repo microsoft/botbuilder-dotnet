@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Join"/> class.
-        /// Built-in function Join constructor.
         /// </summary>
         public Join()
             : base(ExpressionType.Join, EvalJoin, ReturnType.String, Validator)

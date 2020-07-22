@@ -17,7 +17,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Xml"/> class.
-        /// Built-in function Xml constructor.
         /// </summary>
         public Xml()
             : base(ExpressionType.Xml, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)

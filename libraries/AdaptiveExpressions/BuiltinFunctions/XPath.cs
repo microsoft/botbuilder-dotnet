@@ -17,7 +17,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="XPath"/> class.
-        /// Built-in function XPath constructor.
         /// </summary>
         public XPath()
             : base(ExpressionType.XPath, Evaluator(), ReturnType.Object, Validator)

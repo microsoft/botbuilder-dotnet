@@ -13,7 +13,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Power"/> class.
-        /// Built-in function Power constructor.
         /// </summary>
         public Power()
             : base(ExpressionType.Power, Evaluator, FunctionUtils.VerifyNumericListOrNumber)

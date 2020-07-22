@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="If"/> class.
-        /// Built-in function If constructor.
         /// </summary>
         public If()
             : base(ExpressionType.If, Evaluator, ReturnType.Object, Validator)

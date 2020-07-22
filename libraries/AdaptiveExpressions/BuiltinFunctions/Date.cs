@@ -14,7 +14,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Date"/> class.
-        /// Built-in function Date constructor.
         /// </summary>
         public Date()
             : base(ExpressionType.Date, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)

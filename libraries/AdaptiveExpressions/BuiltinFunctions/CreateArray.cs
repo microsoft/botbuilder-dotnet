@@ -12,7 +12,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateArray"/> class.
-        /// Built-in function CreateArray constructor.
         /// </summary>
         public CreateArray()
             : base(ExpressionType.CreateArray, Evaluator(), ReturnType.Array)
