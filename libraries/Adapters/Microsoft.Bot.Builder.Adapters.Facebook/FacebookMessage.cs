@@ -141,5 +141,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <value>A <see cref="FacebookRequestThreadControl"/> holding the contents of the pass_thread_control property.</value>.
         [JsonProperty(PropertyName = "request_thread_control")]
         public FacebookRequestThreadControl RequestThreadControl { get; set; }
+
+        /// <summary>
+        ///  Gets or sets the contents of the message_reads property.
+        /// </summary>
+        /// <value>A <see cref="FacebookRead"/> holding the contents of the message_reads property.
+        /// See https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-reads. </value>.
+        [JsonProperty(PropertyName = "read")]
+        public FacebookRead Reads { get; set; }
     }
 }
