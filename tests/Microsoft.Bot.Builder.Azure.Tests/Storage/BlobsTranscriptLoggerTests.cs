@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [TestInitialize]
-        public async Task BeforeTest()
+        public async Task Init()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [TestCleanup]
-        public async Task AfterTest()
+        public async Task Cleanup()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {

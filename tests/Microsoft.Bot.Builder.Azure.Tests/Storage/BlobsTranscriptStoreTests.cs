@@ -3,14 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Azure.Storage;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using Activity = Microsoft.Bot.Schema.Activity;
 
@@ -21,8 +22,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [TestClass]
     [TestCategory("Storage")]
-    [TestCategory("Storage - BlobTranscripts")]
-    public class AzureBlobTranscriptStoreTests : TranscriptStoreBaseTests
+    [TestCategory("Storage - BlobsTranscriptStore")]
+    public class BlobsTranscriptStoreTests : TranscriptStoreBaseTests
     {
         private const string ConnectionString = @"AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
         
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         protected override ITranscriptStore TranscriptStore
         {
-            get { return new AzureBlobTranscriptStore(ConnectionString, ContainerName); }
+            get { return new BlobsTranscriptStore(ConnectionString, ContainerName); }
         }
 
         // These tests require Azure Storage Emulator v5.7
@@ -56,10 +57,20 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     await TranscriptStore.LogActivityAsync(a);
                     Assert.Fail("Should have thrown ");
                 }
-                catch (StorageException)
+                catch (System.Xml.XmlException xmlEx)
                 {
-                    return;
+                    // Unfortunately, Azure.Storage.Blobs v12.4.4 currently throws this XmlException for long keys :(
+                    if (xmlEx.Message == "'\"' is an unexpected token. Expecting whitespace. Line 1, position 50.")
+                    {
+                        return;
+                    }
                 }
+
+                //catch (RequestFailedException ex)
+                //when ((HttpStatusCode)ex.Status == HttpStatusCode.PreconditionFailed)
+                //{
+                //    return;
+                //}
 
                 Assert.Fail("Should have thrown ");
             }
@@ -71,18 +82,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
-                Assert.ThrowsException<FormatException>(() => new AzureBlobTranscriptStore("123", ContainerName));
+                Assert.ThrowsException<ArgumentNullException>(() =>
+                    new BlobsTranscriptLogger(null, ContainerName));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new AzureBlobTranscriptStore((CloudStorageAccount)null, ContainerName));
+                    new BlobsTranscriptLogger(ConnectionString, null));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new AzureBlobTranscriptStore((string)null, ContainerName));
+                    new BlobsTranscriptLogger(string.Empty, ContainerName));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new AzureBlobTranscriptStore((CloudStorageAccount)null, null));
-
-                Assert.ThrowsException<ArgumentNullException>(() => new AzureBlobTranscriptStore((string)null, null));
+                    new BlobsTranscriptLogger(ConnectionString, string.Empty));
             }
         }
     }
