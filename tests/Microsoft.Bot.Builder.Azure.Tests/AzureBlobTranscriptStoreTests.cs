@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
@@ -25,7 +26,31 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         protected override ITranscriptStore TranscriptStore
         {
-            get { return new AzureBlobTranscriptStore(ConnectionString, ContainerName); }
+            get { return new AzureBlobTranscriptStore(BlobStorageEmulatorConnectionString, ContainerName); }
+        }
+
+        [TestInitialize]
+        public async Task Init()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await CloudStorageAccount.Parse(BlobStorageEmulatorConnectionString)
+                    .CreateCloudBlobClient()
+                    .GetContainerReference(ContainerName)
+                    .DeleteIfExistsAsync().ConfigureAwait(false);
+            }
+        }
+
+        [TestCleanup]
+        public async Task Cleanup()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await CloudStorageAccount.Parse(BlobStorageEmulatorConnectionString)
+                    .CreateCloudBlobClient()
+                    .GetContainerReference(ContainerName)
+                    .DeleteIfExistsAsync().ConfigureAwait(false);
+            }
         }
 
         // These tests require Azure Storage Emulator v5.7

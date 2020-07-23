@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
 using Microsoft.Bot.Builder.Azure.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,12 +21,32 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         protected override string ContainerName
         {
-            get { return $"blobtranscript{TestContext.TestName.ToLower()}"; }
+            get { return $"blobstranscript{TestContext.TestName.ToLower()}"; }
         }
 
         protected override ITranscriptStore TranscriptStore
         {
-            get { return new BlobsTranscriptStore(ConnectionString, ContainerName); }
+            get { return new BlobsTranscriptStore(BlobStorageEmulatorConnectionString, ContainerName); }
+        }
+
+        [TestInitialize]
+        public async Task Init()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await new BlobContainerClient(BlobStorageEmulatorConnectionString, ContainerName)
+                    .DeleteIfExistsAsync().ConfigureAwait(false);
+            }
+        }
+
+        [TestCleanup]
+        public async Task Cleanup()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await new BlobContainerClient(BlobStorageEmulatorConnectionString, ContainerName)
+                    .DeleteIfExistsAsync().ConfigureAwait(false);
+            }
         }
 
         // These tests require Azure Storage Emulator v5.7
@@ -67,16 +88,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (StorageEmulatorHelper.CheckEmulator())
             {
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new BlobsTranscriptLogger(null, ContainerName));
+                    new BlobsTranscriptStore(null, ContainerName));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new BlobsTranscriptLogger(ConnectionString, null));
+                    new BlobsTranscriptStore(BlobStorageEmulatorConnectionString, null));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new BlobsTranscriptLogger(string.Empty, ContainerName));
+                    new BlobsTranscriptStore(string.Empty, ContainerName));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new BlobsTranscriptLogger(ConnectionString, string.Empty));
+                    new BlobsTranscriptStore(BlobStorageEmulatorConnectionString, string.Empty));
             }
         }
     }
