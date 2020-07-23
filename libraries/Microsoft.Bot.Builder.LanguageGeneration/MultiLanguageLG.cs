@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             // append empty as fallback to end
-            if (locale != string.Empty && languageFallbackPolicy.ContainsKey(string.Empty))
+            if (!string.IsNullOrEmpty(locale) && languageFallbackPolicy.ContainsKey(string.Empty))
             {
                 fallbackLocales.AddRange(languageFallbackPolicy[string.Empty]);
             }
@@ -130,17 +130,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     defaultLanguages = new string[] { string.Empty };
                 }
 
-                var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLower()).ToList();
+                var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLowerInvariant()).ToList();
                 var policy = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
                 foreach (var language in cultureCodes.Distinct())
                 {
-                    var lang = language.ToLower();
+                    var lang = language.ToLowerInvariant();
                     var fallback = new List<string>();
                     while (!string.IsNullOrEmpty(lang))
                     {
                         fallback.Add(lang);
 
-                        var i = lang.LastIndexOf("-");
+                        var i = lang.LastIndexOf("-", StringComparison.Ordinal);
                         if (i > 0)
                         {
                             lang = lang.Substring(0, i);
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         }
                     }
 
-                    if (language == string.Empty)
+                    if (string.IsNullOrEmpty(language))
                     {
                         // here we set the default
                         fallback.AddRange(defaultLanguages);
