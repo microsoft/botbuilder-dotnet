@@ -14,9 +14,20 @@ using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Teams
-{
+{ 
+    /// <summary>
+    /// The TeamsInfo
+    /// provides utility methods for the events and interactions that occur within Microsoft Teams.
+    /// </summary>
     public static class TeamsInfo
     {
+        /// <summary>
+        /// Gets the details for the given team id. Only works in the Teams scope. 
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="teamId"> ID of the Teams team. </param>
+        /// <param name="cancellationToken"> cancellation token. </param>
+        /// <returns>Team Details.</returns>
         public static async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
             var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
@@ -25,6 +36,13 @@ namespace Microsoft.Bot.Builder.Teams
 #pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
+        /// <summary>
+        /// Returns a list of channels in a Team.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="teamId"> ID of the Teams team. </param>
+        /// <param name="cancellationToken"> cancellation token. </param>
+        /// <returns>Team Details.</returns>
         public static async Task<IList<ChannelInfo>> GetTeamChannelsAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
             var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
@@ -34,12 +52,26 @@ namespace Microsoft.Bot.Builder.Teams
             return channelList.Conversations;
         }
 
+        /// <summary>
+        /// Gets the list of TeamsChannelAccounts within a team.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="teamId"> ID of the Teams team. </param>
+        /// <param name="cancellationToken"> cancellation token. </param>
+        /// <returns>TeamsChannelAccount.</returns>
         public static Task<IEnumerable<TeamsChannelAccount>> GetTeamMembersAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
             var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
             return GetMembersAsync(GetConnectorClient(turnContext), t, cancellationToken);
         }
 
+        /// <summary>
+        /// Generate the activity.
+        /// Support Both string LG result and structured LG result.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="cancellationToken"> cancellation token. </param>
+        /// <returns>Team Details.</returns>
         public static Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             var teamInfo = turnContext.Activity.TeamsGetTeamInfo();
@@ -55,12 +87,29 @@ namespace Microsoft.Bot.Builder.Teams
             }
         }
 
+        /// <summary>
+        /// Gets a paginated list of members of a team.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="teamId"> ID of the Teams team. </param>
+        /// <param name="continuationToken"> continuationToken token. </param>
+        /// <param name="pageSize"> number of entries on the page. </param>
+        /// /// <param name="cancellationToken"> cancellation token. </param>
+        /// <returns>TeamsPagedMembersResult.</returns>
         public static Task<TeamsPagedMembersResult> GetPagedTeamMembersAsync(ITurnContext turnContext, string teamId = null, string continuationToken = default(string), int? pageSize = default(int?), CancellationToken cancellationToken = default)
         {
             var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
             return GetPagedMembersAsync(GetConnectorClient(turnContext), t, continuationToken, cancellationToken, pageSize);
         }
 
+        /// <summary>
+        /// Gets a pagined list of members of a non-team conversation.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="pageSize"> number of entries on a page. </param>
+        /// <param name="continuationToken"> continuationToken token. </param>
+        /// /// <param name="cancellationToken"> cancellation token. </param>
+        /// <returns>Team Details.</returns>
         public static Task<TeamsPagedMembersResult> GetPagedMembersAsync(ITurnContext turnContext, int? pageSize = default(int?), string continuationToken = default(string), CancellationToken cancellationToken = default)
         {
             var teamInfo = turnContext.Activity.TeamsGetTeamInfo();
@@ -76,12 +125,27 @@ namespace Microsoft.Bot.Builder.Teams
             }
         }
 
+        /// <summary>
+        /// Gets the list of members in a teams scoped conversation.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="userId"> user id. </param>
+        /// <param name="teamId"> ID of the Teams team. </param>
+        /// <param name="cancellationToken"> cancellation token. </param>
+        /// <returns>Team Details.</returns>
         public static Task<TeamsChannelAccount> GetTeamMemberAsync(ITurnContext turnContext, string userId, string teamId = null, CancellationToken cancellationToken = default)
         {
             var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
             return GetMemberAsync(GetConnectorClient(turnContext), userId, t, cancellationToken);
         }
 
+        /// <summary>
+        /// Gets the account of a single user.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="userId"> ID of the user in question. </param>
+        /// <param name="cancellationToken"> cancellation token. </param>
+        /// <returns>Team Details.</returns>
         public static Task<TeamsChannelAccount> GetMemberAsync(ITurnContext turnContext, string userId, CancellationToken cancellationToken = default)
         {
             var teamInfo = turnContext.Activity.TeamsGetTeamInfo();
@@ -97,6 +161,16 @@ namespace Microsoft.Bot.Builder.Teams
             }
         }
 
+        /// <summary>
+        /// Generate the activity.
+        /// Support Both string LG result and structured LG result.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="activity"> ID of the Teams team. </param>
+        /// <param name="teamsChannelId"> cancellation token. </param>
+        /// <param name="credentials"> Microsoft app credentials. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns>Team Details.</returns>
         public static async Task<Tuple<ConversationReference, string>> SendMessageToTeamsChannelAsync(ITurnContext turnContext, IActivity activity, string teamsChannelId, MicrosoftAppCredentials credentials, CancellationToken cancellationToken = default)
         {
             if (turnContext == null)
