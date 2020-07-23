@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// Each activity is stored as json blob in structure of
     /// container/{channelId]/{conversationId}/{Timestamp.ticks}-{activity.id}.json.
     /// </remarks>
-    [Obsolete("This class is deprecated. Please use Microsoft.Bot.Builder.Azure.Storage.BlobsTranscriptLogger instead.", false)]
+    [Obsolete("This class is deprecated. Please use Microsoft.Bot.Builder.Azure.Storage.BlobsTranscriptStore instead.", false)]
     public class AzureBlobTranscriptStore : ITranscriptStore
     {
         private static readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()
@@ -227,6 +227,8 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns>A <see cref="Task"/> A task that represents the work queued to execute.</returns>
         public async Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
+            const int PageSize = 20;
+
             if (string.IsNullOrEmpty(channelId))
             {
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
@@ -234,12 +236,12 @@ namespace Microsoft.Bot.Builder.Azure
 
             var dirName = GetDirName(channelId);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
-            var pageSize = 20;
+            
             BlobContinuationToken token = null;
             List<TranscriptInfo> conversations = new List<TranscriptInfo>();
             do
             {
-                var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, null, token, null, null).ConfigureAwait(false);
+                var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, PageSize * 5, token, null, null).ConfigureAwait(false);
 
                 foreach (var blob in segment.Results.Where(c => c is CloudBlobDirectory).Cast<CloudBlobDirectory>())
                 {
@@ -258,24 +260,21 @@ namespace Microsoft.Bot.Builder.Azure
                     else
                     {
                         conversations.Add(conversation);
-                        if (conversations.Count == pageSize)
+                        if (conversations.Count == PageSize)
                         {
                             break;
                         }
                     }
                 }
 
-                if (segment.ContinuationToken != null)
-                {
-                    token = segment.ContinuationToken;
-                }
+                token = segment.ContinuationToken;
             }
-            while (token != null && conversations.Count < pageSize);
+            while (token != null && conversations.Count < PageSize);
 
             var pagedResult = new PagedResult<TranscriptInfo>();
             pagedResult.Items = conversations.ToArray();
 
-            if (pagedResult.Items.Length == 20)
+            if (pagedResult.Items.Length == PageSize)
             {
                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
             }
@@ -304,7 +303,6 @@ namespace Microsoft.Bot.Builder.Azure
             var dirName = GetDirName(channelId, conversationId);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
             BlobContinuationToken token = null;
-            List<CloudBlockBlob> blobs = new List<CloudBlockBlob>();
             do
             {
                 var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.None, null, token, null, null).ConfigureAwait(false);
@@ -313,10 +311,7 @@ namespace Microsoft.Bot.Builder.Azure
                     await blob.DeleteIfExistsAsync().ConfigureAwait(false);
                 }
 
-                if (segment.ContinuationToken != null)
-                {
-                    token = segment.ContinuationToken;
-                }
+                token = segment.ContinuationToken;
             }
             while (token != null);
         }
@@ -376,7 +371,6 @@ namespace Microsoft.Bot.Builder.Azure
             var dirName = GetDirName(activity.ChannelId, activity.Conversation.Id);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
             BlobContinuationToken token = null;
-            List<CloudBlockBlob> blobs = new List<CloudBlockBlob>();
             do
             {
                 var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, 50, token, null, null).ConfigureAwait(false);
@@ -405,10 +399,7 @@ namespace Microsoft.Bot.Builder.Azure
                     }
                 }
 
-                if (segment.ContinuationToken != null)
-                {
-                    token = segment.ContinuationToken;
-                }
+                token = segment.ContinuationToken;
             }
             while (token != null);
 
