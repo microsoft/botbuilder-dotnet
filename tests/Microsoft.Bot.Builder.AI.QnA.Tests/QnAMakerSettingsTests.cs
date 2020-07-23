@@ -8,12 +8,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
     [TestClass]
-    public class QnAMakerSettingTests
+    public class QnAMakerSettingsTests
     {
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
-        public void QnAMakerSetting()
+        public void QnAMakerSettings_GetUserJsonSettingFiles()
         {
             var builder = new ConfigurationBuilder();
             var config = builder.Build();
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             builder.UseQnAMakerSettings(botRoot, region, environment);
 
             var source = builder.Sources[1] as Microsoft.Extensions.Configuration.Json.JsonConfigurationSource;
-            Assert.AreEqual(source.Path, "qnamaker.settings.development.westus.json");
+            Assert.AreEqual("qnamaker.settings.development.westus.json", source.Path);
         }
     }
 }
