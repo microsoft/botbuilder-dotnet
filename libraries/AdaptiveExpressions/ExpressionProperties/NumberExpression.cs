@@ -68,28 +68,28 @@ namespace AdaptiveExpressions.Properties
         }
 
         /// <summary>
-        /// Convert a floating point number value to a NumberExpression instance.
+        /// Converts a floating point number value to a NumberExpression instance.
         /// </summary>
-        /// <param name="value">A floating point number number to convert.</param>
+        /// <param name="value">The floating point number number to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator NumberExpression(float value) => new NumberExpression(value);
 
         /// <summary>
-        /// Convert a string value to a NumberExpression instance.
+        /// Converts a string value to a NumberExpression instance.
         /// </summary>
-        /// <param name="expression">A string value to convert.</param>
+        /// <param name="expression">The string value to convert.</param>
         public static implicit operator NumberExpression(string expression) => new NumberExpression(expression);
 
         /// <summary>
-        /// Convert an Expression instance to a NumberExpression instance.
+        /// Converts an Expression instance to a NumberExpression instance.
         /// </summary>
         /// <param name="expression">An Expression instance to convert.</param>
         public static implicit operator NumberExpression(Expression expression) => new NumberExpression(expression);
 
         /// <summary>
-        /// Convert a JSON Token to an NumberExpression instance.
+        /// Converts a JSON Token to an NumberExpression instance.
         /// </summary>
-        /// <param name="expressionOrValue">A JSON Token to convert.</param>
+        /// <param name="expressionOrValue">The JSON Token to convert.</param>
         public static implicit operator NumberExpression(JToken expressionOrValue) => new NumberExpression(expressionOrValue);
 #pragma warning restore CA2225 // Operator overloads have named alternates
     }

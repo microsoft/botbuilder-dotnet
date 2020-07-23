@@ -26,7 +26,7 @@ namespace AdaptiveExpressions.Properties
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionProperty{T}"/> class.
         /// </summary>
-        /// <param name="value">An object.</param>
+        /// <param name="value">An object contains the value to be set.</param>
         public ExpressionProperty(object value)
         {
 #pragma warning disable CA2214 // Do not call overridable methods in constructors (fixing this would require further redesign of this class and derived types, excluding it for now).
@@ -92,26 +92,26 @@ namespace AdaptiveExpressions.Properties
         /// <returns>expression.</returns>
         public virtual Expression ToExpression()
         {
-            if (this._expression != null)
+            if (_expression != null)
             {
                 return _expression;
             }
 
             if (this.ExpressionText != null)
             {
-                this._expression = Expression.Parse(this.ExpressionText.TrimStart('='));
+                _expression = Expression.Parse(this.ExpressionText.TrimStart('='));
                 return _expression;
             }
 
             if (this.Value == null || this.Value is string || this.Value.IsNumber() || this.Value.IsInteger() || this.Value is bool || this.Value.GetType().IsEnum)
             {
                 // return expression as constant
-                this._expression = Expression.Parse(this.Value.ToString());
+                _expression = Expression.Parse(this.Value.ToString());
                 return _expression;
             }
 
             // return expression for json object
-            this._expression = Expression.Parse($"json({JsonConvert.SerializeObject(this.Value)})");
+            _expression = Expression.Parse($"json({JsonConvert.SerializeObject(this.Value)})");
             return _expression;
         }
 
@@ -134,7 +134,7 @@ namespace AdaptiveExpressions.Properties
         {
             if (_expression == null && ExpressionText != null)
             {
-                this._expression = Expression.Parse(this.ExpressionText.TrimStart('='));
+                _expression = Expression.Parse(this.ExpressionText.TrimStart('='));
             }
 
             if (_expression != null)
@@ -146,12 +146,12 @@ namespace AdaptiveExpressions.Properties
         }
 
         /// <summary>
-        /// Set the value.
+        /// Sets the value.
         /// </summary>
-        /// <param name="value">value to set.</param>
+        /// <param name="value">Value to set.</param>
         public virtual void SetValue(object value)
         {
-            this._expression = null;
+            _expression = null;
             this.Value = default(T);
             this.ExpressionText = null;
 
@@ -162,7 +162,7 @@ namespace AdaptiveExpressions.Properties
 
             if (value is Expression exp)
             {
-                this._expression = exp;
+                _expression = exp;
                 this.ExpressionText = exp.ToString();
                 return;
             }

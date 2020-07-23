@@ -69,7 +69,7 @@ namespace AdaptiveExpressions.TriggerTrees
         /// Returns a string that represents the current object.
         /// </summary>
         /// <param name="builder">A StringBuilder object.</param>
-        /// <param name="indent">An integer of indent.</param>
+        /// <param name="indent">An integer represents the number of spaces at the start of a line.</param>
         public void ToString(StringBuilder builder, int indent = 0)
         {
             builder.Append(' ', indent);
@@ -109,11 +109,11 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// Compares current Clause with another Clause.
+        /// Compares the current Clause with another Clause.
         /// </summary>
         /// <param name="other">The other Clause to compare.</param>
-        /// <param name="comparers">A comparer, which is a dictionary of IPredicateComparer, with string keys.</param>
-        /// <returns>A RelationshipType value.</returns>
+        /// <param name="comparers">A comparer, which is a dictionary of IPredicateComparer with string keys.</param>
+        /// <returns>A RelationshipType value between two Clause instances.</returns>
         public RelationshipType Relationship(Clause other, Dictionary<string, IPredicateComparer> comparers)
         {
             var soFar = RelationshipType.Incomparable;
@@ -210,11 +210,14 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// Determine whether current Clause matches with another Clause.
+        /// Determines whether the current Clause matches with another Clause.
         /// </summary>
-        /// <param name="clause">The other Clause.</param>
-        /// <param name="memory">The scope.</param>
-        /// <returns>A boolean value.</returns>
+        /// <param name="clause">The other Clause instance to compare with.</param>
+        /// <param name="memory">The scope for looking up variables.</param>
+        /// <returns>
+        /// A boolean value represents whether two Clauses are matched.
+        /// Returns True if two Clauses match, otherwise returns False;
+        /// </returns>
         public bool Matches(Clause clause, object memory)
         {
             var matched = false;

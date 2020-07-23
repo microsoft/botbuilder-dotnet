@@ -26,7 +26,7 @@ namespace AdaptiveExpressions.Memory
         /// <param name="memory">The object to wrap.</param>
         public SimpleObjectMemory(object memory)
         {
-            this._memory = memory;
+            _memory = memory;
         }
 
         /// <summary>

@@ -123,7 +123,7 @@ namespace AdaptiveExpressions.TriggerTrees
         /// Returns a string that represents the current object.
         /// </summary>
         /// <param name="builder">A StringBuilder object.</param>
-        /// <param name="indent">An integer of indent.</param>
+        /// <param name="indent">An integer represents the number of spaces at the start of a line.</param>
         public void ToString(StringBuilder builder, int indent = 0)
             => Clause.ToString(builder, indent);
 

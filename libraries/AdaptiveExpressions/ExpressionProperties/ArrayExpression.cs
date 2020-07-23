@@ -68,32 +68,32 @@ namespace AdaptiveExpressions.Properties
         }
 
         /// <summary>
-        /// Convert an array to ArrayExpression.
+        /// Converts an array to ArrayExpression.
         /// </summary>
-        /// <param name="value">An array to convert.</param>
+        /// <param name="value">The array to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator ArrayExpression<T>(T[] value) => new ArrayExpression<T>(value);
 
         /// <summary>
-        /// Convert a list to ArrayExpression.
+        /// Converts a list to ArrayExpression.
         /// </summary>
-        /// <param name="value">A list to convert.</param>
+        /// <param name="value">The list to convert.</param>
         public static implicit operator ArrayExpression<T>(List<T> value) => new ArrayExpression<T>(value);
 
         /// <summary>
-        /// Convert a string to ArrayExpression.
+        /// Converts a string to ArrayExpression.
         /// </summary>
         /// <param name="expression">A string to convert.</param>
         public static implicit operator ArrayExpression<T>(string expression) => new ArrayExpression<T>(expression);
 
         /// <summary>
-        /// Convert an Expression instance to ArrayExpression.
+        /// Converts an Expression instance to ArrayExpression.
         /// </summary>
         /// <param name="expression">An Expression instance to convert.</param>
         public static implicit operator ArrayExpression<T>(Expression expression) => new ArrayExpression<T>(expression);
 
         /// <summary>
-        /// Convert a JSON Token to ArrayExpression.
+        /// Converts a JSON Token to ArrayExpression.
         /// </summary>
         /// <param name="expressionOrValue">A JSON Token to Convert.</param>
         public static implicit operator ArrayExpression<T>(JToken expressionOrValue) => new ArrayExpression<T>(expressionOrValue);

@@ -67,35 +67,35 @@ namespace AdaptiveExpressions.Properties
         }
 
         /// <summary>
-        /// Convert a value to an EnumExpression instance.
+        /// Converts a value to an EnumExpression instance.
         /// </summary>
-        /// <param name="value"> A value to convert.</param>
+        /// <param name="value">The value to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator EnumExpression<T>(T value) => new EnumExpression<T>(value);
 
         /// <summary>
-        /// Convert a string value to an EnumExpression instance.
+        /// Converts a string value to an EnumExpression instance.
         /// </summary>
-        /// <param name="expressionOrValue"> A string value.</param>
+        /// <param name="expressionOrValue">The string value.</param>
         public static implicit operator EnumExpression<T>(string expressionOrValue) => new EnumExpression<T>(expressionOrValue);
 
         /// <summary>
-        /// Convert an Expression instance to an EnumExpression instance.
+        /// Converts an Expression instance to an EnumExpression instance.
         /// </summary>
-        /// <param name="expression">An Expression instance.</param>
+        /// <param name="expression">The Expression instance.</param>
         public static implicit operator EnumExpression<T>(Expression expression) => new EnumExpression<T>(expression);
 
         /// <summary>
-        /// Convert a JSON Token to an EnumExpression instance.
+        /// Converts a JSON Token to an EnumExpression instance.
         /// </summary>
-        /// <param name="value"> A JSON Token to convert.</param>
+        /// <param name="value">The JSON Token to convert.</param>
         public static implicit operator EnumExpression<T>(JToken value) => new EnumExpression<T>(value);
 #pragma warning restore CA2225 // Operator overloads have named alternates
 
         /// <summary>
-        /// Set the value.
+        /// Sets the value.
         /// </summary>
-        /// <param name="value">value to set.</param>
+        /// <param name="value">Value to set.</param>
         public override void SetValue(object value)
         {
             if (value is string stringOrExpression)

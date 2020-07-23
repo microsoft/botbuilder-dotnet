@@ -36,9 +36,9 @@ namespace AdaptiveExpressions
         /// <param name="capacity">Maximum number of elements to cache.</param>
         public LRUCache(int capacity)
         {
-            this._capacity = capacity > 0 ? capacity : DefaultCapacity;
-            this._cacheMap = new Dictionary<TKey, Entry>();
-            this._cacheList = new LinkedList<TKey>();
+            _capacity = capacity > 0 ? capacity : DefaultCapacity;
+            _cacheMap = new Dictionary<TKey, Entry>();
+            _cacheList = new LinkedList<TKey>();
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace AdaptiveExpressions
         {
             lock (_lockObj)
             {
-                if (this._cacheMap.TryGetValue(key, out var entry))
+                if (_cacheMap.TryGetValue(key, out var entry))
                 {
                     Touch(entry.Node);
                     value = entry.Value;
@@ -74,14 +74,14 @@ namespace AdaptiveExpressions
         {
             lock (_lockObj)
             {
-                if (!this._cacheMap.TryGetValue(key, out var entry))
+                if (!_cacheMap.TryGetValue(key, out var entry))
                 {
                     LinkedListNode<TKey> node;
-                    if (this._cacheMap.Count >= this._capacity)
+                    if (_cacheMap.Count >= _capacity)
                     {
-                        node = this._cacheList.Last;
-                        this._cacheMap.Remove(node.Value);
-                        this._cacheList.RemoveLast();
+                        node = _cacheList.Last;
+                        _cacheMap.Remove(node.Value);
+                        _cacheList.RemoveLast();
                         node.Value = key;
                     }
                     else
@@ -89,13 +89,13 @@ namespace AdaptiveExpressions
                         node = new LinkedListNode<TKey>(key);
                     }
 
-                    this._cacheList.AddFirst(node);
-                    this._cacheMap.Add(key, new Entry(node, value));
+                    _cacheList.AddFirst(node);
+                    _cacheMap.Add(key, new Entry(node, value));
                 }
                 else
                 {
                     entry.Value = value;
-                    this._cacheMap[key] = entry;
+                    _cacheMap[key] = entry;
                     Touch(entry.Node);
                 }
             }
@@ -103,10 +103,10 @@ namespace AdaptiveExpressions
 
         private void Touch(LinkedListNode<TKey> node)
         {
-            if (node != this._cacheList.First)
+            if (node != _cacheList.First)
             {
-                this._cacheList.Remove(node);
-                this._cacheList.AddFirst(node);
+                _cacheList.Remove(node);
+                _cacheList.AddFirst(node);
             }
         }
 

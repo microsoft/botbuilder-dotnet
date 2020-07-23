@@ -75,7 +75,7 @@ namespace AdaptiveExpressions.TriggerTrees
         public IReadOnlyList<Clause> Clauses => _clauses;
 
         /// <summary>
-        /// ToString method if Trigger clasee.
+        /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string value.</returns>
         public override string ToString()
@@ -86,7 +86,7 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// Determine the relationship between current instance and an other Trigger instance.
+        /// Determines the relationship between current instance and another Trigger instance.
         /// </summary>
         /// <param name="other">The other Trigger instance.</param>
         /// <param name="comparers">The comparer dictionary.</param>
@@ -129,11 +129,14 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// Determine whether is there any member in current clauses matches an other Clause instance. 
+        /// Determines whether is there any member in current clauses matches another Clause instance. 
         /// </summary>
         /// <param name="nodeClause">The other Clause instance to match.</param>
-        /// <param name="state">The scope.</param>
-        /// <returns>A boolean value.</returns>
+        /// <param name="state">The scope for looking up variables.</param>
+        /// <returns>
+        /// A boolean value represents whether there is a member matches.
+        /// Returns True if such member exists, otherwise returns False.
+        /// </returns>
         public bool Matches(Clause nodeClause, object state)
         {
             var found = false;
@@ -153,7 +156,9 @@ namespace AdaptiveExpressions.TriggerTrees
         /// Returns a string that represents the current object.
         /// </summary>
         /// <param name="builder">A StringBuilder object.</param>
-        /// <param name="indent">An integer of indent.</param>
+        /// <param name="indent">
+        /// An integer represents the number of spaces at the start of a line. 
+        /// </param>
         protected void ToString(StringBuilder builder, int indent = 0)
         {
             builder.Append(' ', indent);

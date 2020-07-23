@@ -89,9 +89,9 @@ namespace AdaptiveExpressions.Properties
 #pragma warning restore CA2225 // Operator overloads have named alternates
 
         /// <summary>
-        /// Set the value.
+        /// Sets the value.
         /// </summary>
-        /// <param name="value">value to set.</param>
+        /// <param name="value">Value to set.</param>
         public override void SetValue(object value)
         {
             // reset state to no value or expression.

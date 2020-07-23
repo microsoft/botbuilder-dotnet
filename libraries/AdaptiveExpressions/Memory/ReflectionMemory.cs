@@ -18,20 +18,20 @@ namespace AdaptiveExpressions.Memory
 
         private ReflectionMemory(object obj, Methods methods)
         {
-            this._obj = obj;
-            this._methods = methods;
+            _obj = obj;
+            _methods = methods;
         }
 
         public void SetValue(string path, object value)
         {
-            this._methods.SetValue.Invoke(_obj, new object[] { value });
+            _methods.SetValue.Invoke(_obj, new object[] { value });
         }
 
         public bool TryGetValue(string path, out object value)
         {
             value = null;
             var args = new object[] { path, null };
-            var result = (bool)this._methods.TryGetValue.Invoke(_obj, args);
+            var result = (bool)_methods.TryGetValue.Invoke(_obj, args);
             if (result)
             {
                 value = args[1];
@@ -47,7 +47,7 @@ namespace AdaptiveExpressions.Memory
 
         public string Version()
         {
-            return (string)this._methods?.Version?.Invoke(_obj, Array.Empty<object>());
+            return (string)_methods?.Version?.Invoke(_obj, Array.Empty<object>());
         }
 
         internal static ReflectionMemory Create(object obj)

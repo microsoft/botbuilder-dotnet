@@ -67,9 +67,9 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// Gets a value of IOptimizer list.
+        /// Gets a value of a list of Optimizers for optimizing clauses.
         /// </summary>
-        /// <value>A value of IOptimizer list.</value>
+        /// <value>A value of list of Optimizers.</value>
         public List<IOptimizer> Optimizers { get; } = new List<IOptimizer>();
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace AdaptiveExpressions.TriggerTrees
         public Dictionary<string, IPredicateComparer> Comparers { get; } = new Dictionary<string, IPredicateComparer>();
 
         /// <summary>
-        /// Gets or sets a value of root node.
+        /// Gets or sets a value of the root node.
         /// </summary>
         /// <value>A Node instance.</value>
         public Node Root { get; set; }
@@ -166,7 +166,7 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// Generate a graph to given path.
+        /// Generates a graph to given path.
         /// </summary>
         /// <param name="outPath">The path to save the graph.</param>
         public void GenerateGraph(string outPath)
