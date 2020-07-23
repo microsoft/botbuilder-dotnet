@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 JToken value = null;
 
-                // evalute the value
+                // evaluate the value
                 var (val, error) = new ValueExpression(binding.Value).TryGetValue(dc.State);
 
                 if (error != null)

@@ -24,10 +24,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <summary>
-        /// Achieve deep data binding with recursion.
+        /// Replaces the binding paths in a JSON Token value with the evaluated results recursively. Returns the final JSON Token value.
         /// </summary>
-        /// <param name="token">Input token.</param>
-        /// <param name="state">Memory scope.</param>
+        /// <param name="token">A JSON Token value which may have some binding paths.</param>
+        /// <param name="state">A scope for looking up variables.</param>
         /// <returns>Deep data binding result.</returns>
         public static JToken ReplaceJTokenRecursively(this JToken token, object state)
         {
@@ -41,7 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     }
 
                     break;
-
                 case JTokenType.Array:
                     // NOTE: ToList() is required because JToken.Replace will break the enumeration.
                     foreach (var child in token.Children().ToList())
@@ -50,12 +49,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     }
 
                     break;
-
                 case JTokenType.Property:
                     JProperty property = (JProperty)token;
                     property.Value = property.Value.ReplaceJTokenRecursively(state);
                     break;
-
                 default:
                     if (token.Type == JTokenType.String)
                     {
