@@ -33,8 +33,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             using (var stream = await OpenStreamAsync().ConfigureAwait(false))
             {
+<<<<<<< HEAD
                 TextReader textReader = new StreamReader(stream);
                 return await textReader.ReadToEndAsync().ConfigureAwait(false);
+=======
+                using (TextReader textReader = new StreamReader(stream))
+                {
+                    return await textReader.ReadToEndAsync().ConfigureAwait(false);
+                }
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             }
         }
     }

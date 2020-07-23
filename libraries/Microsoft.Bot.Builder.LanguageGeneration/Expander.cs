@@ -149,7 +149,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var length = switchCaseNodes.Length;
             var switchExprs = switchCaseNodes[0].switchCaseStat().expression();
             var switchErrorPrefix = "Switch '" + switchExprs[0].GetText() + "': ";
+<<<<<<< HEAD
             var switchExprResult = EvalExpression(switchExprs[0].GetText(), switchExprs[0], switchCaseNodes[0].switchCaseStat().GetText(), switchErrorPrefix);
+=======
+            var switchExprResult = EvalExpression(switchExprs[0].GetText(), switchCaseNodes[0].switchCaseStat().GetText(), switchErrorPrefix);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             var idx = 0;
             foreach (var switchCaseNode in switchCaseNodes)
             {
@@ -174,7 +178,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 var caseExprs = switchCaseNode.switchCaseStat().expression();
                 var caseErrorPrefix = "Case '" + caseExprs[0].GetText() + "': ";
+<<<<<<< HEAD
                 var caseExprResult = EvalExpression(caseExprs[0].GetText(), caseExprs[0], switchCaseNode.switchCaseStat().GetText(), caseErrorPrefix);
+=======
+                var caseExprResult = EvalExpression(caseExprs[0].GetText(), switchCaseNode.switchCaseStat().GetText(), caseErrorPrefix);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 if (switchExprResult[0] == caseExprResult[0])
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
@@ -203,7 +211,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var isKVPairBody = body.keyValueStructureLine() != null;
                 if (isKVPairBody)
                 {
-                    var property = body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText().ToLower();
+                    var property = body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText().ToLowerInvariant();
                     var value = VisitStructureValue(body.keyValueStructureLine());
                     if (value.Count > 1) 
                     {
@@ -240,7 +248,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
+<<<<<<< HEAD
                     var propertyObjects = EvalExpression(body.expressionInStructure().GetText(), body.expressionInStructure(), body.GetText()).Select(x => JObject.Parse(x)).ToList();
+=======
+                    var propertyObjects = EvalExpression(body.expressionInStructure().GetText(), body.GetText()).Select(x => JObject.Parse(x)).ToList();
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                     var tempResult = new List<JObject>();
                     foreach (var res in expandedResult)
                     {
@@ -253,7 +265,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                             {
                                 foreach (var item in propertyObject)
                                 {
-                                    if (tempRes.Property(item.Key) == null)
+                                    if (tempRes.Property(item.Key, StringComparison.Ordinal) == null)
                                     {
                                         tempRes[item.Key] = item.Value;
                                     }
@@ -296,7 +308,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (child is LGTemplateParser.ExpressionContext expression)
                 {
+<<<<<<< HEAD
                     result = StringListConcat(result, EvalExpression(expression.GetText(), expression, context.GetText(), prefixErrorMsg));
+=======
+                    result = StringListConcat(result, EvalExpression(expression.GetText(), context.GetText(), prefixErrorMsg));
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 }
                 else
                 {
@@ -356,7 +372,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (item.IsPureExpression())
                 {
+<<<<<<< HEAD
                     result.Add(EvalExpression(item.expressionInStructure(0).GetText(), item.expressionInStructure(0), context.GetText()));
+=======
+                    result.Add(EvalExpression(item.expressionInStructure(0).GetText(), context.GetText()));
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 }
                 else
                 {
@@ -366,7 +386,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         if (child is LGTemplateParser.ExpressionInStructureContext expression)
                         {
                             var errorPrefix = "Property '" + context.STRUCTURE_IDENTIFIER().GetText() + "':";
+<<<<<<< HEAD
                             itemStringResult = StringListConcat(itemStringResult, EvalExpression(expression.GetText(), expression, context.GetText(), errorPrefix));
+=======
+                            itemStringResult = StringListConcat(itemStringResult, EvalExpression(expression.GetText(), context.GetText(), errorPrefix));
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                         }
                         else
                         {
@@ -416,7 +440,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return true;
         }
 
+<<<<<<< HEAD
         private List<string> EvalExpression(string exp, ParserRuleContext context = null, string lineContent = "", string errorPrefix = "")
+=======
+        private List<string> EvalExpression(string exp, string lineContent = "", string errorPrefix = "")
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         {
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
@@ -488,7 +516,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return standardFunction;
             }
 
+<<<<<<< HEAD
             if (name.StartsWith("lg."))
+=======
+            if (name.StartsWith("lg.", StringComparison.Ordinal))
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             {
                 name = name.Substring(3);
             }
@@ -497,30 +529,51 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (isExpander)
                 {
+<<<<<<< HEAD
                     return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateExpander(name)), ReturnType.Object, this.ValidTemplateReference);
                 }
                 else
                 {
                     return new ExpressionEvaluator(name, ExpressionFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
+=======
+                    return new ExpressionEvaluator(name, FunctionUtils.Apply(this.TemplateExpander(name)), ReturnType.Object, this.ValidTemplateReference);
+                }
+                else
+                {
+                    return new ExpressionEvaluator(name, FunctionUtils.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 }
             }
 
             const string template = "template";
 
+<<<<<<< HEAD
             if (name.Equals(template))
             {
                 return new ExpressionEvaluator(template, ExpressionFunctions.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
+=======
+            if (name.Equals(template, StringComparison.Ordinal))
+            {
+                return new ExpressionEvaluator(template, FunctionUtils.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             }
 
             const string fromFile = "fromFile";
 
+<<<<<<< HEAD
             if (name.Equals(fromFile))
             {
                 return new ExpressionEvaluator(fromFile, ExpressionFunctions.Apply(this.FromFile()), ReturnType.String, ExpressionFunctions.ValidateUnaryString);
+=======
+            if (name.Equals(fromFile, StringComparison.Ordinal))
+            {
+                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, FunctionUtils.ValidateUnaryString);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             }
 
             const string activityAttachment = "ActivityAttachment";
 
+<<<<<<< HEAD
             if (name.Equals(activityAttachment))
             {
                 return new ExpressionEvaluator(
@@ -528,20 +581,41 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     ExpressionFunctions.Apply(this.ActivityAttachment()),
                     ReturnType.Object,
                     (expr) => ExpressionFunctions.ValidateOrder(expr, null, ReturnType.Object, ReturnType.String));
+=======
+            if (name.Equals(activityAttachment, StringComparison.Ordinal))
+            {
+                return new ExpressionEvaluator(
+                    activityAttachment,
+                    FunctionUtils.Apply(this.ActivityAttachment()),
+                    ReturnType.Object,
+                    (expr) => FunctionUtils.ValidateOrder(expr, null, ReturnType.Object, ReturnType.String));
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             }
 
             const string isTemplate = "isTemplate";
 
+<<<<<<< HEAD
             if (name.Equals(isTemplate))
             {
                 return new ExpressionEvaluator(isTemplate, ExpressionFunctions.Apply(this.IsTemplate()), ReturnType.Boolean, ExpressionFunctions.ValidateUnaryString);
+=======
+            if (name.Equals(isTemplate, StringComparison.Ordinal))
+            {
+                return new ExpressionEvaluator(isTemplate, FunctionUtils.Apply(this.IsTemplate()), ReturnType.Boolean, FunctionUtils.ValidateUnaryString);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             }
 
             const string expandText = "expandText";
 
+<<<<<<< HEAD
             if (name.Equals(expandText))
             {
                 return new ExpressionEvaluator(expandText, ExpressionFunctions.Apply(this.ExpandText()), ReturnType.Object, ExpressionFunctions.ValidateUnaryString);
+=======
+            if (name.Equals(expandText, StringComparison.Ordinal))
+            {
+                return new ExpressionEvaluator(expandText, FunctionUtils.Apply(this.ExpandText()), ReturnType.Object, FunctionUtils.ValidateUnaryString);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             }
 
             return null;
@@ -586,7 +660,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         // Validator for template(...)
         private void ValidateTemplateFunction(Expression expression)
         {
+<<<<<<< HEAD
             ExpressionFunctions.ValidateAtLeastOne(expression);
+=======
+            FunctionUtils.ValidateAtLeastOne(expression);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
             var children0 = expression.Children[0];
 
@@ -612,7 +690,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
-            var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
+            var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count;
             var actualArgsCount = expression.Children.Length;
 
             if (expectedArgsCount != actualArgsCount)
@@ -635,7 +713,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 foundPrebuiltFunction = true;
             }
 
-            for (var i = 0; i < expanderExpression.Children.Count(); i++)
+            for (var i = 0; i < expanderExpression.Children.Length; i++)
             {
                 expanderExpression.Children[i] = ReconstructExpression(expanderExpression.Children[i], evaluatorExpression.Children[i], foundPrebuiltFunction);
             }
@@ -650,7 +728,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
+<<<<<<< HEAD
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
+=======
+            var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             var actualArgsCount = children.Count();
 
             if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)

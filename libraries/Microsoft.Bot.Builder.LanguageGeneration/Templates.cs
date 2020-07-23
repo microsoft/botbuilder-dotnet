@@ -97,7 +97,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Import elements that this LG file contains directly.
         /// </value>
+<<<<<<< HEAD
         public IList<TemplateImport> Imports { get; set; }
+=======
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
+        public IList<TemplateImport> Imports { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         /// <summary>
         /// Gets or sets all references that this LG file has from <see cref="Imports"/>.
@@ -108,7 +114,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// All references that this LG file has from <see cref="Imports"/>.
         /// </value>
+<<<<<<< HEAD
         public IList<Templates> References { get; set; }
+=======
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
+        public IList<Templates> References { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         /// <summary>
         /// Gets or sets diagnostics.
@@ -116,7 +128,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Diagnostics.
         /// </value>
+<<<<<<< HEAD
         public IList<Diagnostic> Diagnostics { get; set; }
+=======
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
+        public IList<Diagnostic> Diagnostics { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         /// <summary>
         /// Gets or sets LG content.
@@ -140,7 +158,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// LG file options.
         /// </value>
+<<<<<<< HEAD
         public IList<string> Options { get; set; }
+=======
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
+        public IList<string> Options { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         /// <summary>
         /// Gets the evluation options for current LG file.
@@ -229,7 +253,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // wrap inline string with "# name and -" to align the evaluation process
             var multiLineMark = "```";
 
+<<<<<<< HEAD
             text = !text.Trim().StartsWith(multiLineMark) && text.Contains('\n')
+=======
+            text = !text.Trim().StartsWith(multiLineMark, StringComparison.Ordinal) && text.Contains('\n')
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                    ? $"{multiLineMark}{text}{multiLineMark}" : text;
 
             var newContent = $"# {InlineTemplateId} {newLine} - {text}";
@@ -402,7 +430,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     if (curTemplates.Any(u => u.Name == templateName))
                     {
                         var newGlobalName = $"{curTemplates.Namespace}.{templateName}";
+<<<<<<< HEAD
                         Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, ExpressionFunctions.Apply(this.GlobalTemplateFunction(templateName)), ReturnType.Object));
+=======
+                        Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, FunctionUtils.Apply(this.GlobalTemplateFunction(templateName)), ReturnType.Object));
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                     }
                 }
             }
@@ -506,7 +538,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var lines = GetLinesOfText(templateBody);
             var destList = lines.Select(u =>
             {
+<<<<<<< HEAD
                 return u.TrimStart().StartsWith("#") ? $"- {u.TrimStart()}" : u;
+=======
+                return u.TrimStart().StartsWith("#", StringComparison.Ordinal) ? $"- {u.TrimStart()}" : u;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             });
 
             return string.Join(newLine, destList);
@@ -516,7 +552,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (text == null)
             {
+<<<<<<< HEAD
                 return new string[0];
+=======
+                return Array.Empty<string>();
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             }
 
             return text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
@@ -539,7 +579,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (AllDiagnostics != null)
             {
                 var errors = AllDiagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
+<<<<<<< HEAD
                 if (errors.Count() != 0)
+=======
+                if (errors.Any())
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 {
                     throw new Exception(string.Join(newLine, errors));
                 }
@@ -554,7 +598,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
                 {
                     var index = option.IndexOf('=');
+<<<<<<< HEAD
                     var key = option.Substring(0, index).Trim().ToLower();
+=======
+                    var key = option.Substring(0, index).Trim().ToLowerInvariant();
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                     var value = option.Substring(index + 1).Trim();
                     if (key == nameOfKey)
                     {

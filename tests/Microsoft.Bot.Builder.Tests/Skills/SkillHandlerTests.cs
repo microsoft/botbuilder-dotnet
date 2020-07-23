@@ -96,6 +96,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         [Fact]
         public async Task OnSendToConversationAsyncTest()
         {
+<<<<<<< HEAD
             BotCallbackHandler botCallback = null;
             _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
                 .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
@@ -103,16 +104,36 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                     botCallback = callback;
                 });
 
+=======
+            _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
+                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
+                {
+                    callback(new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity()), CancellationToken.None).Wait();
+                });
+
+            _mockAdapter.Setup(x => x.SendActivitiesAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity[]>(), It.IsAny<CancellationToken>()))
+                .Callback<ITurnContext, Activity[], CancellationToken>((turnContext, activities, cancellationToken) =>
+                {
+                })
+                .Returns(Task.FromResult(new[] { new ResourceResponse { Id = "resourceId" } }));
+
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             var sut = CreateSkillHandlerForTesting();
 
             var activity = (Activity)Activity.CreateMessageActivity();
             activity.ApplyConversationReference(_conversationReference);
 
             Assert.Null(activity.CallerId);
+<<<<<<< HEAD
             await sut.TestOnSendToConversationAsync(_claimsIdentity, _conversationId, activity, CancellationToken.None);
             Assert.NotNull(botCallback);
             await botCallback.Invoke(new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity()), CancellationToken.None);
             Assert.Null(activity.CallerId);
+=======
+            var resourceResponse = await sut.TestOnSendToConversationAsync(_claimsIdentity, _conversationId, activity, CancellationToken.None);
+            Assert.Null(activity.CallerId);
+            Assert.Equal("resourceId", resourceResponse.Id);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         }
 
         [Fact]

@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Sign out user",
+=======
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Sign Out User",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
     "description": "Sign a user out that was logged in previously using OAuthInput.",
     "type": "object",
     "properties": {
@@ -20,7 +26,11 @@
         },
         "connectionName": {
             "$ref": "schema:#/definitions/stringExpression",
+<<<<<<< HEAD
             "title": "Connection name",
+=======
+            "title": "Connection Name",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             "description": "Connection name that was used with OAuthInput to log a user in."
         },
         "disabled": {

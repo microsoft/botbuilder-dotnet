@@ -11,7 +11,11 @@ namespace AdaptiveExpressions.Memory
     /// Stack implements of <see cref="IMemory"/>.
     /// Memory variables have a hierarchical relationship.
     /// </summary>
+#pragma warning disable CA1710 // Identifiers should have correct suffix (we can't change this without breaking binary compat)
+#pragma warning disable CA1010 // Generic interface should also be implemented (excluding for now, the designers of this package should evaluate complying in the future, for more info see https://docs.microsoft.com/en-us/visualstudio/code-quality/ca1010?view=vs-2019)
     public class StackedMemory : Stack<IMemory>, IMemory
+#pragma warning restore CA1010 // Generic interface should also be implemented
+#pragma warning restore CA1710 // Identifiers should have correct suffix
     {
         public static StackedMemory Wrap(IMemory memory)
         {

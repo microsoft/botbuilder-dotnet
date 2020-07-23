@@ -63,7 +63,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// The actions to add to the plan when the rule constraints are met.
         /// </value>
         [JsonProperty("actions")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         [JsonIgnore]
         public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
@@ -174,7 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                                         return (changed, null);
                                     },
                                     ReturnType.Boolean,
-                                    ExpressionFunctions.ValidateUnary))));
+                                    FunctionUtils.ValidateUnary))));
                     }
                 }
             }

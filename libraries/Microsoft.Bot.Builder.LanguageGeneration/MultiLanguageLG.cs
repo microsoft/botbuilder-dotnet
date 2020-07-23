@@ -80,7 +80,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             // append empty as fallback to end
+<<<<<<< HEAD
             if (locale != string.Empty && languageFallbackPolicy.ContainsKey(string.Empty))
+=======
+            if (!string.IsNullOrEmpty(locale) && languageFallbackPolicy.ContainsKey(string.Empty))
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             {
                 fallbackLocales.AddRange(languageFallbackPolicy[string.Empty]);
             }
@@ -130,17 +134,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     defaultLanguages = new string[] { string.Empty };
                 }
 
+<<<<<<< HEAD
                 var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLower()).ToList();
                 var policy = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
                 foreach (var language in cultureCodes.Distinct())
                 {
                     var lang = language.ToLower();
+=======
+                var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLowerInvariant()).ToList();
+                var policy = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+                foreach (var language in cultureCodes.Distinct())
+                {
+                    var lang = language.ToLowerInvariant();
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                     var fallback = new List<string>();
                     while (!string.IsNullOrEmpty(lang))
                     {
                         fallback.Add(lang);
 
+<<<<<<< HEAD
                         var i = lang.LastIndexOf("-");
+=======
+                        var i = lang.LastIndexOf("-", StringComparison.Ordinal);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                         if (i > 0)
                         {
                             lang = lang.Substring(0, i);
@@ -151,7 +167,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         }
                     }
 
+<<<<<<< HEAD
                     if (language == string.Empty)
+=======
+                    if (string.IsNullOrEmpty(language))
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                     {
                         // here we set the default
                         fallback.AddRange(defaultLanguages);

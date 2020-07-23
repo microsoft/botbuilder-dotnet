@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IEntityRecognizer)",
     "title": "Confirmation entity recognizer",
+=======
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IEntityRecognizer)",
+    "title": "Confirmation Entity Recognizer",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
     "description": "Recognizer which recognizes confirmation choices (yes/no).",
     "type": "object",
     "properties": {}

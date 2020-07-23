@@ -9,6 +9,11 @@
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
     <Rule Id="CA1054" Action="None" /> <!-- UriParametersShouldNotBeStrings -->
     <Rule Id="CA1062" Action="None" /> <!-- ValidateArgumentsOfPublicMethods -->
+<<<<<<< HEAD
+=======
+    <Rule Id="CA1308" Action="None" /> <!-- Normalize strings to uppercase (most of our operations are normalized on lowercase -->
+    <Rule Id="CA1822" Action="None" /> <!-- Ignore Mark members as static -->
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
   </Rules>
   <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
     <Rule Id="CA1303" Action="None" /> <!-- DoNotPassLiteralsAsLocalizedParameters -->
@@ -193,4 +198,8 @@
     <Rule Id="SA1651" Action="Error" />
     <Rule Id="SX1309" Action="Error" /> <!-- FieldNamesShouldBeginWithUnderscores -->
   </Rules>
+<<<<<<< HEAD
 </RuleSet>
+=======
+</RuleSet>
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8

@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+<<<<<<< HEAD
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,6 +17,8 @@ using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+=======
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
 namespace AdaptiveExpressions
 {
@@ -38,15 +39,18 @@ namespace AdaptiveExpressions
     {
         /// <summary>
         /// Read only Dictionary of built in functions.
+<<<<<<< HEAD
         /// </summary>
         public static readonly IDictionary<string, ExpressionEvaluator> StandardFunctions = GetStandardFunctions();
 
         /// <summary>
         /// Random number generator used for expressions.
+=======
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         /// </summary>
-        /// <remarks>This is exposed so that you can explicitly seed the random number generator for tests.</remarks>
-        public static readonly Random Randomizer = new Random();
+        public static readonly IDictionary<string, ExpressionEvaluator> StandardFunctions = GetStandardFunctions();
 
+<<<<<<< HEAD
         /// <summary>
         /// The default date time format string.
         /// </summary>
@@ -2722,10 +2726,14 @@ namespace AdaptiveExpressions
         }
 
         private static IEnumerable<object> Flatten(IEnumerable<object> list, int dept)
+=======
+        private static IDictionary<string, ExpressionEvaluator> GetStandardFunctions()
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         {
             var result = list.ToList();
             if (dept < 1)
             {
+<<<<<<< HEAD
                 dept = 1;
             }
 
@@ -4635,6 +4643,159 @@ namespace AdaptiveExpressions
             eval.Negation = eval;
             functions.Add(eval);
 
+=======
+                new BuiltinFunctions.Accessor(),
+                new BuiltinFunctions.Add(),
+                new BuiltinFunctions.AddDays(),
+                new BuiltinFunctions.AddHours(),
+                new BuiltinFunctions.AddMinutes(),
+                new BuiltinFunctions.AddOrdinal(),
+                new BuiltinFunctions.AddProperty(),
+                new BuiltinFunctions.AddSeconds(),
+                new BuiltinFunctions.AddToTime(),
+                new BuiltinFunctions.And(),
+                new BuiltinFunctions.Average(),
+                new BuiltinFunctions.Base64(),
+                new BuiltinFunctions.Base64ToBinary(),
+                new BuiltinFunctions.Base64ToString(),
+                new BuiltinFunctions.Binary(),
+                new BuiltinFunctions.Bool(),
+                new BuiltinFunctions.Ceiling(),
+                new BuiltinFunctions.Coalesce(),
+                new BuiltinFunctions.Concat(),
+                new BuiltinFunctions.Contains(),
+                new BuiltinFunctions.ConvertFromUtc(),
+                new BuiltinFunctions.ConvertToUtc(),
+                new BuiltinFunctions.Count(),
+                new BuiltinFunctions.CountWord(),
+                new BuiltinFunctions.CreateArray(),
+                new BuiltinFunctions.DataUri(),
+                new BuiltinFunctions.DataUriToBinary(),
+                new BuiltinFunctions.DataUriToString(),
+                new BuiltinFunctions.Date(),
+                new BuiltinFunctions.DateReadBack(),
+                new BuiltinFunctions.DateTimeDiff(),
+                new BuiltinFunctions.DayOfMonth(),
+                new BuiltinFunctions.DayOfWeek(),
+                new BuiltinFunctions.DayOfYear(),
+                new BuiltinFunctions.Divide(),
+                new BuiltinFunctions.Element(),
+                new BuiltinFunctions.Empty(),
+                new BuiltinFunctions.EndsWith(),
+                new BuiltinFunctions.EOL(),
+                new BuiltinFunctions.Equal(),
+                new BuiltinFunctions.Exists(),
+                new BuiltinFunctions.First(),
+                new BuiltinFunctions.Flatten(),
+                new BuiltinFunctions.Float(),
+                new BuiltinFunctions.Floor(),
+                new BuiltinFunctions.Foreach(),
+                new BuiltinFunctions.FormatDateTime(),
+                new BuiltinFunctions.FormatEpoch(),
+                new BuiltinFunctions.FormatNumber(),
+                new BuiltinFunctions.FormatTicks(),
+                new BuiltinFunctions.GetFutureTime(),
+                new BuiltinFunctions.GetNextViableDate(),
+                new BuiltinFunctions.GetNextViableTime(),
+                new BuiltinFunctions.GetPastTime(),
+                new BuiltinFunctions.GetPreviousViableDate(),
+                new BuiltinFunctions.GetPreviousViableTime(),
+                new BuiltinFunctions.GetProperty(),
+                new BuiltinFunctions.GetTimeOfDay(),
+                new BuiltinFunctions.GreaterThan(),
+                new BuiltinFunctions.GreaterThanOrEqual(),
+                new BuiltinFunctions.If(),
+                new BuiltinFunctions.Ignore(),
+                new BuiltinFunctions.IndexOf(),
+                new BuiltinFunctions.IndicesAndValues(),
+                new BuiltinFunctions.Int(),
+                new BuiltinFunctions.Intersection(),
+                new BuiltinFunctions.IsArray(),
+                new BuiltinFunctions.IsBoolean(),
+                new BuiltinFunctions.IsDate(),
+                new BuiltinFunctions.IsDateRange(),
+                new BuiltinFunctions.IsDateTime(),
+                new BuiltinFunctions.IsDefinite(),
+                new BuiltinFunctions.IsDuration(),
+                new BuiltinFunctions.IsFloat(),
+                new BuiltinFunctions.IsInteger(),
+                new BuiltinFunctions.IsMatch(),
+                new BuiltinFunctions.IsObject(),
+                new BuiltinFunctions.IsPresent(),
+                new BuiltinFunctions.IsString(),
+                new BuiltinFunctions.IsTime(),
+                new BuiltinFunctions.IsTimeRange(),
+                new BuiltinFunctions.Join(),
+                new BuiltinFunctions.JPath(),
+                new BuiltinFunctions.Json(),
+                new BuiltinFunctions.Last(),
+                new BuiltinFunctions.LastIndexOf(),
+                new BuiltinFunctions.Length(),
+                new BuiltinFunctions.LessThan(),
+                new BuiltinFunctions.LessThanOrEqual(),
+                new BuiltinFunctions.Max(),
+                new BuiltinFunctions.Merge(),
+                new BuiltinFunctions.Min(),
+                new BuiltinFunctions.Mod(),
+                new BuiltinFunctions.Month(),
+                new BuiltinFunctions.Multiply(),
+                new BuiltinFunctions.NewGuid(),
+                new BuiltinFunctions.Not(),
+                new BuiltinFunctions.NotEqual(),
+                new BuiltinFunctions.Optional(),
+                new BuiltinFunctions.Or(),
+                new BuiltinFunctions.Power(),
+                new BuiltinFunctions.Rand(),
+                new BuiltinFunctions.Range(),
+                new BuiltinFunctions.RemoveProperty(),
+                new BuiltinFunctions.Replace(),
+                new BuiltinFunctions.ReplaceIgnoreCase(),
+                new BuiltinFunctions.Round(),
+                new BuiltinFunctions.Select(),
+                new BuiltinFunctions.SentenceCase(),
+                new BuiltinFunctions.SetPathToValue(),
+                new BuiltinFunctions.SetProperty(),
+                new BuiltinFunctions.Skip(),
+                new BuiltinFunctions.SortBy(),
+                new BuiltinFunctions.SortByDescending(),
+                new BuiltinFunctions.Split(),
+                new BuiltinFunctions.StartOfDay(),
+                new BuiltinFunctions.StartOfHour(),
+                new BuiltinFunctions.StartOfMonth(),
+                new BuiltinFunctions.StartsWith(),
+                new BuiltinFunctions.String(),
+                new BuiltinFunctions.SubArray(),
+                new BuiltinFunctions.Substring(),
+                new BuiltinFunctions.Subtract(),
+                new BuiltinFunctions.SubtractFromTime(),
+                new BuiltinFunctions.Sum(),
+                new BuiltinFunctions.Take(),
+                new BuiltinFunctions.Ticks(),
+                new BuiltinFunctions.TicksToDays(),
+                new BuiltinFunctions.TicksToHours(),
+                new BuiltinFunctions.TicksToMinutes(),
+                new BuiltinFunctions.TitleCase(),
+                new BuiltinFunctions.ToLower(),
+                new BuiltinFunctions.ToUpper(),
+                new BuiltinFunctions.Trim(),
+                new BuiltinFunctions.Union(),
+                new BuiltinFunctions.Unique(),
+                new BuiltinFunctions.UriComponent(),
+                new BuiltinFunctions.UriComponentToString(),
+                new BuiltinFunctions.UriHost(),
+                new BuiltinFunctions.UriPath(),
+                new BuiltinFunctions.UriPathAndQuery(),
+                new BuiltinFunctions.UriPort(),
+                new BuiltinFunctions.UriQuery(),
+                new BuiltinFunctions.UriScheme(),
+                new BuiltinFunctions.UtcNow(),
+                new BuiltinFunctions.Where(),
+                new BuiltinFunctions.Xml(),
+                new BuiltinFunctions.XPath(),
+                new BuiltinFunctions.Year(),
+            };
+
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             var lookup = new Dictionary<string, ExpressionEvaluator>();
             foreach (var function in functions)
             {
@@ -4665,6 +4826,10 @@ namespace AdaptiveExpressions
             lookup.Add("or", lookup[ExpressionType.Or]);
 
             lookup.Add("&", lookup[ExpressionType.Concat]);
+<<<<<<< HEAD
+=======
+
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             return new ReadOnlyDictionary<string, ExpressionEvaluator>(lookup);
         }
     }

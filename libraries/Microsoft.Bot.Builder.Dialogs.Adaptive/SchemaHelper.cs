@@ -84,7 +84,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         // Copy parent $ properties like $entities
                         foreach (JProperty prop in schema.Properties())
                         {
+<<<<<<< HEAD
                             if (prop.Name.StartsWith("$"))
+=======
+                            if (prop.Name.StartsWith("$", StringComparison.Ordinal))
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                             {
                                 itemsSchema[prop.Name] = prop.Value;
                             }
@@ -104,9 +108,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 foreach (JProperty prop in schema["properties"])
                 {
-                    if (!prop.Name.StartsWith("$"))
+                    if (!prop.Name.StartsWith("$", StringComparison.Ordinal))
                     {
-                        var newPath = path == string.Empty ? prop.Name : $"{path}.{prop.Name}";
+                        var newPath = path.Length == 0 ? prop.Name : $"{path}.{prop.Name}";
                         children.Add(CreateProperty((JObject)prop.Value, newPath));
                     }
                 }
@@ -129,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         var newPath = path;
                         if (grand != null && grand is JProperty grandProp && grandProp.Name == "properties")
                         {
-                            newPath = path == string.Empty ? prop.Name : $"{path}.{prop.Name}";
+                            newPath = path.Length == 0 ? prop.Name : $"{path}.{prop.Name}";
                         }
 
                         if (stop = Analyze(newPath, prop.Value, analyzer))

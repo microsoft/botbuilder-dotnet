@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.QnA/Schemas/Microsoft.QnAMakerRecognizer.schema
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IRecognizer)",
     "title": "QnAMaker recognizer",
+=======
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IRecognizer)",
+    "title": "QnAMaker Recognizer",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Recognizers/Microsoft.QnAMakerRecognizer.schema
     "description": "Recognizer for generating QnAMatch intents from a KB.",
     "type": "object",
     "properties": {
@@ -18,7 +24,11 @@
         },
         "endpointKey": {
             "$ref": "schema:#/definitions/stringExpression",
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.QnA/Schemas/Microsoft.QnAMakerRecognizer.schema
             "title": "Endpoint key",
+=======
+            "title": "Endpoint Key",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Recognizers/Microsoft.QnAMakerRecognizer.schema
             "description": "Endpoint key for the QnA Maker KB.",
             "default": "settings.qna.endpointkey"
         },
@@ -39,7 +49,11 @@
         },
         "strictFilters": {
             "$ref": "schema:#/definitions/arrayExpression",
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.QnA/Schemas/Microsoft.QnAMakerRecognizer.schema
             "title": "Strict filters",
+=======
+            "title": "Strict Filters",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Recognizers/Microsoft.QnAMakerRecognizer.schema
             "description": "Metadata filters to use when calling the QnA Maker KB.",
             "items": {
                 "type": "object",
@@ -77,7 +91,11 @@
             ]
         },
         "rankerType": {
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.QnA/Schemas/Microsoft.QnAMakerRecognizer.schema
             "title": "Ranker type",
+=======
+            "title": "Ranker Type",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Recognizers/Microsoft.QnAMakerRecognizer.schema
             "description": "Type of Ranker.",
             "oneOf": [
                 {
@@ -98,7 +116,11 @@
         },
         "includeDialogNameInMetadata": {
             "$ref": "schema:#/definitions/booleanExpression",
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.QnA/Schemas/Microsoft.QnAMakerRecognizer.schema
             "title": "Include dialog name",
+=======
+            "title": "Include Dialog Name",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Recognizers/Microsoft.QnAMakerRecognizer.schema
             "description": "When set to false, the dialog name will not be passed to QnAMaker. (default) is true",
             "default": true,
             "examples": [

@@ -3,6 +3,10 @@
 
 using System;
 using System.Linq;
+<<<<<<< HEAD
+=======
+using System.Net;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +20,10 @@ using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.DialogSkillBot.CognitiveModels;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+<<<<<<< HEAD
+=======
+using Newtonsoft.Json.Linq;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
 namespace Microsoft.BotBuilderSamples.DialogSkillBot.Dialogs
 {
@@ -86,6 +94,12 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot.Dialogs
                 case ActivityTypes.Message:
                     return await OnMessageActivityAsync(stepContext, cancellationToken);
 
+<<<<<<< HEAD
+=======
+                case ActivityTypes.Invoke:
+                    return await OnInvokeActivityAsync(stepContext, cancellationToken);
+
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 default:
                     // We didn't get an activity type we can handle.
                     await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Unrecognized ActivityType: \"{stepContext.Context.Activity.Type}\".", inputHint: InputHints.IgnoringInput), cancellationToken);
@@ -169,6 +183,35 @@ namespace Microsoft.BotBuilderSamples.DialogSkillBot.Dialogs
 
             return new DialogTurnResult(DialogTurnStatus.Complete);
         }
+<<<<<<< HEAD
+=======
+        
+        private async Task<DialogTurnResult> OnInvokeActivityAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var activity = stepContext.Context.Activity;
+            await stepContext.Context.TraceActivityAsync($"{GetType().Name}.OnMessageActivityAsync()", label: $"Text: \"{activity.Text}\". Value: {GetObjectAsJsonString(activity.Value)}", cancellationToken: cancellationToken);
+
+            // Resolve what to execute based on the invoke activity name.
+            switch (activity.Name)
+            {
+                case "InvokeForAStartTest":
+                    await stepContext.Context.SendActivityAsync("Maybe here I would start a dialog.", cancellationToken: cancellationToken);
+                    var invokeResponseNoEoc = new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = JObject.Parse("{ \"origin\": \"New York\", \"destination\": \"Seattle\"}") };
+                    await stepContext.Context.SendActivityAsync(new Activity { Value = invokeResponseNoEoc, Type = ActivityTypesEx.InvokeResponse }, cancellationToken).ConfigureAwait(false);
+                    return EndOfTurn;
+
+                case "InvokeWithEoc":
+                    var invokeResponse = new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = JObject.Parse("{ \"origin\": \"New York\", \"destination\": \"Seattle\"}") };
+                    await stepContext.Context.SendActivityAsync(new Activity { Value = invokeResponse, Type = ActivityTypesEx.InvokeResponse }, cancellationToken).ConfigureAwait(false);
+                    return new DialogTurnResult(DialogTurnStatus.Complete);
+
+                default:
+                    // We didn't get an event name we can handle.
+                    await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Unrecognized InvokeName: \"{activity.Name}\".", inputHint: InputHints.IgnoringInput), cancellationToken);
+                    return new DialogTurnResult(DialogTurnStatus.Complete);
+            }
+        }
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         private async Task<DialogTurnResult> BeginGetWeather(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {

@@ -11,10 +11,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+<<<<<<< HEAD
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Observers;
+=======
+using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -35,6 +40,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<Resource> changedResources = new ConcurrentBag<Resource>();
         private bool typesLoaded = false;
+<<<<<<< HEAD
+=======
+
+        // To detect redundant calls to dispose
+        private bool _disposed;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
@@ -153,7 +164,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="resource">resource to bind to.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>task which will resolve to created type.</returns>
+<<<<<<< HEAD
         public async Task<T> LoadTypeAsync<T>(Resource resource, CancellationToken cancellationToken = default)
+=======
+#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat)
+        public async Task<T> LoadTypeAsync<T>(Resource resource, CancellationToken cancellationToken = default)
+#pragma warning restore CA1801 // Review unused parameters
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         {
             RegisterComponentTypes();
 
@@ -166,7 +183,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             try
             {
                 var sourceContext = new SourceContext();
+<<<<<<< HEAD
                 var (json, range) = await ReadTokenRangeAsync(resource, sourceContext, cancellationToken).ConfigureAwait(false);
+=======
+                var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 using (new SourceScope(sourceContext, range))
                 {
                     var result = Load<T>(json, sourceContext);
@@ -345,13 +366,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         public void Dispose()
         {
-            foreach (var resource in this.resourceProviders)
-            {
-                if (resource is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -371,7 +387,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="sourceContext">source context to build debugger source map.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>resolved object the reference refers to.</returns>
+<<<<<<< HEAD
         public async Task<JToken> ResolveRefAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
+=======
+#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat)
+        public async Task<JToken> ResolveRefAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
+#pragma warning restore CA1801 // Review unused parameters
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         {
             var refTarget = GetRefTarget(refToken);
 
@@ -390,7 +412,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
+<<<<<<< HEAD
             var (json, range) = await ReadTokenRangeAsync(resource, sourceContext, cancellationToken).ConfigureAwait(false);
+=======
+            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
             foreach (JProperty prop in refToken.Children<JProperty>())
             {
@@ -424,6 +450,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return json;
         }
 
+<<<<<<< HEAD
         protected virtual void OnChanged(Resource[] resources)
         {
             Changed?.Invoke(this, resources);
@@ -437,6 +464,53 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 loader = new DefaultLoader();
             }
 
+=======
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                foreach (var resource in this.resourceProviders)
+                {
+                    if (resource is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+
+                cancelReloadToken.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        protected virtual void OnChanged(Resource[] resources)
+        {
+            Changed?.Invoke(this, resources);
+        }
+
+        private void RegisterTypeInternal(string kind, Type type, ICustomDeserializer loader = null)
+        {
+            // Default loader if none specified
+            if (loader == null)
+            {
+                loader = new DefaultLoader();
+            }
+
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             kindToType[kind] = type;
 
             if (!typeToKinds.TryGetValue(type, out List<string> kinds))
@@ -524,7 +598,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return token.ToObject<T>(serializer);
         }
 
+<<<<<<< HEAD
         private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, CancellationToken cancellationToken = default)
+=======
+        private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext)
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         {
             var text = await resource.ReadTextAsync().ConfigureAwait(false);
             using (var readerText = new StringReader(text))
@@ -554,6 +632,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 {
                     cancelReloadToken.Cancel();
                     cancelReloadToken = new CancellationTokenSource();
+#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler (this code looks problematic but excluding the rule for now, we need to analyze threading and re-entrance in more detail before trying to change it).
                     Task.Delay(1000, cancelReloadToken.Token)
                         .ContinueWith(t =>
                         {
@@ -566,6 +645,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                             changedResources = new ConcurrentBag<Resource>();
                             this.OnChanged(changed);
                         }).ContinueWith(t => t.Status);
+#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
                 }
             }
         }

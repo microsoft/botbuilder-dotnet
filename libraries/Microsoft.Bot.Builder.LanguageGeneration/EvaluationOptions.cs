@@ -60,7 +60,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         var value = option.Substring(index + 1).Trim();
                         if (key == strictModeKey)
                         {
+<<<<<<< HEAD
                             if (value.ToLower() == "true")
+=======
+                            if (value.ToLowerInvariant() == "true")
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                             {
                                 StrictMode = true;
                             }
@@ -71,7 +75,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         }
                         else if (key == lineBreakKey)
                         {
+<<<<<<< HEAD
                             LineBreakStyle = value.ToLower() == LGLineBreakStyle.Markdown.ToString().ToLower() ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
+=======
+                            LineBreakStyle = value.ToLowerInvariant() == LGLineBreakStyle.Markdown.ToString().ToLowerInvariant() ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                         }
                     }
                 }

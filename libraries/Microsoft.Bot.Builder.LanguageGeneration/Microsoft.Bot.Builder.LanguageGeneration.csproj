@@ -28,7 +28,11 @@
     <!-- SX1309: FieldNamesShouldBeginWithUnderscores should be fixed as part of https://github.com/microsoft/botframework-sdk/issues/5933 -->
     <NoWarn>$(NoWarn);CS1591;SX1309</NoWarn>
   </PropertyGroup>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
   <ItemGroup>
     <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
       <PrivateAssets>all</PrivateAssets>
@@ -40,6 +44,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+<<<<<<< HEAD
+=======
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

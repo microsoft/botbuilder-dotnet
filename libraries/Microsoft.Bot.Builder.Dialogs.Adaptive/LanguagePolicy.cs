@@ -37,17 +37,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 defaultLanguages = new string[] { string.Empty };
             }
 
+<<<<<<< HEAD
             var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLower()).ToList();
+=======
+            var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLowerInvariant()).ToList();
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             var policy = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
             foreach (var language in cultureCodes.Distinct())
             {
-                var lang = language.ToLower();
+                var lang = language.ToLowerInvariant();
                 var fallback = new List<string>();
                 while (!string.IsNullOrEmpty(lang))
                 {
                     fallback.Add(lang);
 
-                    var i = lang.LastIndexOf("-");
+                    var i = lang.LastIndexOf("-", StringComparison.Ordinal);
                     if (i > 0)
                     {
                         lang = lang.Substring(0, i);
@@ -58,7 +62,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     }
                 }
 
+<<<<<<< HEAD
                 if (language == string.Empty)
+=======
+                if (language.Length == 0)
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 {
                     // here we set the default
                     fallback.AddRange(defaultLanguages);

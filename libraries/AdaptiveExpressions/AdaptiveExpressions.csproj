@@ -19,9 +19,17 @@
   <PropertyGroup>
     <!-- These documentation warnings excludes should be removed as part of https://github.com/microsoft/botbuilder-dotnet/issues/4052 -->
     <!-- SX1309: FieldNamesShouldBeginWithUnderscores should be fixed as part of https://github.com/microsoft/botframework-sdk/issues/5933 -->
+<<<<<<< HEAD
     <NoWarn>$(NoWarn);CS1591;SX1309</NoWarn>
   </PropertyGroup>
   
+=======
+    <!-- CA2225: Operator overloads have named alternates, excluding for now, we should address this if we want to support other platforms than C#
+    see https://docs.microsoft.com/en-us/visualstudio/code-quality/ca2225?view=vs-2019 .-->
+    <NoWarn>$(NoWarn);CS1591;SX1309;CA2225</NoWarn>
+  </PropertyGroup>
+
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>AdaptiveExpressions</PackageId>
@@ -47,6 +55,10 @@
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.Recognizers.Text.DataTypes.TimexExpression" Version="1.2.9" />

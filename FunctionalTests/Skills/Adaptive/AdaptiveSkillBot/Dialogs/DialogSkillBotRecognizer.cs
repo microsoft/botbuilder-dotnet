@@ -28,7 +28,11 @@ namespace Microsoft.BotBuilderSamples.AdaptiveSkillBot.Dialogs
             }
         }
 
+<<<<<<< HEAD
         // Returns true if luis is configured in the appsettings.json and initialized.
+=======
+        // Returns true if LUIS is configured in the appsettings.json and initialized.
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         public virtual bool IsConfigured => _recognizer != null;
 
         public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)

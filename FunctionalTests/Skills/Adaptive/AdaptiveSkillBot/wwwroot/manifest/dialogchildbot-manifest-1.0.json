@@ -3,7 +3,11 @@
   "$id": "DialogSkillBot",
   "name": "Skill bot with dialogs",
   "version": "1.0",
+<<<<<<< HEAD
   "description": "This is a sample skill definition for multiple activity types",
+=======
+  "description": "This is a sample skill definition for multiple activity types.",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
   "publisherName": "Microsoft",
   "privacyUrl": "https://dialogskillbot.contoso.com/privacy.html",
   "copyright": "Copyright (c) Microsoft Corporation. All rights reserved.",
@@ -19,14 +23,24 @@
     {
       "name": "default",
       "protocol": "BotFrameworkV3",
+<<<<<<< HEAD
       "description": "Default endpoint for the skill",
       "endpointUrl": "https://ggdialogskillbot.azurewebsites.net/api/messages",
       "msAppId": "f3fe8762-e50c-4688-b202-a040f522d916"
+=======
+      "description": "Default endpoint for the skill.",
+      "endpointUrl": "https://dialogskillbot.contoso.com/api/messages",
+      "msAppId": "00000000-0000-0000-0000-000000000000"
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
     }
   ],
   "activities": {
     "bookFlight": {
+<<<<<<< HEAD
       "description": "Books a flight (multi turn)",
+=======
+      "description": "Books a flight (multi turn).",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
       "type": "event",
       "name": "BookFlight",
       "value": {
@@ -36,9 +50,28 @@
         "$ref": "#/definitions/bookingInfo"
       }
     },
+<<<<<<< HEAD
     "getWeather": {
       "description": "Retrieves and returns the weather for the user's location (single turn, invoke)",
       "type": "invoke",
+=======
+    "oauthTest": {
+      "description": "Tests the OAuth prompt in a skill",
+      "type": "event",
+      "name": "OAuthTest"
+    },
+<<<<<<<< HEAD:FunctionalTests/Skills/Adaptive/AdaptiveSkillBot/wwwroot/manifest/dialogchildbot-manifest-1.0.json
+========
+    "dialogEchoSkillBot": {
+      "description": "Calls the Echo Skill Bot from a skill",
+      "type": "event",
+      "name": "EchoSkillBot"
+    },
+>>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:FunctionalTests/Skills/DialogToDialog/DialogSkillBot/wwwroot/manifest/dialogchildbot-manifest-1.0.json
+    "getWeather": {
+      "description": "Retrieves and returns the weather for the user's location.",
+      "type": "event",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
       "name": "GetWeather",
       "value": {
         "$ref": "#/definitions/location"
@@ -49,13 +82,18 @@
     },
     "passthroughMessage": {
       "type": "message",
+<<<<<<< HEAD
       "description": "Receives the user's utterance and attempts to resolve it using the skill's LUIS models",
+=======
+      "description": "Receives the user's utterance and attempts to resolve it using the skill's LUIS models.",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
       "value": {
         "type": "object"
       }
     }
   },
   "definitions": {
+<<<<<<< HEAD
     "localeValue": {
       "type": "object",
       "properties": {
@@ -65,6 +103,8 @@
         }
       }
     },
+=======
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
     "bookingInfo": {
       "type": "object",
       "required": [
@@ -73,6 +113,7 @@
       "properties": {
         "origin": {
           "type": "string",
+<<<<<<< HEAD
           "description": "this is the origin city for the flight"
         },
         "destination": {
@@ -82,6 +123,17 @@
         "travelDate": {
           "type": "string",
           "description": "The date for the flight in YYYY-MM-DD format"
+=======
+          "description": "This is the origin city for the flight."
+        },
+        "destination": {
+          "type": "string",
+          "description": "This is the destination city for the flight."
+        },
+        "travelDate": {
+          "type": "string",
+          "description": "The date for the flight in YYYY-MM-DD format."
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         }
       }
     },
@@ -96,7 +148,11 @@
     },
     "location": {
       "type": "object",
+<<<<<<< HEAD
       "description": "Location metadata",
+=======
+      "description": "Location metadata.",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
       "properties": {
         "latitude": {
           "type": "number",

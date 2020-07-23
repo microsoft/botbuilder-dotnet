@@ -2,6 +2,10 @@
 // Licensed under the MIT license.
 
 using System.Collections.Generic;
+<<<<<<< HEAD
+=======
+using System.Globalization;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -97,6 +101,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var wrapper = new LuisRecognizer(RecognizerOptions(dialogContext), HttpClient);
 
             // temp clone of turn context because luisrecognizer always pulls activity from turn context.
+<<<<<<< HEAD
             var tempContext = new TurnContext(dialogContext.Context.Adapter, activity);
             foreach (var keyValue in dialogContext.Context.TurnState)
             {
@@ -106,6 +111,20 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var result = await wrapper.RecognizeAsync(tempContext, cancellationToken).ConfigureAwait(false);
 
             this.TrackRecognizerResult(dialogContext, "LuisResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
+=======
+            RecognizerResult result;
+            using (var tempContext = new TurnContext(dialogContext.Context.Adapter, activity))
+            {
+                foreach (var keyValue in dialogContext.Context.TurnState)
+                {
+                    tempContext.TurnState[keyValue.Key] = keyValue.Value;
+                }
+
+                result = await wrapper.RecognizeAsync(tempContext, cancellationToken).ConfigureAwait(false);
+            }
+
+            TrackRecognizerResult(dialogContext, "LuisResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
             return result;
         }
@@ -159,9 +178,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 { LuisTelemetryConstants.ApplicationIdProperty, applicationId },
                 { LuisTelemetryConstants.IntentProperty, topTwoIntents?[0].Key ?? string.Empty },
+<<<<<<< HEAD
                 { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2") ?? "0.00" },
                 { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
                 { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2") ?? "0.00" : "0.00" },
+=======
+                { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2", CultureInfo.InvariantCulture) ?? "0.00" },
+                { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Length > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
+                { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Length > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2", CultureInfo.InvariantCulture) ?? "0.00" : "0.00" },
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 { LuisTelemetryConstants.FromIdProperty, dc.Context.Activity.From.Id },
             };
 

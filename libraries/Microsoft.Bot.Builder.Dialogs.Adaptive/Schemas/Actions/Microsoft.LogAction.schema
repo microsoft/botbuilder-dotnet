@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+=======
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
     "$role": "implements(Microsoft.IDialog)",
     "title": "Log to console",
     "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
@@ -34,7 +38,11 @@
         },
         "traceActivity": {
             "$ref": "schema:#/definitions/booleanExpression",
+<<<<<<< HEAD
             "title": "Send trace activity",
+=======
+            "title": "Send Trace Activity",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator)."
         }
     }

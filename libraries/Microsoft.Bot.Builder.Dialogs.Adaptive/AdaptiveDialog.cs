@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -37,11 +38,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private const string InstanceKey = "$instance";
         private const string NoneIntentKey = "None";
         private const string OperationsKey = "$operations";
+<<<<<<< HEAD
         private const string PROPERTYNameKey = "PROPERTYName";
         private const string UtteranceKey = "utterance";
 
         // unique key for language generator turn property, (TURN STATE ONLY)
         private readonly string generatorTurnKey = Guid.NewGuid().ToString();
+=======
+        private const string PropertyNameKey = "PROPERTYName";
+        private const string UtteranceKey = "utterance";
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         // unique key for change tracking of the turn state (TURN STATE ONLY)
         private readonly string changeTurnKey = Guid.NewGuid().ToString();
@@ -86,7 +92,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Trigger handlers to respond to conditions which modifying the executing plan. 
         /// </value>
         [JsonProperty("triggers")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public virtual List<OnCondition> Triggers { get; set; } = new List<OnCondition>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets a value indicating whether to end the dialog when there are no actions to execute.
@@ -125,7 +133,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <value>JSON Schema for the dialog.</value>
         [JsonProperty("schema")]
+#pragma warning disable CA2227 // Collection properties should be read only
         public JObject Schema
+#pragma warning restore CA2227 // Collection properties should be read only
         {
             get => dialogSchema?.Schema;
             set
@@ -389,7 +399,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             actionContext.State.SetValue(DialogPath.EventCounter, ++count);
 
             // Look for triggered evt
+<<<<<<< HEAD
             var handled = await QueueFirstMatchAsync(actionContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
+=======
+            var handled = await QueueFirstMatchAsync(actionContext, dialogEvent, cancellationToken).ConfigureAwait(false);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
             if (handled)
             {
@@ -638,7 +652,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+<<<<<<< HEAD
         protected Task<bool> EndCurrentActionAsync(ActionContext actionContext, CancellationToken cancellationToken = default)
+=======
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the cancellationToken parameter withoutt breaking binary compat).
+        protected Task<bool> EndCurrentActionAsync(ActionContext actionContext, CancellationToken cancellationToken = default)
+#pragma warning restore CA1801 // Review unused parameters
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         {
             if (actionContext.Actions.Any())
             {
@@ -661,7 +681,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // Still processing assignments
                     return await ContinueActionsAsync(actionContext, null, cancellationToken).ConfigureAwait(false);
                 }
+<<<<<<< HEAD
                 else if (ShouldEnd(actionContext))
+=======
+                else if (ShouldEnd())
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 {
                     actionContext.State.TryGetValue<object>(DefaultResultProperty, out var result);
                     return await actionContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
@@ -755,7 +779,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                             if (trigger.Id == null)
                             {
+<<<<<<< HEAD
                                 trigger.Id = id++.ToString();
+=======
+                                trigger.Id = id++.ToString(CultureInfo.InvariantCulture);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                             }
                         }
 
@@ -833,12 +861,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return dc.Stack.Count > 0 ? $"{dc.Stack.Count}:{dc.ActiveDialog.Id}" : string.Empty;
         }
 
+<<<<<<< HEAD
         private async Task<bool> QueueFirstMatchAsync(ActionContext actionContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken)
+=======
+        private async Task<bool> QueueFirstMatchAsync(ActionContext actionContext, DialogEvent dialogEvent, CancellationToken cancellationToken)
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         {
             var selection = await Selector.SelectAsync(actionContext, cancellationToken).ConfigureAwait(false);
             if (selection.Any())
             {
+<<<<<<< HEAD
                 var condition = selection.First();
+=======
+                var condition = selection[0];
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 await actionContext.DebuggerStepAsync(condition, dialogEvent, cancellationToken).ConfigureAwait(false);
                 Trace.TraceInformation($"Executing Dialog: {Id} Rule[{condition.Id}]: {condition.GetType().Name}: {condition.GetExpression()}");
 
@@ -863,7 +899,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return false;
         }
 
+<<<<<<< HEAD
         private bool ShouldEnd(DialogContext dc)
+=======
+        private bool ShouldEnd()
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         {
             return AutoEndDialog;
         }
@@ -966,13 +1006,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 // Find PROPERTYName so we can apply it to other entities
                                 foreach (var child in composite)
                                 {
+<<<<<<< HEAD
                                     if (child.Name == PROPERTYNameKey)
+=======
+                                    if (child.Name == PropertyNameKey)
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                                     {
                                         // Expand PROPERTYName and fold single match into siblings span
                                         // TODO: Would we ever need to handle multiple?
                                         var infos = new Dictionary<string, List<EntityInfo>>();
                                         ExpandEntity(child, childInstance, name, null, turn, text, infos);
+<<<<<<< HEAD
                                         pname = infos[PROPERTYNameKey].First();
+=======
+                                        pname = infos[PropertyNameKey].First();
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                                         break;
                                     }
                                 }
@@ -981,7 +1029,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             foreach (var child in composite)
                             {
                                 // Drop PROPERTYName if we are applying it to other entities
+<<<<<<< HEAD
                                 if (pname == null || child.Name != PROPERTYNameKey)
+=======
+                                if (pname == null || child.Name != PropertyNameKey)
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                                 {
                                     ExpandEntity(child, childInstance, name, pname, turn, text, entityToInfo);
                                 }
@@ -1024,10 +1076,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                     return val;
                 });
-                for (var i = 0; i < infos.Count(); ++i)
+                for (var i = 0; i < infos.Count; ++i)
                 {
                     var current = infos[i];
-                    for (var j = i + 1; j < infos.Count();)
+                    for (var j = i + 1; j < infos.Count;)
                     {
                         var alt = infos[j];
                         if (current.Covers(alt))
@@ -1105,7 +1157,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     }
                     else
                     {
+<<<<<<< HEAD
                         if (op != null && name == PROPERTYNameKey)
+=======
+                        if (op != null && name == PropertyNameKey)
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                         {
                             foreach (var property in val as JArray)
                             {
@@ -1248,7 +1304,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
                 else
                 {
+<<<<<<< HEAD
                     result = new List<string> { PROPERTYNameKey };
+=======
+                    result = new List<string> { PropertyNameKey };
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 }
             }
             else
@@ -1328,7 +1388,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var assignments = new EntityAssignments();
             if (!actionContext.State.TryGetValue<string[]>(DialogPath.ExpectedProperties, out var expected))
             {
+<<<<<<< HEAD
                 expected = new string[0];
+=======
+                expected = Array.Empty<string>();
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             }
 
             // default op from the last Ask action.
@@ -1373,7 +1437,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     existing.Dequeue(actionContext);
                     lastEvent = null;
                 }
+<<<<<<< HEAD
                 else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Operation == null && candidate.Entity.Name == PROPERTYNameKey)
+=======
+                else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Operation == null && candidate.Entity.Name == PropertyNameKey)
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 {
                     // NOTE: This assumes the existence of an entity named PROPERTYName for resolving this ambiguity
                     choices = existing.NextAssignment().Alternatives.ToList();
@@ -1425,7 +1493,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 existing.Dequeue(actionContext);
             }
 
+<<<<<<< HEAD
             var operations = new EntityAssignmentComparer(dialogSchema.Schema[OperationsKey]?.ToObject<string[]>() ?? new string[0]);
+=======
+            var operations = new EntityAssignmentComparer(dialogSchema.Schema[OperationsKey]?.ToObject<string[]>() ?? Array.Empty<string>());
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             MergeAssignments(assignments, existing, operations);
             return usedEntities.ToList();
         }
@@ -1441,7 +1513,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 foreach (var bAlt in b.Alternatives)
                 {
+<<<<<<< HEAD
                     if (aAlt.Property == bAlt.Property && aAlt.Entity.Name != PROPERTYNameKey && bAlt.Entity.Name != PROPERTYNameKey)
+=======
+                    if (aAlt.Property == bAlt.Property && aAlt.Entity.Name != PropertyNameKey && bAlt.Entity.Name != PropertyNameKey)
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                     {
                         var prop = dialogSchema.PathToSchema(aAlt.Property);
                         if (!prop.IsArray)

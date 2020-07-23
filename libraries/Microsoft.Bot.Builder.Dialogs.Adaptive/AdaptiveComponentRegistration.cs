@@ -99,6 +99,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<GetActivityMembers>(GetActivityMembers.Kind);
             yield return new DeclarativeType<GetConversationMembers>(GetConversationMembers.Kind);
             yield return new DeclarativeType<SignOutUser>(SignOutUser.Kind);
+<<<<<<< HEAD
+=======
+            yield return new DeclarativeType<TelemetryTrackEventAction>(TelemetryTrackEventAction.Kind);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
             // Inputs
             yield return new DeclarativeType<AttachmentInput>(AttachmentInput.Kind);

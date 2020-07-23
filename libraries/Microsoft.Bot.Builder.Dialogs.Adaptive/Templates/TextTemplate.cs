@@ -38,10 +38,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         {
             if (string.IsNullOrEmpty(this.Template))
             {
-                throw new ArgumentNullException(nameof(this.Template));
+                throw new InvalidOperationException($"The {nameof(this.Template)} property can't be empty.");
             }
 
+<<<<<<< HEAD
             LanguageGenerator languageGenerator = dialogContext.Services.Get<LanguageGenerator>();
+=======
+            var languageGenerator = dialogContext.Services.Get<LanguageGenerator>();
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             if (languageGenerator != null)
             {
                 var result = await languageGenerator.GenerateAsync(

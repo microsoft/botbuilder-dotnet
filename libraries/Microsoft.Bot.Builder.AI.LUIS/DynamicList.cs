@@ -35,6 +35,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// The lists to append on the extended list entity.
         /// </value>
         [JsonProperty(PropertyName = "list")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<ListElement> List { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

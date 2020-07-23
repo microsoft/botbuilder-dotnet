@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public QnARequestContext Context { get; set; }
 
         /// <summary>
-        /// Gets or sets QnA Id of the current question asked (if avaliable).
+        /// Gets or sets QnA Id of the current question asked (if availble).
         /// </summary>
         /// <value>
         /// Id of the current question asked.
@@ -77,9 +77,24 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// An array of <see cref="Metadata"/>.
         /// </value>
         [JsonProperty("strictFilters")]
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public Metadata[] StrictFilters { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
+        /// Gets or sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
+        /// </summary>
+        /// <value>
+        /// An array of <see cref="Metadata"/>.
+        /// </value>
+        [Obsolete("This property is no longer used and will be ignored")]
+        [JsonIgnore]
+#pragma warning disable CA1819 // Properties should not return arrays (property is obsolete, we won't change it)
+        public Metadata[] MetadataBoost { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
+
+        /// <summary>
+<<<<<<< HEAD
         /// Gets or sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
         /// </summary>
         /// <value>
@@ -90,6 +105,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public Metadata[] MetadataBoost { get; set; }
 
         /// <summary>
+=======
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         /// Gets or sets a value indicating whether to call test or prod environment of knowledge base to be called. 
         /// </summary>
         /// <value>

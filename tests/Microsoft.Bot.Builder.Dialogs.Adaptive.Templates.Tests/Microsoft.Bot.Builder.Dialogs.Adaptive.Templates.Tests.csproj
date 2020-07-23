@@ -33,6 +33,12 @@
     
   <ItemGroup>
     <Content Include="lg\inject.lg">
+<<<<<<< HEAD
+=======
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lg\NormalStructuredLG.lg">
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="lg\NormalStructuredLG.lg">
@@ -41,12 +47,15 @@
     <Content Include="lg\DignosticStructuredLG.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+<<<<<<< HEAD
     <Content Include="adaptiveCard.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="lg\herocard.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+=======
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
   </ItemGroup>
     
   <ItemGroup>

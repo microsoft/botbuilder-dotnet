@@ -16,6 +16,10 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+<<<<<<< HEAD
+=======
+using Moq;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
@@ -548,5 +552,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("done")
                 .StartTestAsync();
         }
+<<<<<<< HEAD
+=======
+
+        [TestMethod]
+        public async Task Action_TelemetryTrackEvent()
+        {
+            var mockTelemetryClient = new Mock<IBotTelemetryClient>();
+
+            var testAdapter = new TestAdapter()
+                .UseStorage(new MemoryStorage())
+                .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
+
+            var rootDialog = new AdaptiveDialog
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new TelemetryTrackEventAction("testEvent")
+                            {
+                                Properties =
+                                    new Dictionary<string, AdaptiveExpressions.Properties.
+                                        StringExpression>()
+                                    {
+                                        { "prop1", "value1" }, 
+                                        { "prop2", "value2" }
+                                    }
+                            },
+                        }
+                    }
+                },
+                TelemetryClient = mockTelemetryClient.Object
+            };
+
+            var dm = new DialogManager(rootDialog)
+                .UseResourceExplorer(new ResourceExplorer())
+                .UseLanguageGeneration();
+            
+            await new TestFlow((TestAdapter)testAdapter, dm.OnTurnAsync)
+                .SendConversationUpdate()
+                .StartTestAsync();
+
+            var testEventInvocation = mockTelemetryClient.Invocations.FirstOrDefault(i => i.Arguments[0]?.ToString() == "testEvent");
+
+            Assert.IsNotNull(testEventInvocation);
+            Assert.IsTrue(((Dictionary<string, string>)testEventInvocation.Arguments[1]).Count == 2);
+            Assert.AreEqual(((Dictionary<string, string>)testEventInvocation.Arguments[1])["prop1"], "value1");
+            Assert.AreEqual(((Dictionary<string, string>)testEventInvocation.Arguments[1])["prop2"], "value2");
+        }
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
     }
 }

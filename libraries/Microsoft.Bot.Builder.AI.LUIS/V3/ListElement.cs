@@ -46,7 +46,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// The synonyms of the canonical form.
         /// </value>
         [JsonProperty(PropertyName = "synonyms")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<string> Synonyms { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Validate the object.

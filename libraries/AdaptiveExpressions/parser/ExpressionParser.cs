@@ -129,7 +129,7 @@ namespace AdaptiveExpressions
             {
                 Expression result;
                 var symbol = context.GetText();
-                var normalized = symbol.ToLower();
+                var normalized = symbol.ToLowerInvariant();
                 if (normalized == "false")
                 {
                     result = Expression.ConstantExpression(false);
@@ -198,11 +198,19 @@ namespace AdaptiveExpressions
             public override Expression VisitStringAtom([NotNull] ExpressionAntlrParser.StringAtomContext context)
             {
                 var text = context.GetText();
+<<<<<<< HEAD:libraries/AdaptiveExpressions/parser/ExpressionParser.cs
                 if (text.StartsWith("'") && text.EndsWith("'"))
                 {
                     text = text.Substring(1, text.Length - 2).Replace("\\'", "'");
                 }
                 else if (text.StartsWith("\"") && text.EndsWith("\""))
+=======
+                if (text.StartsWith("'", StringComparison.Ordinal) && text.EndsWith("'", StringComparison.Ordinal))
+                {
+                    text = text.Substring(1, text.Length - 2).Replace("\\'", "'");
+                }
+                else if (text.StartsWith("\"", StringComparison.Ordinal) && text.EndsWith("\"", StringComparison.Ordinal))
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/AdaptiveExpressions/parser/ExpressionEngine.cs
                 {
                     text = text.Substring(1, text.Length - 2).Replace("\\\"", "\"");
                 }
@@ -326,7 +334,7 @@ namespace AdaptiveExpressions
             {
                 var result = expression.Trim().TrimStart('$').Trim();
 
-                if (result.StartsWith("{") && result.EndsWith("}"))
+                if (result.StartsWith("{", StringComparison.Ordinal) && result.EndsWith("}", StringComparison.Ordinal))
                 {
                     result = result.Substring(1, result.Length - 2);
                 }

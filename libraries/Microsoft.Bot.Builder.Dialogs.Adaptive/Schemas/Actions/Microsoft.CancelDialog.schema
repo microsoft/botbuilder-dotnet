@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+=======
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
     "$role": "implements(Microsoft.IDialog)",
     "title": "Cancel all dialogs",
     "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
@@ -20,7 +24,11 @@
         },
         "activityProcessed": {
             "$ref": "schema:#/definitions/booleanExpression",
+<<<<<<< HEAD
             "title": "Activity processed",
+=======
+            "title": "Activity Processed",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             "description": "When set to false, the caller dialog is told it should process the current activity.",
             "default": true
         },

@@ -35,6 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     {
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.Script";
+<<<<<<< HEAD
 
         private static JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
         {
@@ -44,6 +45,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         };
 
         private static IConfiguration defaultConfiguration = new ConfigurationBuilder().Build();
+=======
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestScript"/> class.
@@ -89,40 +92,65 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public string Locale { get; set; } = "en-us";
 
         /// <summary>
+<<<<<<< HEAD
         /// Gets or sets the mock data for Microsoft.HttpRequest.
+=======
+        /// Gets the mock data for Microsoft.HttpRequest.
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         /// </summary>
         /// <value>
         /// A list of mocks. In first match first use order.
         /// </value>
         [JsonProperty("httpRequestMocks")]
+<<<<<<< HEAD
         public List<HttpRequestMock> HttpRequestMocks { get; set; } = new List<HttpRequestMock>();
 
         /// <summary>
         /// Gets or sets the mock data for Microsoft.OAuthInput.
+=======
+        public List<HttpRequestMock> HttpRequestMocks { get; } = new List<HttpRequestMock>();
+
+        /// <summary>
+        /// Gets the mock data for Microsoft.OAuthInput.
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         /// </summary>
         /// <value>
         /// A list of mocks.
         /// </value>
         [JsonProperty("userTokenMocks")]
+<<<<<<< HEAD
         public List<UserTokenMock> UserTokenMocks { get; set; } = new List<UserTokenMock>();
 
         /// <summary>
         /// Gets or sets the mock data for properties.
+=======
+        public List<UserTokenMock> UserTokenMocks { get; } = new List<UserTokenMock>();
+
+        /// <summary>
+        /// Gets the mock data for properties.
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         /// </summary>
         /// <value>
         /// A list of property mocks. In first match first use order.
         /// </value>
         [JsonProperty("propertyMocks")]
+<<<<<<< HEAD
         public List<PropertyMock> PropertyMocks { get; set; } = new List<PropertyMock>();
 
         /// <summary>
         /// Gets or sets the test script actions.
+=======
+        public List<PropertyMock> PropertyMocks { get; } = new List<PropertyMock>();
+
+        /// <summary>
+        /// Gets the test script actions.
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         /// </summary>
         /// <value>
         /// The sequence of test actions to perform to validate the dialog behavior.
         /// </value>
         [JsonProperty("script")]
-        public List<TestAction> Script { get; set; } = new List<TestAction>();
+        public List<TestAction> Script { get; } = new List<TestAction>();
 
         /// <summary>
         /// Gets or sets a value indicating whether trace activities should be passed to the test script.
@@ -137,7 +165,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <param name="resourceExplorer">Resource explorer to use.</param>
         /// <param name="testName">Name of test.</param>
         /// <returns>Test adapter.</returns>
+#pragma warning disable CA1801 // Review unused parameters (excluding for now but consider removing the resourceExplorer parameter if it is not needed)
         public TestAdapter DefaultTestAdapter(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null)
+#pragma warning restore CA1801 // Review unused parameters
         {
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
@@ -358,7 +388,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestScript AssertReplyOneOf(string[] candidates, string description = null, uint timeout = 3000, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
-            this.Script.Add(new AssertReplyOneOf(path: path, line: line) { Text = candidates.ToList<string>(), Description = description, Timeout = timeout, Exact = true });
+            var assertReplyOneOf = new AssertReplyOneOf(path: path, line: line)
+            {
+                Description = description,
+                Timeout = timeout,
+                Exact = true
+            };
+            assertReplyOneOf.Text.AddRange(candidates.ToList());
+            Script.Add(assertReplyOneOf);
             return this;
         }
 
@@ -472,7 +509,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         }
 #endif
 
+#pragma warning disable CA1812 // Internal class is apparently never used (ignoring for now but consider removing it)
         internal class IgnoreEmptyEnumerablesResolver : DefaultContractResolver
+#pragma warning restore CA1812 // Internal class is apparently never used
         {
             protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
             {

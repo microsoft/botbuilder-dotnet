@@ -177,6 +177,11 @@ namespace Microsoft.Bot.Builder.Skills
                 throw new KeyNotFoundException();
             }
 
+<<<<<<< HEAD
+=======
+            ResourceResponse resourceResponse = null;
+
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
                 turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
@@ -195,13 +200,18 @@ namespace Microsoft.Bot.Builder.Skills
                         await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
                         break;
                     default:
-                        await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                        resourceResponse = await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                         break;
                 }
             });
 
             await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
+<<<<<<< HEAD
             return new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+=======
+
+            return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         }
     }
 }

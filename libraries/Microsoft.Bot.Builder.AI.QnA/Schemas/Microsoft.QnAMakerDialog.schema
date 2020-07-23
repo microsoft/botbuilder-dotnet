@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.QnA/Schemas/Microsoft.QnAMakerDialog.schema
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "QnAMaker dialog",
+=======
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "QnAMaker Dialog",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Dialogs/Microsoft.QnAMakerDialog.schema
     "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
     "type": "object",
     "additionalProperties": false,
@@ -14,7 +20,11 @@
         },
         "endpointKey": {
             "$ref": "schema:#/definitions/stringExpression",
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.QnA/Schemas/Microsoft.QnAMakerDialog.schema
             "title": "Endpoint key",
+=======
+            "title": "Endpoint Key",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Dialogs/Microsoft.QnAMakerDialog.schema
             "description": "Endpoint key for the QnA Maker KB.",
             "default": "=settings.qna.endpointkey"
         },
@@ -59,7 +69,11 @@
         },
         "strictFilters": {
             "$ref": "schema:#/definitions/arrayExpression",
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.QnA/Schemas/Microsoft.QnAMakerDialog.schema
             "title": "Strict filters",
+=======
+            "title": "Strict Filters",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Dialogs/Microsoft.QnAMakerDialog.schema
             "description": "Metadata filters to use when calling the QnA Maker KB.",
             "items": {
                 "type": "object",
@@ -95,7 +109,11 @@
         },
         "rankerType": {
             "$ref": "schema:#/definitions/stringExpression",
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.QnA/Schemas/Microsoft.QnAMakerDialog.schema
             "title": "Ranker type",
+=======
+            "title": "Ranker Type",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Dialogs/Microsoft.QnAMakerDialog.schema
             "description": "Type of Ranker.",
             "oneOf": [
                 {

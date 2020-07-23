@@ -72,6 +72,25 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+<<<<<<< HEAD
+=======
+        public async Task TestInstallationUpdateActivity()
+        {
+            // Arrange
+            var activity = new Activity { Type = ActivityTypes.InstallationUpdate };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnInstallationUpdateActivityAsync", bot.Record[0]);
+        }
+
+        [Fact]
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         public async Task TestMemberAdded1()
         {
             // Arrange
@@ -381,12 +400,166 @@ namespace Microsoft.Bot.Builder.Tests
                 Name = SignInConstants.VerifyStateOperationName,
             };
             var turnContext = new TurnContext(new TestInvokeAdapter(), activity);
+<<<<<<< HEAD
 
             // Act
             var bot = new TestActivityHandler();
             await ((IBot)bot).OnTurnAsync(turnContext);
 
             // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnSignInInvokeAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestHealthCheckAsyncOverride()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "healthCheck",
+            };
+            var turnContext = new TurnContext(new TestInvokeAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnHealthCheckAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestHealthCheckAsync()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "healthCheck"
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new ActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+
+            using (var writer = new StringWriter())
+            {
+                using (var jsonWriter = new JsonTextWriter(writer))
+                {
+                    var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+                    var serializer = JsonSerializer.Create(settings);
+
+                    serializer.Serialize(jsonWriter, ((InvokeResponse)activitiesToSend[0].Value).Body);
+                }
+
+                await writer.FlushAsync();
+
+                var obj = JObject.Parse(writer.ToString());
+
+                Assert.True(obj["healthResults"]["success"].Value<bool>());
+                Assert.Equal("Health check succeeded.", obj["healthResults"]["messages"][0].ToString());
+            }
+        }
+
+        [Fact]
+        public async Task TestHealthCheckWithConnectorAsync()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "healthCheck"
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            IConnectorClient connector = new MockConnectorClient();
+
+            turnContext.TurnState.Add(connector);
+
+            // Act
+            var bot = new ActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+
+            using (var writer = new StringWriter())
+            {
+                using (var jsonWriter = new JsonTextWriter(writer))
+                {
+                    var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+                    var serializer = JsonSerializer.Create(settings);
+
+                    serializer.Serialize(jsonWriter, ((InvokeResponse)activitiesToSend[0].Value).Body);
+                }
+
+                await writer.FlushAsync();
+
+                var obj = JObject.Parse(writer.ToString());
+
+                Assert.True(obj["healthResults"]["success"].Value<bool>());
+                Assert.Equal("awesome", obj["healthResults"]["authorization"].ToString());
+                Assert.Equal("Windows/3.1", obj["healthResults"]["user-agent"].ToString());
+                Assert.Equal("Health check succeeded.", obj["healthResults"]["messages"][0].ToString());
+            }
+        }
+
+        [Fact]
+        public async Task TestInvokeShouldNotMatchAsync()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "should.not.match",
+            };
+            var adapter = new TestInvokeAdapter();
+            var turnContext = new TurnContext(adapter, activity);
+=======
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+<<<<<<< HEAD
+            Assert.Single(bot.Record);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal(501, ((InvokeResponse)((Activity)adapter.Activity).Value).Status);
+        }
+
+        [Fact]
+=======
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
             Assert.Equal("OnSignInInvokeAsync", bot.Record[1]);
@@ -536,6 +709,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         public async Task TestEventNullNameAsync()
         {
             // Arrange
@@ -714,12 +888,13 @@ namespace Microsoft.Bot.Builder.Tests
                 return base.OnTypingActivityAsync(turnContext, cancellationToken);
             }
 
-            protected override Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+            protected override Task OnInstallationUpdateActivityAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
+                return base.OnInstallationUpdateActivityAsync(turnContext, cancellationToken);
             }
 
+<<<<<<< HEAD
             protected override Task<InvokeResponse> OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
@@ -735,11 +910,37 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.CompletedTask;
+=======
+            protected override Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task<InvokeResponse> OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                if (turnContext.Activity.Name == "some.random.invoke")
+                {
+                    return Task.FromResult(CreateInvokeResponse());
+                }
+
+                return base.OnInvokeActivityAsync(turnContext, cancellationToken);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             }
 
             protected override Task<HealthCheckResponse> OnHealthCheckAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
+<<<<<<< HEAD
+=======
+                return Task.CompletedTask;
+            }
+
+            protected override Task<HealthCheckResponse> OnHealthCheckAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 return Task.FromResult(new HealthCheckResponse());
             }
         }

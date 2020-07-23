@@ -100,6 +100,13 @@ namespace Microsoft.Bot.Builder
                 case ActivityTypes.Typing:
                     await OnTypingActivityAsync(new DelegatingTurnContext<ITypingActivity>(turnContext), cancellationToken).ConfigureAwait(false);
                     break;
+<<<<<<< HEAD
+=======
+
+                case ActivityTypes.InstallationUpdate:
+                    await OnInstallationUpdateActivityAsync(new DelegatingTurnContext<IInstallationUpdateActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
                 default:
                     await OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken).ConfigureAwait(false);
@@ -441,10 +448,17 @@ namespace Microsoft.Bot.Builder
                     case SignInConstants.TokenExchangeOperationName:
                         await OnSignInInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
                         return CreateInvokeResponse();
+<<<<<<< HEAD
 
                     case "healthCheck":
                         return CreateInvokeResponse(await OnHealthCheckAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
+=======
+
+                    case "healthCheck":
+                        return CreateInvokeResponse(await OnHealthCheckAsync(turnContext, cancellationToken).ConfigureAwait(false));
+
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                     default:
                         throw new InvokeResponseException(HttpStatusCode.NotImplemented);
                 }
@@ -531,6 +545,24 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
         protected virtual Task OnTypingActivityAsync(ITurnContext<ITypingActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Override this in a derived class to provide logic specific to
+        /// <see cref="ActivityTypes.InstallationUpdate"/> activities.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives a installation update activity, it calls this method.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        protected virtual Task OnInstallationUpdateActivityAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

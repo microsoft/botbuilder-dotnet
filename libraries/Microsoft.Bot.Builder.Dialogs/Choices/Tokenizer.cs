@@ -102,9 +102,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             if (token != null)
             {
                 token.End = end;
+<<<<<<< HEAD
 #pragma warning disable CA1308 // Normalize strings to uppercase (the normalized token should be lowercase, ignoring)
                 token.Normalized = token.Text.ToLowerInvariant();
 #pragma warning restore CA1308 // Normalize strings to uppercase
+=======
+                token.Normalized = token.Text.ToLowerInvariant();
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 tokens.Add(token);
             }
         }

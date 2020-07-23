@@ -6,7 +6,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// Centralized Template errors.
     /// </summary>
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.LanguageGeneration/TemplateErrors.cs
     public class TemplateErrors
+=======
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't make this type static without breaking binary compat)
+    public class TemplateErrors
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.LanguageGeneration/LGErrors.cs
     {
         public const string NoTemplate = "LG file must have at least one template definition.";
 

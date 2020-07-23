@@ -52,11 +52,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
             if (reader.ValueType == typeof(string))
             {
                 var id = (string)reader.Value;
-                if (id.StartsWith("="))
+                if (id.StartsWith("=", StringComparison.Ordinal))
                 {
                     result = new DialogExpression(id);
                 }
                 else
+<<<<<<< HEAD
                 {
                     try
                     {
@@ -72,6 +73,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
             {
                 result = new DialogExpression((Dialog)this.converter.ReadJson(new JTokenReader(jToken), objectType, existingValue, serializer));
             }
+=======
+                {
+                    try
+                    {
+                        using (var jsonTextReader = new JsonTextReader(new StringReader($"\"{id}\"")))
+                        {
+                            result = new DialogExpression((Dialog)converter.ReadJson(jsonTextReader, objectType, existingValue, serializer));
+                        }
+                    }
+#pragma warning disable CA1031 // Do not catch general exception types (return an empty if an exception happens).
+                    catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
+                    {
+                        result = new DialogExpression($"='{id}'");
+                    }
+                }
+            }
+            else
+            {
+                using (var jTokenReader = new JTokenReader(jToken))
+                {
+                    result = new DialogExpression((Dialog)this.converter.ReadJson(jTokenReader, objectType, existingValue, serializer));
+                }
+            }
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
             foreach (var observer in observers)
             {

@@ -41,7 +41,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             var di = new DirectoryInfo(botRoot);
+<<<<<<< HEAD
             foreach (var file in di.GetFiles($"luis.settings.{environment.ToLower()}.{luisRegion}.json", SearchOption.AllDirectories))
+=======
+            foreach (var file in di.GetFiles($"luis.settings.{environment.ToLowerInvariant()}.{luisRegion}.json", SearchOption.AllDirectories))
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             {
                 var relative = file.FullName.Substring(di.FullName.Length);
                 if (!relative.Contains("bin\\") && !relative.Contains("obj\\"))

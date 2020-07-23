@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
@@ -17,6 +18,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     {
         private Dictionary<string, FileResource> resources = new Dictionary<string, FileResource>();
         private FileSystemWatcher watcher;
+<<<<<<< HEAD
+=======
+        private readonly object _objectLock = new object();
+
+        // To detect redundant calls to dispose
+        private bool _disposed;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FolderResourceProvider"/> class.
@@ -62,16 +70,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </value>
         public bool IncludeSubFolders { get; set; }
 
+<<<<<<< HEAD
+        public void Dispose()
+=======
+        /// <summary>
+        /// Disposes the object instance a releases any related objects owned by the class.
+        /// </summary>
         public void Dispose()
         {
-            lock (Directory)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Refresh any cached content and look for new content.
+        /// </summary>
+        public override void Refresh()
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
+        {
+            this.resources.Clear();
+
+            SearchOption option = this.IncludeSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+
+            foreach (var fileInfo in this.Directory.EnumerateFiles($"*.*", option).Where(fi => this.ResourceExplorer.ResourceTypes.Contains(fi.Extension.TrimStart('.'))))
             {
-                if (this.watcher != null)
-                {
-                    this.watcher.EnableRaisingEvents = false;
-                    this.watcher.Dispose();
-                    this.watcher = null;
-                }
+                var fileResource = new FileResource(fileInfo.FullName);
+                this.resources[fileResource.Id] = fileResource;
             }
         }
 
@@ -119,17 +143,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>Collection of resources.</returns>
         public override IEnumerable<Resource> GetResources(string extension)
         {
-            extension = $".{extension.TrimStart('.').ToLower()}";
+            extension = $".{extension.TrimStart('.').ToLowerInvariant()}";
 
             lock (this.resources)
             {
-                return this.resources.Where(pair => pair.Key.ToLower().EndsWith(extension)).Select(pair => pair.Value).ToList();
+                return this.resources.Where(pair => pair.Key.ToLowerInvariant().EndsWith(extension, StringComparison.Ordinal)).Select(pair => pair.Value).ToList();
             }
         }
 
         public override string ToString()
         {
             return this.Id;
+        }
+        
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                lock (_objectLock)
+                {
+                    if (watcher != null)
+                    {
+                        watcher.EnableRaisingEvents = false;
+                        watcher.Dispose();
+                        watcher = null;
+                    }
+                }
+            }
+
+            _disposed = true;
         }
 
         private void Watcher_Deleted(object sender, FileSystemEventArgs e)

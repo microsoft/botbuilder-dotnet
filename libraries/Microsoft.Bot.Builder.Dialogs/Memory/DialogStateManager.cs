@@ -585,9 +585,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                         void CheckChildren(string property, object instance)
                         {
                             // Add new child segment
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.Dialogs/Memory/DialogStateManager.cs
 #pragma warning disable CA1308 // Normalize strings to uppercase (we assume properties are lowercase). 
                             trackedPath += "_" + property.ToLowerInvariant();
 #pragma warning restore CA1308 // Normalize strings to uppercase
+=======
+                            trackedPath += "_" + property.ToLowerInvariant();
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Memory/DialogStateManager.cs
                             Update();
                             if (instance is object child)
                             {

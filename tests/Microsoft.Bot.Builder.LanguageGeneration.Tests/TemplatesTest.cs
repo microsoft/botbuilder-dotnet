@@ -7,6 +7,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AdaptiveExpressions;
+<<<<<<< HEAD
+=======
+using AdaptiveExpressions.BuiltinFunctions;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Newtonsoft.Json.Linq;
@@ -1436,7 +1440,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             { 
                 if (func == "custom")
                 {
+<<<<<<< HEAD
                     return ExpressionFunctions.Numeric("custom", (args) => (int)args[0] + (int)args[1]);
+=======
+                    return new NumericEvaluator("custom", (args) => (int)args[0] + (int)args[1]);
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
                 }
                 else
                 {

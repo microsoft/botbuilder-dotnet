@@ -55,7 +55,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Parameter list of this template.
         /// </value>
+<<<<<<< HEAD
         public List<string> Parameters { get; set; }
+=======
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
+        public List<string> Parameters { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         /// <summary>
         /// Gets or sets text format of Body of this template. All content except Name and Parameters.

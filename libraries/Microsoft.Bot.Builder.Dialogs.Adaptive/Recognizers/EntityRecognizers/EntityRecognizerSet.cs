@@ -99,7 +99,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                             }
                         }
                     }
+#pragma warning disable CA1031 // Do not catch general exception types (trace the exception and continue).
                     catch (Exception err)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         System.Diagnostics.Trace.TraceWarning(err.Message);
                     }

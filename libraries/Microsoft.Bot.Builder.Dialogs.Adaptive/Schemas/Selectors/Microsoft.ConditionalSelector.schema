@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.ITriggerSelector)",
     "title": "Conditional trigger selector",
+=======
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.ITriggerSelector)",
+    "title": "Conditional Trigger Selector",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
     "description": "Use a rule selector based on a condition",
     "type": "object",
     "properties": {

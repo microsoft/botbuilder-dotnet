@@ -23,7 +23,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         }
 
         [JsonProperty("languagePolicy")]
+<<<<<<< HEAD
         public LanguagePolicy LanguagePolicy { get; set; }
+=======
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        public LanguagePolicy LanguagePolicy { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         /// <summary>
         /// Abstract method to get an ILanguageGenerator by locale.
@@ -44,7 +50,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>The generator.</returns>
         public override async Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
+<<<<<<< HEAD
             var targetLocale = dialogContext.Context.Activity.Locale?.ToLower() ?? string.Empty;
+=======
+            var targetLocale = dialogContext.Context.Activity.Locale?.ToLowerInvariant() ?? string.Empty;
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
             // priority 
             // 1. local policy
@@ -62,7 +72,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             
             // append empty as fallback to end
+<<<<<<< HEAD
             if (targetLocale != string.Empty && languagePolicy.ContainsKey(string.Empty))
+=======
+            if (targetLocale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             {
                 fallbackLocales.AddRange(languagePolicy[string.Empty]);
             }
@@ -93,7 +107,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 {
                     return await generator.GenerateAsync(dialogContext, template, data, cancellationToken).ConfigureAwait(false);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (catch any exception and add it to the errors list).
                 catch (Exception err)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     errors.Add(err.Message);
                 }

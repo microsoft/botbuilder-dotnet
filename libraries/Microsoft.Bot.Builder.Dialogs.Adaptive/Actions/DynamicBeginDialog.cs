@@ -31,7 +31,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// options if there is no explicit options set.
         /// </value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
+<<<<<<< HEAD
         protected Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+=======
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        protected Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+#pragma warning restore CA2227 // Collection properties should be read only
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
 
         protected override object BindOptions(DialogContext dc, object options)
         {

@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+=======
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
     "$role": "implements(Microsoft.ITrigger)",
     "title": "On condition",
     "description": "Actions to perform when specified condition is true.",
@@ -28,7 +32,11 @@
         },
         "runOnce": {
             "$ref": "schema:#/definitions/booleanExpression",
+<<<<<<< HEAD
             "title": "Run once",
+=======
+            "title": "Run Once",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             "description": "True if rule should run once per unique conditions",
             "examples": [
                 true,

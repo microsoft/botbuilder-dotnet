@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -75,7 +76,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 && !expected.Any(prop => !lastExpectedProperties.Contains(prop))
                 && !lastExpectedProperties.Any(prop => !expected.Contains(prop))
                 && dc.State.TryGetValue(DialogPath.LastTriggerEvent, out DialogEvent lastTrigger)
+<<<<<<< HEAD
                 && lastTrigger.Name.Equals(trigger.Name))
+=======
+                && lastTrigger.Name.Equals(trigger.Name, StringComparison.Ordinal))
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             {
                 retries++;
             }

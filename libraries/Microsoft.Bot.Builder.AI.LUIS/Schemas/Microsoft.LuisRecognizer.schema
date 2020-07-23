@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.LUIS/Schemas/Microsoft.LuisRecognizer.schema
     "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
     "$role": "implements(Microsoft.IRecognizer)",
     "title": "LUIS recognizer",
+=======
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IRecognizer)",
+    "title": "LUIS Recognizer",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Recognizers/Microsoft.LuisRecognizer.schema
     "description": "LUIS recognizer.",
     "type": "object",
     "additionalProperties": false,
@@ -13,12 +19,20 @@
         },
         "applicationId": {
             "$ref": "schema:#/definitions/stringExpression",
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.LUIS/Schemas/Microsoft.LuisRecognizer.schema
             "title": "LUIS application ID",
+=======
+            "title": "LUIS Application ID",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Recognizers/Microsoft.LuisRecognizer.schema
             "description": "Application ID for your model from the LUIS service."
         },
         "endpoint": {
             "$ref": "schema:#/definitions/stringExpression",
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.LUIS/Schemas/Microsoft.LuisRecognizer.schema
             "title": "LUIS endpoint",
+=======
+            "title": "LUIS Endpoint",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Recognizers/Microsoft.LuisRecognizer.schema
             "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com."
         },
         "endpointKey": {
@@ -28,7 +42,11 @@
         },
         "externalEntityRecognizer": {
             "$kind": "Microsoft.IRecognizer",
+<<<<<<< HEAD:libraries/Microsoft.Bot.Builder.AI.LUIS/Schemas/Microsoft.LuisRecognizer.schema
             "title": "External entity recognizer",
+=======
+            "title": "External Entity Recognizer",
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8:libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Recognizers/Microsoft.LuisRecognizer.schema
             "description": "Entities recognized by this recognizer will be passed to LUIS as external entities."
         },
         "dynamicLists": {

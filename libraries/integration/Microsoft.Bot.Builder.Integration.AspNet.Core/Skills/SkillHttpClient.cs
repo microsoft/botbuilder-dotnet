@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <param name="activity">The activity to send.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>Async task with invokeResponse.</returns>
+<<<<<<< HEAD
         public async Task<InvokeResponse<T>> PostActivityAsync<T>(string originatingAudience, string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
             string skillConversationId;
@@ -80,6 +81,44 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>Async task with optional invokeResponse.</returns>
         public async Task<InvokeResponse> PostActivityAsync(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
+=======
+        public virtual async Task<InvokeResponse<T>> PostActivityAsync<T>(string originatingAudience, string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
+        {
+            string skillConversationId;
+            try
+            {
+                var options = new SkillConversationIdFactoryOptions
+                {
+                    FromBotOAuthScope = originatingAudience,
+                    FromBotId = fromBotId,
+                    Activity = activity,
+                    BotFrameworkSkill = toSkill
+                };
+                skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(options, cancellationToken).ConfigureAwait(false);
+            }
+            catch (NotImplementedException)
+            {
+                // Attempt to create the ID using deprecated method.
+#pragma warning disable 618 // Keeping this for backward compat, this catch should be removed when the deprecated method is removed.
+                skillConversationId = await _conversationIdFactory.CreateSkillConversationIdAsync(activity.GetConversationReference(), cancellationToken).ConfigureAwait(false);
+#pragma warning restore 618
+            }
+
+            return await PostActivityAsync<T>(fromBotId, toSkill.AppId, toSkill.SkillEndpoint, callbackUrl, skillConversationId, activity, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Forwards an activity to a skill (bot).
+        /// </summary>
+        /// <param name="fromBotId">The MicrosoftAppId of the bot sending the activity.</param>
+        /// <param name="toSkill">An instance of <see cref="BotFrameworkSkill"/>.</param>
+        /// <param name="callbackUrl">The callback Uri.</param>
+        /// <param name="activity">activity to forward.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>Async task with optional invokeResponse.</returns>
+        public virtual async Task<InvokeResponse> PostActivityAsync(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
+        {
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
             return await PostActivityAsync<object>(fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
         }
 
@@ -93,7 +132,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <typeparam name="T">type of the <see cref="InvokeResponse"/> result.</typeparam>
         /// <returns>Async task with optional invokeResponse of type T.</returns>
+<<<<<<< HEAD
         public async Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
+=======
+        public virtual async Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
+>>>>>>> f127fca9b2eef1fe51f52bbfb2fbbab8a10fc0e8
         {
             var originatingAudience = ChannelProvider != null && ChannelProvider.IsGovernment() ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope : AuthenticationConstants.ToChannelFromBotOAuthScope;
             return await PostActivityAsync<T>(originatingAudience, fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
