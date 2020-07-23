@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                             updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
                             updatedActivity.LocalTimestamp = activityAndBlob.Item1.LocalTimestamp;
                             updatedActivity.Timestamp = activityAndBlob.Item1.Timestamp;
-                            await LogActivityAsync(updatedActivity, activityAndBlob.Item2, true).ConfigureAwait(false);
+                            await LogActivityToBlobClientAsync(updatedActivity, activityAndBlob.Item2, true).ConfigureAwait(false);
                         }
 
                         return;
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                                 ReplyToId = activityAndBlob.Item1.ReplyToId,
                             };
 
-                            await LogActivityAsync(tombstonedActivity, activityAndBlob.Item2, true).ConfigureAwait(false);
+                            await LogActivityToBlobClientAsync(tombstonedActivity, activityAndBlob.Item2, true).ConfigureAwait(false);
                         }
 
                         return;
@@ -127,8 +127,8 @@ namespace Microsoft.Bot.Builder.Azure.Storage
 
                 default:
                     var blobName = GetBlobName(activity);
-                    var blobReference = _containerClient.GetBlobClient(blobName);
-                    await LogActivityAsync(activity, blobReference).ConfigureAwait(false);
+                    var blobClient = _containerClient.GetBlobClient(blobName);
+                    await LogActivityToBlobClientAsync(activity, blobClient).ConfigureAwait(false);
                     return;
             }
         }
@@ -141,9 +141,75 @@ namespace Microsoft.Bot.Builder.Azure.Storage
         /// <param name="continuationToken">Continuatuation token to page through results.</param>
         /// <param name="startDate">Earliest time to include.</param>
         /// <returns>PagedResult of activities.</returns>
-        public Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default)
+        public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default)
         {
-            throw new NotImplementedException();
+            const int PageSize = 20; 
+            
+            if (string.IsNullOrEmpty(channelId))
+            {
+                throw new ArgumentNullException($"missing {nameof(channelId)}");
+            }
+
+            if (string.IsNullOrEmpty(conversationId))
+            {
+                throw new ArgumentNullException($"missing {nameof(conversationId)}");
+            }
+
+            var pagedResult = new PagedResult<IActivity>();
+
+            string token = null;
+            List<BlobItem> blobs = new List<BlobItem>();
+            do
+            {
+                var resultSegment = _containerClient.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
+                                    .AsPages(token);
+
+                await foreach (var blobPage in resultSegment)
+                {
+                    foreach (BlobItem blobItem in blobPage.Values)
+                    {
+                        if (DateTime.Parse(blobItem.Metadata["Timestamp"]).ToUniversalTime() >= startDate)
+                        {
+                            if (continuationToken != null)
+                            {
+                                if (blobItem.Name == continuationToken)
+                                {
+                                    // we found continuation token
+                                    continuationToken = null;
+                                }
+                            }
+                            else
+                            {
+                                blobs.Add(blobItem);
+                                if (blobs.Count == PageSize)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Get the continuation token and loop until it is empty.
+                    token = blobPage.ContinuationToken;
+                }
+            }
+            while (!string.IsNullOrEmpty(token) && blobs.Count < PageSize);
+
+            pagedResult.Items = blobs
+                .Select(async bl =>
+                {
+                    var blobClient = _containerClient.GetBlobClient(bl.Name);
+                    return await GetActivityFromBlobClientAsync(blobClient).ConfigureAwait(false);
+                })
+                .Select(t => t.Result)
+                .ToArray();
+
+            if (pagedResult.Items.Length == PageSize)
+            {
+                pagedResult.ContinuationToken = blobs.Last().Name;
+            }
+
+            return pagedResult;
         }
 
         /// <summary>
@@ -152,9 +218,62 @@ namespace Microsoft.Bot.Builder.Azure.Storage
         /// <param name="channelId">Channel Id.</param>
         /// <param name="continuationToken">Continuatuation token to page through results.</param>
         /// <returns>A <see cref="Task"/> A task that represents the work queued to execute.</returns>
-        public Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
+        public async Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
-            throw new NotImplementedException();
+            const int PageSize = 20;
+
+            if (string.IsNullOrEmpty(channelId))
+            {
+                throw new ArgumentNullException($"missing {nameof(channelId)}");
+            }
+
+            string token;
+            List<TranscriptInfo> conversations = new List<TranscriptInfo>();
+            do
+            {
+                token = null;
+
+                var resultSegment = _containerClient.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/")
+                                    .AsPages(token);
+
+                await foreach (var blobPage in resultSegment)
+                {
+                    foreach (BlobItem blobItem in blobPage.Values)
+                    {
+                        // Unescape the Id we escaped when we saved it
+                        var conversation = new TranscriptInfo() { Id = Uri.UnescapeDataString(blobItem.Name.Split('/').Where(s => s.Length > 0).Last()), ChannelId = channelId };
+                        if (continuationToken != null)
+                        {
+                            if (conversation.Id == continuationToken)
+                            {
+                                // we found continuation token
+                                continuationToken = null;
+                            }
+
+                            // skip record
+                        }
+                        else
+                        {
+                            conversations.Add(conversation);
+                            if (conversations.Count == PageSize)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            while (!string.IsNullOrEmpty(token) && conversations.Count < PageSize);
+
+            var pagedResult = new PagedResult<TranscriptInfo>();
+            pagedResult.Items = conversations.ToArray();
+
+            if (pagedResult.Items.Length == PageSize)
+            {
+                pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
+            }
+
+            return pagedResult;
         }
 
         /// <summary>
@@ -175,14 +294,14 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                 throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
             }
 
-            string token = null;
+            string token;
             do
             {
-                var resultSegment = _containerClient.GetBlobs(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
-                                                            .AsPages(token);
                 token = null;
+                var resultSegment = _containerClient.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
+                                                            .AsPages(token);
 
-                foreach (var blobPage in resultSegment)
+                await foreach (var blobPage in resultSegment)
                 {
                     foreach (BlobItem blobItem in blobPage.Values)
                     {
@@ -197,17 +316,6 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             while (!string.IsNullOrEmpty(token));
         }
 
-        /// <summary>
-        /// Get an Activity from Blob Storage based on the provided IActivity as the key.
-        /// </summary>
-        /// <param name="originalActivity">The activity to use as the key for searching Blob Storage.</param>
-        /// <returns>An activity object retrieved from Blob Storage, or null if not found.</returns>
-        protected async Task<Activity> GetActivityAsync(IActivity originalActivity)
-        {
-            var activityAndBlobClient = await InnerReadBlobAsync(originalActivity).ConfigureAwait(false);
-            return activityAndBlobClient.Item1;
-        }
-
         private async Task<(Activity, BlobClient)> InnerReadBlobAsync(IActivity activity)
         {
             var i = 0;
@@ -215,28 +323,22 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             {
                 try
                 {
-                    string token = null;
+                    string token;
                     do
                     {
-                        var resultSegment = _containerClient.GetBlobs(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/")
-                                                            .AsPages(token);
                         token = null;
+                        var resultSegment = _containerClient.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/")
+                                                            .AsPages(token);
 
-                        foreach (var blobPage in resultSegment)
+                        await foreach (var blobPage in resultSegment)
                         {
                             foreach (BlobItem blobItem in blobPage.Values)
                             {
                                 if (blobItem.Metadata.TryGetValue("Id", out string id) && id == activity.Id)
                                 {
                                     var blobClient = _containerClient.GetBlobClient(blobItem.Name);
-                                    using (BlobDownloadInfo download = await blobClient.DownloadAsync().ConfigureAwait(false))
-                                    {
-                                        using (var jsonReader = new JsonTextReader(new StreamReader(download.Content)))
-                                        {
-                                            var resultActivity = _jsonSerializer.Deserialize(jsonReader, typeof(Activity)) as Activity;
-                                            return (resultActivity, blobClient);
-                                        }
-                                    }
+                                    var blobActivity = await GetActivityFromBlobClientAsync(blobClient).ConfigureAwait(false);
+                                    return (blobActivity, blobClient);
                                 }
                             }
 
@@ -263,7 +365,18 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             }
         }
 
-        private async Task LogActivityAsync(IActivity activity, BlobClient blobReference, bool overwrite = false)
+        private async Task<Activity> GetActivityFromBlobClientAsync(BlobClient blobClient)
+        {
+            using (BlobDownloadInfo download = await blobClient.DownloadAsync().ConfigureAwait(false))
+            {
+                using (var jsonReader = new JsonTextReader(new StreamReader(download.Content)))
+                {
+                    return _jsonSerializer.Deserialize(jsonReader, typeof(Activity)) as Activity;
+                }
+            }
+        }
+
+        private async Task LogActivityToBlobClientAsync(IActivity activity, BlobClient blobClient, bool overwrite = false)
         {
             using (var memoryStream = new MemoryStream())
             using (var streamWriter = new StreamWriter(memoryStream))
@@ -272,7 +385,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                 _jsonSerializer.Serialize(jsonWriter, activity);
                 streamWriter.Flush();
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                await blobReference.UploadAsync(memoryStream, overwrite: overwrite).ConfigureAwait(false);
+                await blobClient.UploadAsync(memoryStream, overwrite: overwrite).ConfigureAwait(false);
             }
 
             var metaData = new Dictionary<string, string>
@@ -282,7 +395,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                 ["RecipientId"] = activity.Recipient?.Id,
                 ["Timestamp"] = activity.Timestamp.Value.ToString("O")
             };
-            await blobReference.SetMetadataAsync(metaData).ConfigureAwait(false);
+            await blobClient.SetMetadataAsync(metaData).ConfigureAwait(false);
         }
 
         private string GetBlobName(IActivity activity)
