@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
@@ -17,7 +16,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Azure.Storage
 {
     /// <summary>
-    /// The blobs transcript logger stores transcripts in an Azure Blob container.
+    /// The blobs transcript store stores transcripts in an Azure Blob container.
     /// </summary>
     /// <remarks>
     /// Each activity is stored as json blob in structure of
