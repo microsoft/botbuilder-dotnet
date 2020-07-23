@@ -15,6 +15,9 @@ using Activity = Microsoft.Bot.Schema.Activity;
 // More info: https://docs.microsoft.com/azure/storage/common/storage-use-emulator
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
+    /// <summary>
+    /// Base tests for <seealso cref="BlobsTranscriptStoreTests"/> and <seealso cref="AzureBlobTranscriptStoreTests"/>.
+    /// </summary>
     public abstract class TranscriptStoreBaseTests 
     {
         protected const string BlobStorageEmulatorConnectionString = @"AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
@@ -39,7 +42,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         protected abstract string ContainerName { get; }
         
-        // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptsEmptyTest()
         {
@@ -51,7 +53,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task ActivityEmptyTest()
         {
@@ -65,7 +66,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task ActivityAddTest()
         {
@@ -85,7 +85,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptRemoveTest()
         {
@@ -94,6 +93,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 for (var i = 0; i < 5; i++)
                 {
                     var a = CreateActivity(i, i, ConversationIds);
+                    await TranscriptStore.LogActivityAsync(a);
                     await TranscriptStore.DeleteTranscriptAsync(a.ChannelId, a.Conversation.Id);
 
                     var loggedActivities =
@@ -103,7 +103,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task ActivityAddSpecialCharsTest()
         {
@@ -123,7 +122,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptRemoveSpecialCharsTest()
         {
@@ -141,7 +139,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task ActivityAddPagedResultTest()
         {
@@ -173,7 +170,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptRemovePagedTest()
         {
@@ -193,7 +189,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task NullParameterTests()
         {
