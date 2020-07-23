@@ -12,6 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Subtract a number of time units from a timestamp.
+    /// SubtractFromTime function takes a timestamp string, an interval integer, a unit of time string, an optional format string and an optional locale string.
     /// </summary>
     public class SubtractFromTime : ExpressionEvaluator
     {

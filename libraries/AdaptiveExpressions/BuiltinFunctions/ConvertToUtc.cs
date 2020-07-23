@@ -12,6 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Convert a timestamp to Universal Time Coordinated (UTC) from the source time zone.
+    /// ConvertToUtc function takes a timestamp string, a timezone string, an optional format string and an optional locale string.
     /// </summary>
     public class ConvertToUtc : ExpressionEvaluator
     {

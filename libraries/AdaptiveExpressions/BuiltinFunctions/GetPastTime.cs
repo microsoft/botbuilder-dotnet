@@ -12,6 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the current timestamp minus the specified time units.
+    /// GetPastTime function takes an interval integer, a unit of time string, an optional format string and an optional locale string.
     /// </summary>
     public class GetPastTime : ExpressionEvaluator
     {

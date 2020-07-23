@@ -12,6 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the current timestamp plus the specified time units.
+    /// GetFutureTime function takes an interval integer, a unit of time string, an optional format string and an optional locale string.
     /// </summary>
     public class GetFutureTime : ExpressionEvaluator
     {

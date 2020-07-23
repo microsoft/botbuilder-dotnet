@@ -7,6 +7,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Add a number of hours to a timestamp.
+    /// AddHours function takes a timestamp string, an interval integer, an optional format string and an optional locale string.
     /// </summary>
     public class AddHours : TimeTransformEvaluator
     {

@@ -9,6 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Format number into required decimal numbers.
+    /// FormatNumber function takes a number as the first argument, a precision digits integer and an optional locale string.
     /// </summary>
     public class FormatNumber : ExpressionEvaluator
     {

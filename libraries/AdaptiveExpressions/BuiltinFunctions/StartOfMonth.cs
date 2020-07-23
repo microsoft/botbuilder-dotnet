@@ -12,6 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the start of the month for a timestamp.
+    /// StartOfMonth function takes a timestamp string, an optional format string and an optional locale string.
     /// </summary>
     public class StartOfMonth : ExpressionEvaluator
     {

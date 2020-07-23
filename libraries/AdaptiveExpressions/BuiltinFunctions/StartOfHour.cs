@@ -12,6 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the start of the hour for a timestamp.
+    /// StartOfHour function takes a timestamp string, an optional format string and an optional locale string.
     /// </summary>
     public class StartOfHour : ExpressionEvaluator
     {

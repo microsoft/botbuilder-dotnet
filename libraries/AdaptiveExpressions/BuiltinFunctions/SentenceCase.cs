@@ -9,6 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Converts the specified string to sentence case.
+    /// SentenceCase function takes a string as the first argument and an optional locale string.
     /// </summary>
     public class SentenceCase : StringTransformEvaluator
     {

@@ -10,6 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return a timestamp in the specified format from UNIX time (also know as Epoch time, POSIX time, UNIX Epoch time).
+    /// FormatEpoch function takes an epoch long integer, an optional format string and an optional locale string.
     /// </summary>
     public class FormatEpoch : ExpressionEvaluator
     {

@@ -10,6 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the string version of a value.
+    /// String function takes an object as the first argument and an optional locale string.
     /// </summary>
 #pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
 #pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)

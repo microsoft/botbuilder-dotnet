@@ -10,6 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return a timestamp in the specified format.
+    /// FormatDateTime function takes a timestamp string, an optional format string and an optional locale string.
     /// </summary>
     public class FormatDateTime : ExpressionEvaluator
     {

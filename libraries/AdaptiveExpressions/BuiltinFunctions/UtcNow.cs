@@ -10,6 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the current timestamp.
+    /// UtcNow function takes an optional locale string.
     /// </summary>
     public class UtcNow : ExpressionEvaluator
     {

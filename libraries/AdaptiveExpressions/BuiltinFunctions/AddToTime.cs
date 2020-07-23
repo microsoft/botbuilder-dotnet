@@ -11,6 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Add a number of time units to a timestamp. 
+    /// AddToTime function takes a timestamp string, an interval integer, a unit of time string, an optional format string and an optional locale string.
     /// </summary>
     public class AddToTime : ExpressionEvaluator
     {

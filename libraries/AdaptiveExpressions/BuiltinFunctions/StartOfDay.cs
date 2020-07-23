@@ -12,6 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the start of the day for a timestamp.
+    /// StartOfDay function takes a timestamp string, an optional format string and an optional locale string.
     /// </summary>
     public class StartOfDay : ExpressionEvaluator
     {
