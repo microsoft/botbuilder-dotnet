@@ -31,11 +31,12 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             TypeNameHandling = TypeNameHandling.All,
         });
 
+        // Containers checked for creation.
+        private static HashSet<string> _checkedContainers = new HashSet<string>();
+
         // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.
         private readonly JsonSerializer _jsonSerializer;
-        private readonly BlobContainerClient _containerClient;
-        private int _checkforContainerExistance;
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobsTranscriptStore"/> class.
         /// </summary>
@@ -61,10 +62,22 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             _jsonSerializer = jsonSerializer ?? JsonSerializer;
 
             // Triggers a check for the existance of the container
-            _checkforContainerExistance = 1;
+            this.ContainerClient = new Lazy<BlobContainerClient>(
+                () =>
+                {
+                    containerName = containerName.ToLower();
+                    var containerClient = new BlobContainerClient(dataConnectionstring, containerName);
+                    if (!_checkedContainers.Contains(containerName))
+                    {
+                        _checkedContainers.Add(containerName);
+                        containerClient.CreateIfNotExistsAsync().Wait();
+                    }
 
-            _containerClient = new BlobContainerClient(dataConnectionstring, containerName);
+                    return containerClient;
+                }, isThreadSafe: true);
         }
+
+        private Lazy<BlobContainerClient> ContainerClient { get; set; }
 
         /// <summary>
         /// Log an activity to the transcript.
@@ -74,12 +87,6 @@ namespace Microsoft.Bot.Builder.Azure.Storage
         public async Task LogActivityAsync(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
-
-            // this should only happen once - assuming this is a singleton
-            if (Interlocked.CompareExchange(ref _checkforContainerExistance, 0, 1) == 1)
-            {
-                await _containerClient.CreateIfNotExistsAsync().ConfigureAwait(false);
-            }
 
             switch (activity.Type)
             {
@@ -127,7 +134,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
 
                 default:
                     var blobName = GetBlobName(activity);
-                    var blobClient = _containerClient.GetBlobClient(blobName);
+                    var blobClient = ContainerClient.Value.GetBlobClient(blobName);
                     await LogActivityToBlobClientAsync(activity, blobClient).ConfigureAwait(false);
                     return;
             }
@@ -143,8 +150,8 @@ namespace Microsoft.Bot.Builder.Azure.Storage
         /// <returns>PagedResult of activities.</returns>
         public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default)
         {
-            const int PageSize = 20; 
-            
+            const int PageSize = 20;
+
             if (string.IsNullOrEmpty(channelId))
             {
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
@@ -161,7 +168,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             List<BlobItem> blobs = new List<BlobItem>();
             do
             {
-                var resultSegment = _containerClient.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
+                var resultSegment = ContainerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
                                     .AsPages(token);
 
                 await foreach (var blobPage in resultSegment)
@@ -198,7 +205,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             pagedResult.Items = blobs
                 .Select(async bl =>
                 {
-                    var blobClient = _containerClient.GetBlobClient(bl.Name);
+                    var blobClient = ContainerClient.Value.GetBlobClient(bl.Name);
                     return await GetActivityFromBlobClientAsync(blobClient).ConfigureAwait(false);
                 })
                 .Select(t => t.Result)
@@ -233,7 +240,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             {
                 token = null;
 
-                var resultSegment = _containerClient.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/")
+                var resultSegment = ContainerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/")
                                     .AsPages(token);
 
                 await foreach (var blobPage in resultSegment)
@@ -298,14 +305,14 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             do
             {
                 token = null;
-                var resultSegment = _containerClient.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
+                var resultSegment = ContainerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
                                                             .AsPages(token);
 
                 await foreach (var blobPage in resultSegment)
                 {
                     foreach (BlobItem blobItem in blobPage.Values)
                     {
-                        var blobClient = _containerClient.GetBlobClient(blobItem.Name);
+                        var blobClient = ContainerClient.Value.GetBlobClient(blobItem.Name);
                         await blobClient.DeleteIfExistsAsync().ConfigureAwait(false);
                     }
 
@@ -327,7 +334,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                     do
                     {
                         token = null;
-                        var resultSegment = _containerClient.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/")
+                        var resultSegment = ContainerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/")
                                                             .AsPages(token);
 
                         await foreach (var blobPage in resultSegment)
@@ -336,7 +343,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                             {
                                 if (blobItem.Metadata.TryGetValue("Id", out string id) && id == activity.Id)
                                 {
-                                    var blobClient = _containerClient.GetBlobClient(blobItem.Name);
+                                    var blobClient = ContainerClient.Value.GetBlobClient(blobItem.Name);
                                     var blobActivity = await GetActivityFromBlobClientAsync(blobClient).ConfigureAwait(false);
                                     return (blobActivity, blobClient);
                                 }
