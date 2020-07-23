@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
     /// </summary>
     public class HttpResponseMockContent
     {
-        private readonly HttpResponseMock.ContentTypes contentType;
+        private readonly HttpResponseMock.ResponseContentType contentType;
 
         private readonly object content;
 
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         /// </summary>
         public HttpResponseMockContent()
         {
-            contentType = HttpResponseMock.ContentTypes.String;
+            contentType = HttpResponseMock.ResponseContentType.String;
             content = string.Empty;
         }
 
@@ -34,10 +34,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
             contentType = httpResponseMock.ContentType;
             switch (contentType)
             {
-                case HttpResponseMock.ContentTypes.String:
+                case HttpResponseMock.ResponseContentType.String:
                     content = httpResponseMock.Content == null ? string.Empty : httpResponseMock.Content.ToString();
                     break;
-                case HttpResponseMock.ContentTypes.ByteArray:
+                case HttpResponseMock.ResponseContentType.ByteArray:
                     content = Convert.FromBase64String(httpResponseMock.Content == null ? string.Empty : httpResponseMock.Content.ToString());
                     break;
                 default:
@@ -53,9 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         {
             switch (contentType)
             {
-                case HttpResponseMock.ContentTypes.String:
+                case HttpResponseMock.ResponseContentType.String:
                     return new StringContent((string)content);
-                case HttpResponseMock.ContentTypes.ByteArray:
+                case HttpResponseMock.ResponseContentType.ByteArray:
                     return new ByteArrayContent((byte[])content);
                 default:
                     throw new NotSupportedException($"{contentType} is not supported yet!");
