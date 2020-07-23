@@ -757,7 +757,7 @@ namespace AdaptiveExpressions
             /// <summary>
             /// Gets a value indicating whether the FunctionTable is readonly.
             /// </summary>
-            /// <value>A boolean value.</value>
+            /// <value>A boolean value indicating  whether the FunctionTable is readonly.</value>
             public bool IsReadOnly => false;
 
             /// <summary>
@@ -797,14 +797,14 @@ namespace AdaptiveExpressions
             /// Inserts a mapping of a string key to ExpressionEvaluator into FunctionTable.
             /// </summary>
             /// <param name="key">The function name to be added.</param>
-            /// <param name="value">The value of the ExpressionEvaluator to add.</param>
+            /// <param name="value">The value of the ExpressionEvaluator to be added.</param>
             public void Add(string key, ExpressionEvaluator value) => this[key] = value;
 
             /// <summary>
             /// Inserts a mapping of a string key to user customized function into FunctionTable.
             /// </summary>
             /// <param name="key">The key of function name to be added.</param>
-            /// <param name="func">The value of the user customized function to add.</param>
+            /// <param name="func">The value of the user customized function to be added.</param>
             public void Add(string key, Func<IReadOnlyList<dynamic>, object> func)
             {
                 Add(key, new ExpressionEvaluator(key, FunctionUtils.Apply(func)));
@@ -822,17 +822,23 @@ namespace AdaptiveExpressions
             public void Clear() => _customFunctions.Clear();
 
             /// <summary>
-            /// Determine whether FunctionTable contains a given key value pair of string to ExpressionEvaluator.
+            /// Determines whether FunctionTable contains a given key value pair of string to ExpressionEvaluator.
             /// </summary>
             /// <param name="item">A key value pair of string to ExpressionEvaluator.</param>
-            /// <returns>A boolean value.</returns>
+            /// <returns>
+            /// A boolean value indicating  whether the key-value pair is in the FunctionTable.
+            /// Retuens True if the key-value pair is contained, otherwise returns False.
+            /// </returns>
             public bool Contains(KeyValuePair<string, ExpressionEvaluator> item) => ExpressionFunctions.StandardFunctions.Contains(item) || _customFunctions.Contains(item);
 
             /// <summary>
             /// Determines if the FunctionTable contains a given string key.
             /// </summary>
             /// <param name="key">A string key.</param>
-            /// <returns>A boolean value.</returns>
+            /// <returns>
+            /// A boolean value indicating  whether the key is in the FunctionTable.
+            /// Retuens True if the key is contained, otherwise returns False.
+            /// </returns>
             public bool ContainsKey(string key) => ExpressionFunctions.StandardFunctions.ContainsKey(key) || _customFunctions.ContainsKey(key);
 
             /// <summary>
@@ -852,14 +858,14 @@ namespace AdaptiveExpressions
             /// Removes a specified key from user customized functions.
             /// </summary>
             /// <param name="key">A string key of function name.</param>
-            /// <returns>A boolean value represents whether the key is successfully removed.</returns>
+            /// <returns>A boolean value indicating  whether the key is successfully removed.</returns>
             public bool Remove(string key) => _customFunctions.TryRemove(key, out var oldVal);
 
             /// <summary>
-            /// Remove a specified key value pair from user customized functions.
+            /// Removes a specified key value pair from user customized functions.
             /// </summary>
             /// <param name="item">A key value pair of string to ExpressionEvaluator.</param>
-            /// <returns>A boolean value represents whether the key is successfully removed.</returns>
+            /// <returns>A boolean value indicating  whether the key is successfully removed.</returns>
             public bool Remove(KeyValuePair<string, ExpressionEvaluator> item) => Remove(item.Key);
 
             /// <summary>
@@ -868,7 +874,7 @@ namespace AdaptiveExpressions
             /// <param name="key">The key of the value to get.</param>
             /// <param name="value">When this method returns, contains the object from the FunctionTable
             /// that has the specified key, or the default value of the type if the operation failed.</param>
-            /// <returns>A boolean value represents whether the value is successfully obtained.</returns>
+            /// <returns>A boolean value indicating  whether the value is successfully obtained.</returns>
             public bool TryGetValue(string key, out ExpressionEvaluator value)
             {
                 if (ExpressionFunctions.StandardFunctions.TryGetValue(key, out value))

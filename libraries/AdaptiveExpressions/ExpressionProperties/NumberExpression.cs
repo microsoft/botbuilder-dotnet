@@ -83,7 +83,7 @@ namespace AdaptiveExpressions.Properties
         /// <summary>
         /// Converts an Expression instance to a NumberExpression instance.
         /// </summary>
-        /// <param name="expression">An Expression instance to convert.</param>
+        /// <param name="expression">The Expression instance to convert.</param>
         public static implicit operator NumberExpression(Expression expression) => new NumberExpression(expression);
 
         /// <summary>

@@ -69,22 +69,22 @@ namespace AdaptiveExpressions.Properties
         }
 
         /// <summary>
-        /// Convert a string value to a StringExpression instance.
+        /// Converts a string value to a StringExpression instance.
         /// </summary>
-        /// <param name="valueOrExpression">A string value to convert.</param>
+        /// <param name="valueOrExpression">The string value to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator StringExpression(string valueOrExpression) => new StringExpression(valueOrExpression);
 
         /// <summary>
-        /// Convert a JSON Token to a StringExpression instance.
+        /// Converts a JSON Token to a StringExpression instance.
         /// </summary>
-        /// <param name="valueOrExpression">A JSON Token to convert.</param>
+        /// <param name="valueOrExpression">The JSON Token to convert.</param>
         public static implicit operator StringExpression(JToken valueOrExpression) => new StringExpression(valueOrExpression);
 
         /// <summary>
-        /// Convert an Expression instance to a StringExpression instance.
+        /// Converts an Expression instance to a StringExpression instance.
         /// </summary>
-        /// <param name="expression">An Expression instance to convert.</param>
+        /// <param name="expression">The Expression instance to convert.</param>
         public static implicit operator StringExpression(Expression expression) => new StringExpression(expression);
 #pragma warning restore CA2225 // Operator overloads have named alternates
 

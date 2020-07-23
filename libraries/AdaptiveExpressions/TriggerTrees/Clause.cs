@@ -45,7 +45,7 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// Gets or sets of the anyBinding dictionary.
+        /// Gets or sets the anyBinding dictionary.
         /// </summary>
         /// <value>A dictionary of strings, with string keys.</value>
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
@@ -215,8 +215,8 @@ namespace AdaptiveExpressions.TriggerTrees
         /// <param name="clause">The other Clause instance to compare with.</param>
         /// <param name="memory">The scope for looking up variables.</param>
         /// <returns>
-        /// A boolean value represents whether two Clauses are matched.
-        /// Returns True if two Clauses match, otherwise returns False;
+        /// A boolean value indicating  whether the two Clauses are matched.
+        /// Returns True if two Clauses are matched, otherwise returns False.
         /// </returns>
         public bool Matches(Clause clause, object memory)
         {

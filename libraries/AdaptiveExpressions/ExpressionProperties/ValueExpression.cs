@@ -53,58 +53,58 @@ namespace AdaptiveExpressions.Properties
         }
 
         /// <summary>
-        /// Convert a string value to a ValueExpression instance.
+        /// Converts a string value to a ValueExpression instance.
         /// </summary>
         /// <param name="valueOrExpression">A string value to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator ValueExpression(string valueOrExpression) => new ValueExpression(valueOrExpression);
 
         /// <summary>
-        /// Convert an integer value to a ValueExpression instance.
+        /// Converts an integer value to a ValueExpression instance.
         /// </summary>
-        /// <param name="value">An integer value to convert.</param>
+        /// <param name="value">The integer value to convert.</param>
         public static implicit operator ValueExpression(int value) => new ValueExpression(value);
 
         /// <summary>
-        /// Convert a long integer value to a ValueExpression instance.
+        /// Converts a long integer value to a ValueExpression instance.
         /// </summary>
-        /// <param name="value">A long integer value to convert.</param>
+        /// <param name="value">The long integer value to convert.</param>
         public static implicit operator ValueExpression(long value) => new ValueExpression(value);
 
         /// <summary>
-        /// Convert a floating point number value to a ValueExpression instance.
+        /// Converts a floating point number value to a ValueExpression instance.
         /// </summary>
-        /// <param name="value">A floating ponit number value to convert.</param>
+        /// <param name="value">The floating ponit number value to convert.</param>
         public static implicit operator ValueExpression(float value) => new ValueExpression(value);
 
         /// <summary>
-        /// Convert a double precision floating number value to a ValueExpression instance.
+        /// Converts a double precision floating number value to a ValueExpression instance.
         /// </summary>
-        /// <param name="value">A double precision floating number value to convert.</param>
+        /// <param name="value">The double precision floating number value to convert.</param>
         public static implicit operator ValueExpression(double value) => new ValueExpression(value);
 
         /// <summary>
-        /// Convert a DateTime value to a ValueExpression instance.
+        /// Converts a DateTime value to a ValueExpression instance.
         /// </summary>
-        /// <param name="value">A DateTime value to convert.</param>
+        /// <param name="value">The DateTime value to convert.</param>
         public static implicit operator ValueExpression(DateTime value) => new ValueExpression(value);
 
         /// <summary>
-        /// Convert a boolean value to a ValueExpression instance.
+        /// Converts a boolean value to a ValueExpression instance.
         /// </summary>
-        /// <param name="value">A boolean value to convert.</param>
+        /// <param name="value">The boolean value to convert.</param>
         public static implicit operator ValueExpression(bool value) => new ValueExpression(value);
 
         /// <summary>
-        /// Convert a JSON Token to a ValueExpression instance.
+        /// Converts a JSON Token to a ValueExpression instance.
         /// </summary>
-        /// <param name="valueOrExpression">A JSON Token to convert.</param>
+        /// <param name="valueOrExpression">The JSON Token to convert.</param>
         public static implicit operator ValueExpression(JToken valueOrExpression) => new ValueExpression(valueOrExpression);
 
         /// <summary>
-        /// Convert an Expression instance to a ValueExpression instance.
+        /// Converts an Expression instance to a ValueExpression instance.
         /// </summary>
-        /// <param name="expression">An Expression instance to convert.</param>
+        /// <param name="expression">The Expression instance to convert.</param>
         public static implicit operator ValueExpression(Expression expression) => new ValueExpression(expression);
 #pragma warning restore CA2225 // Operator overloads have named alternates
 

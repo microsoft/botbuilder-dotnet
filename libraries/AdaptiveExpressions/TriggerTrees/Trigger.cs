@@ -134,7 +134,7 @@ namespace AdaptiveExpressions.TriggerTrees
         /// <param name="nodeClause">The other Clause instance to match.</param>
         /// <param name="state">The scope for looking up variables.</param>
         /// <returns>
-        /// A boolean value represents whether there is a member matches.
+        /// A boolean value indicating  whether there is a member matches.
         /// Returns True if such member exists, otherwise returns False.
         /// </returns>
         public bool Matches(Clause nodeClause, object state)

@@ -68,28 +68,28 @@ namespace AdaptiveExpressions.Properties
         }
 
         /// <summary>
-        /// Convert an integer value to an IntExpression instance.
+        /// Converts an integer value to an IntExpression instance.
         /// </summary>
-        /// <param name="value">An integer value to convert.</param>
+        /// <param name="value">The integer value to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator IntExpression(int value) => new IntExpression(value);
 
         /// <summary>
-        /// Convert a string value to an IntExpression instance.
+        /// Converts a string value to an IntExpression instance.
         /// </summary>
-        /// <param name="expression">A string value to convert.</param>
+        /// <param name="expression">The string value to convert.</param>
         public static implicit operator IntExpression(string expression) => new IntExpression(expression);
 
         /// <summary>
-        /// Convert an Expression instance to an IntExpression instance.
+        /// Converts an Expression instance to an IntExpression instance.
         /// </summary>
-        /// <param name="expression">An Expression instance to convert.</param>
+        /// <param name="expression">The Expression instance to convert.</param>
         public static implicit operator IntExpression(Expression expression) => new IntExpression(expression);
 
         /// <summary>
-        /// Convert a JSON Token to an IntExpression instance.
+        /// Converts a JSON Token to an IntExpression instance.
         /// </summary>
-        /// <param name="expressionOrValue">A JSON Token to convert.</param>
+        /// <param name="expressionOrValue">The JSON Token to convert.</param>
         public static implicit operator IntExpression(JToken expressionOrValue) => new IntExpression(expressionOrValue);
 #pragma warning restore CA2225 // Operator overloads have named alternates
     }

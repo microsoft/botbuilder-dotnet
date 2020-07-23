@@ -38,7 +38,7 @@ namespace AdaptiveExpressions.Properties
         /// Gets or sets the raw value of the expression property.
         /// </summary>
         /// <value>
-        /// the value to return when someone calls GetValue().
+        /// The value to return when someone calls GetValue().
         /// </value>
 #pragma warning disable CA1721 // Property names should not match get methods (by design and we can't change it because of binary compat)
         public T Value { get; protected set; } = default(T);
@@ -53,22 +53,22 @@ namespace AdaptiveExpressions.Properties
         public string ExpressionText { get; set; }
 
         /// <summary>
-        /// Convert a value to an ExpressionProperty instance.
+        /// Converts a value to an ExpressionProperty instance.
         /// </summary>
         /// <param name="value">A value to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator ExpressionProperty<T>(T value) => new ExpressionProperty<T>(value);
 
         /// <summary>
-        /// Convert a string value to an ExpressionProperty instance.
+        /// Converts a string value to an ExpressionProperty instance.
         /// </summary>
-        /// <param name="expression">A string value to convert.</param>
+        /// <param name="expression">The string value to convert.</param>
         public static implicit operator ExpressionProperty<T>(string expression) => new ExpressionProperty<T>(expression);
 
         /// <summary>
-        /// Convert an Expression instance to an ExpressionProperty instance.
+        /// Converts an Expression instance to an ExpressionProperty instance.
         /// </summary>
-        /// <param name="expression">An Expression instance to convert.</param>
+        /// <param name="expression">The Expression instance to convert.</param>
         public static implicit operator ExpressionProperty<T>(Expression expression) => new ExpressionProperty<T>(expression);
 #pragma warning restore CA2225 // Operator overloads have named alternates
 
@@ -119,14 +119,14 @@ namespace AdaptiveExpressions.Properties
         /// Get the value.
         /// </summary>
         /// <param name="data">data to use for expression binding.</param>
-        /// <returns>value or default(T) if not found.</returns>
+        /// <returns>Value or default(T) if not found.</returns>
         public virtual T GetValue(object data)
         {
             return this.TryGetValue(data).Value;
         }
 
         /// <summary>
-        /// try to Get the value.
+        /// Try to Get the value.
         /// </summary>
         /// <param name="data">data to use for expression binding.</param>
         /// <returns>value.</returns>

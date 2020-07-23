@@ -83,19 +83,19 @@ namespace AdaptiveExpressions.Properties
         /// <summary>
         /// Converts a string to ArrayExpression.
         /// </summary>
-        /// <param name="expression">A string to convert.</param>
+        /// <param name="expression">The string to convert.</param>
         public static implicit operator ArrayExpression<T>(string expression) => new ArrayExpression<T>(expression);
 
         /// <summary>
         /// Converts an Expression instance to ArrayExpression.
         /// </summary>
-        /// <param name="expression">An Expression instance to convert.</param>
+        /// <param name="expression">The Expression instance to convert.</param>
         public static implicit operator ArrayExpression<T>(Expression expression) => new ArrayExpression<T>(expression);
 
         /// <summary>
         /// Converts a JSON Token to ArrayExpression.
         /// </summary>
-        /// <param name="expressionOrValue">A JSON Token to Convert.</param>
+        /// <param name="expressionOrValue">The JSON Token to Convert.</param>
         public static implicit operator ArrayExpression<T>(JToken expressionOrValue) => new ArrayExpression<T>(expressionOrValue);
 #pragma warning restore CA2225 // Operator overloads have named alternates
     }
