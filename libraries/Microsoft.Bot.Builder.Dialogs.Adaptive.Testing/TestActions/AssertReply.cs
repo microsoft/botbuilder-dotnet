@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 }
                 else
                 {
-                    if (activity.AsMessageActivity()?.Text.ToLower().Trim().Contains(this.Text.ToLower().Trim()) == false)
+                    if (activity.AsMessageActivity()?.Text.ToLowerInvariant().Trim().Contains(this.Text.ToLowerInvariant().Trim()) == false)
                     {
                         throw new Exception(this.Description ?? $"Text '{activity.Text}' didn't match expected text: '{this.Text}'");
                     }

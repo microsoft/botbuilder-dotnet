@@ -365,7 +365,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 }
 
                 var suggestedQuestions = dc.State.GetValue<List<string>>($"this.suggestedQuestions");
-                if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Compare(question, reply.Trim(), ignoreCase: true) == 0))
+                if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Compare(question, reply.Trim(), StringComparison.OrdinalIgnoreCase) == 0))
                 {
                     // it matches one of the suggested actions, we like that.
                     return true;
@@ -439,7 +439,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the response options to use.</remarks>
-        protected async virtual Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
+        protected virtual async Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
             return new QnADialogResponseOptions
             {
@@ -448,6 +448,31 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
                 CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
             };
+        }
+        
+        private static void ResetOptions(DialogContext dc, QnAMakerDialogOptions dialogOptions)
+        {
+            // Resetting context and QnAId
+            dialogOptions.QnAMakerOptions.QnAId = 0;
+            dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
+
+            // -Check if previous context is present, if yes then put it with the query
+            // -Check for id if query is present in reverse index.
+            var previousContextData = ObjectPath.GetPathValue<Dictionary<string, int>>(dc.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
+            var previousQnAId = ObjectPath.GetPathValue<int>(dc.ActiveDialog.State, PreviousQnAId, 0);
+
+            if (previousQnAId > 0)
+            {
+                dialogOptions.QnAMakerOptions.Context = new QnARequestContext
+                {
+                    PreviousQnAId = previousQnAId
+                };
+
+                if (previousContextData.TryGetValue(dc.Context.Activity.Text, out var currentQnAId))
+                {
+                    dialogOptions.QnAMakerOptions.QnAId = currentQnAId;
+                }
+            }
         }
 
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -485,7 +510,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 // Get filtered list of the response that support low score variation criteria.
                 response.Answers = qnaClient.GetLowScoreVariation(response.Answers);
 
-                if (response.Answers.Count() > 1 && isActiveLearningEnabled)
+                if (response.Answers.Length > 1 && isActiveLearningEnabled)
                 {
                     var suggestedQuestions = new List<string>();
                     foreach (var qna in response.Answers)
@@ -514,31 +539,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             // If card is not shown, move to next step with top QnA response.
             return await stepContext.NextAsync(result, cancellationToken).ConfigureAwait(false);
-        }
-
-        private void ResetOptions(DialogContext dc, QnAMakerDialogOptions dialogOptions)
-        {
-            // Resetting context and QnAId
-            dialogOptions.QnAMakerOptions.QnAId = 0;
-            dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
-
-            // -Check if previous context is present, if yes then put it with the query
-            // -Check for id if query is present in reverse index.
-            var previousContextData = ObjectPath.GetPathValue<Dictionary<string, int>>(dc.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
-            var previousQnAId = ObjectPath.GetPathValue<int>(dc.ActiveDialog.State, PreviousQnAId, 0);
-
-            if (previousQnAId > 0)
-            {
-                dialogOptions.QnAMakerOptions.Context = new QnARequestContext
-                {
-                    PreviousQnAId = previousQnAId
-                };
-
-                if (previousContextData.TryGetValue(dc.Context.Activity.Text, out var currentQnAId))
-                {
-                    dialogOptions.QnAMakerOptions.QnAId = currentQnAId;
-                }
-            }
         }
 
         private async Task<DialogTurnResult> CallTrainAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -613,7 +613,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                 var answer = response.First();
 
-                if (answer.Context != null && answer.Context.Prompts.Count() > 0)
+                if (answer.Context != null && answer.Context.Prompts.Length > 0)
                 {
                     var previousContextData = ObjectPath.GetPathValue(stepContext.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
                     var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);

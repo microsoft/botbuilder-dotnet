@@ -72,6 +72,22 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task TestInstallationUpdateActivity()
+        {
+            // Arrange
+            var activity = new Activity { Type = ActivityTypes.InstallationUpdate };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnInstallationUpdateActivityAsync", bot.Record[0]);
+        }
+
+        [Fact]
         public async Task TestMemberAdded1()
         {
             // Arrange
@@ -712,6 +728,12 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTypingActivityAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnInstallationUpdateActivityAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnInstallationUpdateActivityAsync(turnContext, cancellationToken);
             }
 
             protected override Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)

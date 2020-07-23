@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public async Task QnaMaker_TraceActivity_NullActivity()
         {
             // Get basic Qna

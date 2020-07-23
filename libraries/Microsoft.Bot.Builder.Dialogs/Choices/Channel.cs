@@ -38,6 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Connector.Channels.Telegram:
                 case Connector.Channels.Emulator:
                 case Connector.Channels.Directline:
+                case Connector.Channels.DirectlineSpeech:
                 case Connector.Channels.Webchat:
                     return buttonCnt <= 100;
 
@@ -67,6 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Connector.Channels.Slack:
                 case Connector.Channels.Emulator:
                 case Connector.Channels.Directline:
+                case Connector.Channels.DirectlineSpeech:
                 case Connector.Channels.Webchat:
                 case Connector.Channels.Cortana:
                     return buttonCnt <= 100;

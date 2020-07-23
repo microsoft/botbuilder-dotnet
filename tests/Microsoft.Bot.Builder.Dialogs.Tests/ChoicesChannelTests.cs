@@ -70,6 +70,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public void ShouldReturnTrueForSupportsSuggestedActionsWithDirectLineSpeechAnd100()
+        {
+            var supports = Channel.SupportsSuggestedActions(Channels.DirectlineSpeech, 100);
+            Assert.IsTrue(supports);
+        }
+
+        [TestMethod]
+        public void ShouldReturnTrueForSupportsCardActionsWithDirectLineSpeechAnd99()
+        {
+            var supports = Channel.SupportsCardActions(Channels.DirectlineSpeech, 99);
+            Assert.IsTrue(supports);
+        }
+
+        [TestMethod]
         public void ShouldReturnTrueForSupportsCardActionsWithLineAnd99()
         {
             var supports = Channel.SupportsCardActions(Channels.Line, 99);

@@ -51,7 +51,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The actions to be applied to the active action.
         /// </value>
         [JsonProperty("actions")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the type of change to appy to the active actions.

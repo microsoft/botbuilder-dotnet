@@ -77,7 +77,7 @@ namespace AdaptiveExpressions
                         foreach (var child in expression.Children)
                         {
                             var clauses = Conjunctions(child).ToList();
-                            if (clauses.Count() == 0)
+                            if (!clauses.Any())
                             {
                                 // Encountered false
                                 sofar.Clear();

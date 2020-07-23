@@ -5,9 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -192,14 +193,19 @@ namespace Microsoft.Bot.Builder
         /// <returns>The properties and their values to log when a message is received from the user.</returns>
         protected Task<Dictionary<string, string>> FillReceiveEventPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
         {
+            if (activity == null)
+            {
+                return Task.FromResult(new Dictionary<string, string>());
+            }
+
             var properties = new Dictionary<string, string>()
-                {
-                    { TelemetryConstants.FromIdProperty, activity.From?.Id },
-                    { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
-                    { TelemetryConstants.LocaleProperty, activity.Locale },
-                    { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
-                    { TelemetryConstants.RecipientNameProperty, activity.Recipient.Name },
-                };
+            {
+                { TelemetryConstants.FromIdProperty, activity.From?.Id },
+                { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
+                { TelemetryConstants.LocaleProperty, activity.Locale },
+                { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
+                { TelemetryConstants.RecipientNameProperty, activity.Recipient?.Name },
+            };
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
             if (LogPersonalInformation)
@@ -220,12 +226,14 @@ namespace Microsoft.Bot.Builder
                 }
             }
 
+            PopulateAdditionalChannelProperties(activity, properties);
+            
             // Additional Properties can override "stock" properties.
             if (additionalProperties != null)
             {
                 return Task.FromResult(additionalProperties.Concat(properties)
-                           .GroupBy(kv => kv.Key)
-                           .ToDictionary(g => g.Key, g => g.First().Value));
+                    .GroupBy(kv => kv.Key)
+                    .ToDictionary(g => g.Key, g => g.First().Value));
             }
 
             return Task.FromResult(properties);
@@ -241,11 +249,16 @@ namespace Microsoft.Bot.Builder
         /// <returns>The properties and their values to log when the bot sends the user a message.</returns>
         protected Task<Dictionary<string, string>> FillSendEventPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
         {
+            if (activity == null)
+            {
+                return Task.FromResult(new Dictionary<string, string>());
+            }
+
             var properties = new Dictionary<string, string>()
                 {
                     { TelemetryConstants.ReplyActivityIDProperty, activity.ReplyToId },
-                    { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
-                    { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
+                    { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
+                    { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
                     { TelemetryConstants.LocaleProperty, activity.Locale },
                 };
 
@@ -293,11 +306,16 @@ namespace Microsoft.Bot.Builder
         /// <returns>The properties and their values to log when the bot updates a message it sent previously.</returns>
         protected Task<Dictionary<string, string>> FillUpdateEventPropertiesAsync(Activity activity, Dictionary<string, string> additionalProperties = null)
         {
+            if (activity == null)
+            {
+                return Task.FromResult(new Dictionary<string, string>());
+            }
+
             var properties = new Dictionary<string, string>()
                 {
-                    { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
-                    { TelemetryConstants.ConversationIdProperty, activity.Conversation.Id },
-                    { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
+                    { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
+                    { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
+                    { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
                     { TelemetryConstants.LocaleProperty, activity.Locale },
                 };
 
@@ -328,11 +346,16 @@ namespace Microsoft.Bot.Builder
         protected Task<Dictionary<string, string>> FillDeleteEventPropertiesAsync(IMessageDeleteActivity activity, Dictionary<string, string> additionalProperties = null)
 #pragma warning restore CA1822 // Mark members as static
         {
+            if (activity == null)
+            {
+                return Task.FromResult(new Dictionary<string, string>());
+            }
+
             var properties = new Dictionary<string, string>()
                 {
-                    { TelemetryConstants.RecipientIdProperty, activity.Recipient.Id },
-                    { TelemetryConstants.ConversationIdProperty, activity.Conversation.Id },
-                    { TelemetryConstants.ConversationNameProperty, activity.Conversation.Name },
+                    { TelemetryConstants.RecipientIdProperty, activity.Recipient?.Id },
+                    { TelemetryConstants.ConversationIdProperty, activity.Conversation?.Id },
+                    { TelemetryConstants.ConversationNameProperty, activity.Conversation?.Name },
                 };
 
             // Additional Properties can override "stock" properties.
@@ -344,6 +367,25 @@ namespace Microsoft.Bot.Builder
             }
 
             return Task.FromResult(properties);
+        }
+
+        private static void PopulateAdditionalChannelProperties(Activity activity, Dictionary<string, string> properties)
+        {
+            switch (activity.ChannelId)
+            {
+                case Channels.Msteams:
+                    var teamsChannelData = activity.GetChannelData<TeamsChannelData>();
+                    
+                    properties.Add("TeamsTenantId", teamsChannelData?.Tenant?.Id);
+                    properties.Add("TeamsUserAadObjectId", activity.From?.AadObjectId);
+
+                    if (teamsChannelData?.Team != null)
+                    {
+                        properties.Add("TeamsTeamInfo", JsonConvert.SerializeObject(teamsChannelData.Team));
+                    }
+
+                    break;
+            }
         }
     }
 }

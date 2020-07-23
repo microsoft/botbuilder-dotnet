@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.AI.Luis
@@ -41,7 +39,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             var di = new DirectoryInfo(botRoot);
-            foreach (var file in di.GetFiles($"luis.settings.{environment.ToLower()}.{luisRegion}.json", SearchOption.AllDirectories))
+            foreach (var file in di.GetFiles($"luis.settings.{environment.ToLowerInvariant()}.{luisRegion}.json", SearchOption.AllDirectories))
             {
                 var relative = file.FullName.Substring(di.FullName.Length);
                 if (!relative.Contains("bin\\") && !relative.Contains("obj\\"))

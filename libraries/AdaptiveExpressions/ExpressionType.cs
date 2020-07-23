@@ -120,11 +120,21 @@ namespace AdaptiveExpressions
         public const string IsTimeRange = "isTimeRange";
         public const string IsDateRange = "isDateRange";
         public const string IsPresent = "isPresent";
+        public const string GetNextViableDate = "getNextViableDate";
+        public const string GetPreviousViableDate = "getPreviousViableDate";
+        public const string GetNextViableTime = "getNextViableTime";
+        public const string GetPreviousViableTime = "getPreviousViableTime";
 
         // Conversions
+#pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)
         public const string Float = "float";
+#pragma warning restore CA1720 // Identifier contains type name
+#pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)
         public const string Int = "int";
+#pragma warning restore CA1720 // Identifier contains type name
+#pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)
         public const string String = "string";
+#pragma warning restore CA1720 // Identifier contains type name
         public const string Bool = "bool";
         public const string Binary = "binary";
         public const string Base64 = "base64";

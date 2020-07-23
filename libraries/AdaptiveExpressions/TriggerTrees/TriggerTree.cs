@@ -245,7 +245,9 @@ namespace AdaptiveExpressions.TriggerTrees
             return badNode;
         }
 
+#pragma warning disable CA1812 // Internal class that is apparently never instantiated (we can't remove the number parameter without breaking backward compat)
         private class Debugger
+#pragma warning restore CA1812 // Internal class that is apparently never instantiated
         {
             public Debugger(TriggerTree triggers)
             {
