@@ -21,7 +21,7 @@ steps:
     command: custom
     verbose: false
     customCommand: 'install -g @microsoft/botframework-cli'
-    customEndpoint: 'myget botbuilder-v4-js-daily npm connection'
+    customEndpoint: 'MyGet botbuilder-v4-js-daily npm connection 2'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test (release) 2.1'
