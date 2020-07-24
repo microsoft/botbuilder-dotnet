@@ -22,11 +22,11 @@ namespace Microsoft.Bot.Builder.Teams
     public static class TeamsInfo
     {
         /// <summary>
-        /// Gets the details for the given team id. Only works in the Teams scope. 
+        /// Gets the details for the given team id. Only works in the teams scope. 
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
-        /// <param name="teamId"> ID of the Teams team. </param>
-        /// <param name="cancellationToken"> cancellation token. </param>
+        /// <param name="teamId"> The id of the Teams team. </param>
+        /// <param name="cancellationToken"> Cancellation token. </param>
         /// <returns>Team Details.</returns>
         public static async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
@@ -66,12 +66,11 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Generate the activity.
-        /// Support Both string LG result and structured LG result.
+        /// Gets the conversation members of a one-on-one or group chat.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
-        /// <param name="cancellationToken"> cancellation token. </param>
-        /// <returns>Team Details.</returns>
+        /// <param name="cancellationToken"> Cancellation token. </param>
+        /// <returns>TeamsChannelAccount.</returns>
         public static Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             var teamInfo = turnContext.Activity.TeamsGetTeamInfo();
@@ -103,13 +102,14 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets a pagined list of members of a non-team conversation.
+        /// Gets a pagined list of members of a non-team conversation. This should
+        /// be used for teams that have a large number of members.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
-        /// <param name="pageSize"> number of entries on a page. </param>
-        /// <param name="continuationToken"> continuationToken token. </param>
-        /// /// <param name="cancellationToken"> cancellation token. </param>
-        /// <returns>Team Details.</returns>
+        /// <param name="pageSize"> Suggested number of entries on a page. </param>
+        /// <param name="continuationToken"> ContinuationToken token. </param>
+        /// /// <param name="cancellationToken"> Cancellation token. </param>
+        /// <returns>TeamsPagedMembersResult.</returns>
         public static Task<TeamsPagedMembersResult> GetPagedMembersAsync(ITurnContext turnContext, int? pageSize = default(int?), string continuationToken = default(string), CancellationToken cancellationToken = default)
         {
             var teamInfo = turnContext.Activity.TeamsGetTeamInfo();
@@ -162,8 +162,7 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Generate the activity.
-        /// Support Both string LG result and structured LG result.
+        /// Creates a new thread in a team chat and sends an activity to that new thread.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="activity"> ID of the Teams team. </param>

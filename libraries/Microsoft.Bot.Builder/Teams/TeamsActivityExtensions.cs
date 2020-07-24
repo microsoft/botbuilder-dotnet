@@ -13,10 +13,10 @@ namespace Microsoft.Bot.Builder.Teams
     public static class TeamsActivityExtensions
     {
         /// <summary>
-        /// Gets the Team's channel id off the current activity.
+        /// Gets the Team's channel id from the current activity.
         /// </summary>
-        /// <param name="activity"> this activity. </param>
-        /// <returns>current activity's team's channel, or empty string.</returns>
+        /// <param name="activity"> The current activity. </param>
+        /// <returns>The current activity's team's channel, or empty string.</returns>
         public static string TeamsGetChannelId(this IActivity activity)
         {
             var channelData = activity.GetChannelData<TeamsChannelData>();
@@ -35,9 +35,9 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Configures current activity to generate a notification within Teams.
+        /// Configures the current activity to generate a notification within Teams.
         /// </summary>
-        /// <param name="activity"> this activity. </param>
+        /// <param name="activity"> The current activity. </param>
         public static void TeamsNotifyUser(this IActivity activity)
         {
             var teamsChannelData = activity.ChannelData as TeamsChannelData;
