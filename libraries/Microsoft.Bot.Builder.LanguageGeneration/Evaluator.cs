@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Evaluator : LGTemplateParserBaseVisitor<object>
     {
         /// <summary>
-        /// A string indicating the type of LG.
+        /// A symbol of a string constant "lgType".
         /// </summary>
         public const string LGType = "lgType";
 

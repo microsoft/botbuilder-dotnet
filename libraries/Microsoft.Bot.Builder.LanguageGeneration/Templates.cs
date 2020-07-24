@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="id">The id of the current Templates instance.</param>
         /// <param name="expressionParser">The ExpressionParser to parse the expressions in the conent.</param>
         /// <param name="importResolver">The import resolver delegate to discover all imported LG resources.</param>
-        /// <param name="options">The list of string representing the options during evaluating the templates.</param>
+        /// <param name="options">The list of strings representing the options during evaluating the templates.</param>
         public Templates(
             IList<Template> templates = null,
             IList<TemplateImport> imports = null,

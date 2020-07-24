@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
         /// </summary>
-        /// <param name="opt">An other EvaluationOptions instance.</param>
+        /// <param name="opt">An EvaluationOptions instance.</param>
         public EvaluationOptions(EvaluationOptions opt)
         {
             StrictMode = opt.StrictMode;
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
         /// </summary>
-        /// <param name="optionsList">A list of string contains the options from a LG file.</param>
+        /// <param name="optionsList">A list of strings contains the options from a LG file.</param>
         public EvaluationOptions(IList<string> optionsList)
         {
             if (optionsList != null)

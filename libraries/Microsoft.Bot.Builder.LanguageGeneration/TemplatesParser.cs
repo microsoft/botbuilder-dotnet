@@ -285,10 +285,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             /// <summary>
             /// Visit a parse tree produced by <see cref="LGFileParser.errorDefinition"/>.
-            /// <para>
-            /// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-            /// on <paramref name="context"/>.
-            /// </para>
             /// </summary>
             /// <param name="context">The parse tree.</param>
             /// <returns>An Object of the visitor result.</returns>
@@ -305,10 +301,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             /// <summary>
             /// Visit a parse tree produced by <see cref="LGFileParser.importDefinition"/>.
-            /// <para>
-            /// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-            /// on <paramref name="context"/>.
-            /// </para>
             /// </summary>
             /// <param name="context">The parse tree.</param>
             /// <returns>An object of the visitor result.</returns>
@@ -332,10 +324,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             /// <summary>
             /// Visit a parse tree produced by <see cref="LGFileParser.optionDefinition"/>.
-            /// <para>
-            /// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-            /// on <paramref name="context"/>.
-            /// </para>
             /// </summary>
             /// <param name="context">The parse tree.</param>
             /// <returns>An object of the visitor result.</returns>
@@ -362,10 +350,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             /// <summary>
             /// Visit a parse tree produced by <see cref="LGFileParser.templateDefinition"/>.
-            /// <para>
-            /// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-            /// on <paramref name="context"/>.
-            /// </para>
             /// </summary>
             /// <param name="context">The parse tree.</param>
             /// <returns>An object of the visitor result.</returns>
