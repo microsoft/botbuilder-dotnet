@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -24,33 +25,29 @@ namespace Microsoft.Bot.Builder.Azure.Storage
     /// </remarks>
     public class BlobsTranscriptStore : ITranscriptStore
     {
-        private static readonly JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
-        {
-            // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
-            TypeNameHandling = TypeNameHandling.All,
-        });
-
         // Containers checked for creation.
         private static HashSet<string> _checkedContainers = new HashSet<string>();
 
         // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.
         private readonly JsonSerializer _jsonSerializer;
-        
+
+        private Lazy<BlobContainerClient> _containerClient;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobsTranscriptStore"/> class.
         /// </summary>
-        /// <param name="dataConnectionstring">Azure Storage connection string.</param>
+        /// <param name="dataConnectionString">Azure Storage connection string.</param>
         /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
         /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
         /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
         /// </param>
-        public BlobsTranscriptStore(string dataConnectionstring, string containerName, JsonSerializer jsonSerializer = null)
+        public BlobsTranscriptStore(string dataConnectionString, string containerName, JsonSerializer jsonSerializer = null)
         {
-            if (string.IsNullOrEmpty(dataConnectionstring))
+            if (string.IsNullOrEmpty(dataConnectionString))
             {
-                throw new ArgumentNullException(nameof(dataConnectionstring));
+                throw new ArgumentNullException(nameof(dataConnectionString));
             }
 
             if (string.IsNullOrEmpty(containerName))
@@ -58,14 +55,19 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                 throw new ArgumentNullException(nameof(containerName));
             }
 
-            _jsonSerializer = jsonSerializer ?? JsonSerializer;
+            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
+                                                {
+                                                    // we use All so that we get typed roundtrip out of storage, 
+                                                    // but we don't use validation because we don't know what types are valid
+                                                    TypeNameHandling = TypeNameHandling.All,
+                                                });
 
             // Triggers a check for the existance of the container
-            this.ContainerClient = new Lazy<BlobContainerClient>(
+            _containerClient = new Lazy<BlobContainerClient>(
                 () =>
                 {
-                    containerName = containerName.ToLower();
-                    var containerClient = new BlobContainerClient(dataConnectionstring, containerName);
+                    containerName = containerName.ToLowerInvariant();
+                    var containerClient = new BlobContainerClient(dataConnectionString, containerName);
                     if (!_checkedContainers.Contains(containerName))
                     {
                         _checkedContainers.Add(containerName);
@@ -75,8 +77,6 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                     return containerClient;
                 }, isThreadSafe: true);
         }
-
-        private Lazy<BlobContainerClient> ContainerClient { get; set; }
 
         /// <summary>
         /// Log an activity to the transcript.
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
 
                 default:
                     var blobName = GetBlobName(activity);
-                    var blobClient = ContainerClient.Value.GetBlobClient(blobName);
+                    var blobClient = _containerClient.Value.GetBlobClient(blobName);
                     await LogActivityToBlobClientAsync(activity, blobClient).ConfigureAwait(false);
                     return;
             }
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
         /// </summary>
         /// <param name="channelId">Channel Id.</param>
         /// <param name="conversationId">Conversation Id.</param>
-        /// <param name="continuationToken">Continuatuation token to page through results.</param>
+        /// <param name="continuationToken">Continuation token to page through results.</param>
         /// <param name="startDate">Earliest time to include.</param>
         /// <returns>PagedResult of activities.</returns>
         public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default)
@@ -167,14 +167,14 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             List<BlobItem> blobs = new List<BlobItem>();
             do
             {
-                var resultSegment = ContainerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
+                var resultSegment = _containerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
                                     .AsPages(token);
 
                 await foreach (var blobPage in resultSegment)
                 {
                     foreach (BlobItem blobItem in blobPage.Values)
                     {
-                        if (DateTime.Parse(blobItem.Metadata["Timestamp"]).ToUniversalTime() >= startDate)
+                        if (DateTime.Parse(blobItem.Metadata["Timestamp"], CultureInfo.InvariantCulture).ToUniversalTime() >= startDate)
                         {
                             if (continuationToken != null)
                             {
@@ -204,7 +204,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             pagedResult.Items = blobs
                 .Select(async bl =>
                 {
-                    var blobClient = ContainerClient.Value.GetBlobClient(bl.Name);
+                    var blobClient = _containerClient.Value.GetBlobClient(bl.Name);
                     return await GetActivityFromBlobClientAsync(blobClient).ConfigureAwait(false);
                 })
                 .Select(t => t.Result)
@@ -239,7 +239,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             {
                 token = null;
 
-                var resultSegment = ContainerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/")
+                var resultSegment = _containerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/")
                                     .AsPages(token);
 
                 await foreach (var blobPage in resultSegment)
@@ -304,14 +304,14 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             do
             {
                 token = null;
-                var resultSegment = ContainerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
+                var resultSegment = _containerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
                                                             .AsPages(token);
 
                 await foreach (var blobPage in resultSegment)
                 {
                     foreach (BlobItem blobItem in blobPage.Values)
                     {
-                        var blobClient = ContainerClient.Value.GetBlobClient(blobItem.Name);
+                        var blobClient = _containerClient.Value.GetBlobClient(blobItem.Name);
                         await blobClient.DeleteIfExistsAsync().ConfigureAwait(false);
                     }
 
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                     do
                     {
                         token = null;
-                        var resultSegment = ContainerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/")
+                        var resultSegment = _containerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/")
                                                             .AsPages(token);
 
                         await foreach (var blobPage in resultSegment)
@@ -342,7 +342,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                             {
                                 if (blobItem.Metadata.TryGetValue("Id", out string id) && id == activity.Id)
                                 {
-                                    var blobClient = ContainerClient.Value.GetBlobClient(blobItem.Name);
+                                    var blobClient = _containerClient.Value.GetBlobClient(blobItem.Name);
                                     var blobActivity = await GetActivityFromBlobClientAsync(blobClient).ConfigureAwait(false);
                                     return (blobActivity, blobClient);
                                 }
@@ -389,7 +389,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             using (var jsonWriter = new JsonTextWriter(streamWriter))
             {
                 _jsonSerializer.Serialize(jsonWriter, activity);
-                streamWriter.Flush();
+                await streamWriter.FlushAsync().ConfigureAwait(false);
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 await blobClient.UploadAsync(memoryStream, overwrite: overwrite).ConfigureAwait(false);
             }
@@ -399,14 +399,14 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                 ["Id"] = activity.Id,
                 ["FromId"] = activity.From?.Id,
                 ["RecipientId"] = activity.Recipient?.Id,
-                ["Timestamp"] = activity.Timestamp.Value.ToString("O")
+                ["Timestamp"] = activity.Timestamp.Value.ToString("O", CultureInfo.InvariantCulture)
             };
             await blobClient.SetMetadataAsync(metaData).ConfigureAwait(false);
         }
 
         private string GetBlobName(IActivity activity)
         {
-            var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{activity.Timestamp.Value.Ticks.ToString("x")}-{SanitizeKey(activity.Id)}.json";
+            var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{activity.Timestamp.Value.Ticks.ToString("x", CultureInfo.InvariantCulture)}-{SanitizeKey(activity.Id)}.json";
             return blobName;
         }
 

@@ -28,32 +28,26 @@ namespace Microsoft.Bot.Builder.Azure.Storage
     /// </remarks>
     public class Blobs : IStorage
     {
-        private static readonly JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
-        {
-            // we use All so that we get typed roundtrip out of storage, but we don't use validation because we don't know what types are valid
-            TypeNameHandling = TypeNameHandling.All,
-        });
-
-        // If a JsonSerializer is not provided during construction, this will be the default static JsonSerializer.
+        // If a JsonSerializer is not provided during construction, this will be the default JsonSerializer.
         private readonly JsonSerializer _jsonSerializer;
         private readonly BlobContainerClient _containerClient;
-        private int _checkforContainerExistance;
+        private int _checkForContainerExistence;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Blobs"/> class.
         /// </summary>
-        /// <param name="dataConnectionstring">Azure Storage connection string.</param>
+        /// <param name="dataConnectionString">Azure Storage connection string.</param>
         /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
         /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
         /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
         /// </param>
-        public Blobs(string dataConnectionstring, string containerName, JsonSerializer jsonSerializer = null)
+        public Blobs(string dataConnectionString, string containerName, JsonSerializer jsonSerializer = null)
         {
-            if (string.IsNullOrEmpty(dataConnectionstring))
+            if (string.IsNullOrEmpty(dataConnectionString))
             { 
-                throw new ArgumentNullException(nameof(dataConnectionstring)); 
+                throw new ArgumentNullException(nameof(dataConnectionString)); 
             }
             
             if (string.IsNullOrEmpty(containerName))
@@ -61,12 +55,17 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                 throw new ArgumentNullException(nameof(containerName));
             }
 
-            _jsonSerializer = jsonSerializer ?? JsonSerializer;
+            _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
+                                                    {
+                                                        // we use All so that we get typed roundtrip out of storage, 
+                                                        // but we don't use validation because we don't know what types are valid
+                                                        TypeNameHandling = TypeNameHandling.All,
+                                                    });
 
-            // Triggers a check for the existance of the container
-            _checkforContainerExistance = 1;
+            // Triggers a check for the existence of the container
+            _checkForContainerExistence = 1;
 
-            _containerClient = new BlobContainerClient(dataConnectionstring, containerName);
+            _containerClient = new BlobContainerClient(dataConnectionString, containerName);
         }
 
         /// <summary>
@@ -106,7 +105,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             }
 
             // this should only happen once - assuming this is a singleton
-            if (Interlocked.CompareExchange(ref _checkforContainerExistance, 0, 1) == 1)
+            if (Interlocked.CompareExchange(ref _checkForContainerExistence, 0, 1) == 1)
             {
                 await _containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -152,7 +151,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             }
 
             // this should only happen once - assuming this is a singleton
-            if (Interlocked.CompareExchange(ref _checkforContainerExistance, 0, 1) == 1)
+            if (Interlocked.CompareExchange(ref _checkForContainerExistence, 0, 1) == 1)
             {
                 await _containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -175,7 +174,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                     using (var streamWriter = new StreamWriter(memoryStream))
                     {
                         _jsonSerializer.Serialize(streamWriter, newValue);
-                        streamWriter.Flush();
+                        await streamWriter.FlushAsync().ConfigureAwait(false);
                         memoryStream.Seek(0, SeekOrigin.Begin);
                         await blobReference.UploadAsync(memoryStream, conditions: accessCondition, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
@@ -185,7 +184,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                 && ex.ErrorCode == BlobErrorCode.InvalidBlockList)
                 {
                     throw new Exception(
-                        $"An error ocurred while trying to write an object. The underlying '{BlobErrorCode.InvalidBlockList}' error is commonly caused due to concurrently uploading an object larger than 128MB in size.",
+                        $"An error occurred while trying to write an object. The underlying '{BlobErrorCode.InvalidBlockList}' error is commonly caused due to concurrently uploading an object larger than 128MB in size.",
                         ex);
                 }
             }
@@ -216,7 +215,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
 
                             if (obj is IStoreItem storeItem)
                             {
-                                storeItem.ETag = (await blobReference.GetPropertiesAsync().ConfigureAwait(false))?.Value?.ETag.ToString();
+                                storeItem.ETag = (await blobReference.GetPropertiesAsync(cancellationToken: cancellationToken).ConfigureAwait(false))?.Value?.ETag.ToString();
                             }
 
                             return obj;
@@ -229,7 +228,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
                     // additional retry logic, even though this is a read operation blob storage can return 412 if there is contention
                     if (i++ < 8)
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(20)).ConfigureAwait(false);
+                        await Task.Delay(TimeSpan.FromSeconds(2),  cancellationToken).ConfigureAwait(false);
                         continue;
                     }
                     else
