@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
@@ -22,7 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// <param name="codeModel">ICodeModel to use (default is internal implementation).</param>
         /// <param name="dataModel">IDataModel to use (default is internal implementation).</param>
         /// <param name="logger">ILogger to use (Default is NullLogger).</param>
-        /// <param name="coercion">ICoercion to use (default is internal implementation).</param>
         /// <returns>The <see cref="BotAdapter"/>.</returns>
         public static BotAdapter UseDebugger(
             this BotAdapter botAdapter, 
@@ -33,13 +30,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             IEvents events = null, 
             ICodeModel codeModel = null, 
             IDataModel dataModel = null, 
-            ILogger logger = null, 
-            ICoercion coercion = null)
+            ILogger logger = null)
         {
             codeModel = codeModel ?? new CodeModel();
             DebugSupport.SourceMap = sourceMap ?? new DebuggerSourceMap(codeModel);
 
             return botAdapter.Use(
+#pragma warning disable CA2000 // Dispose objects before losing scope (excluding, the object ownership is transferred to the adapter and the adapter should dispose it)
                 new DialogDebugAdapter(
                     port: port, 
                     sourceMap: DebugSupport.SourceMap, 
@@ -49,6 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     codeModel: codeModel,
                     dataModel: dataModel, 
                     logger: logger));
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
     }
 }

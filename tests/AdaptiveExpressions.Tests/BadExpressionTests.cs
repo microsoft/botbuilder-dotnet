@@ -307,6 +307,18 @@ namespace AdaptiveExpressions.Tests
             Test("dateTimeDiff(notValidTimeStamp,'2018-01-01T08:00:00.000Z')"), // the first parameter is not a valid timestamp
             Test("dateTimeDiff('2017-01-01T08:00:00.000Z',notValidTimeStamp)"), // the second parameter is not a valid timestamp
             Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z', 'years')"), // should only have 2 parameters
+            Test("getNextViableDate(hello)"), // should have a "XXXX-MM-DD" format string
+            Test("getNextViableDate(one)"), // should have a string parameter
+            Test("getNextViableDate('XXXX-10-10', 20)"), // should only have 1 parameter
+            Test("getPreviousViableDate(hello)"), // should have a "XXXX-MM-DD" format string
+            Test("getPreviousViableDate(one)"), // should have a string parameter
+            Test("getPreviousViableDate('XXXX-10-10', 20)"), // should only have 1 parameter
+            Test("getNextViableTime(hello)"), // should have a "XX:mm:ss" format string
+            Test("getNextViableTime(one)"), // should have a string parameter
+            Test("getNextViableTime('XX:12:12', 20)"), // should only have 1 parameter
+            Test("getPreviousViableTime(hello)"), // should have a "XX:mm:ss" format string
+            Test("getPreviousViableTime(one)"), // should have a string parameter
+            Test("getPreviousViableTime('XX:12:12', 20)"), // should only have 1 parameter
             #endregion
 
             #region uri parsing function test
