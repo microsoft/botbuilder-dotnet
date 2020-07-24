@@ -16,18 +16,14 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>A boolean value indicating health status.</value>
         [JsonProperty(PropertyName = "success")]
-#pragma warning disable SA1609 // Property documentation should have value
         public bool Success { get; set; }
-#pragma warning restore SA1609 // Property documentation should have value
 
         /// <summary>
         /// Gets or sets a value that is exactly the same as the Authorization header that would have been added to an HTTP POST back.
         /// </summary>
         /// <value>An Authorization header value.</value>
         [JsonProperty(PropertyName = "authorization")]
-#pragma warning disable SA1609 // Property documentation should have value
         public string Authorization { get; set; }
-#pragma warning restore SA1609 // Property documentation should have value
 
         /// <summary>
         /// Gets or sets a value that is exactly the same as the User-Agent header that would have been added to an HTTP POST back.
@@ -50,8 +46,6 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>Arbitrary diagnostic data that will be serialized to JSON.</value>
         [JsonProperty(PropertyName = "diagnostics")]
-#pragma warning disable SA1609 // Property documentation should have value
         public object Diagnostics { get; set; }
-#pragma warning restore SA1609 // Property documentation should have value
     }
 }
