@@ -59,7 +59,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Default case.
         /// </value>
         [JsonProperty("default")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<Dialog> Default { get; set; } = new List<Dialog>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets Cases.
@@ -68,7 +70,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Cases.
         /// </value>
         [JsonProperty("cases")]
+#pragma warning disable CA2227 // Collection properties should be read only
         public List<Case> Cases { get; set; } = new List<Case>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         protected ActionScope DefaultScope
         {

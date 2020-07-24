@@ -38,7 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>
         /// List of actions being executed.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<ActionState> Actions { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets list of changes that are queued to be applied.

@@ -55,10 +55,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public BoolExpression Disabled { get; set; }
 
         [JsonProperty("actions")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         [JsonProperty("elseActions")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<Dialog> ElseActions { get; set; } = new List<Dialog>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         protected ActionScope TrueScope
         {

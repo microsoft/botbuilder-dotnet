@@ -179,10 +179,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             {
                 if (!await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
                 {
-#pragma warning disable CA1308 // Normalize strings to uppercase (header names come in lowercase, ignoring)
                     var authHeader = httpRequest.Headers.GetValues(AuthHeaderName.ToLowerInvariant()).FirstOrDefault();
                     var channelId = httpRequest.Headers.GetValues(ChannelIdHeaderName.ToLowerInvariant()).FirstOrDefault();
-#pragma warning restore CA1308 // Normalize strings to uppercase
 
                     if (string.IsNullOrWhiteSpace(authHeader))
                     {

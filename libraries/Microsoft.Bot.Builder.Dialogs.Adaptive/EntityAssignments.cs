@@ -23,7 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Gets or sets the queue of pending entity assignments.
         /// </summary>
         /// <value>Queue of entity assignments.</value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<EntityAssignment> Assignments { get; set; } = new List<EntityAssignment>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Read entity event queue from memory.

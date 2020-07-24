@@ -32,7 +32,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </summary>
         /// <value>List of intent names that must be in the chooseIntent to match.</value>
         [JsonProperty("intents")]
+#pragma warning disable CA2227 // Collection properties should be read only
         public List<string> Intents { get; set; } = new List<string>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         public override Expression GetExpression()
         {

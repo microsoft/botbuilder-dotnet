@@ -112,7 +112,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 path = Path.GetDirectoryName(path);
                 if (Directory.Exists(path))
                 {
-                    resourceExplorer.AddResourceProvider(new FolderResourceProvider(resourceExplorer, path, includeSubFolders: true, monitorChanges: monitorChanges));
+#pragma warning disable CA2000 // Dispose objects before losing scope (ownership of FolderResourceProvider is transferred to ResourceExplorer, ResourceExplorer will dispose it on its own Dispose)
+                    resourceExplorer.AddResourceProvider(new FolderResourceProvider(resourceExplorer, path, true, monitorChanges));
+#pragma warning restore CA2000 // Dispose objects before losing scope
                 }
             }
 
@@ -121,10 +123,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
             {
                 packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), PathUtils.NormalizePath(relativePackagePath)));
-                if (packages == null)
-                {
-                    throw new ArgumentNullException("Can't find packages folder");
-                }
             }
 
             var pathResolver = new PackagePathResolver(packages);
@@ -141,7 +139,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
                     if (Directory.Exists(folder))
                     {
+#pragma warning disable CA2000 // Dispose objects before losing scope (ownership of FolderResourceProvider is transferred to ResourceExplorer, ResourceExplorer will dispose it on its own Dispose)
                         resourceExplorer.AddResourceProvider(new FolderResourceProvider(resourceExplorer, folder, includeSubFolders: true, monitorChanges: monitorChanges));
+#pragma warning restore CA2000 // Dispose objects before losing scope
                     }
                 }
             }

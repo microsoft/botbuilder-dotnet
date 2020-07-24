@@ -244,9 +244,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Templates transfeormer. Fullfill more details and body context into the templates object.
+        /// Templates transformer. Fulfill more details and body context into the templates object.
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible (we can't move this nested type without breaking binary compat)
         public class TemplatesTransformer : LGFileParserBaseVisitor<object>
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             private static readonly Regex IdentifierRegex = new Regex(@"^[0-9a-zA-Z_]+$");
             private static readonly Regex TemplateNamePartRegex = new Regex(@"^[a-zA-Z_][0-9a-zA-Z_]*$");
@@ -413,8 +415,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 var templateName = templateNameLine;
                 var parameters = new List<string>();
-                var leftBracketIndex = templateNameLine.IndexOf("(");
-                if (leftBracketIndex >= 0 && templateNameLine.EndsWith(")"))
+                var leftBracketIndex = templateNameLine.IndexOf("(", StringComparison.Ordinal);
+                if (leftBracketIndex >= 0 && templateNameLine.EndsWith(")", StringComparison.Ordinal))
                 {
                     templateName = templateNameLine.Substring(0, leftBracketIndex).Trim();
                     var paramString = templateNameLine.Substring(leftBracketIndex + 1, templateNameLine.Length - leftBracketIndex - 2);
