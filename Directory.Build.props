@@ -13,8 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <CodeAnalysisRuleSet Condition="'$(OS)' == 'Windows_NT'">$(SolutionDir)\BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(OS)' != 'Windows_NT'">$(SolutionDir)/BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>

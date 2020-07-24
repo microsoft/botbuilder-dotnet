@@ -77,6 +77,28 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${dialog.result.content}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "POST",
+                        "url": "http://127.0.0.1",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content.data}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "POST",
+                        "url": "http://127.0.0.1",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content.data}"
                     }
                 ]
             }
@@ -110,6 +132,14 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "repeated response"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "repeated ByteArray response"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "repeated ByteArray response"
         }
     ]
 }
