@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public static partial class Extensions
     {
+        /// <summary>
+        /// Represents the regular expression of a escaped character.
+        /// </summary>
         public static readonly Regex EscapeRegex = new Regex(@"\\[^\r\n]?");
 
         /// <summary>

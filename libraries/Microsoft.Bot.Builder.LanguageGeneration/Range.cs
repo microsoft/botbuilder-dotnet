@@ -8,14 +8,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class Range
     {
+        /// <summary>
+        /// Represents the default range in a file.
+        /// </summary>
         public static readonly Range DefaultRange = new Range(1, 0, 1, 0);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Range"/> class.
+        /// </summary>
+        /// <param name="start">The start position in a file.</param>
+        /// <param name="end">The end position in a file.</param>
         public Range(Position start, Position end)
         {
             Start = start;
             End = end;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Range"/> class.
+        /// </summary>
+        /// <param name="startLine">The start line number in a file.</param>
+        /// <param name="startChar">The start character number in the start line.</param>
+        /// <param name="endLine">The end line number in a file.</param>
+        /// <param name="endChar">The end character number in the end line.</param>
         public Range(int startLine, int startChar, int endLine, int endChar)
         {
             Start = new Position(startLine, startChar);
@@ -38,6 +53,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public Position End { get; set; }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             var result = Start.ToString();

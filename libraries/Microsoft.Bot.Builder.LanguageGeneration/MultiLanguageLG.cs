@@ -11,9 +11,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class MultiLanguageLG
     {
-        private readonly LanguagePolicy languageFallbackPolicy;
+        private readonly LanguagePolicy _languageFallbackPolicy;
 
-        private readonly Dictionary<string, Templates> lgPerLocale;
+        private readonly Dictionary<string, Templates> _lgPerLocale;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiLanguageLG"/> class.
@@ -22,8 +22,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="defaultLanguage">Default language.</param>
         public MultiLanguageLG(Dictionary<string, string> filePerLocale, string defaultLanguage = "")
         {
-            lgPerLocale = new Dictionary<string, Templates>(StringComparer.OrdinalIgnoreCase);
-            languageFallbackPolicy = new LanguagePolicy(defaultLanguage);
+            _lgPerLocale = new Dictionary<string, Templates>(StringComparer.OrdinalIgnoreCase);
+            _languageFallbackPolicy = new LanguagePolicy(defaultLanguage);
 
             if (filePerLocale == null)
             {
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var item in filePerLocale)
             {
-                lgPerLocale[item.Key] = Templates.ParseFile(item.Value);
+                _lgPerLocale[item.Key] = Templates.ParseFile(item.Value);
             }
         }
 
@@ -43,13 +43,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="defaultLanguage">Default language.</param>
         public MultiLanguageLG(Dictionary<string, Templates> templatesPerLocale, string defaultLanguage = "")
         {
-            lgPerLocale = new Dictionary<string, Templates>(StringComparer.OrdinalIgnoreCase);
+            _lgPerLocale = new Dictionary<string, Templates>(StringComparer.OrdinalIgnoreCase);
             foreach (var templatesPair in templatesPerLocale)
             {
-                lgPerLocale.Add(templatesPair.Key, templatesPair.Value);
+                _lgPerLocale.Add(templatesPair.Key, templatesPair.Value);
             }
 
-            languageFallbackPolicy = new LanguagePolicy(defaultLanguage);
+            _languageFallbackPolicy = new LanguagePolicy(defaultLanguage);
         }
 
         /// <summary>
@@ -68,21 +68,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             locale = locale ?? string.Empty;
 
-            if (lgPerLocale.ContainsKey(locale))
+            if (_lgPerLocale.ContainsKey(locale))
             {
-                return lgPerLocale[locale].Evaluate(template, data);
+                return _lgPerLocale[locale].Evaluate(template, data);
             }
 
             var fallbackLocales = new List<string>();
-            if (languageFallbackPolicy.ContainsKey(locale))
+            if (_languageFallbackPolicy.ContainsKey(locale))
             {
-                fallbackLocales.AddRange(languageFallbackPolicy[locale]);
+                fallbackLocales.AddRange(_languageFallbackPolicy[locale]);
             }
 
             // append empty as fallback to end
-            if (!string.IsNullOrEmpty(locale) && languageFallbackPolicy.ContainsKey(string.Empty))
+            if (!string.IsNullOrEmpty(locale) && _languageFallbackPolicy.ContainsKey(string.Empty))
             {
-                fallbackLocales.AddRange(languageFallbackPolicy[string.Empty]);
+                fallbackLocales.AddRange(_languageFallbackPolicy[string.Empty]);
             }
 
             if (fallbackLocales.Count == 0)
@@ -92,9 +92,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var fallbackLocale in fallbackLocales)
             {
-                if (lgPerLocale.ContainsKey(fallbackLocale))
+                if (_lgPerLocale.ContainsKey(fallbackLocale))
                 {
-                    return lgPerLocale[fallbackLocale].Evaluate(template, data);
+                    return _lgPerLocale[fallbackLocale].Evaluate(template, data);
                 }
             }
 

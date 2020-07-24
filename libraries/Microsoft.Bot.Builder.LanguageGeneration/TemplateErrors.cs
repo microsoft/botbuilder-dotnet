@@ -10,6 +10,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class TemplateErrors
 #pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public const string NoTemplate = "LG file must have at least one template definition.";
 
         public const string InvalidTemplateBody = "Invalid template body. Expecting '-' prefix. ";
@@ -91,5 +92,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static string TemplateExist(string templateName) => $"template '{templateName}' already exists.";
 
         public static string ExpressionParseError(string exp) => $"Error occurred when parsing expression '{exp}'.";
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }

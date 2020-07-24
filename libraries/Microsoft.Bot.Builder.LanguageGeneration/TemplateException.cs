@@ -17,6 +17,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 #pragma warning restore CA2229 // Implement serialization constructors
 #pragma warning restore CA1032 // Implement standard exception constructors
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateException"/> class.
+        /// </summary>
+        /// <param name="message">The error message.</param>
+        /// <param name="diagnostics">The list of diagnostics to throw.</param>
         public TemplateException(string message, IList<Diagnostic> diagnostics)
             : base(message)
         {

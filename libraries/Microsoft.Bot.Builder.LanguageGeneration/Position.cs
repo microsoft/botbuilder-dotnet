@@ -9,6 +9,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class Position
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Position"/> class.
+        /// </summary>
+        /// <param name="line">The line number of the current position.</param>
+        /// <param name="character">The character number of the current line.</param>
         public Position(int line, int character)
         {
             Line = line;
@@ -31,6 +36,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public int Character { get; set; }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString() => $"line {Line}:{Character}";
     }
 }

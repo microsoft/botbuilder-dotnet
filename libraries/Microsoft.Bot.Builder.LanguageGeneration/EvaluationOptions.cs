@@ -29,24 +29,35 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class EvaluationOptions
     {
         private static readonly Regex NullKeyReplaceStrRegex = new Regex(@"\${\s*path\s*}");
-        private readonly string strictModeKey = "@strict";
-        private readonly string replaceNullKey = "@replaceNull";
-        private readonly string lineBreakKey = "@lineBreakStyle";
+        private readonly string _strictModeKey = "@strict";
+        private readonly string _replaceNullKey = "@replaceNull";
+        private readonly string _lineBreakKey = "@lineBreakStyle";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
+        /// </summary>
         public EvaluationOptions()
         {
-            this.StrictMode = null;
-            this.NullSubstitution = null;
-            this.LineBreakStyle = null;
+            StrictMode = null;
+            NullSubstitution = null;
+            LineBreakStyle = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
+        /// </summary>
+        /// <param name="opt">An other EvaluationOptions instance.</param>
         public EvaluationOptions(EvaluationOptions opt)
         {
-            this.StrictMode = opt.StrictMode;
-            this.NullSubstitution = opt.NullSubstitution;
-            this.LineBreakStyle = opt.LineBreakStyle;
+            StrictMode = opt.StrictMode;
+            NullSubstitution = opt.NullSubstitution;
+            LineBreakStyle = opt.LineBreakStyle;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
+        /// </summary>
+        /// <param name="optionsList">A list of string contains the options from a LG file.</param>
         public EvaluationOptions(IList<string> optionsList)
         {
             if (optionsList != null)
@@ -58,18 +69,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         var index = option.IndexOf('=');
                         var key = option.Substring(0, index).Trim();
                         var value = option.Substring(index + 1).Trim();
-                        if (key == strictModeKey)
+                        if (key == _strictModeKey)
                         {
                             if (value.ToLowerInvariant() == "true")
                             {
                                 StrictMode = true;
                             }
                         }
-                        else if (key == replaceNullKey)
+                        else if (key == _replaceNullKey)
                         {
                             NullSubstitution = (path) => NullKeyReplaceStrRegex.Replace(value, $"{path}");
                         }
-                        else if (key == lineBreakKey)
+                        else if (key == _lineBreakKey)
                         {
                             LineBreakStyle = value.ToLowerInvariant() == LGLineBreakStyle.Markdown.ToString().ToLowerInvariant() ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
                         }

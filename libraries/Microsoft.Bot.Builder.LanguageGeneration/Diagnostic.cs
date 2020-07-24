@@ -35,6 +35,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class Diagnostic
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Diagnostic"/> class.
+        /// </summary>
+        /// <param name="range">The range of the current Diagnostic instance.</param>
+        /// <param name="message">The error message of the current Diagnostic instance.</param>
+        /// <param name="severity">The serverity of the current Diagnostic instance.</param>
+        /// <param name="source">The source of the current Diagnostic instance.</param>
+        /// <param name="code">The code or identifier of the current Diagnostic instance.</param>
         public Diagnostic(
             Range range,
             string message,
@@ -89,6 +97,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public string Message { get; }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             // ignore error range if source is inline content
