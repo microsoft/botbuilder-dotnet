@@ -188,13 +188,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private static bool PathEquals(string one, string two)
         {
-            var ext1 = Path.GetExtension(one).ToLower();
+            var ext1 = Path.GetExtension(one).ToLowerInvariant();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // we want to be case insensitive on windows
-                one = one.ToLower();
-                two = two.ToLower();
+                one = one.ToLowerInvariant();
+                two = two.ToLowerInvariant();
             }
 
             // if it's resource path, we only care about resource name
@@ -301,7 +301,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
+#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat, consider fixing this before we go out of preview)
         public sealed class Row
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             public Row(Protocol.Source source, Protocol.SourceBreakpoint sourceBreakpoint)
             {

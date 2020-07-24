@@ -21,13 +21,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         }
 
         /// <summary>
-        /// Gets or sets the text variations.
+        /// Gets the text variations.
         /// </summary>
         /// <value>
         /// The text variations.
         /// </value>
         [JsonProperty("text")]
-        public List<string> Text { get; set; } = new List<string>();
+        public List<string> Text { get; } = new List<string>();
 
         /// <summary>
         /// Gets or sets a value indicating whether exact match policy should be used.
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 }
                 else
                 {
-                    if (activity.AsMessageActivity()?.Text.ToLower().Trim().Contains(reply.ToLower().Trim()) == true)
+                    if (activity.AsMessageActivity()?.Text.ToLowerInvariant().Trim().Contains(reply.ToLowerInvariant().Trim()) == true)
                     {
                         found = true;
                         break;

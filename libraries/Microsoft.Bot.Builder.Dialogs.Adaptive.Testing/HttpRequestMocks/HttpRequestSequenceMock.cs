@@ -11,6 +11,9 @@ using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 {
+    /// <summary>
+    /// Mock http request in sequence order. The last response will be repeated.
+    /// </summary>
     public class HttpRequestSequenceMock : HttpRequestMock
     {
         [JsonProperty("$kind")]
@@ -39,16 +42,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         /// Url.
         /// </value>
         [JsonProperty("url")]
+#pragma warning disable CA1056 // Uri properties should not be strings (by design, excluding)
         public string Url { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
-        /// Gets or sets the sequence of responses to reply. The last one will be repeated.
+        /// Gets the sequence of responses to reply. The last one will be repeated.
         /// </summary>
         /// <value>
         /// The sequence of responses to reply.
         /// </value>
         [JsonProperty("responses")]
-        public List<HttpResponseMock> Responses { get; set; }
+        public List<HttpResponseMock> Responses { get;  } = new List<HttpResponseMock>();
 
         public override void Setup(MockHttpMessageHandler handler)
         {
