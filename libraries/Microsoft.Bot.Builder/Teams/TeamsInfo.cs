@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Teams
     public static class TeamsInfo
     {
         /// <summary>
-        /// Gets the details for the given team id. Only works in the teams scope. 
+        /// Gets the details for the given team id. This only works in teams scoped conversations. 
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="teamId"> The id of the Teams team. </param>
@@ -37,7 +37,8 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Returns a list of channels in a Team.
+        /// Returns a list of channels in a Team. 
+        /// This only works in teams scoped conversations.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="teamId"> ID of the Teams team. </param>
@@ -53,7 +54,8 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets the list of TeamsChannelAccounts within a team.
+        /// Gets the list of TeamsChannelAccounts within a team. 
+        /// This only works in teams scoped conversations.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="teamId"> ID of the Teams team. </param>
@@ -87,7 +89,8 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets a paginated list of members of a team.
+        /// Gets a paginated list of members of a team. 
+        /// This only works in teams scoped conversations.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="teamId"> ID of the Teams team. </param>
@@ -102,8 +105,7 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets a pagined list of members of a non-team conversation. This should
-        /// be used for teams that have a large number of members.
+        /// Gets a pagined list of members of one-on-one, group, or team conversation.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="pageSize"> Suggested number of entries on a page. </param>
@@ -140,7 +142,8 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets the account of a single user.
+        /// Gets the account of a single conversation member. 
+        /// This works in one-on-one, group, and teams scoped conversations.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="userId"> ID of the user in question. </param>
