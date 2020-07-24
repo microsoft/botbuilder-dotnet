@@ -62,7 +62,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </value>
         public bool IncludeSubFolders { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             lock (Directory)
@@ -128,7 +130,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
             return this.Id;

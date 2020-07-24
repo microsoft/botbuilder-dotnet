@@ -21,7 +21,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             yield break;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Returns an enumeration of JsonConverters for supporting loading declarative types.
+        /// </summary>
+        /// <param name="resourceExplorer">The ResourceExplorer.</param>
+        /// <param name="sourceContext">The SourceContext to build a debugger source map.</param>
+        /// <returns>A list of JSON converters.</returns>
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield return new InterfaceConverter<IStorage>(resourceExplorer, sourceContext);
