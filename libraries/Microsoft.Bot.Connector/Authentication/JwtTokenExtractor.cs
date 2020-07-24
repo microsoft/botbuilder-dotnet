@@ -17,7 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
-    /// Gets identity information and performs security token validation.
+    /// A JWT token processing class that gets identity information and performs security token validation.
     /// </summary>
     public class JwtTokenExtractor
     {
