@@ -30,7 +30,14 @@ namespace Microsoft.Bot.Builder.TemplateManager
             _languages = templates;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Renders a template to an activity or string.
+        /// </summary>
+        /// <param name="turnContext">The turn context.</param>
+        /// <param name="language">The language to render.</param>
+        /// <param name="templateId">The template to render.</param>
+        /// <param name="data">The data object to use to render.</param>
+        /// <returns>Task.</returns>
         public Task<object> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data)
         {
             if (_languages.TryGetValue(language, out var templates))
