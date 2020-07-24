@@ -43,23 +43,26 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Gets the property that stops retrying.
         /// </summary>
-#pragma warning disable SA1609 // Property documentation should have value
+        /// <value>
+        /// The property that stops retrying.
+        /// </value>
         public static RetryParams StopRetrying { get; } = new RetryParams() { ShouldRetry = false };
-#pragma warning restore SA1609 // Property documentation should have value
 
         /// <summary>
         /// Gets or sets a value indicating whether the retry action should be performed.
         /// </summary>
-#pragma warning disable SA1609 // Property documentation should have value
+        /// <value>
+        /// A value indicating whether the retry action should be performed.
+        /// </value>
         public bool ShouldRetry { get; set; }
-#pragma warning restore SA1609 // Property documentation should have value
 
         /// <summary>
         /// Gets or sets a value indicating the time interval to wait between retry attempts.
         /// </summary>
-#pragma warning disable SA1609 // Property documentation should have value
+        /// <value>
+        /// A value indicating the time interval to wait between retry attempts.
+        /// </value>
         public TimeSpan RetryAfter { get; set; }
-#pragma warning restore SA1609 // Property documentation should have value
 
         /// <summary>
         /// Evaluates if the current retry count is less than the maximum number of retries allowed, and returns a new

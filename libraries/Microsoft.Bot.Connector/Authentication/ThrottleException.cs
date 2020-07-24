@@ -39,8 +39,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Gets or sets the property that defines the retrying behavior.
         /// </summary>
-#pragma warning disable SA1609 // Property documentation should have value
+        /// <value>
+        /// The property that defines the retrying behavior.
+        /// </value>
         public RetryParams RetryParams { get; set; }
-#pragma warning restore SA1609 // Property documentation should have value
     }
 }

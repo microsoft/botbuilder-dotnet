@@ -93,7 +93,10 @@ namespace Microsoft.Bot.Connector.Authentication
             MicrosoftAppId = clientCertificate.ClientId;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Builds the lazy <see cref="AdalAuthenticator" /> to be used for token acquisition.
+        /// </summary>
+        /// <returns>A lazy <see cref="AdalAuthenticator"/>.</returns>
         protected override Lazy<AdalAuthenticator> BuildAuthenticator()
         {
             return new Lazy<AdalAuthenticator>(

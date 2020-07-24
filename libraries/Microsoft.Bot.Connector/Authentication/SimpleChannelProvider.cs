@@ -31,9 +31,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Gets or sets the channel service.
         /// </summary>
-#pragma warning disable SA1609 // Property documentation should have value
+        /// <value>
+        /// The channel service.
+        /// </value>
         public string ChannelService { get; set; }
-#pragma warning restore SA1609 // Property documentation should have value
 
         /// <summary>
         /// Gets the channel service property for this channel provider.

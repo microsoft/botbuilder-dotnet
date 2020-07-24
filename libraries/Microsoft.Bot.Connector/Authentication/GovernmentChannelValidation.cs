@@ -35,10 +35,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Gets or sets the metadata address.
         /// </summary>
+        /// <value>
+        /// The metadata address.
+        /// </value>
 #pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking binary compat)
-#pragma warning disable SA1609 // Property documentation should have value
         public static string OpenIdMetadataUrl { get; set; } = GovernmentAuthenticationConstants.ToBotFromChannelOpenIdMetadataUrl;
-#pragma warning restore SA1609 // Property documentation should have value
 #pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
