@@ -56,7 +56,9 @@ namespace Microsoft.Bot.Builder.Azure.Storage
             }
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
-                                                {
+                                                {            
+                                                    NullValueHandling = NullValueHandling.Ignore,
+                                                    Formatting = Formatting.Indented,
                                                     TypeNameHandling = TypeNameHandling.None,
                                                 });
 
