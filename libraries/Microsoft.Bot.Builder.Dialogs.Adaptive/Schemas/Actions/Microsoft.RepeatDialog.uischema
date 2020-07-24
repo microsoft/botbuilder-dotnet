@@ -1,0 +1,12 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Repeat this dialog",
+        "subtitle": "Repeat Dialog",
+        "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+        "order": [
+            "options",
+            "*"
+        ]
+    }
+}
