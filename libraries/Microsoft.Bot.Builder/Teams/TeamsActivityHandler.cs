@@ -13,6 +13,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Teams
 {
+    /// <summary>
+    /// The TeamsActivityHandler is derived from ActivityHandler. It adds support for 
+    /// the Microsoft Teams specific events and interactions.
+    /// </summary>
     public class TeamsActivityHandler : ActivityHandler
     {
         /// <summary>
