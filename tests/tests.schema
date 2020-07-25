@@ -4581,6 +4581,57 @@
           "description": "Reference to Microsoft.ITrigger .dialog file."
         },
         {
+          "$ref": "#/definitions/Teams.OnAppBasedLinkQuery"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnCardAction"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnChannelCreated"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnChannelDeleted"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnChannelRenamed"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnFileConsent"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationSetting"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionFetchTask"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionQuery"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionSelectItem"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionSubmitAction"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnTaskModuleFetch"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnTaskModuleSubmit"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnTeamRenamed"
+        },
+        {
           "$ref": "#/definitions/Microsoft.OnActivity"
         },
         {
@@ -4657,57 +4708,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.OnUnknownIntent"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnAppBasedLinkQuery"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnCardAction"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnChannelCreated"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnChannelDeleted"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnChannelRenamed"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnFileConsent"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationSetting"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionFetchTask"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionQuery"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionSelectItem"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionSubmitAction"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTaskModuleFetch"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTaskModuleSubmit"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTeamRenamed"
         }
       ]
     },
@@ -5907,11 +5907,15 @@
       }
     },
     "Microsoft.OnCancelDialog": {
-      "$role": "implements(Microsoft.ITrigger)",
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
       "title": "On cancel dialog",
       "description": "Actions to perform on cancel dialog event.",
       "type": "object",
       "required": [
+        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5922,6 +5926,37 @@
         }
       },
       "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
         "$kind": {
           "title": "Kind of dialog object",
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",

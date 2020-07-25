@@ -16,12 +16,11 @@ steps:
 #         Start-CosmosDbEmulator
 
 - task: Npm@1
-  displayName: 'install botframework-cli from MyGet to set up for TestDialogResourcesAreValidForSchema tests.'
+  displayName: 'install botframework-cli to set up for Schema merge tests.'
   inputs:
     command: custom
     verbose: false
-    customCommand: 'install -g @microsoft/botframework-cli'
-    customEndpoint: 'MyGet botbuilder-cli npm connection'
+    customCommand: 'install -g @microsoft/botframework-cli@next'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test (release) 2.1'
