@@ -20,7 +20,7 @@ steps:
   inputs:
     command: custom
     verbose: false
-    customCommand: 'install -g @microsoft/botframework-cli'
+    customCommand: 'install -g @microsoft/botframework-cli@next'
     customEndpoint: 'MyGet botbuilder-cli npm connection'
 
 - task: DotNetCoreCLI@2
