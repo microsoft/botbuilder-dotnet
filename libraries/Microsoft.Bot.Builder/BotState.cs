@@ -345,6 +345,9 @@ namespace Microsoft.Bot.Builder
                 Hash = ComputeHash(State);
             }
 
+            /// <summary>
+            /// Gets or sets the state as a dictionary of key value pairs.
+            /// </summary>
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
             public IDictionary<string, object> State { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only

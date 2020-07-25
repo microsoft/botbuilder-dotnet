@@ -405,6 +405,10 @@ namespace Microsoft.Bot.Builder
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Frees resources.
+        /// </summary>
+        /// <param name="disposing">Boolean value that determines whether to free resources or not.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
