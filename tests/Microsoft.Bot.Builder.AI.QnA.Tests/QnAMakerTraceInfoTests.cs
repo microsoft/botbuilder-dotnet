@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.ComponentModel;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -10,6 +11,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
     public class QnAMakerTraceInfoTests
     {
         [Fact]
+        [Trait("Category", "AI")]
+        [Trait("Category", "QnAMaker")]
         public void QnAMakerTraceInfo_Serialization()
         {
             var qnaMakerTraceInfo = new QnAMakerTraceInfo

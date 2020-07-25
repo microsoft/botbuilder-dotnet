@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
+using AdaptiveExpressions.BuiltinFunctions;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Recognizers;
@@ -33,6 +35,24 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
         public static ResourceExplorer ResourceExplorer { get; set; }      
 
+        public string Initialize()
+        {
+            var parent = Environment.CurrentDirectory;
+            while (!string.IsNullOrEmpty(parent))
+            {
+                if (Directory.EnumerateFiles(parent, "*proj").Any())
+                {
+                    break;
+                }
+                else
+                {
+                    parent = Path.GetDirectoryName(parent);
+                }
+            }
+
+            return parent;
+        }
+
         public AdaptiveDialog QnAMakerRecognizer_DialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -55,18 +75,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [Fact]
         public async Task QnAMakerRecognizer_WithTopNAnswer()
         {
-            var parent = Environment.CurrentDirectory;
-            while (!string.IsNullOrEmpty(parent))
-            {
-                if (Directory.EnumerateFiles(parent, "*proj").Any())
-                {
-                    break;
-                }
-                else
-                {
-                    parent = Path.GetDirectoryName(parent);
-                }
-            }
+            var parent = Initialize();
 
             ResourceExplorer = new ResourceExplorer()
                 .AddFolder(parent, monitorChanges: false);
@@ -84,18 +93,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [Fact]
         public async Task QnAMakerRecognizer_WithAnswer()
         {
-            var parent = Environment.CurrentDirectory;
-            while (!string.IsNullOrEmpty(parent))
-            {
-                if (Directory.EnumerateFiles(parent, "*proj").Any())
-                {
-                    break;
-                }
-                else
-                {
-                    parent = Path.GetDirectoryName(parent);
-                }
-            }
+            var parent = Initialize();
 
             ResourceExplorer = new ResourceExplorer()
                 .AddFolder(parent, monitorChanges: false);
@@ -116,18 +114,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [Fact]
         public async Task QnAMakerRecognizer_WithNoAnswer()
         {
-            var parent = Environment.CurrentDirectory;
-            while (!string.IsNullOrEmpty(parent))
-            {
-                if (Directory.EnumerateFiles(parent, "*proj").Any())
-                {
-                    break;
-                }
-                else
-                {
-                    parent = Path.GetDirectoryName(parent);
-                }
-            }
+            var parent = Initialize();
 
             ResourceExplorer = new ResourceExplorer()
                 .AddFolder(parent, monitorChanges: false);
@@ -144,18 +131,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [Fact]
         public async Task QnAMakerRecognizer_WithIntent()
         {
-            var parent = Environment.CurrentDirectory;
-            while (!string.IsNullOrEmpty(parent))
-            {
-                if (Directory.EnumerateFiles(parent, "*proj").Any())
-                {
-                    break;
-                }
-                else
-                {
-                    parent = Path.GetDirectoryName(parent);
-                }
-            }
+            var parent = Initialize();
 
             ResourceExplorer = new ResourceExplorer()
                 .AddFolder(parent, monitorChanges: false);
