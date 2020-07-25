@@ -11,7 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the XML version of a string that contains a JSON object.
     /// </summary>
+#pragma warning disable CA1724 // Type names should not match namespaces (by design and we can't change this without breaking binary compat)
     public class Xml : ExpressionEvaluator
+#pragma warning restore CA1724 // Type names should not match namespaces
     {
         public Xml()
             : base(ExpressionType.Xml, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
@@ -26,22 +28,30 @@ namespace AdaptiveExpressions.BuiltinFunctions
         private static (object, string) ToXml(object contentToConvert)
         {
             string error = null;
-            XDocument xml;
             string result = null;
             try
             {
+                XDocument xml;
                 if (contentToConvert is string str)
                 {
-                    xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(str), new XmlDictionaryReaderQuotas()));
+                    using (var xmlDictionaryReader = JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(str), new XmlDictionaryReaderQuotas()))
+                    {
+                        xml = XDocument.Load(xmlDictionaryReader);
+                    }
                 }
                 else
                 {
-                    xml = XDocument.Load(JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(contentToConvert.ToString()), new XmlDictionaryReaderQuotas()));
+                    using (var xmlDictionaryReader = JsonReaderWriterFactory.CreateJsonReader(Encoding.ASCII.GetBytes(contentToConvert.ToString()), new XmlDictionaryReaderQuotas()))
+                    {
+                        xml = XDocument.Load(xmlDictionaryReader);
+                    }
                 }
 
                 result = xml.ToString().TrimStart('{').TrimEnd('}');
             }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic error)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 error = "Invalid json";
             }

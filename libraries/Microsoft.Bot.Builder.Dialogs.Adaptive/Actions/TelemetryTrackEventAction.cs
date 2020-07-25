@@ -54,7 +54,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A collection of properties to attach to the tracked event.
         /// </value>
         [JsonProperty]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public Dictionary<string, StringExpression> Properties { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

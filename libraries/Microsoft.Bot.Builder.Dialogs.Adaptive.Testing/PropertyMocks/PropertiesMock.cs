@@ -22,12 +22,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
         }
 
         /// <summary>
-        /// Gets or sets property assignments.
+        /// Gets the property assignments.
         /// </summary>
         /// <value>
         /// Property assignments as property=value pairs. In first match first use order.
         /// </value>
         [JsonProperty("assignments")]
-        public List<PropertyAssignment> Assignments { get; set; } = new List<PropertyAssignment>();
+        public List<PropertyAssignment> Assignments { get; } = new List<PropertyAssignment>();
     }
 }

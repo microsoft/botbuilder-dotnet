@@ -97,7 +97,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Import elements that this LG file contains directly.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
         public IList<TemplateImport> Imports { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets all references that this LG file has from <see cref="Imports"/>.
@@ -108,7 +110,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// All references that this LG file has from <see cref="Imports"/>.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
         public IList<Templates> References { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets diagnostics.
@@ -116,7 +120,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Diagnostics.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
         public IList<Diagnostic> Diagnostics { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets LG content.
@@ -140,7 +146,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// LG file options.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
         public IList<string> Options { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets the evluation options for current LG file.
@@ -229,7 +237,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // wrap inline string with "# name and -" to align the evaluation process
             var multiLineMark = "```";
 
-            text = !text.Trim().StartsWith(multiLineMark) && text.Contains('\n')
+            text = !text.Trim().StartsWith(multiLineMark, StringComparison.Ordinal) && text.Contains('\n')
                    ? $"{multiLineMark}{text}{multiLineMark}" : text;
 
             var newContent = $"# {InlineTemplateId} {newLine} - {text}";
@@ -506,7 +514,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var lines = GetLinesOfText(templateBody);
             var destList = lines.Select(u =>
             {
-                return u.TrimStart().StartsWith("#") ? $"- {u.TrimStart()}" : u;
+                return u.TrimStart().StartsWith("#", StringComparison.Ordinal) ? $"- {u.TrimStart()}" : u;
             });
 
             return string.Join(newLine, destList);
@@ -516,7 +524,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (text == null)
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             return text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
@@ -539,7 +547,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (AllDiagnostics != null)
             {
                 var errors = AllDiagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
-                if (errors.Count() != 0)
+                if (errors.Any())
                 {
                     throw new Exception(string.Join(newLine, errors));
                 }
@@ -554,7 +562,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (!string.IsNullOrWhiteSpace(option) && option.Contains("="))
                 {
                     var index = option.IndexOf('=');
-                    var key = option.Substring(0, index).Trim().ToLower();
+                    var key = option.Substring(0, index).Trim().ToLowerInvariant();
                     var value = option.Substring(index + 1).Trim();
                     if (key == nameOfKey)
                     {

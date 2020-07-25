@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -31,7 +32,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         if (error == null)
                         {
                             var timestamp2 = (DateTime)result;
-                            var timex = new TimexProperty(timestamp2.ToString("yyyy-MM-dd"));
+                            var timex = new TimexProperty(timestamp2.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
                             result = TimexRelativeConvert.ConvertTimexToStringRelative(timex, timestamp1);
                         }
                     }

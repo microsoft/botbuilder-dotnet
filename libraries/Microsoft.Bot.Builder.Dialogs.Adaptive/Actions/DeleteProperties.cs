@@ -49,7 +49,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Collection of property paths to remove.
         /// </value>
         [JsonProperty("properties")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<StringExpression> Properties { get; set; } = new List<StringExpression>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

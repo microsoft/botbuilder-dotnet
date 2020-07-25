@@ -9,7 +9,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Check whether all expressions are true. Return true if all expressions are true,
     /// or return false if at least one expression is false.
     /// </summary>
+#pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
     public class And : ExpressionEvaluator
+#pragma warning restore CA1716 // Identifiers should not match keywords
     {
         public And()
             : base(ExpressionType.And, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateAtLeastOne)

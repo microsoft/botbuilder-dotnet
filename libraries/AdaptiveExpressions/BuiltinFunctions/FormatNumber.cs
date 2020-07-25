@@ -41,11 +41,13 @@ namespace AdaptiveExpressions.BuiltinFunctions
                                 (precision, error) = FunctionUtils.ParseInt32(args[1]);
                                 try
                                 {
-                                    var number = Convert.ToDouble(args[0]);
+                                    var number = Convert.ToDouble(args[0], CultureInfo.InvariantCulture);
                                     var locale = args.Count == 3 ? new CultureInfo(args[2] as string) : CultureInfo.InvariantCulture;
-                                    result = number.ToString("N" + precision.ToString(), locale);
+                                    result = number.ToString("N" + precision, locale);
                                 }
+#pragma warning disable CA1031 // Do not catch general exception types (we are capturing the exception and returning it)
                                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                                 {
                                     error = $"{args[3]} is not a valid locale for formatNumber";
                                 }

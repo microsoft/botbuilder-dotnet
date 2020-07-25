@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -29,7 +30,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 if (args[0].IsInteger())
                 {
-                    value = Convert.ToDouble(args[0]) / TicksPerDay;
+                    value = Convert.ToDouble(args[0], CultureInfo.InvariantCulture) / TicksPerDay;
                 }
                 else
                 {

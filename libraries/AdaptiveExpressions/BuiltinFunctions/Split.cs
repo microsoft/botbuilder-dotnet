@@ -32,7 +32,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                                 seperator = FunctionUtils.ParseStringOrNull(args[1]);
                             }
 
-                            if (seperator == string.Empty)
+                            if (string.IsNullOrWhiteSpace(seperator))
                             {
                                 return inputStr.Select(c => c.ToString()).ToArray();
                             }

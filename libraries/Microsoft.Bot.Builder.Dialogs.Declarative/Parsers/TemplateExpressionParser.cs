@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Parsers
         {
             if (string.IsNullOrEmpty(template))
             {
-                throw new ArgumentException(nameof(template));
+                throw new ArgumentNullException(nameof(template));
             }
 
             var func = FuncRegex.Match(template);
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Parsers
 
             if (innerArgs == null)
             {
-                throw new ArgumentException(nameof(template), "Expected function format {<func>(<arg1>, <arg2>, <argn>)}");
+                throw new ArgumentException("Expected function format {<func>(<arg1>, <arg2>, <argn>)}", nameof(template));
             }
 
             var paramTags = ArgsRegex.Matches(innerArgs);

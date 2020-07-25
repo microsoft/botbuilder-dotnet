@@ -41,7 +41,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// The input recognizers.
         /// </value>
         [JsonProperty("recognizers")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {

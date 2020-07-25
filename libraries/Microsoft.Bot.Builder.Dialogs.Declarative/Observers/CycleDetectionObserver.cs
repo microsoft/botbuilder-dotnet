@@ -11,8 +11,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
     /// <see cref="IConverterObserver"/> dedicated to find cycles and properly aid in the type-loading
     /// of cyclical graphs.
     /// </summary>
+#pragma warning disable CA1812 // Internal class that is apparently never instantiated (Excluding for now, Carlos is addressing this in another branch)
     internal class CycleDetectionObserver : IConverterObserver
-    {
+#pragma warning restore CA1812 // Internal class that is apparently never instantiated
+{
         private readonly Dictionary<int, object> cache = new Dictionary<int, object>();
         private readonly HashSet<int> visitedPassOne = new HashSet<int>();
         private readonly HashSet<int> visitedPassTwo = new HashSet<int>();
