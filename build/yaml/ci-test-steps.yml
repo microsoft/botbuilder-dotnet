@@ -15,6 +15,14 @@ steps:
 #         Import-Module "C:/Program Files/Azure Cosmos DB Emulator/PSModules/Microsoft.Azure.CosmosDB.Emulator"
 #         Start-CosmosDbEmulator
 
+- task: Npm@1
+  displayName: 'install botframework-cli from MyGet to set up for TestDialogResourcesAreValidForSchema tests.'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install -g @microsoft/botframework-cli'
+    customEndpoint: 'MyGet botbuilder-cli npm connection'
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test (release) 2.1'
   inputs:
