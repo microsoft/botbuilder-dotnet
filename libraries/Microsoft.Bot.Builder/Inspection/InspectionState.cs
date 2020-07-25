@@ -4,7 +4,9 @@
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// A state management object that automates the reading and writing of the associated state properties to a storage layer.
+    /// A state management object that automates the reading and writing of the associated 
+    /// state properties to a storage layer. Used by Inspection middleware that enables
+    /// debugging bot state.
     /// </summary>
     public class InspectionState : BotState
     {

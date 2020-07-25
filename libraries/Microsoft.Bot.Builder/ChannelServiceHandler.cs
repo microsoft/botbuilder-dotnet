@@ -41,6 +41,9 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets the channel provider that implements <see cref="IChannelProvider"/>.
         /// </summary>
+        /// <value>
+        /// The channel provider that implements <see cref="IChannelProvider"/>.
+        /// </value>
         protected IChannelProvider ChannelProvider => _channelProvider;
 
         /// <summary>

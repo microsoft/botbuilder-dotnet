@@ -240,6 +240,13 @@ namespace Microsoft.Bot.Builder.Streaming
             await requestHandler.ListenAsync().ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Evaluates if processing an outgoing activity is possible.
+        /// </summary>
+        /// <remarks>If returns true, <see cref="BotFrameworkHttpAdapterBase.ProcessOutgoingActivityAsync"/> will be responsible for sending 
+        /// the outgoing activity.</remarks>
+        /// <param name="activity">The outgoing activity.</param>
+        /// <returns>Whether should call ProcessOutgoingActivityAsync to send the outgoing activity.</returns>
         protected override bool CanProcessOutgoingActivity(Activity activity)
         {
             if (activity == null)
@@ -250,6 +257,13 @@ namespace Microsoft.Bot.Builder.Streaming
             return activity.IsFromStreamingConnection();
         }
 
+        /// <summary>
+        /// Sends an outgoing activity.
+        /// </summary>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="activity">The activity to be processed.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The result of processing the activity.</returns>
         protected override async Task<ResourceResponse> ProcessOutgoingActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             if (activity == null)

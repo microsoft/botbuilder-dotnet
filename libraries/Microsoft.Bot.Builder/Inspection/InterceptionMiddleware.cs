@@ -12,6 +12,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Middleware for the interception of activities.
+    /// </summary>
     public abstract class InterceptionMiddleware : IMiddleware
     {
         internal InterceptionMiddleware(ILogger logger)
@@ -19,6 +22,12 @@ namespace Microsoft.Bot.Builder
             Logger = logger ?? NullLogger.Instance;
         }
 
+        /// <summary>
+        /// Gets the logger for the current object.
+        /// </summary>
+        /// <value>
+        /// The logger for the current object.
+        /// </value>
         protected ILogger Logger { get; }
 
         async Task IMiddleware.OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
@@ -68,10 +77,30 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        /// <summary>
+        /// Overriding methods implement processing of inbound activities.
+        /// </summary>
+        /// <param name="turnContext">The turn context.</param>
+        /// <param name="traceActivity">The trace activity.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected abstract Task<(bool shouldForwardToApplication, bool shouldIntercept)> InboundAsync(ITurnContext turnContext, Activity traceActivity, CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Overriding methods implement processing of outbound activities.
+        /// </summary>
+        /// <param name="turnContext">The turn context.</param>
+        /// <param name="clonedActivities">A collection of activities.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected abstract Task OutboundAsync(ITurnContext turnContext, IEnumerable<Activity> clonedActivities, CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Overriding methods implement processing of state management objects.
+        /// </summary>
+        /// <param name="turnContext">The turn context.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected abstract Task TraceStateAsync(ITurnContext turnContext, CancellationToken cancellationToken);
 
         private async Task<(bool shouldForwardToApplication, bool shouldIntercept)> InvokeInboundAsync(ITurnContext turnContext, Activity traceActivity, CancellationToken cancellationToken)
