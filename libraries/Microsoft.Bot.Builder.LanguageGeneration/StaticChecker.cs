@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var lineOffset = this.currentTemplate != null ? this.currentTemplate.SourceRange.Range.Start.Line : 0;
             var templateNameInfo = string.Empty;
-            if (this.currentTemplate != null && this.currentTemplate.Name != Templates.InlineTemplateId)
+            if (this.currentTemplate != null && this.currentTemplate.Name.StartsWith(Templates.InlineTemplateIdPrefix, StringComparison.InvariantCulture))
             {
                 templateNameInfo = $"[{this.currentTemplate.Name}]";
             }

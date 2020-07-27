@@ -30,7 +30,14 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public abstract class BotAdapter
     {
+        /// <summary>
+        /// The string value for the bot identity key.
+        /// </summary>
         public const string BotIdentityKey = "BotIdentity";
+
+        /// <summary>
+        /// The string value for the OAuth scope key.
+        /// </summary>
         public const string OAuthScopeKey = "Microsoft.Bot.Builder.BotAdapter.OAuthScope";
 
         /// <summary>

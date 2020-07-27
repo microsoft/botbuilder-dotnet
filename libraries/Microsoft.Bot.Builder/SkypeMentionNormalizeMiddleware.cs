@@ -30,6 +30,10 @@ namespace Microsoft.Bot.Builder
         {
         }
 
+        /// <summary>
+        /// Performs the normalization of Skype mention Entities.
+        /// </summary>
+        /// <param name="activity">The activity containing the mentions to normalize.</param>
         public static void NormalizeSkypMentionText(Activity activity)
         {
             if (activity.ChannelId == Channels.Skype && activity.Type == ActivityTypes.Message)

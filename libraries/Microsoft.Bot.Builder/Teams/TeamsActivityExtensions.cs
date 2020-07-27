@@ -24,10 +24,10 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets the TeamsInfo object off the current activity.
+        /// Gets the TeamsInfo object from the current activity.
         /// </summary>
-        /// <param name="activity"> this activity. </param>
-        /// <returns>current activity's team's id, or empty string.</returns>
+        /// <param name="activity">This activity.</param>
+        /// <returns>The current activity's team's Id, or an empty string.</returns>
         public static TeamInfo TeamsGetTeamInfo(this IActivity activity)
         {
             var channelData = activity.GetChannelData<TeamsChannelData>();

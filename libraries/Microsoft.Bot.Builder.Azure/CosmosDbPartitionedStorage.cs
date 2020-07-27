@@ -15,14 +15,17 @@ namespace Microsoft.Bot.Builder.Azure
     /// <summary>
     /// Implements an CosmosDB based storage provider using partitioning for a bot.
     /// </summary>
-    public class CosmosDbPartitionedStorage : IStorage
+    public class CosmosDbPartitionedStorage : IStorage, IDisposable
     {
         private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
         private Container _container;
         private readonly CosmosDbPartitionedStorageOptions _cosmosDbStorageOptions;
         private CosmosClient _client;
-        private bool _compatibilityModePartitionKey = false;
+        private bool _compatibilityModePartitionKey;
+
+        // To detect redundant calls to dispose
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDbPartitionedStorage"/> class.
@@ -38,29 +41,29 @@ namespace Microsoft.Bot.Builder.Azure
 
             if (cosmosDbStorageOptions.CosmosDbEndpoint == null)
             {
-                throw new ArgumentNullException(nameof(cosmosDbStorageOptions.CosmosDbEndpoint), "Service EndPoint for CosmosDB is required.");
+                throw new ArgumentException($"Service EndPoint for CosmosDB is required.", nameof(cosmosDbStorageOptions));
             }
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey))
             {
-                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions.AuthKey));
+                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions));
             }
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.DatabaseId))
             {
-                throw new ArgumentException("DatabaseId is required.", nameof(cosmosDbStorageOptions.DatabaseId));
+                throw new ArgumentException("DatabaseId is required.", nameof(cosmosDbStorageOptions));
             }
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.ContainerId))
             {
-                throw new ArgumentException("ContainerId is required.", nameof(cosmosDbStorageOptions.ContainerId));
+                throw new ArgumentException("ContainerId is required.", nameof(cosmosDbStorageOptions));
             }
 
             if (!string.IsNullOrWhiteSpace(cosmosDbStorageOptions.KeySuffix))
             {
                 if (cosmosDbStorageOptions.CompatibilityMode)
                 {
-                    throw new ArgumentException($"CompatibilityMode cannot be 'true' while using a KeySuffix.", nameof(cosmosDbStorageOptions.CompatibilityMode));
+                    throw new ArgumentException($"CompatibilityMode cannot be 'true' while using a KeySuffix.", nameof(cosmosDbStorageOptions));
                 }
 
                 // In order to reduce key complexity, we do not allow invalid characters in a KeySuffix
@@ -68,7 +71,7 @@ namespace Microsoft.Bot.Builder.Azure
                 var suffixEscaped = CosmosDbKeyEscape.EscapeKey(cosmosDbStorageOptions.KeySuffix);
                 if (!cosmosDbStorageOptions.KeySuffix.Equals(suffixEscaped, StringComparison.Ordinal))
                 {
-                    throw new ArgumentException($"Cannot use invalid Row Key characters: {cosmosDbStorageOptions.KeySuffix}", nameof(cosmosDbStorageOptions.KeySuffix));
+                    throw new ArgumentException($"Cannot use invalid Row Key characters: {cosmosDbStorageOptions.KeySuffix}", nameof(cosmosDbStorageOptions));
                 }
             }
 
@@ -265,6 +268,39 @@ namespace Microsoft.Bot.Builder.Azure
                     throw;
                 }
             }
+        }
+
+        /// <summary>
+        /// Disposes the object instance and releases any related objects owned by the class.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes objects used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                _client?.Dispose();
+            }
+
+            _disposed = true;
         }
 
         private PartitionKey GetPartitionKey(string key)

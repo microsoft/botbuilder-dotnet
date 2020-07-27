@@ -16,8 +16,21 @@ using Microsoft.Rest.TransientFaultHandling;
 
 namespace Microsoft.Bot.Builder.Streaming
 {
+    /// <summary>
+    /// An HTTP adapter base class.
+    /// </summary>
     public class BotFrameworkHttpAdapterBase : BotFrameworkAdapter, IStreamingActivityProcessor
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapterBase"/> class.
+        /// </summary>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="authConfig">The authentication configuration.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="connectorClientRetryPolicy">Retry policy for retyring HTTP operations.</param>
+        /// <param name="customHttpClient">The HTTP client.</param>
+        /// <param name="middleware">The middleware to initially add to the adapter.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public BotFrameworkHttpAdapterBase(
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
@@ -29,12 +42,25 @@ namespace Microsoft.Bot.Builder.Streaming
             : base(credentialProvider, authConfig, channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
         {
         }
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapterBase"/> class.
+        /// </summary>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public BotFrameworkHttpAdapterBase(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapterBase> logger = null)
             : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, null, null, logger)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapterBase"/> class.
+        /// </summary>
+        /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public BotFrameworkHttpAdapterBase(ICredentialProvider credentialProvider, IChannelProvider channelProvider, HttpClient httpClient, ILogger<BotFrameworkHttpAdapterBase> logger)
             : this(credentialProvider ?? new SimpleCredentialProvider(), new AuthenticationConfiguration(), channelProvider, null, httpClient, null, logger)
         {
@@ -125,6 +151,14 @@ namespace Microsoft.Bot.Builder.Streaming
             }
         }
 
+        /// <summary>
+        /// Sends an activity.
+        /// </summary>
+        /// <param name="activity">>The <see cref="Activity"/> to send.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        /// <remarks>If the task completes successfully, the result contains a the resource response object.</remarks>
         public async Task<ResourceResponse> SendStreamingActivityAsync(Activity activity, CancellationToken cancellationToken = default)
         {
             // Check to see if any of this adapter's StreamingRequestHandlers is associated with this conversation.
@@ -206,6 +240,13 @@ namespace Microsoft.Bot.Builder.Streaming
             await requestHandler.ListenAsync().ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Evaluates if processing an outgoing activity is possible.
+        /// </summary>
+        /// <remarks>If returns true, <see cref="BotFrameworkHttpAdapterBase.ProcessOutgoingActivityAsync"/> will be responsible for sending 
+        /// the outgoing activity.</remarks>
+        /// <param name="activity">The outgoing activity.</param>
+        /// <returns>Whether should call ProcessOutgoingActivityAsync to send the outgoing activity.</returns>
         protected override bool CanProcessOutgoingActivity(Activity activity)
         {
             if (activity == null)
@@ -216,6 +257,13 @@ namespace Microsoft.Bot.Builder.Streaming
             return activity.IsFromStreamingConnection();
         }
 
+        /// <summary>
+        /// Sends an outgoing activity.
+        /// </summary>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="activity">The activity to be processed.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The result of processing the activity.</returns>
         protected override async Task<ResourceResponse> ProcessOutgoingActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             if (activity == null)

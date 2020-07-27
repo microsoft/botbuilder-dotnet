@@ -11,6 +11,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// Validates JWT tokens from an enterprise channel.
+    /// </summary>
     public sealed class EnterpriseChannelValidation
     {
         /// <summary>
@@ -86,6 +89,13 @@ namespace Microsoft.Bot.Connector.Authentication
             return identity;
         }
 
+        /// <summary>
+        /// Validates a <see cref="ClaimsIdentity"/> object against the credentials and service URL provided.
+        /// </summary>
+        /// <param name="identity">The identity to validate.</param>
+        /// <param name="credentials">The credentials to use for validation.</param>
+        /// <param name="serviceUrl">The service URL to validate.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
 #pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task ValidateIdentity(ClaimsIdentity identity, ICredentialProvider credentials, string serviceUrl)
 #pragma warning restore UseAsyncSuffix // Use Async suffix
