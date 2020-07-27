@@ -75,10 +75,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public LGTemplateParser.BodyContext TemplateBodyParseTree { get; set; }
 
-        /// <summary>
-        /// Returns a string that represents the current object.
-        /// </summary>
-        /// <returns>A string value.</returns>
+        /// <inheritdoc/>
         public override string ToString() => $"[{Name}({string.Join(", ", Parameters)})]\"{Body}\"";
     }
 }

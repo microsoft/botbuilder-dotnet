@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Memory;
 using Antlr4.Runtime;
@@ -19,12 +18,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG template Evaluator.
     /// </summary>
-    public class Evaluator : LGTemplateParserBaseVisitor<object>
+    internal class Evaluator : LGTemplateParserBaseVisitor<object>
     {
-        /// <summary>
-        /// A symbol of a string constant "lgType".
-        /// </summary>
-        public const string LGType = "lgType";
+        internal const string LGType = "lgType";
 
         private const string ReExecuteSuffix = "!";
         private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
@@ -40,7 +36,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
-            this._lgOptions = opt;
+            _lgOptions = opt;
 
             // generate a new customized expression parser by injecting the template as functions
             ExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup));
@@ -72,6 +68,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Evaluate a template with given name and scope.
+        /// Throws errors <see cref="TemplateErrors"/> if certain errors detected.
         /// </summary>
         /// <param name="inputTemplateName">Template name.</param>
         /// <param name="scope">Scope.</param>
@@ -120,12 +117,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>structuredBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override object VisitStructuredTemplateBody([NotNull] LGTemplateParser.StructuredTemplateBodyContext context)
         {
             var result = new JObject();
@@ -165,19 +157,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>normalBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override object VisitNormalBody([NotNull] LGTemplateParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
-        /// <summary>
-        /// Visit a parse tree produced by <see cref="LGTemplateParser.normalTemplateBody"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override object VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var normalTemplateStrs = context.templateString();
@@ -185,12 +168,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)].normalTemplateString());
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>ifElseBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override object VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
         {
             var ifRules = context.ifElseTemplateBody().ifConditionRule();
@@ -205,12 +183,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>switchCaseBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override object VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
         {
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
@@ -255,11 +228,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by <see cref="LGTemplateParser.normalTemplateString"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>The visitor result.</returns>
+        /// <inheritdoc/>
         public override object VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
@@ -298,12 +267,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Construct the scope for mapping the values of arguments to the parameters of the template.
+        /// Constructs the scope for mapping the values of arguments to the parameters of the template.
+        /// Throws errors <see cref="TemplateErrors"/> if certain errors detected.
         /// </summary>
-        /// <param name="inputTemplateName">The template name to evaluate.</param>
-        /// <param name="args">The value of arguments.</param>
+        /// <param name="inputTemplateName">Template name to evaluate.</param>
+        /// <param name="args">Arguments to map to the template parameters.</param>
         /// <returns>
-        /// An object implemented IMemory interface. 
+        /// An implementation of IMemory interface. 
         /// If the number of arguments is 0, returns the current scope.
         /// Otherwise, returns an CustomizedMemory that the mapping of the parameter name to the argument value added to the scope.
         /// </returns>

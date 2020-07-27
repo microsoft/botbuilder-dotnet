@@ -19,12 +19,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG template expander.
     /// </summary>
-    public class Expander : LGTemplateParserBaseVisitor<List<object>>
+    internal class Expander : LGTemplateParserBaseVisitor<List<object>>
     {
-        /// <summary>
-        /// A string indicating the type of LG.
-        /// </summary>
-        public const string LGType = "lgType";
+        internal const string LGType = "lgType";
         private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions _lgOptions;
         private readonly ExpressionParser _expressionParser;
@@ -82,6 +79,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Expand the results of a template with given name and scope.
+        /// Throws errors <see cref="TemplateErrors"/> if certain errors detected.
         /// </summary>
         /// <param name="templateName">Given template name.</param>
         /// <param name="scope">Given scope.</param>
@@ -117,19 +115,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>normalBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override List<object> VisitNormalBody([NotNull] LGTemplateParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
-        /// <summary>
-        /// Visit a parse tree produced by <see cref="LGTemplateParser.normalTemplateBody"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override List<object> VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var normalTemplateStrs = context.templateString();
@@ -143,12 +132,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>ifElseBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override List<object> VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
         {
             var ifRules = context.ifElseTemplateBody().ifConditionRule();
@@ -163,12 +147,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>switchCaseBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override List<object> VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
         {
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
@@ -212,12 +191,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>structuredBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override List<object> VisitStructuredBody([NotNull] LGTemplateParser.StructuredBodyContext context)
         {
             var templateRefValues = new Dictionary<string, List<object>>();
@@ -320,15 +294,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return finalResult;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by <see cref="LGTemplateParser.normalTemplateString"/>.
-        /// <para>
-        /// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-        /// on <paramref name="context"/>.
-        /// </para>
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>The visitor result.</returns>
+        /// <inheritdoc/>
         public override List<object> VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
@@ -362,12 +328,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Construct the scope for mapping the values of arguments to the parameters of the template.
+        /// Constructs the scope for mapping the values of arguments to the parameters of the template.
         /// </summary>
         /// <param name="templateName">The template name to evaluate.</param>
-        /// <param name="args">The value of arguments.</param>
+        /// <param name="args">Arguments to map to the template parameters.</param>
         /// <returns>
-        /// An object implemented IMemory interface. 
+        /// An object.
         /// If the number of arguments is 0, returns the current scope.
         /// Otherwise, returns an CustomizedMemory that the mapping of the parameter name to the argument value added to the scope.
         /// </returns>

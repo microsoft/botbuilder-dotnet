@@ -47,10 +47,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public SourceRange SourceRange { get; set; }
 
-        /// <summary>
-        /// Returns a string that represents the current object.
-        /// </summary>
-        /// <returns>A string value.</returns>
+        /// <inheritdoc/>
         public override string ToString()
         {
             return $"[{Description}]({Id})";

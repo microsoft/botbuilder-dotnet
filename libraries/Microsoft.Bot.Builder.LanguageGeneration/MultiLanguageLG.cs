@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiLanguageLG"/> class.
         /// </summary>
-        /// <param name="filePerLocale">A dictionary of locale and LG file.</param>
+        /// <param name="filePerLocale">Dictionary of locale and LG file.</param>
         /// <param name="defaultLanguage">Default language.</param>
         public MultiLanguageLG(Dictionary<string, string> filePerLocale, string defaultLanguage = "")
         {
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiLanguageLG"/> class.
         /// </summary>
-        /// <param name="templatesPerLocale">A dictionary of LG file templates per locale.</param>
+        /// <param name="templatesPerLocale">Dictionary of LG file templates per locale.</param>
         /// <param name="defaultLanguage">Default language.</param>
         public MultiLanguageLG(Dictionary<string, Templates> templatesPerLocale, string defaultLanguage = "")
         {

@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG template analyzer.
     /// </summary>
-    public class Analyzer : LGTemplateParserBaseVisitor<AnalyzerResult>
+    internal class Analyzer : LGTemplateParserBaseVisitor<AnalyzerResult>
     {
         private readonly Dictionary<string, Template> _templateMap;
 
@@ -44,7 +44,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public List<Template> Templates { get; }
 
         /// <summary>
-        /// Analyzer a template to get the static analyzer results.
+        /// Analyzes a template to get the static analyzer results. 
+        /// Throws errors <see cref="TemplateErrors"/> if certain errors detected.
         /// </summary>
         /// <param name="templateName">Template name.</param>
         /// <returns>Analyze result including variables and template references.</returns>
@@ -73,19 +74,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return dependencies;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>normalBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override AnalyzerResult VisitNormalBody([NotNull] LGTemplateParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
-        /// <summary>
-        /// Visit a parse tree produced by <see cref="LGTemplateParser.normalTemplateBody"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override AnalyzerResult VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var result = new AnalyzerResult();
@@ -99,12 +91,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>structuredBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override AnalyzerResult VisitStructuredTemplateBody([NotNull] LGTemplateParser.StructuredTemplateBodyContext context)
         {
             var result = new AnalyzerResult();
@@ -126,12 +113,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>ifElseBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override AnalyzerResult VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
         {
             var result = new AnalyzerResult();
@@ -154,12 +136,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by the <c>switchCaseBody</c>
-        /// labeled alternative in <see cref="LGTemplateParser.body"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>An object of the visitor result.</returns>
+        /// <inheritdoc/>
         public override AnalyzerResult VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
         {
             var result = new AnalyzerResult();
@@ -181,11 +158,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        /// <summary>
-        /// Visit a parse tree produced by <see cref="LGTemplateParser.normalTemplateString"/>.
-        /// </summary>
-        /// <param name="context">The parse tree.</param>
-        /// <returns>The visitor result.</returns>
+        /// <inheritdoc/>
         public override AnalyzerResult VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var result = new AnalyzerResult();

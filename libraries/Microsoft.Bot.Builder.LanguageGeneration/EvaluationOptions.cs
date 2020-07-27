@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
         /// </summary>
-        /// <param name="opt">An EvaluationOptions instance.</param>
+        /// <param name="opt">Instance to copy initial settings from.</param>
         public EvaluationOptions(EvaluationOptions opt)
         {
             StrictMode = opt.StrictMode;
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
         /// </summary>
-        /// <param name="optionsList">A list of strings contains the options from a LG file.</param>
+        /// <param name="optionsList">List of strings containing the options from a LG file.</param>
         public EvaluationOptions(IList<string> optionsList)
         {
             if (optionsList != null)
@@ -118,8 +118,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Merge a incoming option to current option. If a property in incoming option is not null while it is null in current
         /// option, then the value of this property will be overwritten.
         /// </summary>
-        /// <param name="opt">The incoming option for merging.</param>
-        /// <returns>The result after merging.</returns>
+        /// <param name="opt">Incoming option for merging.</param>
+        /// <returns>Result after merging.</returns>
         public EvaluationOptions Merge(EvaluationOptions opt)
         {
             var properties = typeof(EvaluationOptions).GetProperties();

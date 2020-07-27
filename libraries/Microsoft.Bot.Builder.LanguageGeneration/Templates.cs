@@ -35,15 +35,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="Templates"/> class.
         /// </summary>
-        /// <param name="templates">A list of Template instances.</param>
-        /// <param name="imports">A list of TemplateImport instances.</param>
-        /// <param name="diagnostics">A list of Diagnostic instances.</param>
-        /// <param name="references">A list of Templates instances.</param>
-        /// <param name="content">The content of the current Templates instance.</param>
-        /// <param name="id">The id of the current Templates instance.</param>
-        /// <param name="expressionParser">The ExpressionParser to parse the expressions in the conent.</param>
-        /// <param name="importResolver">The import resolver delegate to discover all imported LG resources.</param>
-        /// <param name="options">The list of strings representing the options during evaluating the templates.</param>
+        /// <param name="templates">List of Template instances.</param>
+        /// <param name="imports">List of TemplateImport instances.</param>
+        /// <param name="diagnostics">List of Diagnostic instances.</param>
+        /// <param name="references">List of Templates instances.</param>
+        /// <param name="content">Content of the current Templates instance.</param>
+        /// <param name="id">Id of the current Templates instance.</param>
+        /// <param name="expressionParser">ExpressionParser to parse the expressions in the conent.</param>
+        /// <param name="importResolver">Import resolver delegate to discover all imported LG resources.</param>
+        /// <param name="options">List of strings representing the options during evaluating the templates.</param>
         public Templates(
             IList<Template> templates = null,
             IList<TemplateImport> imports = null,
@@ -208,11 +208,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser expressionParser = null) => TemplatesParser.ParseText(content, id, importResolver, expressionParser).InjectToExpressionFunction();
 
         /// <summary>
-        /// Evaluate a template with given name and scope.
+        /// Evaluates a template with given name and scope.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
-        /// <param name="scope">The state visible in the evaluation.</param>
-        /// <param name="opt">The EvaluationOptions in evaluating a template.</param>
+        /// <param name="scope">State visible in the evaluation.</param>
+        /// <param name="opt">EvaluationOptions in evaluating a template.</param>
         /// <returns>Evaluate result.</returns>
         public object Evaluate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
@@ -229,12 +229,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Use to evaluate an inline template str.
+        /// Evaluates an inline template string.
         /// </summary>
         /// <param name="text">Inline string which will be evaluated.</param>
         /// <param name="scope">Scope object or JToken.</param>
-        /// <param name="opt">The EvaluationOptions in evaluating a template.</param>
-        /// <returns>Evaluate result.</returns>
+        /// <param name="opt">EvaluationOptions in evaluating a template.</param>
+        /// <returns>Evaluated result.</returns>
         public object EvaluateText(string text, object scope = null, EvaluationOptions opt = null)
         {
             var evalOpt = opt != null ? opt.Merge(LgOptions) : LgOptions;
@@ -260,13 +260,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Expand a template with given name and scope.
+        /// Expands a template with given name and scope.
         /// Return all possible responses instead of random one.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
-        /// <param name="scope">The state visible in the evaluation.</param>
-        /// <param name="opt">The evaluation option for current expander.</param>
-        /// <returns>Expand result.</returns>
+        /// <param name="scope">State visible in the evaluation.</param>
+        /// <param name="opt">Evaluation option for current expander.</param>
+        /// <returns>Expanded result.</returns>
         public IList<object> ExpandTemplate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// (experimental)
-        /// Analyze a template to get the static analyzer results including variables and template references.
+        /// Analyzes a template to get the static analyzer results including variables and template references.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <returns>Analyzer result.</returns>
@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Update an existing template.
+        /// Updates an existing template in current Templates instance.
         /// </summary>
         /// <param name="templateName">Original template name. The only id of a template.</param>
         /// <param name="newTemplateName">New template Name.</param>
@@ -332,11 +332,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Add a new template and return LG File.
+        /// Adds a new template and returns the updated Templates instance.
         /// </summary>
         /// <param name="templateName">New template name.</param>
         /// <param name="parameters">New params.</param>
-        /// <param name="templateBody">New  template body.</param>
+        /// <param name="templateBody">New template body.</param>
         /// <returns>Updated LG file.</returns>
         public Templates AddTemplate(string templateName, List<string> parameters, string templateBody)
         {
@@ -374,7 +374,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Delete an exist template.
+        /// Removes an existing template in current Templates instances.
         /// </summary>
         /// <param name="templateName">Which template should delete.</param>
         /// <returns>Updated LG file.</returns>
@@ -397,20 +397,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return this;
         }
 
-        /// <summary>
-        /// Returns a string that represents the current object.
-        /// </summary>
-        /// <returns>A string value.</returns>
+        /// <inheritdoc/>
         public override string ToString() => Content;
 
-        /// <summary>
-        /// Determines whether current Templates instance are equal to another object.
-        /// </summary>
-        /// <param name="obj">The other object to compare.</param>
-        /// <returns>
-        /// Returns Ture the other object is also an instance of Templates and its id, content are equal to those of the current instance.
-        /// Otherwise returns False.
-        /// </returns>
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (!(obj is Templates lgFileObj))
@@ -421,10 +411,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return Id == lgFileObj.Id && Content == lgFileObj.Content;
         }
 
-        /// <summary>
-        /// Returns the hash code for this Templates instance using the specified rules.
-        /// </summary>
-        /// <returns>An integer value.</returns>
+        /// <inheritdoc/>
         public override int GetHashCode() => (Id, Content).GetHashCode();
 
         private Templates InjectToExpressionFunction()

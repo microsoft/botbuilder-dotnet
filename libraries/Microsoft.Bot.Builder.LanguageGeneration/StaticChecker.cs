@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="StaticChecker"/> class.
         /// </summary>
-        /// <param name="templates">The templates wihch would be checked.</param>
+        /// <param name="templates">Templates wihch would be checked.</param>
         public StaticChecker(Templates templates)
         {
             _templates = templates;
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Return error messages list.
+        /// Returns a list of diagnostic information.
         /// </summary>
         /// <returns>Report result.</returns>
         public List<Diagnostic> Check()

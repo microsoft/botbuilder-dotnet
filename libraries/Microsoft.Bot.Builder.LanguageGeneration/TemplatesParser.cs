@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// Delegate for resolving resource id of imported lg file.
     /// </summary>
-    /// <param name="sourceId">The id or path of source file.</param>
+    /// <param name="sourceId">Id or path of source file.</param>
     /// <param name="resourceId">Resource id to resolve.</param>
     /// <returns>Resolved resource content and unique id.</returns>
     public delegate (string content, string id) ImportResolverDelegate(string sourceId, string resourceId);
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// Parser to turn lg content into a <see cref="Templates"/>.
     /// </summary>
-    public static class TemplatesParser
+    internal static class TemplatesParser
     {
         /// <summary>
         /// Inline text id.
@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             /// <summary>
             /// Initializes a new instance of the <see cref="TemplatesTransformer"/> class.
             /// </summary>
-            /// <param name="templates">A Templates instance.</param>
+            /// <param name="templates">Templates to transform.</param>
             public TemplatesTransformer(Templates templates)
             {
                 _templates = templates;
@@ -283,11 +283,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return _templates;
             }
 
-            /// <summary>
-            /// Visit a parse tree produced by <see cref="LGFileParser.errorDefinition"/>.
-            /// </summary>
-            /// <param name="context">The parse tree.</param>
-            /// <returns>An Object of the visitor result.</returns>
+            /// <inheritdoc/>
             public override object VisitErrorDefinition([NotNull] LGFileParser.ErrorDefinitionContext context)
             {
                 var lineContent = context.INVALID_LINE().GetText();
@@ -299,11 +295,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return null;
             }
 
-            /// <summary>
-            /// Visit a parse tree produced by <see cref="LGFileParser.importDefinition"/>.
-            /// </summary>
-            /// <param name="context">The parse tree.</param>
-            /// <returns>An object of the visitor result.</returns>
+            /// <inheritdoc/>
             public override object VisitImportDefinition([NotNull] LGFileParser.ImportDefinitionContext context)
             {
                 var importStr = context.IMPORT().GetText();
@@ -322,11 +314,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return null;
             }
 
-            /// <summary>
-            /// Visit a parse tree produced by <see cref="LGFileParser.optionDefinition"/>.
-            /// </summary>
-            /// <param name="context">The parse tree.</param>
-            /// <returns>An object of the visitor result.</returns>
+            /// <inheritdoc/>
             public override object VisitOptionDefinition([NotNull] LGFileParser.OptionDefinitionContext context)
             {
                 var originalText = context.OPTION().GetText();
@@ -348,11 +336,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return null;
             }
 
-            /// <summary>
-            /// Visit a parse tree produced by <see cref="LGFileParser.templateDefinition"/>.
-            /// </summary>
-            /// <param name="context">The parse tree.</param>
-            /// <returns>An object of the visitor result.</returns>
+            /// <inheritdoc/>
             public override object VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
             {
                 var startLine = context.Start.Line;

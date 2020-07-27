@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.LanguageGeneration.Tests")]
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    /// <summary>
-    /// Centralized Template errors.
-    /// </summary>
 #pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't make this type static without breaking binary compat)
-    public class TemplateErrors
+    internal class TemplateErrors
 #pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
