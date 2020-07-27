@@ -583,7 +583,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         await SendInvokeResponseAsync(
                             turnContext,
                             HttpStatusCode.PreconditionFailed,
-                            new TokenExchangeInvokeResponse()
+                            new TokenExchangeInvokeResponse
                             {
                                 Id = tokenExchangeRequest.Id,
                                 ConnectionName = _settings.ConnectionName,
