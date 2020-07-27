@@ -38,7 +38,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <param name="templateId">The template to render.</param>
         /// <param name="data">The data object to use to render.</param>
         /// <returns>Task.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (we can't change this without breaking compat)
         public Task<object> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             if (_languages.TryGetValue(language, out var templates))
             {
