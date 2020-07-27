@@ -173,9 +173,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 using (new SourceScope(sourceContext, range))
                 {
                     var result = Load<T>(json, sourceContext);
-                    if (result is Dialog dlg)
+
+                    if (result is Dialog dlg && !((JObject)json).ContainsKey("id"))
                     {
-                        // dialog id's are resource ids
+                        // if there is no jobject.id for the dialog, then the dialog id's should be resource.id
                         dlg.Id = resource.Id;
                     }
 
