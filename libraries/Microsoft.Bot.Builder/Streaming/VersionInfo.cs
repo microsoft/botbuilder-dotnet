@@ -3,8 +3,17 @@
 
 namespace Microsoft.Bot.Builder.Streaming
 {
+    /// <summary>
+    /// A class containing version information.
+    /// </summary>
     public class VersionInfo
     {
+        /// <summary>
+        /// Gets or sets the user agent value.
+        /// </summary>
+        /// <value>
+        /// The user agent value.
+        /// </value>
         public string UserAgent { get; set; }
     }
 }
