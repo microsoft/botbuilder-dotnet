@@ -24,9 +24,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Templates : List<Template>
     {
         /// <summary>
-        /// Temp Template ID for inline content.
+        /// Temp Template ID prefix for inline content.
         /// </summary>
-        public const string InlineTemplateId = "__temp__";
+        public const string InlineTemplateIdPrefix = "__temp__";
         private readonly string _newLine = Environment.NewLine;
         private readonly Regex _newLineRegex = new Regex("(\r?\n)");
         private readonly string _namespaceKey = "@namespace";
@@ -246,17 +246,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             CheckErrors();
 
+            var inlineTemplateId = $"{InlineTemplateIdPrefix}{Guid.NewGuid():N}";
+
             // wrap inline string with "# name and -" to align the evaluation process
             var multiLineMark = "```";
 
             text = !text.Trim().StartsWith(multiLineMark, StringComparison.Ordinal) && text.Contains('\n')
                    ? $"{multiLineMark}{text}{multiLineMark}" : text;
 
-            var newContent = $"# {InlineTemplateId} {_newLine} - {text}";
+            var newContent = $"# {inlineTemplateId} {_newLine} - {text}";
 
             var newLG = TemplatesParser.ParseTextWithRef(newContent, this);
 
-            return newLG.Evaluate(InlineTemplateId, scope, evalOpt);
+            return newLG.Evaluate(inlineTemplateId, scope, evalOpt);
         }
 
         /// <summary>

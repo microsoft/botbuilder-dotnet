@@ -7,6 +7,9 @@ using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 {
+    /// <summary>
+    /// Http Response Mock (used in HttpRequestSequenceMock).
+    /// </summary>
     public class HttpResponseMock
     {
         public enum ResponseContentType

@@ -4,29 +4,33 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using dbg = System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 {
-    [TestClass]
     public class ConditionalTests
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
-
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public ConditionalTests()
         {
+            ComponentRegistration.Add(new DeclarativeComponentRegistration());
+            ComponentRegistration.Add(new DialogsComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveComponentRegistration());
+            ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());
+            ComponentRegistration.Add(new TeamsComponentRegistration());
+
             ResourceExplorer = new ResourceExplorer()
                 .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(ConditionalTests)), monitorChanges: false);
         }
+
+        public static ResourceExplorer ResourceExplorer { get; set; }
         
-        [TestMethod]
+        [Fact]
         public async Task ConditionalsTests_OnTeamActivityTypes()
         {
             await TestUtils.RunTestScript(ResourceExplorer);

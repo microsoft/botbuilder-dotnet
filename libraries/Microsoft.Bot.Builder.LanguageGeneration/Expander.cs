@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     internal class Expander : LGTemplateParserBaseVisitor<List<object>>
     {
-        internal const string LGType = "lgType";
+        private const string LGType = "lgType";
         private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions _lgOptions;
         private readonly ExpressionParser _expressionParser;
