@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="parseTree">Rule invocation record for parsing.</param>
         /// <param name="source">Source, used as the lg file path.</param>
-        /// <param name="offset">Offset in parse tree.</param>
+        /// <param name="offset">Offset in the parse tree.</param>
         public SourceRange(ParserRuleContext parseTree, string source = "", int offset = 0)
         {
             this.Source = source ?? string.Empty;

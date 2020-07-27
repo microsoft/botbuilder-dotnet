@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Expand the results of a template with given name and scope.
-        /// Throws errors <see cref="TemplateErrors"/> if certain errors detected.
+        /// Throws errors if certain errors detected <see cref="TemplateErrors"/>.
         /// </summary>
         /// <param name="templateName">Given template name.</param>
         /// <param name="scope">Given scope.</param>

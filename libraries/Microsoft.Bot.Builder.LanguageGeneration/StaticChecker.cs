@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Returns a list of diagnostic information.
+        /// Returns a list of Diagnostic instances.
         /// </summary>
         /// <returns>Report result.</returns>
         public List<Diagnostic> Check()

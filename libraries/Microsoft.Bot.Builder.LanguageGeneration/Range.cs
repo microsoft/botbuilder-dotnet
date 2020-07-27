@@ -16,8 +16,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="Range"/> class.
         /// </summary>
-        /// <param name="start">Starting position in a file.</param>
-        /// <param name="end">Ending position in a file.</param>
+        /// <param name="start">Starting <see cref="Position"/> in a file.</param>
+        /// <param name="end">Ending <see cref="Position"/> in a file.</param>
         public Range(Position start, Position end)
         {
             Start = start;

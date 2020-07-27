@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Evaluate a template with given name and scope.
-        /// Throws errors <see cref="TemplateErrors"/> if certain errors detected.
+        /// Throws errors if certain errors detected <see cref="TemplateErrors"/>.
         /// </summary>
         /// <param name="inputTemplateName">Template name.</param>
         /// <param name="scope">Scope.</param>
@@ -268,12 +268,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Constructs the scope for mapping the values of arguments to the parameters of the template.
-        /// Throws errors <see cref="TemplateErrors"/> if certain errors detected.
+        /// Throws errors if certain errors detected <see cref="TemplateErrors"/>.
         /// </summary>
         /// <param name="inputTemplateName">Template name to evaluate.</param>
         /// <param name="args">Arguments to map to the template parameters.</param>
         /// <returns>
-        /// An implementation of IMemory interface. 
+        /// An object. 
         /// If the number of arguments is 0, returns the current scope.
         /// Otherwise, returns an CustomizedMemory that the mapping of the parameter name to the argument value added to the scope.
         /// </returns>

@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="content">Content of the current Templates instance.</param>
         /// <param name="id">Id of the current Templates instance.</param>
         /// <param name="expressionParser">ExpressionParser to parse the expressions in the conent.</param>
-        /// <param name="importResolver">Import resolver delegate to discover all imported LG resources.</param>
+        /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="options">List of strings representing the options during evaluating the templates.</param>
         public Templates(
             IList<Template> templates = null,
@@ -265,7 +265,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">State visible in the evaluation.</param>
-        /// <param name="opt">Evaluation option for current expander.</param>
+        /// <param name="opt">EvaluationOptions in expanding a template.</param>
         /// <returns>Expanded result.</returns>
         public IList<object> ExpandTemplate(string templateName, object scope = null, EvaluationOptions opt = null)
         {

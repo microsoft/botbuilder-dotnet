@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Analyzes a template to get the static analyzer results. 
-        /// Throws errors <see cref="TemplateErrors"/> if certain errors detected.
+        /// Throws errors if certain errors detected <see cref="TemplateErrors"/>.
         /// </summary>
         /// <param name="templateName">Template name.</param>
         /// <returns>Analyze result including variables and template references.</returns>
