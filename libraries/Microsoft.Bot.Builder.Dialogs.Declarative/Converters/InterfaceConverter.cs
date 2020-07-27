@@ -12,11 +12,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
-    public class InterfaceConverter<T> : JsonConverter, IObservableConverter
+    public class InterfaceConverter<T> : JsonConverter, IObservableConverter, IObservableJsonConverter
         where T : class
     {
         private readonly ResourceExplorer resourceExplorer;
-        private readonly List<IConverterObserver> observers = new List<IConverterObserver>();
+        private readonly List<IJsonLoadObserver> observers = new List<IJsonLoadObserver>();
         private readonly SourceContext sourceContext;
 
         public InterfaceConverter(ResourceExplorer resourceExplorer, SourceContext sourceContext)
@@ -35,6 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var (jToken, range) = SourceScope.ReadTokenRange(reader, sourceContext);
+
             using (new SourceScope(sourceContext, range))
             {
                 if (this.resourceExplorer.IsRef(jToken))
@@ -43,16 +44,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
                 }
 
-                foreach (var observer in this.observers)
-                {
-                    if (observer.OnBeforeLoadToken(jToken, out T interceptResult))
-                    {
-                        return interceptResult;
-                    }
-                }
-
                 var kind = (string)jToken["$kind"];
-              
+
                 if (kind == null)
                 {
                     // see if there is jObject resolver
@@ -67,8 +60,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
                 // if reference resolution made a source context available for the JToken, then add it to the context stack
                 var found = DebugSupport.SourceMap.TryGetValue(jToken, out var rangeResolved);
-                using (found ? new SourceScope(sourceContext, rangeResolved) : null)
+                using (var newScope = found ? new SourceScope(sourceContext, rangeResolved) : null)
                 {
+                    foreach (var observer in this.observers)
+                    {
+                        if (observer.OnBeforeLoadToken(sourceContext, rangeResolved ?? range, jToken, out T interceptResult))
+                        {
+                            return interceptResult;
+                        }
+                    }
+
                     T result = this.resourceExplorer.BuildType<T>(kind, jToken, serializer);
 
                     // associate the most specific source context information with this item
@@ -80,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
                     foreach (var observer in this.observers)
                     {
-                        if (observer.OnAfterLoadToken(jToken, result, out T interceptedResult))
+                        if (observer.OnAfterLoadToken(sourceContext, range, jToken, result, out T interceptedResult))
                         {
                             return interceptedResult;
                         }
@@ -102,7 +103,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         }
 
         /// <inheritdoc/>
+        [Obsolete("Deprecated in favor of IJsonLoadObserver registration.")]
         public void RegisterObserver(IConverterObserver observer)
+        {
+            if (observer == null)
+            {
+                throw new ArgumentNullException(nameof(observer));
+            }
+
+            // Create a wrapper for the deprecated type IConverterObserver.
+            // This supports backward compartibity.
+            RegisterObserver(new JsonLoadObserverWrapper(observer));
+        }
+
+        /// <inheritdoc cref="IObservableJsonConverter"/>
+        public void RegisterObserver(IJsonLoadObserver observer)
         {
             if (observer == null)
             {
