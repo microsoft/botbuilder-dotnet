@@ -83,7 +83,6 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         /// <param name="request">The <see cref="StreamingRequest"/> to send.</param>
         /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
         /// <returns>A <see cref="Task"/> of type <see cref="ReceiveResponse"/> handling the send operation.</returns>
-#pragma warning disable IDE0034
         public Task<ReceiveResponse> SendAsync(StreamingRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (request == null)

@@ -22,7 +22,9 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         private char Type { get; set; }
 
+#pragma warning disable UseAsyncSuffix // Use Async suffix  (we can't change this without breaking binary compat)
         public Task Disassemble()
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             var header = new Header()
             {

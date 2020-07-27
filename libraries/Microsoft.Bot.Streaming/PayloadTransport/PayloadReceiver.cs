@@ -87,7 +87,6 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
         private async Task ReceivePacketsAsync()
         {
             bool isClosed = false;
-            int length;
             DisconnectedEventArgs disconnectArgs = null;
 
             while (_receiver != null && _receiver.IsConnected && !isClosed)
@@ -97,6 +96,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                 {
                     // read the header
                     int headerOffset = 0;
+                    int length;
                     while (headerOffset < TransportConstants.MaxHeaderLength)
                     {
                         length = await _receiver.ReceiveAsync(_receiveHeaderBuffer, headerOffset, TransportConstants.MaxHeaderLength - headerOffset).ConfigureAwait(false);

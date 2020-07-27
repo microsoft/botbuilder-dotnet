@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Streaming.Payloads
         public ContentStream(Guid id, PayloadStreamAssembler assembler)
         {
             Id = id;
-            _assembler = assembler ?? throw new ArgumentNullException();
+            _assembler = assembler ?? throw new ArgumentNullException(nameof(assembler));
             Stream = _assembler.GetPayloadAsStream();
         }
 

@@ -8,7 +8,9 @@ namespace Microsoft.Bot.Streaming.Payloads
 {
     public interface IAssembler
     {
+#pragma warning disable CA1716 // Identifiers should not match keywords (we can't change this without breaking binary compat)
         bool End { get; }
+#pragma warning restore CA1716 // Identifiers should not match keywords
 
         Guid Id { get; }
 

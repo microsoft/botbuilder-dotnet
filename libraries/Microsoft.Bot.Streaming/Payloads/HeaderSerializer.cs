@@ -69,7 +69,9 @@ namespace Microsoft.Bot.Streaming.Payloads
             return TransportConstants.MaxHeaderLength;
         }
 
+#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
         public static Header Deserialize(byte[] buffer, int offset, int count)
+#pragma warning restore CA1801 // Review unused parameters
         {
             if (count != TransportConstants.MaxHeaderLength)
             {

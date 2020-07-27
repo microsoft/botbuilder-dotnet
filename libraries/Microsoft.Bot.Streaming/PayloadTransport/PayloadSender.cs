@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
         private readonly SendQueue<SendPacket> _sendQueue;
         private readonly EventWaitHandle _connectedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
         private ITransportSender _sender;
-        private bool _isDisconnecting = false;
+        private bool _isDisconnecting;
         private readonly byte[] _sendHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
         private readonly byte[] _sendContentBuffer = new byte[TransportConstants.MaxPayloadLength];
 
@@ -98,8 +98,6 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
         {
             _connectedEvent.WaitOne();
 
-            DisconnectedEventArgs disconnectedArgs = null;
-
             try
             {
                 // determine if we know the payload length and end
@@ -166,7 +164,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             }
             catch (Exception e)
             {
-                disconnectedArgs = new DisconnectedEventArgs()
+                var disconnectedArgs = new DisconnectedEventArgs()
                 {
                     Reason = e.Message,
                 };
