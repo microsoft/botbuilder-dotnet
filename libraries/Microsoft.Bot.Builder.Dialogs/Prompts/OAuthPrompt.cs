@@ -581,14 +581,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                     if (tokenExchangeResponse == null || string.IsNullOrEmpty(tokenExchangeResponse.Token))
                     {
                         await SendInvokeResponseAsync(
-                           turnContext,
-                           HttpStatusCode.PreconditionFailed,
-                           new TokenExchangeInvokeResponse()
-                           {
-                               Id = tokenExchangeRequest.Id,
-                               ConnectionName = _settings.ConnectionName,
-                               FailureDetail = "The bot is unable to exchange token. Proceed with regular login.",
-                           }, cancellationToken).ConfigureAwait(false);
+                            turnContext,
+                            HttpStatusCode.PreconditionFailed,
+                            new TokenExchangeInvokeResponse()
+                            {
+                                Id = tokenExchangeRequest.Id,
+                                ConnectionName = _settings.ConnectionName,
+                                FailureDetail = "The bot is unable to exchange token. Proceed with regular login.",
+                            }, cancellationToken).ConfigureAwait(false);
                     }
                     else
                     {
