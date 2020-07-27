@@ -460,6 +460,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             _disposed = true;
         }
 
+        /// <summary>
+        /// Handler for on changed events.
+        /// </summary>
+        /// <param name="resources">A collection of resources to pass to the event handler.</param>
         protected virtual void OnChanged(Resource[] resources)
         {
             Changed?.Invoke(this, resources);
