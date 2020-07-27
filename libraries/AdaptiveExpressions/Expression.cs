@@ -757,7 +757,7 @@ namespace AdaptiveExpressions
             /// <summary>
             /// Gets a value indicating whether the FunctionTable is readonly.
             /// </summary>
-            /// <value>A boolean value indicating  whether the FunctionTable is readonly.</value>
+            /// <value>A boolean value indicating whether the FunctionTable is readonly.</value>
             public bool IsReadOnly => false;
 
             /// <summary>

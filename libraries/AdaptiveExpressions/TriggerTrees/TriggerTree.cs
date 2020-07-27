@@ -67,7 +67,7 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// Gets a value of a list of Optimizers for optimizing clauses.
+        /// Gets a list of Optimizers for optimizing clauses.
         /// </summary>
         /// <value>A value of list of Optimizers.</value>
         public List<IOptimizer> Optimizers { get; } = new List<IOptimizer>();

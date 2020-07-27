@@ -129,7 +129,7 @@ namespace AdaptiveExpressions.TriggerTrees
         }
 
         /// <summary>
-        /// Determines whether is there any member in current clauses matches another Clause instance. 
+        /// Determines whether there is a member in the current Clause that matches the nodeClause parameter.
         /// </summary>
         /// <param name="nodeClause">The other Clause instance to match.</param>
         /// <param name="state">The scope for looking up variables.</param>

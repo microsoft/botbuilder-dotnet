@@ -86,7 +86,7 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
-        /// Determines if the current Expression instance are deep equal to another one.
+        /// Determines if the current Expression instance is deep equal to another one.
         /// </summary>
         /// <param name="other">The other Expression instance to compare.</param>
         /// <returns>A boolean value indicating  whether the two Expressions are deep equal. Reyurns True if they are deep equal, otherwise return False.</returns>

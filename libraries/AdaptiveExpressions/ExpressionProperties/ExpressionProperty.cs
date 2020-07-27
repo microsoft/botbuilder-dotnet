@@ -26,7 +26,7 @@ namespace AdaptiveExpressions.Properties
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionProperty{T}"/> class.
         /// </summary>
-        /// <param name="value">An object contains the value to be set.</param>
+        /// <param name="value">An object containing the value to be set.</param>
         public ExpressionProperty(object value)
         {
 #pragma warning disable CA2214 // Do not call overridable methods in constructors (fixing this would require further redesign of this class and derived types, excluding it for now).
