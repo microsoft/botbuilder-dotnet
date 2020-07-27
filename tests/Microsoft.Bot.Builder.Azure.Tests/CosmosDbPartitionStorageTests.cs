@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbPartitionedStorage(null));
 
             // No Endpoint. Should throw.
-            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions()
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions()
             {
                 AuthKey = "test",
                 ContainerId = "testId",
