@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     }
 
     /// <summary>
-    /// Options for evaluation of LG template <see cref="EvaluationOptions"/> class.
+    /// Options for evaluating LG templates.
     /// </summary>
     public class EvaluationOptions
     {
