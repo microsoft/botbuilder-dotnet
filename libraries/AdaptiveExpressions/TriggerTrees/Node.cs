@@ -108,6 +108,10 @@ namespace AdaptiveExpressions.TriggerTrees
         public static bool ShowTrace = true;
 #endif
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -115,6 +119,11 @@ namespace AdaptiveExpressions.TriggerTrees
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <param name="builder">A StringBuilder object.</param>
+        /// <param name="indent">An integer representing the number of spaces at the start of a line.</param>
         public void ToString(StringBuilder builder, int indent = 0)
             => Clause.ToString(builder, indent);
 

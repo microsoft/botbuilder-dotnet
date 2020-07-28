@@ -8,6 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsDateTime : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsDateTime"/> class.
+        /// </summary>
         public IsDateTime()
             : base(ExpressionType.IsDateTime, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

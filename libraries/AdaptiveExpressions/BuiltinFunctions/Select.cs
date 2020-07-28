@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Select : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Select"/> class.
+        /// </summary>
         public Select()
             : base(ExpressionType.Select, FunctionUtils.Foreach, ReturnType.Array, FunctionUtils.ValidateForeach)
         {

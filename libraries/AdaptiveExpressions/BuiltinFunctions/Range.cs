@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Range : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Range"/> class.
+        /// </summary>
         public Range()
             : base(ExpressionType.Range, Evaluator(), ReturnType.Array, FunctionUtils.ValidateBinaryNumber)
         {

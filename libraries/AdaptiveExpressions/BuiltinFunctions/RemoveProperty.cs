@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class RemoveProperty : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveProperty"/> class.
+        /// </summary>
         public RemoveProperty()
             : base(ExpressionType.RemoveProperty, Evaluator(), ReturnType.Object, Validator)
         {

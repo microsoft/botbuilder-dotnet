@@ -8,6 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Foreach : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Foreach"/> class.
+        /// </summary>
         public Foreach()
             : base(ExpressionType.Foreach, FunctionUtils.Foreach, ReturnType.Array, FunctionUtils.ValidateForeach)
         {

@@ -67,12 +67,30 @@ namespace AdaptiveExpressions.Properties
         {
         }
 
+        /// <summary>
+        /// Converts a boolean value to a BoolExpression.
+        /// </summary>
+        /// <param name="value">The boolean value to convert.</param>
+#pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator BoolExpression(bool value) => new BoolExpression(value);
 
+        /// <summary>
+        /// Converts a string value to a BoolExpression.
+        /// </summary>
+        /// <param name="expression">The string value to convert.</param>
         public static implicit operator BoolExpression(string expression) => new BoolExpression(expression);
-        
+
+        /// <summary>
+        /// Converts an Expression instance to BoolExpression.
+        /// </summary>
+        /// <param name="expression">The Expression instance to convert.</param>
         public static implicit operator BoolExpression(Expression expression) => new BoolExpression(expression);
 
+        /// <summary>
+        /// Converts a JSON Token to BoolExpression.
+        /// </summary>
+        /// <param name="expressionOrValue">The JSON Token to Convert.</param>
         public static implicit operator BoolExpression(JToken expressionOrValue) => new BoolExpression(expressionOrValue);
+#pragma warning restore CA2225 // Operator overloads have named alternates
     }
 }

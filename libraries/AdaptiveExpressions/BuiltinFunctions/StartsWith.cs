@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class StartsWith : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartsWith"/> class.
+        /// </summary>
         public StartsWith()
             : base(ExpressionType.StartsWith, Evaluator(), ReturnType.Boolean, Validator)
         {

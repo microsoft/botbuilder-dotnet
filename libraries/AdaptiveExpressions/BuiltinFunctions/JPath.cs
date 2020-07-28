@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class JPath : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JPath"/> class.
+        /// </summary>
         public JPath()
             : base(ExpressionType.JPath, Evaluator(), ReturnType.Object, Validator)
         {

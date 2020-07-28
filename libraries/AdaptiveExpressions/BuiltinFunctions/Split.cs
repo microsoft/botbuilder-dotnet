@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Split : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Split"/> class.
+        /// </summary>
         public Split()
             : base(ExpressionType.Split, Evaluator(), ReturnType.Array, Validator)
         {

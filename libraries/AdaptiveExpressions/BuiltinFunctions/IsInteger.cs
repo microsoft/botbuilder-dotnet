@@ -8,6 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsInteger : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsInteger"/> class.
+        /// </summary>
         public IsInteger()
             : base(ExpressionType.IsInteger, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
