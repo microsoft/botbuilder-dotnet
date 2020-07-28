@@ -75,7 +75,7 @@ namespace AdaptiveExpressions
         {
             if (optional == null)
             {
-                optional = new ReturnType[0];
+                optional = Array.Empty<ReturnType>();
             }
 
             if (expression.Children.Length < types.Length || expression.Children.Length > types.Length + optional.Length)
@@ -187,6 +187,13 @@ namespace AdaptiveExpressions
             => ValidateArityAndAnyType(expression, 1, 1, ReturnType.String);
 
         /// <summary>
+        /// Validate 1 or 2 string arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateUnaryOrBinaryString(Expression expression)
+            => ValidateArityAndAnyType(expression, 1, 2, ReturnType.String);
+
+        /// <summary>
         /// Validate there is a single number argument.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
@@ -209,7 +216,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking backward compat)
         public static string VerifyNumber(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (!value.IsNumber())
@@ -227,7 +236,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
         public static string VerifyNumericList(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (!TryParseList(value, out var list))
@@ -256,7 +267,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
         public static string VerifyNumericListOrNumber(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (value.IsNumber())
@@ -290,7 +303,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
         public static string VerifyContainer(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (!(value is string) && !(value is IList) && !(value is IEnumerable))
@@ -308,7 +323,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
         public static string VerifyList(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (!TryParseList(value, out var _))
@@ -345,7 +362,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
         public static string VerifyInteger(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (!value.IsInteger())
@@ -363,7 +382,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
         public static string VerifyString(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (!(value is string))
@@ -381,7 +402,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">expression.</param>
         /// <param name="number">number.</param>
         /// <returns>error message.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
         public static string VerifyStringOrNull(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (!(value is string) && value != null)
@@ -399,7 +422,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
         public static string VerifyNotNull(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (value == null)
@@ -417,7 +442,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
         public static string VerifyNumberOrString(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (value == null || (!value.IsNumber() && !(value is string)))
@@ -435,7 +462,9 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression that led to value.</param>
         /// <param name="number">No function.</param>
         /// <returns>Error.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
         public static string VerifyNumberOrStringOrNull(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
         {
             string error = null;
             if (value != null && !value.IsNumber() && !(value is string))
@@ -507,7 +536,9 @@ namespace AdaptiveExpressions
                     {
                         value = function(args);
                     }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return it in the error)
                     catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         error = e.Message;
                     }
@@ -538,7 +569,9 @@ namespace AdaptiveExpressions
                     {
                         (value, error) = function(args);
                     }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return it in the error)
                     catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         error = e.Message;
                     }
@@ -682,7 +715,12 @@ namespace AdaptiveExpressions
             {
                 if (index >= 0 && index < list.Count)
                 {
-                    value = list[Convert.ToInt32(index)];
+                    var newIndex = 0;
+                    (newIndex, error) = ParseInt32(index);
+                    if (error == null)
+                    {
+                        value = list[newIndex];
+                    }
                 }
                 else
                 {
@@ -728,7 +766,7 @@ namespace AdaptiveExpressions
             value = null;
             if (instance != null)
             {
-                property = property.ToLower();
+                property = property.ToLowerInvariant();
 
                 // NOTE: what about other type of TKey, TValue?
                 if (instance is IDictionary<string, object> idict)
@@ -736,7 +774,7 @@ namespace AdaptiveExpressions
                     if (!idict.TryGetValue(property, out value))
                     {
                         // fall back to case insensitive
-                        var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
+                        var prop = idict.Keys.Where(k => k.ToLowerInvariant() == property).SingleOrDefault();
                         if (prop != null)
                         {
                             isPresent = idict.TryGetValue(prop, out value);
@@ -756,7 +794,7 @@ namespace AdaptiveExpressions
                 {
                     // Use reflection
                     var type = instance.GetType();
-                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                    var prop = type.GetProperties().Where(p => p.Name.ToLowerInvariant() == property).SingleOrDefault();
                     if (prop != null)
                     {
                         value = prop.GetValue(instance);
@@ -771,6 +809,29 @@ namespace AdaptiveExpressions
             }
 
             return isPresent;
+        }
+
+        /// <summary>
+        /// Convert an input object to 32-bit signed interger. If failed, an error messgage will returned.
+        /// </summary>
+        /// <param name="obj">Input object.</param>
+        /// <returns>A tuple of an integer and a string.</returns>
+        internal static (int, string) ParseInt32(object obj)
+        {
+            int result = 0;
+            string error = null;
+            try
+            {
+                result = Convert.ToInt32(obj, CultureInfo.InvariantCulture);
+            }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic message)
+            catch
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                error = $"{obj} must be a 32-bit signed integer.";
+            }
+
+            return (result, error);
         }
 
         /// <summary>
@@ -955,14 +1016,14 @@ namespace AdaptiveExpressions
 
         internal static void ValidateForeach(Expression expression)
         {
-            if (expression.Children.Count() != 3)
+            if (expression.Children.Length != 3)
             {
-                throw new Exception($"foreach expect 3 parameters, found {expression.Children.Count()}");
+                throw new Exception($"foreach expect 3 parameters, found {expression.Children.Length}");
             }
 
             var second = expression.Children[1];
 
-            if (!(second.Type == ExpressionType.Accessor && second.Children.Count() == 1))
+            if (!(second.Type == ExpressionType.Accessor && second.Children.Length == 1))
             {
                 throw new Exception($"Second parameter of foreach is not an identifier : {second}");
             }
@@ -973,7 +1034,7 @@ namespace AdaptiveExpressions
             Func<DateTime, DateTime> converter = (dateTime) => dateTime;
             string error = null;
             var multiFlag = isPast ? -1 : 1;
-            switch (timeUnit.ToLower())
+            switch (timeUnit.ToLowerInvariant())
             {
                 case "second": converter = (dateTime) => dateTime.AddSeconds(multiFlag * interval); break;
                 case "minute": converter = (dateTime) => dateTime.AddMinutes(multiFlag * interval); break;
@@ -988,7 +1049,7 @@ namespace AdaptiveExpressions
             return (converter, error);
         }
 
-        internal static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, object> transform = null)
+        internal static (object, string) NormalizeToDateTime(object timestamp, Func<DateTime, (object, string)> transform = null)
         {
             object result = null;
             string error = null;
@@ -998,7 +1059,7 @@ namespace AdaptiveExpressions
             }
             else if (timestamp is DateTime dt)
             {
-                result = transform != null ? transform(dt) : dt;
+                (result, error) = transform != null ? transform(dt) : (dt, null);
             }
             else
             {
@@ -1026,7 +1087,9 @@ namespace AdaptiveExpressions
             {
                 convertedTimeZone = TimeZoneInfo.FindSystemTimeZoneById(convertedTimeZoneStr);
             }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic message)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 error = $"{timezone} is an illegal timezone";
             }
@@ -1042,7 +1105,9 @@ namespace AdaptiveExpressions
             {
                 result = datetime.ToString(format, CultureInfo.InvariantCulture.DateTimeFormat);
             }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic message)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 error = $"illegal format representation: {format}";
             }
@@ -1059,7 +1124,9 @@ namespace AdaptiveExpressions
             {
                 result = new Uri(uri);
             }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic message)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 error = $"{uri} is an illegal URI string";
             }
@@ -1096,7 +1163,7 @@ namespace AdaptiveExpressions
         {
             if (strToConvert == null)
             {
-                return new byte[] { };
+                return Array.Empty<byte>();
             }
 
             return Encoding.UTF8.GetBytes(strToConvert);
@@ -1161,7 +1228,7 @@ namespace AdaptiveExpressions
                return (result, error);
            };
 
-        private static (object, string) ParseISOTimestamp(string timeStamp, Func<DateTime, object> transform = null)
+        private static (object, string) ParseISOTimestamp(string timeStamp, Func<DateTime, (object, string)> transform = null)
         {
             object result = null;
             string error = null;
@@ -1172,9 +1239,9 @@ namespace AdaptiveExpressions
                     styles: DateTimeStyles.RoundtripKind,
                     result: out var parsed))
             {
-                if (parsed.ToString(DefaultDateTimeFormat).Equals(timeStamp, StringComparison.InvariantCultureIgnoreCase))
+                if (parsed.ToString(DefaultDateTimeFormat, CultureInfo.InvariantCulture).Equals(timeStamp, StringComparison.OrdinalIgnoreCase))
                 {
-                    result = transform != null ? transform(parsed) : parsed;
+                    (result, error) = transform != null ? transform(parsed) : (parsed, null);
                 }
                 else
                 {

@@ -80,6 +80,7 @@ namespace AdaptiveExpressions.Tests
             Test("countWord(one)"), // should have string param
             Test("addOrdinal(one)"), // should have Integer param
             Test("addOrdinal(one, two)"), // should have one param
+            Test("addOrdinal(122332132123123123)"), // should have a 32-bit signed integer
             Test("newGuid(one)"), // should have no parameters
             Test("EOL(one)"), // should have no parameters
             Test("indexOf(hello)"), // should have two parameters
@@ -142,6 +143,7 @@ namespace AdaptiveExpressions.Tests
             Test("formatNumber(1,2,'dlkj'"), // invalid locale
             Test("formatNumber(1,2.0)"), // the second parameter should be an integer
             Test("formatNumber(hello,2.0)"), // the first parameter should be a number
+            Test("formatNumber(hello,2232131231231)"), // the first parameter should be a 32-bit signed integer
             #endregion
 
             #region Math functions test
@@ -169,6 +171,8 @@ namespace AdaptiveExpressions.Tests
             Test("rand(5, 6.1)"), //  param should be integer
             Test("rand(5)"), //  need two params
             Test("rand(7, 6)"), //  minvalue cannot be greater than maxValue
+            Test("rand(21223123221322, 10)"), // the first parameter should be a 32-bit signed integer
+            Test("rand(10, 21223123221322)"), // the first parameter should be a 32-bit signed integer
             Test("sum(items)"), //  should have number parameters
             Test("range(hello,one)"), // params should be integer
             Test("range(one,0)"), // the second param should be more than 0
@@ -182,6 +186,7 @@ namespace AdaptiveExpressions.Tests
             Test("round(1.2, -2)"), // the 2nd parameter should not less than 0
             Test("round(1.2, 16)"), // the 2nd parameter should not greater than 15
             Test("round(1.2, 2, 3)"), // should have one or two number parameters
+            Test("round(1.2, 21232123123123123)"), // the second parameter should be a 32-bit signed integer
             #endregion
             
             #region Date and time function test
@@ -203,22 +208,26 @@ namespace AdaptiveExpressions.Tests
             Test("addDays(timestamp, 'hi')"), // second param should be integer
             Test("addDays(timestamp)"), // should have 2 or 3 params
             Test("addDays(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
+            Test("addDays(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("addDays(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addHours('errortime', 1)"), // error datetime format
             Test("addHours(timestamp, 'hi')"), // second param should be integer
             Test("addHours(timestamp)"), // should have 2 or 3 params
             Test("addHours(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
+            Test("addHours(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("addHours(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addMinutes('errortime', 1)"), // error datetime format
             Test("addMinutes(timestamp, 'hi')"), // second param should be integer
             Test("addMinutes(timestamp)"), // should have 2 or 3 params
             Test("addMinutes(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
+            Test("addMinutes(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("addMinutes(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addSeconds('errortime', 1)"), // error datetime format
             Test("addSeconds(timestamp, 'hi')"), // second param should be integer
             Test("addSeconds(timestamp)"), // should have 2 or 3 params
             Test("addSeconds(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
             Test("addSeconds(notISOTimestamp, 1)"), // not ISO datetime format
+            Test("addSeconds(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("dayOfMonth('errortime')"), // error datetime format
             Test("dayOfMonth(timestamp, 1)"), // should have 1 param
             Test("dayOfMonth(notISOTimestamp)"), // not ISO datetime format
@@ -298,6 +307,18 @@ namespace AdaptiveExpressions.Tests
             Test("dateTimeDiff(notValidTimeStamp,'2018-01-01T08:00:00.000Z')"), // the first parameter is not a valid timestamp
             Test("dateTimeDiff('2017-01-01T08:00:00.000Z',notValidTimeStamp)"), // the second parameter is not a valid timestamp
             Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z', 'years')"), // should only have 2 parameters
+            Test("getNextViableDate(hello)"), // should have a "XXXX-MM-DD" format string
+            Test("getNextViableDate(one)"), // should have a string parameter
+            Test("getNextViableDate('XXXX-10-10', 20)"), // should only have 1 parameter
+            Test("getPreviousViableDate(hello)"), // should have a "XXXX-MM-DD" format string
+            Test("getPreviousViableDate(one)"), // should have a string parameter
+            Test("getPreviousViableDate('XXXX-10-10', 20)"), // should only have 1 parameter
+            Test("getNextViableTime(hello)"), // should have a "XX:mm:ss" format string
+            Test("getNextViableTime(one)"), // should have a string parameter
+            Test("getNextViableTime('XX:12:12', 20)"), // should only have 1 parameter
+            Test("getPreviousViableTime(hello)"), // should have a "XX:mm:ss" format string
+            Test("getPreviousViableTime(one)"), // should have a string parameter
+            Test("getPreviousViableTime('XX:12:12', 20)"), // should only have 1 parameter
             #endregion
 
             #region uri parsing function test
@@ -361,6 +382,7 @@ namespace AdaptiveExpressions.Tests
             Test("sortBy(hello, 'x')"), // first param should be list
             Test("sortBy(createArray('H','e','l','l','o'), 1)"), // second param should be string
             Test("sortBy(createArray('H','e','l','l','o'), 'x', hi)"), // second param should be string
+            Test("flatten(createArray(1,createArray(2),createArray(createArray(3, 4), createArray(5,6))), 123456789012345)"), // the second parameter should be a 32-bit signed integer
 #endregion
 
             #region Object manipulation and construction functions test

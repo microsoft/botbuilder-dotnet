@@ -184,6 +184,16 @@ namespace Microsoft.Bot.Builder.AI.Tests
                             },
                             new AssertCondition()
                             {
+                                Condition = "turn.recognized.entities.$instance.answer[0].startIndex == 0",
+                                Description = "startIndex should be 0",
+                            },
+                            new AssertCondition()
+                            {
+                                Condition = "turn.recognized.entities.$instance.answer[0].endIndex != null",
+                                Description = "endIndex should not be null",
+                            },
+                            new AssertCondition()
+                            {
                                 Condition = "turn.recognized.answers[0].answer != null",
                                 Description = "There should be answers object"
                             },

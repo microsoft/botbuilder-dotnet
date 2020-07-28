@@ -19,7 +19,9 @@ namespace AdaptiveExpressions
     /// Type expected from evaluating an expression.
     /// </summary>
     [Flags]
+#pragma warning disable CA1714 // Flags enums should have plural names (we can't change this without breaking binary compat)
     public enum ReturnType
+#pragma warning restore CA1714 // Flags enums should have plural names
     {
         /// <summary>
         /// True or false boolean value.
@@ -34,12 +36,16 @@ namespace AdaptiveExpressions
         /// <summary>
         /// Any value is possible.
         /// </summary>
+#pragma warning disable CA1720 // Identifier contains type name (we can't change this without breaking binary compat)
         Object = 4,
+#pragma warning restore CA1720 // Identifier contains type name
 
         /// <summary>
         /// String value.
         /// </summary>
+#pragma warning disable CA1720 // Identifier contains type name (we can't change this without breaking binary compat)
         String = 8,
+#pragma warning restore CA1720 // Identifier contains type name
 
         /// <summary>
         /// Array value.
@@ -112,7 +118,9 @@ namespace AdaptiveExpressions
         /// <value>
         /// Children expressions.
         /// </value>
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public Expression[] Children { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets expected result of evaluating expression.
@@ -192,7 +200,9 @@ namespace AdaptiveExpressions
                 {
                     value = function(state);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (capture the exception and return in in the error)
                 catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = e.Message;
                 }
@@ -242,7 +252,7 @@ namespace AdaptiveExpressions
         /// <returns>New expression.</returns>
         public static Expression AndExpression(params Expression[] children)
         {
-            if (children.Count() > 1)
+            if (children.Length > 1)
             {
                 return Expression.MakeExpression(ExpressionType.And, children);
             }
@@ -257,7 +267,7 @@ namespace AdaptiveExpressions
         /// <returns>New expression.</returns>
         public static Expression OrExpression(params Expression[] children)
         {
-            if (children.Count() > 1)
+            if (children.Length > 1)
             {
                 return Expression.MakeExpression(ExpressionType.Or, children);
             }
@@ -305,15 +315,15 @@ namespace AdaptiveExpressions
                 eq = this.Type == other.Type;
                 if (eq)
                 {
-                    eq = this.Children.Count() == other.Children.Count();
+                    eq = this.Children.Length == other.Children.Length;
                     if (this.Type == ExpressionType.And || this.Type == ExpressionType.Or)
                     {
                         // And/Or do not depend on order
-                        for (var i = 0; eq && i < this.Children.Count(); ++i)
+                        for (var i = 0; eq && i < this.Children.Length; ++i)
                         {
                             var primary = this.Children[i];
                             var found = false;
-                            for (var j = 0; j < this.Children.Count(); ++j)
+                            for (var j = 0; j < this.Children.Length; ++j)
                             {
                                 if (primary.DeepEquals(other.Children[j]))
                                 {
@@ -327,7 +337,7 @@ namespace AdaptiveExpressions
                     }
                     else
                     {
-                        for (var i = 0; eq && i < this.Children.Count(); ++i)
+                        for (var i = 0; eq && i < this.Children.Length; ++i)
                         {
                             eq = this.Children[i].DeepEquals(other.Children[i]);
                         }
@@ -440,7 +450,7 @@ namespace AdaptiveExpressions
                     var iteratorName = (string)(children[1].Children[0] as Constant).Value;
 
                     // filter references found in children 2 with iterator name
-                    var nonLocalRefs2 = refs2.Where(x => !(x.Equals(iteratorName) || x.StartsWith(iteratorName + '.') || x.StartsWith(iteratorName + '[')))
+                    var nonLocalRefs2 = refs2.Where(x => !(x.Equals(iteratorName, StringComparison.Ordinal) || x.StartsWith(iteratorName + '.', StringComparison.Ordinal) || x.StartsWith(iteratorName + '[', StringComparison.Ordinal)))
                                              .ToList();
 
                     refs.UnionWith(refs0);
@@ -565,52 +575,52 @@ namespace AdaptiveExpressions
 
                 if (typeof(T) == typeof(bool))
                 {
-                    return ((T)(object)Convert.ToBoolean(result), error);
+                    return ((T)(object)Convert.ToBoolean(result, CultureInfo.InvariantCulture), error);
                 }
 
                 if (typeof(T) == typeof(byte))
                 {
-                    return ((T)(object)Convert.ToByte(result), (Convert.ToByte(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                    return ((T)(object)Convert.ToByte(result, CultureInfo.InvariantCulture), (Convert.ToByte(result, CultureInfo.InvariantCulture) == Convert.ToDouble(result, CultureInfo.InvariantCulture)) ? null : Error<T>(result));
                 }
 
                 if (typeof(T) == typeof(short))
                 {
-                    return ((T)(object)Convert.ToInt16(result), (Convert.ToInt16(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                    return ((T)(object)Convert.ToInt16(result, CultureInfo.InvariantCulture), (Convert.ToInt16(result, CultureInfo.InvariantCulture) == Convert.ToDouble(result, CultureInfo.InvariantCulture)) ? null : Error<T>(result));
                 }
 
                 if (typeof(T) == typeof(int))
                 {
-                    return ((T)(object)Convert.ToInt32(result), (Convert.ToInt32(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                    return ((T)(object)Convert.ToInt32(result, CultureInfo.InvariantCulture), (Convert.ToInt32(result, CultureInfo.InvariantCulture) == Convert.ToDouble(result, CultureInfo.InvariantCulture)) ? null : Error<T>(result));
                 }
 
                 if (typeof(T) == typeof(long))
                 {
-                    return ((T)(object)Convert.ToInt64(result), (Convert.ToInt64(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                    return ((T)(object)Convert.ToInt64(result, CultureInfo.InvariantCulture), (Convert.ToInt64(result, CultureInfo.InvariantCulture) == Convert.ToDouble(result, CultureInfo.InvariantCulture)) ? null : Error<T>(result));
                 }
 
                 if (typeof(T) == typeof(ushort))
                 {
-                    return ((T)(object)Convert.ToUInt16(result), (Convert.ToUInt16(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                    return ((T)(object)Convert.ToUInt16(result, CultureInfo.InvariantCulture), (Convert.ToUInt16(result, CultureInfo.InvariantCulture) == Convert.ToDouble(result, CultureInfo.InvariantCulture)) ? null : Error<T>(result));
                 }
 
                 if (typeof(T) == typeof(uint))
                 {
-                    return ((T)(object)Convert.ToUInt32(result), (Convert.ToUInt32(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                    return ((T)(object)Convert.ToUInt32(result, CultureInfo.InvariantCulture), (Convert.ToUInt32(result, CultureInfo.InvariantCulture) == Convert.ToDouble(result, CultureInfo.InvariantCulture)) ? null : Error<T>(result));
                 }
 
                 if (typeof(T) == typeof(ulong))
                 {
-                    return ((T)(object)Convert.ToUInt64(result), (Convert.ToUInt64(result) == Convert.ToDouble(result)) ? null : Error<T>(result));
+                    return ((T)(object)Convert.ToUInt64(result, CultureInfo.InvariantCulture), (Convert.ToUInt64(result, CultureInfo.InvariantCulture) == Convert.ToDouble(result, CultureInfo.InvariantCulture)) ? null : Error<T>(result));
                 }
 
                 if (typeof(T) == typeof(float))
                 {
-                    return ((T)(object)Convert.ToSingle(Convert.ToDecimal(result)), null);
+                    return ((T)(object)Convert.ToSingle(Convert.ToDecimal(result, CultureInfo.InvariantCulture)), null);
                 }
 
                 if (typeof(T) == typeof(double))
                 {
-                    return ((T)(object)Convert.ToDouble(Convert.ToDecimal(result)), null);
+                    return ((T)(object)Convert.ToDouble(Convert.ToDecimal(result, CultureInfo.InvariantCulture)), null);
                 }
 
                 if (result == null)
@@ -620,7 +630,9 @@ namespace AdaptiveExpressions
 
                 return (JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(result)), null);
             }
+#pragma warning disable CA1031 // Do not catch general exception types (just return an error)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 return (default(T), Error<T>(result));
             }
@@ -665,7 +677,7 @@ namespace AdaptiveExpressions
             // Generic version
             if (!valid)
             {
-                var infix = Type.Length > 0 && !char.IsLetter(Type[0]) && Children.Count() >= 2;
+                var infix = Type.Length > 0 && !char.IsLetter(Type[0]) && Children.Length >= 2;
                 if (!infix)
                 {
                     builder.Append(Type);
@@ -710,7 +722,11 @@ namespace AdaptiveExpressions
         /// <summary>
         /// FunctionTable is a dictionary which merges BuiltinFunctions.Functions with a CustomDictionary.
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat)
+#pragma warning disable CA1710 // Identifiers should have correct suffix (we can't change this without breaking binary compat)
         public class FunctionTable : IDictionary<string, ExpressionEvaluator>
+#pragma warning restore CA1710 // Identifiers should have correct suffix
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             private readonly ConcurrentDictionary<string, ExpressionEvaluator> customFunctions = new ConcurrentDictionary<string, ExpressionEvaluator>(StringComparer.InvariantCultureIgnoreCase);
 

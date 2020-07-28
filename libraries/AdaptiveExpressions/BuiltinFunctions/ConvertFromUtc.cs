@@ -26,7 +26,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
             if (error == null)
             {
-                var format = (args.Count() == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
+                var format = (args.Count == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
                 if (args[1] is string targetTimeZone)
                 {
                     (value, error) = EvalConvertFromUTC(args[0], targetTimeZone, format);

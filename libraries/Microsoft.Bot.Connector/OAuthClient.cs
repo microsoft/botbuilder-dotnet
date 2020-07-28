@@ -21,6 +21,9 @@ namespace Microsoft.Bot.Connector
     using System.Threading.Tasks;
     using System.Threading;
 
+    /// <summary>
+    /// An OAuth client class that implements <see cref="IOAuthClient"/>.
+    /// </summary>
     public partial class OAuthClient : ServiceClient<OAuthClient>, IOAuthClient
     {
         /// <summary>

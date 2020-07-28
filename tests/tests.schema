@@ -296,6 +296,9 @@
 			"$ref": "#/definitions/Microsoft.SwitchCondition"
 		},
 		{
+			"$ref": "#/definitions/Microsoft.TelemetryTrackEvent"
+		},
+		{
 			"$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
 		},
 		{
@@ -2505,7 +2508,7 @@
 					]
 				},
 				"outputFormat": {
-					"$ref": "#/definitions/stringExpression",
+					"$ref": "#/definitions/expression",
 					"title": "Output format",
 					"description": "Expression to use for formatting the output.",
 					"examples": [
@@ -4395,6 +4398,9 @@
 					"$ref": "#/definitions/Microsoft.SwitchCondition"
 				},
 				{
+					"$ref": "#/definitions/Microsoft.TelemetryTrackEvent"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.TraceActivity"
 				},
 				{
@@ -4530,10 +4536,10 @@
 					"type": "string"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+					"$ref": "#/definitions/Microsoft.LuisRecognizer"
 				},
 				{
-					"$ref": "#/definitions/Microsoft.LuisRecognizer"
+					"$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
 				},
 				{
 					"$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
@@ -7362,7 +7368,7 @@
 				"extends(Microsoft.OnCondition)"
 			],
 			"title": "On unknown intent",
-			"description": "Action to perform when user input is unrecognized and if none of the 'on intent recognition' triggers match recognized intent.",
+			"description": "Action to perform when user input is unrecognized or if none of the 'on intent recognition' triggers match recognized intent.",
 			"type": "object",
 			"required": [
 				"actions",
@@ -8575,6 +8581,68 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.SwitchCondition"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.TelemetryTrackEvent": {
+			"$role": "implements(Microsoft.IDialog)",
+			"type": "object",
+			"title": "Telemetry - Track Event",
+			"description": "Track a custom event using the registered Telemetry Client.",
+			"required": [
+				"url",
+				"method",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"id": {
+					"type": "string",
+					"title": "Id",
+					"description": "Optional id for the dialog"
+				},
+				"disabled": {
+					"$ref": "#/definitions/booleanExpression",
+					"title": "Disabled",
+					"description": "Optional condition which if true will disable this action.",
+					"examples": [
+						"user.age > 3"
+					]
+				},
+				"eventName": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "Event Name",
+					"description": "The name of the event to track.",
+					"examples": [
+						"MyEventStarted",
+						"MyEventCompleted"
+					]
+				},
+				"properties": {
+					"type": "object",
+					"title": "Properties",
+					"description": "One or more properties to attach to the event being tracked.",
+					"additionalProperties": {
+						"$ref": "#/definitions/stringExpression"
+					}
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.TelemetryTrackEvent"
 				},
 				"$designer": {
 					"title": "Designer information",
@@ -11198,6 +11266,7 @@
 			]
 		},
 		"equalsExpression": {
+			"$role": "expression",
 			"type": "string",
 			"title": "Expression",
 			"description": "Expression starting with =.",
@@ -11207,6 +11276,7 @@
 			]
 		},
 		"expression": {
+			"$role": "expression",
 			"type": "string",
 			"title": "Expression",
 			"description": "Expression to evaluate.",

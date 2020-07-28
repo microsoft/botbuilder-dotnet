@@ -34,7 +34,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     jsonObj = JObject.Parse(jsonStr);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (we should probably do something about this but ignoring it for now)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = $"{jsonStr} is not a valid JSON string";
                 }
@@ -54,7 +56,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     value = jsonObj.SelectTokens(jpath);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (we should probably do something about this but ignoring for now)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = $"{jpath} is not a valid path";
                 }

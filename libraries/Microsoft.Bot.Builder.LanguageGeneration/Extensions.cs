@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -76,7 +77,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = expression.Trim().TrimStart('$').Trim();
 
-            if (result.StartsWith("{") && result.EndsWith("}"))
+            if (result.StartsWith("{", StringComparison.Ordinal) && result.EndsWith("}", StringComparison.Ordinal))
             {
                 result = result.Substring(1, result.Length - 2);
             }

@@ -8,7 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Check whether an expression is true or false. Based on the result, return a specified value.
     /// </summary>
+#pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
     public class If : ExpressionEvaluator
+#pragma warning restore CA1716 // Identifiers should not match keywords
     {
         public If()
             : base(ExpressionType.If, Evaluator, ReturnType.Object, Validator)

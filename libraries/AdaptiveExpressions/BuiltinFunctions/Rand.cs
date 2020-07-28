@@ -26,8 +26,14 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         {
                             object value = null;
                             string error = null;
-                            var min = Convert.ToInt32(args[0]);
-                            var max = Convert.ToInt32(args[1]);
+                            var min = 0;
+                            var max = 0;
+                            (min, error) = FunctionUtils.ParseInt32(args[0]);
+                            if (error == null)
+                            {
+                                (max, error) = FunctionUtils.ParseInt32(args[1]);
+                            }
+
                             if (min >= max)
                             {
                                 error = $"{min} is not < {max} for rand";

@@ -33,8 +33,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     if (idxValue.IsInteger())
                     {
-                        var idx = Convert.ToInt32(idxValue);
-                        (value, error) = FunctionUtils.AccessIndex(inst, idx);
+                        var idx = 0;
+                        (idx, error) = FunctionUtils.ParseInt32(idxValue);
+                        if (error == null)
+                        {
+                            (value, error) = FunctionUtils.AccessIndex(inst, idx);
+                        } 
                     }
                     else if (idxValue is string idxStr)
                     {

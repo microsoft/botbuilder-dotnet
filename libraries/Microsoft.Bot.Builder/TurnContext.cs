@@ -405,6 +405,10 @@ namespace Microsoft.Bot.Builder
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">Boolean value that determines whether to free resources or not.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

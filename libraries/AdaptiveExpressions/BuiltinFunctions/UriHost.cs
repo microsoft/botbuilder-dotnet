@@ -50,7 +50,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     var host = uriBase.Host;
                     result = host.ToString();
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (we are capturing the exception and returning a generic error for all failures)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = "invalid operation, input uri should be an absolute URI";
                 }
