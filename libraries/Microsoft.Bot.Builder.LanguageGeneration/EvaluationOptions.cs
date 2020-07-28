@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     }
 
     /// <summary>
-    /// Options for evaluation of LG template <see cref="EvaluationOptions"/> class.
+    /// Options for evaluating LG templates.
     /// </summary>
     public class EvaluationOptions
     {
@@ -36,18 +36,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public EvaluationOptions()
         {
-            this.StrictMode = null;
-            this.NullSubstitution = null;
-            this.LineBreakStyle = null;
-            this.Locale = null;
+            StrictMode = null;
+            NullSubstitution = null;
+            LineBreakStyle = null;
+            Locale = null;
         }
 
         public EvaluationOptions(EvaluationOptions opt)
         {
-            this.StrictMode = opt.StrictMode;
-            this.NullSubstitution = opt.NullSubstitution;
-            this.LineBreakStyle = opt.LineBreakStyle;
-            this.Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
+            StrictMode = opt.StrictMode;
+            NullSubstitution = opt.NullSubstitution;
+            LineBreakStyle = opt.LineBreakStyle;
+            Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
         }
 
         public EvaluationOptions(IList<string> optionsList)
