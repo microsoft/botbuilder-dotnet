@@ -11,9 +11,6 @@
         ],
         "hidden": [
             "actions"
-        ],
-        "properties": {
-            "intent": {}
-        }
+        ]
     }
 }
