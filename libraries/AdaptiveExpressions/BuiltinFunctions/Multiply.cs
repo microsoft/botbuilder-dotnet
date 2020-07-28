@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Multiply : MultivariateNumericEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Multiply"/> class.
+        /// </summary>
         public Multiply()
             : base(ExpressionType.Multiply, Evaluator)
         {

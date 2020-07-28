@@ -5,6 +5,9 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// A utilities class of file path operations.
+    /// </summary>
     public static class PathUtils
     {
         /// <summary>

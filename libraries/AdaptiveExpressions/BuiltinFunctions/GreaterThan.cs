@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class GreaterThan : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GreaterThan"/> class.
+        /// </summary>
         public GreaterThan()
             : base(
                   ExpressionType.GreaterThan,

@@ -15,6 +15,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         private const long TicksPerMinute = 60 * 10000000L;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TicksToMinutes"/> class.
+        /// </summary>
         public TicksToMinutes()
             : base(ExpressionType.TicksToMinutes, Evaluator, ReturnType.Number, FunctionUtils.ValidateUnaryNumber)
         {

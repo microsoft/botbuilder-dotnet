@@ -8,6 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class DataUriToBinary : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataUriToBinary"/> class.
+        /// </summary>
         public DataUriToBinary()
             : base(ExpressionType.DataUriToBinary, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
         {

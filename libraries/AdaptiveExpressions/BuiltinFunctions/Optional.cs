@@ -13,6 +13,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Optional : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Optional"/> class.
+        /// </summary>
         public Optional()
             : base(ExpressionType.Optional, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnaryBoolean)
         {

@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Ceiling : NumberTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ceiling"/> class.
+        /// </summary>
         public Ceiling()
                 : base(ExpressionType.Ceiling, Function)
         {

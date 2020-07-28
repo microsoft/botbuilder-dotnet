@@ -43,6 +43,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
+        /// </summary>
+        /// <param name="providers">The list of resource providers to initialize the current instance.</param>
         public ResourceExplorer(IEnumerable<ResourceProvider> providers)
             : this()
         {
@@ -172,9 +176,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 using (new SourceScope(sourceContext, range))
                 {
                     var result = Load<T>(json, sourceContext);
-                    if (result is Dialog dlg)
+
+                    if (result is Dialog dlg && !((JObject)json).ContainsKey("id"))
                     {
-                        // dialog id's are resource ids
+                        // if there is no jobject.id for the dialog, then the dialog id's should be resource.id
                         dlg.Id = resource.Id;
                     }
 
@@ -455,6 +460,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             _disposed = true;
         }
 
+        /// <summary>
+        /// Handler for on changed events.
+        /// </summary>
+        /// <param name="resources">A collection of resources to pass to the event handler.</param>
         protected virtual void OnChanged(Resource[] resources)
         {
             Changed?.Invoke(this, resources);
@@ -526,7 +535,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private T Load<T>(JToken token, SourceContext sourceContext)
         {
             var converters = new List<JsonConverter>();
-            
+
             // get converters
             foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
             {

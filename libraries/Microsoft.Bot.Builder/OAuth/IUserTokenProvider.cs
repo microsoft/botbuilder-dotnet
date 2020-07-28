@@ -9,6 +9,9 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// A contract for user token provider classes.
+    /// </summary>
     public interface IUserTokenProvider
     {
         /// <summary>Attempts to retrieve the token for a user that's in a login flow, using the bot's AppCredentials.

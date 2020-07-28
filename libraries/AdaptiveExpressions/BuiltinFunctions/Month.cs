@@ -8,6 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Month : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Month"/> class.
+        /// </summary>
         public Month()
             : base(ExpressionType.Month, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {

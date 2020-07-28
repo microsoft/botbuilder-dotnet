@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Accessor : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Accessor"/> class.
+        /// </summary>
         public Accessor()
             : base(ExpressionType.Accessor, Evaluator, ReturnType.Object, Validator)
         {
