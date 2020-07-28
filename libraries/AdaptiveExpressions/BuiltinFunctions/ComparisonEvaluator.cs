@@ -12,6 +12,13 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class ComparisonEvaluator : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComparisonEvaluator"/> class.
+        /// </summary>
+        /// <param name="type">Name of the built-in function.</param>
+        /// <param name="function">The comparison function, it takes a list of objects and returns a boolean.</param>
+        /// <param name="validator">Validator of input arguments.</param>
+        /// <param name="verify">Optional function to verify each child's result.</param>
         public ComparisonEvaluator(string type, Func<IReadOnlyList<object>, bool> function, ValidateExpressionDelegate validator, FunctionUtils.VerifyExpression verify = null)
             : base(type, Evaluator(function, verify), ReturnType.Boolean, validator)
         {

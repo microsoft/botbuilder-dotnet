@@ -13,6 +13,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class StartOfMonth : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartOfMonth"/> class.
+        /// </summary>
         public StartOfMonth()
             : base(ExpressionType.StartOfMonth, Evaluator, ReturnType.String, Validator)
         {

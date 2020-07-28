@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Date : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Date"/> class.
+        /// </summary>
         public Date()
             : base(ExpressionType.Date, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {

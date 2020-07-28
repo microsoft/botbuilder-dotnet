@@ -55,6 +55,10 @@ namespace Microsoft.Bot.Builder
             await ReceiveActivityInternalAsync(turnContext, callback, 0, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets an enumerator that iterates over a collection of implementations of <see cref="IMiddleware"/> objects.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate over the collection.</returns>
         public IEnumerator<IMiddleware> GetEnumerator()
         {
             return this._middleware.GetEnumerator();

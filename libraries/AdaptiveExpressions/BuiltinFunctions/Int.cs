@@ -13,6 +13,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Int : ExpressionEvaluator
 #pragma warning restore CA1720 // Identifier contains type name
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Int"/> class.
+        /// </summary>
         public Int()
             : base(ExpressionType.Int, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {

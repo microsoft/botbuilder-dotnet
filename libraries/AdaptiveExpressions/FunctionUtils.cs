@@ -14,6 +14,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions
 {
+    /// <summary>
+    /// Utility functions for Adaptive-Expressions.
+    /// </summary>
     public static class FunctionUtils
     {
         /// <summary>

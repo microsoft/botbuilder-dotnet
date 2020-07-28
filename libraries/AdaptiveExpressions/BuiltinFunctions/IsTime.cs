@@ -13,6 +13,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsTime : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsTime"/> class.
+        /// </summary>
         public IsTime()
             : base(ExpressionType.IsTime, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

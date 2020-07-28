@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Max : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Max"/> class.
+        /// </summary>
         public Max()
             : base(ExpressionType.Max, Evaluator(), ReturnType.Number, FunctionUtils.ValidateAtLeastOne)
         {

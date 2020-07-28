@@ -14,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class AddToTime : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddToTime"/> class.
+        /// </summary>
         public AddToTime()
             : base(ExpressionType.AddToTime, Evaluator, ReturnType.String, Validator)
         {

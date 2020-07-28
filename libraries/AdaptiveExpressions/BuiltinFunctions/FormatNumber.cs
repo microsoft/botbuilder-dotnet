@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class FormatNumber : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatNumber"/> class.
+        /// </summary>
         public FormatNumber()
             : base(ExpressionType.FormatNumber, Evaluator(), ReturnType.String, Validator)
         {

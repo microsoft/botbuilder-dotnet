@@ -14,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class SubtractFromTime : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SubtractFromTime"/> class.
+        /// </summary>
         public SubtractFromTime()
             : base(ExpressionType.SubtractFromTime, Evaluator, ReturnType.String, Validator)
         {

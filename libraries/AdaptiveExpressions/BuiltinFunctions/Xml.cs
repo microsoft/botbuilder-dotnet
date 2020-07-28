@@ -15,6 +15,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Xml : ExpressionEvaluator
 #pragma warning restore CA1724 // Type names should not match namespaces
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Xml"/> class.
+        /// </summary>
         public Xml()
             : base(ExpressionType.Xml, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {

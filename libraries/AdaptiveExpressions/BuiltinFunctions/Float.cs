@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Float : ExpressionEvaluator
 #pragma warning restore CA1720 // Identifier contains type name
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Float"/> class.
+        /// </summary>
         public Float()
             : base(ExpressionType.Float, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {

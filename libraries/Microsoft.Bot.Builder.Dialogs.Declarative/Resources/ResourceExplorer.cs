@@ -44,6 +44,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
+        /// </summary>
+        /// <param name="providers">The list of resource providers to initialize the current instance.</param>
         public ResourceExplorer(IEnumerable<ResourceProvider> providers)
             : this()
         {
@@ -463,6 +467,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             _disposed = true;
         }
 
+        /// <summary>
+        /// Handler for on changed events.
+        /// </summary>
+        /// <param name="resources">A collection of resources to pass to the event handler.</param>
         protected virtual void OnChanged(Resource[] resources)
         {
             Changed?.Invoke(this, resources);

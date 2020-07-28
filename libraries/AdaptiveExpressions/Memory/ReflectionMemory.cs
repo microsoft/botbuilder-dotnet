@@ -13,32 +13,32 @@ namespace AdaptiveExpressions.Memory
         // cache of type => either Methods or null 
         private static ConcurrentDictionary<Type, Methods> methodsCache = new ConcurrentDictionary<Type, Methods>();
 
-        private object obj;
-        private Methods methods;
+        private object _obj;
+        private Methods _methods;
 
         private ReflectionMemory(object obj, Methods methods)
         {
-            this.obj = obj;
-            this.methods = methods;
+            _obj = obj;
+            _methods = methods;
         }
 
         public void SetValue(string path, object value)
         {
-            this.methods.SetValue.Invoke(obj, new object[] { value });
+            _methods.SetValue.Invoke(_obj, new object[] { value });
         }
 
         public bool TryGetValue(string path, out object value)
         {
             value = null;
             var args = new object[] { path, null };
-            var result = (bool)this.methods.TryGetValue.Invoke(obj, args);
+            var result = (bool)_methods.TryGetValue.Invoke(_obj, args);
             if (result)
             {
                 value = args[1];
 
                 if (value is IExpressionProperty ep)
                 {
-                    value = ep.GetObject(obj);
+                    value = ep.GetObject(_obj);
                 }
             }
 
@@ -47,7 +47,7 @@ namespace AdaptiveExpressions.Memory
 
         public string Version()
         {
-            return (string)this.methods?.Version?.Invoke(obj, Array.Empty<object>());
+            return (string)_methods?.Version?.Invoke(_obj, Array.Empty<object>());
         }
 
         internal static ReflectionMemory Create(object obj)

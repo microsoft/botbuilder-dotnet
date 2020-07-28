@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class ToLower : StringTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToLower"/> class.
+        /// </summary>
         public ToLower()
             : base(ExpressionType.ToLower, Function)
         {

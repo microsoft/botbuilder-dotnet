@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Ticks : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ticks"/> class.
+        /// </summary>
         public Ticks()
             : base(ExpressionType.Ticks, Evaluator, ReturnType.Number, Validator)
         {

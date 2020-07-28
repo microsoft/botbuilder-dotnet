@@ -82,7 +82,9 @@ namespace Microsoft.Bot.Configuration
                 throw new System.NullReferenceException("LuisService.Region cannot be Null");
             }
 
+#pragma warning disable CA1304 // Specify CultureInfo (this class is obsolete, we won't fix it)
             var region = this.Region.ToLower();
+#pragma warning restore CA1304 // Specify CultureInfo
 
             // usgovvirginia is that actual azure region name, but the cognitive service team called their endpoint 'virginia' instead of 'usgovvirginia'
             // We handle both region names as an alias for virginia.api.cognitive.microsoft.us
@@ -92,7 +94,9 @@ namespace Microsoft.Bot.Configuration
             }
 
             // if it starts with usgov or usdod then it is a .us TLD
+#pragma warning disable CA1307 // Specify StringComparison (this class is obsolete, we won't fix it)
             else if (region.StartsWith("usgov") || region.StartsWith("usdod"))
+#pragma warning restore CA1307 // Specify StringComparison
             {
                 return $"https://{this.Region}.api.cognitive.microsoft.us";
             }

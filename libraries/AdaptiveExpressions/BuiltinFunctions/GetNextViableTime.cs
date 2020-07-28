@@ -14,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class GetNextViableTime : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetNextViableTime"/> class.
+        /// </summary>
         public GetNextViableTime()
             : base(ExpressionType.GetNextViableTime, Evaluator, ReturnType.String, FunctionUtils.ValidateUnaryOrBinaryString)
         {
