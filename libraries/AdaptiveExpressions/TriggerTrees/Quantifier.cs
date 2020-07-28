@@ -64,6 +64,10 @@ namespace AdaptiveExpressions.TriggerTrees
         /// </value>
         public IEnumerable<string> Bindings { get; }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             return $"{Type} {Variable} {Bindings.Count()}";

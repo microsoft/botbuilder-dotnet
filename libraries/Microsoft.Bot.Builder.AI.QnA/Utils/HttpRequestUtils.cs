@@ -5,6 +5,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,7 +87,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var framework = Assembly
                 .GetEntryAssembly()?
                 .GetCustomAttribute<TargetFrameworkAttribute>()?
-                .FrameworkName;
+                .FrameworkName ?? RuntimeInformation.FrameworkDescription;
             var comment = $"({Environment.OSVersion.VersionString};{framework})";
             platformInfo = new ProductInfoHeaderValue(comment);
         }

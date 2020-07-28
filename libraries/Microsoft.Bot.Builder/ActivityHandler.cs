@@ -101,12 +101,21 @@ namespace Microsoft.Bot.Builder
                     await OnTypingActivityAsync(new DelegatingTurnContext<ITypingActivity>(turnContext), cancellationToken).ConfigureAwait(false);
                     break;
 
+                case ActivityTypes.InstallationUpdate:
+                    await OnInstallationUpdateActivityAsync(new DelegatingTurnContext<IInstallationUpdateActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
+
                 default:
                     await OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken).ConfigureAwait(false);
                     break;
             }
         }
 
+        /// <summary>
+        /// An <see cref="InvokeResponse"/> factory that initializes the body to the parameter passed and status equal to OK.
+        /// </summary>
+        /// <param name="body">JSON serialized content from a POST response.</param>
+        /// <returns>A new <see cref="InvokeResponse"/> object.</returns>
         protected static InvokeResponse CreateInvokeResponse(object body = null)
         {
             return new InvokeResponse { Status = (int)HttpStatusCode.OK, Body = body };
@@ -536,6 +545,24 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Override this in a derived class to provide logic specific to
+        /// <see cref="ActivityTypes.InstallationUpdate"/> activities.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives a installation update activity, it calls this method.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        protected virtual Task OnInstallationUpdateActivityAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Invoked when an activity other than a message, conversation update, or event is received when the base behavior of
         /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
         /// If overridden, this could potentially respond to any of the other activity types like
@@ -563,6 +590,9 @@ namespace Microsoft.Bot.Builder
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// A custom exception for invoke response errors.
+        /// </summary>
 #pragma warning disable CA1064 // Exceptions should be public (we can't change this without breaking binary compat, we may consider making this type public in the future)
         protected class InvokeResponseException : Exception
 #pragma warning restore CA1064 // Exceptions should be public
@@ -570,26 +600,47 @@ namespace Microsoft.Bot.Builder
             private readonly HttpStatusCode _statusCode;
             private readonly object _body;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="InvokeResponseException"/> class.
+            /// </summary>
+            /// <param name="statusCode">The Http status code of the error.</param>
+            /// <param name="body">The body of the exception. Default is null.</param>
             public InvokeResponseException(HttpStatusCode statusCode, object body = null)
             {
                 _statusCode = statusCode;
                 _body = body;
             }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="InvokeResponseException"/> class.
+            /// </summary>
             public InvokeResponseException()
             {
             }
 
-            public InvokeResponseException(string message) 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="InvokeResponseException"/> class.
+            /// </summary>
+            /// <param name="message">The message that explains the reason for the exception, or an empty string.</param>
+            public InvokeResponseException(string message)
                 : base(message)
             {
             }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="InvokeResponseException"/> class.
+            /// </summary>
+            /// <param name="message">The message that explains the reason for the exception, or an empty string.</param>
+            /// <param name="innerException">Gets the System.Exception instance that caused the current exception.</param>
             public InvokeResponseException(string message, Exception innerException) 
                 : base(message, innerException)
             {
             }
 
+            /// <summary>
+            /// A factory method that creates a new <see cref="InvokeResponse"/> object with the status code and body of the current object..
+            /// </summary>
+            /// <returns>A new <see cref="InvokeResponse"/> object.</returns>
             public InvokeResponse CreateInvokeResponse()
             {
                 return new InvokeResponse

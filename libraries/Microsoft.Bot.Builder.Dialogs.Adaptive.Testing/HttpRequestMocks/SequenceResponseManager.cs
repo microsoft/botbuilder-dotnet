@@ -8,39 +8,42 @@ using System.Net.Http;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 {
+    /// <summary>
+    /// Manage Sequence Response for HttpRequestSequenceMock.
+    /// </summary>
     public class SequenceResponseManager
     {
         private int _id;
-        private List<HttpContent> _contents;
+        private List<HttpResponseMockContent> _contents = new List<HttpResponseMockContent>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SequenceResponseManager"/> class.
+        /// Return the list of mocks in sequence order. The last one will be repeated.
+        /// </summary>
+        /// <param name="responses">The list of HttpResponseMock.</param>
         public SequenceResponseManager(List<HttpResponseMock> responses)
         {
             _id = 0;
             if (responses == null || responses.Count == 0)
             {
-                _contents = new List<HttpContent>()
-                {
-                    new StringContent(string.Empty)
-                };
+                // Create an empty content for response.
+                _contents.Add(new HttpResponseMockContent());
             }
             else
             {
-                _contents = responses.Select(r =>
+                foreach (var response in responses)
                 {
-                    switch (r.ContentType)
-                    {
-                        case HttpResponseMock.ContentTypes.String:
-                            return (HttpContent)new StringContent(r.Content == null ? string.Empty : r.Content.ToString());
-                        case HttpResponseMock.ContentTypes.ByteArray:
-                            var bytes = Convert.FromBase64String(r.Content == null ? string.Empty : r.Content.ToString());
-                            return (HttpContent)new ByteArrayContent(bytes);
-                        default:
-                            throw new NotSupportedException($"{r.ContentType} is not supported yet!");
-                    }
-                }).ToList();
+                    _contents.Add(new HttpResponseMockContent(response));
+                }
             }
         }
 
+        /// <summary>
+        /// Return the content in sequence order. The last one will be repeated.
+        /// </summary>
+        /// <returns>
+        /// The HttpContent.
+        /// </returns>
         public HttpContent GetContent()
         {
             var result = _contents[_id];
@@ -49,7 +52,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
                 _id++;
             }
 
-            return result;
+            // We create a new one here in case the consumer will dispose the content object.
+            return result.GetHttpContent();
         }
     }
 }

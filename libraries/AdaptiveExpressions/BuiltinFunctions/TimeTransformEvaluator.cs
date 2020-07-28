@@ -14,6 +14,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class TimeTransformEvaluator : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimeTransformEvaluator"/> class.
+        /// </summary>
+        /// <param name="type">Name of the built-in function.</param>
+        /// <param name="function">The time transformation function, it takes a DateTime object and an integer, returns a DateTime object.</param>
         public TimeTransformEvaluator(string type, Func<DateTime, int, DateTime> function)
             : base(type, Evaluator(function), ReturnType.String, Validator)
         {

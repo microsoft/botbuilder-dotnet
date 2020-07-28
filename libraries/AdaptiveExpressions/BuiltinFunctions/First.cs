@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class First : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="First"/> class.
+        /// </summary>
         public First()
             : base(ExpressionType.First, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
         {

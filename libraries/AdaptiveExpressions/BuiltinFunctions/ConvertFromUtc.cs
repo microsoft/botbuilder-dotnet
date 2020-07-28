@@ -17,6 +17,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class ConvertFromUtc : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConvertFromUtc"/> class.
+        /// </summary>
         public ConvertFromUtc()
             : base(ExpressionType.ConvertFromUtc, Evaluator, ReturnType.String, Validator)
         {

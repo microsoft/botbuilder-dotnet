@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Substring : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Substring"/> class.
+        /// </summary>
         public Substring()
             : base(ExpressionType.Substring, EvalSubstring, ReturnType.String, Validator)
         {

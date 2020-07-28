@@ -23,7 +23,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private bool _evaluate;
         private Random _rand;
         private int _seed = -1;
-
+        private readonly object _objectLock = new object();
+        
         /// <summary>
         /// Gets or sets optional seed for random number generator.
         /// </summary>
@@ -74,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             if (candidates.Count > 0)
             {
                 int selection;
-                lock (this)
+                lock (_objectLock)
                 {
                     selection = _rand.Next(candidates.Count);
                 }

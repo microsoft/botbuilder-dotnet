@@ -14,6 +14,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions
 {
+    /// <summary>
+    /// Utility functions for Adaptive-Expressions.
+    /// </summary>
     public static class FunctionUtils
     {
         /// <summary>
@@ -185,6 +188,13 @@ namespace AdaptiveExpressions
         /// <param name="expression">Expression to validate.</param>
         public static void ValidateUnaryString(Expression expression)
             => ValidateArityAndAnyType(expression, 1, 1, ReturnType.String);
+
+        /// <summary>
+        /// Validate 1 or 2 string arguments.
+        /// </summary>
+        /// <param name="expression">Expression to validate.</param>
+        public static void ValidateUnaryOrBinaryString(Expression expression)
+            => ValidateArityAndAnyType(expression, 1, 2, ReturnType.String);
 
         /// <summary>
         /// Validate there is a single number argument.

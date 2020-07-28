@@ -30,6 +30,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly IEvents events;
         private readonly Action terminate;
 
+        // To detect redundant calls
+        private bool _disposed;
+
         // lifetime scoped to IMiddleware.OnTurnAsync
         private readonly ConcurrentDictionary<string, ThreadModel> threadByTurnId = new ConcurrentDictionary<string, ThreadModel>();
         private readonly IIdentifier<ThreadModel> threads = new Identifier<ThreadModel>().WithMutex();
@@ -170,7 +173,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     this.Logger.LogError($"thread context not found");
                 }
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we just log the exception and we continue the execution)
             catch (Exception error)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 this.Logger.LogError(error, error.Message);
             }
@@ -228,6 +233,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
+        // Protected implementation of Dispose pattern.
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed state (managed objects).
+                cancellationToken?.Dispose();
+            }
+
+            _disposed = true;
+
+            // Call base class implementation.
+            base.Dispose(disposing);
+        }
+
         protected override async Task AcceptAsync(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -241,7 +266,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     {
                         message = await DispatchAsync(request, cancellationToken).ConfigureAwait(false);
                     }
+#pragma warning disable CA1031 // Do not catch general exception types (catch any exception and return it in the message)
                     catch (Exception error)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         message = Protocol.Response.Fail(NextSeq, request, error.Message);
                     }
@@ -316,7 +343,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     thread.Value.Run.Post(Phase.Continue);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (catch any exception and add it to the aggregated list)
                 catch (Exception error)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     errors.Add(error);
                 }
@@ -371,7 +400,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 phase = Phase.Continue;
             }
 
-            string reason = phase.ToString().ToLower();
+            string reason = phase.ToString().ToLowerInvariant();
 
             if (phase == Phase.Started || phase == Phase.Exited)
             {
@@ -587,7 +616,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                     return Protocol.Response.From(NextSeq, evaluate, body);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (catch any exception and return it)
                 catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     return Protocol.Response.Fail(NextSeq, evaluate, ex.Message);
                 }
@@ -659,7 +690,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
+#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat, consider fixing this before we go out of preview)
         public sealed class RunModel
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             public Phase? PhaseSent { get; set; }
 

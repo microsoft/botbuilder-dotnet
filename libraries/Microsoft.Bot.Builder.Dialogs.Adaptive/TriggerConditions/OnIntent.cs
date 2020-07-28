@@ -48,7 +48,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// Entities which must be recognized for this rule to trigger.
         /// </value>
         [JsonProperty("entities")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<string> Entities { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         public override string GetIdentity()
         {
@@ -60,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             // add constraints for the intents property
             if (string.IsNullOrEmpty(this.Intent))
             {
-                throw new ArgumentNullException(nameof(this.Intent));
+                throw new InvalidOperationException($"The {nameof(this.Intent)} property is null or empty.");
             }
 
             var intentExpression = Expression.Parse($"{TurnPath.Recognized}.intent == '{this.Intent.TrimStart('#')}'");
@@ -72,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     intentExpression,
                     Expression.AndExpression(this.Entities.Select(entity =>
                     {
-                        if (entity.StartsWith("@") || entity.StartsWith(TurnPath.Recognized, StringComparison.InvariantCultureIgnoreCase))
+                        if (entity.StartsWith("@", StringComparison.Ordinal) || entity.StartsWith(TurnPath.Recognized, StringComparison.InvariantCultureIgnoreCase))
                         {
                             return Expression.Parse($"exists({entity})");
                         }

@@ -17,6 +17,11 @@ namespace AdaptiveExpressions.Memory
 #pragma warning restore CA1010 // Generic interface should also be implemented
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     {
+        /// <summary>
+        /// Wrap an object implementes IMemory interface into a StackedMemory object.
+        /// </summary>
+        /// <param name="memory">An object that implements IMemory.</param>
+        /// <returns>A StackedMemory object.</returns>
         public static StackedMemory Wrap(IMemory memory)
         {
             if (memory is StackedMemory sm)
@@ -76,6 +81,10 @@ namespace AdaptiveExpressions.Memory
             throw new Exception($"Can't set value to {path}, stacked memory is read-only");
         }
 
+        /// <summary>
+        /// Get the version of the current StackedMemory.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public string Version()
         {
             return "0"; // Read-only

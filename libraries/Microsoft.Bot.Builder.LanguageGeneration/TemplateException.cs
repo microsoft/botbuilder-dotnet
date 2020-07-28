@@ -11,7 +11,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// Template Exception that contains diagnostics.
     /// </summary>
     [Serializable]
+#pragma warning disable CA1032 // Implement standard exception constructors (by design)
+#pragma warning disable CA2229 // Implement serialization constructors (by design)
     public class TemplateException : Exception, ISerializable
+#pragma warning restore CA2229 // Implement serialization constructors
+#pragma warning restore CA1032 // Implement standard exception constructors
     {
         public TemplateException(string message, IList<Diagnostic> diagnostics)
             : base(message)
@@ -25,6 +29,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Diagnostics.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
         public IList<Diagnostic> Diagnostics { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

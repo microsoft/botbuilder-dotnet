@@ -13,6 +13,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsObject : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsObject"/> class.
+        /// </summary>
         public IsObject()
             : base(ExpressionType.IsObject, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

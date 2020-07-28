@@ -8,12 +8,19 @@ namespace AdaptiveExpressions
     /// </summary>
     public class Options
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Options"/> class.
+        /// </summary>
         public Options()
         {
             this.NullSubstitution = null;
             this.Locale = Thread.CurrentThread.CurrentCulture.Name;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Options"/> class.
+        /// </summary>
+        /// <param name="opt">An Options instance.</param>
         public Options(Options opt)
         {
             this.NullSubstitution = opt.NullSubstitution;

@@ -8,6 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsMatch : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsMatch"/> class.
+        /// </summary>
         public IsMatch()
             : base(ExpressionType.IsMatch, Evaluator(), ReturnType.Boolean, Validator)
         {

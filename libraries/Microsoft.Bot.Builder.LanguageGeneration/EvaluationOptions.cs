@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         var value = option.Substring(index + 1).Trim();
                         if (key == strictModeKey)
                         {
-                            if (value.ToLower() == "true")
+                            if (value.ToLowerInvariant() == "true")
                             {
                                 StrictMode = true;
                             }
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         }
                         else if (key == lineBreakKey)
                         {
-                            LineBreakStyle = value.ToLower() == LGLineBreakStyle.Markdown.ToString().ToLower() ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
+                            LineBreakStyle = value.ToLowerInvariant() == LGLineBreakStyle.Markdown.ToString().ToLowerInvariant() ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
                         }
                     }
                 }

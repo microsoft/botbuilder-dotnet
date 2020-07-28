@@ -11,6 +11,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     /// </summary>
     public abstract class ResourceProvider
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceProvider"/> class.
+        /// </summary>
+        /// <param name="resourceExplorer">The ResourceExplorer object to initialize the current object.</param>
         public ResourceProvider(ResourceExplorer resourceExplorer)
         {
             this.ResourceExplorer = resourceExplorer;
@@ -57,6 +61,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         public abstract void Refresh();
 
+        /// <summary>
+        /// Actions to perform when the current object is changed.
+        /// </summary>
+        /// <param name="resources">A collection of changed resources.</param>
         protected virtual void OnChanged(IEnumerable<Resource> resources)
         {
             Changed?.Invoke(this, resources);

@@ -17,7 +17,7 @@ namespace AdaptiveExpressions.Memory
     /// </summary>
     public class SimpleObjectMemory : IMemory
     {
-        private object memory = null;
+        private object _memory = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleObjectMemory"/> class.
@@ -26,7 +26,7 @@ namespace AdaptiveExpressions.Memory
         /// <param name="memory">The object to wrap.</param>
         public SimpleObjectMemory(object memory)
         {
-            this.memory = memory;
+            _memory = memory;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace AdaptiveExpressions.Memory
         public bool TryGetValue(string path, out object value)
         {
             value = null;
-            if (memory == null || path.Length == 0)
+            if (_memory == null || path.Length == 0)
             {
                 return false;
             }
@@ -47,7 +47,7 @@ namespace AdaptiveExpressions.Memory
                             .Select(x => x.Trim('\'', '"'))
                             .ToArray();
 
-            var curScope = memory;
+            var curScope = _memory;
 
             foreach (var part in parts)
             {
@@ -73,7 +73,7 @@ namespace AdaptiveExpressions.Memory
 
             if (value is IExpressionProperty ep)
             {
-                value = ep.GetObject(memory);
+                value = ep.GetObject(_memory);
             }
 
             return true;
@@ -92,7 +92,7 @@ namespace AdaptiveExpressions.Memory
         /// <param name="value">Value to set.</param>
         public void SetValue(string path, object value)
         {
-            if (memory == null)
+            if (_memory == null)
             {
                 return;
             }
@@ -101,7 +101,7 @@ namespace AdaptiveExpressions.Memory
                             .Select(x => x.Trim('\'', '"'))
                             .ToArray();
 
-            var curScope = memory;
+            var curScope = _memory;
             var curPath = string.Empty; // valid path so far
             string error = null;
 
@@ -176,14 +176,22 @@ namespace AdaptiveExpressions.Memory
             }
         }
 
+        /// <summary>
+        /// Return the version info of SimpleObjectMemory.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public string Version()
         {
             return ToString();
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(memory, new JsonSerializerSettings
+            return JsonConvert.SerializeObject(_memory, new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
