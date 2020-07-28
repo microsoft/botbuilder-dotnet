@@ -737,7 +737,7 @@ namespace AdaptiveExpressions
             private readonly ConcurrentDictionary<string, ExpressionEvaluator> _customFunctions = new ConcurrentDictionary<string, ExpressionEvaluator>(StringComparer.InvariantCultureIgnoreCase);
 
             /// <summary>
-            /// Gets a collection of string values which is the keys of the StandardFunctions. 
+            /// Gets a collection of string values that represent the keys of the StandardFunctions. 
             /// </summary>
             /// <value> A list of string values.</value>
             public ICollection<string> Keys => ExpressionFunctions.StandardFunctions.Keys.Concat(_customFunctions.Keys).ToList();
@@ -749,7 +749,7 @@ namespace AdaptiveExpressions
             public ICollection<ExpressionEvaluator> Values => ExpressionFunctions.StandardFunctions.Values.Concat(_customFunctions.Values).ToList();
 
             /// <summary>
-            /// Gets a value of the total number of StandardFunctions and user customed functions.
+            /// Gets a value of the total number of StandardFunctions and user custom functions.
             /// </summary>
             /// <value>An integer value.</value>
             public int Count => ExpressionFunctions.StandardFunctions.Count + _customFunctions.Count;
@@ -761,7 +761,7 @@ namespace AdaptiveExpressions
             public bool IsReadOnly => false;
 
             /// <summary>
-            /// Gets a value of ExpressionEvaluator corresponding the given key.
+            /// Gets a value of ExpressionEvaluator corresponding to the given key.
             /// </summary>
             /// <param name="key">A string value of function name.</param>
             /// <returns>An ExpressionEvaluator.</returns>
