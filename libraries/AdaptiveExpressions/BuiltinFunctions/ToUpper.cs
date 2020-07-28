@@ -9,7 +9,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return a string in uppercase format.
-    /// ToUpper function takes a string as the first argument and an optional locale string.
+    /// ToUpper function takes a string as the first argument 
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// If a character in the string doesn't have an uppercase version, that character stays unchanged in the returned string.
     /// </summary>
     public class ToUpper : StringTransformEvaluator

@@ -3,14 +3,14 @@
 
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the current timestamp.
-    /// UtcNow function takes an optional locale string.
+    /// UtcNow function takes an optional format string whose default value "yyyy-MM-ddTHH:mm:ss.fffZ"
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
     public class UtcNow : ExpressionEvaluator
     {

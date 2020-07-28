@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using AdaptiveExpressions.Memory;
 
@@ -12,7 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the start of the month for a timestamp.
-    /// StartOfMonth function takes a timestamp string, an optional format string and an optional locale string.
+    /// StartOfMonth function takes a timestamp string,
+    /// an optional format string whose default value "yyyy-MM-ddTHH:mm:ss.fffZ"
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
     public class StartOfMonth : ExpressionEvaluator
     {

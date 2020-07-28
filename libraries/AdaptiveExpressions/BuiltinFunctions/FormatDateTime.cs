@@ -3,14 +3,15 @@
 
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return a timestamp in the specified format.
-    /// FormatDateTime function takes a timestamp string, an optional format string and an optional locale string.
+    /// FormatDateTime function takes a timestamp string,
+    /// an optional format string whose default value "yyyy-MM-ddTHH:mm:ss.fffZ"
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
     public class FormatDateTime : ExpressionEvaluator
     {

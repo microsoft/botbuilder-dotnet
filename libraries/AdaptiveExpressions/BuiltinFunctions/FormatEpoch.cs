@@ -3,14 +3,15 @@
 
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return a timestamp in the specified format from UNIX time (also know as Epoch time, POSIX time, UNIX Epoch time).
-    /// FormatEpoch function takes an epoch long integer, an optional format string and an optional locale string.
+    /// FormatEpoch function takes an epoch long integer,
+    /// an optional format string whose default value "yyyy-MM-ddTHH:mm:ss.fffZ"
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
     public class FormatEpoch : ExpressionEvaluator
     {

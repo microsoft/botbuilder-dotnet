@@ -10,7 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return a timestamp in the specified format from ticks.
-    /// FormatTicks function takes a ticks long integer, an optional format string and an optional locale string.
+    /// FormatTicks function takes a ticks long integer,
+    /// an optional format string whose default value "yyyy-MM-ddTHH:mm:ss.fffZ"
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
     public class FormatTicks : ExpressionEvaluator
     {

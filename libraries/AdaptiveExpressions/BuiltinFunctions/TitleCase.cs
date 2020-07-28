@@ -9,7 +9,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Converts the specified string to title case.
-    /// TitleCase function takes a string as the first argument and an optional locale string.
+    /// TitleCase function takes a string as the first argument 
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
     public class TitleCase : StringTransformEvaluator
     {

@@ -7,7 +7,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Add a number of minutes to a timestamp.
-    /// AddMinutes function takes a timestamp string, an interval integer, an optional format string and an optional locale string.
+    /// AddMinutes function takes a timestamp string, an interval integer,
+    /// an optional format string whose default value "yyyy-MM-ddTHH:mm:ss.fffZ"
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
     public class AddMinutes : TimeTransformEvaluator
     {
