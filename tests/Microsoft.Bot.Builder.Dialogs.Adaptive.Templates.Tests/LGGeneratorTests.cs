@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // use LG file as entrance
             var lgResourceGroup = LGResourceLoader.GroupByLocale(resourceExplorer);
 
-            var generator = new TemplateEngineLanguageGenerator((resourceExplorer.GetResource("a.en-US.lg") as FileResource).FullName, lgResourceGroup);
+            var generator = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("a.en-US.lg").FullName, lgResourceGroup);
             var result = await generator.GenerateAsync(GetDialogContext(), "${templatea()}", null);
             Assert.Equal("from a.en-us.lg", result);
 
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var ex = await Assert.ThrowsAsync<Exception>(async () => await generator.GenerateAsync(GetDialogContext(), "${greeting()}", null));
             Assert.True(ex.Message.Contains("greeting does not have an evaluator"));
 
-            generator = new TemplateEngineLanguageGenerator((resourceExplorer.GetResource("a.lg") as FileResource).FullName, lgResourceGroup);
+            generator = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("a.lg").FullName, lgResourceGroup);
 
             result = await generator.GenerateAsync(GetDialogContext(), "${templatea()}", null);
             Assert.Equal("from a.lg", result);
@@ -170,12 +170,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var lg = new MultiLanguageGenerator();
             var multilanguageresources = LGResourceLoader.GroupByLocale(resourceExplorer);
-            lg.LanguageGenerators[string.Empty] = new TemplateEngineLanguageGenerator((resourceExplorer.GetResource("test.lg") as FileResource).FullName, multilanguageresources);
-            lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator((resourceExplorer.GetResource("test.de.lg") as FileResource).FullName, multilanguageresources);
-            lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator((resourceExplorer.GetResource("test.en.lg") as FileResource).FullName, multilanguageresources);
-            lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator((resourceExplorer.GetResource("test.en-US.lg") as FileResource).FullName, multilanguageresources);
-            lg.LanguageGenerators["en-GB"] = new TemplateEngineLanguageGenerator((resourceExplorer.GetResource("test.en-GB.lg") as FileResource).FullName, multilanguageresources);
-            lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator((resourceExplorer.GetResource("test.fr.lg") as FileResource).FullName, multilanguageresources);
+            lg.LanguageGenerators[string.Empty] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg").FullName, multilanguageresources);
+            lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.de.lg").FullName, multilanguageresources);
+            lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en.lg").FullName, multilanguageresources);
+            lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-US.lg").FullName, multilanguageresources);
+            lg.LanguageGenerators["en-GB"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-GB.lg").FullName, multilanguageresources);
+            lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.fr.lg").FullName, multilanguageresources);
 
             // test targeted in each language
             Assert.Equal("english-us", await lg.GenerateAsync(GetDialogContext(locale: "en-us"), "${test()}", null));

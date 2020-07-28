@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 else
                 {
                     var content = resource.ReadTextAsync().GetAwaiter().GetResult();
-                    return (content, (resource as FileResource).FullName);
+                    return (content, resource.FullName);
                 }
             };
         }
@@ -86,14 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(Resource resource)
         {
-            if (resource is FileResource fileResource)
-            {
-                return new TemplateEngineLanguageGenerator(fileResource.FullName, multilanguageResources);
-            }
-            else
-            {
-                throw new Exception("resource is not file resource.");
-            }
+            return new TemplateEngineLanguageGenerator(resource.FullName, multilanguageResources);
         }
     }
 }

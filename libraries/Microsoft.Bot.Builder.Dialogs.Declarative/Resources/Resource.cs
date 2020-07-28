@@ -20,6 +20,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         public string Id { get; protected set; }
 
         /// <summary>
+        /// Gets or sets full name.
+        /// </summary>
+        /// <value>
+        /// Resource full name.
+        /// </value>
+        public string FullName { get; protected set; }
+
+        /// <summary>
         /// Get readonly stream. 
         /// </summary>
         /// <returns>The resource as a stream.</returns>
