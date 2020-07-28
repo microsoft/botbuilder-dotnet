@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         /// </value>
         [JsonProperty("url")]
 #pragma warning disable CA1056 // Uri properties should not be strings (by design, excluding)
-        public string Url { get; set; }
+        public Uri Url { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         /// The sequence of responses to reply.
         /// </value>
         [JsonProperty("responses")]
-        public List<HttpResponseMock> Responses { get;  } = new List<HttpResponseMock>();
+        public List<HttpResponseMock> Responses { get; } = new List<HttpResponseMock>();
 
         public override void Setup(MockHttpMessageHandler handler)
         {
@@ -62,11 +63,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
             MockedRequest mocked;
             if (!Method.HasValue)
             {
-                mocked = handler.When(Url);
+                mocked = handler.When(Url.ToString());
             }
             else
             {
-                mocked = handler.When(new HttpMethod(Method.Value.ToString()), Url);
+                mocked = handler.When(new HttpMethod(Method.Value.ToString()), Url.ToString());
             }
 
             mocked.Respond(re => response.GetContent());
