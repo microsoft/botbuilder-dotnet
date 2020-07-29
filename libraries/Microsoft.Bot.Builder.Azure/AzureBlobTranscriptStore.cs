@@ -241,7 +241,7 @@ namespace Microsoft.Bot.Builder.Azure
             List<TranscriptInfo> conversations = new List<TranscriptInfo>();
             do
             {
-                var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, PageSize * 5, token, null, null).ConfigureAwait(false);
+                var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, null, token, null, null).ConfigureAwait(false);
 
                 foreach (var blob in segment.Results.Where(c => c is CloudBlobDirectory).Cast<CloudBlobDirectory>())
                 {
