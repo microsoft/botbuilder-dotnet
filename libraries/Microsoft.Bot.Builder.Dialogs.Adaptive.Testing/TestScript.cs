@@ -107,6 +107,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public List<PropertyMock> PropertyMocks { get; } = new List<PropertyMock>();
 
         /// <summary>
+        /// Gets or sets a value indicating whether this script is called from a parent but doesn't call another skill.
+        /// </summary>
+        /// <value>
+        /// If true then mock this script to be called as a leaf skill.
+        /// </value>
+        [JsonProperty("calledAsLeafSkill")]
+        public bool CalledAsLeafSkill { get; set; }
+
+        /// <summary>
         /// Gets the test script actions.
         /// </summary>
         /// <value>
@@ -171,6 +180,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             foreach (var userToken in UserTokenMocks)
             {
                 userToken.Setup(adapter);
+            }
+
+            if (CalledAsLeafSkill)
+            {
+                adapter.Use(new MockSkillClaimMiddleware(MockSkillClaimMiddleware.MockCase.LeafSkill));
             }
 
             if (callback != null)

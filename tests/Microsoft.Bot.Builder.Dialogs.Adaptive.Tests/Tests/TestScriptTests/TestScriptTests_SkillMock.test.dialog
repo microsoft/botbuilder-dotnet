@@ -1,0 +1,46 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test Skill Mock",
+    "calledAsLeafSkill": true,
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnEventActivity",
+                "condition": "=turn.activity.name == \"Test\"",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "welcome to the skill"
+                    },
+                    {
+                        "$kind": "Microsoft.EndDialog",
+                        "value": "skill result"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "event",
+                "name": "Test",
+                "locale": "en-US"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "welcome to the skill"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "type == 'endOfConversation'",
+                "value == 'skill result'"
+            ]
+        }
+    ]
+}
