@@ -81,24 +81,57 @@ stages:
   - job: generate_multiconfig_var
     steps:
     - powershell: |
+       if ("$(Build.Reason)" -eq 'Schedule') {
+         $updatedFiles = $env:BotBuilderDll
+       }
+       elseIf ("$(Build.Reason)" -eq 'Manual') {
+         git checkout master
+         $branchSource = "$(Build.SourceBranch)"
+         echo $branchSource
+         $branchSourcePath = $branchSource -replace "refs/heads/", ""
+         git checkout $branchSourcePath
+         $commits = $(git rev-list --count HEAD ^master)
+         echo "Commits: $commits"
+         $updatedFiles = $(git diff HEAD HEAD~$commits --name-only)
+       }
+       else {
+         $updatedFiles = $(git diff HEAD HEAD~ --name-only)
+       }
+
        $multiconfig = '{';
-
-       $env:BotBuilderDll.Split(",") | ForEach {
-           $library = $_.Trim()
-           Write-Host $library
-
-           $threadName = $library.Split(".")[-1];
-           $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $library + "'}, ";
+       $updatedFiles | ForEach-Object {
+         $changedLibrary = ''
+         Switch -Wildcard ($_) {
+           '*/Microsoft.Bot.Builder.AI.Luis/*' { $changedLibrary = 'Microsoft.Bot.Builder.AI.Luis' }
+           '*/Microsoft.Bot.Builder.AI.QnA/*' { $changedLibrary = 'Microsoft.Bot.Builder.AI.QnA' }
+           '*/Microsoft.Bot.Builder.ApplicationInsights/*' { $changedLibrary = 'Microsoft.Bot.Builder.ApplicationInsights' }
+           '*/Microsoft.Bot.Builder.Azure/*' { $changedLibrary = 'Microsoft.Bot.Builder.Azure' }
+           '*/Microsoft.Bot.Builder.Dialogs/*' { $changedLibrary = 'Microsoft.Bot.Builder.Dialogs' }
+           '*/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core/*' { $changedLibrary = 'Microsoft.Bot.Builder.Integration.ApplicationInsights.Core' }
+           '*/Microsoft.Bot.Builder.Integration.AspNet.Core/*' { $changedLibrary = 'Microsoft.Bot.Builder.Integration.AspNet.Core' }
+           '*/Microsoft.Bot.Builder.TemplateManager/*' { $changedLibrary = 'Microsoft.Bot.Builder.TemplateManager' }
+           '*/Microsoft.Bot.Builder.Testing/*' { $changedLibrary = 'Microsoft.Bot.Builder.Testing' }
+           '*/Microsoft.Bot.Builder/*' { $changedLibrary = 'Microsoft.Bot.Builder' }
+           '*/Microsoft.Bot.Configuration/*' { $changedLibrary = 'Microsoft.Bot.Configuration' }
+           '*/Microsoft.Bot.Connector/*' { $changedLibrary = 'Microsoft.Bot.Connector' }
+           '*/Microsoft.Bot.Schema/*' { $changedLibrary = 'Microsoft.Bot.Schema' }
+           '*/Microsoft.Bot.Streaming/*' { $changedLibrary = 'Microsoft.Bot.Streaming' }
          }
+         if ($changedLibrary.Length -gt 0) {
+           Write-Host $changedLibrary
+           $threadName = $changedLibrary.Split(".")[-1];
+           $multiconfig += "'" + $threadName + "':{'BotBuilderDll':'" + $changedLibrary + "'}, ";
+         }
+       }
        $multiconfig = $multiconfig.TrimEnd(' ').TrimEnd(',') + "}";
-       $multiconfig
-
+       echo $multiconfig
        "##vso[task.setVariable variable=MULTICONFIG;isOutput=true]$multiconfig"
       name: generate_var
     - script: echo $(generate_var.MULTICONFIG)
 
   - job: check_api_for
     dependsOn: generate_multiconfig_var
+    condition: ne(dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'], '{}')
     timeoutInMinutes: 10
     strategy:
       maxParallel: 10
@@ -106,10 +139,9 @@ stages:
     steps:
     - template: ci-api-validation-steps.yml
 
-- stage: Post_Results_to_GitHub
-  dependsOn: API_Compatibility_Validation
-  jobs:
-  - job: Post_to_GitHub
+  - job: post_results_to_gitHub
+    dependsOn: generate_multiconfig_var
+    condition: ne(dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'], '{}')
     variables:
       BuildConfiguration: Release-Windows
     steps:
