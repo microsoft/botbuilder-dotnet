@@ -14,8 +14,8 @@ namespace Microsoft.Bot.Streaming.Payloads
         private readonly PayloadStreamAssembler _assembler;
         private readonly Queue<byte[]> _bufferQueue = new Queue<byte[]>();
 
-        private readonly SemaphoreSlim dataAvailable = new SemaphoreSlim(0, int.MaxValue);
-        private readonly object syncLock = new object();
+        private readonly SemaphoreSlim _dataAvailable = new SemaphoreSlim(0, int.MaxValue);
+        private readonly object _syncLock = new object();
         private long _producerLength = 0;       // total length
         private long _consumerPosition = 0;     // read position
 
@@ -61,9 +61,9 @@ namespace Microsoft.Bot.Streaming.Payloads
 
             if (_active == null)
             {
-                await dataAvailable.WaitAsync(cancellationToken).ConfigureAwait(false);
+                await _dataAvailable.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-                lock (syncLock)
+                lock (_syncLock)
                 {
                     _active = _bufferQueue.Dequeue();
                 }
@@ -131,9 +131,9 @@ namespace Microsoft.Bot.Streaming.Payloads
 
             if (_active == null)
             {
-                dataAvailable.Wait();
+                _dataAvailable.Wait();
 
-                lock (syncLock)
+                lock (_syncLock)
                 {
                     _active = _bufferQueue.Dequeue();
                 }
@@ -162,13 +162,13 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         internal void GiveBuffer(byte[] buffer, int count)
         {
-            lock (syncLock)
+            lock (_syncLock)
             {
                 _bufferQueue.Enqueue(buffer);
                 _producerLength += count;
             }
 
-            dataAvailable.Release();
+            _dataAvailable.Release();
         }
 
         protected override void Dispose(bool disposing)

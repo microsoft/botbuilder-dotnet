@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Streaming.Payloads
      */
     public class Header
     {
-        private int internalPayloadLength;
+        private int _internalPayloadLength;
 
         public char Type { get; set; }
 
@@ -34,13 +34,13 @@ namespace Microsoft.Bot.Streaming.Payloads
         {
             get
             {
-                return internalPayloadLength;
+                return _internalPayloadLength;
             }
 
             set
             {
                 ClampLength(value, TransportConstants.MaxLength, TransportConstants.MinLength);
-                internalPayloadLength = value;
+                _internalPayloadLength = value;
                 return;
             }
         }
