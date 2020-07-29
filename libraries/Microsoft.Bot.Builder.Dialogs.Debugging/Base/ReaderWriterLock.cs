@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class ReaderWriterLock : IDisposable
+    internal sealed class ReaderWriterLock : IDisposable
     {
         private readonly SemaphoreSlim reader;
         private readonly SemaphoreSlim writer;
