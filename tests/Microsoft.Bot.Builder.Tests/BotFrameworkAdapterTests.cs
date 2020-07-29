@@ -435,7 +435,7 @@ namespace Microsoft.Bot.Builder.Tests
             var callback = new BotCallbackHandler((turnContext, ct) =>
             {
                 var cr2 = turnContext.Activity.GetConversationReference();
-                cr.ActivityId = null; // activityids will be different...
+                cr.ActivityId = null; // activityIds will be different...
                 cr2.ActivityId = null;
                 Assert.Equal(JsonConvert.SerializeObject(cr), JsonConvert.SerializeObject(cr2));
                 Assert.Equal("test", (string)turnContext.Activity.Value);
