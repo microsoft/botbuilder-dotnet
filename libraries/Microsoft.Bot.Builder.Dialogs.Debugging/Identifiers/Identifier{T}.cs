@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// For these combined identifiers, we use 7 bit encoding.
     /// </summary>
     /// <typeparam name="T">Datatype of the stored items.</typeparam>
-    public sealed class Identifier<T> : IIdentifier<T>
+    internal sealed class Identifier<T> : IIdentifier<T>
     {
         private readonly Dictionary<T, ulong> codeByItem = new Dictionary<T, ulong>(ReferenceEquality<T>.Instance);
         private readonly Dictionary<ulong, T> itemByCode = new Dictionary<ulong, T>();

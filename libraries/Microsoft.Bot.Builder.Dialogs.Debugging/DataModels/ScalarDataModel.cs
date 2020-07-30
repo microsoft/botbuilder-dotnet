@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class ScalarDataModel : IDataModel
+    internal sealed class ScalarDataModel : IDataModel
     {
         public static readonly IDataModel Instance = new ScalarDataModel();
 

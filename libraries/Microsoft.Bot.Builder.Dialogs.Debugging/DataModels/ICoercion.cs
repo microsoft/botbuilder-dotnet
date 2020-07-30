@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         object Coerce(object source, Type target);
     }
 
-    public sealed class Coercion : ICoercion
+    internal sealed class Coercion : ICoercion
     {
         public Coercion()
         {

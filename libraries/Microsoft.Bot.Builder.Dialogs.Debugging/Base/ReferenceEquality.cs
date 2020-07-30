@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class ReferenceEquality<T> : IEqualityComparer<T>
+    internal sealed class ReferenceEquality<T> : IEqualityComparer<T>
     {
         public static readonly IEqualityComparer<T> Instance = new ReferenceEquality<T>();
 

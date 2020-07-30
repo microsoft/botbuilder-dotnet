@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class Events<TDialogEvents> : IEvents
+    internal sealed class Events<TDialogEvents> : IEvents
         where TDialogEvents : DialogEvents
     {
         private readonly ConcurrentDictionary<string, bool> stateByFilter = new ConcurrentDictionary<string, bool>();

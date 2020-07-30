@@ -6,7 +6,9 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class ListDataModel<T> : DataModelBase<IList<T>, int, T>
+#pragma warning disable CA1812 // Supressing error due to internal being used as intended
+    internal sealed class ListDataModel<T> : DataModelBase<IList<T>, int, T>
+#pragma warning restore CA1812 // Supressing error due to internal being used as intended
     {
         public ListDataModel(ICoercion coercion)
             : base(coercion)
