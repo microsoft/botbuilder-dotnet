@@ -360,9 +360,13 @@ namespace Microsoft.Bot.Builder
                 // channel service URL to the trusted services list so we can send messages back.
                 // the service URL for skills is trusted because it is applied by the SkillHandler based on the original request
                 // received by the root bot
-                if (!await CredentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
+                var appIdFromClaims = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+                if (!string.IsNullOrEmpty(appIdFromClaims))
                 {
-                    AppCredentials.TrustServiceUrl(reference.ServiceUrl);
+                    if (SkillValidation.IsSkillClaim(claimsIdentity.Claims) || await CredentialProvider.IsValidAppIdAsync(appIdFromClaims).ConfigureAwait(false))
+                    {
+                        AppCredentials.TrustServiceUrl(reference.ServiceUrl);
+                    }
                 }
 
                 var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, audience).ConfigureAwait(false);
