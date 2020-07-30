@@ -1,320 +1,40 @@
-{
-  "$type": "System.Collections.Generic.Queue`1[[Microsoft.Bot.Builder.Azure.Tests.SerializableResponseMessage, Microsoft.Bot.Builder.Azure.Tests]], System.Collections",
-  "$values": [
-    {
-      "$type": "Microsoft.Bot.Builder.Azure.Tests.SerializableResponseMessage, Microsoft.Bot.Builder.Azure.Tests",
-      "StatusCode": 200,
-      "RequestMessage": {
-        "$type": "Microsoft.Bot.Builder.Azure.Tests.SerializableRequestMessage, Microsoft.Bot.Builder.Azure.Tests",
-        "Method": {
-          "$type": "System.Net.Http.HttpMethod, System.Net.Http",
-          "Method": "GET"
-        },
-        "RequestUri": "dbs/test-CosmosDbPartitionStorageTests/colls/bot-storage",
-        "Content": null,
-        "Headers": {
-          "x-ms-date": "Tue, 21 Jul 2020 02:35:54 GMT",
-          "authorization": "type%3dmaster%26ver%3d1.0%26sig%3dnV%2fSptFTeznB4dKK4PiqWuYueEsU%2bH23vJH3s5mcEyI%3d"
-        }
-      },
-      "ErrorMessage": null,
-      "Content": {
-        "id": "bot-storage",
-        "indexingPolicy": {
-          "indexingMode": "none",
-          "automatic": false,
-          "includedPaths": [],
-          "excludedPaths": []
-        },
-        "partitionKey": {
-          "paths": [
-            "/id"
-          ],
-          "kind": "Hash"
-        },
-        "conflictResolutionPolicy": {
-          "mode": "LastWriterWins",
-          "conflictResolutionPath": "/_ts",
-          "conflictResolutionProcedure": ""
-        },
-        "geospatialConfig": {
-          "type": "Geography"
-        },
-        "_rid": "3Ko5AIG8Vc8=",
-        "_ts": 1595298951,
-        "_self": "dbs/3Ko5AA==/colls/3Ko5AIG8Vc8=/",
-        "_etag": "\"00000000-0000-0000-5f07-a68ebb9301d6\"",
-        "_docs": "docs/",
-        "_sprocs": "sprocs/",
-        "_triggers": "triggers/",
-        "_udfs": "udfs/",
-        "_conflicts": "conflicts/"
-      },
-      "Headers": {
-        "x-ms-request-charge": "1",
-        "x-ms-activity-id": "4472ecd0-0c79-47bb-9eb0-1fc295786343",
-        "etag": "\"00000000-0000-0000-5f07-a68ebb9301d6\"",
-        "Content-Type": "application/json",
-        "x-ms-session-token": "0:-1#3483",
-        "Cache-Control": "no-store, no-cache",
-        "Pragma": "no-cache",
-        "Transfer-Encoding": "chunked",
-        "Server": "Microsoft-HTTPAPI/2.0",
-        "Access-Control-Allow-Origin": "",
-        "Access-Control-Allow-Credentials": "true",
-        "x-ms-last-state-change-utc": "Tue, 21 Jul 2020 00:22:48.190 GMT",
-        "collection-partition-index": "0",
-        "collection-service-index": "0",
-        "lsn": "3483",
-        "x-ms-schemaversion": "1.9",
-        "x-ms-alt-content-path": "dbs/test-CosmosDbPartitionStorageTests",
-        "x-ms-content-path": "3Ko5AA==",
-        "x-ms-quorum-acked-lsn": "3483",
-        "x-ms-current-write-quorum": "1",
-        "x-ms-current-replica-set-size": "1",
-        "x-ms-xp-role": "0",
-        "x-ms-global-Committed-lsn": "-1",
-        "x-ms-number-of-read-regions": "0",
-        "x-ms-item-lsn": "3481",
-        "x-ms-transport-request-id": "50",
-        "x-ms-cosmos-llsn": "3483",
-        "x-ms-cosmos-quorum-acked-llsn": "3483",
-        "x-ms-cosmos-item-llsn": "3481",
-        "x-ms-serviceversion": "version=2.9.0.0",
-        "x-ms-gatewayversion": "version=2.9.2",
-        "Date": "Tue, 21 Jul 2020 02:35:54 GMT",
-        "Content-Location": "https://127.0.0.1:8081/dbs/test-CosmosDbPartitionStorageTests/colls/bot-storage"
-      }
+[
+  {
+    "id": "delete1",
+    "realId": "delete1",
+    "document": {
+      "$type": "Microsoft.Bot.Builder.Tests.PocoStoreItem, Microsoft.Bot.Builder.Tests",
+      "ETag": null,
+      "Id": "1",
+      "Count": 1
     },
-    {
-      "$type": "Microsoft.Bot.Builder.Azure.Tests.SerializableResponseMessage, Microsoft.Bot.Builder.Azure.Tests",
-      "StatusCode": 201,
-      "RequestMessage": {
-        "$type": "Microsoft.Bot.Builder.Azure.Tests.SerializableRequestMessage, Microsoft.Bot.Builder.Azure.Tests",
-        "Method": {
-          "$type": "System.Net.Http.HttpMethod, System.Net.Http",
-          "Method": "POST"
-        },
-        "RequestUri": "dbs/test-CosmosDbPartitionStorageTests/colls/bot-storage",
-        "Content": {
-          "id": "delete1",
-          "realId": "delete1",
-          "document": {
-            "$type": "Microsoft.Bot.Builder.Tests.PocoStoreItem, Microsoft.Bot.Builder.Tests",
-            "ETag": null,
-            "Id": "1",
-            "Count": 1
-          },
-          "_etag": null,
-          "PartitionKey": "delete1"
-        },
-        "Headers": {
-          "x-ms-documentdb-partitionkey": "[\"delete1\"]",
-          "x-ms-documentdb-is-upsert": "True",
-          "x-ms-date": "Tue, 21 Jul 2020 02:35:54 GMT",
-          "authorization": "type%3dmaster%26ver%3d1.0%26sig%3d9JUW55VQKRg6y0zB01KDkZWe%2fdzH5Szzd7YkfonaUMM%3d",
-          "x-ms-client-retry-attempt-count": "0",
-          "x-ms-remaining-time-in-ms-on-client": "30000",
-          "x-ms-documentdb-collection-rid": "3Ko5AIG8Vc8=",
-          "x-ms-transport-request-id": "1"
-        }
-      },
-      "ErrorMessage": null,
-      "Content": {
-        "id": "delete1",
-        "realId": "delete1",
-        "document": {
-          "$type": "Microsoft.Bot.Builder.Tests.PocoStoreItem, Microsoft.Bot.Builder.Tests",
-          "ETag": null,
-          "Id": "1",
-          "Count": 1
-        },
-        "_etag": "\"00000000-0000-0000-5f07-a84409f601d6\"",
-        "PartitionKey": "delete1",
-        "_rid": "3Ko5AIG8Vc8DAAAAAAAAAA==",
-        "_self": "dbs/3Ko5AA==/colls/3Ko5AIG8Vc8=/docs/3Ko5AIG8Vc8DAAAAAAAAAA==/",
-        "_attachments": "attachments/",
-        "_ts": 1595298954
-      },
-      "Headers": {
-        "x-ms-request-charge": "4.95",
-        "x-ms-activity-id": "7ca31f80-2d12-4aba-93d3-7a7e5e7b8b94",
-        "etag": "\"00000000-0000-0000-5f07-a84409f601d6\"",
-        "x-ms-session-token": "0:-1#3484",
-        "x-ms-last-state-change-utc": "Tue, 21 Jul 2020 00:22:48.190 GMT",
-        "x-ms-resource-quota": "documentSize=10240;documentsSize=10485760;documentsCount=-1;collectionSize=10485760;",
-        "x-ms-resource-usage": "documentSize=0;documentsSize=3;documentsCount=2;collectionSize=3;",
-        "lsn": "3484",
-        "x-ms-schemaversion": "1.9",
-        "x-ms-alt-content-path": "dbs/test-CosmosDbPartitionStorageTests/colls/bot-storage",
-        "x-ms-content-path": "3Ko5AIG8Vc8=",
-        "x-ms-quorum-acked-lsn": "3483",
-        "x-ms-current-write-quorum": "1",
-        "x-ms-current-replica-set-size": "1",
-        "x-ms-xp-role": "0",
-        "x-ms-global-Committed-lsn": "-1",
-        "x-ms-number-of-read-regions": "0",
-        "x-ms-transport-request-id": "1",
-        "x-ms-cosmos-llsn": "3484",
-        "x-ms-cosmos-quorum-acked-llsn": "3483",
-        "x-ms-serviceversion": " version=2.9.0.0"
-      }
+    "_etag": "\"00000000-0000-0000-66cc-715eb1c701d6\"",
+    "PartitionKey": "delete1"
+  },
+  {
+    "id": "delete1",
+    "realId": "delete1",
+    "document": {
+      "$type": "Microsoft.Bot.Builder.Tests.PocoStoreItem, Microsoft.Bot.Builder.Tests",
+      "ETag": null,
+      "Id": "1",
+      "Count": 1
     },
-    {
-      "$type": "Microsoft.Bot.Builder.Azure.Tests.SerializableResponseMessage, Microsoft.Bot.Builder.Azure.Tests",
-      "StatusCode": 200,
-      "RequestMessage": {
-        "$type": "Microsoft.Bot.Builder.Azure.Tests.SerializableRequestMessage, Microsoft.Bot.Builder.Azure.Tests",
-        "Method": {
-          "$type": "System.Net.Http.HttpMethod, System.Net.Http",
-          "Method": "GET"
-        },
-        "RequestUri": "dbs/test-CosmosDbPartitionStorageTests/colls/bot-storage/docs/delete1",
-        "Content": null,
-        "Headers": {
-          "x-ms-documentdb-partitionkey": "[\"delete1\"]",
-          "x-ms-date": "Tue, 21 Jul 2020 02:35:54 GMT",
-          "authorization": "type%3dmaster%26ver%3d1.0%26sig%3dTyN8XETVMMSInpUxvKFz%2fe738iNugPZAgFDtX%2fcvZgA%3d",
-          "x-ms-client-retry-attempt-count": "0",
-          "x-ms-remaining-time-in-ms-on-client": "30000",
-          "x-ms-documentdb-collection-rid": "3Ko5AIG8Vc8=",
-          "x-ms-transport-request-id": "2"
-        }
-      },
-      "ErrorMessage": null,
-      "Content": {
-        "id": "delete1",
-        "realId": "delete1",
-        "document": {
-          "$type": "Microsoft.Bot.Builder.Tests.PocoStoreItem, Microsoft.Bot.Builder.Tests",
-          "ETag": null,
-          "Id": "1",
-          "Count": 1
-        },
-        "_etag": "\"00000000-0000-0000-5f07-a84409f601d6\"",
-        "PartitionKey": "delete1",
-        "_rid": "3Ko5AIG8Vc8DAAAAAAAAAA==",
-        "_self": "dbs/3Ko5AA==/colls/3Ko5AIG8Vc8=/docs/3Ko5AIG8Vc8DAAAAAAAAAA==/",
-        "_attachments": "attachments/",
-        "_ts": 1595298954
-      },
-      "Headers": {
-        "x-ms-request-charge": "1",
-        "x-ms-activity-id": "45235ab1-2d5e-43a9-b779-44a87ea6671f",
-        "etag": "\"00000000-0000-0000-5f07-a84409f601d6\"",
-        "x-ms-session-token": "0:-1#3484",
-        "x-ms-last-state-change-utc": "Tue, 21 Jul 2020 00:22:48.190 GMT",
-        "x-ms-resource-quota": "documentSize=10240;documentsSize=10485760;documentsCount=-1;collectionSize=10485760;",
-        "x-ms-resource-usage": "documentSize=0;documentsSize=3;documentsCount=3;collectionSize=3;",
-        "lsn": "3484",
-        "x-ms-schemaversion": "1.9",
-        "x-ms-alt-content-path": "dbs/test-CosmosDbPartitionStorageTests/colls/bot-storage",
-        "x-ms-content-path": "3Ko5AIG8Vc8=",
-        "x-ms-quorum-acked-lsn": "3484",
-        "x-ms-current-write-quorum": "1",
-        "x-ms-current-replica-set-size": "1",
-        "x-ms-xp-role": "0",
-        "x-ms-global-Committed-lsn": "-1",
-        "x-ms-number-of-read-regions": "0",
-        "x-ms-item-lsn": "3484",
-        "x-ms-transport-request-id": "2",
-        "x-ms-cosmos-llsn": "3484",
-        "x-ms-cosmos-quorum-acked-llsn": "3484",
-        "x-ms-cosmos-item-llsn": "3484",
-        "x-ms-serviceversion": " version=2.9.0.0"
-      }
-    },
-    {
-      "$type": "Microsoft.Bot.Builder.Azure.Tests.SerializableResponseMessage, Microsoft.Bot.Builder.Azure.Tests",
-      "StatusCode": 204,
-      "RequestMessage": {
-        "$type": "Microsoft.Bot.Builder.Azure.Tests.SerializableRequestMessage, Microsoft.Bot.Builder.Azure.Tests",
-        "Method": {
-          "$type": "System.Net.Http.HttpMethod, System.Net.Http",
-          "Method": "DELETE"
-        },
-        "RequestUri": "dbs/test-CosmosDbPartitionStorageTests/colls/bot-storage/docs/delete1",
-        "Content": null,
-        "Headers": {
-          "x-ms-documentdb-partitionkey": "[\"delete1\"]",
-          "x-ms-date": "Tue, 21 Jul 2020 02:35:54 GMT",
-          "authorization": "type%3dmaster%26ver%3d1.0%26sig%3dv1FP4lNZoILefB7ik9T69RbrjZX7y3kwQ74Cw5eDRdc%3d",
-          "x-ms-client-retry-attempt-count": "0",
-          "x-ms-remaining-time-in-ms-on-client": "30000",
-          "x-ms-documentdb-collection-rid": "3Ko5AIG8Vc8=",
-          "x-ms-transport-request-id": "3"
-        }
-      },
-      "ErrorMessage": null,
-      "Content": null,
-      "Headers": {
-        "x-ms-request-charge": "4.95",
-        "x-ms-activity-id": "8e59765d-5cc0-4527-afb1-fe788eeb2320",
-        "x-ms-session-token": "0:-1#3485",
-        "x-ms-last-state-change-utc": "Tue, 21 Jul 2020 00:22:48.190 GMT",
-        "x-ms-resource-quota": "documentSize=10240;documentsSize=10485760;documentsCount=-1;collectionSize=10485760;",
-        "x-ms-resource-usage": "documentSize=0;documentsSize=2;documentsCount=3;collectionSize=2;",
-        "lsn": "3485",
-        "x-ms-schemaversion": "1.9",
-        "x-ms-alt-content-path": "dbs/test-CosmosDbPartitionStorageTests/colls/bot-storage",
-        "x-ms-content-path": "3Ko5AIG8Vc8=",
-        "x-ms-quorum-acked-lsn": "3484",
-        "x-ms-current-write-quorum": "1",
-        "x-ms-current-replica-set-size": "1",
-        "x-ms-xp-role": "0",
-        "x-ms-global-Committed-lsn": "-1",
-        "x-ms-number-of-read-regions": "0",
-        "x-ms-transport-request-id": "3",
-        "x-ms-cosmos-llsn": "3485",
-        "x-ms-cosmos-quorum-acked-llsn": "3484",
-        "x-ms-serviceversion": " version=2.9.0.0"
-      }
-    },
-    {
-      "$type": "Microsoft.Bot.Builder.Azure.Tests.SerializableResponseMessage, Microsoft.Bot.Builder.Azure.Tests",
+    "_etag": "\"00000000-0000-0000-66cc-715eb1c701d6\"",
+    "PartitionKey": "delete1"
+  },
+  null,
+  {
+    "id": "CosmosException",
+    "realId": "CosmosException",
+    "document": {
+      "Message": "Response status code does not indicate success: 404 Substatus: 0 Reason: ({\r\n  \"Errors\": [\r\n    \"Resource Not Found\"\r\n  ]\r\n}).",
       "StatusCode": 404,
-      "RequestMessage": {
-        "$type": "Microsoft.Bot.Builder.Azure.Tests.SerializableRequestMessage, Microsoft.Bot.Builder.Azure.Tests",
-        "Method": {
-          "$type": "System.Net.Http.HttpMethod, System.Net.Http",
-          "Method": "GET"
-        },
-        "RequestUri": "dbs/test-CosmosDbPartitionStorageTests/colls/bot-storage/docs/delete1",
-        "Content": null,
-        "Headers": {
-          "x-ms-documentdb-partitionkey": "[\"delete1\"]",
-          "x-ms-date": "Tue, 21 Jul 2020 02:35:54 GMT",
-          "authorization": "type%3dmaster%26ver%3d1.0%26sig%3dTyN8XETVMMSInpUxvKFz%2fe738iNugPZAgFDtX%2fcvZgA%3d",
-          "x-ms-client-retry-attempt-count": "0",
-          "x-ms-remaining-time-in-ms-on-client": "30000",
-          "x-ms-documentdb-collection-rid": "3Ko5AIG8Vc8=",
-          "x-ms-transport-request-id": "4"
-        }
-      },
-      "ErrorMessage": null,
-      "Content": {
-        "Errors": [
-          "Resource Not Found"
-        ]
-      },
-      "Headers": {
-        "x-ms-request-charge": "1",
-        "x-ms-activity-id": "e690d940-348c-4c7c-b902-46d4e28cfc8f",
-        "x-ms-session-token": "0:-1#3485",
-        "x-ms-last-state-change-utc": "Tue, 21 Jul 2020 00:22:48.190 GMT",
-        "lsn": "3485",
-        "x-ms-schemaversion": "1.9",
-        "x-ms-quorum-acked-lsn": "3485",
-        "x-ms-current-write-quorum": "1",
-        "x-ms-current-replica-set-size": "1",
-        "x-ms-xp-role": "0",
-        "x-ms-global-Committed-lsn": "-1",
-        "x-ms-number-of-read-regions": "0",
-        "x-ms-transport-request-id": "4",
-        "x-ms-cosmos-llsn": "3485",
-        "x-ms-cosmos-quorum-acked-llsn": "3485",
-        "x-ms-serviceversion": " version=2.9.0.0"
-      }
-    }
-  ]
-}
+      "SubStatusCode": 0,
+      "ActivityId": "a4f8c234-c60f-43cb-93b9-0e260f129d20",
+      "RequestCharge": 1.0
+    },
+    "_etag": "00000000-0000-0000-0000-000000000000",
+    "PartitionKey": "CosmosException"
+  }
+]

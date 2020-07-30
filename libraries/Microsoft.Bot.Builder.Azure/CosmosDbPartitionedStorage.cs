@@ -4,11 +4,17 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Azure.Tests")]
+
+// This is required for Moq to use DocumentStoreItem in the Tests
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2, PublicKey=0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7")]
 
 namespace Microsoft.Bot.Builder.Azure
 {
@@ -60,7 +66,7 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 if (cosmosDbStorageOptions.CompatibilityMode)
                 {
-                    throw new ArgumentException($"CompatibilityMode cannot be 'true' while using a KeySuffix.", nameof(cosmosDbStorageOptions.CompatibilityMode));
+                    throw new ArgumentException("CompatibilityMode cannot be 'true' while using a KeySuffix.", nameof(cosmosDbStorageOptions.CompatibilityMode));
                 }
 
                 // In order to reduce key complexity, we do not allow invalid characters in a KeySuffix
@@ -98,7 +104,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
         /// <returns>A dictionary containing the retrieved items.</returns>
         /// <exception cref="ArgumentNullException">Exception thrown if the array of keys (Ids for the items to be retrieved) is null.</exception>
-        public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken = default)
         {
             if (keys == null)
             {
@@ -159,7 +165,7 @@ namespace Microsoft.Bot.Builder.Azure
         }
 
         /// <summary>
-        /// Inserts or updates one or more items into the Cosmos DB container. 
+        /// Inserts or updates one or more items into the Cosmos DB container.
         /// </summary>
         /// <param name="changes">A dictionary of items to be inserted or updated. The dictionary item key
         /// is used as the ID for the inserted / updated item.</param>
@@ -167,7 +173,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns>A Task representing the work to be executed.</returns>
         /// <exception cref="ArgumentNullException">Exception thrown if the changes dictionary is null.</exception>
         /// <exception cref="Exception">Exception thrown is the etag is empty on any of the items within the changes dictionary.</exception>
-        public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task WriteAsync(IDictionary<string, object> changes, CancellationToken cancellationToken = default)
         {
             if (changes == null)
             {
@@ -231,7 +237,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
         /// <returns>A Task representing the work to be executed.</returns>
         /// <exception cref="ArgumentNullException">Thrown if the array of Ids to be deleted is null.</exception>
-        public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default)
         {
             if (keys == null)
             {
@@ -305,7 +311,7 @@ namespace Microsoft.Bot.Builder.Azure
                         try
                         {
                             _container = _client.GetContainer(_cosmosDbStorageOptions.DatabaseId, _cosmosDbStorageOptions.ContainerId);
-                            
+
                             // This will throw if the container does not exist. 
                             var readContainer = await _container.ReadContainerAsync().ConfigureAwait(false);
 
@@ -345,41 +351,59 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.
         /// </summary>
-        private class DocumentStoreItem : IStoreItem
+        internal class DocumentStoreItem : IStoreItem
         {
             /// <summary>
             /// Gets the PartitionKey path to be used for this document type.
             /// </summary>
+            /// <value>
+            /// The PartitionKey path to be used for this document type.
+            /// </value>
             public static string PartitionKeyPath => "/id";
 
             /// <summary>
             /// Gets or sets the sanitized Id/Key used as PrimaryKey.
             /// </summary>
+            /// <value>
+            /// The sanitized Id/Key used as PrimaryKey.
+            /// </value>
             [JsonProperty("id")]
             public string Id { get; set; }
 
             /// <summary>
             /// Gets or sets the un-sanitized Id/Key.
             /// </summary>
+            /// <value>
+            /// The un-sanitized Id/Key.
+            /// </value>
             [JsonProperty("realId")]
             public string RealId { get; internal set; }
 
             /// <summary>
             /// Gets or sets the persisted object.
             /// </summary>
+            /// <value>
+            /// The persisted object.
+            /// </value>
             [JsonProperty("document")]
             public JObject Document { get; set; }
 
             /// <summary>
             /// Gets or sets the ETag information for handling optimistic concurrency updates.
             /// </summary>
+            /// <value>
+            /// The ETag information for handling optimistic concurrency updates.
+            /// </value>
             [JsonProperty("_etag")]
             public string ETag { get; set; }
 
             /// <summary>
             /// Gets the PartitionKey value for the document.
             /// </summary>
-            public string PartitionKey => this.Id;
+            /// <value>
+            /// The PartitionKey value for the document.
+            /// </value>
+            public string PartitionKey => Id;
         }
     }
 }
