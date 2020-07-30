@@ -22,7 +22,7 @@ using static Microsoft.Bot.Builder.Azure.CosmosDbPartitionedStorage;
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
     /// <summary>
-    /// HTTP Requests can be recorded <see cref=CosmosTestRecorder"/>.
+    /// Requests to the Cosmos Container (ReadItemAsync, WriteItemAsync, etc) can be recorded <see cref=CosmosTestRecorder"/>.
     /// Be sure to add _testRecorder.RecordingFileName = GetActualAsyncMethodName() <see cref="GetActualAsyncMethodName(string)"/>; to each test that needs recording.
     /// </summary>
     [TestClass]
