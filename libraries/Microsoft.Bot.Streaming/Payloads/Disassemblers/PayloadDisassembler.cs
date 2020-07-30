@@ -42,6 +42,10 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         private bool IsEnd { get; set; } = false;
 
+        /// <summary>
+        /// Gets the stream this disassembler is operating on.
+        /// </summary>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public abstract Task<StreamWrapper> GetStreamAsync();
 
         public async Task DisassembleAsync(CancellationToken cancellationToken = default(CancellationToken))
