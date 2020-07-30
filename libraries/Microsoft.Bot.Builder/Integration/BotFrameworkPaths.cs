@@ -3,8 +3,15 @@
 
 namespace Microsoft.Bot.Builder.Integration
 {
+    /// <summary>
+    /// A class that defines the bot framework default path values.
+    /// </summary>
     public class BotFrameworkPaths
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkPaths"/> class and
+        /// sets BasePath and MessagePath to default values.
+        /// </summary>
         public BotFrameworkPaths()
         {
             BasePath = "/api";

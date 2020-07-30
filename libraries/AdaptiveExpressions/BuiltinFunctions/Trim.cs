@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Trim : StringTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Trim"/> class.
+        /// </summary>
         public Trim()
             : base(ExpressionType.Trim, Function)
         {

@@ -25,6 +25,11 @@ namespace Microsoft.Bot.Builder
             BotStateSet = new BotStateSet(botStates);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoSaveStateMiddleware"/> class with 
+        /// a list of state management objects managed by this object.
+        /// </summary>
+        /// <param name="botStateSet">The state management objects managed by this object.</param>
         public AutoSaveStateMiddleware(BotStateSet botStateSet)
         {
             BotStateSet = botStateSet;

@@ -121,6 +121,15 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        /// <summary>
+        /// Gets from the store activities that match a set of criteria.
+        /// </summary>
+        /// <param name="channelId">The ID of the channel the conversation is in.</param>
+        /// <param name="conversationId">The ID of the conversation.</param>
+        /// <param name="continuationToken">The continuation token (if available).</param>
+        /// <param name="startDate">A cutoff date. Activities older than this date are not included.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task completes successfully, the result contains the matching activities.</remarks>
         public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
             var transcriptFile = GetTranscriptFile(channelId, conversationId);
@@ -132,6 +141,13 @@ namespace Microsoft.Bot.Builder
             return result;
         }
 
+        /// <summary>
+        /// Gets the conversations on a channel from the store.
+        /// </summary>
+        /// <param name="channelId">The ID of the channel.</param>
+        /// <param name="continuationToken">Continuation token (if available).</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>List all transcripts for given ChannelID.</remarks>
         public Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
             List<TranscriptInfo> transcripts = new List<TranscriptInfo>();
@@ -154,6 +170,12 @@ namespace Microsoft.Bot.Builder
             });
         }
 
+        /// <summary>
+        /// Deletes conversation data from the store.
+        /// </summary>
+        /// <param name="channelId">The ID of the channel the conversation is in.</param>
+        /// <param name="conversationId">The ID of the conversation to delete.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public Task DeleteTranscriptAsync(string channelId, string conversationId)
         {
             var transcriptFile = GetTranscriptFile(channelId, conversationId);

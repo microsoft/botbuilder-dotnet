@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class DebuggerSourceMap : ISourceMap, IBreakpoints
+    internal sealed class DebuggerSourceMap : ISourceMap, IBreakpoints
     {
         private readonly ICodeModel codeModel;
         private readonly object gate = new object();

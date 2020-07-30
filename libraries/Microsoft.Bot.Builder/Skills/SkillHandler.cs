@@ -19,6 +19,9 @@ namespace Microsoft.Bot.Builder.Skills
     /// </summary>
     public class SkillHandler : ChannelServiceHandler
     {
+        /// <summary>
+        /// The skill conversation reference.
+        /// </summary>
         public static readonly string SkillConversationReferenceKey = $"{typeof(SkillHandler).Namespace}.SkillConversationReference";
 
         private readonly BotAdapter _adapter;

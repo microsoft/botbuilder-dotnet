@@ -110,6 +110,10 @@ namespace Microsoft.Bot.Builder.Adapters
                 this);
         }
 
+        /// <summary>
+        /// Creates a conversation update activity and process it the activity.
+        /// </summary>
+        /// <returns>A new <see cref="TestFlow"/> object.</returns>
         public TestFlow SendConversationUpdate()
         {
             return new TestFlow(

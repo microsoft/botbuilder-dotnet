@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// <summary>
     /// Extension method implementing await for <see cref="SemaphoreSlim"/>.
     /// </summary>
-    public static class SemaphoreSlimExtensions
+    internal static class SemaphoreSlimExtensions
     {
         public static async Task<Releaser> WithWaitAsync(this SemaphoreSlim semaphore, CancellationToken cancellationToken)
         {

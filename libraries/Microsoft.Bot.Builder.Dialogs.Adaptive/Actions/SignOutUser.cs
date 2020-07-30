@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public BoolExpression Disabled { get; set; }
 
         /// <summary>
-        /// Gets or sets the expression which resolves to the activityId to update.
+        /// Gets or sets the expression which resolves to the user Id to signout. (default is current user.id).
         /// </summary>
         /// <value>Expression to userId.  If there is no expression, then the current user.id will be used.</value>
         [JsonProperty("userId")]
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             string userId = this.UserId?.GetValue(dc.State);
-            
+
             if (!(dc.Context.Adapter is IUserTokenProvider adapter))
             {
                 throw new InvalidOperationException("SignoutUser(): not supported by the current adapter");

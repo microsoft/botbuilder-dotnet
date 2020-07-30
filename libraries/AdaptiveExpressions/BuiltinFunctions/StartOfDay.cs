@@ -13,6 +13,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class StartOfDay : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartOfDay"/> class.
+        /// </summary>
         public StartOfDay()
             : base(ExpressionType.StartOfDay, Evaluator, ReturnType.String, Validator)
         {

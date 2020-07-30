@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriHost : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriHost"/> class.
+        /// </summary>
         public UriHost()
             : base(ExpressionType.UriHost, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {

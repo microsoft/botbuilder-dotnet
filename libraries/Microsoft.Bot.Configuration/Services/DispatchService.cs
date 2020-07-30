@@ -26,6 +26,8 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         /// <value>The list of service Ids.</value>
         [JsonProperty("serviceIds")]
+#pragma warning disable CA2227 // Collection properties should be read only (this class is obsolete, we won't fix it)
         public List<string> ServiceIds { get; set; } = new List<string>();
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

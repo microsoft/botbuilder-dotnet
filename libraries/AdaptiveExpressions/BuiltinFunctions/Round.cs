@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Round : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Round"/> class.
+        /// </summary>
         public Round()
             : base(ExpressionType.Round, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnaryOrBinaryNumber)
         {

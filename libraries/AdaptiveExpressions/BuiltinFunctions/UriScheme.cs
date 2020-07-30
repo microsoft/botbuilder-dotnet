@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriScheme : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriScheme"/> class.
+        /// </summary>
         public UriScheme()
             : base(ExpressionType.UriScheme, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {

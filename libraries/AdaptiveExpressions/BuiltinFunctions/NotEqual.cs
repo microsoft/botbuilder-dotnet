@@ -14,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class NotEqual : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotEqual"/> class.
+        /// </summary>
         public NotEqual()
             : base(
                   ExpressionType.NotEqual,

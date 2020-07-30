@@ -14,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static readonly object _randomizerLock = new object();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rand"/> class.
+        /// </summary>
         public Rand()
             : base(ExpressionType.Rand, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
         {

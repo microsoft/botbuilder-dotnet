@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class IdentifierCache<T> : IIdentifier<T>
+    internal sealed class IdentifierCache<T> : IIdentifier<T>
     {
         private readonly IIdentifier<T> inner;
         private readonly int count;

@@ -13,7 +13,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
     /// <remarks>
     /// ITemplateRenderer implements.
     /// </remarks>
+#pragma warning disable CA1724 // Type names should not match namespaces (by design and we can't change this without breaking binary compat)
     public class TemplateManager
+#pragma warning restore CA1724 // Type names should not match namespaces
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateManager"/> class.
@@ -28,7 +30,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <value>
         /// Template renderers.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
         public List<ITemplateRenderer> Renderers { get; set; } = new List<ITemplateRenderer>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets language fall-back policy.
@@ -36,7 +40,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <value>
         /// Language fall-back policy.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
         public List<string> LanguageFallback { get; set; } = new List<string>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Creates an Activity object of type equal to "Template" and value equal to a new TemplateOptions object.
@@ -106,7 +112,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <param name="templateId">Id of the template.</param>
         /// <param name="data">Data to render the template.</param>
         /// <returns>Task.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (we can't change this without breaking compat)
         public async Task ReplyWith(ITurnContext turnContext, string templateId, object data = null)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -114,7 +122,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             Activity boundActivity = await RenderTemplate(turnContext, turnContext.Activity?.AsMessageActivity()?.Locale, templateId, data).ConfigureAwait(false);
             if (boundActivity != null)
             {
-                await turnContext.SendActivityAsync(boundActivity);
+                await turnContext.SendActivityAsync(boundActivity).ConfigureAwait(false);
                 return;
             }
 
@@ -129,7 +137,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <param name="templateId">The id of the template.</param>
         /// <param name="data">Data to render the template with.</param>
         /// <returns>Task.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (we can't change this without breaking compat)
         public async Task<Activity> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data = null)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             var fallbackLocales = new List<string>(LanguageFallback);
 
@@ -145,7 +155,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
             {
                 foreach (var renderer in this.Renderers)
                 {
-                    object templateOutput = await renderer.RenderTemplate(turnContext, locale, templateId, data);
+                    object templateOutput = await renderer.RenderTemplate(turnContext, locale, templateId, data).ConfigureAwait(false);
                     if (templateOutput != null)
                     {
                         if (templateOutput is string)

@@ -4581,57 +4581,6 @@
           "description": "Reference to Microsoft.ITrigger .dialog file."
         },
         {
-          "$ref": "#/definitions/Teams.OnAppBasedLinkQuery"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnCardAction"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnChannelCreated"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnChannelDeleted"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnChannelRenamed"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnFileConsent"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationSetting"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionFetchTask"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionQuery"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionSelectItem"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionSubmitAction"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTaskModuleFetch"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTaskModuleSubmit"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTeamRenamed"
-        },
-        {
           "$ref": "#/definitions/Microsoft.OnActivity"
         },
         {
@@ -4708,6 +4657,57 @@
         },
         {
           "$ref": "#/definitions/Microsoft.OnUnknownIntent"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnAppBasedLinkQuery"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnCardAction"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnChannelCreated"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnChannelDeleted"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnChannelRenamed"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnFileConsent"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationSetting"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionFetchTask"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionQuery"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionSelectItem"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionSubmitAction"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnTaskModuleFetch"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnTaskModuleSubmit"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnTeamRenamed"
         }
       ]
     },
@@ -8451,11 +8451,9 @@
         },
         "userId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "ActivityId",
-          "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
-          "examples": [
-            "=$lastActivity"
-          ]
+          "title": "UserId",
+          "description": "Expression to an user to signout. Default is user.id.",
+          "default": "=user.id"
         },
         "connectionName": {
           "$ref": "#/definitions/stringExpression",

@@ -14,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Empty : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Empty"/> class.
+        /// </summary>
         public Empty()
             : base(
                   ExpressionType.Empty,

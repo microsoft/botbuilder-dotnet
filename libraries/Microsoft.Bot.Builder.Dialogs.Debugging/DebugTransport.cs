@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
 
         /// <summary>
-        /// Disposes objected used by the class.
+        /// Disposes objects used by the class.
         /// </summary>
         /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
         /// <remarks>
