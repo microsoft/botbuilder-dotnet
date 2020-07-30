@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Builder.Tests
                 new Claim(AuthenticationConstants.VersionClaim, "1.0")
             };
             var skillsIdentity = new ClaimsIdentity(skillClaims);
-            var channelServiceUrl = "https://smba.trafficmanager.net/amer/";
+            var channelServiceUrl = "https://continuetest.smba.trafficmanager.net/amer/";
 
             // Skill1 is calling ContinueSkillConversationAsync() to proactively send an Activity to the channel
             var callback = new BotCallbackHandler((turnContext, ct) =>
@@ -340,7 +340,7 @@ namespace Microsoft.Bot.Builder.Tests
                 new Claim(AuthenticationConstants.VersionClaim, "1.0")
             };
             var skillsIdentity = new ClaimsIdentity(skillClaims);
-            var skill2ServiceUrl = "https://skill2.com/api/skills/";
+            var skill2ServiceUrl = "https://continuetest.skill2.com/api/skills/";
 
             // Skill1 is calling ContinueSkillConversationAsync() to proactively send an Activity to Skill 2
             var callback = new BotCallbackHandler((turnContext, ct) =>
