@@ -141,11 +141,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             serializer.Serialize(writer, value);
         }
 
-        [Obsolete("Deprecated in favor of IJsonLoadObserver registration.")]
         /// <summary>
         /// Registers a <see cref="IConverterObserver"/> to receive notifications on converter events.
         /// </summary>
         /// <param name="observer">The observer to be registered.</param>
+        [Obsolete("Deprecated in favor of IJsonLoadObserver registration.")]
         public void RegisterObserver(IConverterObserver observer)
         {
             if (observer == null)
