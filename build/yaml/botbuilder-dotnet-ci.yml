@@ -91,12 +91,12 @@ stages:
        }
        else {
          if ("$(Build.Reason)" -eq 'Manual') {
-           git checkout master-test
+           git checkout master
            $branchSource = "$(Build.SourceBranch)"
            echo $branchSource
            $branchSourcePath = $branchSource -replace "refs/heads/", ""
            git checkout $branchSourcePath
-           $commits = $(git rev-list --count HEAD ^master-test)
+           $commits = $(git rev-list --count HEAD ^master)
            echo "Commits: $commits"
            $updatedFiles = $(git diff HEAD HEAD~$commits --name-only)
          }
