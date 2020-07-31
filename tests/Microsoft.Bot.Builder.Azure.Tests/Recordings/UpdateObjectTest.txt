@@ -8,7 +8,7 @@
       "Count": 1,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-66cc-78d040d201d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b6d55aa701d6\"",
     "PartitionKey": "pocoItem"
   },
   {
@@ -20,7 +20,7 @@
       "Id": "1",
       "Count": 1
     },
-    "_etag": "\"00000000-0000-0000-66cc-78d318ae01d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b6da3b3a01d6\"",
     "PartitionKey": "pocoStoreItem"
   },
   {
@@ -32,7 +32,7 @@
       "Count": 1,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-66cc-78d040d201d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b6d55aa701d6\"",
     "PartitionKey": "pocoItem"
   },
   {
@@ -44,7 +44,7 @@
       "Id": "1",
       "Count": 1
     },
-    "_etag": "\"00000000-0000-0000-66cc-78d318ae01d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b6da3b3a01d6\"",
     "PartitionKey": "pocoStoreItem"
   },
   {
@@ -56,7 +56,7 @@
       "Count": 2,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-66cc-78d5bad001d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b70524c701d6\"",
     "PartitionKey": "pocoItem"
   },
   {
@@ -64,11 +64,11 @@
     "realId": "pocoStoreItem",
     "document": {
       "$type": "Microsoft.Bot.Builder.Tests.PocoStoreItem, Microsoft.Bot.Builder.Tests",
-      "ETag": "\"00000000-0000-0000-66cc-78d318ae01d6\"",
+      "ETag": "\"00000000-0000-0000-66dc-b6da3b3a01d6\"",
       "Id": "1",
       "Count": 2
     },
-    "_etag": "\"00000000-0000-0000-66cc-78d85bdb01d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b70aaa1601d6\"",
     "PartitionKey": "pocoStoreItem"
   },
   {
@@ -80,7 +80,7 @@
       "Count": 2,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-66cc-78d5bad001d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b70524c701d6\"",
     "PartitionKey": "pocoItem"
   },
   {
@@ -88,11 +88,11 @@
     "realId": "pocoStoreItem",
     "document": {
       "$type": "Microsoft.Bot.Builder.Tests.PocoStoreItem, Microsoft.Bot.Builder.Tests",
-      "ETag": "\"00000000-0000-0000-66cc-78d318ae01d6\"",
+      "ETag": "\"00000000-0000-0000-66dc-b6da3b3a01d6\"",
       "Id": "1",
       "Count": 2
     },
-    "_etag": "\"00000000-0000-0000-66cc-78d85bdb01d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b70aaa1601d6\"",
     "PartitionKey": "pocoStoreItem"
   },
   {
@@ -104,7 +104,7 @@
       "Count": 123,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-66cc-78daf17b01d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b721a78401d6\"",
     "PartitionKey": "pocoItem"
   },
   {
@@ -114,7 +114,7 @@
       "Message": "Response status code does not indicate success: 412 Substatus: 0 Reason: ({\r\n  \"Errors\": [\r\n    \"One of the specified pre-condition is not met\"\r\n  ]\r\n}).",
       "StatusCode": 412,
       "SubStatusCode": 0,
-      "ActivityId": "a8374383-019a-4e21-a475-2552d024836f",
+      "ActivityId": "86e9cd7f-41a7-427a-88ef-4f006cca17eb",
       "RequestCharge": 1.24
     },
     "_etag": "00000000-0000-0000-0000-000000000000",
@@ -129,7 +129,7 @@
       "Count": 123,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-66cc-78daf17b01d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b721a78401d6\"",
     "PartitionKey": "pocoItem"
   },
   {
@@ -137,11 +137,11 @@
     "realId": "pocoStoreItem",
     "document": {
       "$type": "Microsoft.Bot.Builder.Tests.PocoStoreItem, Microsoft.Bot.Builder.Tests",
-      "ETag": "\"00000000-0000-0000-66cc-78d318ae01d6\"",
+      "ETag": "\"00000000-0000-0000-66dc-b6da3b3a01d6\"",
       "Id": "1",
       "Count": 2
     },
-    "_etag": "\"00000000-0000-0000-66cc-78d85bdb01d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b70aaa1601d6\"",
     "PartitionKey": "pocoStoreItem"
   },
   {
@@ -153,7 +153,7 @@
       "Count": 100,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-66cc-78df7b7601d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b730cc0801d6\"",
     "PartitionKey": "pocoItem"
   },
   {
@@ -165,7 +165,7 @@
       "Id": "1",
       "Count": 100
     },
-    "_etag": "\"00000000-0000-0000-66cc-78e142e201d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b73972ee01d6\"",
     "PartitionKey": "pocoStoreItem"
   },
   {
@@ -177,7 +177,7 @@
       "Count": 100,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-66cc-78df7b7601d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b730cc0801d6\"",
     "PartitionKey": "pocoItem"
   },
   {
@@ -189,7 +189,7 @@
       "Id": "1",
       "Count": 100
     },
-    "_etag": "\"00000000-0000-0000-66cc-78e142e201d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b73972ee01d6\"",
     "PartitionKey": "pocoStoreItem"
   },
   {
@@ -201,7 +201,7 @@
       "Id": "1",
       "Count": 100
     },
-    "_etag": "\"00000000-0000-0000-66cc-78e142e201d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b73972ee01d6\"",
     "PartitionKey": "pocoStoreItem"
   },
   {
@@ -213,7 +213,7 @@
       "Count": 100,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-66cc-78df7b7601d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b730cc0801d6\"",
     "PartitionKey": "pocoItem"
   },
   {
@@ -225,7 +225,7 @@
       "Id": "1",
       "Count": 100
     },
-    "_etag": "\"00000000-0000-0000-66cc-78e142e201d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-b73972ee01d6\"",
     "PartitionKey": "pocoStoreItem"
   }
 ]

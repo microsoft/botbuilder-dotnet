@@ -8,7 +8,7 @@
       "Id": "1",
       "Count": 1
     },
-    "_etag": "\"00000000-0000-0000-66cc-715eb1c701d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-a897fc1801d6\"",
     "PartitionKey": "delete1"
   },
   {
@@ -20,7 +20,7 @@
       "Id": "1",
       "Count": 1
     },
-    "_etag": "\"00000000-0000-0000-66cc-715eb1c701d6\"",
+    "_etag": "\"00000000-0000-0000-66dc-a897fc1801d6\"",
     "PartitionKey": "delete1"
   },
   null,
@@ -31,7 +31,7 @@
       "Message": "Response status code does not indicate success: 404 Substatus: 0 Reason: ({\r\n  \"Errors\": [\r\n    \"Resource Not Found\"\r\n  ]\r\n}).",
       "StatusCode": 404,
       "SubStatusCode": 0,
-      "ActivityId": "a4f8c234-c60f-43cb-93b9-0e260f129d20",
+      "ActivityId": "3b739f63-5334-450c-a813-99b59091a582",
       "RequestCharge": 1.0
     },
     "_etag": "00000000-0000-0000-0000-000000000000",

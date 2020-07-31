@@ -22,7 +22,7 @@ using static Microsoft.Bot.Builder.Azure.CosmosDbPartitionedStorage;
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
     /// <summary>
-    /// Requests to the Cosmos Container (ReadItemAsync, WriteItemAsync, etc) can be recorded <see cref=CosmosTestRecorder"/>.
+    /// Requests to the Cosmos Container (ReadItemAsync, WriteItemAsync, etc) can be recorded <see cref=CosmosTestRecorder" />.
     /// Be sure to add _testRecorder.RecordingFileName = GetActualAsyncMethodName() <see cref="GetActualAsyncMethodName(string)"/>; to each test that needs recording.
     /// </summary>
     [TestClass]
@@ -37,7 +37,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string CosmosCollectionName = "bot-storage";
 
         // Switch between Record and Playback mode using "COSMOS_RECORDING_MODE" Env Var, 
-        // or switching the right-hand side of the null-coalesce to RecordingMode.Record
+        // or switching the right-hand side of the null-coalesce to RecordingMode.Record.
+        // This should default to Playback, but tests should be re-recorded with any test or CosmosDbPartitionedStorage change.
         private static readonly string _recordingMode = Environment.GetEnvironmentVariable("COSMOS_RECORDING_MODE") ?? RecordingMode.Playback;
 
         private static readonly string _noConnectionMessage = $"Unable to connect to Cosmos Endpoint {CosmosServiceEndpoint}. Running tests against recordings.";
@@ -292,7 +293,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // https://github.com/microsoft/botbuilder-dotnet/issues/1859
         // The waterfall in this test has been modified to include a prompt.
         [TestMethod]
-        public async Task WaterfallCosmos()
+        public async Task CosmosStorageCanHandleBotStateInWaterfallDialog()
         {
             _testRecorder.RecordingFileName = GetActualAsyncMethodName();
             var convoState = new ConversationState(_storage);
@@ -323,18 +324,18 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 {
                     async (stepContext, ct) =>
                     {
-                        Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(int));
+                        Assert.AreEqual(typeof(int), stepContext.ActiveDialog.State["stepIndex"].GetType());
                         await stepContext.Context.SendActivityAsync("step1", cancellationToken: ct).ConfigureAwait(false);
                         return Dialog.EndOfTurn;
                     },
                     async (stepContext, ct) =>
                     {
-                        Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(int));
+                        Assert.AreEqual(typeof(int), stepContext.ActiveDialog.State["stepIndex"].GetType());
                         return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please type your name.") }, ct).ConfigureAwait(false);
                     },
                     async (stepContext, ct) =>
                     {
-                        Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(int));
+                        Assert.AreEqual(typeof(int), stepContext.ActiveDialog.State["stepIndex"].GetType());
                         await stepContext.Context.SendActivityAsync("step3", cancellationToken: ct).ConfigureAwait(false);
                         return Dialog.EndOfTurn;
                     },
@@ -476,7 +477,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         ///   1. If in record mode, use the real container to call the method, then record.
         ///   2. If in playback mode, get the saved responses from the recorded files.
         /// </summary>
-        /// <param name="method">A method fromt he real container such as ReadItemAsync, WriteItemAsync, etc.</param>
+        /// <param name="method">A method from the real container such as ReadItemAsync, WriteItemAsync, etc.</param>
         /// <returns>Either the actual DocumentStoreItem, or the one from the saved file if in Playback Mode.</returns>
         internal async Task<ItemResponse<DocumentStoreItem>> HandleMockedMethods(Func<Task<ItemResponse<DocumentStoreItem>>> method = null)
         {
@@ -493,26 +494,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 // We need to store all CosmosExceptions so that we can re-throw them during playback.
                 catch (CosmosException exception)
                 {
-                    // Some properties of CosmosException are more difficult to deserialize than it's worth,
-                    // so we'll remove some of them here.
-                    var exceptionObject = new
-                    {
-                        exception.Message,
-                        exception.StatusCode,
-                        exception.SubStatusCode,
-                        exception.ActivityId,
-                        exception.RequestCharge
-                    };
-
-                    document = new DocumentStoreItem
-                    {
-                        Document = JObject.FromObject(exceptionObject),
-                        ETag = new Guid().ToString(),
-                        Id = nameof(CosmosException),
-                    };
-
-                    // RealId is internal and required for Cosmos, so we'll use reflection to set it here.
-                    document.GetType().GetProperty("RealId").SetValue(document, nameof(CosmosException));
+                    document = ConvertCosmosExceptionToDocumentStoreItem(exception);
 
                     _testRecorder.AddRecordingToQueue(document);
 
@@ -538,6 +520,32 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             mockItemResponse.SetupGet(x => x.Resource).Returns(document);
 
             return mockItemResponse.Object;
+        }
+
+        internal DocumentStoreItem ConvertCosmosExceptionToDocumentStoreItem(CosmosException exception)
+        {
+            // Some properties of CosmosException are more difficult to deserialize than it's worth,
+            // so we'll remove some of them here.
+            var exceptionObject = new
+            {
+                exception.Message,
+                exception.StatusCode,
+                exception.SubStatusCode,
+                exception.ActivityId,
+                exception.RequestCharge
+            };
+
+            var document = new DocumentStoreItem
+            {
+                Document = JObject.FromObject(exceptionObject),
+                ETag = new Guid().ToString(),
+                Id = nameof(CosmosException),
+            };
+
+            // RealId is internal and required for Cosmos, so we'll use reflection to set it here.
+            document.GetType().GetProperty("RealId").SetValue(document, nameof(CosmosException));
+
+            return document;
         }
     }
 }

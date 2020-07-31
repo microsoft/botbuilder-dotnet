@@ -1,0 +1,1103 @@
+[
+  {
+    "id": "CosmosException",
+    "realId": "CosmosException",
+    "document": {
+      "Message": "Response status code does not indicate success: 404 Substatus: 0 Reason: ({\r\n  \"Errors\": [\r\n    \"Resource Not Found\"\r\n  ]\r\n}).",
+      "StatusCode": 404,
+      "SubStatusCode": 0,
+      "ActivityId": "00591242-782d-43fc-9ff7-92c0f5af5b4d",
+      "RequestCharge": 1.0
+    },
+    "_etag": "00000000-0000-0000-0000-000000000000",
+    "PartitionKey": "CosmosException"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 0
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b565ae5101d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 0
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b565ae5101d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "TextPrompt",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": {
+                  "$type": "Microsoft.Bot.Builder.Dialogs.PromptOptions, Microsoft.Bot.Builder.Dialogs",
+                  "Prompt": {
+                    "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
+                    "type": "message",
+                    "id": "1fabeab037164f4fb93b42b31bba7e8e",
+                    "timestamp": "2020-07-30T18:48:37.7082713-07:00",
+                    "localTimestamp": null,
+                    "localTimezone": null,
+                    "serviceUrl": "https://test.com",
+                    "channelId": "test",
+                    "from": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "bot",
+                      "name": "Bot",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "conversation": {
+                      "$type": "Microsoft.Bot.Schema.ConversationAccount, Microsoft.Bot.Schema",
+                      "isGroup": false,
+                      "conversationType": "convo1",
+                      "id": "Conversation1",
+                      "name": null,
+                      "aadObjectId": null,
+                      "role": null,
+                      "tenantId": null
+                    },
+                    "recipient": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "user1",
+                      "name": "User1",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "textFormat": null,
+                    "attachmentLayout": null,
+                    "membersAdded": null,
+                    "membersRemoved": null,
+                    "reactionsAdded": null,
+                    "reactionsRemoved": null,
+                    "topicName": null,
+                    "historyDisclosed": null,
+                    "locale": "en-us",
+                    "text": "Please type your name.",
+                    "speak": null,
+                    "inputHint": "acceptingInput",
+                    "summary": null,
+                    "suggestedActions": null,
+                    "attachments": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Attachment, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "entities": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Entity, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "channelData": null,
+                    "action": null,
+                    "replyToId": "10",
+                    "label": null,
+                    "valueType": null,
+                    "value": null,
+                    "name": null,
+                    "relatesTo": null,
+                    "code": null,
+                    "expiration": null,
+                    "importance": null,
+                    "deliveryMode": null,
+                    "listenFor": null,
+                    "textHighlights": null,
+                    "semanticAction": null,
+                    "callerId": null
+                  },
+                  "RetryPrompt": null,
+                  "Choices": null,
+                  "Style": null,
+                  "Validations": null
+                },
+                "state": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                  "AttemptCount": 0
+                }
+              },
+              "StackIndex": null,
+              "Version": null
+            },
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 1
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b57be4c201d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "TextPrompt",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": {
+                  "$type": "Microsoft.Bot.Builder.Dialogs.PromptOptions, Microsoft.Bot.Builder.Dialogs",
+                  "Prompt": {
+                    "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
+                    "type": "message",
+                    "id": "1fabeab037164f4fb93b42b31bba7e8e",
+                    "timestamp": "2020-07-30T18:48:37.7082713-07:00",
+                    "localTimestamp": null,
+                    "localTimezone": null,
+                    "serviceUrl": "https://test.com",
+                    "channelId": "test",
+                    "from": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "bot",
+                      "name": "Bot",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "conversation": {
+                      "$type": "Microsoft.Bot.Schema.ConversationAccount, Microsoft.Bot.Schema",
+                      "isGroup": false,
+                      "conversationType": "convo1",
+                      "id": "Conversation1",
+                      "name": null,
+                      "aadObjectId": null,
+                      "role": null,
+                      "tenantId": null
+                    },
+                    "recipient": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "user1",
+                      "name": "User1",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "textFormat": null,
+                    "attachmentLayout": null,
+                    "membersAdded": null,
+                    "membersRemoved": null,
+                    "reactionsAdded": null,
+                    "reactionsRemoved": null,
+                    "topicName": null,
+                    "historyDisclosed": null,
+                    "locale": "en-us",
+                    "text": "Please type your name.",
+                    "speak": null,
+                    "inputHint": "acceptingInput",
+                    "summary": null,
+                    "suggestedActions": null,
+                    "attachments": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Attachment, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "entities": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Entity, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "channelData": null,
+                    "action": null,
+                    "replyToId": "10",
+                    "label": null,
+                    "valueType": null,
+                    "value": null,
+                    "name": null,
+                    "relatesTo": null,
+                    "code": null,
+                    "expiration": null,
+                    "importance": null,
+                    "deliveryMode": null,
+                    "listenFor": null,
+                    "textHighlights": null,
+                    "semanticAction": null,
+                    "callerId": null
+                  },
+                  "RetryPrompt": null,
+                  "Choices": null,
+                  "Style": null,
+                  "Validations": null
+                },
+                "state": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                  "AttemptCount": 0
+                }
+              },
+              "StackIndex": null,
+              "Version": null
+            },
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 1
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b57be4c201d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "TextPrompt",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": {
+                  "$type": "Microsoft.Bot.Builder.Dialogs.PromptOptions, Microsoft.Bot.Builder.Dialogs",
+                  "Prompt": {
+                    "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
+                    "type": "message",
+                    "id": "1fabeab037164f4fb93b42b31bba7e8e",
+                    "timestamp": "2020-07-30T18:48:37.7082713-07:00",
+                    "localTimestamp": null,
+                    "localTimezone": null,
+                    "serviceUrl": "https://test.com",
+                    "channelId": "test",
+                    "from": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "bot",
+                      "name": "Bot",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "conversation": {
+                      "$type": "Microsoft.Bot.Schema.ConversationAccount, Microsoft.Bot.Schema",
+                      "isGroup": false,
+                      "conversationType": "convo1",
+                      "id": "Conversation1",
+                      "name": null,
+                      "aadObjectId": null,
+                      "role": null,
+                      "tenantId": null
+                    },
+                    "recipient": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "user1",
+                      "name": "User1",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "textFormat": null,
+                    "attachmentLayout": null,
+                    "membersAdded": null,
+                    "membersRemoved": null,
+                    "reactionsAdded": null,
+                    "reactionsRemoved": null,
+                    "topicName": null,
+                    "historyDisclosed": null,
+                    "locale": "en-us",
+                    "text": "Please type your name.",
+                    "speak": null,
+                    "inputHint": "acceptingInput",
+                    "summary": null,
+                    "suggestedActions": null,
+                    "attachments": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Attachment, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "entities": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Entity, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "channelData": null,
+                    "action": null,
+                    "replyToId": "10",
+                    "label": null,
+                    "valueType": null,
+                    "value": null,
+                    "name": null,
+                    "relatesTo": null,
+                    "code": null,
+                    "expiration": null,
+                    "importance": null,
+                    "deliveryMode": null,
+                    "listenFor": null,
+                    "textHighlights": null,
+                    "semanticAction": null,
+                    "callerId": null
+                  },
+                  "RetryPrompt": null,
+                  "Choices": null,
+                  "Style": null,
+                  "Validations": null
+                },
+                "state": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                  "AttemptCount": 1
+                }
+              },
+              "StackIndex": null,
+              "Version": null
+            },
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 1
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b5841c8901d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "TextPrompt",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": {
+                  "$type": "Microsoft.Bot.Builder.Dialogs.PromptOptions, Microsoft.Bot.Builder.Dialogs",
+                  "Prompt": {
+                    "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
+                    "type": "message",
+                    "id": "1fabeab037164f4fb93b42b31bba7e8e",
+                    "timestamp": "2020-07-30T18:48:37.7082713-07:00",
+                    "localTimestamp": null,
+                    "localTimezone": null,
+                    "serviceUrl": "https://test.com",
+                    "channelId": "test",
+                    "from": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "bot",
+                      "name": "Bot",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "conversation": {
+                      "$type": "Microsoft.Bot.Schema.ConversationAccount, Microsoft.Bot.Schema",
+                      "isGroup": false,
+                      "conversationType": "convo1",
+                      "id": "Conversation1",
+                      "name": null,
+                      "aadObjectId": null,
+                      "role": null,
+                      "tenantId": null
+                    },
+                    "recipient": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "user1",
+                      "name": "User1",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "textFormat": null,
+                    "attachmentLayout": null,
+                    "membersAdded": null,
+                    "membersRemoved": null,
+                    "reactionsAdded": null,
+                    "reactionsRemoved": null,
+                    "topicName": null,
+                    "historyDisclosed": null,
+                    "locale": "en-us",
+                    "text": "Please type your name.",
+                    "speak": null,
+                    "inputHint": "acceptingInput",
+                    "summary": null,
+                    "suggestedActions": null,
+                    "attachments": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Attachment, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "entities": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Entity, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "channelData": null,
+                    "action": null,
+                    "replyToId": "10",
+                    "label": null,
+                    "valueType": null,
+                    "value": null,
+                    "name": null,
+                    "relatesTo": null,
+                    "code": null,
+                    "expiration": null,
+                    "importance": null,
+                    "deliveryMode": null,
+                    "listenFor": null,
+                    "textHighlights": null,
+                    "semanticAction": null,
+                    "callerId": null
+                  },
+                  "RetryPrompt": null,
+                  "Choices": null,
+                  "Style": null,
+                  "Validations": null
+                },
+                "state": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                  "AttemptCount": 1
+                }
+              },
+              "StackIndex": null,
+              "Version": null
+            },
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 1
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b5841c8901d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "TextPrompt",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": {
+                  "$type": "Microsoft.Bot.Builder.Dialogs.PromptOptions, Microsoft.Bot.Builder.Dialogs",
+                  "Prompt": {
+                    "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
+                    "type": "message",
+                    "id": "1fabeab037164f4fb93b42b31bba7e8e",
+                    "timestamp": "2020-07-30T18:48:37.7082713-07:00",
+                    "localTimestamp": null,
+                    "localTimezone": null,
+                    "serviceUrl": "https://test.com",
+                    "channelId": "test",
+                    "from": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "bot",
+                      "name": "Bot",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "conversation": {
+                      "$type": "Microsoft.Bot.Schema.ConversationAccount, Microsoft.Bot.Schema",
+                      "isGroup": false,
+                      "conversationType": "convo1",
+                      "id": "Conversation1",
+                      "name": null,
+                      "aadObjectId": null,
+                      "role": null,
+                      "tenantId": null
+                    },
+                    "recipient": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "user1",
+                      "name": "User1",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "textFormat": null,
+                    "attachmentLayout": null,
+                    "membersAdded": null,
+                    "membersRemoved": null,
+                    "reactionsAdded": null,
+                    "reactionsRemoved": null,
+                    "topicName": null,
+                    "historyDisclosed": null,
+                    "locale": "en-us",
+                    "text": "Please type your name.",
+                    "speak": null,
+                    "inputHint": "acceptingInput",
+                    "summary": null,
+                    "suggestedActions": null,
+                    "attachments": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Attachment, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "entities": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Entity, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "channelData": null,
+                    "action": null,
+                    "replyToId": "10",
+                    "label": null,
+                    "valueType": null,
+                    "value": null,
+                    "name": null,
+                    "relatesTo": null,
+                    "code": null,
+                    "expiration": null,
+                    "importance": null,
+                    "deliveryMode": null,
+                    "listenFor": null,
+                    "textHighlights": null,
+                    "semanticAction": null,
+                    "callerId": null
+                  },
+                  "RetryPrompt": null,
+                  "Choices": null,
+                  "Style": null,
+                  "Validations": null
+                },
+                "state": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                  "AttemptCount": 2
+                }
+              },
+              "StackIndex": null,
+              "Version": null
+            },
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 1
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b58718be01d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "TextPrompt",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": {
+                  "$type": "Microsoft.Bot.Builder.Dialogs.PromptOptions, Microsoft.Bot.Builder.Dialogs",
+                  "Prompt": {
+                    "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
+                    "type": "message",
+                    "id": "1fabeab037164f4fb93b42b31bba7e8e",
+                    "timestamp": "2020-07-30T18:48:37.7082713-07:00",
+                    "localTimestamp": null,
+                    "localTimezone": null,
+                    "serviceUrl": "https://test.com",
+                    "channelId": "test",
+                    "from": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "bot",
+                      "name": "Bot",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "conversation": {
+                      "$type": "Microsoft.Bot.Schema.ConversationAccount, Microsoft.Bot.Schema",
+                      "isGroup": false,
+                      "conversationType": "convo1",
+                      "id": "Conversation1",
+                      "name": null,
+                      "aadObjectId": null,
+                      "role": null,
+                      "tenantId": null
+                    },
+                    "recipient": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "user1",
+                      "name": "User1",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "textFormat": null,
+                    "attachmentLayout": null,
+                    "membersAdded": null,
+                    "membersRemoved": null,
+                    "reactionsAdded": null,
+                    "reactionsRemoved": null,
+                    "topicName": null,
+                    "historyDisclosed": null,
+                    "locale": "en-us",
+                    "text": "Please type your name.",
+                    "speak": null,
+                    "inputHint": "acceptingInput",
+                    "summary": null,
+                    "suggestedActions": null,
+                    "attachments": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Attachment, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "entities": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Entity, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "channelData": null,
+                    "action": null,
+                    "replyToId": "10",
+                    "label": null,
+                    "valueType": null,
+                    "value": null,
+                    "name": null,
+                    "relatesTo": null,
+                    "code": null,
+                    "expiration": null,
+                    "importance": null,
+                    "deliveryMode": null,
+                    "listenFor": null,
+                    "textHighlights": null,
+                    "semanticAction": null,
+                    "callerId": null
+                  },
+                  "RetryPrompt": null,
+                  "Choices": null,
+                  "Style": null,
+                  "Validations": null
+                },
+                "state": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                  "AttemptCount": 2
+                }
+              },
+              "StackIndex": null,
+              "Version": null
+            },
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 1
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b58718be01d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "TextPrompt",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": {
+                  "$type": "Microsoft.Bot.Builder.Dialogs.PromptOptions, Microsoft.Bot.Builder.Dialogs",
+                  "Prompt": {
+                    "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
+                    "type": "message",
+                    "id": "1fabeab037164f4fb93b42b31bba7e8e",
+                    "timestamp": "2020-07-30T18:48:37.7082713-07:00",
+                    "localTimestamp": null,
+                    "localTimezone": null,
+                    "serviceUrl": "https://test.com",
+                    "channelId": "test",
+                    "from": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "bot",
+                      "name": "Bot",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "conversation": {
+                      "$type": "Microsoft.Bot.Schema.ConversationAccount, Microsoft.Bot.Schema",
+                      "isGroup": false,
+                      "conversationType": "convo1",
+                      "id": "Conversation1",
+                      "name": null,
+                      "aadObjectId": null,
+                      "role": null,
+                      "tenantId": null
+                    },
+                    "recipient": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "user1",
+                      "name": "User1",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "textFormat": null,
+                    "attachmentLayout": null,
+                    "membersAdded": null,
+                    "membersRemoved": null,
+                    "reactionsAdded": null,
+                    "reactionsRemoved": null,
+                    "topicName": null,
+                    "historyDisclosed": null,
+                    "locale": "en-us",
+                    "text": "Please type your name.",
+                    "speak": null,
+                    "inputHint": "acceptingInput",
+                    "summary": null,
+                    "suggestedActions": null,
+                    "attachments": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Attachment, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "entities": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Entity, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "channelData": null,
+                    "action": null,
+                    "replyToId": "10",
+                    "label": null,
+                    "valueType": null,
+                    "value": null,
+                    "name": null,
+                    "relatesTo": null,
+                    "code": null,
+                    "expiration": null,
+                    "importance": null,
+                    "deliveryMode": null,
+                    "listenFor": null,
+                    "textHighlights": null,
+                    "semanticAction": null,
+                    "callerId": null
+                  },
+                  "RetryPrompt": null,
+                  "Choices": null,
+                  "Style": null,
+                  "Validations": null
+                },
+                "state": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                  "AttemptCount": 3
+                }
+              },
+              "StackIndex": null,
+              "Version": null
+            },
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 1
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b58b81f501d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "TextPrompt",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": {
+                  "$type": "Microsoft.Bot.Builder.Dialogs.PromptOptions, Microsoft.Bot.Builder.Dialogs",
+                  "Prompt": {
+                    "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
+                    "type": "message",
+                    "id": "1fabeab037164f4fb93b42b31bba7e8e",
+                    "timestamp": "2020-07-30T18:48:37.7082713-07:00",
+                    "localTimestamp": null,
+                    "localTimezone": null,
+                    "serviceUrl": "https://test.com",
+                    "channelId": "test",
+                    "from": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "bot",
+                      "name": "Bot",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "conversation": {
+                      "$type": "Microsoft.Bot.Schema.ConversationAccount, Microsoft.Bot.Schema",
+                      "isGroup": false,
+                      "conversationType": "convo1",
+                      "id": "Conversation1",
+                      "name": null,
+                      "aadObjectId": null,
+                      "role": null,
+                      "tenantId": null
+                    },
+                    "recipient": {
+                      "$type": "Microsoft.Bot.Schema.ChannelAccount, Microsoft.Bot.Schema",
+                      "id": "user1",
+                      "name": "User1",
+                      "aadObjectId": null,
+                      "role": null
+                    },
+                    "textFormat": null,
+                    "attachmentLayout": null,
+                    "membersAdded": null,
+                    "membersRemoved": null,
+                    "reactionsAdded": null,
+                    "reactionsRemoved": null,
+                    "topicName": null,
+                    "historyDisclosed": null,
+                    "locale": "en-us",
+                    "text": "Please type your name.",
+                    "speak": null,
+                    "inputHint": "acceptingInput",
+                    "summary": null,
+                    "suggestedActions": null,
+                    "attachments": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Attachment, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "entities": {
+                      "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Schema.Entity, Microsoft.Bot.Schema]], System.Private.CoreLib",
+                      "$values": []
+                    },
+                    "channelData": null,
+                    "action": null,
+                    "replyToId": "10",
+                    "label": null,
+                    "valueType": null,
+                    "value": null,
+                    "name": null,
+                    "relatesTo": null,
+                    "code": null,
+                    "expiration": null,
+                    "importance": null,
+                    "deliveryMode": null,
+                    "listenFor": null,
+                    "textHighlights": null,
+                    "semanticAction": null,
+                    "callerId": null
+                  },
+                  "RetryPrompt": null,
+                  "Choices": null,
+                  "Style": null,
+                  "Validations": null
+                },
+                "state": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                  "AttemptCount": 3
+                }
+              },
+              "StackIndex": null,
+              "Version": null
+            },
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 1
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b58b81f501d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  },
+  {
+    "id": "test*2fconversations*2fConversation1",
+    "realId": "test/conversations/Conversation1",
+    "document": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+      "dialogState": {
+        "$type": "Microsoft.Bot.Builder.Dialogs.DialogState, Microsoft.Bot.Builder.Dialogs",
+        "dialogStack": {
+          "$type": "System.Collections.Generic.List`1[[Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs]], System.Private.CoreLib",
+          "$values": [
+            {
+              "$type": "Microsoft.Bot.Builder.Dialogs.DialogInstance, Microsoft.Bot.Builder.Dialogs",
+              "id": "WaterfallDialog",
+              "state": {
+                "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib",
+                "options": null,
+                "values": {
+                  "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
+                },
+                "instanceId": "f42e02c4-4992-4095-bb00-ec59561a7837",
+                "stepIndex": 2
+              },
+              "StackIndex": null,
+              "Version": null
+            }
+          ]
+        }
+      }
+    },
+    "_etag": "\"00000000-0000-0000-66dc-b5965d3801d6\"",
+    "PartitionKey": "test*2fconversations*2fConversation1"
+  }
+]
