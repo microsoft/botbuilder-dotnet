@@ -4,7 +4,6 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
-using Microsoft.Bot.Builder.Azure.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // These tests require Azure Storage Emulator v5.7

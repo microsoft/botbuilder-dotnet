@@ -13,7 +13,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Azure.Storage
+namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
     /// Implements <see cref="IStorage"/> using Azure Storage Blobs.
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
     /// property value to the blob's ETag upon read. Afterward, an <see cref="BlobRequestConditions"/> with the ETag value
     /// will be generated during Write. New entities start with a null ETag.
     /// </remarks>
-    public class Blobs : IStorage
+    public class BlobsStorage : IStorage
     {
         // If a JsonSerializer is not provided during construction, this will be the default JsonSerializer.
         private readonly JsonSerializer _jsonSerializer;
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
         private int _checkForContainerExistence;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Blobs"/> class.
+        /// Initializes a new instance of the <see cref="BlobsStorage"/> class.
         /// </summary>
         /// <param name="dataConnectionString">Azure Storage connection string.</param>
         /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Azure.Storage
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
         /// </param>
-        public Blobs(string dataConnectionString, string containerName, JsonSerializer jsonSerializer = null)
+        public BlobsStorage(string dataConnectionString, string containerName, JsonSerializer jsonSerializer = null)
         {
             if (string.IsNullOrEmpty(dataConnectionString))
             { 

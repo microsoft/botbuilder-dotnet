@@ -48,16 +48,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (StorageEmulatorHelper.CheckEmulator())
             {
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new Storage.Blobs(null, ContainerName));
+                    new BlobsStorage(null, ContainerName));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new Storage.Blobs(ConnectionString, null));
+                    new BlobsStorage(ConnectionString, null));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new Storage.Blobs(string.Empty, ContainerName));
+                    new BlobsStorage(string.Empty, ContainerName));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new Storage.Blobs(ConnectionString, string.Empty));
+                    new BlobsStorage(ConnectionString, string.Empty));
             }
         }
 
@@ -65,11 +65,11 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (typeNameHandlingNone)
             {
-                return new Storage.Blobs(ConnectionString, ContainerName, new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+                return new BlobsStorage(ConnectionString, ContainerName, new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
             }
             else
             {
-                return new Storage.Blobs(ConnectionString, ContainerName);
+                return new BlobsStorage(ConnectionString, ContainerName);
             }
         }
     }
