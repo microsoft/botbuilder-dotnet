@@ -65,12 +65,30 @@ namespace AdaptiveExpressions.Properties
         {
         }
 
+        /// <summary>
+        /// Converts a value to an ObjectExpression instance.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+#pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator ObjectExpression<T>(T value) => new ObjectExpression<T>(value);
 
+        /// <summary>
+        /// Converts a string value to an ObjectExpression instance.
+        /// </summary>
+        /// <param name="expressionOrString">A string value to convert.</param>
         public static implicit operator ObjectExpression<T>(string expressionOrString) => new ObjectExpression<T>(expressionOrString);
 
+        /// <summary>
+        /// Converts an Expression instance to an ObjectExpression instance.
+        /// </summary>
+        /// <param name="expression">The Expression instance to convert.</param>
         public static implicit operator ObjectExpression<T>(Expression expression) => new ObjectExpression<T>(expression);
 
+        /// <summary>
+        /// Converts a JSON Token to an ObjectExpression instance.
+        /// </summary>
+        /// <param name="expressionOrvalue">The JSON Token to convert.</param>
         public static implicit operator ObjectExpression<T>(JToken expressionOrvalue) => new ObjectExpression<T>(expressionOrvalue);
+#pragma warning restore CA2225 // Operator overloads have named alternates
     }
 }

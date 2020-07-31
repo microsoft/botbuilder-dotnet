@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriPathAndQuery : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriPathAndQuery"/> class.
+        /// </summary>
         public UriPathAndQuery()
             : base(ExpressionType.UriPathAndQuery, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {
@@ -47,7 +50,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 uriBase = new Uri(uri);
             }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic error)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 error = "illegal URI string";
             }
@@ -59,7 +64,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     var pathAndQuery = uriBase.PathAndQuery;
                     result = pathAndQuery.ToString();
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic error)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = "invalid operation, input uri should be an absolute URI";
                 }

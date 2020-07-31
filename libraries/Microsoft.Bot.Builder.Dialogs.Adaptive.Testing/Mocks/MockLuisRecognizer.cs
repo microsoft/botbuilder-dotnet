@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -48,17 +49,19 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
         {
             var recognizer = _recognizer.RecognizerOptions(dialogContext);
             recognizer.IncludeAPIResults = true;
-            var client = GetMockedClient(activity.Text, recognizer);
-            var wrapper = new LuisRecognizer(recognizer, client);
-            var result = await wrapper.RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
-            if (client == null)
+            using (var client = GetMockedClient(activity.Text, recognizer))
             {
-                // Save response
-                var outPath = ResponsePath(activity.Text, recognizer);
-                File.WriteAllText(outPath, JsonConvert.SerializeObject(result.Properties["luisResult"]));
-            }
+                var wrapper = new LuisRecognizer(recognizer, client);
+                var result = await wrapper.RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
+                if (client == null)
+                {
+                    // Save response
+                    var outPath = ResponsePath(activity.Text, recognizer);
+                    File.WriteAllText(outPath, JsonConvert.SerializeObject(result.Properties["luisResult"]));
+                }
 
-            return result;
+                return result;
+            }
         }
 
         private string ResponsePath(string utterance, LuisRecognizerOptionsV3 recognizer)
@@ -101,8 +104,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
                 foreach (var external in options.ExternalEntities)
                 {
                     hash ^= external.Entity.StableHash();
-                    hash ^= external.Start.ToString().StableHash();
-                    hash ^= external.Length.ToString().StableHash();
+                    hash ^= external.Start.ToString(CultureInfo.InvariantCulture).StableHash();
+                    hash ^= external.Length.ToString(CultureInfo.InvariantCulture).StableHash();
                 }
             }
 
@@ -147,11 +150,15 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
                 var response = ResponsePath(utterance, recognizer);
                 if (File.Exists(response))
                 {
+#pragma warning disable CA2000 // Dispose objects before losing scope (ownership of handler is passed to MockedHttpClientHandler, that object should dispose it)
                     var handler = new MockHttpMessageHandler();
+#pragma warning restore CA2000 // Dispose objects before losing scope
                     handler
                         .When(recognizer.Application.Endpoint + "*")
                         .WithPartialContent(utterance)
+#pragma warning disable CA2000 // Dispose objects before losing scope (ownership of the File.OpenRead() stream is passed to MockedHttpClientHandler, that object should dispose it)
                         .Respond("application/json", File.OpenRead(response));
+#pragma warning restore CA2000 // Dispose objects before losing scope
                     client = new MockedHttpClientHandler(handler.ToHttpClient());
                 }
             }

@@ -14,6 +14,9 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json.Linq;
     using System.Linq;
 
+    /// <summary>
+    /// Response schema sent back from Bot Framework Token Service, in response to a request to get or exchange a token for a user.
+    /// </summary>
     public partial class TokenResponse
     {
         /// <summary>

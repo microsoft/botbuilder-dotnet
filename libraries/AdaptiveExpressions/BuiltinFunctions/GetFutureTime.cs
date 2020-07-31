@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AdaptiveExpressions.Memory;
 
@@ -13,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class GetFutureTime : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetFutureTime"/> class.
+        /// </summary>
         public GetFutureTime()
             : base(ExpressionType.GetFutureTime, Evaluator, ReturnType.String, Validator)
         {
@@ -28,12 +32,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 if (args[0].IsInteger() && args[1] is string string1)
                 {
-                    var format = (args.Count() == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
+                    var format = (args.Count == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
                     Func<DateTime, DateTime> timeConverter;
-                    (timeConverter, error) = FunctionUtils.DateTimeConverter(Convert.ToInt64(args[0]), string1, false);
+                    (timeConverter, error) = FunctionUtils.DateTimeConverter(Convert.ToInt64(args[0], CultureInfo.InvariantCulture), string1, false);
                     if (error == null)
                     {
-                        value = timeConverter(DateTime.UtcNow).ToString(format);
+                        value = timeConverter(DateTime.UtcNow).ToString(format, CultureInfo.InvariantCulture);
                     }
                 }
                 else

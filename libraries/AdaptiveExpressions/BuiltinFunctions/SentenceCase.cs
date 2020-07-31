@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class SentenceCase : StringTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SentenceCase"/> class.
+        /// </summary>
         public SentenceCase()
             : base(ExpressionType.SentenceCase, Function)
         {

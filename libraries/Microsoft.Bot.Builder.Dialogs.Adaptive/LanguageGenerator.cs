@@ -19,6 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="data">data to bind to.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>object or text.</returns>
+#pragma warning disable CA1716 // Identifiers should not match keywords (we can't change the template parameter name without breaking binary compat).
         public abstract Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default);
+#pragma warning restore CA1716 // Identifiers should not match keywords
     }
 }

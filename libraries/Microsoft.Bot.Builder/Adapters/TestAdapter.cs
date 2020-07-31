@@ -126,10 +126,8 @@ namespace Microsoft.Bot.Builder.Adapters
                 ChannelId = "test",
                 ServiceUrl = "https://test.com",
                 Conversation = new ConversationAccount(false, name, name),
-#pragma warning disable CA1308 // Normalize strings to uppercase (it is safe to use lowercase here, this is just for display purposes)
                 User = new ChannelAccount(id: user.ToLowerInvariant(), name: user),
                 Bot = new ChannelAccount(id: bot.ToLowerInvariant(), name: bot),
-#pragma warning restore CA1308 // Normalize strings to uppercase
                 Locale = "en-us"
             };
         }
@@ -826,11 +824,32 @@ namespace Microsoft.Bot.Builder.Adapters
             });
         }
 
+        /// <summary>
+        /// Performs a token exchange operation such as for single sign-on.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">The user id associated with the token..</param>
+        /// <param name="exchangeRequest">The exchange request details, either a token to exchange or a uri to exchange.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>If the task completes, the exchanged token is returned.</returns>
         public Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default)
         {
             return ExchangeTokenAsync(turnContext, null, connectionName, userId, exchangeRequest, cancellationToken);
         }
 
+        /// <summary>
+        /// Performs a token exchange operation such as for single sign-on.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">The user id associated with the token..</param>
+        /// <param name="exchangeRequest">The exchange request details, either a token to exchange or a uri to exchange.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>If the task completes, the exchanged token is returned.</returns>
         public Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default)
         {
             var exchangableValue = !string.IsNullOrEmpty(exchangeRequest?.Token) ?

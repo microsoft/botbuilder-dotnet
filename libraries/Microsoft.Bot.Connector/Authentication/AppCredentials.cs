@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -18,19 +19,19 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public abstract class AppCredentials : ServiceClientCredentials
     {
-        private static readonly IDictionary<string, DateTime> TrustedHostNames = new Dictionary<string, DateTime>()
+        internal static readonly IDictionary<string, DateTime> TrustedHostNames = new Dictionary<string, DateTime>
         {
             // { "state.botframework.com", DateTime.MaxValue }, // deprecated state api
-            { "api.botframework.com", DateTime.MaxValue },       // bot connector API
-            { "token.botframework.com", DateTime.MaxValue },    // oauth token endpoint
-            { "api.botframework.azure.us", DateTime.MaxValue },        // bot connector API in US Government DataCenters
-            { "token.botframework.azure.us", DateTime.MaxValue },      // oauth token endpoint in US Government DataCenters
+            { "api.botframework.com", DateTime.MaxValue }, // bot connector API
+            { "token.botframework.com", DateTime.MaxValue }, // oauth token endpoint
+            { "api.botframework.azure.us", DateTime.MaxValue }, // bot connector API in US Government DataCenters
+            { "token.botframework.azure.us", DateTime.MaxValue }, // oauth token endpoint in US Government DataCenters
         };
 
         /// <summary>
         /// Authenticator abstraction used to obtain tokens through the Client Credentials OAuth 2.0 flow.
         /// </summary>
-        private Lazy<IAuthenticator> authenticator;
+        private Lazy<IAuthenticator> _authenticator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppCredentials"/> class.
@@ -39,7 +40,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
         public AppCredentials(string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
-        : this(channelAuthTenant, customHttpClient, logger, null)
+            : this(channelAuthTenant, customHttpClient, logger, null)
         {
         }
 
@@ -55,7 +56,7 @@ namespace Microsoft.Bot.Connector.Authentication
             OAuthScope = string.IsNullOrWhiteSpace(oAuthScope) ? AuthenticationConstants.ToChannelFromBotOAuthScope : oAuthScope;
             ChannelAuthTenant = channelAuthTenant;
             CustomHttpClient = customHttpClient;
-            Logger = logger;
+            Logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -74,19 +75,13 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </value>
         public string ChannelAuthTenant
         {
-            get
-            {
-                return string.IsNullOrEmpty(AuthTenant)
-                    ? AuthenticationConstants.DefaultChannelAuthTenant
-                    : AuthTenant;
-            }
-
+            get => string.IsNullOrEmpty(AuthTenant) ? AuthenticationConstants.DefaultChannelAuthTenant : AuthTenant;
             set
             {
                 // Advanced user only, see https://aka.ms/bots/tenant-restriction
                 var endpointUrl = string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, value);
 
-                if (Uri.TryCreate(endpointUrl, UriKind.Absolute, out var result))
+                if (Uri.TryCreate(endpointUrl, UriKind.Absolute, out _))
                 {
                     AuthTenant = value;
                 }
@@ -167,9 +162,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>True if the host of the service url is trusted; False otherwise.</returns>
         public static bool IsTrustedServiceUrl(string serviceUrl)
         {
-            if (Uri.TryCreate(serviceUrl, UriKind.Absolute, out Uri uri))
+            if (Uri.TryCreate(serviceUrl, UriKind.Absolute, out var uri))
             {
-                return IsTrustedUrl(uri);
+                return IsTrustedUrl(uri, NullLogger.Instance);
             }
 
             return false;
@@ -182,9 +177,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task ProcessHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (ShouldSetToken(request))
+            if (ShouldSetToken(request, Logger))
             {
-                string token = await this.GetTokenAsync().ConfigureAwait(false);
+                var token = await GetTokenAsync().ConfigureAwait(false);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
 
@@ -200,8 +195,13 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <remarks>If the task is successful, the result contains the access token string.</remarks>
         public async Task<string> GetTokenAsync(bool forceRefresh = false)
         {
-            authenticator ??= BuildIAuthenticator();
-            var token = await authenticator.Value.GetTokenAsync(forceRefresh).ConfigureAwait(false);
+            _authenticator ??= BuildIAuthenticator();
+            var token = await _authenticator.Value.GetTokenAsync(forceRefresh).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(token.AccessToken))
+            {
+                Logger.LogWarning($"{GetType().FullName}.ProcessHttpRequestAsync(): got empty token from call to the configured IAuthenticator.");
+            }
+
             return token.AccessToken;
         }
 
@@ -226,31 +226,35 @@ namespace Microsoft.Bot.Connector.Authentication
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
-        private static bool IsTrustedUrl(Uri uri)
+        private static bool IsTrustedUrl(Uri uri, ILogger logger)
         {
             lock (TrustedHostNames)
             {
-                if (TrustedHostNames.TryGetValue(uri.Host, out DateTime trustedServiceUrlExpiration))
+                if (TrustedHostNames.TryGetValue(uri.Host, out var trustedServiceUrlExpiration))
                 {
                     // check if the trusted service url is still valid
                     if (trustedServiceUrlExpiration > DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5)))
                     {
                         return true;
                     }
+
+                    logger.LogWarning($"{typeof(AppCredentials).FullName}.IsTrustedUrl(): '{uri}' found in TrustedHostNames but it expired (Expiration is set to: {trustedServiceUrlExpiration}, current time is {DateTime.UtcNow}).");
+                    return false;
                 }
 
+                logger.LogWarning($"{typeof(AppCredentials).FullName}.IsTrustedUrl(): '{uri}' not found in TrustedHostNames.");
                 return false;
             }
         }
 
-        private static bool ShouldSetToken(HttpRequestMessage request)
+        private static bool ShouldSetToken(HttpRequestMessage request, ILogger logger)
         {
-            if (IsTrustedUrl(request.RequestUri))
+            if (IsTrustedUrl(request.RequestUri, logger))
             {
                 return true;
             }
 
-            System.Diagnostics.Debug.WriteLine($"Service url {request.RequestUri.Authority} is not trusted and JwtToken cannot be sent to it.");
+            logger.LogWarning($"{typeof(AppCredentials).FullName}.ShouldSetToken(): '{request.RequestUri.Authority}' is not trusted and JwtToken cannot be sent to it.");
             return false;
         }
     }

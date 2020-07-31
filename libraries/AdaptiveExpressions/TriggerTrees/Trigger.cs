@@ -74,6 +74,10 @@ namespace AdaptiveExpressions.TriggerTrees
         /// </value>
         public IReadOnlyList<Clause> Clauses => _clauses;
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -81,6 +85,12 @@ namespace AdaptiveExpressions.TriggerTrees
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Determines the relationship between current instance and another Trigger instance.
+        /// </summary>
+        /// <param name="other">The other Trigger instance.</param>
+        /// <param name="comparers">The comparer dictionary.</param>
+        /// <returns>A RelationshipType value.</returns>
         public RelationshipType Relationship(Trigger other, Dictionary<string, IPredicateComparer> comparers)
         {
             RelationshipType result;
@@ -118,6 +128,15 @@ namespace AdaptiveExpressions.TriggerTrees
             return result;
         }
 
+        /// <summary>
+        /// Determines whether there is a member in the current Clause that matches the nodeClause parameter.
+        /// </summary>
+        /// <param name="nodeClause">The other Clause instance to match.</param>
+        /// <param name="state">The scope for looking up variables.</param>
+        /// <returns>
+        /// A boolean value indicating  whether there is a member matches.
+        /// Returns True if such member exists, otherwise returns False.
+        /// </returns>
         public bool Matches(Clause nodeClause, object state)
         {
             var found = false;
@@ -133,6 +152,13 @@ namespace AdaptiveExpressions.TriggerTrees
             return found;
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <param name="builder">A StringBuilder object.</param>
+        /// <param name="indent">
+        /// An integer represents the number of spaces at the start of a line. 
+        /// </param>
         protected void ToString(StringBuilder builder, int indent = 0)
         {
             builder.Append(' ', indent);
@@ -221,7 +247,7 @@ namespace AdaptiveExpressions.TriggerTrees
                     foreach (var child in expression.Children)
                     {
                         var clauses = GenerateClauses(child);
-                        if (clauses.Count() == 0)
+                        if (!clauses.Any())
                         {
                             // Encountered false
                             soFar.Clear();
@@ -301,15 +327,15 @@ namespace AdaptiveExpressions.TriggerTrees
         private void RemoveDuplicatedPredicates()
         {
             // Rewrite clauses to remove duplicated tests
-            for (var i = 0; i < _clauses.Count(); ++i)
+            for (var i = 0; i < _clauses.Count; ++i)
             {
                 var clause = _clauses[i];
                 var children = new List<Expression>();
-                for (var p = 0; p < clause.Children.Count(); ++p)
+                for (var p = 0; p < clause.Children.Length; ++p)
                 {
                     var pred = clause.Children[p];
                     var found = false;
-                    for (var q = p + 1; q < clause.Children.Count(); ++q)
+                    for (var q = p + 1; q < clause.Children.Length; ++q)
                     {
                         if (pred.DeepEquals(clause.Children[q]))
                         {
@@ -331,12 +357,12 @@ namespace AdaptiveExpressions.TriggerTrees
         // Mark clauses that are more specific than another clause as subsumed and also remove any = clauses.
         private void MarkSubsumedClauses()
         {
-            for (var i = 0; i < _clauses.Count(); ++i)
+            for (var i = 0; i < _clauses.Count; ++i)
             {
                 var clause = _clauses[i];
                 if (!clause.Subsumed)
                 {
-                    for (var j = i + 1; j < _clauses.Count(); ++j)
+                    for (var j = i + 1; j < _clauses.Count; ++j)
                     {
                         var other = _clauses[j];
                         if (!other.Subsumed)
@@ -407,7 +433,7 @@ namespace AdaptiveExpressions.TriggerTrees
             var newExpr = expression;
             changed = false;
             if (expression.Type == ExpressionType.Accessor
-                && expression.Children.Count() == 1
+                && expression.Children.Length == 1
                 && expression.Children[0] is Constant cnst
                 && cnst.Value is string str
                 && str == variable)
@@ -526,10 +552,10 @@ namespace AdaptiveExpressions.TriggerTrees
             {
                 // NOTE: This is quadratic in clause length but GetHashCode is not equal for expressions and we expect the number of clauses to be small.
                 var predicates = new List<Expression>(clause.Children);
-                for (var i = 0; i < predicates.Count(); ++i)
+                for (var i = 0; i < predicates.Count; ++i)
                 {
                     var first = predicates[i];
-                    for (var j = i + 1; j < predicates.Count();)
+                    for (var j = i + 1; j < predicates.Count;)
                     {
                         var second = predicates[j];
                         if (first.DeepEquals(second))

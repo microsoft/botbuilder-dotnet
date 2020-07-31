@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.TraceExtensions;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -104,6 +103,48 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             return await RecognizeAsync(turnContext, turnContext?.Activity?.AsMessageActivity()?.Text, PredictionOptions, httpClient, cancellationToken).ConfigureAwait(false);
         }
+        
+        private static JObject BuildRequestBody(string utterance, LuisV3.LuisPredictionOptions options)
+        {
+            var content = new JObject
+            {
+                { "query", utterance },
+            };
+            var queryOptions = new JObject
+            {
+                { "preferExternalEntities", options.PreferExternalEntities },
+            };
+
+            if (!string.IsNullOrEmpty(options.DateTimeReference))
+            {
+                queryOptions.Add("datetimeReference", options.DateTimeReference);
+            }
+
+            content.Add("options", queryOptions);
+
+            var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+            if (options.DynamicLists != null)
+            {
+                foreach (var list in options.DynamicLists)
+                {
+                    list.Validate();
+                }
+
+                content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
+            }
+
+            if (options.ExternalEntities != null)
+            {
+                foreach (var entity in options.ExternalEntities)
+                {
+                    entity.Validate();
+                }
+
+                content.Add("externalEntities", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.ExternalEntities, settings)));
+            }
+
+            return content;
+        }
 
         private async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, string utterance, LuisV3.LuisPredictionOptions options, HttpClient httpClient, CancellationToken cancellationToken)
         {
@@ -122,10 +163,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 var uri = BuildUri(options);
                 var content = BuildRequestBody(utterance, options);
                 httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", Application.EndpointKey);
-                var response = await httpClient.PostAsync(uri.Uri, new StringContent(content.ToString(), System.Text.Encoding.UTF8, "application/json")).ConfigureAwait(false);
-                response.EnsureSuccessStatusCode();
-                httpClient.DefaultRequestHeaders.Remove("Ocp-Apim-Subscription-Key");
-                luisResponse = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                using (var stringContent = new StringContent(content.ToString(), System.Text.Encoding.UTF8, "application/json"))
+                {
+                    var response = await httpClient.PostAsync(uri.Uri, stringContent, cancellationToken).ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
+                    httpClient.DefaultRequestHeaders.Remove("Ocp-Apim-Subscription-Key");
+                    luisResponse = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                }
+
                 var prediction = (JObject)luisResponse["prediction"];
                 recognizerResult = new RecognizerResult();
 
@@ -188,48 +233,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
             query["show-all-intents"] = options.IncludeAllIntents.ToString();
             uri.Query = query.ToString();
             return uri;
-        }
-
-        private JObject BuildRequestBody(string utterance, LuisV3.LuisPredictionOptions options)
-        {
-            var content = new JObject
-                {
-                    { "query", utterance },
-                };
-            var queryOptions = new JObject
-                {
-                    { "preferExternalEntities", options.PreferExternalEntities },
-                };
-
-            if (!string.IsNullOrEmpty(options.DateTimeReference))
-            {
-                queryOptions.Add("datetimeReference", options.DateTimeReference);
-            }
-
-            content.Add("options", queryOptions);
-
-            var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-            if (options.DynamicLists != null)
-            {
-                foreach (var list in options.DynamicLists)
-                {
-                    list.Validate();
-                }
-
-                content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
-            }
-
-            if (options.ExternalEntities != null)
-            {
-                foreach (var entity in options.ExternalEntities)
-                {
-                    entity.Validate();
-                }
-
-                content.Add("externalEntities", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.ExternalEntities, settings)));
-            }
-
-            return content;
         }
     }
 }

@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class AddSeconds : TimeTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddSeconds"/> class.
+        /// </summary>
         public AddSeconds()
                 : base(ExpressionType.AddSeconds, Function)
         {

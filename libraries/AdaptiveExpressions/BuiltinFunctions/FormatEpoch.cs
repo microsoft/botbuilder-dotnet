@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class FormatEpoch : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatEpoch"/> class.
+        /// </summary>
         public FormatEpoch()
             : base(ExpressionType.FormatEpoch, Evaluator(), ReturnType.String, Validator)
         {
@@ -28,8 +31,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             if (timestamp.IsNumber())
                             {
                                 var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                                dateTime = dateTime.AddSeconds(Convert.ToDouble(timestamp));
-                                result = dateTime.ToString(args.Count() == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
+                                dateTime = dateTime.AddSeconds(Convert.ToDouble(timestamp, CultureInfo.InvariantCulture));
+                                result = dateTime.ToString(args.Count == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
                             }
                             else
                             {

@@ -11,8 +11,13 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Check XML for nodes or values that match an XPath (XML Path Language) expression, and return the matching nodes or values.
     /// An XPath expression (referred to as XPath) helps you navigate an XML document structure so that you can select nodes or compute values in the XML content.
     /// </summary>
+#pragma warning disable CA1724 // Type names should not match namespaces (by design and we can't change this without breaking binary compat)
     public class XPath : ExpressionEvaluator
+#pragma warning restore CA1724 // Type names should not match namespaces
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XPath"/> class.
+        /// </summary>
         public XPath()
             : base(ExpressionType.XPath, Evaluator(), ReturnType.Object, Validator)
         {
@@ -33,7 +38,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 doc.LoadXml(xmlObj.ToString());
             }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic error)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 error = "not valid xml input";
             }
@@ -65,7 +72,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         }
                     }
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic error)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = $"cannot evaluate the xpath query expression: {xpath.ToString()}";
                 }

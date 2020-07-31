@@ -8,6 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class SortByDescending : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SortByDescending"/> class.
+        /// </summary>
         public SortByDescending()
             : base(ExpressionType.SortByDescending, FunctionUtils.SortBy(true), ReturnType.Array, Validator)
         {

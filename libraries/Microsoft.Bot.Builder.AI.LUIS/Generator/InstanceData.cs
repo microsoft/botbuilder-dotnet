@@ -71,6 +71,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Any extra properties.
         /// </value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IDictionary<string, object> Properties { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

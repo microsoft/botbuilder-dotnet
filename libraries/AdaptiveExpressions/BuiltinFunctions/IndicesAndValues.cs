@@ -13,6 +13,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IndicesAndValues : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IndicesAndValues"/> class.
+        /// </summary>
         public IndicesAndValues()
             : base(ExpressionType.IndicesAndValues, Evaluator, ReturnType.Array, FunctionUtils.ValidateUnary)
         {

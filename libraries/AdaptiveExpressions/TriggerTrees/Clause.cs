@@ -9,12 +9,15 @@ namespace AdaptiveExpressions.TriggerTrees
     using System.Text;
     using AdaptiveExpressions;
 
+    /// <summary>
+    /// A canonical normal form expression.
+    /// </summary>
     public class Clause : Expression
     {
-        private Dictionary<string, string> anyBindings = new Dictionary<string, string>();
+        private Dictionary<string, string> _anyBindings = new Dictionary<string, string>();
 
         // These are the ignored predicates
-        private Expression ignored;
+        private Expression _ignored;
 
         internal Clause()
             : base(ExpressionType.And)
@@ -41,10 +44,20 @@ namespace AdaptiveExpressions.TriggerTrees
         {
         }
 
-        public Dictionary<string, string> AnyBindings { get => anyBindings; set => anyBindings = value; }
+        /// <summary>
+        /// Gets or sets the anyBinding dictionary.
+        /// </summary>
+        /// <value>A dictionary of strings, with string keys.</value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        public Dictionary<string, string> AnyBindings { get => _anyBindings; set => _anyBindings = value; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         internal bool Subsumed { get; set; } = false;
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -52,6 +65,11 @@ namespace AdaptiveExpressions.TriggerTrees
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <param name="builder">A StringBuilder object.</param>
+        /// <param name="indent">An integer represents the number of spaces at the start of a line.</param>
         public void ToString(StringBuilder builder, int indent = 0)
         {
             builder.Append(' ', indent);
@@ -77,10 +95,10 @@ namespace AdaptiveExpressions.TriggerTrees
             }
 
             builder.Append(')');
-            if (ignored != null)
+            if (_ignored != null)
             {
                 builder.Append(" ignored(");
-                builder.Append(ignored.ToString());
+                builder.Append(_ignored.ToString());
                 builder.Append(')');
             }
 
@@ -90,13 +108,19 @@ namespace AdaptiveExpressions.TriggerTrees
             }
         }
 
+        /// <summary>
+        /// Compares the current Clause with another Clause.
+        /// </summary>
+        /// <param name="other">The other Clause to compare.</param>
+        /// <param name="comparers">A comparer, which is a dictionary of IPredicateComparer with string keys.</param>
+        /// <returns>A RelationshipType value between two Clause instances.</returns>
         public RelationshipType Relationship(Clause other, Dictionary<string, IPredicateComparer> comparers)
         {
             var soFar = RelationshipType.Incomparable;
             var shorter = this;
-            var shorterCount = shorter.Children.Count();
+            var shorterCount = shorter.Children.Length;
             var longer = other;
-            var longerCount = longer.Children.Count();
+            var longerCount = longer.Children.Length;
             var swapped = false;
             if (longerCount < shorterCount)
             {
@@ -185,15 +209,24 @@ namespace AdaptiveExpressions.TriggerTrees
             return swapped ? soFar.Swap() : soFar;
         }
 
+        /// <summary>
+        /// Determines whether the current Clause matches with another Clause.
+        /// </summary>
+        /// <param name="clause">The other Clause instance to compare with.</param>
+        /// <param name="memory">The scope for looking up variables.</param>
+        /// <returns>
+        /// A boolean value indicating  whether the two Clauses are matched.
+        /// Returns True if two Clauses are matched, otherwise returns False.
+        /// </returns>
         public bool Matches(Clause clause, object memory)
         {
             var matched = false;
             if (clause.DeepEquals(this))
             {
                 matched = true;
-                if (ignored != null)
+                if (_ignored != null)
                 {
-                    var (match, err) = ignored.TryEvaluate<bool>(memory);
+                    var (match, err) = _ignored.TryEvaluate<bool>(memory);
                     matched = err == null && match;
                 }
             }
@@ -221,7 +254,7 @@ namespace AdaptiveExpressions.TriggerTrees
 
             if (ignores.Any())
             {
-                ignored = Expression.AndExpression(ignores.ToArray());
+                _ignored = Expression.AndExpression(ignores.ToArray());
             }
         }
 

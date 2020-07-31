@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriPath : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriPath"/> class.
+        /// </summary>
         public UriPath()
             : base(ExpressionType.UriPath, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {
@@ -49,7 +52,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     var uriBase = (Uri)result;
                     result = uriBase.AbsolutePath.ToString();
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (return generic error if the operation fails for whatever reason)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = "invalid operation, input uri should be an absolute URI";
                 }

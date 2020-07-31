@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Range : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Range"/> class.
+        /// </summary>
         public Range()
             : base(ExpressionType.Range, Evaluator(), ReturnType.Array, FunctionUtils.ValidateBinaryNumber)
         {
@@ -24,15 +27,24 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         {
                             string error = null;
                             IList result = null;
-                            var count = Convert.ToInt32(args[1]);
-                            if (count <= 0)
+                            var count = 0;                
+                            (count, error) = FunctionUtils.ParseInt32(args[1]);
+                            if (error == null)
                             {
-                                error = $"The second parameter {args[1]} should be more than zero";
-                            }
-                            else
-                            {
-                                result = Enumerable.Range(Convert.ToInt32(args[0]), count).ToList();
-                            }
+                                if (count <= 0)
+                                {
+                                    error = $"The second parameter {args[1]} should be more than zero";
+                                }
+                                else
+                                {
+                                    var start = 0;
+                                    (start, error) = FunctionUtils.ParseInt32(args[0]);
+                                    if (error == null)
+                                    {
+                                        result = Enumerable.Range(start, count).ToList();
+                                    }
+                                }
+                            }                         
 
                             return (result, error);
                         },

@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriPort : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriPort"/> class.
+        /// </summary>
         public UriPort()
             : base(ExpressionType.UriPort, Evaluator, ReturnType.Number, FunctionUtils.ValidateUnary)
         {
@@ -49,7 +52,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     var port = uriBase.Port;
                     result = Convert.ToInt32(port);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types  (capture any exception and return generic error)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = "invalid operation, input uri should be an absolute URI";
                 }

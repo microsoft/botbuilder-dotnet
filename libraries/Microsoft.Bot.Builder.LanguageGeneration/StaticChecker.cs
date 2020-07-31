@@ -357,7 +357,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var exp = expressionContext.GetText();
             var result = new List<Diagnostic>();
-            if (!exp.EndsWith("}"))
+            if (!exp.EndsWith("}", StringComparison.Ordinal))
             {
                 result.Add(BuildLGDiagnostic(TemplateErrors.NoCloseBracket, context: expressionContext));
             }
@@ -369,7 +369,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     ExpressionParser.Parse(exp);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (catch any exception and return it in the result)
                 catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     var suffixErrorMsg = Evaluator.ConcatErrorMsg(TemplateErrors.ExpressionParseError(exp), e.Message);
                     var errorMsg = Evaluator.ConcatErrorMsg(prefix, suffixErrorMsg);
@@ -389,7 +391,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var lineOffset = this.currentTemplate != null ? this.currentTemplate.SourceRange.Range.Start.Line : 0;
             var templateNameInfo = string.Empty;
-            if (this.currentTemplate != null && this.currentTemplate.Name != Templates.InlineTemplateId)
+            if (this.currentTemplate != null && this.currentTemplate.Name.StartsWith(Templates.InlineTemplateIdPrefix, StringComparison.InvariantCulture))
             {
                 templateNameInfo = $"[{this.currentTemplate.Name}]";
             }

@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             lock (languageGeneratorManagers)
             {
-                if (!languageGeneratorManagers.TryGetValue(resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer)), out var lgm))
+                if (!languageGeneratorManagers.TryGetValue(resourceExplorer ?? throw new InvalidOperationException($"Unable to get an instance of {nameof(resourceExplorer)}."), out var lgm))
                 {
                     lgm = new LanguageGeneratorManager(resourceExplorer);
                     languageGeneratorManagers[resourceExplorer] = lgm;

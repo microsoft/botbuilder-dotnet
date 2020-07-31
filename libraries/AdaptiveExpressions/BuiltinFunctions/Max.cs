@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Max : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Max"/> class.
+        /// </summary>
         public Max()
             : base(ExpressionType.Max, Evaluator(), ReturnType.Number, FunctionUtils.ValidateAtLeastOne)
         {
@@ -60,19 +63,22 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static object EvalMax(object a, object b)
         {
-            if (a == null || b == null)
+            if (a == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(a));
+            }
+
+            if (b == null)
+            {
+                throw new ArgumentNullException(nameof(b));
             }
 
             if (FunctionUtils.CultureInvariantDoubleConvert(a) > FunctionUtils.CultureInvariantDoubleConvert(b))
             {
                 return a;
             }
-            else
-            {
-                return b;
-            }
+
+            return b;
         }
     }
 }

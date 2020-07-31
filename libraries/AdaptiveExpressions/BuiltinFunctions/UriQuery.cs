@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriQuery : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriQuery"/> class.
+        /// </summary>
         public UriQuery()
             : base(ExpressionType.UriQuery, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {
@@ -49,7 +52,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     var query = uriBase.Query;
                     result = query.ToString();
                 }
+#pragma warning disable CA1031 // Do not catch general exception types  (capture any exception and return generic error)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = "invalid operation, input uri should be an absolute URI";
                 }

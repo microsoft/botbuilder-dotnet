@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Newtonsoft.Json.Linq;
@@ -80,12 +82,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             return long.TryParse((string)value, out var longVal) ?
                             new JValue(longVal) :
-                            new JValue(double.Parse((string)value));
+                            new JValue(double.Parse((string)value, CultureInfo.InvariantCulture));
         }
 
         internal static JToken ExtractEntityValue(EntityModel entity)
         {
-            if (entity.Type.StartsWith("builtin.geographyV2."))
+            if (entity.Type.StartsWith("builtin.geographyV2.", StringComparison.Ordinal))
             {
                 var subtype = entity.Type.Substring(20);
                 return new JObject(
@@ -93,17 +95,17 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     new JProperty("location", entity.Entity));
             }
 
-#pragma warning disable IDE0007 // Use implicit type
-            else if (entity.AdditionalProperties == null || !entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
-#pragma warning restore IDE0007 // Use implicit type
+            if (entity.AdditionalProperties == null || !entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
             {
                 return entity.Entity;
             }
-            else if (entity.Type.StartsWith("builtin.datetime."))
+
+            if (entity.Type.StartsWith("builtin.datetime.", StringComparison.Ordinal))
             {
                 return JObject.FromObject(resolution);
             }
-            else if (entity.Type.StartsWith("builtin.datetimeV2."))
+
+            if (entity.Type.StartsWith("builtin.datetimeV2.", StringComparison.Ordinal))
             {
                 if (resolution.values == null || resolution.values.Count == 0)
                 {
@@ -116,49 +118,48 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 var distinctTimexes = timexes.Distinct();
                 return new JObject(new JProperty("type", type), new JProperty("timex", JArray.FromObject(distinctTimexes)));
             }
-            else if (entity.Type.StartsWith("builtin.ordinalV2"))
+
+            if (entity.Type.StartsWith("builtin.ordinalV2", StringComparison.Ordinal))
             {
                 return new JObject(
                     new JProperty("relativeTo", resolution.relativeTo),
                     new JProperty("offset", Number(resolution.offset)));
             }
-            else
+
+            switch (entity.Type)
             {
-                switch (entity.Type)
+                case "builtin.number":
+                case "builtin.ordinal": return Number(resolution.value);
+                case "builtin.percentage":
                 {
-                    case "builtin.number":
-                    case "builtin.ordinal": return Number(resolution.value);
-                    case "builtin.percentage":
-                        {
-                            var svalue = (string)resolution.value;
-                            if (svalue.EndsWith("%"))
-                            {
-                                svalue = svalue.Substring(0, svalue.Length - 1);
-                            }
+                    var svalue = (string)resolution.value;
+                    if (svalue.EndsWith("%", StringComparison.Ordinal))
+                    {
+                        svalue = svalue.Substring(0, svalue.Length - 1);
+                    }
 
-                            return Number(svalue);
-                        }
-
-                    case "builtin.age":
-                    case "builtin.dimension":
-                    case "builtin.currency":
-                    case "builtin.temperature":
-                        {
-                            var units = (string)resolution.unit;
-                            var val = Number(resolution.value);
-                            var obj = new JObject();
-                            if (val != null)
-                            {
-                                obj.Add("number", val);
-                            }
-
-                            obj.Add("units", units);
-                            return obj;
-                        }
-
-                    default:
-                        return resolution.value ?? (resolution.values != null ? JArray.FromObject(resolution.values) : resolution);
+                    return Number(svalue);
                 }
+
+                case "builtin.age":
+                case "builtin.dimension":
+                case "builtin.currency":
+                case "builtin.temperature":
+                {
+                    var units = (string)resolution.unit;
+                    var val = Number(resolution.value);
+                    var obj = new JObject();
+                    if (val != null)
+                    {
+                        obj.Add("number", val);
+                    }
+
+                    obj.Add("units", units);
+                    return obj;
+                }
+
+                default:
+                    return resolution.value ?? (resolution.values != null ? JArray.FromObject(resolution.values) : resolution);
             }
         }
 
@@ -196,23 +197,23 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             // Type::Role -> Role
             var type = entity.Type.Split(':').Last();
-            if (type.StartsWith("builtin.datetimeV2."))
+            if (type.StartsWith("builtin.datetimeV2.", StringComparison.Ordinal))
             {
                 type = "datetime";
             }
-            else if (type.StartsWith("builtin.currency"))
+            else if (type.StartsWith("builtin.currency", StringComparison.Ordinal))
             {
                 type = "money";
             }
-            else if (type.StartsWith("builtin.geographyV2"))
+            else if (type.StartsWith("builtin.geographyV2", StringComparison.Ordinal))
             {
                 type = "geographyV2";
             }
-            else if (type.StartsWith("builtin.ordinalV2"))
+            else if (type.StartsWith("builtin.ordinalV2", StringComparison.Ordinal))
             {
                 type = "ordinalV2";
             }
-            else if (type.StartsWith("builtin."))
+            else if (type.StartsWith("builtin.", StringComparison.Ordinal))
             {
                 type = type.Substring(8);
             }

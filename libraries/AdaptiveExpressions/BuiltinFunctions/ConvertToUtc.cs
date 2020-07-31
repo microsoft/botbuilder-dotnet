@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AdaptiveExpressions.Memory;
 
@@ -13,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class ConvertToUtc : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConvertToUtc"/> class.
+        /// </summary>
         public ConvertToUtc()
             : base(ExpressionType.ConvertToUtc, Evaluator, ReturnType.String, Validator)
         {
@@ -26,10 +30,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
             if (error == null)
             {
-                var format = (args.Count() == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
+                var format = (args.Count == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
                 if (args[1] is string sourceTimeZone)
                 {
-                    (value, error) = EvalConvertToUTC(args[0], sourceTimeZone, format);
+                    (value, error) = EvalConvertToUtc(args[0], sourceTimeZone, format);
                 }
                 else
                 {
@@ -40,7 +44,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             return (value, error);
         }
 
-        private static (string, string) EvalConvertToUTC(object sourceTimestamp, string sourceTimezone, string format)
+        private static (string, string) EvalConvertToUtc(object sourceTimestamp, string sourceTimezone, string format)
         {
             string error = null;
             string result = null;
@@ -49,14 +53,16 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 if (sourceTimestamp is string st)
                 {
-                    srcDt = DateTime.Parse(st);
+                    srcDt = DateTime.Parse(st, CultureInfo.InvariantCulture);
                 }
                 else
                 {
                     srcDt = (DateTime)sourceTimestamp;
                 }
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we should probably do something about this but ignoring it for not)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 error = $"illegal time-stamp representation {sourceTimestamp}";
             }

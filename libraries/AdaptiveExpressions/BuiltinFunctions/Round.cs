@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -10,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Round : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Round"/> class.
+        /// </summary>
         public Round()
             : base(ExpressionType.Round, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnaryOrBinaryNumber)
         {
@@ -24,19 +28,27 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             object result = null;
                             if (args.Count == 2 && !args[1].IsInteger())
                             {
-                                error = $"The second parameter {args[1]} must be an integer.";
+                                error = $"The second {args[1]} parameter must be an integer.";
                             }
 
                             if (error == null)
                             {
-                                var digits = args.Count == 2 ? Convert.ToInt32(args[1]) : 0;
-                                if (digits < 0 || digits > 15)
+                                var digits = 0;
+                                if (args.Count == 2)
                                 {
-                                    error = $"The second parameter {args[1]} must be an integer between 0 and 15.";
+                                    (digits, error) = FunctionUtils.ParseInt32(args[1]);
                                 }
-                                else
+
+                                if (error == null)
                                 {
-                                    result = Math.Round(Convert.ToDouble(args[0]), digits);
+                                    if (digits < 0 || digits > 15)
+                                    {
+                                        error = $"The second parameter {args[1]} must be an integer between 0 and 15;";
+                                    }
+                                    else
+                                    {
+                                        result = Math.Round(Convert.ToDouble(args[0], CultureInfo.InvariantCulture), digits);
+                                    }
                                 }
                             }
 

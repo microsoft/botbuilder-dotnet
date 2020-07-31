@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -223,7 +224,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     }
                 }
 
-                if (topAnswer.Answer.Trim().ToLower().StartsWith(IntentPrefix))
+                if (topAnswer.Answer.Trim().ToUpperInvariant().StartsWith(IntentPrefix.ToUpperInvariant(), StringComparison.Ordinal))
                 {
                     recognizerResult.Intents.Add(topAnswer.Answer.Trim().Substring(IntentPrefix.Length).Trim(), new IntentScore { Score = topAnswer.Score });
                 }
@@ -237,7 +238,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 ObjectPath.SetPathValue(recognizerResult, "entities.answer", answerArray);
 
                 var instance = new JArray();
-                instance.Add(JObject.FromObject(topAnswer));
+                var data = JObject.FromObject(topAnswer);
+                data["startIndex"] = 0;
+                data["endIndex"] = activity.Text.Length;
+                instance.Add(data);
                 ObjectPath.SetPathValue(recognizerResult, "entities.$instance.answer", instance);
 
                 recognizerResult.Properties["answers"] = answers;
@@ -273,9 +277,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
 
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = epKey ?? throw new ArgumentNullException(nameof(EndpointKey), error),
-                Host = hn ?? throw new ArgumentNullException(nameof(HostName), error2),
-                KnowledgeBaseId = kbId ?? throw new ArgumentNullException(nameof(KnowledgeBaseId), error3)
+                EndpointKey = epKey ?? throw new InvalidOperationException($"Unable to get a value for {nameof(EndpointKey)} from state. {error}"),
+                Host = hn ?? throw new InvalidOperationException($"Unable to a get value for {nameof(HostName)} from state. {error2}"),
+                KnowledgeBaseId = kbId ?? throw new InvalidOperationException($"Unable to get a value for {nameof(KnowledgeBaseId)} from state. {error3}")
             };
 
             return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), HttpClient, TelemetryClient, logPersonalInfo));

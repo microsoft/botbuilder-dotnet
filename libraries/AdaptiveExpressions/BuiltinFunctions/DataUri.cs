@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class DataUri : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataUri"/> class.
+        /// </summary>
         public DataUri()
             : base(ExpressionType.DataUri, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {

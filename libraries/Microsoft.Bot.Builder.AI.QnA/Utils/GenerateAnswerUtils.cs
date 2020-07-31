@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (turnContext.Activity == null)
             {
-                throw new ArgumentNullException(nameof(turnContext.Activity));
+                throw new ArgumentException($"The {nameof(turnContext.Activity)} property for {nameof(turnContext)} can't be null.", nameof(turnContext));
             }
 
             if (messageActivity == null)
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (options.ScoreThreshold < 0 || options.ScoreThreshold > 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
+                throw new ArgumentOutOfRangeException(nameof(options), $"The {nameof(options.ScoreThreshold)} property should be a value between 0 and 1");
             }
 
             if (options.Timeout == 0.0D)
@@ -131,12 +131,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (options.Top < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(options.Top), "Top should be an integer greater than 0");
+                throw new ArgumentOutOfRangeException(nameof(options), $"The {nameof(options.Top)} property should be an integer greater than 0");
             }
 
             if (options.StrictFilters == null)
             {
-                options.StrictFilters = new Metadata[] { };
+                options.StrictFilters = Array.Empty<Metadata>();
             }
 
             if (options.RankerType == null)

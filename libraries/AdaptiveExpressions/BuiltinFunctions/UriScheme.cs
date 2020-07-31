@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriScheme : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriScheme"/> class.
+        /// </summary>
         public UriScheme()
             : base(ExpressionType.UriScheme, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {
@@ -50,7 +53,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     var scheme = uriBase.Scheme;
                     result = scheme.ToString();
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic error)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = "invalid operation, input uri should be an absolute URI";
                 }

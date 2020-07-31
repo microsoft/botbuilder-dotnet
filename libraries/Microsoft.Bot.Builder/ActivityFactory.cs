@@ -16,7 +16,6 @@ namespace Microsoft.Bot.Builder
     public class ActivityFactory
 #pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
-#pragma warning disable CA1308 // Normalize strings to uppercase (LG is heavily invested in lowercase, ignoring this rule in this class)
         private const string LGType = "lgType";
         private const string AdaptiveCardType = "application/vnd.microsoft.card.adaptive";
 
@@ -407,6 +406,5 @@ namespace Microsoft.Bot.Builder
 
             return type?.ToLowerInvariant() ?? string.Empty;
         }
-#pragma warning restore CA1308 // Normalize strings to uppercase
     }
 }

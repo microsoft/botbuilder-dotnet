@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class DayOfWeek : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DayOfWeek"/> class.
+        /// </summary>
         public DayOfWeek()
             : base(ExpressionType.DayOfWeek, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
@@ -17,7 +20,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.ApplyWithError(args => FunctionUtils.NormalizeToDateTime(args[0], dt => Convert.ToInt32(dt.DayOfWeek)));
+            return FunctionUtils.ApplyWithError(args => FunctionUtils.NormalizeToDateTime(args[0], dt => FunctionUtils.ParseInt32(dt.DayOfWeek)));
         }
     }
 }

@@ -4,14 +4,13 @@
 using System;
 using System.Net.Http;
 using Newtonsoft.Json;
-using LuisV2 = Microsoft.Bot.Builder.AI.Luis;
 
 namespace Microsoft.Bot.Builder.AI.LuisV3
 {
     /// <summary>
     /// Optional parameters for a LUIS recognizer.
     /// </summary>
-     [Obsolete]
+     [Obsolete("This class has been deprecated, use Microsoft.Bot.Builder.AI.Luis.LuisRecognizerOptionsV2 or Microsoft.Bot.Builder.AI.Luis.LuisRecognizerOptionsV3 instead.")]
      public class LuisRecognizerOptions
     {
         /// <summary>

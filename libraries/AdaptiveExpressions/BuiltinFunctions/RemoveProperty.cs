@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -10,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class RemoveProperty : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveProperty"/> class.
+        /// </summary>
         public RemoveProperty()
             : base(ExpressionType.RemoveProperty, Evaluator(), ReturnType.Object, Validator)
         {
@@ -20,7 +24,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             return FunctionUtils.Apply(args =>
             {
                 var newJobj = (JObject)args[0];
-                newJobj.Property(args[1].ToString()).Remove();
+                newJobj.Property(args[1].ToString(), StringComparison.Ordinal).Remove();
                 return newJobj;
             });
         }

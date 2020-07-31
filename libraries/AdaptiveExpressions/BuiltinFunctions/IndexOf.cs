@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections;
 using AdaptiveExpressions.Memory;
 
@@ -11,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IndexOf : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IndexOf"/> class.
+        /// </summary>
         public IndexOf()
             : base(ExpressionType.IndexOf, Evaluator, ReturnType.Number, Validator)
         {
@@ -26,7 +30,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     if (args[1] is string || args[1] == null)
                     {
-                        result = FunctionUtils.ParseStringOrNull(args[0]).IndexOf(FunctionUtils.ParseStringOrNull(args[1]));
+                        result = FunctionUtils.ParseStringOrNull(args[0]).IndexOf(FunctionUtils.ParseStringOrNull(args[1]), StringComparison.Ordinal);
                     }
                     else
                     {

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AdaptiveExpressions.Memory;
 
@@ -13,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class SubtractFromTime : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SubtractFromTime"/> class.
+        /// </summary>
         public SubtractFromTime()
             : base(ExpressionType.SubtractFromTime, Evaluator, ReturnType.String, Validator)
         {
@@ -28,12 +32,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 if (args[1].IsInteger() && args[2] is string string2)
                 {
-                    var format = (args.Count() == 4) ? (string)args[3] : FunctionUtils.DefaultDateTimeFormat;
+                    var format = (args.Count == 4) ? (string)args[3] : FunctionUtils.DefaultDateTimeFormat;
                     Func<DateTime, DateTime> timeConverter;
-                    (timeConverter, error) = FunctionUtils.DateTimeConverter(Convert.ToInt64(args[1]), string2);
+                    (timeConverter, error) = FunctionUtils.DateTimeConverter(Convert.ToInt64(args[1], CultureInfo.InvariantCulture), string2);
                     if (error == null)
                     {
-                        (value, error) = FunctionUtils.NormalizeToDateTime(args[0], dt => timeConverter(dt).ToString(format));
+                        (value, error) = FunctionUtils.NormalizeToDateTime(args[0], dt => (timeConverter(dt).ToString(format, CultureInfo.InvariantCulture), null));
                     }
                 }
                 else
