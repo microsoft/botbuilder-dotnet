@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Streaming.Payloads
 {
+    /// <summary>
+    /// An extension of <see cref="Stream"/> that operates in conjunction with a <see cref="PayloadStreamAssembler"/> to convert raw bytes into a consumable form.
+    /// </summary>
     public class PayloadStream : Stream
     {
         private readonly PayloadStreamAssembler _assembler;
@@ -24,34 +27,52 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         private bool _end = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PayloadStream"/> class.
+        /// </summary>
+        /// <param name="assembler">The <see cref="PayloadStreamAssembler"/> to use when constructing this stream.</param>
         public PayloadStream(PayloadStreamAssembler assembler)
         {
             _assembler = assembler;
         }
 
+        /// <inheritdoc/>
         public override bool CanRead => true;
 
+        /// <inheritdoc/>
         public override bool CanSeek => false;
 
+        /// <inheritdoc/>
         public override bool CanWrite => true;
 
+        /// <inheritdoc/>
         public override long Position { get => _consumerPosition; set => throw new NotSupportedException(); }
 
+        /// <inheritdoc/>
         public override long Length => _producerLength;
 
+        /// <summary>
+        /// No-op. PayloadStreams should never be flushed, so we override Stream's Flush to make sure no caller attempts to flush a PayloadStream.
+        /// </summary>
         public override void Flush()
         {
-            /*
-             No-op. PayloadStreams should never be flushed, so
-             we override Stream's Flush to make sure no caller
-             attempts to flush a PayloadStream.
-            */
         }
 
+        /// <summary>
+        /// Not supported. Throws <see cref="NotSupportedException"/>.
+        /// </summary>
+        /// <param name="value">No-op.</param>
         public override void SetLength(long value) => throw new NotSupportedException();
 
+        /// <summary>
+        /// Not supported. Throws <see cref="NotSupportedException"/>.
+        /// </summary>
+        /// <param name="offset">No-op.</param>
+        /// <param name="origin">No-op also.</param>
+        /// <returns>Throws <see cref="NotSupportedException"/>.</returns>
         public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 
+        /// <inheritdoc/>
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (_end)
@@ -88,6 +109,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             return availableCount;
         }
 
+        /// <inheritdoc/>
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             var copy = new byte[count];
@@ -96,6 +118,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
         {
             var copy = new byte[count];
@@ -103,6 +126,9 @@ namespace Microsoft.Bot.Streaming.Payloads
             GiveBuffer(copy, count);
         }
 
+        /// <summary>
+        /// Closes the connected <see cref="PayloadStreamAssembler"/> and ends production.
+        /// </summary>
         public void Cancel()
         {
             if (_assembler != null)
@@ -158,8 +184,16 @@ namespace Microsoft.Bot.Streaming.Payloads
             return availableCount;
         }
 
+        /// <summary>
+        /// Called when production is cancelled or completed.
+        /// </summary>
         public void DoneProducing() => GiveBuffer(Array.Empty<byte>(), 0);
 
+        /// <summary>
+        /// Releases the buffered data.
+        /// </summary>
+        /// <param name="buffer">The data buffer.</param>
+        /// <param name="count">The amount of data contained in the buffer.</param>
         internal void GiveBuffer(byte[] buffer, int count)
         {
             lock (_syncLock)
@@ -171,6 +205,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             _dataAvailable.Release();
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
