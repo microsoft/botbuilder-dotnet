@@ -101,7 +101,7 @@ stages:
     dependsOn: generate_multiconfig_var
     timeoutInMinutes: 10
     strategy:
-      maxParallel: 10
+      maxParallel: 1
       matrix: $[ dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'] ]
     steps:
     - template: ci-api-validation-steps.yml
