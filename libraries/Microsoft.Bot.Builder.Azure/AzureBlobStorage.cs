@@ -14,6 +14,7 @@ using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Microsoft.WindowsAzure.Storage.Core;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Azure
 {
@@ -244,6 +245,11 @@ namespace Microsoft.Bot.Builder.Azure
                         if (obj is IStoreItem storeItem)
                         {
                             storeItem.ETag = blobReference.Properties.ETag;
+                        }
+
+                        if (obj is JObject asJobject && asJobject.ContainsKey("ETag"))
+                        {
+                            asJobject["ETag"] = blobReference.Properties.ETag;
                         }
 
                         return obj;

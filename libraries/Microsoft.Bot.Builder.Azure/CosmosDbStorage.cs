@@ -250,6 +250,11 @@ namespace Microsoft.Bot.Builder.Azure
                         storeItem.ETag = doc.ETag;
                     }
 
+                    if (item is JObject asJobject && asJobject.ContainsKey("ETag"))
+                    {
+                        asJobject["ETag"] = doc.ETag;
+                    }
+
                     // doc.Id cannot be used since it is escaped, read it from RealId property instead
                     storeItems.Add(doc.ReadlId, item);
                 }
