@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -200,8 +200,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else
             {
-                var promptState = (IDictionary<string, object>)state[PersistedState];
-                var promptOptions = (PromptOptions)state[PersistedOptions];
+                var promptState = state.GetTypedValue<IDictionary<string, object>>(PersistedState);
+                var promptOptions = state.GetTypedValue<PromptOptions>(PersistedOptions);
 
                 // Increment attempt count
                 // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount.GetValue(dc.State))
                 {
                     if (!interrupted)
-                    { 
+                    {
                         // increase the turnCount as last step
                         dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
                         var prompt = await this.OnRenderPromptAsync(dc, inputState, cancellationToken).ConfigureAwait(false);
