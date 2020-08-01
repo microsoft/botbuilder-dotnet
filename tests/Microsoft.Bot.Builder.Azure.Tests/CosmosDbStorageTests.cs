@@ -89,13 +89,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                _storage = new CosmosDbStorage(new CosmosDbStorageOptions
-                {
-                    AuthKey = CosmosAuthKey,
-                    CollectionId = CosmosCollectionName,
-                    CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
-                    DatabaseId = CosmosDatabaseName,
-                });
+                _storage = GetStorage();
             }
         }
 
@@ -136,7 +130,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null));
 
             // No Endpoint. Should throw.
-            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = "test",
                 CollectionId = "testId",
@@ -454,7 +448,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
+                var storage = GetStorage();
                 var changes = new Dictionary<string, object>
                 {
                     { DocumentId, itemToTest }
@@ -508,7 +502,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
 
                 // Connect to the comosDb created before
-                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
+                var storage = GetStorage();
                 var changes = new Dictionary<string, object>
                 {
                     { DocumentId, itemToTest }
@@ -562,7 +556,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
 
                 // Connect to the comosDb created before without partitionKey
-                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
+                var storage = GetStorage();
                 var changes = new Dictionary<string, object>
                 {
                     { DocumentId, itemToTest }
@@ -598,10 +592,36 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                var storage = new CosmosDbStorage(
-                                   CreateCosmosDbStorageOptions(),
-                                   new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+                var storage = GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
                 await StatePersistsThroughMultiTurn(storage);
+            }
+        }
+        
+        [TestMethod]
+        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingAll()
+        {
+            if (CheckEmulator())
+            {
+                var storage = GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.All });
+                await StatePersistsThroughMultiTurn(storage);
+            }
+        }
+
+        [TestMethod]
+        public async Task TestTypedObjects_TypeNameHandling_All()
+        {
+            if (CheckEmulator())
+            {
+                await TestTypedObjects(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.All }), expectTyped: true);
+            }
+        }
+
+        [TestMethod]
+        public async Task TestTypedObjects_TypeNameHandling_None()
+        {
+            if (CheckEmulator())
+            {
+                await TestTypedObjects(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None }), expectTyped: false);
             }
         }
 
@@ -640,6 +660,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
                 DatabaseId = CosmosDatabaseName,
             };
+        }
+
+        private CosmosDbStorage GetStorage(JsonSerializer jsonSerializer = null)
+        {
+            if (jsonSerializer == null)
+            {
+                return new CosmosDbStorage(CreateCosmosDbStorageOptions());
+            }
+
+            return new CosmosDbStorage(CreateCosmosDbStorageOptions(), jsonSerializer);
         }
 
         private Mock<IDocumentClient> GetDocumentClient()

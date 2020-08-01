@@ -164,9 +164,17 @@ namespace Microsoft.Bot.Builder.Tests
             // write with old etag should FAIL for storeitem
 
             updatePocoStoreItem.Count = 123;
+            bool threwException = false;
+            try
+            {
+                await storage.WriteAsync(new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } });
+            }
+            catch
+            {
+                threwException = true;   
+            }
 
-            await Assert.ThrowsAsync<Exception>(() => storage.WriteAsync(
-                new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } }));
+            Assert.True(threwException);
 
             var reloadedStoreItems2 = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
 
