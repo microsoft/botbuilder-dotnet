@@ -9,6 +9,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.BotBuilderSamples.Tests.Dialogs.TestData;
 using Microsoft.BotBuilderSamples.Tests.Framework;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -41,7 +42,9 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
             if (testClient.DialogTurnResult.Result != null)
             {
-                var bookingResults = (BookingDetails)testClient.DialogTurnResult.Result;
+                var result = testClient.DialogTurnResult.Result;
+                var bookingResults = result is BookingDetails ? result as BookingDetails : (result as JObject)?.ToObject<BookingDetails>();
+
                 Assert.Equal(bookingTestData.ExpectedBookingDetails.Origin, bookingResults.Origin);
                 Assert.Equal(bookingTestData.ExpectedBookingDetails.Destination, bookingResults.Destination);
                 Assert.Equal(bookingTestData.ExpectedBookingDetails.TravelDate, bookingResults.TravelDate);
