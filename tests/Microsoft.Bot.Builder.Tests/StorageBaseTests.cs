@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    public class StorageBaseTests 
+    public class StorageBaseTests
     {
         protected async Task ReadUnknownTest(IStorage storage)
         {
@@ -29,21 +30,69 @@ namespace Microsoft.Bot.Builder.Tests
 
             await storage.WriteAsync(storeItems);
 
-            var readStoreItems = new Dictionary<string, object>(await storage.ReadAsync(storeItems.Keys.ToArray()));
+            var readStoreItems = await storage.ReadAsync(storeItems.Keys.ToArray());
 
-            Assert.IsType<PocoItem>(readStoreItems["createPoco"]);
-            Assert.IsType<PocoStoreItem>(readStoreItems["createPocoStoreItem"]);
-
-            var createPoco = readStoreItems["createPoco"] as PocoItem;
+            var createPoco = readStoreItems.GetTypedValue<PocoItem>("createPoco");
 
             Assert.NotNull(createPoco);
             Assert.Equal("1", createPoco.Id);
 
-            var createPocoStoreItem = readStoreItems["createPocoStoreItem"] as PocoStoreItem;
+            var createPocoStoreItem = readStoreItems.GetTypedValue<PocoStoreItem>("createPocoStoreItem");
 
             Assert.NotNull(createPocoStoreItem);
             Assert.Equal("2", createPocoStoreItem.Id);
             Assert.NotNull(createPocoStoreItem.ETag);
+        }
+
+        protected async Task TestTypedObjects(IStorage storage, bool expectTyped)
+        {
+            var storeItems = new Dictionary<string, object>
+            {
+                ["createPoco"] = new PocoItem() { Id = "1" },
+                ["createPocoStoreItem"] = new PocoStoreItem() { Id = "2" },
+            };
+
+            await storage.WriteAsync(storeItems);
+
+            var readStoreItems = await storage.ReadAsync(storeItems.Keys.ToArray());
+
+            if (expectTyped)
+            {
+                Assert.IsType<PocoItem>(readStoreItems["createPoco"]);
+                Assert.IsType<PocoStoreItem>(readStoreItems["createPocoStoreItem"]);
+            }
+            else
+            {
+                Assert.IsType<JObject>(readStoreItems["createPoco"]);
+                Assert.IsType<JObject>(readStoreItems["createPocoStoreItem"]);
+            }
+
+            if (expectTyped)
+            {
+                var createPoco = readStoreItems["createPoco"] as PocoItem;
+
+                Assert.NotNull(createPoco);
+                Assert.Equal("1", createPoco.Id);
+
+                var createPocoStoreItem = readStoreItems["createPocoStoreItem"] as PocoStoreItem;
+
+                Assert.NotNull(createPocoStoreItem);
+                Assert.Equal("2", createPocoStoreItem.Id);
+                Assert.NotNull(createPocoStoreItem.ETag);
+            }
+            else
+            {
+                var createPoco = readStoreItems.GetTypedValue<PocoItem>("createPoco");
+
+                Assert.NotNull(createPoco);
+                Assert.Equal("1", createPoco.Id);
+
+                var createPocoStoreItem = readStoreItems.GetTypedValue<PocoStoreItem>("createPocoStoreItem");
+
+                Assert.NotNull(createPocoStoreItem);
+                Assert.Equal("2", createPocoStoreItem.Id);
+                Assert.NotNull(createPocoStoreItem.ETag);
+            }
         }
 
         protected async Task HandleCrazyKeys(IStorage storage)
@@ -57,7 +106,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var storeItems = await storage.ReadAsync(new[] { key });
 
-            storeItem = storeItems.FirstOrDefault(si => si.Key == key).Value as PocoStoreItem;
+            storeItem = storeItems.GetTypedValue<PocoStoreItem>(key);
 
             Assert.NotNull(storeItem);
             Assert.Equal("1", storeItem.Id);
@@ -77,10 +126,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             await storage.WriteAsync(dict);
 
-            var loadedStoreItems = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
+            var loadedStoreItems = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
 
-            var updatePocoItem = loadedStoreItems["pocoItem"] as PocoItem;
-            var updatePocoStoreItem = loadedStoreItems["pocoStoreItem"] as PocoStoreItem;
+            var updatePocoItem = loadedStoreItems.GetTypedValue<PocoItem>("pocoItem");
+            var updatePocoStoreItem = loadedStoreItems.GetTypedValue<PocoStoreItem>("pocoStoreItem");
             Assert.NotNull(updatePocoStoreItem.ETag);
 
             // 2nd write should work, because we have new etag, or no etag
@@ -89,10 +138,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             await storage.WriteAsync(loadedStoreItems);
 
-            var reloadedStoreItems = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
+            var reloadedStoreItems = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
 
-            var reloeadedUpdatePocoItem = reloadedStoreItems["pocoItem"] as PocoItem;
-            var reloadedUpdatePocoStoreItem = reloadedStoreItems["pocoStoreItem"] as PocoStoreItem;
+            var reloeadedUpdatePocoItem = reloadedStoreItems.GetTypedValue<PocoItem>("pocoItem");
+            var reloadedUpdatePocoStoreItem = reloadedStoreItems.GetTypedValue<PocoStoreItem>("pocoStoreItem");
 
             Assert.NotNull(reloadedUpdatePocoStoreItem.ETag);
             Assert.NotEqual(updatePocoStoreItem.ETag, reloadedUpdatePocoStoreItem.ETag);
@@ -113,16 +162,16 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             // write with old etag should FAIL for storeitem
-            
+
             updatePocoStoreItem.Count = 123;
 
             await Assert.ThrowsAsync<Exception>(() => storage.WriteAsync(
                 new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } }));
 
-            var reloadedStoreItems2 = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
+            var reloadedStoreItems2 = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
 
-            var reloadedPocoItem2 = reloadedStoreItems2["pocoItem"] as PocoItem;
-            var reloadedPocoStoreItem2 = reloadedStoreItems2["pocoStoreItem"] as PocoStoreItem;
+            var reloadedPocoItem2 = reloadedStoreItems2.GetTypedValue<PocoItem>("pocoItem");
+            var reloadedPocoStoreItem2 = reloadedStoreItems2.GetTypedValue<PocoStoreItem>("pocoStoreItem");
 
             Assert.Equal(123, reloadedPocoItem2.Count);
             Assert.Equal(2, reloadedPocoStoreItem2.Count);
@@ -140,16 +189,16 @@ namespace Microsoft.Bot.Builder.Tests
 
             await storage.WriteAsync(wildcardEtagedict);
 
-            var reloadedStoreItems3 = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
+            var reloadedStoreItems3 = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
 
-            Assert.Equal(100, (reloadedStoreItems3["pocoItem"] as PocoItem).Count);
-            Assert.Equal(100, (reloadedStoreItems3["pocoStoreItem"] as PocoStoreItem).Count);
+            Assert.Equal(100, reloadedStoreItems3.GetTypedValue<PocoItem>("pocoItem").Count);
+            Assert.Equal(100, reloadedStoreItems3.GetTypedValue<PocoStoreItem>("pocoStoreItem").Count);
 
             // write with empty etag should not work
             try
             {
                 var reloadedStoreItems4 = await storage.ReadAsync(new[] { "pocoStoreItem" });
-                var reloadedStoreItem4 = reloadedStoreItems4["pocoStoreItem"] as PocoStoreItem;
+                var reloadedStoreItem4 = reloadedStoreItems4.GetTypedValue<PocoStoreItem>("pocoStoreItem");
 
                 Assert.NotNull(reloadedStoreItem4);
 
@@ -168,8 +217,8 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             var finalStoreItems = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
-            Assert.Equal(100, (finalStoreItems["pocoItem"] as PocoItem).Count);
-            Assert.Equal(100, (finalStoreItems["pocoStoreItem"] as PocoStoreItem).Count);
+            Assert.Equal(100, finalStoreItems.GetTypedValue<PocoItem>("pocoItem").Count);
+            Assert.Equal(100, finalStoreItems.GetTypedValue<PocoStoreItem>("pocoStoreItem").Count);
         }
 
         protected async Task DeleteObjectTest(IStorage storage)
@@ -183,7 +232,7 @@ namespace Microsoft.Bot.Builder.Tests
             await storage.WriteAsync(dict);
 
             var storeItems = await storage.ReadAsync(new[] { "delete1" });
-            var storeItem = storeItems.First().Value as PocoStoreItem;
+            var storeItem = storeItems.GetTypedValue<PocoStoreItem>("delete1");
 
             Assert.NotNull(storeItem.ETag);
             Assert.Equal(1, storeItem.Count);
@@ -234,9 +283,8 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsType<InvalidOperationException>(ex);
             }
 
-            var readStoreItems = new Dictionary<string, object>(await storage.ReadAsync(new[] { "createPoco" }));
-            Assert.IsType<PocoItem>(readStoreItems["createPoco"]);
-            var createPoco = readStoreItems["createPoco"] as PocoItem;
+            var readStoreItems = await storage.ReadAsync(new[] { "createPoco" });
+            var createPoco = readStoreItems.GetTypedValue<PocoItem>("createPoco");
             Assert.Equal("1", createPoco.Id);
         }
 
