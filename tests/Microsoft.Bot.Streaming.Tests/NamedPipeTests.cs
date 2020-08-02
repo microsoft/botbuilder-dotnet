@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 // In this context it makes for ugly code, but in the context of blocking an HTTP
                 // response until the the streaming connection has ended it creates an easier to
                 // follow user experience.
-                reader.ConnectAsync();
+                await reader.ConnectAsync();
                 await writer.StartAsync();
 
                 // The writeStream can only connect to the readStream if the readStream is listening for new connections.
