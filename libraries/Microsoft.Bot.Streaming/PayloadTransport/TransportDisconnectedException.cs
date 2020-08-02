@@ -5,19 +5,23 @@ using System;
 
 namespace Microsoft.Bot.Streaming.PayloadTransport
 {
-    internal class TransportDisconnectedException : Exception
+    public class TransportDisconnectedException : Exception
     {
         public TransportDisconnectedException()
             : base()
         {
         }
 
-        public TransportDisconnectedException(string reason)
-            : base()
+        public TransportDisconnectedException(string message)
+            : base(message)
         {
-            Reason = reason;
         }
 
-        public string Reason { get; set; }
+        public TransportDisconnectedException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+        public string Reason => Message;
     }
 }

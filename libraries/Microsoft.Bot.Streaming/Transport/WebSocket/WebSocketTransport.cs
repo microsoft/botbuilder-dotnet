@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
             if (disposing)
             {
                 // Dispose managed objects owned by the class here.
-                // TODO
+                _socket?.Dispose();
             }
 
             _disposed = true;

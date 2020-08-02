@@ -122,7 +122,13 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
             }
 
             await clientWebSocket.ConnectAsync(new Uri(_url), cancellationToken).ConfigureAwait(false);
+
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
+            // We don't dispose the websocket, since WebSocketTransport is now
+            // the owner of the web socket.
             var socketTransport = new WebSocketTransport(clientWebSocket);
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
             // Listen for disconnected events.
             _sender.Disconnected += OnConnectionDisconnected;

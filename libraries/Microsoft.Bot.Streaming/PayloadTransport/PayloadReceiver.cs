@@ -10,7 +10,7 @@ using Microsoft.Bot.Streaming.Utilities;
 
 namespace Microsoft.Bot.Streaming.PayloadTransport
 {
-    public class PayloadReceiver : IPayloadReceiver
+    public class PayloadReceiver : IPayloadReceiver, IDisposable
     {
         private Func<Header, Stream> _getStream;
         private Action<Header, Stream, int> _receiveAction;
@@ -18,6 +18,9 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
         private bool _isDisconnecting = false;
         private readonly byte[] _receiveHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
         private readonly byte[] _receiveContentBuffer = new byte[TransportConstants.MaxPayloadLength];
+
+        // To detect redundant calls to dispose
+        private bool _disposed;
 
         public PayloadReceiver()
         {
@@ -64,7 +67,15 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                             didDisconnect = true;
                         }
                     }
+#pragma warning disable CA1031 // Do not catch general exception types
+
+                    // As ITransportReceiver is an extension point, we don't 
+                    // know what exceptions will be thrown by different implementations
+                    // of ITransportReceiver.Close(). We do want to ensure that Disconnect doesn't
+                    // stop the other resource cleanup, so we don't throw any exception.
+                    // TODO: Flow ILogger all the way here and start logging these exceptions.
                     catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                     }
 
@@ -80,6 +91,39 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                     _isDisconnecting = false;
                 }
             }
+        }
+
+        /// <summary>
+        /// Disposes the object and releases any related objects owned by the class.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                _receiver?.Dispose();
+            }
+
+            _disposed = true;
         }
 
         private void RunReceive() => Background.Run(ReceivePacketsAsync);
@@ -164,7 +208,9 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                         Reason = de.Reason,
                     };
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     isClosed = true;
                     disconnectArgs = new DisconnectedEventArgs()

@@ -112,8 +112,14 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
             var incoming = new NamedPipeClientStream(".", incomingPipeName, PipeDirection.In, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             await incoming.ConnectAsync().ConfigureAwait(false);
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
+            // We don't dispose the websocket, since NamedPipeTransport is now
+            // the owner of the web socket.
             _sender.Connect(new NamedPipeTransport(outgoing));
             _receiver.Connect(new NamedPipeTransport(incoming));
+
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
         /// <summary>
@@ -144,8 +150,8 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
         /// </summary>
         public void Disconnect()
         {
-            _sender.Disconnect();
-            _receiver.Disconnect();
+            _sender?.Disconnect();
+            _receiver?.Disconnect();
         }
 
         /// <summary>
@@ -176,6 +182,16 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
             {
                 // Dispose managed objects owned by the class here.
                 Disconnect();
+
+                if (_sender is IDisposable disposableSender)
+                {
+                    disposableSender?.Dispose();
+                }
+
+                if (_receiver is IDisposable disposableReceiver)
+                {
+                    disposableReceiver?.Dispose();
+                }
             }
 
             _disposed = true;

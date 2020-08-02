@@ -72,7 +72,9 @@ namespace Microsoft.Bot.Streaming.Utilities
                     {
                         spanDelay = await task(token).ConfigureAwait(false);
                     }
+#pragma warning disable CA1031 // Do not catch general exception types
                     catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                     }
 
@@ -94,7 +96,9 @@ namespace Microsoft.Bot.Streaming.Utilities
             {
                 await task().ConfigureAwait(false);
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
             }
         }
