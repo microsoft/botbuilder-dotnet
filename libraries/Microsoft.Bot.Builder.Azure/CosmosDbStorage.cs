@@ -249,8 +249,7 @@ namespace Microsoft.Bot.Builder.Azure
                     {
                         storeItem.ETag = doc.ETag;
                     }
-
-                    if (item is JObject asJobject && asJobject.ContainsKey("ETag"))
+                    else if (item is JObject asJobject && asJobject.ContainsKey("ETag"))
                     {
                         asJobject["ETag"] = doc.ETag;
                     }

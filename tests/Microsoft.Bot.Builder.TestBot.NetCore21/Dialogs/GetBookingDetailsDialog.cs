@@ -36,60 +36,68 @@ namespace Microsoft.BotBuilderSamples
             return !timexProperty.Types.Contains(Constants.TimexTypes.Definite);
         }
 
-        private JObject GetBookingDetails(WaterfallStepContext stepContext)
+        private BookingDetails GetBookingDetails(WaterfallStepContext stepContext)
         {
-            return stepContext.Options is JObject ? stepContext.Options as JObject : JObject.FromObject(stepContext.Options);
+            if (stepContext.Options is BookingDetails asBookingDetails)
+            {
+                return asBookingDetails;
+            }
+            else if (stepContext.Options is JObject asJobject)
+            {
+                asBookingDetails = asJobject.ToObject<BookingDetails>();
+                stepContext.ActiveDialog.State["options"] = asBookingDetails;
+                return asBookingDetails;
+            }
+
+            return null;
         }
 
         private async Task<DialogTurnResult> DestinationActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = GetBookingDetails(stepContext);
-            var destination = bookingDetails.Value<string>("Destination");
 
-            if (destination == null)
+            if (bookingDetails.Destination == null)
             {
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where would you like to travel to?") }, cancellationToken);
             }
 
-            return await stepContext.NextAsync(destination, cancellationToken);
+            return await stepContext.NextAsync(bookingDetails.Destination, cancellationToken);
         }
 
         private async Task<DialogTurnResult> OriginActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = GetBookingDetails(stepContext);
-            bookingDetails["Destination"] = (string)stepContext.Result;
+            bookingDetails.Destination = (string)stepContext.Result;
 
-            var origin = bookingDetails.Value<string>("Origin");
-            if (origin == null)
+            if (bookingDetails.Origin == null)
             {
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where are you traveling from?") }, cancellationToken);
             }
 
-            return await stepContext.NextAsync(origin, cancellationToken);
+            return await stepContext.NextAsync(bookingDetails.Origin, cancellationToken);
         }
 
         private async Task<DialogTurnResult> TravelDateActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = GetBookingDetails(stepContext);
-            bookingDetails["Origin"] = (string)stepContext.Result;
+            bookingDetails.Origin = (string)stepContext.Result;
 
-            var travelDate = bookingDetails.Value<string>("TravelDate");
-            if (travelDate == null || IsAmbiguous(travelDate))
+            if (bookingDetails.TravelDate == null || IsAmbiguous(bookingDetails.TravelDate))
             {
                 // Run the DateResolverDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
-                return await stepContext.BeginDialogAsync(nameof(DateResolverDialog), travelDate, cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(DateResolverDialog), bookingDetails.TravelDate, cancellationToken);
             }
 
-            return await stepContext.NextAsync(travelDate, cancellationToken);
+            return await stepContext.NextAsync(bookingDetails.TravelDate, cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = GetBookingDetails(stepContext);
-            bookingDetails["TravelDate"] = (string)stepContext.Result;
+            bookingDetails.TravelDate = (string)stepContext.Result;
 
             // We are done collection booking  details, return the data to the caller.
-            return await stepContext.EndDialogAsync(stepContext.Options, cancellationToken);
+            return await stepContext.EndDialogAsync(bookingDetails, cancellationToken);
         }
     }
 }

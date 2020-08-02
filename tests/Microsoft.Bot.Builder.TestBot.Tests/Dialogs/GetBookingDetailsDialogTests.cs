@@ -27,12 +27,34 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         [Theory]
         [MemberData(nameof(GetBookingDetailsDialogTestsDataGenerator.BookingFlows), MemberType = typeof(GetBookingDetailsDialogTestsDataGenerator))]
         [MemberData(nameof(GetBookingDetailsDialogTestsDataGenerator.CancelFlows), MemberType = typeof(GetBookingDetailsDialogTestsDataGenerator))]
-        public async Task DialogFlowUseCases(TestDataObject testData)
+        public async Task DialogFlowUseCases_TypeNameHandlingAll(TestDataObject testData)
+        {
+            await RunDialogFlowUseCases(testData, GetConversationState(TypeNameHandling.All));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetBookingDetailsDialogTestsDataGenerator.BookingFlows), MemberType = typeof(GetBookingDetailsDialogTestsDataGenerator))]
+        [MemberData(nameof(GetBookingDetailsDialogTestsDataGenerator.CancelFlows), MemberType = typeof(GetBookingDetailsDialogTestsDataGenerator))]
+        public async Task DialogFlowUseCases_TypeNameHandlingNone(TestDataObject testData)
+        {
+            await RunDialogFlowUseCases(testData, GetConversationState(TypeNameHandling.None));
+        }
+
+        private ConversationState GetConversationState(TypeNameHandling typeNameHandling)
+        {
+            return new ConversationState(new MemoryStorage(new JsonSerializer()
+            {
+                TypeNameHandling = typeNameHandling,
+                ReferenceLoopHandling = ReferenceLoopHandling.Error,
+            }));
+        }
+
+        private async Task RunDialogFlowUseCases(TestDataObject testData, ConversationState conversationState)
         {
             // Arrange
             var bookingTestData = testData.GetObject<GetBookingDetailsDialogTestCase>();
             var sut = new GetBookingDetailsDialog();
-            var testClient = new DialogTestClient(Channels.Test, sut, bookingTestData.InitialBookingDetails, new[] { new XUnitDialogTestLogger(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, bookingTestData.InitialBookingDetails, new[] { new XUnitDialogTestLogger(Output) }, conversationState);
 
             // Act/Assert
             Output.WriteLine($"Test Case: {bookingTestData.Name}");

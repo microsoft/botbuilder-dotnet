@@ -246,8 +246,7 @@ namespace Microsoft.Bot.Builder.Azure
                         {
                             storeItem.ETag = blobReference.Properties.ETag;
                         }
-
-                        if (obj is JObject asJobject && asJobject.ContainsKey("ETag"))
+                        else if (obj is JObject asJobject && asJobject.ContainsKey("ETag"))
                         {
                             asJobject["ETag"] = blobReference.Properties.ETag;
                         }
