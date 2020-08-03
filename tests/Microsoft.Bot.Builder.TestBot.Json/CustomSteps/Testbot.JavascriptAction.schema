@@ -31,7 +31,8 @@
             "description": "One or more options that are passed to the function as args.",
             "additionalProperties": {
                 "type": "string",
-                "title": "Options"
+                "title": "Options",
+                "description": "Options for action."
             }
         },
         "resultProperty": {

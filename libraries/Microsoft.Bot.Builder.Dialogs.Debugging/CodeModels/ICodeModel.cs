@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         object Evaluate(string expression);
     }
 
-    public sealed class CodeModel : ICodeModel
+    internal sealed class CodeModel : ICodeModel
     {
         string ICodeModel.NameFor(object item)
         {

@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class CodePoint : ICodePoint
+    internal sealed class CodePoint : ICodePoint
     {
         public CodePoint(ICodeModel codeModel, DialogContext dialogContext, object item, string more)
         {
