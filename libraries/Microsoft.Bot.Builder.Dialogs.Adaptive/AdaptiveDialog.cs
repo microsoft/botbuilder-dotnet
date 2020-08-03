@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public virtual async Task RepromptDialogAsync(DialogContext dc, DialogInstance instance, CancellationToken cancellationToken = default)
         {
             // Forward to current sequence step
-            var state = instance.State.GetTypedValue<AdaptiveDialogState>(AdaptiveKey);
+            var state = instance.State.CoerceValue<AdaptiveDialogState>(AdaptiveKey);
 
             if (state.Actions.Any())
             {
@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State;
-            var state = activeDialogState.GetTypedValue<AdaptiveDialogState>(AdaptiveKey);
+            var state = activeDialogState.CoerceValue<AdaptiveDialogState>(AdaptiveKey);
 
             if (state == null)
             {
@@ -875,7 +875,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private ActionContext ToActionContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State;
-            var state = activeDialogState.GetTypedValue<AdaptiveDialogState>(AdaptiveKey);
+            var state = activeDialogState.CoerceValue<AdaptiveDialogState>(AdaptiveKey);
 
             if (state == null)
             {

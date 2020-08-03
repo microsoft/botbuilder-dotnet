@@ -200,8 +200,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else
             {
-                var promptState = state.GetTypedValue<IDictionary<string, object>>(PersistedState);
-                var promptOptions = state.GetTypedValue<PromptOptions>(PersistedOptions);
+                var promptState = state.CoerceValue<IDictionary<string, object>>(PersistedState);
+                var promptOptions = state.CoerceValue<PromptOptions>(PersistedOptions);
 
                 // Increment attempt count
                 // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859

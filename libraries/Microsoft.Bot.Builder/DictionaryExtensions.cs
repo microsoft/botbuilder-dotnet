@@ -15,15 +15,16 @@ namespace Microsoft.Bot.Builder
     public static partial class DictionaryExtensions
     {
         /// <summary>
-        /// Extension Method on object to cast to type T to support TypeNameHandling.None during storage serialization.
+        /// Extension Method on object to coerce the value of the dictionary to type T.
         /// </summary>
+        /// <remarks>This allows the dictionaries which are string => JToken to be able to affinitize to a typed instance.</remarks>
         /// <param name="dict">object to cast.</param>
         /// <param name="property">property name.</param>
         /// <typeparam name="T">type to which object should be casted.</typeparam>
         /// <returns>T.</returns>
-        public static T GetTypedValue<T>(this IDictionary<string, object> dict, string property)
+        public static T CoerceValue<T>(this IDictionary<string, object> dict, string property)
         {
-            if (dict.TryGetTypedValue(property, out T result))
+            if (dict.TryCoerceValue(property, out T result))
             {
                 return result;
             }
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="result">result.</param>
         /// <typeparam name="T">type to which object should be casted.</typeparam>
         /// <returns>T.</returns>
-        public static bool TryGetTypedValue<T>(this IDictionary<string, object> dict, string property, out T result)
+        public static bool TryCoerceValue<T>(this IDictionary<string, object> dict, string property, out T result)
         {
             result = default(T);
 

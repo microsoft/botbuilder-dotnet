@@ -32,12 +32,12 @@ namespace Microsoft.Bot.Builder.Tests
 
             var readStoreItems = await storage.ReadAsync(storeItems.Keys.ToArray());
 
-            var createPoco = readStoreItems.GetTypedValue<PocoItem>("createPoco");
+            var createPoco = readStoreItems.CoerceValue<PocoItem>("createPoco");
 
             Assert.NotNull(createPoco);
             Assert.Equal("1", createPoco.Id);
 
-            var createPocoStoreItem = readStoreItems.GetTypedValue<PocoStoreItem>("createPocoStoreItem");
+            var createPocoStoreItem = readStoreItems.CoerceValue<PocoStoreItem>("createPocoStoreItem");
 
             Assert.NotNull(createPocoStoreItem);
             Assert.Equal("2", createPocoStoreItem.Id);
@@ -82,12 +82,12 @@ namespace Microsoft.Bot.Builder.Tests
             }
             else
             {
-                var createPoco = readStoreItems.GetTypedValue<PocoItem>("createPoco");
+                var createPoco = readStoreItems.CoerceValue<PocoItem>("createPoco");
 
                 Assert.NotNull(createPoco);
                 Assert.Equal("1", createPoco.Id);
 
-                var createPocoStoreItem = readStoreItems.GetTypedValue<PocoStoreItem>("createPocoStoreItem");
+                var createPocoStoreItem = readStoreItems.CoerceValue<PocoStoreItem>("createPocoStoreItem");
 
                 Assert.NotNull(createPocoStoreItem);
                 Assert.Equal("2", createPocoStoreItem.Id);
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var storeItems = await storage.ReadAsync(new[] { key });
 
-            storeItem = storeItems.GetTypedValue<PocoStoreItem>(key);
+            storeItem = storeItems.CoerceValue<PocoStoreItem>(key);
 
             Assert.NotNull(storeItem);
             Assert.Equal("1", storeItem.Id);
@@ -128,8 +128,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             var loadedStoreItems = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
 
-            var updatePocoItem = loadedStoreItems.GetTypedValue<PocoItem>("pocoItem");
-            var updatePocoStoreItem = loadedStoreItems.GetTypedValue<PocoStoreItem>("pocoStoreItem");
+            var updatePocoItem = loadedStoreItems.CoerceValue<PocoItem>("pocoItem");
+            var updatePocoStoreItem = loadedStoreItems.CoerceValue<PocoStoreItem>("pocoStoreItem");
             Assert.NotNull(updatePocoStoreItem.ETag);
 
             // 2nd write should work, because we have new etag, or no etag
@@ -140,8 +140,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             var reloadedStoreItems = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
 
-            var reloeadedUpdatePocoItem = reloadedStoreItems.GetTypedValue<PocoItem>("pocoItem");
-            var reloadedUpdatePocoStoreItem = reloadedStoreItems.GetTypedValue<PocoStoreItem>("pocoStoreItem");
+            var reloeadedUpdatePocoItem = reloadedStoreItems.CoerceValue<PocoItem>("pocoItem");
+            var reloadedUpdatePocoStoreItem = reloadedStoreItems.CoerceValue<PocoStoreItem>("pocoStoreItem");
 
             Assert.NotNull(reloadedUpdatePocoStoreItem.ETag);
             Assert.NotEqual(updatePocoStoreItem.ETag, reloadedUpdatePocoStoreItem.ETag);
@@ -178,8 +178,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             var reloadedStoreItems2 = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
 
-            var reloadedPocoItem2 = reloadedStoreItems2.GetTypedValue<PocoItem>("pocoItem");
-            var reloadedPocoStoreItem2 = reloadedStoreItems2.GetTypedValue<PocoStoreItem>("pocoStoreItem");
+            var reloadedPocoItem2 = reloadedStoreItems2.CoerceValue<PocoItem>("pocoItem");
+            var reloadedPocoStoreItem2 = reloadedStoreItems2.CoerceValue<PocoStoreItem>("pocoStoreItem");
 
             Assert.Equal(123, reloadedPocoItem2.Count);
             Assert.Equal(2, reloadedPocoStoreItem2.Count);
@@ -199,14 +199,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             var reloadedStoreItems3 = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
 
-            Assert.Equal(100, reloadedStoreItems3.GetTypedValue<PocoItem>("pocoItem").Count);
-            Assert.Equal(100, reloadedStoreItems3.GetTypedValue<PocoStoreItem>("pocoStoreItem").Count);
+            Assert.Equal(100, reloadedStoreItems3.CoerceValue<PocoItem>("pocoItem").Count);
+            Assert.Equal(100, reloadedStoreItems3.CoerceValue<PocoStoreItem>("pocoStoreItem").Count);
 
             // write with empty etag should not work
             try
             {
                 var reloadedStoreItems4 = await storage.ReadAsync(new[] { "pocoStoreItem" });
-                var reloadedStoreItem4 = reloadedStoreItems4.GetTypedValue<PocoStoreItem>("pocoStoreItem");
+                var reloadedStoreItem4 = reloadedStoreItems4.CoerceValue<PocoStoreItem>("pocoStoreItem");
 
                 Assert.NotNull(reloadedStoreItem4);
 
@@ -225,8 +225,8 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             var finalStoreItems = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
-            Assert.Equal(100, finalStoreItems.GetTypedValue<PocoItem>("pocoItem").Count);
-            Assert.Equal(100, finalStoreItems.GetTypedValue<PocoStoreItem>("pocoStoreItem").Count);
+            Assert.Equal(100, finalStoreItems.CoerceValue<PocoItem>("pocoItem").Count);
+            Assert.Equal(100, finalStoreItems.CoerceValue<PocoStoreItem>("pocoStoreItem").Count);
         }
 
         protected async Task DeleteObjectTest(IStorage storage)
@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder.Tests
             await storage.WriteAsync(dict);
 
             var storeItems = await storage.ReadAsync(new[] { "delete1" });
-            var storeItem = storeItems.GetTypedValue<PocoStoreItem>("delete1");
+            var storeItem = storeItems.CoerceValue<PocoStoreItem>("delete1");
 
             Assert.NotNull(storeItem.ETag);
             Assert.Equal(1, storeItem.Count);
@@ -292,7 +292,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             var readStoreItems = await storage.ReadAsync(new[] { "createPoco" });
-            var createPoco = readStoreItems.GetTypedValue<PocoItem>("createPoco");
+            var createPoco = readStoreItems.CoerceValue<PocoItem>("createPoco");
             Assert.Equal("1", createPoco.Id);
         }
 

@@ -56,23 +56,23 @@ namespace Microsoft.Bot.Builder.Tests
                 { "arr", new Foo[] { new Foo(), new Bar() } }
             };
 
-            Assert.Equal("string", data.GetTypedValue<string>("str"));
-            Assert.Equal(16, data.GetTypedValue<short>("short"));
-            Assert.Equal(16, data.GetTypedValue<ushort>("ushort"));
-            Assert.Equal(32, data.GetTypedValue<int>("int"));
-            Assert.Equal(32U, data.GetTypedValue<uint>("uint"));
-            Assert.Equal(64, data.GetTypedValue<long>("long"));
-            Assert.Equal(64UL, data.GetTypedValue<ulong>("ulong"));
-            Assert.Equal(1.0F, data.GetTypedValue<float>("single"));
-            Assert.Equal((double)2.0, data.GetTypedValue<double>("double"));
+            Assert.Equal("string", data.CoerceValue<string>("str"));
+            Assert.Equal(16, data.CoerceValue<short>("short"));
+            Assert.Equal(16, data.CoerceValue<ushort>("ushort"));
+            Assert.Equal(32, data.CoerceValue<int>("int"));
+            Assert.Equal(32U, data.CoerceValue<uint>("uint"));
+            Assert.Equal(64, data.CoerceValue<long>("long"));
+            Assert.Equal(64UL, data.CoerceValue<ulong>("ulong"));
+            Assert.Equal(1.0F, data.CoerceValue<float>("single"));
+            Assert.Equal((double)2.0, data.CoerceValue<double>("double"));
 
-            Assert.Equal(1000, data.GetTypedValue<Foo>("foo").Num);
+            Assert.Equal(1000, data.CoerceValue<Foo>("foo").Num);
 
-            Assert.Equal(1000, data.GetTypedValue<Bar>("bar").Num);
-            Assert.Equal(30, data.GetTypedValue<Bar>("bar").Count);
+            Assert.Equal(1000, data.CoerceValue<Bar>("bar").Num);
+            Assert.Equal(30, data.CoerceValue<Bar>("bar").Count);
 
-            Assert.Equal(1000, data.GetTypedValue<Foo[]>("arr")[0].Num);
-            Assert.Equal(data.GetTypedValue<Foo>("foo").GetHashCode(), data.GetTypedValue<Foo>("foo").GetHashCode());
+            Assert.Equal(1000, data.CoerceValue<Foo[]>("arr")[0].Num);
+            Assert.Equal(data.CoerceValue<Foo>("foo").GetHashCode(), data.CoerceValue<Foo>("foo").GetHashCode());
 
             var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.None };
             data = JObject.FromObject(data, serializer).ToObject<IDictionary<string, object>>(serializer);
@@ -80,24 +80,24 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsType<JObject>(data["bar"]);
             Assert.IsType<JArray>(data["arr"]);
 
-            Assert.Equal("string", data.GetTypedValue<string>("str"));
-            Assert.Equal(16, data.GetTypedValue<short>("short"));
-            Assert.Equal(16, data.GetTypedValue<ushort>("ushort"));
-            Assert.Equal(32, data.GetTypedValue<int>("int"));
-            Assert.Equal(32U, data.GetTypedValue<uint>("uint"));
-            Assert.Equal(64, data.GetTypedValue<long>("long"));
-            Assert.Equal(64UL, data.GetTypedValue<ulong>("ulong"));
-            Assert.Equal(1.0F, data.GetTypedValue<float>("single"));
-            Assert.Equal((double)2.0, data.GetTypedValue<double>("double"));
+            Assert.Equal("string", data.CoerceValue<string>("str"));
+            Assert.Equal(16, data.CoerceValue<short>("short"));
+            Assert.Equal(16, data.CoerceValue<ushort>("ushort"));
+            Assert.Equal(32, data.CoerceValue<int>("int"));
+            Assert.Equal(32U, data.CoerceValue<uint>("uint"));
+            Assert.Equal(64, data.CoerceValue<long>("long"));
+            Assert.Equal(64UL, data.CoerceValue<ulong>("ulong"));
+            Assert.Equal(1.0F, data.CoerceValue<float>("single"));
+            Assert.Equal((double)2.0, data.CoerceValue<double>("double"));
 
-            Assert.Equal(1000, data.GetTypedValue<Foo>("foo").Num);
+            Assert.Equal(1000, data.CoerceValue<Foo>("foo").Num);
 
-            Assert.Equal(1000, data.GetTypedValue<Bar>("bar").Num);
-            Assert.Equal(30, data.GetTypedValue<Bar>("bar").Count);
+            Assert.Equal(1000, data.CoerceValue<Bar>("bar").Num);
+            Assert.Equal(30, data.CoerceValue<Bar>("bar").Count);
 
-            Assert.Equal(1000, data.GetTypedValue<Foo[]>("arr")[0].Num);
-            Assert.Equal(data.GetTypedValue<Foo>("foo").GetHashCode(), data.GetTypedValue<Foo>("foo").GetHashCode());
-            Assert.Equal(data.GetTypedValue<Foo>("bar").GetHashCode(), data.GetTypedValue<Bar>("bar").GetHashCode());
+            Assert.Equal(1000, data.CoerceValue<Foo[]>("arr")[0].Num);
+            Assert.Equal(data.CoerceValue<Foo>("foo").GetHashCode(), data.CoerceValue<Foo>("foo").GetHashCode());
+            Assert.Equal(data.CoerceValue<Foo>("bar").GetHashCode(), data.CoerceValue<Bar>("bar").GetHashCode());
 
             Assert.IsType<Foo>(data["foo"]);
             Assert.IsAssignableFrom<Foo>(data["bar"]);
