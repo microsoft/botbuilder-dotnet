@@ -61,8 +61,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var handled = await base.OnDialogEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
 
-            // Trace unhandled "versionChanged" and "error" events.
-            if (!handled && (e.Name == DialogEvents.VersionChanged || e.Name == DialogEvents.Error))
+            // Trace unhandled "versionChanged" events.
+            if (!handled && e.Name == DialogEvents.VersionChanged)
             {
                 var traceMessage = $"Unhandled dialog event: {e.Name}. Active Dialog: {dc.ActiveDialog.Id}";
 
