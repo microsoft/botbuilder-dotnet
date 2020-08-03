@@ -8,11 +8,22 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
 {
+    /// <summary>
+    /// Dialog action which allows you to add assertions into your dialog flow.
+    /// </summary>
     public class AssertCondition : Dialog
     {
+        /// <summary>
+        /// Kind to use for serialization.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.AssertCondition";
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssertCondition"/> class.
+        /// </summary>
+        /// <param name="path">optional path.</param>
+        /// <param name="line">optional line.</param>
         [JsonConstructor]
         public AssertCondition([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {

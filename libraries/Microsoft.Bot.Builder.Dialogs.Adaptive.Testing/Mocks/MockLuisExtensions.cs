@@ -11,6 +11,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.AI.Luis.Testing
 {
+    /// <summary>
+    /// Helper extensions for mocking luis.
+    /// </summary>
     public static class MockLuisExtensions
     {
         private static readonly Encoding UTF8 = new UTF8Encoding();
