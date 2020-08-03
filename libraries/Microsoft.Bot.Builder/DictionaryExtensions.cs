@@ -32,8 +32,9 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Extension Method on object to cast to type T to support TypeNameHandling.None during storage serialization.
+        /// Extension Method on IDictionary&lt;string,object&gt; to coerce the value of the dictionary to type T.
         /// </summary>
+        /// <remarks>This allows the dictionaries which are string => JToken to be able to affinitize to a typed instance.</remarks>
         /// <param name="dict">object to cast.</param>
         /// <param name="property">property name.</param>
         /// <param name="result">result.</param>
@@ -126,6 +127,13 @@ namespace Microsoft.Bot.Builder
                 else if (typeof(T) == typeof(double))
                 {
                     result = (T)(object)Convert.ToDouble(obj, CultureInfo.InvariantCulture);
+                    dict[property] = result;
+                    return true;
+                }
+                else if (obj != null)
+                {
+                    // change the type
+                    result = JObject.FromObject(obj).ToObject<T>();
                     dict[property] = result;
                     return true;
                 }

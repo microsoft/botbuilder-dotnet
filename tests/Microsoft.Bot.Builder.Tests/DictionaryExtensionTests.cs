@@ -18,6 +18,23 @@ namespace Microsoft.Bot.Builder.Tests
             public int Num { get; set; } = 1000;
 
             public string String { get; set; } = "string";
+
+            /// <summary>
+            /// Gets or sets any extra properties to include in the results.
+            /// </summary>
+            /// <value>
+            /// Any extra properties to include in the results.
+            /// </value>
+            [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
+            public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+#pragma warning restore CA2227 // Collection properties should be read only
+        }
+
+        public class Bar : Foo
+        {
+            [JsonProperty("count")]
+            public int Count { get; set; } = 30;
         }
 
         [Fact]
@@ -34,8 +51,9 @@ namespace Microsoft.Bot.Builder.Tests
                 { "ulong", 64UL },
                 { "single", 1.0F },
                 { "double", (double)2.0 },
-                { "obj", new Foo() },
-                { "arr", new Foo[] { new Foo(), new Foo() } }
+                { "foo", new Foo() },
+                { "bar", new Bar() },
+                { "arr", new Foo[] { new Foo(), new Bar() } }
             };
 
             Assert.Equal("string", data.GetTypedValue<string>("str"));
@@ -47,13 +65,19 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal(64UL, data.GetTypedValue<ulong>("ulong"));
             Assert.Equal(1.0F, data.GetTypedValue<float>("single"));
             Assert.Equal((double)2.0, data.GetTypedValue<double>("double"));
-            Assert.Equal(1000, data.GetTypedValue<Foo>("obj").Num);
+
+            Assert.Equal(1000, data.GetTypedValue<Foo>("foo").Num);
+
+            Assert.Equal(1000, data.GetTypedValue<Bar>("bar").Num);
+            Assert.Equal(30, data.GetTypedValue<Bar>("bar").Count);
+
             Assert.Equal(1000, data.GetTypedValue<Foo[]>("arr")[0].Num);
-            Assert.Equal(data.GetTypedValue<Foo>("obj").GetHashCode(), data.GetTypedValue<Foo>("obj").GetHashCode());
+            Assert.Equal(data.GetTypedValue<Foo>("foo").GetHashCode(), data.GetTypedValue<Foo>("foo").GetHashCode());
 
             var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.None };
             data = JObject.FromObject(data, serializer).ToObject<IDictionary<string, object>>(serializer);
-            Assert.IsType<JObject>(data["obj"]);
+            Assert.IsType<JObject>(data["foo"]);
+            Assert.IsType<JObject>(data["bar"]);
             Assert.IsType<JArray>(data["arr"]);
 
             Assert.Equal("string", data.GetTypedValue<string>("str"));
@@ -65,11 +89,19 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal(64UL, data.GetTypedValue<ulong>("ulong"));
             Assert.Equal(1.0F, data.GetTypedValue<float>("single"));
             Assert.Equal((double)2.0, data.GetTypedValue<double>("double"));
-            Assert.Equal(1000, data.GetTypedValue<Foo>("obj").Num);
-            Assert.Equal(1000, data.GetTypedValue<Foo[]>("arr")[0].Num);
-            Assert.Equal(data.GetTypedValue<Foo>("obj").GetHashCode(), data.GetTypedValue<Foo>("obj").GetHashCode());
 
-            Assert.IsType<Foo>(data["obj"]);
+            Assert.Equal(1000, data.GetTypedValue<Foo>("foo").Num);
+
+            Assert.Equal(1000, data.GetTypedValue<Bar>("bar").Num);
+            Assert.Equal(30, data.GetTypedValue<Bar>("bar").Count);
+
+            Assert.Equal(1000, data.GetTypedValue<Foo[]>("arr")[0].Num);
+            Assert.Equal(data.GetTypedValue<Foo>("foo").GetHashCode(), data.GetTypedValue<Foo>("foo").GetHashCode());
+            Assert.Equal(data.GetTypedValue<Foo>("bar").GetHashCode(), data.GetTypedValue<Bar>("bar").GetHashCode());
+
+            Assert.IsType<Foo>(data["foo"]);
+            Assert.IsAssignableFrom<Foo>(data["bar"]);
+            Assert.IsType<Bar>(data["bar"]);
             Assert.IsType<Foo[]>(data["arr"]);
         }
     }
