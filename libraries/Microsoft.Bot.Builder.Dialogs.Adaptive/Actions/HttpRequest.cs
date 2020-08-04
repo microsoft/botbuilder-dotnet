@@ -228,10 +228,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // Bind each string token to the data in state
-            if (instanceBody != null)
-            {
-                instanceBody = await ReplaceJTokenRecursivelyAsync(dc.State, instanceBody, cancellationToken).ConfigureAwait(false);
-            }
+            instanceBody = instanceBody?.ReplaceJTokenRecursively(dc.State);
 
             // Set headers
             if (instanceHeaders != null)
@@ -383,50 +380,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}[{Method} {Url?.ToString()}]";
-        }
-
-        private async Task<JToken> ReplaceJTokenRecursivelyAsync(object state, JToken token, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            switch (token.Type)
-            {
-                case JTokenType.Object:
-                    // NOTE: ToList() is required because JToken.Replace will break the enumeration.
-                    foreach (var child in token.Children<JProperty>().ToList())
-                    {
-                        child.Replace(await ReplaceJTokenRecursivelyAsync(state, child, cancellationToken).ConfigureAwait(false));
-                    }
-
-                    break;
-
-                case JTokenType.Array:
-                    // NOTE: ToList() is required because JToken.Replace will break the enumeration.
-                    foreach (var child in token.Children().ToList())
-                    {
-                        child.Replace(await ReplaceJTokenRecursivelyAsync(state, child, cancellationToken).ConfigureAwait(false));
-                    }
-
-                    break;
-
-                case JTokenType.Property:
-                    JProperty property = (JProperty)token;
-                    property.Value = await ReplaceJTokenRecursivelyAsync(state, property.Value, cancellationToken).ConfigureAwait(false);
-                    break;
-
-                default:
-                    if (token.Type == JTokenType.String)
-                    {
-                        // if it is a "{bindingpath}" then run through expression parser and treat as a value
-                        var (result, error) = new ValueExpression(token).TryGetValue(state);
-                        if (error == null)
-                        {
-                            token = JToken.FromObject(result);
-                        }
-                    }
-
-                    break;
-            }
-
-            return token;
         }
 
         /// <summary>

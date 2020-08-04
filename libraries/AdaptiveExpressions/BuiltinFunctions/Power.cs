@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Power : MultivariateNumericEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Power"/> class.
+        /// </summary>
         public Power()
             : base(ExpressionType.Power, Evaluator, FunctionUtils.VerifyNumericListOrNumber)
         {

@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class DataModel : IDataModel
+    internal sealed class DataModel : IDataModel
     {
         private readonly ICoercion coercion;
 

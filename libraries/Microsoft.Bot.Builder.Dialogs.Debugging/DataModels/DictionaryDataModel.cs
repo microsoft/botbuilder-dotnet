@@ -5,7 +5,9 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class DictionaryDataModel<TKey, TValue> : DataModelBase<IDictionary<TKey, TValue>, TKey, TValue>
+#pragma warning disable CA1812 // Supressing error due to internal being used as intended
+    internal class DictionaryDataModel<TKey, TValue> : DataModelBase<IDictionary<TKey, TValue>, TKey, TValue>
+#pragma warning restore CA1812
     {
         public DictionaryDataModel(ICoercion coercion)
             : base(coercion)

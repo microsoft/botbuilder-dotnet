@@ -66,35 +66,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 ProcessStartInfo startInfo;
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bf.cmd dialog:merge ../../libraries/**/*.schema ../**/*.schema -o {schemaPath}");
+                    File.Delete(schemaPath);
+                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bf dialog:merge ../../libraries/**/*.schema ../../libraries/**/*.uischema ../**/*.schema !../**/testbot.schema -o {schemaPath}");
                     startInfo.WorkingDirectory = projectPath;
                     startInfo.UseShellExecute = false;
-                    startInfo.CreateNoWindow = false;
+                    startInfo.CreateNoWindow = true;
                     startInfo.RedirectStandardError = true;
 
-                    // startInfo.RedirectStandardOutput = true;
-                    // string output = process.StandardOutput.ReadToEnd();
-
                     var process = Process.Start(startInfo);
-                    string error = process.StandardError.ReadToEnd();
+                    var error = process.StandardError.ReadToEnd();
                     process.WaitForExit();
 
-                    if (!string.IsNullOrEmpty(error))
-                    {
-                        Trace.TraceError(error);
-                    }
+                    Assert.AreEqual(error, string.Empty);
                 }
             }
             catch (Exception err)
             {
-                Trace.TraceError(err.Message);
+                Assert.Fail(err.Message);
             }
 
-            if (File.Exists(schemaPath))
-            {
-                var json = File.ReadAllText(schemaPath);
-                Schema = JSchema.Parse(json);
-            }
+            Assert.IsTrue(File.Exists(schemaPath));
+            var json = File.ReadAllText(schemaPath);
+            Schema = JSchema.Parse(json);
         }
 
         [DataTestMethod]

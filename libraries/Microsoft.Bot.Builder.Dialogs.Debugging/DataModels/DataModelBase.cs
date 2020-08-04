@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public abstract class DataModelBase<TContext, TName, TValue> : IDataModel
+    internal abstract class DataModelBase<TContext, TName, TValue> : IDataModel
     {
         private readonly ICoercion coercion;
 

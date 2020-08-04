@@ -14,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class GetFutureTime : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetFutureTime"/> class.
+        /// </summary>
         public GetFutureTime()
             : base(ExpressionType.GetFutureTime, Evaluator, ReturnType.String, Validator)
         {

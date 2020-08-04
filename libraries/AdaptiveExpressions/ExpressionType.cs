@@ -9,6 +9,7 @@ namespace AdaptiveExpressions
     public static class ExpressionType
     {
         // Math
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public const string Add = "+";
         public const string Subtract = "-";
         public const string Multiply = "*";
@@ -212,5 +213,6 @@ namespace AdaptiveExpressions
         /// but all such rules would be incomparable because they counter is per-rule. 
         /// </remarks>
         public const string Ignore = "ignore";
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }

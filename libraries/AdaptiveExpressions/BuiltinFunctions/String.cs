@@ -14,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
 #pragma warning restore CA1720 // Identifier contains type name
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="String"/> class.
+        /// </summary>
         public String()
             : base(ExpressionType.String, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {

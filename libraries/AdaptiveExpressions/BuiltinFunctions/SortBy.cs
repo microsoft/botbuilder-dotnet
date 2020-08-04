@@ -8,6 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class SortBy : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SortBy"/> class.
+        /// </summary>
         public SortBy()
             : base(ExpressionType.SortBy, FunctionUtils.SortBy(false), ReturnType.Array, Validator)
         {

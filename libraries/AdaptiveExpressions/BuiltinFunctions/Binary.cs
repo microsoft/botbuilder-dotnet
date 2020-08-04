@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class Binary : ExpressionEvaluator
 #pragma warning restore CA1724 // Type names should not match namespaces
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Binary"/> class.
+        /// </summary>
         public Binary()
             : base(ExpressionType.Binary, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
         {

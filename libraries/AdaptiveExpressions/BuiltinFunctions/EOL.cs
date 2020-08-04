@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class EOL : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EOL"/> class.
+        /// </summary>
         public EOL()
             : base(ExpressionType.EOL, Evaluator(), ReturnType.String, Validator)
         {
