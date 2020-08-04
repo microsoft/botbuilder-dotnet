@@ -48,7 +48,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-	[Ignore]
+        [Ignore]
+        [TestCategory("IgnoreInAutomatedBuild")]
         public async Task JsonDialogLoad_CycleDetection()
         {
             await BuildTestFlow(@"Root.dialog")
