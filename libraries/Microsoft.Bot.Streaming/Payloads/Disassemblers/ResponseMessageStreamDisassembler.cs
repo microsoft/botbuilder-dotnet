@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.PayloadTransport;
 
@@ -18,7 +19,7 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         public override char Type => PayloadTypes.Stream;
 
-        public override async Task<StreamWrapper> GetStreamAsync()
+        public override async Task<StreamWrapper> GetStreamAsync(CancellationToken cancellationToken = default)
         {
             var stream = await ContentStream.Content.ReadAsStreamAsync().ConfigureAwait(false);
             var description = GetStreamDescription(ContentStream);

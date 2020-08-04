@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.PayloadTransport;
 
@@ -21,7 +22,7 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         public override char Type => PayloadTypes.Response;
 
-        public override Task<StreamWrapper> GetStreamAsync()
+        public override Task<StreamWrapper> GetStreamAsync(CancellationToken cancellationToken = default)
         {
             var payload = new ResponsePayload()
             {

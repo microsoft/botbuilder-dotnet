@@ -42,13 +42,11 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         private bool IsEnd { get; set; } = false;
 
-        public abstract Task<StreamWrapper> GetStreamAsync();
+        public abstract Task<StreamWrapper> GetStreamAsync(CancellationToken cancellationToken = default);
 
-#pragma warning disable CA1801 // Review unused parameters
-        public async Task DisassembleAsync(CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore CA1801 // Review unused parameters
+        public async Task DisassembleAsync(CancellationToken cancellationToken = default)
         {
-            var w = await GetStreamAsync().ConfigureAwait(false);
+            var w = await GetStreamAsync(cancellationToken).ConfigureAwait(false);
 
             Stream = w.Stream;
             StreamLength = w.StreamLength;
