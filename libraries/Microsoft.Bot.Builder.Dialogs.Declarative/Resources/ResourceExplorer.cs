@@ -164,24 +164,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             RegisterComponentTypes();
 
             string id = resource.Id;
-            if (resource is FileResource fileResource)
-            {
-                id = fileResource.FullName;
-            }
 
             try
             {
                 var sourceContext = new SourceContext();
-                var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+                var (jToken, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
                 using (new SourceScope(sourceContext, range))
                 {
-                    var result = Load<T>(json, sourceContext);
+                    AutoAssignId(resource, jToken);
 
-                    if (result is Dialog dlg && !((JObject)json).ContainsKey("id"))
-                    {
-                        // if there is no jobject.id for the dialog, then the dialog id's should be resource.id
-                        dlg.Id = resource.Id;
-                    }
+                    var result = Load<T>(jToken, sourceContext);
 
                     return result;
                 }
@@ -577,6 +569,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     range.Path = fileResource.FullName;
                 }
 
+                AutoAssignId(resource, token);
+
                 return (token, range);
             }
         }
@@ -608,6 +602,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                             this.OnChanged(changed);
                         }).ContinueWith(t => t.Status);
 #pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
+                }
+            }
+        }
+
+        private void AutoAssignId(Resource resource, JToken jToken)
+        {
+            if (jToken is JObject jObj)
+            {
+                if (!jObj.ContainsKey("id"))
+                {
+                    jObj["id"] = resource.Id;
                 }
             }
         }

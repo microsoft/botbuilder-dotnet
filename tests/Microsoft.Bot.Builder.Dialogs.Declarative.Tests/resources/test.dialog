@@ -1,5 +1,13 @@
 {
     "$schema": "../../tests.schema",
-    "$kind": "Microsoft.SendActivity",
-    "activity": "hello"
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnIntent",
+            "actions": [
+                "test2.dialog",
+                "test3.dialog"
+            ]
+        }
+    ]
 }

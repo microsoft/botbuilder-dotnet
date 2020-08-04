@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 var resources = explorer.GetResources(".dialog").ToArray();
 
-                Assert.AreEqual(2, resources.Length);
+                Assert.AreEqual(3, resources.Length);
                 Assert.AreEqual($".dialog", Path.GetExtension(resources[0].Id));
 
                 resources = explorer.GetResources("foo").ToArray();
@@ -79,8 +80,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             using (var explorer = new ResourceExplorer())
             {
                 explorer.AddResourceProvider(new FolderResourceProvider(explorer, path));
-                var dlg1 = explorer.LoadType<Dialog>("test.dialog");
+                var dlg1 = explorer.LoadType<Dialog>("test.dialog") as AdaptiveDialog;
                 Assert.AreEqual("test.dialog", dlg1.Id, "resource .id should be used as default dialog.id if none assigned");
+
+                Assert.AreEqual("1234567890", dlg1.Triggers[0].Actions[0].Id);
+                Assert.AreEqual("test3.dialog", dlg1.Triggers[0].Actions[1].Id);
 
                 var dlg2 = explorer.LoadType<Dialog>("test2.dialog");
                 Assert.AreEqual("1234567890", dlg2.Id, "id in the .dialog file should be honored");
