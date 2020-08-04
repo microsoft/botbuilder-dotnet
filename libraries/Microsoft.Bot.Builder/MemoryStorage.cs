@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder
 
                     if (_memory.TryGetValue(change.Key, out var oldState))
                     {
-                        if (oldState != null && oldState.TryGetValue("eTag", out var etag))
+                        if (oldState != null && oldState.TryGetValue("ETag", out var etag))
                         {
                             oldStateETag = etag.Value<string>();
                         }
@@ -161,7 +161,21 @@ namespace Microsoft.Bot.Builder
                             throw new Exception($"Etag conflict.\r\n\r\nOriginal: {newStoreItem.ETag}\r\nCurrent: {oldStateETag}");
                         }
 
-                        newState["eTag"] = (_eTag++).ToString(CultureInfo.InvariantCulture);
+                        newState["ETag"] = (_eTag++).ToString(CultureInfo.InvariantCulture);
+                    }
+                    else if (newValue is JObject asJobject && asJobject.ContainsKey("ETag"))
+                    {
+                        string newStoreItemETag = asJobject.Value<string>("ETag");
+                        if (oldStateETag != null
+                                &&
+                           newStoreItemETag != "*"
+                                &&
+                           newStoreItemETag != oldStateETag)
+                        {
+                            throw new Exception($"Etag conflict.\r\n\r\nOriginal: {newStoreItemETag}\r\nCurrent: {oldStateETag}");
+                        }
+
+                        newState["ETag"] = (_eTag++).ToString(CultureInfo.InvariantCulture);
                     }
 
                     _memory[change.Key] = newState;

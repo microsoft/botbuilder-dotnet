@@ -77,5 +77,12 @@ namespace Microsoft.Bot.Builder.Tests
             storage = new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
             await StatePersistsThroughMultiTurn(storage);
         }
+        
+        [Fact]
+        public async Task UpdateObjectTest_AsJObjects_TypeNameHandlingNone()
+        {
+            storage = new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+            await UpdateObjectTest_AsJObjects(storage);
+        }
     }
 }
