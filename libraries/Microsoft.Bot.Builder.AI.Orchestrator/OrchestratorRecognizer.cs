@@ -126,51 +126,22 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <summary>
         /// Return recognition results.
         /// </summary>
-        /// <param name="dialogContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="dc">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="activity">The incoming activity received from the user. The Text property value is used as the query text for QnA Maker.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <returns>A <see cref="RecognizerResult"/> containing the QnA Maker result.</returns>
-        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Schema.Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
+        public override async Task<RecognizerResult> RecognizeAsync(DialogContext dc, Schema.Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
-            var detectAmbiguity = DetectAmbiguousIntents.GetValue(dialogContext.State);
+            var text = activity.Text ?? string.Empty;
+            var detectAmbiguity = DetectAmbiguousIntents.GetValue(dc.State);
 
-            _modelPath = ModelPath.GetValue(dialogContext.State);
-            _snapshotPath = SnapshotPath.GetValue(dialogContext.State);
+            _modelPath = ModelPath.GetValue(dc.State);
+            _snapshotPath = SnapshotPath.GetValue(dc.State);
 
             InitializeModel();
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            var recognizerResult = this.RecognizeText(dialogContext, activity.Text);
-            sw.Stop();
-            Trace.TraceInformation($"Orchestrator recognize in {sw.ElapsedMilliseconds}ms");
-
-            if (EntityRecognizers.Count != 0)
-            {
-                // Run entity recognition
-                recognizerResult = await RecognizeEntitiesAsync(dialogContext, activity, recognizerResult).ConfigureAwait(false);
-            }
-
-            // save raw result
-            recognizerResult.Properties.TryGetValue(ResultProperty, out var resultObject);
-
-            await dialogContext.Context.TraceActivityAsync(nameof(OrchestratorRecognizer), JObject.FromObject(recognizerResult), nameof(OrchestratorRecognizer), "Orchestrator Recognition ", cancellationToken).ConfigureAwait(false);
-
-            TrackRecognizerResult(dialogContext, nameof(OrchestratorRecognizer), FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
-
-            return recognizerResult;
-        }
-
-        /// <summary>
-        /// Returns recognition result.
-        /// </summary>
-        /// <param name="dc">dialog Context.</param>
-        /// <param name="text">text.</param>
-        /// <returns>Recognizer rsult.</returns>
-        private RecognizerResult RecognizeText(DialogContext dc, string text)
-        {
             var recognizerResult = new RecognizerResult()
             {
                 Text = text,
@@ -208,7 +179,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                     AddResultAsIntent(recognizerResult, results[0]);
 
                     // Disambiguate if configured
-                    bool detectAmbiguity = this.DetectAmbiguousIntents.GetValue(dc.State);
                     if (detectAmbiguity)
                     {
                         var thresholdScore = DisambiguationScoreThreshold.GetValue(dc.State);
@@ -230,7 +200,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                                 },
                             });
 
-                            // create a RecognizerResult with ChooseIntent => Amibgious recognizerResults as candidates. 
+                            // replace RecognizerResult with ChooseIntent => Amibgious recognizerResults as candidates. 
                             recognizerResult = CreateChooseIntentResult(recognizerResults.ToDictionary(result => this.Id, result => result));
                         }
                     }
@@ -241,6 +211,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // Return 'None' if no intent matched.
                 recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
             }
+
+            await dc.Context.TraceActivityAsync(nameof(OrchestratorRecognizer), JObject.FromObject(recognizerResult), nameof(OrchestratorRecognizer), "Orchestrator Recognition ", cancellationToken).ConfigureAwait(false);
+            TrackRecognizerResult(dc, nameof(OrchestratorRecognizer), FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
 
             return recognizerResult;
         }
