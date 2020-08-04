@@ -90,10 +90,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
             Assert.Equal("content with id: 1.lg from source: abc", result);
         }
 
-        private static LGResource ConstantResolver(string sourceId, string resourceId)
+        private static LGResource ConstantResolver(LGResource lgResource, string resourceId)
         {
-            var id = sourceId + resourceId;
-            var content = $"# myTemplate\r\n - content with id: {resourceId} from source: {sourceId}";
+            var id = lgResource.Id + resourceId;
+            var content = $"# myTemplate\r\n - content with id: {resourceId} from source: {lgResource.Id}";
             return new LGResource(id, id, content);
         }
     }

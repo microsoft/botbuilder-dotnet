@@ -18,10 +18,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// Delegate for resolving resource id of imported lg file.
     /// </summary>
-    /// <param name="sourceId">The id or path of source file.</param>
+    /// <param name="resource">Original resource.</param>
     /// <param name="resourceId">Resource id to resolve.</param>
     /// <returns>Resolved resource.</returns>
-    public delegate LGResource ImportResolverDelegate(string sourceId, string resourceId);
+    public delegate LGResource ImportResolverDelegate(LGResource resource, string resourceId);
 
     /// <summary>
     /// Parser to turn lg content into a <see cref="Templates"/>.
@@ -186,10 +186,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Default import resolver, using relative/absolute file path to access the file content.
         /// </summary>
-        /// <param name="sourceId">Default is file path.</param>
+        /// <param name="resource">Original Resource.</param>
         /// <param name="resourceId">Import path.</param>
         /// <returns>Target content id.</returns>
-        private static LGResource DefaultFileResolver(string sourceId, string resourceId)
+        private static LGResource DefaultFileResolver(LGResource resource, string resourceId)
         {
             // import paths are in resource files which can be executed on multiple OS environments
             // normalize to map / & \ in importPath -> OSPath
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (!Path.IsPathRooted(importPath))
             {
                 // get full path for importPath relative to path which is doing the import.
-                importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceId), resourceId));
+                importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(resource.FullName), resourceId));
             }
 
             return new LGResource(importPath, importPath, File.ReadAllText(importPath));
@@ -222,7 +222,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 LGResource resource;
                 try
                 {
-                    resource = start.ImportResolver(start.Id, import.Id);
+                    var originalResource = new LGResource(start.Id, start.Source, start.Content);
+                    resource = start.ImportResolver(originalResource, import.Id);
                 }
                 catch (Exception e)
                 {
