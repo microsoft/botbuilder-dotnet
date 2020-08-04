@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
@@ -14,6 +15,8 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public static partial class DictionaryExtensions
     {
+        private static JsonSerializer _coerceSerializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.None };
+
         /// <summary>
         /// Extension Method on object to coerce the value of the dictionary to type T.
         /// </summary>
@@ -133,8 +136,7 @@ namespace Microsoft.Bot.Builder
                 }
                 else if (obj != null)
                 {
-                    // change the type
-                    result = JObject.FromObject(obj).ToObject<T>();
+                    result = JObject.FromObject(obj, _coerceSerializer).ToObject<T>();
                     dict[property] = result;
                     return true;
                 }

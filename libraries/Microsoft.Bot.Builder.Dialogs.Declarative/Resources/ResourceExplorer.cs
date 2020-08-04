@@ -548,7 +548,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             var serializer = JsonSerializer.Create(new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.Auto,
+                TypeNameHandling = TypeNameHandling.None,
                 Converters = converters,
                 Error = (sender, args) =>
                 {
