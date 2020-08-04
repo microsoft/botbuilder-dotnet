@@ -41,7 +41,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             string id = null,
             ExpressionParser expressionParser = null,
             ImportResolverDelegate importResolver = null,
-            IList<string> options = null)
+            IList<string> options = null,
+            string source = null)
         {
             if (templates != null)
             {
@@ -54,6 +55,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Content = content ?? string.Empty;
             ImportResolver = importResolver;
             Id = id ?? string.Empty;
+            Source = source;
             ExpressionParser = expressionParser ?? new ExpressionParser();
             Options = options ?? new List<string>();
             this.InjectToExpressionFunction();
@@ -136,9 +138,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Gets or sets id of this LG file.
         /// </summary>
         /// <value>
-        /// Id of this lg source. For file, is full path.
+        /// Id of this lg source.
         /// </value>
         public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets source of this LG file.
+        /// </summary>
+        /// <value>
+        /// Source of this lg source. For file, is full path.
+        /// </value>
+        public string Source { get; set; }
 
         /// <summary>
         /// Gets or sets lG file options.
@@ -189,11 +199,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">Expression parser engine for parsing expressions.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
+        [Obsolete("This method will soon be deprecated. Use ParseResource instead.")]
         public static Templates ParseText(
             string content,
             string id = "",
             ImportResolverDelegate importResolver = null,
             ExpressionParser expressionParser = null) => TemplatesParser.ParseText(content, id, importResolver, expressionParser).InjectToExpressionFunction();
+
+        /// <summary>
+        /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
+        /// </summary>
+        /// <param name="resource">LG resource.</param>
+        /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">Expression parser engine for parsing expressions.</param>
+        /// <returns>new <see cref="Templates"/> entity.</returns>
+        public static Templates ParseResource(
+            LGResource resource,
+            ImportResolverDelegate importResolver = null,
+            ExpressionParser expressionParser = null) => TemplatesParser.ParseResource(resource, importResolver, expressionParser).InjectToExpressionFunction();
 
         /// <summary>
         /// Evaluate a template with given name and scope.
@@ -305,7 +328,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     content);
 
                 var updatedTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
-                updatedTemplates = new TemplatesTransformer(updatedTemplates).Transform(AntlrParseTemplates(content, Id));
+                var resource = new LGResource(Id, Id, content);
+                updatedTemplates = new TemplatesTransformer(updatedTemplates).Transform(AntlrParseTemplates(resource));
 
                 var originStartLine = template.SourceRange.Range.Start.Line - 1;
                 AppendDiagnosticsWithOffset(updatedTemplates.Diagnostics, originStartLine);
@@ -348,7 +372,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.Content = $"{Content}{newLine}{templateNameLine}{newLine}{newTemplateBody}";
 
             var newTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
-            newTemplates = new TemplatesTransformer(newTemplates).Transform(AntlrParseTemplates(content, Id));
+            var resource = new LGResource(Id, Id, content);
+            newTemplates = new TemplatesTransformer(newTemplates).Transform(AntlrParseTemplates(resource));
 
             AppendDiagnosticsWithOffset(newTemplates.Diagnostics, originStartLine);
 
@@ -582,9 +607,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (result == null)
             {
-                if (Path.IsPathRooted(this.Id))
+                if (Path.IsPathRooted(Source))
                 {
-                    result = Path.GetFileNameWithoutExtension(this.Id);
+                    result = Path.GetFileNameWithoutExtension(Source);
                 }
                 else
                 {
