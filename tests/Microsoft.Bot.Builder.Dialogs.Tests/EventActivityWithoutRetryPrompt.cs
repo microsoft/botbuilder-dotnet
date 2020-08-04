@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
 
             // Send initial prompt, calling OnPromptAsync() overload that does not have isRetry parameter
-            await OnPromptAsync(dc.Context, state.CoerceValue<IDictionary<string, object>>(PersistedState), state.CoerceValue<PromptOptions>(PersistedOptions), cancellationToken).ConfigureAwait(false);
+            await OnPromptAsync(dc.Context, state.MapValueTo<IDictionary<string, object>>(PersistedState), state.MapValueTo<PromptOptions>(PersistedOptions), cancellationToken).ConfigureAwait(false);
             return EndOfTurn;
         }
     }

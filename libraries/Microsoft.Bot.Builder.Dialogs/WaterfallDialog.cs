@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // data store for state. The stepIndex which was an object being cast to an Int64
             // after deserialization was throwing an exception for not being Int32 datatype.
             // This change ensures the correct datatype conversion has been done.
-            var index = state.CoerceValue<int>(StepIndex);
+            var index = state.MapValueTo<int>(StepIndex);
             return await RunStepAsync(dc, index + 1, reason, result, cancellationToken).ConfigureAwait(false);
         }
 
@@ -139,10 +139,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var state = instance.State;
 
                 // Create step context
-                state.CoerceValue<int>(StepIndex);
-                var index = state.CoerceValue<int>(StepIndex);
+                state.MapValueTo<int>(StepIndex);
+                var index = state.MapValueTo<int>(StepIndex);
                 var stepName = WaterfallStepName(index);
-                var instanceId = state.CoerceValue<string>(PersistedInstanceId);
+                var instanceId = state.MapValueTo<string>(PersistedInstanceId);
 
                 var properties = new Dictionary<string, string>
                 {
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             else if (reason == DialogReason.EndCalled)
             {
                 var state = instance.State;
-                var instanceId = state.CoerceValue<string>(PersistedInstanceId);
+                var instanceId = state.MapValueTo<string>(PersistedInstanceId);
                 var properties = new Dictionary<string, string>
                 {
                     { "DialogId", Id },
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var stepName = WaterfallStepName(stepContext.Index);
-            var instanceId = stepContext.ActiveDialog.State.CoerceValue<string>(PersistedInstanceId);
+            var instanceId = stepContext.ActiveDialog.State.MapValueTo<string>(PersistedInstanceId);
             var properties = new Dictionary<string, string>
             {
                 { "DialogId", Id },
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 // Create step context
                 var options = state[PersistedOptions];
-                var values = state.CoerceValue<IDictionary<string, object>>(PersistedValues);
+                var values = state.MapValueTo<IDictionary<string, object>>(PersistedValues);
                 var stepContext = new WaterfallStepContext(this, dc, options, values, index, reason, result);
 
                 // Execute step

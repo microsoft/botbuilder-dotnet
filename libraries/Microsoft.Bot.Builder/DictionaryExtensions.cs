@@ -22,9 +22,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="property">property name.</param>
         /// <typeparam name="T">type to which object should be casted.</typeparam>
         /// <returns>T.</returns>
-        public static T CoerceValue<T>(this IDictionary<string, object> dict, string property)
+        public static T MapValueTo<T>(this IDictionary<string, object> dict, string property)
         {
-            if (dict.TryCoerceValue(property, out T result))
+            if (dict.TryMapValueTo(property, out T result))
             {
                 return result;
             }
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="result">result.</param>
         /// <typeparam name="T">type to which object should be casted.</typeparam>
         /// <returns>T.</returns>
-        public static bool TryCoerceValue<T>(this IDictionary<string, object> dict, string property, out T result)
+        public static bool TryMapValueTo<T>(this IDictionary<string, object> dict, string property, out T result)
         {
             result = default(T);
 

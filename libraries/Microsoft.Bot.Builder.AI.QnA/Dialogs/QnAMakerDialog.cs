@@ -544,8 +544,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private async Task<DialogTurnResult> CallTrainAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
-            var trainResponses = stepContext.Values.CoerceValue<List<QueryResult>>(ValueProperty.QnAData);
-            var currentQuery = stepContext.Values.CoerceValue<string>(ValueProperty.CurrentQuery);
+            var trainResponses = stepContext.Values.MapValueTo<List<QueryResult>>(ValueProperty.QnAData);
+            var currentQuery = stepContext.Values.MapValueTo<string>(ValueProperty.CurrentQuery);
 
             var reply = stepContext.Context.Activity.Text;
 

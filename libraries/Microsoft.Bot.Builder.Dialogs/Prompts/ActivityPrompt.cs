@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
 
             // Send initial prompt
-            await OnPromptAsync(dc.Context, state.CoerceValue<IDictionary<string, object>>(PersistedState), state.CoerceValue<PromptOptions>(PersistedOptions), false, cancellationToken).ConfigureAwait(false);
+            await OnPromptAsync(dc.Context, state.MapValueTo<IDictionary<string, object>>(PersistedState), state.MapValueTo<PromptOptions>(PersistedOptions), false, cancellationToken).ConfigureAwait(false);
             return EndOfTurn;
         }
 
@@ -118,8 +118,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Perform base recognition
             var instance = dc.ActiveDialog;
-            var state = instance.State.CoerceValue<IDictionary<string, object>>(PersistedState);
-            var options = instance.State.CoerceValue<PromptOptions>(PersistedOptions);
+            var state = instance.State.MapValueTo<IDictionary<string, object>>(PersistedState);
+            var options = instance.State.MapValueTo<PromptOptions>(PersistedOptions);
             var recognized = await OnRecognizeAsync(dc.Context, state, options, cancellationToken).ConfigureAwait(false);
 
             // Increment attempt count
@@ -188,8 +188,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
         {
-            var state = instance.State.CoerceValue<IDictionary<string, object>>(PersistedState);
-            var options = instance.State.CoerceValue<PromptOptions>(PersistedOptions);
+            var state = instance.State.MapValueTo<IDictionary<string, object>>(PersistedState);
+            var options = instance.State.MapValueTo<PromptOptions>(PersistedOptions);
             await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
         }
 

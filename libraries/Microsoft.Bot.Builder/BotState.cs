@@ -243,7 +243,7 @@ namespace Microsoft.Bot.Builder
 
             var cachedState = GetCachedState(turnContext);
 
-            if (cachedState.State.TryCoerceValue<T>(propertyName, out T result))
+            if (cachedState.State.TryMapValueTo<T>(propertyName, out T result))
             {
                 return Task.FromResult(result);
             }
