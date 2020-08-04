@@ -38,18 +38,9 @@ namespace Microsoft.BotBuilderSamples
 
         private BookingDetails GetBookingDetails(WaterfallStepContext stepContext)
         {
-            if (stepContext.Options is BookingDetails asBookingDetails)
-            {
-                return asBookingDetails;
-            }
-            else if (stepContext.Options is JObject asJobject)
-            {
-                asBookingDetails = asJobject.ToObject<BookingDetails>();
-                stepContext.ActiveDialog.State["options"] = asBookingDetails;
-                return asBookingDetails;
-            }
-
-            return null;
+            var bookingDetails = ObjectPath.MapValueTo<BookingDetails>(stepContext.Options);
+            stepContext.ActiveDialog.State["options"] = bookingDetails;
+            return bookingDetails;
         }
 
         private async Task<DialogTurnResult> DestinationActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
