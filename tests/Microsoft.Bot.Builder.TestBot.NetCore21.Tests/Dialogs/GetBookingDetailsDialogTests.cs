@@ -66,8 +66,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
             if (testClient.DialogTurnResult.Result != null)
             {
-                var result = testClient.DialogTurnResult.Result;
-                var bookingResults = result is BookingDetails ? result as BookingDetails : (result as JObject)?.ToObject<BookingDetails>();
+                var bookingResults = (BookingDetails)testClient.DialogTurnResult.Result;
 
                 Assert.Equal(bookingTestData.ExpectedBookingDetails.Origin, bookingResults.Origin);
                 Assert.Equal(bookingTestData.ExpectedBookingDetails.Destination, bookingResults.Destination);
