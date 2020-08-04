@@ -267,7 +267,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        [Ignore]
         public async Task Action_ReplaceDialogRecursive()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
