@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Base;
+using Microsoft.Bot.Builder.Dialogs.Debugging.CodeModels;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging

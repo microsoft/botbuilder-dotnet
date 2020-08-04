@@ -2,9 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Dialogs.Debugging.CodeModels;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.CodeModels
 {
     public interface ICodeModel
     {

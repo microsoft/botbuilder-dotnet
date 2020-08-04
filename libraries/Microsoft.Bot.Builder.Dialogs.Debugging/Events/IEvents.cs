@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.Events
 {
     public interface IEvents
     {

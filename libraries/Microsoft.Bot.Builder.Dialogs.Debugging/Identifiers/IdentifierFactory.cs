@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+﻿namespace Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers
 {
     internal static class IdentifierFactory
     {

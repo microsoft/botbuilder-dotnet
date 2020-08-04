@@ -2,6 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.Dialogs.Debugging.CodeModels;
+using Microsoft.Bot.Builder.Dialogs.Debugging.DataModels;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging

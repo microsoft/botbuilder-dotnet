@@ -5,7 +5,7 @@ using System;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
     public interface ICoercion
     {

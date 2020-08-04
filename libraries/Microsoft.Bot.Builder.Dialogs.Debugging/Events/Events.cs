@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.Events
 {
     internal sealed class Events<TDialogEvents> : IEvents
         where TDialogEvents : DialogEvents

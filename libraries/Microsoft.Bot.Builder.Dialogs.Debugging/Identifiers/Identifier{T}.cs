@@ -4,8 +4,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Base;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers
 {
     /// <summary>
     /// This class maintains an integer identifier for C# memory within the debug adapter

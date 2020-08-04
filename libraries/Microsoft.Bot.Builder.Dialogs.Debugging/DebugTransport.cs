@@ -9,10 +9,12 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Base;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ReaderWriterLock = Microsoft.Bot.Builder.Dialogs.Debugging.Base.ReaderWriterLock;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {

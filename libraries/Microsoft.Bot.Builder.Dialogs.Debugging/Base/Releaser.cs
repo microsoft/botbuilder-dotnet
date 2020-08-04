@@ -4,7 +4,7 @@
 using System;
 using System.Threading;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.Base
 {
 #pragma warning disable CA1815 // Override equals and operator equals on value types (we don't seem to need this in code, excluding for now)
     internal struct Releaser : IDisposable

@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.Base
 {
     /// <summary>
     /// Extension method implementing await for <see cref="SemaphoreSlim"/>.
