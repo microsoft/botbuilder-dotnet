@@ -205,7 +205,16 @@ namespace Microsoft.Bot.Builder.Azure
                     Document = json,
                 };
 
-                var etag = (change.Value as IStoreItem)?.ETag;
+                string etag = null;
+                if (change.Value is IStoreItem asIStoreItem)
+                {
+                    etag = asIStoreItem.ETag;
+                }
+                else if (change.Value is JObject asJobject && asJobject.ContainsKey("ETag"))
+                {
+                    etag = asJobject.Value<string>("ETag");
+                }
+
                 if (etag == null || etag == "*")
                 {
                     // if new item or * then insert or replace unconditionally

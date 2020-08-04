@@ -192,6 +192,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [TestMethod]
+        public async Task UpdateObjectTest_AsJObjects_TypeNameHandlingNone()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await UpdateObjectTest_AsJObjects(GetStorage(true));
+            }
+        }
+
+        [TestMethod]
         public async Task TestConversationStateBlobStorage_TypeNameHandlingNone()
         {
             if (StorageEmulatorHelper.CheckEmulator())

@@ -300,8 +300,17 @@ namespace Microsoft.Bot.Builder.Azure
                     ReadlId = change.Key,
                     Document = json,
                 };
+                
+                string etag = null;
+                if (change.Value is IStoreItem asIStoreItem)
+                {
+                    etag = asIStoreItem.ETag;
+                }
+                else if (change.Value is JObject asJobject && asJobject.ContainsKey("ETag"))
+                {
+                    etag = asJobject.Value<string>("ETag");
+                }
 
-                var etag = (change.Value as IStoreItem)?.ETag;
                 if (etag == null || etag == "*")
                 {
                     // if new item or * then insert or replace unconditionaly

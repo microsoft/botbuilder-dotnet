@@ -183,11 +183,20 @@ namespace Microsoft.Bot.Builder.Azure
             foreach (var keyValuePair in changes)
             {
                 var newValue = keyValuePair.Value;
-                var storeItem = newValue as IStoreItem;
+
+                string etag = null;
+                if (newValue is IStoreItem asIStoreItem)
+                {
+                    etag = asIStoreItem.ETag;
+                }
+                else if (newValue is JObject asJobject && asJobject.ContainsKey("ETag"))
+                {
+                    etag = asJobject.Value<string>("ETag");
+                }
 
                 // "*" eTag in IStoreItem converts to null condition for AccessCondition
-                var accessCondition = storeItem?.ETag != "*"
-                    ? AccessCondition.GenerateIfMatchCondition(storeItem?.ETag)
+                var accessCondition = etag != "*"
+                    ? AccessCondition.GenerateIfMatchCondition(etag)
                     : AccessCondition.GenerateEmptyCondition();
 
                 var blobName = GetBlobName(keyValuePair.Key);

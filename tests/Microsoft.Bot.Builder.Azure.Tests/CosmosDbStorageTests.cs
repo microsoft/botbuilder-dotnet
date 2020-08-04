@@ -596,7 +596,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 await StatePersistsThroughMultiTurn(storage);
             }
         }
-        
+
+        [TestMethod]
+        public async Task UpdateObjectTest_AsJObjects_TypeNameHandlingNone()
+        {
+            if (CheckEmulator())
+            {
+                await UpdateObjectTest_AsJObjects(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None }));
+            }
+        }
+
         [TestMethod]
         public async Task StatePersistsThroughMultiTurn_TypeNameHandlingAll()
         {

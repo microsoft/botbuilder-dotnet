@@ -229,6 +229,123 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal(100, finalStoreItems.MapValueTo<PocoStoreItem>("pocoStoreItem").Count);
         }
 
+        protected async Task UpdateObjectTest_AsJObjects(IStorage storage)
+        {
+            var originalPocoItem = new PocoItem() { Id = "1", Count = 1 };
+            var originalPocoStoreItem = new PocoStoreItem() { Id = "1", Count = 1 };
+
+            // first write should work
+            var dict = new Dictionary<string, object>()
+            {
+                { "pocoItem", originalPocoItem },
+                { "pocoStoreItem", originalPocoStoreItem },
+            };
+
+            await storage.WriteAsync(dict);
+
+            var loadedStoreItems = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
+
+            var updatePocoItem = loadedStoreItems["pocoItem"] as JObject;
+            var updatePocoStoreItem = loadedStoreItems["pocoStoreItem"] as JObject;
+            Assert.NotNull(updatePocoStoreItem.Value<string>("ETag"));
+
+            // 2nd write should work, because we have new etag, or no etag
+            updatePocoItem["Count"] = updatePocoItem.Value<int>("Count") + 1;
+            updatePocoStoreItem["Count"] = updatePocoStoreItem.Value<int>("Count") + 1;
+            
+            await storage.WriteAsync(loadedStoreItems);
+
+            var reloadedStoreItems = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
+
+            var reloeadedUpdatePocoItem = reloadedStoreItems["pocoItem"] as JObject;
+            var reloadedUpdatePocoStoreItem = reloadedStoreItems["pocoStoreItem"] as JObject;
+
+            Assert.NotNull(reloadedUpdatePocoStoreItem.Value<string>("ETag"));
+            Assert.NotEqual(updatePocoStoreItem.Value<string>("ETag"), reloadedUpdatePocoStoreItem.Value<string>("ETag"));
+            Assert.Equal(2, reloeadedUpdatePocoItem.Value<int>("Count"));
+            Assert.Equal(2, reloadedUpdatePocoStoreItem.Value<int>("Count"));
+
+            // write with old etag should succeed for non-storeitem
+            try
+            {
+                updatePocoItem["Count"] = 123;
+
+                await storage.WriteAsync(
+                    new Dictionary<string, object>() { { "pocoItem", updatePocoItem } });
+            }
+            catch
+            {
+                Assert.True(false); // This should not be hit
+            }
+
+            // write with old etag should FAIL for storeitem
+
+            updatePocoStoreItem["Count"] = 123;
+            bool threwException = false;
+            try
+            {
+                await storage.WriteAsync(new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } });
+            }
+            catch
+            {
+                threwException = true;
+            }
+
+            Assert.True(threwException);
+
+            var reloadedStoreItems2 = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
+
+            var reloadedPocoItem2 = reloadedStoreItems2["pocoItem"] as JObject;
+            var reloadedPocoStoreItem2 = reloadedStoreItems2["pocoStoreItem"] as JObject;
+
+            Assert.Equal(123, reloadedPocoItem2["Count"]);
+            Assert.Equal(2, reloadedPocoStoreItem2["Count"]);
+
+            // write with wildcard etag should work
+            reloadedPocoItem2["Count"] = 100;
+            reloadedPocoStoreItem2["Count"] = 100;
+            reloadedPocoStoreItem2["ETag"] = "*";
+
+            var wildcardEtagedict = new Dictionary<string, object>()
+            {
+                { "pocoItem", reloadedPocoItem2 },
+                { "pocoStoreItem", reloadedPocoStoreItem2 },
+            };
+
+            await storage.WriteAsync(wildcardEtagedict);
+
+            var reloadedStoreItems3 = await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" });
+
+            Assert.Equal(100, (reloadedStoreItems3["pocoItem"] as JObject).Value<int>("Count"));
+            Assert.Equal(100, (reloadedStoreItems3["pocoStoreItem"] as JObject).Value<int>("Count"));
+
+            // write with empty etag should not work
+            try
+            {
+                var reloadedStoreItems4 = await storage.ReadAsync(new[] { "pocoStoreItem" });
+                var reloadedStoreItem4 = reloadedStoreItems4["pocoStoreItem"] as JObject;
+
+                Assert.NotNull(reloadedStoreItem4);
+
+                reloadedStoreItem4["ETag"] = string.Empty;
+                var dict2 = new Dictionary<string, object>()
+                {
+                    { "pocoStoreItem", reloadedStoreItem4 },
+                };
+
+                await storage.WriteAsync(dict2);
+
+                Assert.True(false); // "Should have thrown exception on write with storeitem because of empty etag"
+            }
+            catch
+            {
+            }
+
+            var finalStoreItems = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
+            Assert.Equal(100, (finalStoreItems["pocoItem"] as JObject).Value<int>("Count"));
+            Assert.Equal(100, (finalStoreItems["pocoStoreItem"] as JObject).Value<int>("Count"));
+        }
+
         protected async Task DeleteObjectTest(IStorage storage)
         {
             // first write should work

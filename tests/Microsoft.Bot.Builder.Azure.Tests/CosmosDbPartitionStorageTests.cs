@@ -219,11 +219,31 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
-        public async Task UpdateObjectTest()
+        public async Task UpdateObjectTest_TypeNameHandlingNone()
         {
             if (CheckEmulator())
             {
-                await UpdateObjectTest(_storage);
+                await UpdateObjectTest(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None }));
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task UpdateObjectTest_AsJObjects_TypeNameHandlingNone()
+        {
+            if (CheckEmulator())
+            {
+                await UpdateObjectTest_AsJObjects(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None }));
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task UpdateObjectTest_TypeNameHandlingAll()
+        {
+            if (CheckEmulator())
+            {
+                await UpdateObjectTest(GetStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.All }));
             }
         }
 
