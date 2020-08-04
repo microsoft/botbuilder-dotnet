@@ -145,6 +145,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <returns>A <see cref="RecognizerResult"/> containing the QnA Maker result.</returns>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Schema.Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
+            var text = activity.Text ?? string.Empty;
             var detectAmbiguity = DetectAmbiguousIntents.GetValue(dialogContext.State);
 
             _modelPath = ModelPath.GetValue(dialogContext.State);
@@ -152,19 +153,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
             InitializeModel();
 
-            var tempContext = new TurnContext(dialogContext.Context.Adapter, activity);
-            foreach (var keyValue in dialogContext.Context.TurnState)
-            {
-                tempContext.TurnState[keyValue.Key] = keyValue.Value;
-            }
-
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var recognizerResult = this.Recognize(tempContext);
+            var recognizerResult = this.Recognize(text);
             sw.Stop();
             Trace.TraceInformation($"Orchestrator recognize in {sw.ElapsedMilliseconds}ms");
-
-            tempContext.Dispose();
 
             if (EntityRecognizers.Count != 0)
             {
@@ -224,11 +217,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <summary>
         /// Returns recognition result.
         /// </summary>
-        /// <param name="turnContext">Turn context.</param>
+        /// <param name="text">Text to recognize.</param>
         /// <returns>Recognizer rsult.</returns>
-        public RecognizerResult Recognize(ITurnContext turnContext)
+        public RecognizerResult Recognize(string text)
         {
-            var text = turnContext.Activity.Text ?? string.Empty;
             var recognizerResult = new RecognizerResult()
             {
                 Text = text,

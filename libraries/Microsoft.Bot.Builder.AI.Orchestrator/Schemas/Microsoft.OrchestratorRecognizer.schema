@@ -14,13 +14,13 @@
             "$ref": "schema:#/definitions/stringExpression",
             "title": "Model",
             "description": "NLR model file path.",
-            "default": "settings.orchestrator.modelpath"
+            "default": "=settings.orchestrator.modelpath"
         },
         "snapshotPath": {
             "$ref": "schema:#/definitions/stringExpression",
             "title": "Endpoint Key",
             "description": "SnapShot file path.",
-            "default": "settings.orchestrator.shapshotpath"
+            "default": "=settings.orchestrator.shapshotpath"
         },
         "entityRecognizers": {
             "type": "array",
