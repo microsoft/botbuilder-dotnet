@@ -30,7 +30,7 @@ variables:
 #  DotNetCoverallsToken: define this in Azure
 #  GitHubCommentApiKey: define this in Azure
   IsBuildServer: true # This activates package versioning in the projects in Microsoft.Bot.Builder.sln.
-  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RestoreConfigFile=nuget.config
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   ReleasePackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
