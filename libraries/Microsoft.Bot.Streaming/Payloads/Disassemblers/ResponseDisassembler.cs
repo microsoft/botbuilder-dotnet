@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         public override char Type => PayloadTypes.Response;
 
-        public override Task<StreamWrapper> GetStreamAsync(CancellationToken cancellationToken = default)
+        public override Task<StreamWrapper> GetStreamAsync()
         {
             var payload = new ResponsePayload()
             {

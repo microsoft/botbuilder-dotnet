@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         public override char Type => PayloadTypes.Stream;
 
-        public override async Task<StreamWrapper> GetStreamAsync(CancellationToken cancellationToken = default)
+        public override async Task<StreamWrapper> GetStreamAsync()
         {
             var stream = await ContentStream.Content.ReadAsStreamAsync().ConfigureAwait(false);
             var description = GetStreamDescription(ContentStream);
