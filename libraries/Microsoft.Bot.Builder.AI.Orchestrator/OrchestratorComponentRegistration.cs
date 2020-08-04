@@ -15,21 +15,21 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
     public class OrchestratorComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
         /// <summary>
-        /// Gets a list of <see cref="OrchestratorAdaptiveRecognizer"/> declarative type objects.
+        /// Gets a list of <see cref="OrchestratorRecognizer"/> declarative type objects.
         /// </summary>
         /// <param name="resourceExplorer">An instance of <see cref="ResourceExplorer"/>.</param>
-        /// <returns>A collection of <see cref="DeclarativeType"/> of <see cref="OrchestratorAdaptiveRecognizer"/>.</returns>
+        /// <returns>A collection of <see cref="DeclarativeType"/> of <see cref="OrchestratorRecognizer"/>.</returns>
         public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
-            yield return new DeclarativeType<OrchestratorAdaptiveRecognizer>(OrchestratorAdaptiveRecognizer.Kind);
+            yield return new DeclarativeType<OrchestratorRecognizer>(OrchestratorRecognizer.Kind);
         }
 
         /// <summary>
-        /// Gets a list of <see cref="OrchestratorAdaptiveRecognizer"/> declarative type objects.
+        /// Gets a list of <see cref="OrchestratorRecognizer"/> declarative type objects.
         /// </summary>
         /// <param name="resourceExplorer">An instance of <see cref="ResourceExplorer"/>.</param>
         /// <param name="sourceContext">An instance of <see cref="SourceContext"/>.</param>
-        /// <returns>A collection of <see cref="DeclarativeType"/> of <see cref="OrchestratorAdaptiveRecognizer"/>.</returns>
+        /// <returns>A collection of <see cref="DeclarativeType"/> of <see cref="OrchestratorRecognizer"/>.</returns>
         public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield break;
