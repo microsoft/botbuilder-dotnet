@@ -27,7 +27,8 @@
   <PropertyGroup>
     <!-- These documentation warnings excludes should be removed as part of https://github.com/microsoft/botbuilder-dotnet/issues/4052 -->
     <!-- SX1309: FieldNamesShouldBeginWithUnderscores should be fixed as part of https://github.com/microsoft/botframework-sdk/issues/5933 -->
-    <NoWarn>$(NoWarn);CS1591;SX1309</NoWarn>
+    <!-- CA1812: Internal class that is apparently never instantiated. A lot of internal classes are just used for serialization and not instantiated explicitly, excliding from this project only -->
+    <NoWarn>$(NoWarn);CS1591;SX1309;CA1812</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

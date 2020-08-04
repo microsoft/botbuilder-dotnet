@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -33,8 +34,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             this.stateByFilter["EndDialog"] = false;
         }
 
-        Protocol.ExceptionBreakpointFilter[] IEvents.Filters =>
-            this.stateByFilter.Select(kv => new Protocol.ExceptionBreakpointFilter() { Label = kv.Key, Filter = kv.Key, Default = kv.Value }).ToArray();
+        ExceptionBreakpointFilter[] IEvents.Filters =>
+            this.stateByFilter.Select(kv => new ExceptionBreakpointFilter() { Label = kv.Key, Filter = kv.Key, Default = kv.Value }).ToArray();
 
         bool IEvents.this[string filter]
         {

@@ -9,6 +9,8 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Debugging.DataModels;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -43,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private readonly Task task;
 
-        private Protocol.LaunchAttach options = new Protocol.LaunchAttach();
+        private LaunchAttach options = new LaunchAttach();
         private int sequence = 0;
 
         public DialogDebugAdapter(int port, ISourceMap sourceMap, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
@@ -189,12 +191,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             var body = new
             {
                 output = text + Environment.NewLine,
-                source = found ? new Protocol.Source(range.Path) : null,
+                source = found ? new Source(range.Path) : null,
                 line = found ? (int?)range.StartPoint.LineIndex : null,
                 variablesReference = code,
             };
 
-            await SendAsync(Protocol.Event.From(NextSeq, "output", body), cancellationToken).ConfigureAwait(false);
+            await SendAsync(Event.From(NextSeq, "output", body), cancellationToken).ConfigureAwait(false);
         }
 
         public async Task DisposeAsync()
@@ -260,8 +262,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 try
                 {
                     var token = await ReadAsync(cancellationToken).ConfigureAwait(false);
-                    var request = Protocol.Parse(token);
-                    Protocol.Message message;
+                    var request = ProtocolMessage.Parse(token);
+                    Message message;
                     try
                     {
                         message = await DispatchAsync(request, cancellationToken).ConfigureAwait(false);
@@ -270,7 +272,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     catch (Exception error)
 #pragma warning restore CA1031 // Do not catch general exception types
                     {
-                        message = Protocol.Response.Fail(NextSeq, request, error.Message);
+                        message = Response.Fail(NextSeq, request, error.Message);
                     }
 
                     await SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -328,7 +330,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             // consider resetting this.events filter enabled state to defaults from constructor
 
-            this.options = new Protocol.LaunchAttach();
+            this.options = new LaunchAttach();
             this.breakpoints.Clear();
             this.output.ValueCodes.Clear();
             ContinueAllThreads();
@@ -369,7 +371,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
 
                 var body = new { reason = "changed", breakpoint };
-                await SendAsync(Protocol.Event.From(NextSeq, "breakpoint", body), cancellationToken).ConfigureAwait(false);
+                await SendAsync(Event.From(NextSeq, "breakpoint", body), cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -404,11 +406,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             if (phase == Phase.Started || phase == Phase.Exited)
             {
-                await SendAsync(Protocol.Event.From(NextSeq, "thread", new { threadId, reason }), cancellationToken).ConfigureAwait(false);
+                await SendAsync(Event.From(NextSeq, "thread", new { threadId, reason }), cancellationToken).ConfigureAwait(false);
             }
             else if (phase == Phase.Continue)
             {
-                await SendAsync(Protocol.Event.From(NextSeq, "continued", new { threadId, allThreadsContinued = false }), cancellationToken).ConfigureAwait(false);
+                await SendAsync(Event.From(NextSeq, "continued", new { threadId, allThreadsContinued = false }), cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -422,13 +424,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     allThreadsStopped = false,
                 };
 
-                await SendAsync(Protocol.Event.From(NextSeq, "stopped", body), cancellationToken).ConfigureAwait(false);
+                await SendAsync(Event.From(NextSeq, "stopped", body), cancellationToken).ConfigureAwait(false);
             }
 
             run.PhaseSent = run.Phase;
         }
 
-        private async Task SendAsync(Protocol.Message message, CancellationToken cancellationToken)
+        private async Task SendAsync(Message message, CancellationToken cancellationToken)
         {
             var token = JToken.FromObject(message, new JsonSerializer()
             {
@@ -438,10 +440,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             await SendAsync(token, cancellationToken).ConfigureAwait(false);
         }
 
-        private Protocol.Capabilities MakeCapabilities()
+        private Capabilities MakeCapabilities()
         {
             // TODO: there is a "capabilities" event for dynamic updates, but exceptionBreakpointFilters does not seem to be dynamically updateable
-            return new Protocol.Capabilities()
+            return new Capabilities()
             {
                 SupportsConfigurationDoneRequest = true,
                 SupportsSetVariable = true,
@@ -453,26 +455,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             };
         }
 
-        private async Task<Protocol.Message> DispatchAsync(Protocol.Message message, CancellationToken cancellationToken)
+        private async Task<Message> DispatchAsync(Message message, CancellationToken cancellationToken)
         {
-            if (message is Protocol.Request<Protocol.Initialize> initialize)
+            if (message is Request<Initialize> initialize)
             {
                 var body = MakeCapabilities();
-                var response = Protocol.Response.From(NextSeq, initialize, body);
+                var response = Response.From(NextSeq, initialize, body);
                 await SendAsync(response, cancellationToken).ConfigureAwait(false);
-                return Protocol.Event.From(NextSeq, "initialized", new { });
+                return Event.From(NextSeq, "initialized", new { });
             }
-            else if (message is Protocol.Request<Protocol.Launch> launch)
+            else if (message is Request<Launch> launch)
             {
                 this.options = launch.Arguments;
-                return Protocol.Response.From(NextSeq, launch, new { });
+                return Response.From(NextSeq, launch, new { });
             }
-            else if (message is Protocol.Request<Protocol.Attach> attach)
+            else if (message is Request<Attach> attach)
             {
                 this.options = attach.Arguments;
-                return Protocol.Response.From(NextSeq, attach, new { });
+                return Response.From(NextSeq, attach, new { });
             }
-            else if (message is Protocol.Request<Protocol.SetBreakpoints> setBreakpoints)
+            else if (message is Request<SetBreakpoints> setBreakpoints)
             {
                 var arguments = setBreakpoints.Arguments;
                 var file = Path.GetFileName(arguments.Source.Path);
@@ -488,9 +490,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     }
                 }
 
-                return Protocol.Response.From(NextSeq, setBreakpoints, new { breakpoints });
+                return Response.From(NextSeq, setBreakpoints, new { breakpoints });
             }
-            else if (message is Protocol.Request<Protocol.SetFunctionBreakpoints> setFunctionBreakpoints)
+            else if (message is Request<SetFunctionBreakpoints> setFunctionBreakpoints)
             {
                 var arguments = setFunctionBreakpoints.Arguments;
                 await OutputAsync($"Set function breakpoints.", null, null, cancellationToken).ConfigureAwait(false);
@@ -504,34 +506,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     }
                 }
 
-                return Protocol.Response.From(NextSeq, setFunctionBreakpoints, new { breakpoints });
+                return Response.From(NextSeq, setFunctionBreakpoints, new { breakpoints });
             }
-            else if (message is Protocol.Request<Protocol.SetExceptionBreakpoints> setExceptionBreakpoints)
+            else if (message is Request<SetExceptionBreakpoints> setExceptionBreakpoints)
             {
                 var arguments = setExceptionBreakpoints.Arguments;
                 this.events.Reset(arguments.Filters);
 
-                return Protocol.Response.From(NextSeq, setExceptionBreakpoints, new { });
+                return Response.From(NextSeq, setExceptionBreakpoints, new { });
             }
-            else if (message is Protocol.Request<Protocol.Threads> threads)
+            else if (message is Request<Threads> threads)
             {
                 var body = new
                 {
                     threads = this.threads.Select(t => new { id = t.Key, name = t.Value.Name }).ToArray()
                 };
 
-                return Protocol.Response.From(NextSeq, threads, body);
+                return Response.From(NextSeq, threads, body);
             }
-            else if (message is Protocol.Request<Protocol.StackTrace> stackTrace)
+            else if (message is Request<StackTrace> stackTrace)
             {
                 var arguments = stackTrace.Arguments;
                 var thread = this.threads[arguments.ThreadId];
 
                 var frames = thread.Frames;
-                var stackFrames = new List<Protocol.StackFrame>();
+                var stackFrames = new List<StackFrame>();
                 foreach (var frame in frames)
                 {
-                    var stackFrame = new Protocol.StackFrame()
+                    var stackFrame = new StackFrame()
                     {
                         Id = EncodeFrame(thread, frame),
                         Name = frame.Name
@@ -548,9 +550,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     stackFrames.Add(stackFrame);
                 }
 
-                return Protocol.Response.From(NextSeq, stackTrace, new { stackFrames });
+                return Response.From(NextSeq, stackTrace, new { stackFrames });
             }
-            else if (message is Protocol.Request<Protocol.Scopes> scopes)
+            else if (message is Request<Scopes> scopes)
             {
                 var arguments = scopes.Arguments;
                 DecodeFrame(arguments.FrameId, out var thread, out var frame);
@@ -564,9 +566,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     }
                 };
 
-                return Protocol.Response.From(NextSeq, scopes, body);
+                return Response.From(NextSeq, scopes, body);
             }
-            else if (message is Protocol.Request<Protocol.Variables> vars)
+            else if (message is Request<Variables> vars)
             {
                 var arguments = vars.Arguments;
                 DecodeValue(arguments.VariablesReference, out var arena, out var context);
@@ -582,9 +584,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                                 .ToArray()
                 };
 
-                return Protocol.Response.From(NextSeq, vars, body);
+                return Response.From(NextSeq, vars, body);
             }
-            else if (message is Protocol.Request<Protocol.SetVariable> setVariable)
+            else if (message is Request<SetVariable> setVariable)
             {
                 var arguments = setVariable.Arguments;
                 DecodeValue(arguments.VariablesReference, out var arena, out var context);
@@ -597,9 +599,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     variablesReference = EncodeValue(arena, value)
                 };
 
-                return Protocol.Response.From(NextSeq, setVariable, body);
+                return Response.From(NextSeq, setVariable, body);
             }
-            else if (message is Protocol.Request<Protocol.Evaluate> evaluate)
+            else if (message is Request<Evaluate> evaluate)
             {
                 var arguments = evaluate.Arguments;
                 DecodeFrame(arguments.FrameId, out var thread, out var frame);
@@ -614,16 +616,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         variablesReference = EncodeValue(thread, result),
                     };
 
-                    return Protocol.Response.From(NextSeq, evaluate, body);
+                    return Response.From(NextSeq, evaluate, body);
                 }
 #pragma warning disable CA1031 // Do not catch general exception types (catch any exception and return it)
                 catch (Exception ex)
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
-                    return Protocol.Response.Fail(NextSeq, evaluate, ex.Message);
+                    return Response.Fail(NextSeq, evaluate, ex.Message);
                 }
             }
-            else if (message is Protocol.Request<Protocol.Continue> cont)
+            else if (message is Request<Continue> cont)
             {
                 bool found = this.threads.TryGetValue(cont.Arguments.ThreadId, out var thread);
                 if (found)
@@ -631,9 +633,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     thread.Run.Post(Phase.Continue);
                 }
 
-                return Protocol.Response.From(NextSeq, cont, new { allThreadsContinued = false });
+                return Response.From(NextSeq, cont, new { allThreadsContinued = false });
             }
-            else if (message is Protocol.Request<Protocol.Pause> pause)
+            else if (message is Request<Pause> pause)
             {
                 bool found = this.threads.TryGetValue(pause.Arguments.ThreadId, out var thread);
                 if (found)
@@ -641,9 +643,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     thread.Run.Post(Phase.Pause);
                 }
 
-                return Protocol.Response.From(NextSeq, pause, new { });
+                return Response.From(NextSeq, pause, new { });
             }
-            else if (message is Protocol.Request<Protocol.Next> next)
+            else if (message is Request<Next> next)
             {
                 bool found = this.threads.TryGetValue(next.Arguments.ThreadId, out var thread);
                 if (found)
@@ -651,18 +653,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     thread.Run.Post(Phase.Next);
                 }
 
-                return Protocol.Response.From(NextSeq, next, new { });
+                return Response.From(NextSeq, next, new { });
             }
-            else if (message is Protocol.Request<Protocol.Terminate> terminate)
+            else if (message is Request<Terminate> terminate)
             {
                 if (this.terminate != null)
                 {
                     this.terminate();
                 }
 
-                return Protocol.Response.From(NextSeq, terminate, new { });
+                return Response.From(NextSeq, terminate, new { });
             }
-            else if (message is Protocol.Request<Protocol.Disconnect> disconnect)
+            else if (message is Request<Disconnect> disconnect)
             {
                 var arguments = disconnect.Arguments;
                 if (arguments.TerminateDebuggee && this.terminate != null)
@@ -674,44 +676,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     this.ResetOnDisconnect();
                 }
 
-                return Protocol.Response.From(NextSeq, disconnect, new { });
+                return Response.From(NextSeq, disconnect, new { });
             }
-            else if (message is Protocol.Request request)
+            else if (message is Request request)
             {
-                return Protocol.Response.From(NextSeq, request, new { });
+                return Response.From(NextSeq, request, new { });
             }
-            else if (message is Protocol.Event @event)
+            else if (message is Event @event)
             {
                 throw new NotImplementedException();
             }
             else
             {
                 throw new NotImplementedException();
-            }
-        }
-
-#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat, consider fixing this before we go out of preview)
-        public sealed class RunModel
-#pragma warning restore CA1034 // Nested types should not be visible
-        {
-            public Phase? PhaseSent { get; set; }
-
-            public Phase Phase { get; set; } = Phase.Started;
-
-            public object Gate { get; } = new object();
-
-            public void Post(Phase what)
-            {
-                Monitor.Enter(Gate);
-                try
-                {
-                    Phase = what;
-                    Monitor.Pulse(Gate);
-                }
-                finally
-                {
-                    Monitor.Exit(Gate);
-                }
             }
         }
 

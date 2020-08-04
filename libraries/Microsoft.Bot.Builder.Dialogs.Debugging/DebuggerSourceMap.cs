@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -24,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             this.codeModel = codeModel ?? throw new ArgumentNullException(nameof(codeModel));
         }
 
-        public static bool Equals(Protocol.Range target, SourceRange source) =>
+        public static bool Equals(Range target, SourceRange source) =>
             (target.Source == null && source == null)
             || (PathEquals(target.Source.Path, source.Path)
                 && target.Line == source.StartPoint.LineIndex
@@ -32,12 +33,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 && target.Column == source.StartPoint.CharIndex
                 && target.EndColumn == source.EndPoint.CharIndex);
 
-        public static void Assign(Protocol.Range target, SourceRange source)
+        public static void Assign(Range target, SourceRange source)
         {
             if (source != null)
             {
                 target.Designer = source.Designer;
-                target.Source = new Protocol.Source(source.Path);
+                target.Source = new Source(source.Path);
                 target.Line = source.StartPoint.LineIndex;
                 target.EndLine = source.EndPoint.LineIndex;
                 target.Column = source.StartPoint.CharIndex;
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        public static void Assign(Protocol.Range target, string item, string more)
+        public static void Assign(Range target, string item, string more)
         {
             target.Item = item;
             target.More = more;
@@ -100,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints)
+        IReadOnlyList<Breakpoint> IBreakpoints.SetBreakpoints(Source source, IReadOnlyList<SourceBreakpoint> sourceBreakpoints)
         {
             lock (gate)
             {
@@ -113,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     }
                 }
 
-                var breakpoints = new List<Protocol.Breakpoint>(sourceBreakpoints.Count);
+                var breakpoints = new List<Breakpoint>(sourceBreakpoints.Count);
 
                 foreach (var sourceBreakpoint in sourceBreakpoints)
                 {
@@ -128,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints)
+        IReadOnlyList<Breakpoint> IBreakpoints.SetBreakpoints(IReadOnlyList<FunctionBreakpoint> functionBreakpoints)
         {
             lock (gate)
             {
@@ -140,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     }
                 }
 
-                var breakpoints = new List<Protocol.Breakpoint>(functionBreakpoints.Count);
+                var breakpoints = new List<Breakpoint>(functionBreakpoints.Count);
 
                 foreach (var functionBreakpoint in functionBreakpoints)
                 {
@@ -155,11 +156,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.ApplyUpdates()
+        IReadOnlyList<Breakpoint> IBreakpoints.ApplyUpdates()
         {
             lock (gate)
             {
-                IReadOnlyList<Protocol.Breakpoint> updates = Array.Empty<Protocol.Breakpoint>();
+                IReadOnlyList<Breakpoint> updates = Array.Empty<Breakpoint>();
                 if (dirty)
                 {
                     updates = Update();
@@ -178,7 +179,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        object IBreakpoints.ItemFor(Protocol.Breakpoint breakpoint)
+        object IBreakpoints.ItemFor(Breakpoint breakpoint)
         {
             lock (gate)
             {
@@ -278,11 +279,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        private IReadOnlyList<Protocol.Breakpoint> Update()
+        private IReadOnlyList<Breakpoint> Update()
         {
             lock (gate)
             {
-                var changes = new List<Protocol.Breakpoint>();
+                var changes = new List<Breakpoint>();
 
                 foreach (var row in rows.Items)
                 {
@@ -299,32 +300,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 return changes;
             }
-        }
-
-#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat, consider fixing this before we go out of preview)
-        public sealed class Row
-#pragma warning restore CA1034 // Nested types should not be visible
-        {
-            public Row(Protocol.Source source, Protocol.SourceBreakpoint sourceBreakpoint)
-            {
-                Source = source;
-                SourceBreakpoint = sourceBreakpoint;
-            }
-
-            public Row(Protocol.FunctionBreakpoint functionBreakpoint)
-            {
-                FunctionBreakpoint = functionBreakpoint;
-            }
-
-            public Protocol.Source Source { get; }
-
-            public Protocol.SourceBreakpoint SourceBreakpoint { get; }
-
-            public Protocol.FunctionBreakpoint FunctionBreakpoint { get; }
-
-            public Protocol.Breakpoint Breakpoint { get; } = new Protocol.Breakpoint();
-
-            public object Item { get; set; }
         }
     }
 }
