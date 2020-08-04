@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -27,6 +28,19 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </remarks>
     public class Recognizer
     {
+        /// <summary>
+        /// Intent name that will be produced by this recognizer if the child recognizers do not have consensus for intents.
+        /// </summary>
+        public const string ChooseIntent = "ChooseIntent";
+
+        /// <summary>
+        /// Standard none intent that means none of the recognizers recognize the intent.
+        /// </summary>
+        /// <remarks>
+        /// If each recognizer returns no intents or None intents, then this recognizer will return None intent.
+        /// </remarks>
+        public const string NoneIntent = "None";
+
         public Recognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             if (!string.IsNullOrEmpty(callerPath))
@@ -145,6 +159,50 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             TelemetryClient.TrackEvent(eventName, telemetryProperties, telemetryMetrics);
+        }
+
+        /// <summary>
+        /// CreateChooseIntentResult - returns ChooseIntent between multiple recognizer results.
+        /// </summary>
+        /// <param name="recognizerResults">recognizer Id => recognizer results map.</param>
+        /// <returns>recognizerResult which is ChooseIntent.</returns>
+        protected RecognizerResult CreateChooseIntentResult(Dictionary<string, RecognizerResult> recognizerResults)
+        {
+            string text = null;
+            List<JObject> candidates = new List<JObject>();
+
+            foreach (var recognizerResult in recognizerResults)
+            {
+                text = recognizerResult.Value.Text;
+                var (intent, score) = recognizerResult.Value.GetTopScoringIntent();
+                if (intent != NoneIntent)
+                {
+                    dynamic candidate = new JObject();
+                    candidate.id = recognizerResult.Key;
+                    candidate.intent = intent;
+                    candidate.score = score;
+                    candidate.result = JObject.FromObject(recognizerResult.Value);
+                    candidates.Add(candidate);
+                }
+            }
+
+            if (candidates.Any())
+            {
+                // return ChooseIntent with candidates array
+                return new RecognizerResult()
+                {
+                    Text = text,
+                    Intents = new Dictionary<string, IntentScore>() { { ChooseIntent, new IntentScore() { Score = 1.0 } } },
+                    Properties = new Dictionary<string, object>() { { "candidates", candidates } },
+                };
+            }
+
+            // just return a none intent
+            return new RecognizerResult()
+            {
+                Text = text,
+                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
+            };
         }
     }
 }

@@ -37,18 +37,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// </summary>
         public const string ResultProperty = "result";
 
-        /// <summary>
-        /// Intent name that will be produced by this recognizer if the child recognizers do not have consensus for intents.
-        /// </summary>
-        private const string ChooseIntent = "ChooseIntent";
-
-        /// <summary>
-        /// Property name for candidate intents that meet the ambiguity threshold.
-        /// </summary>
-        private const string CandidatesCollection = "candidates";
-
         private const float UnknownIntentFilterScore = 0.4F;
-        private const string NoneIntent = "None";
         private static Microsoft.Orchestrator.Orchestrator orchestrator = null;
         private string _modelPath;
         private string _snapshotPath;
@@ -94,7 +83,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Model path.
         /// </value>
         [JsonProperty("modelPath")]
-        public StringExpression ModelPath { get; set; }
+        public StringExpression ModelPath { get; set; } = "=settings.orchestrator.modelPath";
 
         /// <summary>
         /// Gets or sets the full path to the snapshot to use.
@@ -103,7 +92,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Snapshot path.
         /// </value>
         [JsonProperty("snapshotPath")]
-        public StringExpression SnapshotPath { get; set; }
+        public StringExpression SnapshotPath { get; set; } = "=settings.orchestrator.snapshotPath";
 
         /// <summary>
         /// Gets or sets the entity recognizers.
@@ -152,19 +141,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
             InitializeModel();
 
-            var tempContext = new TurnContext(dialogContext.Context.Adapter, activity);
-            foreach (var keyValue in dialogContext.Context.TurnState)
-            {
-                tempContext.TurnState[keyValue.Key] = keyValue.Value;
-            }
-
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var recognizerResult = this.Recognize(tempContext);
+            var recognizerResult = this.RecognizeText(dialogContext, activity.Text);
             sw.Stop();
             Trace.TraceInformation($"Orchestrator recognize in {sw.ElapsedMilliseconds}ms");
-
-            tempContext.Dispose();
 
             if (EntityRecognizers.Count != 0)
             {
@@ -172,47 +153,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 recognizerResult = await RecognizeEntitiesAsync(dialogContext, activity, recognizerResult).ConfigureAwait(false);
             }
 
-            // Score with orchestrator
+            // save raw result
             recognizerResult.Properties.TryGetValue(ResultProperty, out var resultObject);
-
-            var result = (IReadOnlyCollection<Result>)resultObject;
-
-            if (result.Any())
-            {
-                // Disambiguate if configured
-                if (detectAmbiguity == true)
-                {
-                    var topScore = result.First().Score;
-                    var thresholdScore = DisambiguationScoreThreshold.GetValue(dialogContext.State);
-                    var classifyingScore = Math.Round(topScore, 2) - Math.Round(thresholdScore, 2);
-                    var ambiguousIntents = result.Where(item => item.Score >= classifyingScore);
-
-                    if (ambiguousIntents.Any())
-                    {
-                        // Add ambiguous intents that meet the threshold as candidates.
-                        var candidates = new JObject();
-                        foreach (Result ambiguousIntent in ambiguousIntents)
-                        {
-                            var candidate = new JObject();
-                            candidate.Add("intent", ambiguousIntent.Label.Name);
-                            candidate.Add("score", ambiguousIntent.Score);
-                            candidate.Add("closestText", ambiguousIntent.ClosestText);
-                            var recoResult = new RecognizerResult();
-                            recoResult.Intents.Add(ambiguousIntent.Label.Name, new IntentScore()
-                            {
-                                Score = ambiguousIntent.Score
-                            });
-                            recoResult.Entities = recognizerResult.Entities;
-                            recoResult.Text = recognizerResult.Text;
-                            candidate.Add("result", JObject.FromObject(recoResult));
-                            candidates.Add(ambiguousIntent.Label.Name, candidate);
-                        }
-
-                        recognizerResult.Intents.Add(ChooseIntent, new IntentScore() { Score = 1.0 });
-                        recognizerResult.Properties = new Dictionary<string, object>() { { CandidatesCollection, candidates } };
-                    }
-                }
-            }
 
             await dialogContext.Context.TraceActivityAsync(nameof(OrchestratorRecognizer), JObject.FromObject(recognizerResult), nameof(OrchestratorRecognizer), "Orchestrator Recognition ", cancellationToken).ConfigureAwait(false);
 
@@ -224,11 +166,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <summary>
         /// Returns recognition result.
         /// </summary>
-        /// <param name="turnContext">Turn context.</param>
+        /// <param name="dc">dialog Context.</param>
+        /// <param name="text">text.</param>
         /// <returns>Recognizer rsult.</returns>
-        public RecognizerResult Recognize(ITurnContext turnContext)
+        private RecognizerResult RecognizeText(DialogContext dc, string text)
         {
-            var text = turnContext.Activity.Text ?? string.Empty;
             var recognizerResult = new RecognizerResult()
             {
                 Text = text,
@@ -244,49 +186,71 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             // Score with orchestrator
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var result = this._resolver.Score(text);
+            var results = this._resolver.Score(text);
             sw.Stop();
             Console.WriteLine($"Orchestrator recognize : {sw.ElapsedMilliseconds}");
 
-            if (result.Any())
-            {
-                AddTopScoringIntent(result, ref recognizerResult);
-            }
-
             // Add full recognition result as a 'result' property
-            recognizerResult.Properties.Add(ResultProperty, result);
+            recognizerResult.Properties.Add(ResultProperty, results);
 
-            // Return 'None' if no intent matched.
-            if (!recognizerResult.Intents.Any())
+            if (results.Any())
             {
+                var topScore = results[0].Score;
+
+                // if top scoring intent is less than threshold, return None
+                if (topScore < UnknownIntentFilterScore)
+                {
+                    recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
+                }
+                else
+                {
+                    // add top score
+                    AddResultAsIntent(recognizerResult, results[0]);
+
+                    // Disambiguate if configured
+                    bool detectAmbiguity = this.DetectAmbiguousIntents.GetValue(dc.State);
+                    if (detectAmbiguity)
+                    {
+                        var thresholdScore = DisambiguationScoreThreshold.GetValue(dc.State);
+                        var classifyingScore = Math.Round(topScore, 2) - Math.Round(thresholdScore, 2);
+                        var ambigiousResults = results.Where(item => item.Score >= classifyingScore).ToList();
+
+                        if (ambigiousResults.Count > 1)
+                        {
+                            // create a RecognizerResult for each ambigious result.
+                            var recognizerResults = ambigiousResults.Select(result => new RecognizerResult()
+                            {
+                                Text = text,
+                                AlteredText = result.ClosestText,
+                                Entities = recognizerResult.Entities,
+                                Properties = recognizerResult.Properties,
+                                Intents = new Dictionary<string, IntentScore>()
+                                {
+                                    { result.Label.Name, new IntentScore() { Score = result.Score } }
+                                },
+                            });
+
+                            // create a RecognizerResult with ChooseIntent => Amibgious recognizerResults as candidates. 
+                            recognizerResult = CreateChooseIntentResult(recognizerResults.ToDictionary(result => this.Id, result => result));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Return 'None' if no intent matched.
                 recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
             }
 
             return recognizerResult;
         }
 
-        private static RecognizerResult AddTopScoringIntent(IReadOnlyList<Result> result, ref RecognizerResult recognizerResult)
+        private void AddResultAsIntent(RecognizerResult recognizerResult, Result result)
         {
-            var topScoringIntent = result[0].Label.Name;
-            var topScore = result[0].Score;
-
-            // if top scoring intent is less than threshold, return None
-            if (topScore < UnknownIntentFilterScore)
+            recognizerResult.Intents.Add(result.Label.Name, new IntentScore()
             {
-                recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
-            }
-            else
-            {
-                if (!recognizerResult.Intents.ContainsKey(topScoringIntent))
-                {
-                    recognizerResult.Intents.Add(topScoringIntent, new IntentScore()
-                    {
-                        Score = result[0].Score
-                    });
-                }
-            }
-
-            return recognizerResult;
+                Score = result.Score
+            });
         }
 
         private async Task<RecognizerResult> RecognizeEntitiesAsync(DialogContext dialogContext, Schema.Activity activity, RecognizerResult recognizerResult)
