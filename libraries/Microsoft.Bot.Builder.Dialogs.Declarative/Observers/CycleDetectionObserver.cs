@@ -11,8 +11,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
     /// <see cref="IConverterObserver"/> dedicated to find cycles and properly aid in the type-loading
     /// of cyclical graphs.
     /// </summary>
+#pragma warning disable CA1812 // Internal class that is apparently never instantiated (Excluding for now, Carlos is addressing this in another branch)
     internal class CycleDetectionObserver : IConverterObserver
-    {
+#pragma warning restore CA1812 // Internal class that is apparently never instantiated
+{
         private readonly Dictionary<int, object> cache = new Dictionary<int, object>();
         private readonly HashSet<int> visitedPassOne = new HashSet<int>();
         private readonly HashSet<int> visitedPassTwo = new HashSet<int>();
@@ -25,7 +27,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
         /// </value>
         public CycleDetectionPasses CycleDetectionPass { get; set; } = CycleDetectionPasses.PassOne;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Notifies <see cref="IConverterObserver"/> instances before type-loading a <see cref="JToken"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the concrete object to be built.</typeparam>
+        /// <param name="token">Token to be used to build the object.</param>
+        /// <param name="result">Output parameter for observer to provide its result to the converter.</param>
+        /// <returns>True if the observer provides a result and False if not.</returns>
         public bool OnBeforeLoadToken<T>(JToken token, out T result)
             where T : class
         {
@@ -88,7 +96,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
             return false;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Notifies <see cref="IConverterObserver"/> instances after type-loading a <see cref="JToken"/> into the 
+        /// provided instance of <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the concrete object that was built.</typeparam>
+        /// <param name="token">Token used to build the object.</param>
+        /// <param name="loaded">Object that was built using the token.</param>
+        /// <param name="result">Output parameter for observer to provide its result to the converter.</param>
+        /// <returns>True if the observer provides a result and False if not.</returns>
         public bool OnAfterLoadToken<T>(JToken token, T loaded, out T result)
             where T : class
         {

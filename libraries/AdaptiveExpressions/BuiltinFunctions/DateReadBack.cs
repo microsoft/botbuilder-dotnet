@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -11,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class DateReadBack : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DateReadBack"/> class.
+        /// </summary>
         public DateReadBack()
             : base(ExpressionType.DateReadBack, Evaluator(), ReturnType.String, Validator)
         {
@@ -31,7 +35,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         if (error == null)
                         {
                             var timestamp2 = (DateTime)result;
-                            var timex = new TimexProperty(timestamp2.ToString("yyyy-MM-dd"));
+                            var timex = new TimexProperty(timestamp2.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
                             result = TimexRelativeConvert.ConvertTimexToStringRelative(timex, timestamp1);
                         }
                     }

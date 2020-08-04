@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsDuration : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsDuration"/> class.
+        /// </summary>
         public IsDuration()
             : base(ExpressionType.IsDuration, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

@@ -13,6 +13,9 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
     using System.Linq;
 
+    /// <summary>
+    /// A type containing information for single sign-on.
+    /// </summary>
     public partial class SignInResource
     {
         /// <summary>

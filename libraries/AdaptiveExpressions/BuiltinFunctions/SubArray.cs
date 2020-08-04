@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class SubArray : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SubArray"/> class.
+        /// </summary>
         public SubArray()
             : base(ExpressionType.SubArray, EvalSubArray, ReturnType.Array, Validator)
         {

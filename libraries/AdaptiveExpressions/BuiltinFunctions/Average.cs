@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -11,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Average : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Average"/> class.
+        /// </summary>
         public Average()
             : base(ExpressionType.Average, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {
@@ -22,7 +26,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         args =>
                         {
                             var operands = FunctionUtils.ResolveListValue(args[0]).OfType<object>().ToList();
-                            return operands.Average(u => Convert.ToSingle(u));
+                            return operands.Average(u => Convert.ToSingle(u, CultureInfo.InvariantCulture));
                         },
                         FunctionUtils.VerifyNumericList);
         }

@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriHost : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriHost"/> class.
+        /// </summary>
         public UriHost()
             : base(ExpressionType.UriHost, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {
@@ -50,7 +53,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     var host = uriBase.Host;
                     result = host.ToString();
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (we are capturing the exception and returning a generic error for all failures)
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     error = "invalid operation, input uri should be an absolute URI";
                 }

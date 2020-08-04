@@ -8,8 +8,15 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the string version of a value.
     /// </summary>
+#pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
+#pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)
     public class String : ExpressionEvaluator
+#pragma warning restore CA1720 // Identifier contains type name
+#pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="String"/> class.
+        /// </summary>
         public String()
             : base(ExpressionType.String, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {

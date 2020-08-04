@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -14,6 +15,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     {
         private const long TicksPerHour = 60 * 60 * 10000000L;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TicksToHours"/> class.
+        /// </summary>
         public TicksToHours()
             : base(ExpressionType.TicksToHours, Evaluator, ReturnType.Number, FunctionUtils.ValidateUnaryNumber)
         {
@@ -29,7 +33,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 if (args[0].IsInteger())
                 {
-                    value = Convert.ToDouble(args[0]) / TicksPerHour;
+                    value = Convert.ToDouble(args[0], CultureInfo.InvariantCulture) / TicksPerHour;
                 }
                 else
                 {

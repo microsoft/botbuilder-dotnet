@@ -4,18 +4,22 @@
 using System.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using static Microsoft.Bot.Builder.Dialogs.Adaptive.Actions.HttpRequest;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 {
+    /// <summary>
+    /// Http Response Mock (used in HttpRequestSequenceMock).
+    /// </summary>
     public class HttpResponseMock
     {
-        public enum ContentTypes
+        public enum ResponseContentType
         {
             /// <summary>
             /// String response.
             /// </summary>
+#pragma warning disable CA1720 // Identifier contains type name (by design)
             String,
+#pragma warning restore CA1720 // Identifier contains type name
 
             /// <summary>
             /// Byte array response. The content should be the base64 string of the byte array.
@@ -29,10 +33,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         /// <value>
         /// The content type. Default is String.
         /// </value>
-        [DefaultValue(ContentTypes.String)]
+        [DefaultValue(ResponseContentType.String)]
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("contentType")]
-        public ContentTypes ContentType { get; set; } = ContentTypes.String;
+        public ResponseContentType ContentType { get; set; } = ResponseContentType.String;
 
         /// <summary>
         /// Gets or sets the content.

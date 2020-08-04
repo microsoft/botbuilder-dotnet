@@ -60,6 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<OnTypingActivity>(OnTypingActivity.Kind);
             yield return new DeclarativeType<OnHandoffActivity>(OnHandoffActivity.Kind);
             yield return new DeclarativeType<OnChooseIntent>(OnChooseIntent.Kind);
+            yield return new DeclarativeType<OnQnAMatch>(OnQnAMatch.Kind);
 
             yield return new DeclarativeType<OnEndOfActions>(OnEndOfActions.Kind);
             yield return new DeclarativeType<OnChooseProperty>(OnChooseProperty.Kind);
@@ -99,6 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<GetActivityMembers>(GetActivityMembers.Kind);
             yield return new DeclarativeType<GetConversationMembers>(GetConversationMembers.Kind);
             yield return new DeclarativeType<SignOutUser>(SignOutUser.Kind);
+            yield return new DeclarativeType<TelemetryTrackEventAction>(TelemetryTrackEventAction.Kind);
 
             // Inputs
             yield return new DeclarativeType<AttachmentInput>(AttachmentInput.Kind);

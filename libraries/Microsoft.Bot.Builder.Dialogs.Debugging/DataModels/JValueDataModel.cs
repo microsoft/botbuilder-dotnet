@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class JValueDataModel : IDataModel
+    internal sealed class JValueDataModel : IDataModel
     {
         public static readonly IDataModel Instance = new JValueDataModel();
 

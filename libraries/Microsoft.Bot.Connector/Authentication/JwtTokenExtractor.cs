@@ -16,6 +16,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// A JWT token processing class that gets identity information and performs security token validation.
+    /// </summary>
     public class JwtTokenExtractor
     {
         /// <summary>
@@ -116,11 +119,24 @@ namespace Microsoft.Bot.Connector.Authentication
             _endorsementsData = customEndorsementsConfig ?? throw new ArgumentNullException(nameof(customEndorsementsConfig));
         }
 
+        /// <summary>
+        /// Gets the claims identity associated with a request.
+        /// </summary>
+        /// <param name="authorizationHeader">The raw HTTP header in the format: "Bearer [longString]".</param>
+        /// <param name="channelId">The Id of the channel being validated in the original request.</param>
+        /// <returns>A <see cref="Task{ClaimsIdentity}"/> object.</returns>
         public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId)
         {
             return await GetIdentityAsync(authorizationHeader, channelId, Array.Empty<string>()).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets the claims identity associated with a request.
+        /// </summary>
+        /// <param name="authorizationHeader">The raw HTTP header in the format: "Bearer [longString]".</param>
+        /// <param name="channelId">The Id of the channel being validated in the original request.</param>
+        /// <param name="requiredEndorsements">The required JWT endorsements.</param>
+        /// <returns>A <see cref="Task{ClaimsIdentity}"/> object.</returns>
         public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId, string[] requiredEndorsements)
         {
             if (authorizationHeader == null)
@@ -137,11 +153,26 @@ namespace Microsoft.Bot.Connector.Authentication
             return null;
         }
 
+        /// <summary>
+        /// Gets the claims identity associated with a request.
+        /// </summary>
+        /// <param name="scheme">The associated scheme.</param>
+        /// <param name="parameter">The token.</param>
+        /// <param name="channelId">The Id of the channel being validated in the original request.</param>
+        /// <returns>A <see cref="Task{ClaimsIdentity}"/> object.</returns>
         public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId)
         {
             return await GetIdentityAsync(scheme, parameter, channelId, Array.Empty<string>()).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets the claims identity associated with a request.
+        /// </summary>
+        /// <param name="scheme">The associated scheme.</param>
+        /// <param name="parameter">The token.</param>
+        /// <param name="channelId">The Id of the channel being validated in the original request.</param>
+        /// <param name="requiredEndorsements">The required JWT endorsements.</param>
+        /// <returns>A <see cref="Task{ClaimsIdentity}"/> object.</returns>
         public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId, string[] requiredEndorsements)
         {
             if (requiredEndorsements == null)

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
@@ -10,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class EndsWith : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EndsWith"/> class.
+        /// </summary>
         public EndsWith()
             : base(ExpressionType.EndsWith, Evaluator(), ReturnType.Boolean, Validator)
         {
@@ -22,7 +27,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         {
                             var rawStr = FunctionUtils.ParseStringOrNull(args[0]);
                             var seekStr = FunctionUtils.ParseStringOrNull(args[1]);
-                            return rawStr.EndsWith(seekStr);
+                            return rawStr.EndsWith(seekStr, StringComparison.Ordinal);
                         }, FunctionUtils.VerifyStringOrNull);
         }
 

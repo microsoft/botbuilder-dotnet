@@ -66,14 +66,34 @@ namespace AdaptiveExpressions.TriggerTrees
             Root = new Node(new Clause(), this);
         }
 
+        /// <summary>
+        /// Gets a list of Optimizers for optimizing clauses.
+        /// </summary>
+        /// <value>A value of list of Optimizers.</value>
         public List<IOptimizer> Optimizers { get; } = new List<IOptimizer>();
 
+        /// <summary>
+        /// Gets a value of a dictionary, which has IPredicateComparer values, with string keys.
+        /// </summary>
+        /// <value>A dictionary of IPredicateComparer values, with string keys.</value>
         public Dictionary<string, IPredicateComparer> Comparers { get; } = new Dictionary<string, IPredicateComparer>();
 
+        /// <summary>
+        /// Gets or sets a value of the root node.
+        /// </summary>
+        /// <value>A Node instance.</value>
         public Node Root { get; set; }
 
+        /// <summary>
+        /// Gets or sets the total number of triggers.
+        /// </summary>
+        /// <value>An integet number.</value>
         public int TotalTriggers { get; set; }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString() => $"TriggerTree with {TotalTriggers} triggers";
 
         /// <summary>
@@ -145,6 +165,10 @@ namespace AdaptiveExpressions.TriggerTrees
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Generates a graph to given path.
+        /// </summary>
+        /// <param name="outPath">The path to save the graph.</param>
         public void GenerateGraph(string outPath)
         {
             using (var output = new StreamWriter(outPath))
@@ -245,7 +269,9 @@ namespace AdaptiveExpressions.TriggerTrees
             return badNode;
         }
 
+#pragma warning disable CA1812 // Internal class that is apparently never instantiated (we can't remove the number parameter without breaking backward compat)
         private class Debugger
+#pragma warning restore CA1812 // Internal class that is apparently never instantiated
         {
             public Debugger(TriggerTree triggers)
             {

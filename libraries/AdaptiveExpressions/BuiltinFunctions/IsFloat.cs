@@ -9,6 +9,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsFloat : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsFloat"/> class.
+        /// </summary>
         public IsFloat()
             : base(ExpressionType.IsFloat, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

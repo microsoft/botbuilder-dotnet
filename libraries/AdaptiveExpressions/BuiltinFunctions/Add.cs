@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -10,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Add : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Add"/> class.
+        /// </summary>
         public Add()
             : base(ExpressionType.Add, Evaluator(), ReturnType.String | ReturnType.Number, Validator)
         {
@@ -49,19 +53,22 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static object EvalAdd(object a, object b)
         {
-            if (a == null || b == null)
+            if (a == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(a));
+            }
+
+            if (b == null)
+            {
+                throw new ArgumentNullException(nameof(b));
             }
 
             if (a.IsInteger() && b.IsInteger())
             {
-                return Convert.ToInt64(a) + Convert.ToInt64(b);
+                return Convert.ToInt64(a, CultureInfo.InvariantCulture) + Convert.ToInt64(b, CultureInfo.InvariantCulture);
             }
-            else
-            {
-                return FunctionUtils.CultureInvariantDoubleConvert(a) + FunctionUtils.CultureInvariantDoubleConvert(b);
-            }
+
+            return FunctionUtils.CultureInvariantDoubleConvert(a) + FunctionUtils.CultureInvariantDoubleConvert(b);
         }
 
         private static void Validator(Expression expression)

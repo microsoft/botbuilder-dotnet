@@ -29,7 +29,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// The language generators for multiple languages.
         /// </value>
         [JsonProperty("languageGenerators")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public ConcurrentDictionary<string, LanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, LanguageGenerator>(StringComparer.OrdinalIgnoreCase);
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Implementation of lookup by locale.  This uses internal dictionary to lookup.

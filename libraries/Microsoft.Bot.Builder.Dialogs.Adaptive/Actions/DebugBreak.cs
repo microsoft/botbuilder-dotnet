@@ -80,9 +80,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 Debug.WriteLine($"{path}: {actionsIds.Count()} actions remaining.");
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we catch any exception and we write it to the debugger).
             catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
-                Debug.WriteLine($"Failed to collect full debug dump. Error: {ex.ToString()}");
+                Debug.WriteLine($"Failed to collect full debug dump. Error: {ex}");
             }
         }
     }

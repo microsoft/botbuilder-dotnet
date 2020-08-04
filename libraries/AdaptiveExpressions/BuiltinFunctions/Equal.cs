@@ -15,6 +15,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Equal : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Equal"/> class.
+        /// </summary>
         public Equal()
             : base(
                   ExpressionType.Equal,
@@ -53,7 +56,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 return args[0] == args[1] || (args[0] != null && args[0].Equals(args[1]));
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we return false if it fails for whatever reason)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 return false;
             }

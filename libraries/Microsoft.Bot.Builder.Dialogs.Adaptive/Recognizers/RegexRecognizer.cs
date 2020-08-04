@@ -37,7 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// Dictionary of patterns -> Intent names.
         /// </value>
         [JsonProperty("intents")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<IntentPattern> Intents { get; set; } = new List<IntentPattern>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the entity recognizers.
@@ -46,7 +48,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// The entity recognizers.
         /// </value>
         [JsonProperty("entities")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<EntityRecognizer> Entities { get; set; } = new List<EntityRecognizer>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {

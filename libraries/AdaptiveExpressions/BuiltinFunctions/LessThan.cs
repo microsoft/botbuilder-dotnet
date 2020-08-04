@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class LessThan : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LessThan"/> class.
+        /// </summary>
         public LessThan()
             : base(
                   ExpressionType.LessThan,

@@ -5,6 +5,11 @@
     "responses": [
         {
             "content": "fallback response"
+        },
+        {
+            "contentType": "ByteArray",
+            // Convert.ToBase64String(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(obj)))
+            "content": "eyJkYXRhIjoicmVwZWF0ZWQgQnl0ZUFycmF5IHJlc3BvbnNlIn0="
         }
     ]
 }

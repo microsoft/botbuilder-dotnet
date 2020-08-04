@@ -13,6 +13,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class ConvertFromUtc : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConvertFromUtc"/> class.
+        /// </summary>
         public ConvertFromUtc()
             : base(ExpressionType.ConvertFromUtc, Evaluator, ReturnType.String, Validator)
         {
@@ -26,7 +29,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
             if (error == null)
             {
-                var format = (args.Count() == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
+                var format = (args.Count == 3) ? (string)args[2] : FunctionUtils.DefaultDateTimeFormat;
                 if (args[1] is string targetTimeZone)
                 {
                     (value, error) = EvalConvertFromUTC(args[0], targetTimeZone, format);

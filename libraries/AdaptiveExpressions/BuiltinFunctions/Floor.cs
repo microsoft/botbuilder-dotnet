@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -11,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Floor : NumberTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Floor"/> class.
+        /// </summary>
         public Floor()
             : base(ExpressionType.Floor, Function)
         {
@@ -18,7 +22,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static object Function(IReadOnlyList<object> args)
         {
-            return Math.Floor(Convert.ToDouble(args[0]));
+            return Math.Floor(Convert.ToDouble(args[0], CultureInfo.InvariantCulture));
         }
     }
 }

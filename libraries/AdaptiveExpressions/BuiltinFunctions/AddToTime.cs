@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AdaptiveExpressions.Memory;
 
@@ -13,6 +14,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class AddToTime : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddToTime"/> class.
+        /// </summary>
         public AddToTime()
             : base(ExpressionType.AddToTime, Evaluator, ReturnType.String, Validator)
         {
@@ -26,10 +30,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
             if (error == null)
             {
-                var format = (args.Count() == 4) ? (string)args[3] : FunctionUtils.DefaultDateTimeFormat;
+                var format = (args.Count == 4) ? (string)args[3] : FunctionUtils.DefaultDateTimeFormat;
                 if (args[1].IsInteger() && args[2] is string timeUnit)
                 {
-                    (value, error) = EvalAddToTime(args[0], Convert.ToInt64(args[1]), timeUnit, format);
+                    (value, error) = EvalAddToTime(args[0], Convert.ToInt64(args[1], CultureInfo.InvariantCulture), timeUnit, format);
                 }
                 else
                 {

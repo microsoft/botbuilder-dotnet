@@ -19,6 +19,9 @@ namespace Microsoft.Bot.Builder.Skills
     /// </summary>
     public class SkillHandler : ChannelServiceHandler
     {
+        /// <summary>
+        /// The skill conversation reference.
+        /// </summary>
         public static readonly string SkillConversationReferenceKey = $"{typeof(SkillHandler).Namespace}.SkillConversationReference";
 
         private readonly BotAdapter _adapter;
@@ -177,6 +180,8 @@ namespace Microsoft.Bot.Builder.Skills
                 throw new KeyNotFoundException();
             }
 
+            ResourceResponse resourceResponse = null;
+
             var callback = new BotCallbackHandler(async (turnContext, ct) =>
             {
                 turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
@@ -195,13 +200,14 @@ namespace Microsoft.Bot.Builder.Skills
                         await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
                         break;
                     default:
-                        await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                        resourceResponse = await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                         break;
                 }
             });
 
             await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
-            return new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+
+            return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
         }
     }
 }

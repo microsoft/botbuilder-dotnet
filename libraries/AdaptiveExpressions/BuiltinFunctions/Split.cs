@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Split : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Split"/> class.
+        /// </summary>
         public Split()
             : base(ExpressionType.Split, Evaluator(), ReturnType.Array, Validator)
         {
@@ -32,7 +35,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                                 seperator = FunctionUtils.ParseStringOrNull(args[1]);
                             }
 
-                            if (seperator == string.Empty)
+                            if (string.IsNullOrWhiteSpace(seperator))
                             {
                                 return inputStr.Select(c => c.ToString()).ToArray();
                             }

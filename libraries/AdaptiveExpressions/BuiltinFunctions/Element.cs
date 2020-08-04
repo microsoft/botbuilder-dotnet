@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Element : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Element"/> class.
+        /// </summary>
         public Element()
             : base(ExpressionType.Element, Evaluator, ReturnType.Object, FunctionUtils.ValidateBinary)
         {
@@ -33,8 +36,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     if (idxValue.IsInteger())
                     {
-                        var idx = Convert.ToInt32(idxValue);
-                        (value, error) = FunctionUtils.AccessIndex(inst, idx);
+                        var idx = 0;
+                        (idx, error) = FunctionUtils.ParseInt32(idxValue);
+                        if (error == null)
+                        {
+                            (value, error) = FunctionUtils.AccessIndex(inst, idx);
+                        } 
                     }
                     else if (idxValue is string idxStr)
                     {

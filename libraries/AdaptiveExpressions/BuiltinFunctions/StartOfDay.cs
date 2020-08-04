@@ -13,6 +13,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class StartOfDay : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartOfDay"/> class.
+        /// </summary>
         public StartOfDay()
             : base(ExpressionType.StartOfDay, Evaluator, ReturnType.String, Validator)
         {
@@ -26,7 +29,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
             if (error == null)
             {
-                var format = (args.Count() == 2) ? (string)args[1] : FunctionUtils.DefaultDateTimeFormat;
+                var format = (args.Count == 2) ? (string)args[1] : FunctionUtils.DefaultDateTimeFormat;
                 (value, error) = StartOfDayWithError(args[0], format);
             }
 

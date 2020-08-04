@@ -13,6 +13,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class StartOfMonth : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartOfMonth"/> class.
+        /// </summary>
         public StartOfMonth()
             : base(ExpressionType.StartOfMonth, Evaluator, ReturnType.String, Validator)
         {
@@ -26,7 +29,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
             if (error == null)
             {
-                var format = (args.Count() == 2) ? (string)args[1] : FunctionUtils.DefaultDateTimeFormat;
+                var format = (args.Count == 2) ? (string)args[1] : FunctionUtils.DefaultDateTimeFormat;
                 (value, error) = StartOfMonthWithError(args[0], format);
             }
 

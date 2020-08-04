@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
@@ -9,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class StartsWith : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartsWith"/> class.
+        /// </summary>
         public StartsWith()
             : base(ExpressionType.StartsWith, Evaluator(), ReturnType.Boolean, Validator)
         {
@@ -21,7 +26,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         {
                             string rawStr = FunctionUtils.ParseStringOrNull(args[0]);
                             string seekStr = FunctionUtils.ParseStringOrNull(args[1]);
-                            return rawStr.StartsWith(seekStr);
+                            return rawStr.StartsWith(seekStr, StringComparison.Ordinal);
                         }, FunctionUtils.VerifyStringOrNull);
         }
 

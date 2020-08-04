@@ -47,6 +47,11 @@ namespace Microsoft.Bot.Schema
             this.Properties = entity.Properties;
         }
 
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">The other object to compair against.</param>
+        /// <returns>true if the current object is equal to the other parameter, otherwise false.</returns>
         public bool Equals(Entity other)
         {
             if (other == null)
@@ -57,6 +62,11 @@ namespace Microsoft.Bot.Schema
             return JsonConvert.SerializeObject(this).Equals(JsonConvert.SerializeObject(other), StringComparison.Ordinal);
         }
 
+        /// <summary>
+        /// Determines whether the specifid object is equal to the current object.
+        /// </summary>
+        /// <param name="obj">The other object to compair against.</param>
+        /// <returns>true if the current object is equal to the obj parameter, otherwise false.</returns>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -77,6 +87,10 @@ namespace Microsoft.Bot.Schema
             return Equals(obj as Entity);
         }
 
+        /// <summary>
+        /// Hash function that generates a hash code for the current object.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
         public override int GetHashCode()
         {
             return base.GetHashCode();

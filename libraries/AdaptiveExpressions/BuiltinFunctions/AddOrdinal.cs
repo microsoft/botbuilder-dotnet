@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -10,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class AddOrdinal : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddOrdinal"/> class.
+        /// </summary>
         public AddOrdinal()
             : base(ExpressionType.AddOrdinal, Evaluator(), ReturnType.String, Validator)
         {
@@ -17,7 +21,20 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.Apply(args => EvalAddOrdinal(Convert.ToInt32(args[0])), FunctionUtils.VerifyInteger);
+            return FunctionUtils.ApplyWithError(
+                args => 
+                {
+                    object result = null;
+                    string error = null;
+                    var input = 0;
+                    (input, error) = FunctionUtils.ParseInt32(args[0]);
+                    if (error == null)
+                    {
+                        result = EvalAddOrdinal(input);
+                    }
+
+                    return (result, error);
+                }, FunctionUtils.VerifyInteger);
         }
 
         private static void Validator(Expression expression)
@@ -28,7 +45,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
         private static string EvalAddOrdinal(int num)
         {
             var hasResult = false;
-            var ordinalResult = num.ToString();
+            var ordinalResult = num.ToString(CultureInfo.InvariantCulture);
             if (num > 0)
             {
                 switch (num % 100)

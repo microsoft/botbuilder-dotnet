@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Flatten : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Flatten"/> class.
+        /// </summary>
         public Flatten()
             : base(ExpressionType.Flatten, Evaluator(), ReturnType.Array, Validator)
         {
@@ -19,11 +22,23 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.Apply(
+            return FunctionUtils.ApplyWithError(
                         args =>
                         {
-                            var depth = args.Count > 1 ? Convert.ToInt32(args[1]) : 100;
-                            return EvalFlatten((IEnumerable<object>)args[0], depth);
+                            var depth = 100;
+                            object result = null;
+                            string error = null;
+                            if (args.Count > 1)
+                            {
+                                (depth, error) = FunctionUtils.ParseInt32(args[1]);
+                            }
+
+                            if (error == null)
+                            {
+                                result = EvalFlatten((IEnumerable<object>)args[0], depth);
+                            }
+
+                            return (result, error);
                         });
         }
 

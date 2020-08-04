@@ -28,24 +28,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         }
 
         /// <summary>
-        /// Gets or sets the members added names.
+        /// Gets the members added names.
         /// </summary>
         /// <value>The members names.</value>
         [JsonProperty("membersAdded")]
-        public List<string> MembersAdded { get; set; }
+        public List<string> MembersAdded { get; } = new List<string>();
 
         /// <summary>
-        /// Gets or sets the members removed names.
+        /// Gets the members removed names.
         /// </summary>
         /// <value>The members names.</value>
         [JsonProperty("membersRemoved")]
-        public List<string> MembersRemoved { get; set; }
+        public List<string> MembersRemoved { get; } = new List<string>();
 
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
+        public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             var activity = adapter.MakeActivity();
             activity.Type = ActivityTypes.ConversationUpdate;
-            if (this.MembersAdded != null)
+            if (this.MembersAdded.Any())
             {
                 activity.MembersAdded = new List<ChannelAccount>();
                 foreach (var member in MembersAdded)
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 }
             }
 
-            if (this.MembersRemoved != null)
+            if (this.MembersRemoved.Any())
             {
                 activity.MembersRemoved = new List<ChannelAccount>();
 

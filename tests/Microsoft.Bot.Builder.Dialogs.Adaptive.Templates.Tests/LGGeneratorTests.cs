@@ -3,6 +3,7 @@
 #pragma warning disable SA1402
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,6 +38,30 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var context = GetDialogContext(string.Empty);
             var lg = new TemplateEngineLanguageGenerator();
             await Assert.ThrowsAsync<Exception>(() => lg.GenerateAsync(context, "${tesdfdfsst()}", null));
+        }
+
+        [Fact]
+        public void TestLGResourceGroup()
+        {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+
+            // use LG file as entrance
+            var lgResourceGroup = LGResourceLoader.GroupByLocale(resourceExplorer);
+
+            Assert.Contains(string.Empty, lgResourceGroup.Keys.ToList());
+            var resourceNames = lgResourceGroup[string.Empty].Select(u => u.Id);
+            Assert.Equal(8, resourceNames.Count());
+            Assert.Subset(new HashSet<string>() { "a.lg", "b.lg", "c.lg", "inject.lg", "NormalStructuredLG.lg", "root.lg", "subDialog.lg", "test.lg" }, new HashSet<string>(resourceNames));
+
+            Assert.Contains("en-us", lgResourceGroup.Keys.ToList());
+            resourceNames = lgResourceGroup["en-us"].Select(u => u.Id);
+            Assert.Equal(8, resourceNames.Count());
+            Assert.Subset(new HashSet<string>() { "a.en-US.lg", "b.en-us.lg", "c.en.lg", "inject.lg", "NormalStructuredLG.lg", "root.lg", "subDialog.lg", "test.en-US.lg" }, new HashSet<string>(resourceNames));
+
+            Assert.Contains("en", lgResourceGroup.Keys.ToList());
+            resourceNames = lgResourceGroup["en"].Select(u => u.Id);
+            Assert.Equal(8, resourceNames.Count());
+            Assert.Subset(new HashSet<string>() { "a.lg", "b.lg", "c.en.lg", "inject.lg", "NormalStructuredLG.lg", "root.lg", "subDialog.lg", "test.en.lg" }, new HashSet<string>(resourceNames));
         }
 
         [Fact]
