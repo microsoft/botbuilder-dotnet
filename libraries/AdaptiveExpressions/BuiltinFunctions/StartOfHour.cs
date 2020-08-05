@@ -3,13 +3,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
+using System.Threading;
 using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return the start of the hour for a timestamp.
+    /// StartOfHour function takes a timestamp string,
+    /// an optional format string whose default value "yyyy-MM-ddTHH:mm:ss.fffZ"
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
     public class StartOfHour : ExpressionEvaluator
     {
@@ -26,17 +30,24 @@ namespace AdaptiveExpressions.BuiltinFunctions
             object value = null;
             string error = null;
             IReadOnlyList<object> args;
+            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
+            var format = FunctionUtils.DefaultDateTimeFormat;
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+
             if (error == null)
             {
-                var format = (args.Count == 2) ? (string)args[1] : FunctionUtils.DefaultDateTimeFormat;
-                (value, error) = StartOfHourWithError(args[0], format);
+                (format, locale, error) = FunctionUtils.DetermineFormatAndLocale(args, format, locale, 3);
+            }
+
+            if (error == null)
+            {
+                (value, error) = StartOfHourWithError(args[0], format, locale);
             }
 
             return (value, error);
         }
 
-        private static (object, string) StartOfHourWithError(object timestamp, string format)
+        private static (object, string) StartOfHourWithError(object timestamp, string format, CultureInfo locale)
         {
             string result = null;
             string error = null;
@@ -49,7 +60,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 var startOfDay = ts.Date;
                 var hours = ts.Hour;
                 var startOfHour = startOfDay.AddHours(hours);
-                (result, error) = FunctionUtils.ReturnFormatTimeStampStr(startOfHour, format);
+                (result, error) = FunctionUtils.ReturnFormatTimeStampStr(startOfHour, format, locale);
             }
 
             return (result, error);
@@ -57,7 +68,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static void Validator(Expression expression)
         {
-            FunctionUtils.ValidateArityAndAnyType(expression, 1, 2, ReturnType.String);
+            FunctionUtils.ValidateArityAndAnyType(expression, 1, 3, ReturnType.String);
         }
     }
 }
