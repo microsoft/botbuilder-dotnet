@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder
                     }
                     catch (CultureNotFoundException)
                     {
-                        // if turnContext.Activity.Locale is invalid, then TurnContext.Locale will set to en-US as default. 
+                        // if turnContext.Activity.Locale is invalid, then TurnContext.Locale will set to Thread.CurrentThread.CurrentCulture.Name as default. 
                         (turnContext as TurnContext).Locale = Thread.CurrentThread.CurrentCulture.Name;
                     }
                 }
