@@ -653,6 +653,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// Obtain the CultureInfo in DialogContext.
+        /// </summary>
+        /// <returns>A string representing the current locale.</returns>
+        public string GetLocale()
+        {
+            var locale = ((TurnContext)Context).Locale ?? null;
+            return locale;
+        }
+
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (result is CancellationToken)

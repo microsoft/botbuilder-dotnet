@@ -96,17 +96,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Obtain the CultureInfo in DialogContext.
-        /// </summary>
-        /// <param name="dialogContext">The dialogContext to extract information.</param>
-        /// <returns>A string representing the current locale.</returns>
-        public static string GetLocale(this DialogContext dialogContext)
-        {
-            var locale = (dialogContext.Context as TurnContext).Locale ?? null;
-            return locale;
-        }
-
-        /// <summary>
         /// Helper to determine if we should send an EoC to the parent or not.
         /// </summary>
         private static bool SendEoCToParent(ITurnContext turnContext)

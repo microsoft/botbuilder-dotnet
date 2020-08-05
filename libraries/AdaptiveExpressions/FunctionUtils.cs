@@ -605,7 +605,7 @@ namespace AdaptiveExpressions
                     {
                         (value, error) = function(args, options);
                     }
-#pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CA1031 // Do not catch general exception types (caputure any exception which may happen in the delegate function and return it)
                     catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                     {
@@ -1054,14 +1054,14 @@ namespace AdaptiveExpressions
         {
             if (expression.Children.Length != 3)
             {
-                throw new Exception($"foreach expects 3 parameters, found {expression.Children.Length}");
+                throw new ArgumentException($"foreach expects 3 parameters, found {expression.Children.Length}");
             }
 
             var second = expression.Children[1];
 
             if (!(second.Type == ExpressionType.Accessor && second.Children.Length == 1))
             {
-                throw new Exception($"Second parameter of foreach is not an identifier : {second}");
+                throw new ArgumentException($"Second parameter of foreach is not an identifier : {second}");
             }
         }
 
@@ -1105,17 +1105,15 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
-        internal static (CultureInfo, string) TryParseLocale(string localeStr)
+        internal static (CultureInfo, string) TryParseLocale(string locale)
         {
             CultureInfo result = null;
             string error = null;
             try
             {
-                result = new CultureInfo(localeStr);
+                result = new CultureInfo(locale);
             }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
+            catch (CultureNotFoundException e)
             {
                 error = e.Message;
             }

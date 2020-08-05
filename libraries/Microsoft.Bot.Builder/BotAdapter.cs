@@ -232,13 +232,11 @@ namespace Microsoft.Bot.Builder
                         Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
                         (turnContext as TurnContext).Locale = turnContext.Activity.Locale;
                     }
-#pragma warning disable CA1031 // Do not catch general exception types
-                    catch
+                    catch (CultureNotFoundException)
                     {
-                        // if turnContext.Activity.Locale is illegal, then TurnContext.Locale will set to en-US as default. 
-                        (turnContext as TurnContext).Locale = "en-US";
+                        // if turnContext.Activity.Locale is invalid, then TurnContext.Locale will set to en-US as default. 
+                        (turnContext as TurnContext).Locale = Thread.CurrentThread.CurrentCulture.Name;
                     }
-#pragma warning restore CA1031 // Do not catch general exception types
                 }
 
                 try
