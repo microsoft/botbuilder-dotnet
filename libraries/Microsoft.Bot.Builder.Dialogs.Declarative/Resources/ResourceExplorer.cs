@@ -170,12 +170,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             {
                 var sourceContext = new SourceContext();
                 var (jToken, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+
                 using (new SourceScope(sourceContext, range))
                 {
-                    AutoAssignId(resource, jToken);
-
                     var result = Load<T>(jToken, sourceContext);
-
                     return result;
                 }
             }
@@ -393,7 +391,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // the same content, introducing potential bugs.
             // We explicitly pass advance: true in this case to mimic the behavior in Json.Net
             // Json.Net: https://github.com/JamesNK/Newtonsoft.Json/blob/9be95e0f6aedf5cdc108b058bf71f0839911e0c9/Src/Newtonsoft.Json/Serialization/JsonSerializerInternalReader.cs#L1791
-            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext, advance: true).ConfigureAwait(false);
+            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
             {
@@ -534,7 +532,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private T Load<T>(JToken token, SourceContext sourceContext)
         {
             var converters = new List<JsonConverter>();
-            
+
             // Get converters
             foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
             {
@@ -580,31 +578,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return token.ToObject<T>(serializer);
         }
 
-        private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, bool advance = false)
+        private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext)
         {
             var text = await resource.ReadTextAsync().ConfigureAwait(false);
             using (var readerText = new StringReader(text))
             using (var readerJson = new JsonTextReader(readerText))
             {
-                if (advance)
-                {
-                    // We have the optional advance parameter to mimic the state
-                    // in which Json.Net passes the readers. In some scenarios,
-                    // Json.Net advances de readers by one.
-                    // Example: https://github.com/JamesNK/Newtonsoft.Json/blob/9be95e0f6aedf5cdc108b058bf71f0839911e0c9/Src/Newtonsoft.Json/Serialization/JsonSerializerInternalReader.cs#L1791
-                    readerJson.Read(); // Move to first token
-                }
-
-                var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
-
-                if (resource is FileResource fileResource)
-                {
-                    range.Path = fileResource.FullName;
-                }
+                var (token, range) = SourceScope.ReadTokenRange(readerJson, new SourceContext());
 
                 AutoAssignId(resource, token);
 
-                return (token, range);
+                using (var newReader = new JTokenReader(token))
+                {
+                    var reader = token.CreateReader();
+
+                    // Mimic the state in which Json.Net passes the readers. In some scenarios,
+                    // Json.Net advances de readers by one.
+                    // Example: https://github.com/JamesNK/Newtonsoft.Json/blob/9be95e0f6aedf5cdc108b058bf71f0839911e0c9/Src/Newtonsoft.Json/Serialization/JsonSerializerInternalReader.cs#L1791
+                    reader.Read();
+                    
+                    // Recalculate the token range to have consistent ranges.
+                    var (newToken, newRange) = SourceScope.ReadTokenRange(reader, sourceContext);
+
+                    if (resource is FileResource fileResource)
+                    {
+                        newRange.Path = fileResource.FullName;
+                    }
+
+                    return (newToken, newRange);
+                }
             }
         }
 
