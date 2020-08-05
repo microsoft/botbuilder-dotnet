@@ -184,15 +184,7 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 var newValue = keyValuePair.Value;
 
-                string etag = null;
-                if (newValue is IStoreItem asIStoreItem)
-                {
-                    etag = asIStoreItem.ETag;
-                }
-                else if (newValue is JObject asJobject && asJobject.ContainsKey("ETag"))
-                {
-                    etag = asJobject.Value<string>("ETag");
-                }
+                string etag = StorageExtensions.GetETagOrNull(newValue);
 
                 // "*" eTag in IStoreItem converts to null condition for AccessCondition
                 var accessCondition = etag != "*"

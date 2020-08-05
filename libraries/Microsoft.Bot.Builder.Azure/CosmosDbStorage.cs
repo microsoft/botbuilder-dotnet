@@ -301,16 +301,7 @@ namespace Microsoft.Bot.Builder.Azure
                     Document = json,
                 };
                 
-                string etag = null;
-                if (change.Value is IStoreItem asIStoreItem)
-                {
-                    etag = asIStoreItem.ETag;
-                }
-                else if (change.Value is JObject asJobject && asJobject.ContainsKey("ETag"))
-                {
-                    etag = asJobject.Value<string>("ETag");
-                }
-
+                string etag = StorageExtensions.GetETagOrNull(change.Value);
                 if (etag == null || etag == "*")
                 {
                     // if new item or * then insert or replace unconditionaly
