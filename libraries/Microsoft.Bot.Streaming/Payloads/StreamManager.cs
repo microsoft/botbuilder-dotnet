@@ -7,11 +7,18 @@ using System.IO;
 
 namespace Microsoft.Bot.Streaming.Payloads
 {
+    /// <summary>
+    /// StreamManagers are used to provide access to the objects involved in processing incoming <see cref="PayloadStream"/>s.
+    /// </summary>
     public class StreamManager : IStreamManager
     {
         private readonly ConcurrentDictionary<Guid, PayloadStreamAssembler> _activeAssemblers;
         private readonly Action<PayloadStreamAssembler> _onCancelStream;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamManager"/> class.
+        /// </summary>
+        /// <param name="onCancelStream">Optional action to trigger if the managed stream is cancelled.</param>
         public StreamManager(Action<PayloadStreamAssembler> onCancelStream = null)
         {
             // If no callback is defined, make it a noop to avoid null checking everywhere.
@@ -19,6 +26,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             _activeAssemblers = new ConcurrentDictionary<Guid, PayloadStreamAssembler>();
         }
 
+        /// <inheritdoc/>
         public PayloadStreamAssembler GetPayloadAssembler(Guid id)
         {
             if (!_activeAssemblers.TryGetValue(id, out var assembler))
@@ -36,6 +44,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             return assembler;
         }
 
+        /// <inheritdoc/>
         public Stream GetPayloadStream(Header header)
         {
             var assembler = GetPayloadAssembler(header.Id);
@@ -43,6 +52,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             return assembler.GetPayloadAsStream();
         }
 
+        /// <inheritdoc/>
         public void OnReceive(Header header, Stream contentStream, int contentLength)
         {
             if (_activeAssemblers.TryGetValue(header.Id, out var assembler))
@@ -51,6 +61,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             }
         }
 
+        /// <inheritdoc/>
         public void CloseStream(Guid id)
         {
             if (_activeAssemblers.TryRemove(id, out var assembler))
