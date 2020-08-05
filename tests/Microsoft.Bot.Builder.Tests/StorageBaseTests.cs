@@ -114,7 +114,6 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             // write with old etag should FAIL for storeitem
-             
             updatePocoStoreItem.Count = 123;
 
             await Assert.ThrowsAsync<T>(() => storage.WriteAsync(
