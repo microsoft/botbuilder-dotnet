@@ -52,6 +52,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("membersRemoved")]
         public List<string> MembersRemoved { get; } = new List<string>();
 
+        /// <summary>
+        /// Executes async call.
+        /// </summary>
+        /// <param name="adapter">The adapter for the call.</param>
+        /// <param name="callback">The callback handler.</param>
+        /// <returns>Async task.</returns>
         public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             var activity = adapter.MakeActivity();

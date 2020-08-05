@@ -45,6 +45,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("exact")]
         public bool Exact { get; set; } = true;
 
+        /// <summary>
+        /// Validates the activity.
+        /// </summary>
+        /// <param name="activity">The activity to be verified. </param>
         public override void ValidateReply(Activity activity)
         {
             // if we have a reply
@@ -70,6 +74,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             base.ValidateReply(activity);
         }
 
+        /// <summary>
+        /// Gets the text to assert for an activity.
+        /// </summary>
+        /// <returns>String.</returns>
         public override string GetConditionDescription()
         {
             return $"{Text}";

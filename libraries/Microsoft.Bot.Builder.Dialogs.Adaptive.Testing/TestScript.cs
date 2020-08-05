@@ -33,6 +33,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     /// <seealso cref="TestAdapter"/>
     public class TestScript
     {
+        /// <summary>
+        /// Sets the Kind for this class. 
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.Script";
 
@@ -221,6 +224,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             return this;
         }
 
+        /// <summary>
+        /// Sends conversation update.
+        /// </summary>
+        /// <param name="path">Optional path to caller file. </param>
+        /// <param name="line">Optional number for the caller's line.</param>
+        /// <returns>Modified TestScript.</returns>
         public TestScript SendConversationUpdate([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
             this.Script.Add(new UserConversationUpdate(path: path, line: line));

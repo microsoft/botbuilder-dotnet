@@ -42,6 +42,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("timespan")]
         public uint Timespan { get; set; }
 
+        /// <summary>
+        /// Executes async task.
+        /// </summary>
+        /// <param name="adapter">The adapter.</param>
+        /// <param name="callback">The callback handler.</param>
+        /// <returns>Async task.</returns>
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             await Task.Delay((int)Timespan).ConfigureAwait(false);

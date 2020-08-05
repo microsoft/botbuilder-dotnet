@@ -58,11 +58,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("assertions")]
         public List<string> Assertions { get; } = new List<string>();
 
+        /// <summary>
+        /// Gets the description of the condition.
+        /// </summary>
+        /// <returns>String.</returns>
         public virtual string GetConditionDescription()
         {
             return Description ?? string.Join("\n", Assertions);
         }
 
+        /// <summary>
+        /// Validates the reply of an activity.
+        /// </summary>
+        /// <param name="activity">The activity to verify.</param>
         public virtual void ValidateReply(Activity activity)
         {
             foreach (var assertion in Assertions)
@@ -75,6 +83,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             }
         }
 
+        /// <summary>
+        /// Executes the next async call.
+        /// </summary>
+        /// <param name="adapter">The adapter use for making the call.</param>
+        /// <param name="callback">The callback used when the response comes in.</param>
+        /// <returns>Async task.</returns>
         public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             var timeout = (int)this.Timeout;
