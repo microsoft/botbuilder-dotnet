@@ -8,7 +8,7 @@
       "Count": 0,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-6b62-b86bc40f01d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-40b6540a01d6\"",
     "PartitionKey": "createPoco"
   },
   {
@@ -20,7 +20,7 @@
       "Id": "2",
       "Count": 0
     },
-    "_etag": "\"00000000-0000-0000-6b62-b86c9e8901d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-40b75ffe01d6\"",
     "PartitionKey": "createPocoStoreItem"
   },
   {
@@ -32,7 +32,7 @@
       "Count": 0,
       "ExtraBytes": null
     },
-    "_etag": "\"00000000-0000-0000-6b62-b86bc40f01d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-40b6540a01d6\"",
     "PartitionKey": "createPoco"
   },
   {
@@ -44,7 +44,7 @@
       "Id": "2",
       "Count": 0
     },
-    "_etag": "\"00000000-0000-0000-6b62-b86c9e8901d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-40b75ffe01d6\"",
     "PartitionKey": "createPocoStoreItem"
   }
 ]

@@ -17,7 +17,6 @@ using Microsoft.Bot.Builder.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json.Linq;
-using static Microsoft.Bot.Builder.Azure.CosmosDbPartitionedStorage;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -39,7 +38,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // Switch between Record and Playback mode using "COSMOS_RECORDING_MODE" Env Var, 
         // or switching the right-hand side of the null-coalesce to RecordingMode.Record.
         // This should default to Playback, but tests should be re-recorded with any test or CosmosDbPartitionedStorage change.
-        private static readonly string _recordingMode = Environment.GetEnvironmentVariable("COSMOS_RECORDING_MODE") ?? RecordingMode.Record;
+        private static readonly string _recordingMode = Environment.GetEnvironmentVariable("COSMOS_RECORDING_MODE") ?? RecordingMode.Playback;
 
         private static readonly string _noConnectionMessage = $"Unable to connect to Cosmos Endpoint {CosmosServiceEndpoint}. Running tests against recordings.";
         private static CosmosTestRecorder _testRecorder;
@@ -413,11 +412,11 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
 
             mockContainer.Setup(x => x.UpsertItemAsync(
-                It.IsAny<DocumentStoreItem>(),
+                It.IsAny<CosmosDbPartitionedStorage.DocumentStoreItem>(),
                 It.IsAny<PartitionKey>(),
                 It.IsAny<ItemRequestOptions>(),
                 It.IsAny<CancellationToken>())).Returns(async (
-                    DocumentStoreItem item,
+                    CosmosDbPartitionedStorage.DocumentStoreItem item,
                     PartitionKey partitionKey,
                     ItemRequestOptions requestOptions,
                     CancellationToken cancellationToken) =>
@@ -430,7 +429,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                         .ConfigureAwait(false)).ConfigureAwait(false);
                 });
 
-            mockContainer.Setup(x => x.ReadItemAsync<DocumentStoreItem>(
+            mockContainer.Setup(x => x.ReadItemAsync<CosmosDbPartitionedStorage.DocumentStoreItem>(
                 It.IsAny<string>(),
                 It.IsAny<PartitionKey>(),
                 It.IsAny<ItemRequestOptions>(),
@@ -440,7 +439,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     ItemRequestOptions requestOptions,
                     CancellationToken cancellationToken) =>
                 {
-                    return await HandleMockedMethods(async () => await realContainer.ReadItemAsync<DocumentStoreItem>(
+                    return await HandleMockedMethods(async () => await realContainer.ReadItemAsync<CosmosDbPartitionedStorage.DocumentStoreItem>(
                             id,
                             partitionKey,
                             requestOptions,
@@ -448,7 +447,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                         .ConfigureAwait(false)).ConfigureAwait(false);
                 });
 
-            mockContainer.Setup(x => x.DeleteItemAsync<DocumentStoreItem>(
+            mockContainer.Setup(x => x.DeleteItemAsync<CosmosDbPartitionedStorage.DocumentStoreItem>(
                It.IsAny<string>(),
                It.IsAny<PartitionKey>(),
                It.IsAny<ItemRequestOptions>(),
@@ -458,7 +457,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                    ItemRequestOptions requestOptions,
                    CancellationToken cancellationToken) =>
                {
-                   return await HandleMockedMethods(async () => await realContainer.DeleteItemAsync<DocumentStoreItem>(
+                   return await HandleMockedMethods(async () => await realContainer.DeleteItemAsync<CosmosDbPartitionedStorage.DocumentStoreItem>(
                             id,
                             partitionKey,
                             requestOptions,
@@ -479,9 +478,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         /// </summary>
         /// <param name="method">A method from the real container such as ReadItemAsync, WriteItemAsync, etc.</param>
         /// <returns>Either the actual DocumentStoreItem, or the one from the saved file if in Playback Mode.</returns>
-        internal async Task<ItemResponse<DocumentStoreItem>> HandleMockedMethods(Func<Task<ItemResponse<DocumentStoreItem>>> method = null)
+        internal async Task<ItemResponse<CosmosDbPartitionedStorage.DocumentStoreItem>> HandleMockedMethods(Func<Task<ItemResponse<CosmosDbPartitionedStorage.DocumentStoreItem>>> method = null)
         {
-            DocumentStoreItem document;
+            CosmosDbPartitionedStorage.DocumentStoreItem document;
             if (_recordingMode == RecordingMode.Record)
             {
                 try
@@ -516,13 +515,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 }
             }
 
-            var mockItemResponse = new Mock<ItemResponse<DocumentStoreItem>>();
+            var mockItemResponse = new Mock<ItemResponse<CosmosDbPartitionedStorage.DocumentStoreItem>>();
             mockItemResponse.SetupGet(x => x.Resource).Returns(document);
 
             return mockItemResponse.Object;
         }
 
-        internal DocumentStoreItem ConvertCosmosExceptionToDocumentStoreItem(CosmosException exception)
+        internal CosmosDbPartitionedStorage.DocumentStoreItem ConvertCosmosExceptionToDocumentStoreItem(CosmosException exception)
         {
             // Some properties of CosmosException are more difficult to deserialize than it's worth,
             // so we'll remove some of them here.
@@ -535,7 +534,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 exception.RequestCharge
             };
 
-            var document = new DocumentStoreItem
+            var document = new CosmosDbPartitionedStorage.DocumentStoreItem
             {
                 Document = JObject.FromObject(exceptionObject),
                 ETag = new Guid().ToString(),

@@ -6,7 +6,7 @@
       "Message": "Response status code does not indicate success: 404 Substatus: 0 Reason: ({\r\n  \"Errors\": [\r\n    \"Resource Not Found\"\r\n  ]\r\n}).",
       "StatusCode": 404,
       "SubStatusCode": 0,
-      "ActivityId": "a5380e2e-efee-46a0-a5a1-9eb6dda20be3",
+      "ActivityId": "18df52dc-7f5f-407f-9323-99d12e098cd9",
       "RequestCharge": 1.0
     },
     "_etag": "00000000-0000-0000-0000-000000000000",
@@ -31,7 +31,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 0
               },
               "StackIndex": null,
@@ -41,7 +41,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb2c67ea01d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-43566a5b01d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   },
   {
@@ -63,7 +63,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 0
               },
               "StackIndex": null,
@@ -73,7 +73,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb2c67ea01d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-43566a5b01d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   },
   {
@@ -96,8 +96,8 @@
                   "Prompt": {
                     "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
                     "type": "message",
-                    "id": "4fd323dacd9e4049b29a635635ded7cb",
-                    "timestamp": "2020-08-05T12:58:04.5622824-07:00",
+                    "id": "2e2d5dd57d7c4fe0806e319cd5c63ec3",
+                    "timestamp": "2020-08-05T13:23:21.4951389-07:00",
                     "localTimestamp": null,
                     "localTimezone": null,
                     "serviceUrl": "https://test.com",
@@ -187,7 +187,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 1
               },
               "StackIndex": null,
@@ -197,7 +197,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb3b598e01d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-4362015001d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   },
   {
@@ -220,8 +220,8 @@
                   "Prompt": {
                     "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
                     "type": "message",
-                    "id": "4fd323dacd9e4049b29a635635ded7cb",
-                    "timestamp": "2020-08-05T12:58:04.5622824-07:00",
+                    "id": "2e2d5dd57d7c4fe0806e319cd5c63ec3",
+                    "timestamp": "2020-08-05T13:23:21.4951389-07:00",
                     "localTimestamp": null,
                     "localTimezone": null,
                     "serviceUrl": "https://test.com",
@@ -311,7 +311,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 1
               },
               "StackIndex": null,
@@ -321,7 +321,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb3b598e01d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-4362015001d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   },
   {
@@ -344,8 +344,8 @@
                   "Prompt": {
                     "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
                     "type": "message",
-                    "id": "4fd323dacd9e4049b29a635635ded7cb",
-                    "timestamp": "2020-08-05T12:58:04.5622824-07:00",
+                    "id": "2e2d5dd57d7c4fe0806e319cd5c63ec3",
+                    "timestamp": "2020-08-05T13:23:21.4951389-07:00",
                     "localTimestamp": null,
                     "localTimezone": null,
                     "serviceUrl": "https://test.com",
@@ -435,7 +435,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 1
               },
               "StackIndex": null,
@@ -445,7 +445,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb41ce4901d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-436944ca01d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   },
   {
@@ -468,8 +468,8 @@
                   "Prompt": {
                     "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
                     "type": "message",
-                    "id": "4fd323dacd9e4049b29a635635ded7cb",
-                    "timestamp": "2020-08-05T12:58:04.5622824-07:00",
+                    "id": "2e2d5dd57d7c4fe0806e319cd5c63ec3",
+                    "timestamp": "2020-08-05T13:23:21.4951389-07:00",
                     "localTimestamp": null,
                     "localTimezone": null,
                     "serviceUrl": "https://test.com",
@@ -559,7 +559,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 1
               },
               "StackIndex": null,
@@ -569,7 +569,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb41ce4901d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-436944ca01d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   },
   {
@@ -592,8 +592,8 @@
                   "Prompt": {
                     "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
                     "type": "message",
-                    "id": "4fd323dacd9e4049b29a635635ded7cb",
-                    "timestamp": "2020-08-05T12:58:04.5622824-07:00",
+                    "id": "2e2d5dd57d7c4fe0806e319cd5c63ec3",
+                    "timestamp": "2020-08-05T13:23:21.4951389-07:00",
                     "localTimestamp": null,
                     "localTimezone": null,
                     "serviceUrl": "https://test.com",
@@ -683,7 +683,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 1
               },
               "StackIndex": null,
@@ -693,7 +693,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb446f9301d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-436d46aa01d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   },
   {
@@ -716,8 +716,8 @@
                   "Prompt": {
                     "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
                     "type": "message",
-                    "id": "4fd323dacd9e4049b29a635635ded7cb",
-                    "timestamp": "2020-08-05T12:58:04.5622824-07:00",
+                    "id": "2e2d5dd57d7c4fe0806e319cd5c63ec3",
+                    "timestamp": "2020-08-05T13:23:21.4951389-07:00",
                     "localTimestamp": null,
                     "localTimezone": null,
                     "serviceUrl": "https://test.com",
@@ -807,7 +807,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 1
               },
               "StackIndex": null,
@@ -817,7 +817,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb446f9301d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-436d46aa01d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   },
   {
@@ -840,8 +840,8 @@
                   "Prompt": {
                     "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
                     "type": "message",
-                    "id": "4fd323dacd9e4049b29a635635ded7cb",
-                    "timestamp": "2020-08-05T12:58:04.5622824-07:00",
+                    "id": "2e2d5dd57d7c4fe0806e319cd5c63ec3",
+                    "timestamp": "2020-08-05T13:23:21.4951389-07:00",
                     "localTimestamp": null,
                     "localTimezone": null,
                     "serviceUrl": "https://test.com",
@@ -931,7 +931,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 1
               },
               "StackIndex": null,
@@ -941,7 +941,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb46eed801d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-436eb5de01d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   },
   {
@@ -964,8 +964,8 @@
                   "Prompt": {
                     "$type": "Microsoft.Bot.Schema.Activity, Microsoft.Bot.Schema",
                     "type": "message",
-                    "id": "4fd323dacd9e4049b29a635635ded7cb",
-                    "timestamp": "2020-08-05T12:58:04.5622824-07:00",
+                    "id": "2e2d5dd57d7c4fe0806e319cd5c63ec3",
+                    "timestamp": "2020-08-05T13:23:21.4951389-07:00",
                     "localTimestamp": null,
                     "localTimezone": null,
                     "serviceUrl": "https://test.com",
@@ -1055,7 +1055,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 1
               },
               "StackIndex": null,
@@ -1065,7 +1065,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb46eed801d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-436eb5de01d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   },
   {
@@ -1087,7 +1087,7 @@
                 "values": {
                   "$type": "System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib],[System.Object, System.Private.CoreLib]], System.Private.CoreLib"
                 },
-                "instanceId": "a82ef3ed-45c2-4e89-a3ef-3fa4c0cd4e13",
+                "instanceId": "c05e32d6-ad66-49a9-ae45-deb9c2b6a333",
                 "stepIndex": 2
               },
               "StackIndex": null,
@@ -1097,7 +1097,7 @@
         }
       }
     },
-    "_etag": "\"00000000-0000-0000-6b62-bb4a431f01d6\"",
+    "_etag": "\"00000000-0000-0000-6b66-4371bf6301d6\"",
     "PartitionKey": "test*2fconversations*2fConversation1"
   }
 ]
