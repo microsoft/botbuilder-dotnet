@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
         [Fact]
         public async Task PostActivityUsingInvokeResponseToSelf()
-        {      
+        {
             var activity = new Activity { Conversation = new ConversationAccount(id: Guid.NewGuid().ToString()) };
             var httpClient = CreateHttpClientWithMockHandler((request, cancellationToken) =>
             {
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 };
                 return Task.FromResult(response);
             });
-            
+
             var client = new BotFrameworkHttpClient(httpClient, new Mock<ICredentialProvider>().Object);
             var result = await client.PostActivityAsync(string.Empty, new Uri("https://skillbot.com/api/messages"), activity);
 
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
         [Fact]
         public async Task PostActivityUsingInvokeResponseOfTToSelf()
-        {      
+        {
             var activity = new Activity { Conversation = new ConversationAccount(id: Guid.NewGuid().ToString()) };
             var httpClient = CreateHttpClientWithMockHandler((request, cancellationToken) =>
             {
@@ -200,45 +200,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 };
                 return Task.FromResult(response);
             });
-            
+
             var client = new BotFrameworkHttpClient(httpClient, new Mock<ICredentialProvider>().Object);
             var result = await client.PostActivityAsync<TestContentBody>(string.Empty, new Uri("https://skillbot.com/api/messages"), activity);
 
             Assert.IsType<InvokeResponse<TestContentBody>>(result);
             Assert.Equal((int)HttpStatusCode.OK, result.Status);
             Assert.NotNull(result.Body);
-        }
-
-        /// <summary>
-        /// Helper to create an HttpClient with a mock message handler that executes function argument to validate the request and mock a response.
-        /// </summary>
-        private HttpClient CreateHttpClientWithMockHandler(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> valueFunction)
-        {
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-            mockHttpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .Returns(valueFunction)
-                .Verifiable();
-
-            return new HttpClient(mockHttpMessageHandler.Object);
-        }
-
-        /// <summary>
-        /// A simple type for testing InvokeResponse body.
-        /// </summary>
-        internal class TestContentBody
-        {
-            public TestContentBody(string id, string someProp)
-            {
-                Id = id;
-                SomeProp = someProp;
-            }
-
-            [JsonProperty("id")]
-            public string Id { get; set; }
-
-            [JsonProperty("someProp")]
-            public string SomeProp { get; set; }
         }
 
         [Fact]
@@ -286,6 +254,38 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             };
 
             await client.PostActivityAsync(string.Empty, string.Empty, new Uri("https://skillbot.com/api/messages"), new Uri("https://parentbot.com/api/messages"), "NewConversationId", activity);
+        }
+
+        /// <summary>
+        /// Helper to create an HttpClient with a mock message handler that executes function argument to validate the request and mock a response.
+        /// </summary>
+        private HttpClient CreateHttpClientWithMockHandler(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> valueFunction)
+        {
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Returns(valueFunction)
+                .Verifiable();
+
+            return new HttpClient(mockHttpMessageHandler.Object);
+        }
+
+        /// <summary>
+        /// A simple type for testing InvokeResponse body.
+        /// </summary>
+        internal class TestContentBody
+        {
+            public TestContentBody(string id, string someProp)
+            {
+                Id = id;
+                SomeProp = someProp;
+            }
+
+            [JsonProperty("id")]
+            public string Id { get; set; }
+
+            [JsonProperty("someProp")]
+            public string SomeProp { get; set; }
         }
     }
 }
