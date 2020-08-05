@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // Switch between Record and Playback mode using "COSMOS_RECORDING_MODE" Env Var, 
         // or switching the right-hand side of the null-coalesce to RecordingMode.Record.
         // This should default to Playback, but tests should be re-recorded with any test or CosmosDbPartitionedStorage change.
-        private static readonly string _recordingMode = Environment.GetEnvironmentVariable("COSMOS_RECORDING_MODE") ?? RecordingMode.Playback;
+        private static readonly string _recordingMode = Environment.GetEnvironmentVariable("COSMOS_RECORDING_MODE") ?? RecordingMode.Record;
 
         private static readonly string _noConnectionMessage = $"Unable to connect to Cosmos Endpoint {CosmosServiceEndpoint}. Running tests against recordings.";
         private static CosmosTestRecorder _testRecorder;
@@ -228,7 +228,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public async Task UpdateObjectTest()
         {
             _testRecorder.RecordingFileName = GetActualAsyncMethodName();
-            await UpdateObjectTest(_storage).ConfigureAwait(false);
+            await UpdateObjectTest<CosmosException>(_storage).ConfigureAwait(false);
         }
 
         [TestMethod]

@@ -63,7 +63,8 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal("1", storeItem.Id);
         }
 
-        protected async Task UpdateObjectTest(IStorage storage)
+        protected async Task UpdateObjectTest<T>(IStorage storage)
+            where T : Exception
         {
             var originalPocoItem = new PocoItem() { Id = "1", Count = 1 };
             var originalPocoStoreItem = new PocoStoreItem() { Id = "1", Count = 1 };
@@ -113,10 +114,10 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             // write with old etag should FAIL for storeitem
-
+             
             updatePocoStoreItem.Count = 123;
 
-            await Assert.ThrowsAnyAsync<Exception>(() => storage.WriteAsync(
+            await Assert.ThrowsAsync<T>(() => storage.WriteAsync(
                 new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } }));
 
             var reloadedStoreItems2 = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));

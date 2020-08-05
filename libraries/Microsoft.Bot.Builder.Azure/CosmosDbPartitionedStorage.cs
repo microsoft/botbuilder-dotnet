@@ -4,17 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
-[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Azure.Tests")]
-
-// This is required for Moq to use DocumentStoreItem in the Tests
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2, PublicKey=0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7")]
 
 namespace Microsoft.Bot.Builder.Azure
 {
@@ -387,7 +381,9 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.
         /// </summary>
-        internal class DocumentStoreItem : IStoreItem
+#pragma warning disable CA1034 // Nested types should not be visible. Must be visible so tests have access without InternalsVisibleTo. Cannot move to separate file due to typing serialization.
+        public sealed class DocumentStoreItem : IStoreItem
+#pragma warning restore CA1034 // Nested types should not be visible
         {
             /// <summary>
             /// Gets the PartitionKey path to be used for this document type.
@@ -407,7 +403,7 @@ namespace Microsoft.Bot.Builder.Azure
             public string Id { get; set; }
 
             /// <summary>
-            /// Gets or sets the un-sanitized Id/Key.
+            /// Gets the un-sanitized Id/Key.
             /// </summary>
             /// <value>
             /// The un-sanitized Id/Key.
@@ -422,7 +418,9 @@ namespace Microsoft.Bot.Builder.Azure
             /// The persisted object.
             /// </value>
             [JsonProperty("document")]
+#pragma warning disable CA2227 // Collection properties should be read only. Setter cannot be readonly due to serialization at runtime.
             public JObject Document { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
             /// <summary>
             /// Gets or sets the ETag information for handling optimistic concurrency updates.
