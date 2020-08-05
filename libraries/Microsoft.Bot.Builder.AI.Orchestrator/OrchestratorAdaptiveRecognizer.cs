@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             if (EntityRecognizers.Count != 0)
             {
                 // Run entity recognition
-                recognizerResult = await RecognizeEntitiesAsync(dc, activity, recognizerResult).ConfigureAwait(false);
+                await RecognizeEntitiesAsync(dc, activity, recognizerResult).ConfigureAwait(false);
             }
 
             // Score with orchestrator
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             return recognizerResult;
         }
 
-        private async Task<RecognizerResult> RecognizeEntitiesAsync(DialogContext dialogContext, Schema.Activity activity, RecognizerResult recognizerResult)
+        private async Task RecognizeEntitiesAsync(DialogContext dialogContext, Schema.Activity activity, RecognizerResult recognizerResult)
         {
             var text = activity.Text ?? string.Empty;
             var entityPool = new List<Entity>();
@@ -287,8 +287,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 instance.Add("resolution", entity.GetValue("resolution", StringComparison.InvariantCulture));
                 ((JArray)instanceData).Add(instance);
             }
-
-            return recognizerResult;
         }
 
         private void InitializeModel()
