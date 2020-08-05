@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var (intent, score) = recognizerResult.Value.GetTopScoringIntent();
                 if (intent != NoneIntent)
                 {
-                    var candidate = new JObject();
+                    dynamic candidate = new JObject();
                     candidate.id = recognizerResult.Key;
                     candidate.intent = intent;
                     candidate.score = score;
