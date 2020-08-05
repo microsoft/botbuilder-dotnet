@@ -26,11 +26,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="dict"><see cref="IDictionary"/> from which to retrieve the property.</param>
         /// <param name="property">Name of the property.</param>
         /// <typeparam name="T">The type to which the object should be casted.</typeparam>
-        /// <returns>The object from the dictionary casted to <typeparamref name="T"/>.</returns>
-        /// <remarks>
-        /// If the object in the dictionary is not currently of type <typeparamref name="T"/>, it will replaced with
-        /// a new object which has been casted to <typeparamref name="T"/>.
-        /// </remarks>
+        /// <returns>The in from the dictionary casted to <typeparamref name="T"/>.</returns>
         public static T MapValueTo<T>(this IDictionary<string, object> dict, string property)
         {
             if (dict.TryMapValueTo(property, out T result))
@@ -52,7 +48,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="result">The result will be the property, if found, as the <typeparamref name="T"/> specified 
         /// or default<typeparamref name="T"/>.</param>
         /// <typeparam name="T">The type to which the object should be casted.</typeparam>
-        /// <returns>The object from the dictionary casted to <typeparamref name="T"/>.</returns>
+        /// <returns>The object in the dictionary casted to <typeparamref name="T"/>.</returns>
         public static bool TryMapValueTo<T>(this IDictionary<string, object> dict, string property, out T result)
         {
             result = default(T);
