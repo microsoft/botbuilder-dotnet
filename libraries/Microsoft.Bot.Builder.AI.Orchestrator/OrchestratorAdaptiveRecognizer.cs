@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -154,12 +153,14 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 return recognizerResult;
             }
 
+            if (EntityRecognizers.Count != 0)
+            {
+                // Run entity recognition
+                recognizerResult = await RecognizeEntitiesAsync(dc, activity, recognizerResult).ConfigureAwait(false);
+            }
+
             // Score with orchestrator
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            var results = this._resolver.Score(text);
-            sw.Stop();
-            Console.WriteLine($"Orchestrator recognize : {sw.ElapsedMilliseconds}");
+            var results = _resolver.Score(text);
 
             // Add full recognition result as a 'result' property
             recognizerResult.Properties.Add(ResultProperty, results);
@@ -176,7 +177,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 else
                 {
                     // add top score
-                    AddResultAsIntent(recognizerResult, results[0]);
+                    recognizerResult.Intents.Add(results[0].Label.Name, new IntentScore()
+                    {
+                        Score = results[0].Score
+                    });
 
                     // Disambiguate if configured
                     if (detectAmbiguity)
@@ -216,14 +220,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             TrackRecognizerResult(dc, nameof(OrchestratorAdaptiveRecognizer), FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
 
             return recognizerResult;
-        }
-
-        private void AddResultAsIntent(RecognizerResult recognizerResult, Result result)
-        {
-            recognizerResult.Intents.Add(result.Label.Name, new IntentScore()
-            {
-                Score = result.Score
-            });
         }
 
         private async Task<RecognizerResult> RecognizeEntitiesAsync(DialogContext dialogContext, Schema.Activity activity, RecognizerResult recognizerResult)
@@ -269,22 +265,20 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 ((JArray)values).Add(entity.GetValue("text", StringComparison.InvariantCulture));
 
                 // get/create $instance
-                JToken instanceRoot;
-                if (!recognizerResult.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
+                if (!recognizerResult.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out JToken instanceRoot))
                 {
                     instanceRoot = new JObject();
                     recognizerResult.Entities["$instance"] = instanceRoot;
                 }
 
                 // add instanceData
-                JToken instanceData;
-                if (!((JObject)instanceRoot).TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out instanceData))
+                if (!((JObject)instanceRoot).TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out JToken instanceData))
                 {
                     instanceData = new JArray();
                     instanceRoot[entityResult.Type] = instanceData;
                 }
 
-                JObject instance = new JObject();
+                var instance = new JObject();
                 instance.Add("startIndex", entity.GetValue("start", StringComparison.InvariantCulture));
                 instance.Add("endIndex", entity.GetValue("end", StringComparison.InvariantCulture));
                 instance.Add("score", (double)1.0);
@@ -312,22 +306,16 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             if (orchestrator == null)
             {
                 var fullModelPath = Path.GetFullPath(PathUtils.NormalizePath(_modelPath));
-                Stopwatch sw = new Stopwatch();
 
                 // Create Orchestrator 
                 try
                 {
-                    sw.Start();
                     orchestrator = new Microsoft.Orchestrator.Orchestrator(fullModelPath);
                 }
                 catch (Exception ex)
                 {
-                    sw.Stop();
                     throw new Exception("Failed to find or load Model", ex);
                 }
-
-                sw.Stop();
-                Console.WriteLine($"Model load time:{sw.ElapsedMilliseconds}");
             }
 
             if (_resolver == null)
