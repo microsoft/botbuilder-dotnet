@@ -45,6 +45,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
             }
         }
 
+        /// <inheritdoc/>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             var recognizer = _recognizer.RecognizerOptions(dialogContext);

@@ -9,8 +9,17 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
+    /// <summary>
+    /// Abstract base class for scripted actions.
+    /// </summary>
     public abstract class TestAction
     {
+        /// <summary>
+        /// Execute the test.
+        /// </summary>
+        /// <param name="adapter">adapter to execute against.</param>
+        /// <param name="callback">logic for the bot to use.</param>
+        /// <returns>async task.</returns>
         public abstract Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback);
 
         protected void RegisterSourcePath(string path, int line)

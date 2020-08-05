@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.Base
 {
     internal sealed class ReferenceEquality<T> : IEqualityComparer<T>
     {
@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
         }
 
-        bool IEqualityComparer<T>.Equals(T x, T y) => object.ReferenceEquals(x, y);
+        bool IEqualityComparer<T>.Equals(T x, T y) => ReferenceEquals(x, y);
 
         int IEqualityComparer<T>.GetHashCode(T obj) => RuntimeHelpers.GetHashCode(obj);
     }
