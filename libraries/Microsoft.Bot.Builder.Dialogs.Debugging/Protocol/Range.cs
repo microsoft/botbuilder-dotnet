@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Protocol
 {
-    public class Range : Reference
+    internal class Range : Reference
     {
         public string Item { get; set; }
 

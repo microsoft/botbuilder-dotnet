@@ -7,9 +7,7 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-#pragma warning disable CA1812 // Supressing error due to internal being used as intended
     internal sealed class EnumerableDataModel<T> : DataModelBase<IEnumerable<T>, int, T>
-#pragma warning restore CA1812 // Supressing error due to internal being used as intended
     {
         public EnumerableDataModel(ICoercion coercion)
             : base(coercion)

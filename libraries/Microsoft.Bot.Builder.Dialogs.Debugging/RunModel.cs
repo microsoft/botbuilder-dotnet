@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class RunModel
+    internal sealed class RunModel
     {
         public DialogDebugAdapter.Phase? PhaseSent { get; set; }
 

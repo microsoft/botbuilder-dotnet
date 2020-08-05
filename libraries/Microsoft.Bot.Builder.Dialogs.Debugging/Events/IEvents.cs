@@ -6,7 +6,7 @@ using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Events
 {
-    public interface IEvents
+    internal interface IEvents
     {
 #pragma warning disable CA1819 // Properties should not return arrays (change it without breaking binary compat)
         ExceptionBreakpointFilter[] Filters

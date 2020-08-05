@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Protocol
 {
-    public class ExceptionBreakpointFilter
+    internal class ExceptionBreakpointFilter
     {
         public string Filter { get; set; }
 

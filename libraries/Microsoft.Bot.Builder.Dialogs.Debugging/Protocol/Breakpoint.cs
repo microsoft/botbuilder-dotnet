@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Protocol
 {
-    public class Breakpoint : Range
+    internal class Breakpoint : Range
     {
         public bool Verified { get; set; }
 

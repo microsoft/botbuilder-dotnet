@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public interface IBreakpoints
+    internal interface IBreakpoints
     {
         bool IsBreakPoint(object item);
 

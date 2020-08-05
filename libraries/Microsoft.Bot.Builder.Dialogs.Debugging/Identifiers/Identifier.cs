@@ -5,13 +5,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers
 {
     public static class Identifier
     {
-        private const ulong MORE = 0x80;
-        private const ulong DATA = 0x7F;
+        private const ulong More = 0x80;
+        private const ulong Data = 0x7F;
 
         public static ulong Encode(ulong one, ulong two)
         {
             ulong target = 0;
-            int offset = 0;
+            var offset = 0;
             Encode(one, ref target, ref offset);
             Encode(two, ref target, ref offset);
             return target;
@@ -25,9 +25,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers
 
         private static void Encode(ulong source, ref ulong target, ref int offset)
         {
-            while (source > DATA)
+            while (source > Data)
             {
-                ulong chunk = (byte)(source | MORE);
+                ulong chunk = (byte)(source | More);
                 target |= chunk << offset;
                 offset += 8;
                 source >>= 7;
@@ -43,14 +43,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers
         private static void Decode(ref ulong source, out ulong target)
         {
             target = 0;
-            int offset = 0;
+            var offset = 0;
             while (true)
             {
                 ulong chunk = (byte)source;
-                target |= (chunk & DATA) << offset;
+                target |= (chunk & Data) << offset;
                 source >>= 8;
 
-                if ((chunk & MORE) == 0)
+                if ((chunk & More) == 0)
                 {
                     break;
                 }
