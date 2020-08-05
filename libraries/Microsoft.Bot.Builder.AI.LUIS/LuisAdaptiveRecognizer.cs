@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -19,6 +20,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// </summary>
     public class LuisAdaptiveRecognizer : Recognizer
     {
+        /// <summary>
+        /// The Kind name for this recognizer.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.LuisRecognizer";
 
@@ -94,15 +98,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var wrapper = new LuisRecognizer(RecognizerOptions(dialogContext), HttpClient);
 
             // temp clone of turn context because luisrecognizer always pulls activity from turn context.
-            var tempContext = new TurnContext(dialogContext.Context.Adapter, activity);
-            foreach (var keyValue in dialogContext.Context.TurnState)
+            RecognizerResult result;
+            using (var tempContext = new TurnContext(dialogContext.Context.Adapter, activity))
             {
-                tempContext.TurnState[keyValue.Key] = keyValue.Value;
+                foreach (var keyValue in dialogContext.Context.TurnState)
+                {
+                    tempContext.TurnState[keyValue.Key] = keyValue.Value;
+                }
+
+                result = await wrapper.RecognizeAsync(tempContext, cancellationToken).ConfigureAwait(false);
             }
 
-            var result = await wrapper.RecognizeAsync(tempContext, cancellationToken).ConfigureAwait(false);
-
-            this.TrackRecognizerResult(dialogContext, "LuisResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, "LuisResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
         }
@@ -136,6 +143,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
             };
         }
 
+        /// <summary>
+        /// Uses the <see cref="RecognizerResult"/> returned from the <see cref="LuisRecognizer"/> and populates a dictionary of string
+        /// with properties to be logged into telemetry.  Including any additional properties that were passed into the method.
+        /// </summary>
+        /// <param name="recognizerResult">An instance of <see cref="RecognizerResult"/> to extract the telemetry properties from.</param>
+        /// <param name="telemetryProperties">A collection of additional properties to be added to the returned dictionary of properties.</param>
+        /// <param name="dc">An instance of <see cref="DialogContext"/>.</param>
+        /// <returns>The dictionary of properties to be logged with telemetry for the recongizer result.</returns>
         protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dc)
         {
             var (logPersonalInfo, error) = this.LogPersonalInformation.TryGetValue(dc.State);
@@ -148,9 +163,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 { LuisTelemetryConstants.ApplicationIdProperty, applicationId },
                 { LuisTelemetryConstants.IntentProperty, topTwoIntents?[0].Key ?? string.Empty },
-                { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2") ?? "0.00" },
-                { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
-                { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2") ?? "0.00" : "0.00" },
+                { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2", CultureInfo.InvariantCulture) ?? "0.00" },
+                { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Length > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
+                { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Length > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2", CultureInfo.InvariantCulture) ?? "0.00" : "0.00" },
                 { LuisTelemetryConstants.FromIdProperty, dc.Context.Activity.From.Id },
             };
 

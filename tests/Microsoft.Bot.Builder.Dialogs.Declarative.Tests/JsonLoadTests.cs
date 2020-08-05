@@ -49,6 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         [TestMethod]
         [Ignore]
+        [TestCategory("IgnoreInAutomatedBuild")]
         public async Task JsonDialogLoad_CycleDetection()
         {
             await BuildTestFlow(@"Root.dialog")
@@ -445,7 +446,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var dm = new DialogManager(dialog)
                 .UseResourceExplorer(resourceExplorer)
                 .UseLanguageGeneration();
-            dm.InitialTurnState.Add<IQnAMakerClient>(new MockQnAMakerClient()); 
+            dm.InitialTurnState.Add<IQnAMakerClient>(new MockQnAMakerClient());
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {

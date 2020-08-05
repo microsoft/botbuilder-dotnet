@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AdaptiveExpressions.Properties;
@@ -15,7 +17,7 @@ namespace AdaptiveExpressions.Memory
     /// </summary>
     public class SimpleObjectMemory : IMemory
     {
-        private object memory = null;
+        private object _memory = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleObjectMemory"/> class.
@@ -24,7 +26,7 @@ namespace AdaptiveExpressions.Memory
         /// <param name="memory">The object to wrap.</param>
         public SimpleObjectMemory(object memory)
         {
-            this.memory = memory;
+            _memory = memory;
         }
 
         /// <summary>
@@ -36,7 +38,7 @@ namespace AdaptiveExpressions.Memory
         public bool TryGetValue(string path, out object value)
         {
             value = null;
-            if (memory == null || path.Length == 0)
+            if (_memory == null || path.Length == 0)
             {
                 return false;
             }
@@ -45,14 +47,14 @@ namespace AdaptiveExpressions.Memory
                             .Select(x => x.Trim('\'', '"'))
                             .ToArray();
 
-            var curScope = memory;
+            var curScope = _memory;
 
             foreach (var part in parts)
             {
                 string error = null;
-                if (int.TryParse(part, out var idx) && ExpressionFunctions.TryParseList(curScope, out var li))
+                if (int.TryParse(part, out var idx) && FunctionUtils.TryParseList(curScope, out var li))
                 {
-                    (value, error) = ExpressionFunctions.AccessIndex(li, idx);
+                    (value, error) = FunctionUtils.AccessIndex(li, idx);
                     if (error != null)
                     {
                         return false;
@@ -60,7 +62,7 @@ namespace AdaptiveExpressions.Memory
                 }
                 else
                 {
-                    if (!ExpressionFunctions.TryAccessProperty(curScope, part, out value))
+                    if (!FunctionUtils.TryAccessProperty(curScope, part, out value))
                     {
                         return false;
                     }
@@ -71,7 +73,7 @@ namespace AdaptiveExpressions.Memory
 
             if (value is IExpressionProperty ep)
             {
-                value = ep.GetObject(memory);
+                value = ep.GetObject(_memory);
             }
 
             return true;
@@ -90,7 +92,7 @@ namespace AdaptiveExpressions.Memory
         /// <param name="value">Value to set.</param>
         public void SetValue(string path, object value)
         {
-            if (memory == null)
+            if (_memory == null)
             {
                 return;
             }
@@ -99,22 +101,22 @@ namespace AdaptiveExpressions.Memory
                             .Select(x => x.Trim('\'', '"'))
                             .ToArray();
 
-            var curScope = memory;
+            var curScope = _memory;
             var curPath = string.Empty; // valid path so far
             string error = null;
 
             // find the 2nd last value, the container
             for (var i = 0; i < parts.Length - 1; i++)
             {
-                if (int.TryParse(parts[i], out var index) && ExpressionFunctions.TryParseList(curScope, out var li))
+                if (int.TryParse(parts[i], out var index) && FunctionUtils.TryParseList(curScope, out var li))
                 {
                     curPath += $"[{parts[i]}]";
-                    (curScope, error) = ExpressionFunctions.AccessIndex(li, index);
+                    (curScope, error) = FunctionUtils.AccessIndex(li, index);
                 }
                 else
                 {
                     curPath += $".{parts[i]}";
-                    if (ExpressionFunctions.TryAccessProperty(curScope, parts[i], out var newScope))
+                    if (FunctionUtils.TryAccessProperty(curScope, parts[i], out var newScope))
                     {
                         curScope = newScope;
                     }
@@ -133,7 +135,7 @@ namespace AdaptiveExpressions.Memory
             // set the last value
             if (int.TryParse(parts.Last(), out var idx))
             {
-                if (ExpressionFunctions.TryParseList(curScope, out var li))
+                if (FunctionUtils.TryParseList(curScope, out var li))
                 {
                     if (li is JArray)
                     {
@@ -166,7 +168,7 @@ namespace AdaptiveExpressions.Memory
             }
             else
             {
-                (_, error) = ExpressionFunctions.SetProperty(curScope, parts.Last(), value);
+                (_, error) = SetProperty(curScope, parts.Last(), value);
                 if (error != null)
                 {
                     return;
@@ -174,17 +176,63 @@ namespace AdaptiveExpressions.Memory
             }
         }
 
+        /// <summary>
+        /// Return the version info of SimpleObjectMemory.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public string Version()
         {
             return ToString();
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(memory, new JsonSerializerSettings
+            return JsonConvert.SerializeObject(_memory, new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
+        }
+
+        private (object result, string error) SetProperty(object instance, string property, object value)
+        {
+            var result = value;
+            string error = null;
+
+            if (instance is IDictionary<string, object> idict)
+            {
+                idict[property] = value;
+            }
+            else if (instance is IDictionary dict)
+            {
+                dict[property] = value;
+            }
+            else if (instance is JObject jobj)
+            {
+                jobj[property] = FunctionUtils.ConvertToJToken(value);
+            }
+            else
+            {
+                // Use reflection
+                var type = instance.GetType();
+                var prop = type.GetProperties().Where(p => p.Name.ToLowerInvariant() == property).SingleOrDefault();
+                if (prop != null)
+                {
+                    if (prop.CanWrite)
+                    {
+                        prop.SetValue(instance, value);
+                    }
+                    else
+                    {
+                        error = $"property {prop.Name} is read-only";
+                    }
+                }
+            }
+
+            return (result, error);
         }
     }
 }

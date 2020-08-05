@@ -15,9 +15,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     internal class GenerateAnswerUtils
     {
-        private readonly IBotTelemetryClient telemetryClient;
-        private QnAMakerEndpoint _endpoint;
-        private readonly HttpClient httpClient;
+        private readonly HttpClient _httpClient;
+        private readonly IBotTelemetryClient _telemetryClient;
+        private readonly QnAMakerEndpoint _endpoint;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenerateAnswerUtils"/> class.
@@ -28,12 +28,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="httpClient">Http client.</param>
         public GenerateAnswerUtils(IBotTelemetryClient telemetryClient, QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient)
         {
-            this.telemetryClient = telemetryClient;
-            this._endpoint = endpoint;
+            _telemetryClient = telemetryClient;
+            _endpoint = endpoint;
 
-            this.Options = options ?? new QnAMakerOptions();
-            ValidateOptions(this.Options);
-            this.httpClient = httpClient;
+            Options = options ?? new QnAMakerOptions();
+            ValidateOptions(Options);
+            _httpClient = httpClient;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [Obsolete]
         public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
         {
-            var result = await this.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            var result = await GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
             return result.Answers;
         }
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (turnContext.Activity == null)
             {
-                throw new ArgumentNullException(nameof(turnContext.Activity));
+                throw new ArgumentException($"The {nameof(turnContext.Activity)} property for {nameof(turnContext)} can't be null.", nameof(turnContext));
             }
 
             if (messageActivity == null)
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (options.ScoreThreshold < 0 || options.ScoreThreshold > 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
+                throw new ArgumentOutOfRangeException(nameof(options), $"The {nameof(options.ScoreThreshold)} property should be a value between 0 and 1");
             }
 
             if (options.Timeout == 0.0D)
@@ -131,14 +131,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (options.Top < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(options.Top), "Top should be an integer greater than 0");
+                throw new ArgumentOutOfRangeException(nameof(options), $"The {nameof(options.Top)} property should be an integer greater than 0");
             }
 
             if (options.StrictFilters == null)
             {
-                options.StrictFilters = new Metadata[] { };
+                options.StrictFilters = Array.Empty<Metadata>();
             }
-           
+
             if (options.RankerType == null)
             {
                 options.RankerType = RankerTypes.DefaultRankerType;
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>Return modified options for the QnA Maker knowledge base.</returns>
         private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
-            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(this.Options));
+            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(Options));
 
             if (queryOptions != null)
             {
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 if (queryOptions.StrictFilters?.Length > 0)
                 {
                     hydratedOptions.StrictFilters = queryOptions.StrictFilters;
-                }         
+                }
 
                 hydratedOptions.Context = queryOptions.Context;
                 hydratedOptions.QnAId = queryOptions.QnAId;
@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 {
                     question = messageActivity.Text,
                     top = options.Top,
-                    strictFilters = options.StrictFilters,                  
+                    strictFilters = options.StrictFilters,
                     scoreThreshold = options.ScoreThreshold,
                     context = options.Context,
                     qnaId = options.QnAId,
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     rankerType = options.RankerType
                 }, Formatting.None);
 
-            var httpRequestHelper = new HttpRequestUtils(httpClient);
+            var httpRequestHelper = new HttpRequestUtils(_httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
 
             var result = await FormatQnaResultAsync(response, options).ConfigureAwait(false);
@@ -208,12 +208,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             var traceInfo = new QnAMakerTraceInfo
             {
-                Message = (Activity)messageActivity,
+                Message = messageActivity,
                 QueryResults = result,
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
                 ScoreThreshold = options.ScoreThreshold,
                 Top = options.Top,
-                StrictFilters = options.StrictFilters,               
+                StrictFilters = options.StrictFilters,
                 Context = options.Context,
                 QnAId = options.QnAId,
                 IsTest = options.IsTest,

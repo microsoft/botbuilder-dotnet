@@ -16,11 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    public class DialogExpressionConverter : JsonConverter<DialogExpression>, IObservableConverter
+    public class DialogExpressionConverter : JsonConverter<DialogExpression>, IObservableConverter, IObservableJsonConverter
     {
         private readonly InterfaceConverter<Dialog> converter;
         private readonly ResourceExplorer resourceExplorer;
-        private readonly List<IConverterObserver> observers = new List<IConverterObserver>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogExpressionConverter"/> class.
@@ -39,20 +38,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
         {
             var jToken = JToken.Load(reader);
 
-            foreach (var observer in observers)
-            {
-                if (observer.OnBeforeLoadToken(jToken, out DialogExpression interceptResult))
-                {
-                    return interceptResult;
-                }
-            }
-
             DialogExpression result = null;
 
             if (reader.ValueType == typeof(string))
             {
                 var id = (string)reader.Value;
-                if (id.StartsWith("="))
+                if (id.StartsWith("=", StringComparison.Ordinal))
                 {
                     result = new DialogExpression(id);
                 }
@@ -60,9 +51,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                 {
                     try
                     {
-                        result = new DialogExpression((Dialog)this.converter.ReadJson(new JsonTextReader(new StringReader($"\"{id}\"")), objectType, existingValue, serializer));
+                        using (var jsonTextReader = new JsonTextReader(new StringReader($"\"{id}\"")))
+                        {
+                            result = new DialogExpression((Dialog)converter.ReadJson(jsonTextReader, objectType, existingValue, serializer));
+                        }
                     }
+#pragma warning disable CA1031 // Do not catch general exception types (return an empty if an exception happens).
                     catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         result = new DialogExpression($"='{id}'");
                     }
@@ -70,15 +66,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
             }
             else
             {
-                result = new DialogExpression((Dialog)this.converter.ReadJson(new JTokenReader(jToken), objectType, existingValue, serializer));
-            }
-
-            foreach (var observer in observers)
-            {
-                if (observer.OnAfterLoadToken(jToken, result, out DialogExpression interceptedResult))
+                using (var jTokenReader = new JTokenReader(jToken))
                 {
-                    interceptedResult.SetValue(result.Value);
-                    result = interceptedResult;
+                    result = new DialogExpression((Dialog)this.converter.ReadJson(jTokenReader, objectType, existingValue, serializer));
                 }
             }
 
@@ -98,6 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
         }
 
         /// <inheritdoc/>
+        [Obsolete("Deprecated in favor of IJsonLoadObserver registration.")]
         public void RegisterObserver(IConverterObserver observer)
         {
             if (observer == null)
@@ -105,7 +96,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                 throw new ArgumentNullException(nameof(observer));
             }
 
-            this.observers.Add(observer);
+            // Create a wrapper for the deprecated type IConverterObserver.
+            // This supports backward compartibity.
+            RegisterObserver(new JsonLoadObserverWrapper(observer));
+        }
+
+        public void RegisterObserver(IJsonLoadObserver observer)
+        {
+            if (observer == null)
+            {
+                throw new ArgumentNullException(nameof(observer));
+            }
+
             this.converter.RegisterObserver(observer);
         }
     }

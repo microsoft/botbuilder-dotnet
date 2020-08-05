@@ -74,7 +74,67 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         private const string DefaultCardNoMatchText = "None of the above.";
         private const string DefaultCardNoMatchResponse = "Thanks for the feedback.";
 
-        private float maximumScoreForLowScoreVariation = 0.95F;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
+        /// </summary>
+        /// <param name="dialogId">The ID of the <see cref="Dialog"/>.</param>
+        /// <param name="knowledgeBaseId">The ID of the QnA Maker knowledge base to query.</param>
+        /// <param name="endpointKey">The QnA Maker endpoint key to use to query the knowledge base.</param>
+        /// <param name="hostName">The QnA Maker host URL for the knowledge base, starting with "https://" and
+        /// ending with "/qnamaker".</param>
+        /// <param name="noAnswer">The activity to send the user when QnA Maker does not find an answer.</param>
+        /// <param name="threshold">The threshold for answers returned, based on score.</param>
+        /// <param name="activeLearningCardTitle">The card title to use when showing active learning options
+        /// to the user, if active learning is enabled.</param>
+        /// <param name="cardNoMatchText">The button text to use with active learning options,
+        /// allowing a user to indicate none of the options are applicable.</param>
+        /// <param name="top">The maximum number of answers to return from the knowledge base.</param>
+        /// <param name="cardNoMatchResponse">The activity to send the user if they select the no match option
+        /// on an active learning card.</param>
+        /// <param name="strictFilters">QnA Maker metadata with which to filter or boost queries to the
+        /// knowledge base; or null to apply none.</param>
+        /// <param name="httpClient">An HTTP client to use for requests to the QnA Maker Service;
+        /// or `null` to use a default client.</param>
+        /// <param name="sourceFilePath">The source file path, for debugging. Defaults to the full path
+        /// of the source file that contains the caller.</param>
+        /// <param name="sourceLineNumber">The line number, for debugging. Defaults to the line number
+        /// in the source file at which the method is called.</param>
+        public QnAMakerDialog(
+            string dialogId,
+            string knowledgeBaseId,
+            string endpointKey,
+            string hostName,
+            Activity noAnswer = null,
+            float threshold = DefaultThreshold,
+            string activeLearningCardTitle = DefaultCardTitle,
+            string cardNoMatchText = DefaultCardNoMatchText,
+            int top = DefaultTopN,
+            Activity cardNoMatchResponse = null,
+            Metadata[] strictFilters = null,
+            HttpClient httpClient = null,
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0)
+            : base(dialogId)
+        {
+            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+            this.KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
+            this.HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
+            this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
+            this.Threshold = threshold;
+            this.Top = top;
+            this.ActiveLearningCardTitle = activeLearningCardTitle;
+            this.CardNoMatchText = cardNoMatchText;
+            this.StrictFilters = strictFilters;
+            this.NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
+            this.CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
+            this.HttpClient = httpClient;
+
+            // add waterfall steps
+            this.AddStep(CallGenerateAnswerAsync);
+            this.AddStep(CallTrainAsync);
+            this.AddStep(CheckForMultiTurnPromptAsync);
+            this.AddStep(DisplayQnAResultAsync);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMakerDialog"/> class.
@@ -114,26 +174,22 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             HttpClient httpClient = null,
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
-            : base(nameof(QnAMakerDialog))
+            : this(
+                nameof(QnAMakerDialog),
+                knowledgeBaseId,
+                endpointKey,
+                hostName,
+                noAnswer,
+                threshold,
+                activeLearningCardTitle,
+                cardNoMatchText,
+                top,
+                cardNoMatchResponse,
+                strictFilters,
+                httpClient,
+                sourceFilePath,
+                sourceLineNumber)
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
-            this.KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
-            this.HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
-            this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
-            this.Threshold = threshold;
-            this.Top = top;
-            this.ActiveLearningCardTitle = activeLearningCardTitle;
-            this.CardNoMatchText = cardNoMatchText;
-            this.StrictFilters = strictFilters;
-            this.NoAnswer = new BindToActivity(noAnswer ?? MessageFactory.Text(DefaultNoAnswer));
-            this.CardNoMatchResponse = new BindToActivity(cardNoMatchResponse ?? MessageFactory.Text(DefaultCardNoMatchResponse));
-            this.HttpClient = httpClient;
-
-            // add waterfall steps
-            this.AddStep(CallGenerateAnswerAsync);
-            this.AddStep(CallTrainAsync);
-            this.AddStep(CheckForMultiTurnPromptAsync);
-            this.AddStep(DisplayQnAResultAsync);
         }
 
         /// <summary>
@@ -333,6 +389,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return await base.BeginDialogAsync(dc, dialogOptions, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             var interrupted = dc.State.GetValue<bool>(TurnPath.Interrupted, () => false);
@@ -345,6 +402,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             return base.ContinueDialogAsync(dc, cancellationToken);
         }
 
+        /// <inheritdoc/>
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             if (dc.Context.Activity.Type == ActivityTypes.Message)
@@ -363,7 +421,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 }
 
                 var suggestedQuestions = dc.State.GetValue<List<string>>($"this.suggestedQuestions");
-                if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Compare(question, reply.Trim(), ignoreCase: true) == 0))
+                if (suggestedQuestions != null && suggestedQuestions.Any(question => string.Compare(question, reply.Trim(), StringComparison.OrdinalIgnoreCase) == 0))
                 {
                     // it matches one of the suggested actions, we like that.
                     return true;
@@ -437,7 +495,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the response options to use.</remarks>
-        protected async virtual Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
+        protected virtual async Task<QnADialogResponseOptions> GetQnAResponseOptionsAsync(DialogContext dc)
         {
             return new QnADialogResponseOptions
             {
@@ -446,6 +504,31 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 CardNoMatchText = this.CardNoMatchText?.GetValue(dc.State) ?? DefaultCardNoMatchText,
                 CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
             };
+        }
+        
+        private static void ResetOptions(DialogContext dc, QnAMakerDialogOptions dialogOptions)
+        {
+            // Resetting context and QnAId
+            dialogOptions.QnAMakerOptions.QnAId = 0;
+            dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
+
+            // -Check if previous context is present, if yes then put it with the query
+            // -Check for id if query is present in reverse index.
+            var previousContextData = ObjectPath.GetPathValue<Dictionary<string, int>>(dc.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
+            var previousQnAId = ObjectPath.GetPathValue<int>(dc.ActiveDialog.State, PreviousQnAId, 0);
+
+            if (previousQnAId > 0)
+            {
+                dialogOptions.QnAMakerOptions.Context = new QnARequestContext
+                {
+                    PreviousQnAId = previousQnAId
+                };
+
+                if (previousContextData.TryGetValue(dc.Context.Activity.Text, out var currentQnAId))
+                {
+                    dialogOptions.QnAMakerOptions.QnAId = currentQnAId;
+                }
+            }
         }
 
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -477,13 +560,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             stepContext.Values[ValueProperty.QnAData] = new List<QueryResult>(response.Answers);
 
             // Check if active learning is enabled.
-            // maximumScoreForLowScoreVariation is the score above which no need to check for feedback.
-            if (response.Answers.Any() && response.Answers.First().Score <= maximumScoreForLowScoreVariation)
+            // MaximumScoreForLowScoreVariation is the score above which no need to check for feedback.
+            if (response.Answers.Any() && response.Answers.First().Score <= (ActiveLearningUtils.MaximumScoreForLowScoreVariation / 100))
             {
                 // Get filtered list of the response that support low score variation criteria.
                 response.Answers = qnaClient.GetLowScoreVariation(response.Answers);
 
-                if (response.Answers.Count() > 1 && isActiveLearningEnabled)
+                if (response.Answers.Length > 1 && isActiveLearningEnabled)
                 {
                     var suggestedQuestions = new List<string>();
                     foreach (var qna in response.Answers)
@@ -512,31 +595,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
             // If card is not shown, move to next step with top QnA response.
             return await stepContext.NextAsync(result, cancellationToken).ConfigureAwait(false);
-        }
-
-        private void ResetOptions(DialogContext dc, QnAMakerDialogOptions dialogOptions)
-        {
-            // Resetting context and QnAId
-            dialogOptions.QnAMakerOptions.QnAId = 0;
-            dialogOptions.QnAMakerOptions.Context = new QnARequestContext();
-
-            // -Check if previous context is present, if yes then put it with the query
-            // -Check for id if query is present in reverse index.
-            var previousContextData = ObjectPath.GetPathValue<Dictionary<string, int>>(dc.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
-            var previousQnAId = ObjectPath.GetPathValue<int>(dc.ActiveDialog.State, PreviousQnAId, 0);
-
-            if (previousQnAId > 0)
-            {
-                dialogOptions.QnAMakerOptions.Context = new QnARequestContext
-                {
-                    PreviousQnAId = previousQnAId
-                };
-
-                if (previousContextData.TryGetValue(dc.Context.Activity.Text, out var currentQnAId))
-                {
-                    dialogOptions.QnAMakerOptions.QnAId = currentQnAId;
-                }
-            }
         }
 
         private async Task<DialogTurnResult> CallTrainAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -611,7 +669,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
 
                 var answer = response.First();
 
-                if (answer.Context != null && answer.Context.Prompts.Count() > 0)
+                if (answer.Context != null && answer.Context.Prompts.Length > 0)
                 {
                     var previousContextData = ObjectPath.GetPathValue(stepContext.ActiveDialog.State, QnAContextData, new Dictionary<string, int>());
                     var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);

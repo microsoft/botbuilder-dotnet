@@ -3,6 +3,8 @@
 #pragma warning disable SA1402
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -11,29 +13,58 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
-    [TestClass]
     public class LGGeneratorTests
     {
-        public TestContext TestContext { get; set; }
+        public LGGeneratorTests()
+        {
+            ComponentRegistration.Add(new DeclarativeComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());
+            ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
+        }
 
-        [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [Fact]
         public async Task TestNotFoundTemplate()
         {
             var context = GetDialogContext(string.Empty);
             var lg = new TemplateEngineLanguageGenerator();
-            await lg.GenerateAsync(context, "${tesdfdfsst()}", null);
+            await Assert.ThrowsAsync<Exception>(() => lg.GenerateAsync(context, "${tesdfdfsst()}", null));
         }
 
-        [TestMethod]
+        [Fact]
+        public void TestLGResourceGroup()
+        {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+
+            // use LG file as entrance
+            var lgResourceGroup = LGResourceLoader.GroupByLocale(resourceExplorer);
+
+            Assert.Contains(string.Empty, lgResourceGroup.Keys.ToList());
+            var resourceNames = lgResourceGroup[string.Empty].Select(u => u.Id);
+            Assert.Equal(8, resourceNames.Count());
+            Assert.Subset(new HashSet<string>() { "a.lg", "b.lg", "c.lg", "inject.lg", "NormalStructuredLG.lg", "root.lg", "subDialog.lg", "test.lg" }, new HashSet<string>(resourceNames));
+
+            Assert.Contains("en-us", lgResourceGroup.Keys.ToList());
+            resourceNames = lgResourceGroup["en-us"].Select(u => u.Id);
+            Assert.Equal(8, resourceNames.Count());
+            Assert.Subset(new HashSet<string>() { "a.en-US.lg", "b.en-us.lg", "c.en.lg", "inject.lg", "NormalStructuredLG.lg", "root.lg", "subDialog.lg", "test.en-US.lg" }, new HashSet<string>(resourceNames));
+
+            Assert.Contains("en", lgResourceGroup.Keys.ToList());
+            resourceNames = lgResourceGroup["en"].Select(u => u.Id);
+            Assert.Equal(8, resourceNames.Count());
+            Assert.Subset(new HashSet<string>() { "a.lg", "b.lg", "c.en.lg", "inject.lg", "NormalStructuredLG.lg", "root.lg", "subDialog.lg", "test.en.lg" }, new HashSet<string>(resourceNames));
+        }
+
+        [Fact]
         public async Task TestMultiLangImport()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
@@ -44,35 +75,35 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var resource = resourceExplorer.GetResource("a.en-US.lg") as FileResource;
             var generator = new TemplateEngineLanguageGenerator(resource.FullName, lgResourceGroup);
             var result = await generator.GenerateAsync(GetDialogContext(), "${templatea()}", null);
-            Assert.AreEqual("from a.en-us.lg", result);
+            Assert.Equal("from a.en-us.lg", result);
 
             // import b.en-us.lg
             result = await generator.GenerateAsync(GetDialogContext(), "${templateb()}", null);
-            Assert.AreEqual("from b.en-us.lg", result);
+            Assert.Equal("from b.en-us.lg", result);
 
             // fallback to c.en.lg
             result = await generator.GenerateAsync(GetDialogContext(), "${templatec()}", null);
-            Assert.AreEqual("from c.en.lg", result);
+            Assert.Equal("from c.en.lg", result);
 
             // there is no 'greeting' template in b.en-us.lg, no more fallback to b.lg
-            var ex = await Assert.ThrowsExceptionAsync<Exception>(async () => await generator.GenerateAsync(GetDialogContext(), "${greeting()}", null));
-            Assert.IsTrue(ex.Message.Contains("greeting does not have an evaluator"));
+            var ex = await Assert.ThrowsAsync<Exception>(async () => await generator.GenerateAsync(GetDialogContext(), "${greeting()}", null));
+            Assert.True(ex.Message.Contains("greeting does not have an evaluator"));
 
             resource = resourceExplorer.GetResource("a.lg") as FileResource;
             generator = new TemplateEngineLanguageGenerator(resource.FullName, lgResourceGroup);
 
             result = await generator.GenerateAsync(GetDialogContext(), "${templatea()}", null);
-            Assert.AreEqual("from a.lg", result);
+            Assert.Equal("from a.lg", result);
 
             result = await generator.GenerateAsync(GetDialogContext(), "${templateb()}", null);
-            Assert.AreEqual("from b.lg", result);
+            Assert.Equal("from b.lg", result);
 
             // ignore the "en" in c.en.lg, just load c.lg
             result = await generator.GenerateAsync(GetDialogContext(), "${templatec()}", null);
-            Assert.AreEqual("from c.lg", result);
+            Assert.Equal("from c.lg", result);
 
             result = await generator.GenerateAsync(GetDialogContext(), "${greeting()}", null);
-            Assert.AreEqual("hi", result);
+            Assert.Equal("hi", result);
         }
 
         public class TestMultiLanguageDialog : Dialog
@@ -83,64 +114,64 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
                 // en-us locale
                 dialogContext.Context.Activity.Locale = "en-us";
-                Assert.IsNotNull(lg, "ILanguageGenerator should not be null");
-                Assert.IsNotNull(dialogContext.Services.Get<ResourceExplorer>(), "ResourceExplorer should not be null");
+                Assert.NotNull(lg);
+                Assert.NotNull(dialogContext.Services.Get<ResourceExplorer>());
 
                 var result = await lg.GenerateAsync(dialogContext, "${templatea()}", null);
-                Assert.AreEqual("from a.en-us.lg", result);
+                Assert.Equal("from a.en-us.lg", result);
 
                 // import b.en-us.lg
                 result = await lg.GenerateAsync(dialogContext, "${templateb()}", null);
-                Assert.AreEqual("from b.en-us.lg", result);
+                Assert.Equal("from b.en-us.lg", result);
 
                 // fallback to c.en.lg
                 result = await lg.GenerateAsync(dialogContext, "${templatec()}", null);
-                Assert.AreEqual("from c.en.lg", result);
+                Assert.Equal("from c.en.lg", result);
 
                 // there is no 'greeting' template in b.en-us.lg, fallback to a.lg to find it.
                 result = await lg.GenerateAsync(dialogContext, "${greeting()}", null);
-                Assert.AreEqual("hi", result);
+                Assert.Equal("hi", result);
 
                 //en locale
                 dialogContext.Context.Activity.Locale = "en";
-                Assert.IsNotNull(lg, "ILanguageGenerator should not be null");
-                Assert.IsNotNull(dialogContext.Services.Get<ResourceExplorer>(), "ResourceExplorer should not be null");
+                Assert.NotNull(lg);
+                Assert.NotNull(dialogContext.Services.Get<ResourceExplorer>());
 
                 result = await lg.GenerateAsync(dialogContext, "${templatea()}", null);
-                Assert.AreEqual("from a.lg", result);
+                Assert.Equal("from a.lg", result);
 
                 // import b.en-us.lg
                 result = await lg.GenerateAsync(dialogContext, "${templateb()}", null);
-                Assert.AreEqual("from b.lg", result);
+                Assert.Equal("from b.lg", result);
 
                 // c.en.lg is ignore in b.lg
                 result = await lg.GenerateAsync(dialogContext, "${templatec()}", null);
-                Assert.AreEqual("from c.lg", result);
+                Assert.Equal("from c.lg", result);
 
                 // there is no 'greeting' template in b.en-us.lg, fallback to a.lg to find it.
                 result = await lg.GenerateAsync(dialogContext, "${greeting()}", null);
-                Assert.AreEqual("hi", result);
+                Assert.Equal("hi", result);
 
                 // empty locale
                 dialogContext.Context.Activity.Locale = string.Empty;
                 result = await lg.GenerateAsync(dialogContext, "${templatea()}", null);
-                Assert.AreEqual("from a.lg", result);
+                Assert.Equal("from a.lg", result);
 
                 result = await lg.GenerateAsync(dialogContext, "${templateb()}", null);
-                Assert.AreEqual("from b.lg", result);
+                Assert.Equal("from b.lg", result);
 
                 // ignore the "en" in c.en.lg, just load c.lg
                 result = await lg.GenerateAsync(dialogContext, "${templatec()}", null);
-                Assert.AreEqual("from c.lg", result);
+                Assert.Equal("from c.lg", result);
 
                 result = await lg.GenerateAsync(dialogContext, "${greeting()}", null);
-                Assert.AreEqual("hi", result);
+                Assert.Equal("hi", result);
 
                 return await dialogContext.EndDialogAsync();
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMultiLanguageE2E()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
@@ -159,7 +190,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMultiLanguageGenerator()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
@@ -174,39 +205,39 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.fr.lg").ReadTextAsync().Result, "test.fr.lg", multilanguageresources);
 
             // test targeted in each language
-            Assert.AreEqual("english-us", await lg.GenerateAsync(GetDialogContext(locale: "en-us"), "${test()}", null));
-            Assert.AreEqual("english-gb", await lg.GenerateAsync(GetDialogContext(locale: "en-gb"), "${test()}", null));
-            Assert.AreEqual("english", await lg.GenerateAsync(GetDialogContext(locale: "en"), "${test()}", null));
-            Assert.AreEqual("default", await lg.GenerateAsync(GetDialogContext(locale: string.Empty), "${test()}", null));
-            Assert.AreEqual("default", await lg.GenerateAsync(GetDialogContext(locale: "foo"), "${test()}", null));
+            Assert.Equal("english-us", await lg.GenerateAsync(GetDialogContext(locale: "en-us"), "${test()}", null));
+            Assert.Equal("english-gb", await lg.GenerateAsync(GetDialogContext(locale: "en-gb"), "${test()}", null));
+            Assert.Equal("english", await lg.GenerateAsync(GetDialogContext(locale: "en"), "${test()}", null));
+            Assert.Equal("default", await lg.GenerateAsync(GetDialogContext(locale: string.Empty), "${test()}", null));
+            Assert.Equal("default", await lg.GenerateAsync(GetDialogContext(locale: "foo"), "${test()}", null));
 
             // test fallback for en-us -> en -> default
-            //Assert.AreEqual("default2", await lg.Generate(GetTurnContext(locale: "en-us"), "${test2()}", null));
-            Assert.AreEqual("default2", await lg.GenerateAsync(GetDialogContext(locale: "en-gb"), "${test2()}", null));
-            Assert.AreEqual("default2", await lg.GenerateAsync(GetDialogContext(locale: "en"), "${test2()}", null));
-            Assert.AreEqual("default2", await lg.GenerateAsync(GetDialogContext(locale: string.Empty), "${test2()}", null));
-            Assert.AreEqual("default2", await lg.GenerateAsync(GetDialogContext(locale: "foo"), "${test2()}", null));
+            //Assert.Equal("default2", await lg.Generate(GetTurnContext(locale: "en-us"), "${test2()}", null));
+            Assert.Equal("default2", await lg.GenerateAsync(GetDialogContext(locale: "en-gb"), "${test2()}", null));
+            Assert.Equal("default2", await lg.GenerateAsync(GetDialogContext(locale: "en"), "${test2()}", null));
+            Assert.Equal("default2", await lg.GenerateAsync(GetDialogContext(locale: string.Empty), "${test2()}", null));
+            Assert.Equal("default2", await lg.GenerateAsync(GetDialogContext(locale: "foo"), "${test2()}", null));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestResourceMultiLanguageGenerator()
         {
             var lg = new ResourceMultiLanguageGenerator("test.lg");
 
             // test targeted in each language
-            Assert.AreEqual("english-us", await lg.GenerateAsync(GetDialogContext("en-us", lg), "${test()}", null));
-            Assert.AreEqual("english-us", await lg.GenerateAsync(GetDialogContext("en-us", lg), "${test()}", new { country = "us" }));
-            Assert.AreEqual("english-gb", await lg.GenerateAsync(GetDialogContext("en-gb", lg), "${test()}", null));
-            Assert.AreEqual("english", await lg.GenerateAsync(GetDialogContext("en", lg), "${test()}", null));
-            Assert.AreEqual("default", await lg.GenerateAsync(GetDialogContext(string.Empty, lg), "${test()}", null));
-            Assert.AreEqual("default", await lg.GenerateAsync(GetDialogContext("foo", lg), "${test()}", null));
+            Assert.Equal("english-us", await lg.GenerateAsync(GetDialogContext("en-us", lg), "${test()}", null));
+            Assert.Equal("english-us", await lg.GenerateAsync(GetDialogContext("en-us", lg), "${test()}", new { country = "us" }));
+            Assert.Equal("english-gb", await lg.GenerateAsync(GetDialogContext("en-gb", lg), "${test()}", null));
+            Assert.Equal("english", await lg.GenerateAsync(GetDialogContext("en", lg), "${test()}", null));
+            Assert.Equal("default", await lg.GenerateAsync(GetDialogContext(string.Empty, lg), "${test()}", null));
+            Assert.Equal("default", await lg.GenerateAsync(GetDialogContext("foo", lg), "${test()}", null));
 
             // test fallback for en-us -> en -> default
-            //Assert.AreEqual("default2", await lg.Generate(GetTurnContext("en-us", lg), "${test2()}", null));
-            Assert.AreEqual("default2", await lg.GenerateAsync(GetDialogContext("en-gb", lg), "${test2()}", null));
-            Assert.AreEqual("default2", await lg.GenerateAsync(GetDialogContext("en", lg), "${test2()}", null));
-            Assert.AreEqual("default2", await lg.GenerateAsync(GetDialogContext(string.Empty, lg), "${test2()}", null));
-            Assert.AreEqual("default2", await lg.GenerateAsync(GetDialogContext("foo", lg), "${test2()}", null));
+            //Assert.Equal("default2", await lg.Generate(GetTurnContext("en-us", lg), "${test2()}", null));
+            Assert.Equal("default2", await lg.GenerateAsync(GetDialogContext("en-gb", lg), "${test2()}", null));
+            Assert.Equal("default2", await lg.GenerateAsync(GetDialogContext("en", lg), "${test2()}", null));
+            Assert.Equal("default2", await lg.GenerateAsync(GetDialogContext(string.Empty, lg), "${test2()}", null));
+            Assert.Equal("default2", await lg.GenerateAsync(GetDialogContext("foo", lg), "${test2()}", null));
         }
 
         public class TestLanguageGeneratorMiddlewareDialog : Dialog
@@ -214,15 +245,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dialogContext, object options = null, CancellationToken cancellationToken = default)
             {
                 var lg = dialogContext.Services.Get<LanguageGenerator>();
-                Assert.IsNotNull(lg, "ILanguageGenerator should not be null");
-                Assert.IsNotNull(dialogContext.Services.Get<ResourceExplorer>(), "ResourceExplorer should not be null");
+                Assert.NotNull(lg);
+                Assert.NotNull(dialogContext.Services.Get<ResourceExplorer>());
                 var text = await lg.GenerateAsync(dialogContext, "${test()}", null);
-                Assert.AreEqual("english-us", text, "template should be there");
+                Assert.Equal("english-us", text);
                 return await dialogContext.EndDialogAsync();
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestLanguageGeneratorMiddleware()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
@@ -252,7 +283,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
                 var generator = (ResourceMultiLanguageGenerator)dc.Services.Get<LanguageGenerator>();
-                Assert.AreEqual(ResourceId, generator.ResourceId);
+                Assert.Equal(ResourceId, generator.ResourceId);
                 await dc.Context.SendActivityAsync($"BeginDialog {Id}:{generator.ResourceId}");
                 return new DialogTurnResult(DialogTurnStatus.Waiting);
             }
@@ -260,13 +291,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             public async override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
             {
                 var generator = (ResourceMultiLanguageGenerator)dc.Services.Get<LanguageGenerator>();
-                Assert.AreEqual(ResourceId, generator.ResourceId);
+                Assert.Equal(ResourceId, generator.ResourceId);
                 await dc.Context.SendActivityAsync($"ContinueDialog {Id}:{generator.ResourceId}");
                 return await dc.EndDialogAsync();
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestLGScopedAccess()
         {
             var dialog = new AdaptiveDialog()
@@ -333,7 +364,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestDialogInjectionDeclarative()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
@@ -373,7 +404,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestLGInjection()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
@@ -392,7 +423,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestDateTimeFunctions()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
@@ -431,7 +462,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestNoResourceExplorerLanguageGeneration()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
@@ -485,7 +516,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(MethodBase.GetCurrentMethod().ToString()));
             adapter
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
@@ -500,7 +531,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(MethodBase.GetCurrentMethod().ToString()));
             adapter
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)

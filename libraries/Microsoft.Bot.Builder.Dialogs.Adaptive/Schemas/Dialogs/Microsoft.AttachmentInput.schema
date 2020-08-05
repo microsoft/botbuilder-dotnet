@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.InputDialog)" ],
     "title": "Attachment input dialog",
     "description": "Collect information - Ask for a file or image.",
@@ -11,7 +11,8 @@
             "oneOf": [
                 {
                     "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment",
-                    "title": "Object"
+                    "title": "Object",
+                    "description": "Attachment object."
                 },
                 {
                     "$ref": "schema:#/definitions/equalsExpression"
@@ -25,7 +26,8 @@
             "oneOf": [
                 {
                     "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Attachment",
-                    "title": "Object"
+                    "title": "Object",
+                    "description": "Attachment object."
                 },
                 {
                     "$ref": "schema:#/definitions/equalsExpression"

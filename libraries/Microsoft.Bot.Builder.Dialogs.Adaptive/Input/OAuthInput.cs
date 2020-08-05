@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -204,7 +205,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 // Increment attempt count
                 // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
-                promptState[AttemptCountKey] = Convert.ToInt32(promptState[AttemptCountKey]) + 1;
+                promptState[AttemptCountKey] = Convert.ToInt32(promptState[AttemptCountKey], CultureInfo.InvariantCulture) + 1;
 
                 // Validate the return value
                 var inputState = InputState.Invalid;
@@ -431,7 +432,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             else if (IsTeamsVerificationInvoke(turnContext))
             {
                 var magicCodeObject = turnContext.Activity.Value as JObject;
-                var magicCode = magicCodeObject.GetValue("state")?.ToString();
+                var magicCode = magicCodeObject.GetValue("state", StringComparison.Ordinal)?.ToString();
 
                 if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
                 {
@@ -458,12 +459,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     }
                     else
                     {
-                        await this.SendInvokeResponseAsync(turnContext, cancellationToken, HttpStatusCode.NotFound).ConfigureAwait(false);
+                        await this.SendInvokeResponseAsync(turnContext, HttpStatusCode.NotFound, null, cancellationToken).ConfigureAwait(false);
                     }
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (send a 500 if an error occurs).
                 catch
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
-                    await this.SendInvokeResponseAsync(turnContext, cancellationToken, HttpStatusCode.InternalServerError).ConfigureAwait(false);
+                    await this.SendInvokeResponseAsync(turnContext, HttpStatusCode.InternalServerError, null, cancellationToken).ConfigureAwait(false);
                 }
             }
             else if (IsTokenExchangeRequestInvoke(turnContext))
@@ -476,40 +479,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     await this.SendInvokeResponseAsync(
                         turnContext,
-                        cancellationToken,
                         HttpStatusCode.BadRequest,
                         new TokenExchangeInvokeResponse()
                         {
                             Id = null,
                             ConnectionName = connectionName,
                             FailureDetail = "The bot received an InvokeActivity that is missing a TokenExchangeInvokeRequest value. This is required to be sent with the InvokeActivity.",
-                        }).ConfigureAwait(false);
+                        }, cancellationToken).ConfigureAwait(false);
                 }
                 else if (tokenExchangeRequest.ConnectionName != connectionName)
                 {
                     await this.SendInvokeResponseAsync(
                         turnContext,
-                        cancellationToken,
                         HttpStatusCode.BadRequest,
                         new TokenExchangeInvokeResponse()
                         {
                             Id = tokenExchangeRequest.Id,
                             ConnectionName = connectionName,
                             FailureDetail = "The bot received an InvokeActivity with a TokenExchangeInvokeRequest containing a ConnectionName that does not match the ConnectionName expected by the bot's active OAuthPrompt. Ensure these names match when sending the InvokeActivityInvalid ConnectionName in the TokenExchangeInvokeRequest",
-                        }).ConfigureAwait(false);
+                        }, cancellationToken).ConfigureAwait(false);
                 }
                 else if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
                 {
                     await this.SendInvokeResponseAsync(
                            turnContext,
-                           cancellationToken,
                            HttpStatusCode.BadGateway,
                            new TokenExchangeInvokeResponse()
                            {
                                Id = tokenExchangeRequest.Id,
                                ConnectionName = connectionName,
                                FailureDetail = $"The bot's BotAdapter does not support token exchange operations. Ensure the bot's Adapter supports the {nameof(IExtendedUserTokenProvider)} interface.",
-                           }).ConfigureAwait(false);
+                           }, cancellationToken).ConfigureAwait(false);
                     throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
                 }
                 else
@@ -527,7 +527,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                            },
                            cancellationToken).ConfigureAwait(false);
                     }
+#pragma warning disable CA1031 // Do not catch general exception types (see description below)
                     catch
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         // Ignore Exceptions
                         // If token exchange failed for any reason, tokenExchangeResponse above stays null , and hence we send back a failure invoke response to the caller.
@@ -538,26 +540,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     {
                         await this.SendInvokeResponseAsync(
                            turnContext,
-                           cancellationToken,
                            HttpStatusCode.Conflict,
                            new TokenExchangeInvokeResponse()
                            {
                                Id = tokenExchangeRequest.Id,
                                ConnectionName = connectionName,
                                FailureDetail = "The bot is unable to exchange token. Proceed with regular login.",
-                           }).ConfigureAwait(false);
+                           }, cancellationToken).ConfigureAwait(false);
                     }
                     else
                     {
                         await this.SendInvokeResponseAsync(
                            turnContext,
-                           cancellationToken,
                            HttpStatusCode.OK,
                            new TokenExchangeInvokeResponse()
                            {
                                Id = tokenExchangeRequest.Id,
                                ConnectionName = connectionName,
-                           }).ConfigureAwait(false);
+                           }, cancellationToken).ConfigureAwait(false);
 
                         result.Succeeded = true;
                         result.Value = new TokenResponse()
@@ -623,7 +623,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return true;
         }
 
-        private async Task SendInvokeResponseAsync(ITurnContext turnContext, CancellationToken cancellationToken, HttpStatusCode statusCode, object body = null)
+        private async Task SendInvokeResponseAsync(ITurnContext turnContext, HttpStatusCode statusCode, object body, CancellationToken cancellationToken)
         {
             await turnContext.SendActivityAsync(
                 new Activity

@@ -1,5 +1,5 @@
 ﻿{
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Javascript Action",
     "description": "This gives you the ability to execute javascript to manipulate memory",
@@ -31,7 +31,8 @@
             "description": "One or more options that are passed to the function as args.",
             "additionalProperties": {
                 "type": "string",
-                "title": "Options"
+                "title": "Options",
+                "description": "Options for action."
             }
         },
         "resultProperty": {

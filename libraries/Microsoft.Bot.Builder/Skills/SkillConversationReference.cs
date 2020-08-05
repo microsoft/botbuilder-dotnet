@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Skills
 {
     /// <summary>
-    /// The SkillConversationReference is a record which is used to track a conversation with a skill.
+    /// A conversation reference type for skills.
     /// </summary>
     public class SkillConversationReference
     {
@@ -28,7 +28,12 @@ namespace Microsoft.Bot.Builder.Skills
         [JsonProperty("conversationReference")]
         public ConversationReference ConversationReference { get; set; }
 
-        [JsonProperty("oAuthScope")]
+        /// <summary>
+        /// Gets or sets the OAuth scope.
+        /// </summary>
+        /// <value>
+        /// The OAuth scope.
+        /// </value>
         public string OAuthScope { get; set; }
     }
 }

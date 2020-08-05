@@ -74,7 +74,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// <value>
         /// Dynamic lists of things like contact names to recognize at query time.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<DynamicList> DynamicLists { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets external entities recognized in the query.
@@ -82,7 +84,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
         /// <value>
         /// External entities recognized in query.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<ExternalEntity> ExternalEntities { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets a value indicating whether external entities should override other means of recognizing entities.

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class IdentifierMutex<T> : IIdentifier<T>
+    internal sealed class IdentifierMutex<T> : IIdentifier<T>
     {
         private readonly IIdentifier<T> inner;
         private readonly object gate = new object();

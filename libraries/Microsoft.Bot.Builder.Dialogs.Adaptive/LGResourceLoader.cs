@@ -11,7 +11,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// <summary>
     /// load all lg resource and split them into different language group.
     /// </summary>
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class LGResourceLoader
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         public static Dictionary<string, IList<Resource>> GroupByLocale(ResourceExplorer resourceExplorer)
         {
@@ -25,43 +27,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 var existNames = new HashSet<string>();
                 foreach (var suffix in suffixs)
                 {
-                    if (string.IsNullOrEmpty(locale) || !string.IsNullOrEmpty(suffix))
+                    var resourcesWithSuchSuffix = allResources.Where(u => ParseLGFileName(u.Id).language.ToLowerInvariant() == suffix.ToLowerInvariant());
+                    foreach (var resourceWithSuchSuffix in resourcesWithSuchSuffix)
                     {
-                        var resourcesWithSuchSuffix = allResources.Where(u => ParseLGFileName(u.Id).language == suffix);
-                        foreach (var resourceWithSuchSuffix in resourcesWithSuchSuffix)
+                        var resourceName = resourceWithSuchSuffix.Id;
+                        var length = string.IsNullOrEmpty(suffix) ? 3 : 4;
+                        var prefixName = resourceName.Substring(0, resourceName.Length - suffix.Length - length);
+                        if (!existNames.Contains(prefixName))
                         {
-                            var resourceName = resourceWithSuchSuffix.Id;
-                            var length = string.IsNullOrEmpty(suffix) ? 3 : 4;
-                            var prefixName = resourceName.Substring(0, resourceName.Length - suffix.Length - length);
-                            if (!existNames.Contains(prefixName))
+                            existNames.Add(prefixName);
+                            if (!resourceMapping.ContainsKey(locale))
                             {
-                                existNames.Add(prefixName);
-                                if (!resourceMapping.ContainsKey(locale))
-                                {
-                                    resourceMapping.Add(locale, new List<Resource> { resourceWithSuchSuffix });
-                                }
-                                else
-                                {
-                                    resourceMapping[locale].Add(resourceWithSuchSuffix);
-                                }
+                                resourceMapping.Add(locale, new List<Resource> { resourceWithSuchSuffix });
+                            }
+                            else
+                            {
+                                resourceMapping[locale].Add(resourceWithSuchSuffix);
                             }
                         }
                     }
-                    else
+                }
+
+                if (resourceMapping.ContainsKey(locale))
+                {
+                    var resourcesWithEmptySuffix = allResources.Where(u => ParseLGFileName(u.Id).language.Length == 0);
+                    foreach (var resourceWithEmptySuffix in resourcesWithEmptySuffix)
                     {
-                        if (resourceMapping.ContainsKey(locale))
+                        var resourceName = resourceWithEmptySuffix.Id;
+                        var prefixName = resourceName.Substring(0, resourceName.Length - 3);
+                        if (!existNames.Contains(prefixName))
                         {
-                            var resourcesWithEmptySuffix = allResources.Where(u => ParseLGFileName(u.Id).language == string.Empty);
-                            foreach (var resourceWithEmptySuffix in resourcesWithEmptySuffix)
-                            {
-                                var resourceName = resourceWithEmptySuffix.Id;
-                                var prefixName = resourceName.Substring(0, resourceName.Length - 3);
-                                if (!existNames.Contains(prefixName))
-                                {
-                                    existNames.Add(prefixName);
-                                    resourceMapping[locale].Add(resourceWithEmptySuffix);
-                                }
-                            }
+                            existNames.Add(prefixName);
+                            resourceMapping[locale].Add(resourceWithEmptySuffix);
                         }
                     }
                 }
@@ -77,14 +74,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>get the name and language.</returns>
         public static (string prefix, string language) ParseLGFileName(string lgFileName)
         {
-            if (string.IsNullOrEmpty(lgFileName) || !lgFileName.EndsWith(".lg"))
+            if (string.IsNullOrEmpty(lgFileName) || !lgFileName.EndsWith(".lg", StringComparison.Ordinal))
             {
                 return (lgFileName, string.Empty);
             }
 
             var fileName = lgFileName.Substring(0, lgFileName.Length - ".lg".Length);
 
-            var lastDot = fileName.LastIndexOf(".");
+            var lastDot = fileName.LastIndexOf(".", StringComparison.Ordinal);
             if (lastDot > 0)
             {
                 return (fileName.Substring(0, lastDot), fileName.Substring(lastDot + 1));
@@ -107,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             if (optionalLocales == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(optionalLocales));
             }
 
             if (optionalLocales.Contains(locale))

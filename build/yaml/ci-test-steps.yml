@@ -15,25 +15,56 @@ steps:
 #         Import-Module "C:/Program Files/Azure Cosmos DB Emulator/PSModules/Microsoft.Azure.CosmosDB.Emulator"
 #         Start-CosmosDbEmulator
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test (release)'
+- task: Npm@1
+  displayName: 'install botframework-cli to set up for Schema merge tests.'
   inputs:
-    command: test
-    projects: |
-     Tests/**/*Tests.csproj
-     
-    arguments: '-v n  --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
-  condition: eq(variables['BuildConfiguration'],'Release-Windows')
+    command: custom
+    verbose: false
+    customCommand: 'install -g @microsoft/botframework-cli@next'
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet test (debug)'
+  displayName: 'dotnet test (release) 2.1'
   inputs:
     command: test
     projects: |
      Tests/**/*Tests.csproj
+     !Tests/**/Microsoft.Bot.Builder.TestBot.Tests.csproj
      
-    arguments: '-v n  --configuration debug --no-build --no-restore --filter TestCategory!=IgnoreInAutomatedBuild --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
-  condition: eq(variables['BuildConfiguration'],'Debug-Windows')
+    arguments: '-v n  -f netcoreapp2.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: and(eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp21'))
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (debug) 2.1'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+     !Tests/**/Microsoft.Bot.Builder.TestBot.Tests.csproj
+     
+    arguments: '-v n  -f netcoreapp2.1 --configuration debug --no-build --no-restore --filter TestCategory!=IgnoreInAutomatedBuild --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: and(eq(variables['BuildConfiguration'],'Debug-Windows'), eq(variables['BuildTarget'],'netcoreapp21'))
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (release) 3.1'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+     !Tests/**/*21.Tests.csproj
+     
+    arguments: '-v n  -f netcoreapp3.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: and(eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (debug) 3.1'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+     !Tests/**/*21.Tests.csproj
+     
+    arguments: '-v n  -f netcoreapp3.1 --configuration debug --no-build --no-restore --filter TestCategory!=IgnoreInAutomatedBuild --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: and(eq(variables['BuildConfiguration'],'Debug-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
 
 - powershell: |
    # This task copies the code coverage file created by dotnet test into a well known location. In all
@@ -82,7 +113,7 @@ steps:
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Microsoft.Bot.Builder DLLs artifact'
   inputs:
-    artifactName: 'BotBuilderDLLs-$(BuildConfiguration)'
+    artifactName: 'BotBuilderDLLs-$(BuildConfiguration)-$(BuildTarget)'
     targetPath: outputLibraries
 
 - script: |

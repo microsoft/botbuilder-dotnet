@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Sign Out User",
     "description": "Sign a user out that was logged in previously using OAuthInput.",
@@ -12,11 +12,9 @@
         },
         "userId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "ActivityId",
-            "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
-            "examples": [
-                "=$lastActivity"
-            ]
+            "title": "UserId",
+            "description": "Expression to an user to signout. Default is user.id.",
+            "default": "=user.id"
         },
         "connectionName": {
             "$ref": "schema:#/definitions/stringExpression",

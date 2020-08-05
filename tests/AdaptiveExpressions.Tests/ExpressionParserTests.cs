@@ -115,6 +115,25 @@ namespace AdaptiveExpressions.Tests
             { "unixTimestamp", 1521118800 },
             { "unixTimestampFraction", 1521118800.5 },
             { "ticks", 637243624200000000 },
+            { 
+                "json1", @"{
+                          'FirstName': 'John',
+                          'LastName': 'Smith',
+                          'Enabled': false,
+                          'Roles': [ 'User' ]
+                        }"
+            },
+            { 
+                "json2", @"{
+                          'Enabled': true,
+                          'Roles': [ 'Customer', 'Admin' ]
+                        }"
+            },
+            {
+                "json3", @"{
+                          'Age': 36,
+                        }"
+            },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
             {
                 "jsonStr", @"{
@@ -286,6 +305,7 @@ namespace AdaptiveExpressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
         {
+            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             #region accessor and element
             Test("`hi\\``", "hi`"),  // `hi\`` -> hi`
             Test("`hi\\y`", "hi\\y"), // `hi\y` -> hi\y
@@ -647,7 +667,7 @@ namespace AdaptiveExpressions.Tests
             Test("formatNumber(12.123, 2)", "12.12"),
             Test("formatNumber(1.551, 2)", "1.55"),
             Test("formatNumber(12.123, 4)", "12.1230"),
-            Test("formatNumber(12000.3, 4, 'fr-fr')", "12\x00a0000,3000"),
+            Test("formatNumber(12000.3, 4, 'fr-fr') == '12\x00A0000,3000' || formatNumber(12000.3, 4, 'fr-fr') == '12\x202F000,3000'", true),
             #endregion
 
             #region  Math functions test
@@ -695,7 +715,7 @@ namespace AdaptiveExpressions.Tests
             // init dateTime: 2018-03-15T13:00:00Z
             Test("isDefinite('helloworld')", false),
             Test("isDefinite('2012-12-21')", true),
-            Test("isDefinite('xxxx-12-21')", false),
+            Test("isDefinite('XXXX-12-21')", false),
             Test("isDefinite(validFullDateTimex)", true),
             Test("isDefinite(invalidFullDateTimex)", false),
             Test("isTime(validHourTimex)", true),
@@ -790,7 +810,24 @@ namespace AdaptiveExpressions.Tests
             Test("ticks(timestampObj3)", 636503904000000000),
             Test("ticksToDays(2193385800000000)", 2538.64097222),
             Test("ticksToHours(2193385800000000)", 60927.383333333331),
-            Test("ticksToMinutes(2193385811100000)", 3655643.0185), 
+            Test("ticksToMinutes(2193385811100000)", 3655643.0185),
+            Test("isMatch(getPreviousViableDate('XXXX-07-10'), '20[0-9]{2}-07-10')", true),
+            Test("isMatch(getPreviousViableDate('XXXX-07-10', 'Asia/Shanghai'), '20[0-9]{2}-07-10')", true),
+            Test("getPreviousViableDate('XXXX-02-29')", "2020-02-29"),
+            Test("getPreviousViableDate('XXXX-02-29', 'Pacific Standard Time')", "2020-02-29"),
+            Test("isMatch(getNextViableDate('XXXX-07-10'), '202[0-9]-07-10')", true),
+            Test("isMatch(getNextViableDate('XXXX-07-10', 'Europe/London'), '202[0-9]-07-10')", true),
+            Test("getNextViableDate('XXXX-02-29')", "2024-02-29"),
+            Test("getNextViableDate('XXXX-02-29', 'America/Los_Angeles')", "2024-02-29"),
+            Test("isMatch(getNextViableTime('TXX:40:20'), 'T[0-2][0-9]:40:20')", true),
+            Test("isMatch(getNextViableTime('TXX:40:20', 'Asia/Tokyo'), 'T[0-2][0-9]:40:20')", true),
+            Test("isMatch(getNextViableTime('TXX:05:10'), 'T[0-2][0-9]:05:10')", true),
+            Test("isMatch(getNextViableTime('TXX:05:10', 'Europe/Paris'), 'T[0-2][0-9]:05:10')", true),
+            Test("isMatch(getPreviousViableTime('TXX:40:20'), 'T[0-2][0-9]:40:20')", true),
+            Test("isMatch(getPreviousViableTime('TXX:40:20', 'Eastern Standard Time'), 'T[0-2][0-9]:40:20')", true),
+            Test("isMatch(getPreviousViableTime('TXX:05:10'), 'T[0-2][0-9]:05:10')", true),
+            Test("isMatch(getPreviousViableTime('TXX:05:10', 'Central Standard Time'), 'T[0-2][0-9]:05:10')", true),
+
             #endregion
 
             #region uri parsing function test
@@ -921,6 +958,8 @@ namespace AdaptiveExpressions.Tests
             Test("setProperty({name: 'Paul'}, 'name', user.name).name", null),
             Test("setProperty({}, 'name', user.nickname).name", "John"),
             Test("addProperty({}, 'name', user.name).name", null),
+            Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"]}"),
+            Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"],\"Age\":36}"),
             #endregion
 
             #region  Memory access
@@ -1046,7 +1085,7 @@ namespace AdaptiveExpressions.Tests
             var cultureList = new List<string>() { "de-DE", "fr-FR", "es-ES" };
             foreach (var newCultureInfo in cultureList)
             {
-                var originalCuture = Thread.CurrentThread.CurrentCulture;
+                var originalCulture = Thread.CurrentThread.CurrentCulture;
                 Thread.CurrentThread.CurrentCulture = new CultureInfo(newCultureInfo);
                 var parsed = Expression.Parse(input);
                 Assert.NotNull(parsed);
@@ -1056,7 +1095,7 @@ namespace AdaptiveExpressions.Tests
                 if (expectedRefs != null)
                 {
                     var actualRefs = parsed.References();
-                    Assert.True(expectedRefs.SetEquals(actualRefs));
+                    Assert.True(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} actual: {string.Join(',', actualRefs)}");
                 }
 
                 // ToString re-parse
@@ -1064,7 +1103,7 @@ namespace AdaptiveExpressions.Tests
                 var newActual = newExpression.TryEvaluate(scope).value;
                 AssertObjectEquals(actual, newActual);
 
-                Thread.CurrentThread.CurrentCulture = originalCuture;
+                Thread.CurrentThread.CurrentCulture = originalCulture;
             }
         }
 
@@ -1101,22 +1140,22 @@ namespace AdaptiveExpressions.Tests
 
             // normal case, note, we doesn't append a " yet
             var exp = Expression.Parse("a[f].b[n].z");
-            var (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            var (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("a['foo'].b[2].z", path);
 
             // normal case
             exp = Expression.Parse("a[z.z][z.z].y");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("a['zar']['zar'].y", path);
 
             // normal case
             exp = Expression.Parse("a.b[z.z]");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("a.b['zar']", path);
 
             // stop evaluate at middle
             exp = Expression.Parse("json(x).b");
-            (path, left, err) = ExpressionFunctions.TryAccumulatePath(exp, memory, null);
+            (path, left, err) = FunctionUtils.TryAccumulatePath(exp, memory, null);
             Assert.Equal("b", path);
         }
 

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -30,7 +31,7 @@ namespace Microsoft.Bot.Builder.Azure
         // We are escaping illegal characters using a "*{AsciiCodeInHex}" pattern. This
         // means a key of "?test?" would be escaped as "*3ftest*3f".
         private static readonly Dictionary<char, string> _illegalKeyCharacterReplacementMap =
-                new Dictionary<char, string>(_illegalKeys.ToDictionary(c => c, c => '*' + ((int)c).ToString("x2")));
+                new Dictionary<char, string>(_illegalKeys.ToDictionary(c => c, c => '*' + ((int)c).ToString("x2", CultureInfo.InvariantCulture)));
 
         /// <summary>
         /// Converts the key into a DocumentID that can be used safely with Cosmos DB.
@@ -116,7 +117,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             if (key.Length > MaxKeyLength)
             {
-                var hash = key.GetHashCode().ToString("x");
+                var hash = key.GetHashCode().ToString("x", CultureInfo.InvariantCulture);
                 key = key.Substring(0, MaxKeyLength - hash.Length) + hash;
             }
 

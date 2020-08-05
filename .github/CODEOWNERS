@@ -12,43 +12,114 @@
 # This should make it easy to add new rules without breaking existing ones.
 
 # Global rule:
-* @tomlm @cleemullins @mrivera-ms
+* @microsoft/bb-dotnet
 
 # Various C# Libraries
-/FunctionalTests/**                 @gabog @mrivera-ms
-/build/**                           @mrivera-ms
+/FunctionalTests/**                                                                 @gabog @mrivera-ms
+/tests/Microsoft.Bot.Builder.TestBot*/**                                            @gabog @mrivera-ms
+/build/**                                                                           @microsoft/bb-dotnet
 
 # Adapters
-/libraries/Adapters/**              @garypretty
+/libraries/Adapters/**                                                              @garypretty
+/tests/Adapters/**                                                                  @garypretty  
 
-# Adaptive Expressions
-/libraries/AdaptiveExpressions/**   @tomlm @carlosscastro @boydc2014 @chrimc62
+# Platform Integration Libaries (.NET Core and WebApi)
+/libraries/integration/**                                                           @microsoft/bb-dotnet-integration
+/tests/integration/**                                                               @microsoft/bb-dotnet-integration
 
-# Platform Integration Libaries
-/libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core/**           @garypretty
-/libraries/integration/Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi/**         @garypretty
-/libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.Core/**                        @johnataylor
-/libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.WebApi/**                      @johnataylor
+# Application Insights/Telemetry
+/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                             @garypretty
+/tests/Microsoft.Bot.Builder.ApplicationInsights.Tests/**                           @garypretty
 
-# BotBuilder Libaries
-/libraries/Microsoft.Bot.Builder/**                                                @mrivera-ms @gabog @johnataylor
-/libraries/Microsoft.Bot.Builder.AI.LUIS/**                                        @munozemilio
-/libraries/Microsoft.Bot.Builder.AI.QnA/**                                         @mrivera-ms @johnataylor
-/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                            @garypretty
-/libraries/Microsoft.Bot.Builder.Azure/**                                          @mrivera-ms
-/libraries/Microsoft.Bot.Builder.Dialogs/**                                        @mrivera-ms @gabog @johnataylor
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                               @mrivera-ms @tomlm
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                       @mrivera-ms @tomlm
-/libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                              @mrivera-ms @tomlm @gabog
-/libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                            @mrivera-ms @tomlm
-/libraries/Microsoft.Bot.Builder.LanguageGeneration/**                             @mrivera-ms @tomlm @boydc2014 @chrimc62
-/libraries/Microsoft.Bot.Builder.TemplateManager/**                                @mrivera-ms @tomlm
-/libraries/Microsoft.Bot.Builder.Testing/**                                        @gabog
-/libraries/Microsoft.Bot.Configuration/**                                          @tomlm
-/libraries/Microsoft.Bot.Connector/**                                              @mrivera-ms @carlosscastro @johnataylor
-/libraries/Microsoft.Bot.Schema/**                                                 @mrivera-ms @johnataylor
-/libraries/Microsoft.Bot.Streaming/**                                              @mrivera-ms @carlosscastro
+# AI: LUIS + QnA Maker
+/libraries/Microsoft.Bot.Builder.AI*/**                                             @microsoft/bf-cog-services
+/tests/Microsoft.Bot.Builder.AI*/**                                                 @microsoft/bf-cog-services
 
-# Tests
-/tests/AdaptiveExpressions.Tests/**                                                @tomlm @boydc2014 @chrimc62 
-/tests/Microsoft.Bot.Builder.LanguageGeneration.Tests/**                           @tomlm @boydc2014 @chrimc62
+# Azure (Storage)
+/libraries/Microsoft.Bot.Builder.Azure/**                                           @EricDahlvang @mrivera-ms
+/tests/Microsoft.Bot.Builder.Azure.Tests/**                                         @EricDahlvang @mrivera-ms
+
+# Adaptive Dialogs
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                                @microsoft/bf-adaptive
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams/**                          @microsoft/bf-adaptive
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                        @microsoft/bf-adaptive
+#   Adaptive Dialogs' tests
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling/**                          @microsoft/bf-adaptive
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests/**                        @microsoft/bf-adaptive
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests/**                    @microsoft/bf-adaptive
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Tests/**                              @microsoft/bf-adaptive
+
+# AdaptiveExpressions & LanguageGeneration libraries
+/libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                             @microsoft/bf-adaptive
+/tests/Microsoft.Bot.Builder.Dialogs.Declarative.Tests/**                           @microsoft/bf-adaptive
+/libraries/Microsoft.Bot.Builder.LanguageGeneration/**                              @microsoft/bf-adaptive
+/tests/Microsoft.Bot.Builder.LanguageGeneration.Tests/**                            @microsoft/bf-adaptive
+/libraries/AdaptiveExpressions/**                                                   @microsoft/bf-adaptive
+/tests/AdaptiveExpressions.Tests/**                                                 @microsoft/bf-adaptive
+
+# BotBuilder Dialogs Debugging
+/libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                               @mrivera-ms @tomlm @gabog
+/tests/Microsoft.Bot.Builder.Dialogs.Debugging.Tests/**                             @mrivera-ms @tomlm @gabog
+
+# TemplateManager
+/libraries/Microsoft.Bot.Builder.TemplateManager/**                                 @mrivera-ms @tomlm
+/tests/Microsoft.Bot.Builder.TemplateManager/**                                     @mrivera-ms @tomlm
+
+# BotBuilder Testing
+/libraries/Microsoft.Bot.Builder.Testing/**                                         @gabog
+/tests/Microsoft.Bot.Builder.Testing.Tests/**                                       @gabog
+
+# Bot Framework Schema
+/libraries/Microsoft.Bot.Schema/**                                                  @mrivera-ms @johnataylor
+/tests/Microsoft.Bot.Schema.Tests/**                                                @mrivera-ms @johnataylor
+
+# Streaming library
+/libraries/Microsoft.Bot.Builder/Streaming/**                                       @microsoft/bf-streaming
+/libraries/Microsoft.Bot.Streaming/**                                               @microsoft/bf-streaming
+/tests/Microsoft.Bot.Builder.Streaming.Tests/**                                     @microsoft/bf-streaming
+
+# BotBuilder library
+/libraries/Microsoft.Bot.Builder/**                                                 @gabog @johnataylor
+/tests/Microsoft.Bot.Builder.Tests/**                                               @gabog @johnataylor
+
+# BotBuilder Dialogs
+/libraries/Microsoft.Bot.Builder.Dialogs/**                                         @microsoft/bf-dialogs
+/tests/Microsoft.Bot.Builder.Dialogs/**                                             @microsoft/bf-dialogs
+
+# Bot Framework Connector
+/libraries/Microsoft.Bot.Connector/**                                               @mrivera-ms @carlosscastro @johnataylor
+/tests/Microsoft.Bot.Connector.Tests/**                                             @mrivera-ms @carlosscastro @johnataylor
+
+# Bot Framework Authentication
+/libraries/Microsoft.Bot.Builder/OAuth/**                                           @microsoft/bf-auth
+/libraries/Microsoft.Bot.Connector/Authentication/**                                @microsoft/bf-auth
+/tests/Microsoft.Bot.Connector.Tests/Authentication/**                              @microsoft/bf-auth
+
+# Bot Configuration
+/libraries/Microsoft.Bot.Configuration/**                                           @tomlm
+/libraries/Microsoft.Bot.Configuration.Tests/**                                     @tomlm
+
+# Bot Framework Skills
+/libraries/Microsoft.Bot.Builder/Skills/**                                          @microsoft/bf-skills
+/tests/Microsoft.Bot.Builder.Tests/Skills/**                                        @microsoft/bf-skills
+
+/libraries/Microsoft.Bot.Builder.Integration.AspNet.Core/Skills/**                  @microsoft/bf-skills
+/libraries/Microsoft.Bot.Builder.Integration.AspNet.Core/**/*HttpClient.cs          @microsoft/bf-skills
+
+/tests/Microsoft.Bot.Builder.Integration.AspNet.Core.Tests/Skills/**                @microsoft/bf-skills
+/tests/Microsoft.Bot.Builder.Integration.AspNet.Core.Tests/**/*HttpClientTests.cs   @microsoft/bf-skills
+
+/FunctionalTests/Skills/**                                                          @microsoft/bf-skills
+/tests/Skills/**                                                                    @microsoft/bf-skills
+
+# Bot Framework & Microsoft Teams
+/libraries/Microsoft.Bot.Builder/Teams/**                                           @microsoft/bf-teams
+/tests/Microsoft.Bot.Builder.Tests/Teams/**                                         @microsoft/bf-teams
+/tests/Teams/**                                                                     @microsoft/bf-teams
+
+# Ownership by specific files or file types
+# This section MUST stay at the bottom of the CODEOWNERS file. For more information, see
+# https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners#example-of-a-codeowners-file
+
+# .schema files
+/**/*.schema                                                                        @chrimc62 @tomlm

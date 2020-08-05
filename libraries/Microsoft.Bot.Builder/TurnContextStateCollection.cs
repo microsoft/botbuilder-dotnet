@@ -131,12 +131,19 @@ namespace Microsoft.Bot.Builder
             Set(typeof(T).FullName, value);
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Frees resources if the disposing parameter is set to true.
+        /// </summary>
+        /// <param name="disposing">Boolean value that indicates if freeing resources should be performed.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

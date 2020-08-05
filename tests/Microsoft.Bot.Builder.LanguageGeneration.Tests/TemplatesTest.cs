@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AdaptiveExpressions;
+using AdaptiveExpressions.BuiltinFunctions;
 using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Newtonsoft.Json.Linq;
@@ -123,6 +124,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // - ${length(expandText(@answer))}
             var evaled = templates.Evaluate("template", scope);
+            Assert.Equal("hello vivian".Length, evaled);
+
+            // Parse text content
+            evaled = templates.EvaluateText("${length(expandText(@answer))}", scope);
             Assert.Equal("hello vivian".Length, evaled);
         }
 
@@ -1436,7 +1441,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             { 
                 if (func == "custom")
                 {
-                    return ExpressionFunctions.Numeric("custom", (args) => (int)args[0] + (int)args[1]);
+                    return new NumericEvaluator("custom", (args) => (int)args[0] + (int)args[1]);
                 }
                 else
                 {

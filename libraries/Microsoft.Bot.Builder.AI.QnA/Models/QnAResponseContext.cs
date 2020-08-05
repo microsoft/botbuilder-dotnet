@@ -18,6 +18,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The QnA prompts array.
         /// </value>
         [JsonProperty(PropertyName = "prompts")]
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public QnaMakerPrompt[] Prompts { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
     }
 }

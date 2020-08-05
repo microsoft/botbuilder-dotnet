@@ -59,7 +59,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Default case.
         /// </value>
         [JsonProperty("default")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<Dialog> Default { get; set; } = new List<Dialog>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets Cases.
@@ -68,7 +70,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Cases.
         /// </value>
         [JsonProperty("cases")]
+#pragma warning disable CA2227 // Collection properties should be read only
         public List<Case> Cases { get; set; } = new List<Case>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         protected ActionScope DefaultScope
         {
@@ -114,32 +118,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 {
                     this.caseExpressions = new Dictionary<string, Expression>();
 
-                    foreach (var cse in this.Cases)
+                    foreach (var @case in this.Cases)
                     {
-                        Expression caseExpression = null;
-
-                        // Values for cases are always coerced to constant
-                        if (long.TryParse(cse.Value, out long i))
+                        if (long.TryParse(@case.Value, out long intVal))
                         {
-                            caseExpression = Expression.ConstantExpression(i);
+                            // you don't have to put quotes around numbers, "23" => 23 OR "23"
+                            this.caseExpressions[@case.Value] = Expression.OrExpression(
+                                Expression.EqualsExpression(this.Condition, Expression.ConstantExpression(intVal)),
+                                Expression.EqualsExpression(this.Condition, Expression.ConstantExpression(@case.Value)));
                         }
-                        else if (float.TryParse(cse.Value, out float f))
+                        else if (float.TryParse(@case.Value, out float floatVal))
                         {
-                            caseExpression = Expression.ConstantExpression(f);
+                            // you don't have to put quotes around numbers, "23" => 23 OR "23"
+                            this.caseExpressions[@case.Value] = Expression.OrExpression(
+                                Expression.EqualsExpression(this.Condition, Expression.ConstantExpression(floatVal)),
+                                Expression.EqualsExpression(this.Condition, Expression.ConstantExpression(@case.Value)));
                         }
-                        else if (bool.TryParse(cse.Value, out bool b))
+                        else if (bool.TryParse(@case.Value, out bool boolVal))
                         {
-                            caseExpression = Expression.ConstantExpression(b);
+                            // you don't have to put quotes around bools, "true" => true OR "true"
+                            this.caseExpressions[@case.Value] = Expression.OrExpression(
+                                Expression.EqualsExpression(this.Condition, Expression.ConstantExpression(boolVal)),
+                                Expression.EqualsExpression(this.Condition, Expression.ConstantExpression(@case.Value)));
                         }
                         else
                         {
-                            caseExpression = Expression.ConstantExpression(cse.Value);
+                            // if someone does "=23" that will be numeric comparison or "='23'" that will be string comparison, or it can be a 
+                            // real expression bound to memory.
+                            var (value, _) = new ValueExpression(@case.Value).TryGetValue(dc.State);
+                            this.caseExpressions[@case.Value] = Expression.EqualsExpression(this.Condition, Expression.ConstantExpression(value));
                         }
-
-                        var caseCondition = Expression.EqualsExpression(this.Condition, caseExpression);
-
-                        // Map of expression to actions
-                        this.caseExpressions[cse.Value] = caseCondition;
                     }
                 }
             }
@@ -150,13 +158,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 var (value, error) = this.caseExpressions[caseScope.Value].TryEvaluate(dc.State);
 
-                if (error != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {caseExpressions[caseScope.Value].ToString()}. Error: {error}");
-                }
-
                 // Compare both expression results. The current switch case triggers if the comparison is true.
-                if (((bool)value) == true)
+                if (value != null && ((bool)value) == true)
                 {
                     actionScope = caseScope;
                     break;

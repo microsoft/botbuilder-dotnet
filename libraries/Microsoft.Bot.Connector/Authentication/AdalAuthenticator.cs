@@ -13,6 +13,9 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// An authentication class that implements <see cref="IAuthenticator"/>, used to authenticate requests against Azure.
+    /// </summary>
     public class AdalAuthenticator : IAuthenticator
     {
         private const string MsalTemporarilyUnavailable = "temporarily_unavailable";
@@ -45,11 +48,24 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly OAuthConfiguration authConfig;
         private readonly ILogger logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdalAuthenticator"/> class.
+        /// </summary>
+        /// <param name="clientCredential">The client credential to use for token acquisition.</param>
+        /// <param name="configurationOAuth">A configuration object for OAuth client credential authentication.</param>
+        /// <param name="customHttpClient">A customized instance of the HttpClient class.</param>
         public AdalAuthenticator(ClientCredential clientCredential, OAuthConfiguration configurationOAuth, HttpClient customHttpClient = null)
             : this(clientCredential, configurationOAuth, customHttpClient, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdalAuthenticator"/> class.
+        /// </summary>
+        /// <param name="clientCredential">The client credential to use for token acquisition.</param>
+        /// <param name="configurationOAuth">A configuration object for OAuth client credential authentication.</param>
+        /// <param name="customHttpClient">A customized instance of the HttpClient class.</param>
+        /// <param name="logger">The type used to perform logging.</param>
         public AdalAuthenticator(ClientCredential clientCredential, OAuthConfiguration configurationOAuth, HttpClient customHttpClient = null, ILogger logger = null)
         {
             this.authConfig = configurationOAuth ?? throw new ArgumentNullException(nameof(configurationOAuth));
@@ -59,11 +75,26 @@ namespace Microsoft.Bot.Connector.Authentication
             Initialize(configurationOAuth, customHttpClient);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdalAuthenticator"/> class.
+        /// </summary>
+        /// <param name="clientCertificate">A client credential that includes a X509Certificate.</param>
+        /// <param name="configurationOAuth">A configuration object for OAuth client credential authentication.</param>
+        /// <param name="customHttpClient">A customized instance of the HttpClient class.</param>
+        /// <param name="logger">The type used to perform logging.</param>
         public AdalAuthenticator(ClientAssertionCertificate clientCertificate, OAuthConfiguration configurationOAuth, HttpClient customHttpClient = null, ILogger logger = null)
             : this(clientCertificate, false, configurationOAuth, customHttpClient, logger)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdalAuthenticator"/> class.
+        /// </summary>
+        /// <param name="clientCertificate">A client credential that includes a X509Certificate.</param>
+        /// <param name="sendX5c">Enables easy certificates roll-over in Azure AD. Setting it to true sends the public certficate to Azure AD along with token requests.</param>
+        /// <param name="configurationOAuth">A configuration object for OAuth client credential authentication.</param>
+        /// <param name="customHttpClient">A customized instance of the HttpClient class.</param>
+        /// <param name="logger">The type used to perform logging.</param>
         public AdalAuthenticator(ClientAssertionCertificate clientCertificate, bool sendX5c, OAuthConfiguration configurationOAuth, HttpClient customHttpClient = null, ILogger logger = null)
         {
             this.authConfig = configurationOAuth ?? throw new ArgumentNullException(nameof(configurationOAuth));
@@ -74,6 +105,11 @@ namespace Microsoft.Bot.Connector.Authentication
             Initialize(configurationOAuth, customHttpClient);
         }
 
+        /// <summary>
+        /// Performs the call to acquire a security token.
+        /// </summary>
+        /// <param name="forceRefresh">Forces a token refresh by clearing the token cache and acquiring it again.</param>
+        /// <returns>A <see cref="Task{AuthenticationResult}" /> object.</returns>
         public async Task<AuthenticationResult> GetTokenAsync(bool forceRefresh = false)
         {
             var watch = Stopwatch.StartNew();
@@ -91,7 +127,7 @@ namespace Microsoft.Bot.Connector.Authentication
         async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
         {
             var result = await GetTokenAsync(forceRefresh).ConfigureAwait(false);
-            return new AuthenticatorResult() 
+            return new AuthenticatorResult()
             {
                 AccessToken = result.AccessToken,
                 ExpiresOn = result.ExpiresOn
@@ -187,7 +223,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             return RetryParams.DefaultBackOff(0);
         }
-        
+
         private void ReleaseSemaphore()
         {
             try

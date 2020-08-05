@@ -28,7 +28,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Results that QnAMaker returned.
         /// </value>
         [JsonProperty("queryResults")]
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public QueryResult[] QueryResults { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets or sets iD of the Knowledgebase that is being used.
@@ -66,8 +68,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The filters used to return answers that have the specified metadata.
         /// </value>        
         [JsonProperty("strictFilters")]
-        public Metadata[] StrictFilters { get; set; }           
-                
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
+        public Metadata[] StrictFilters { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
+
         /// <summary>
         /// Gets or sets context for multi-turn responses.
         /// </summary>
@@ -103,9 +107,17 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
+        /// </summary>
+        /// <value>
+        /// An array of <see cref="Metadata"/>.
+        /// </value>
         [Obsolete("This property is no longer used and will be ignored")]
         [JsonIgnore]
+#pragma warning disable CA1819 // Properties should not return arrays (this property is obsolete and we won't change it)
         public Metadata[] MetadataBoost { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
     }
 }

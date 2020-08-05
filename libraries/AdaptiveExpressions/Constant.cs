@@ -12,7 +12,7 @@ namespace AdaptiveExpressions
     /// </summary>
     public class Constant : Expression
     {
-        private readonly Regex singleQuotRegex = new Regex(@"(?<!\\)'");
+        private readonly Regex _singleQuotRegex = new Regex(@"(?<!\\)'");
         private object _value;
 
         /// <summary>
@@ -45,12 +45,16 @@ namespace AdaptiveExpressions
                       value is string ? ReturnType.String
                       : value.IsNumber() ? ReturnType.Number
                       : value is bool ? ReturnType.Boolean
-                      : ExpressionFunctions.TryParseList(value, out _) ? ReturnType.Array
+                      : FunctionUtils.TryParseList(value, out _) ? ReturnType.Array
                       : ReturnType.Object;
                 _value = value;
             }
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             if (Value == null)
@@ -61,7 +65,7 @@ namespace AdaptiveExpressions
             {
                 var result = value.Replace(@"\", @"\\");
 
-                result = singleQuotRegex.Replace(result, new MatchEvaluator(m =>
+                result = _singleQuotRegex.Replace(result, new MatchEvaluator(m =>
                 {
                     var value = m.Value;
 
@@ -81,6 +85,11 @@ namespace AdaptiveExpressions
             }
         }
 
+        /// <summary>
+        /// Determines if the current Expression instance is deep equal to another one.
+        /// </summary>
+        /// <param name="other">The other Expression instance to compare.</param>
+        /// <returns>A boolean value indicating  whether the two Expressions are deep equal. Reyurns True if they are deep equal, otherwise return False.</returns>
         public override bool DeepEquals(Expression other)
         {
             bool eq;

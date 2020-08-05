@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
@@ -45,7 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Additional property settings as property=value pairs.
         /// </value>
         [JsonProperty("assignments")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<PropertyAssignment> Assignments { get; set; } = new List<PropertyAssignment>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -61,11 +64,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             foreach (var propValue in this.Assignments)
             {
-                var (value, valueError) = propValue.Value.TryGetValue(dc.State);
+                JToken value = null;
+                var (val, valueError) = propValue.Value.TryGetValue(dc.State);
                 if (valueError != null)
                 {
                     throw new Exception($"Expression evaluation resulted in an error. Expression: {propValue.Value.ToString()}. Error: {valueError}");
                 }
+
+                if (val != null)
+                {
+                    value = JToken.FromObject(val).DeepClone();
+                }
+
+                value = value?.ReplaceJTokenRecursively(dc.State);
 
                 dc.State.SetValue(propValue.Property.GetValue(dc.State), value);
             }

@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/component/component.schema",
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "title": "Microsoft LanguageGenerator",
     "description": "Components which dervie from the LanguageGenerator class",
     "$role": "interface",

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -10,13 +11,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Logging.Debug;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public abstract class DebugTransport
+    public abstract class DebugTransport : IDisposable
     {
         private const string Prefix = @"Content-Length: ";
         private static readonly Encoding Encoding = Encoding.ASCII;
@@ -27,12 +27,52 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private StreamReader reader;
         private StreamWriter writer;
 
+        // To detect redundant calls to dispose
+        private bool _disposed;
+        
         protected DebugTransport(ILogger logger)
         {
             this.Logger = logger ?? NullLogger.Instance;
         }
 
         protected ILogger Logger { get; set; }
+
+        /// <summary>
+        /// Disposes the object instance a releases any related objects owned by the class.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes objects used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                connected?.Dispose();
+                readable?.Dispose();
+                writable?.Dispose();
+                reader?.Dispose();
+                writer?.Dispose();
+            }
+
+            _disposed = true;
+        }
 
         protected async Task ListenAsync(IPEndPoint point, CancellationToken cancellationToken)
         {
@@ -77,7 +117,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                             }
                         }
                     }
+#pragma warning disable CA1031 // Do not catch general exception types (we just log the exception and we continue the execution)
                     catch (Exception error)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         this.Logger.LogError(error, error.Message);
                     }
@@ -112,12 +154,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         throw new InvalidOperationException();
                     }
 
-                    if (!line.StartsWith(Prefix))
+                    if (!line.StartsWith(Prefix, StringComparison.Ordinal))
                     {
                         throw new InvalidOperationException();
                     }
 
-                    var count = int.Parse(line.Substring(Prefix.Length));
+                    var count = int.Parse(line.Substring(Prefix.Length), CultureInfo.InvariantCulture);
 
                     var buffer = new char[count];
                     int index = 0;

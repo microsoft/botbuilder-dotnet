@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
         {
             var recognizer = obj.ToObject<LuisAdaptiveRecognizer>(serializer);
             var name = recognizer.ApplicationId.ToString();
-            if (name.StartsWith("="))
+            if (name.StartsWith("=", StringComparison.Ordinal))
             {
                 var start = name.LastIndexOf('.') + 1;
                 name = name.Substring(start);

@@ -108,6 +108,10 @@ namespace AdaptiveExpressions.TriggerTrees
         public static bool ShowTrace = true;
 #endif
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -115,6 +119,11 @@ namespace AdaptiveExpressions.TriggerTrees
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <param name="builder">A StringBuilder object.</param>
+        /// <param name="indent">An integer representing the number of spaces at the start of a line.</param>
         public void ToString(StringBuilder builder, int indent = 0)
             => Clause.ToString(builder, indent);
 
@@ -175,7 +184,7 @@ namespace AdaptiveExpressions.TriggerTrees
             var op = Operation.None;
             if (!ops.TryGetValue(this, out op))
             {
-                var trigger = triggerNode.Triggers.First();
+                var trigger = triggerNode.Triggers[0];
                 var relationship = Relationship(triggerNode);
 #if TraceTree
                 if (Node.ShowTrace)
@@ -212,7 +221,7 @@ namespace AdaptiveExpressions.TriggerTrees
                             {
                                 _allTriggers.Add(trigger);
                                 var add = true;
-                                for (var i = 0; i < _triggers.Count();)
+                                for (var i = 0; i < _triggers.Count;)
                                 {
                                     var existing = _triggers[i];
                                     var reln = trigger.Relationship(existing, Tree.Comparers);

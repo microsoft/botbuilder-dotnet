@@ -45,10 +45,23 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Possible anchors for offsets.
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat)
         public static class Anchor
+#pragma warning restore CA1034 // Nested types should not be visible
         {
+            /// <summary>
+            /// Constant for Offset anchor type of Current.
+            /// </summary>
             public const string Current = "current";
+
+            /// <summary>
+            /// Constant for Offset anchor type of End.
+            /// </summary>
             public const string End = "end";
+
+            /// <summary>
+            /// Constant for Offset anchor type of Start.
+            /// </summary>
             public const string Start = "start";
         }
     }
