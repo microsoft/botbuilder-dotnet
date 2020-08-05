@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the current timestamp.
     /// </summary>
-    public class UtcNow : ExpressionEvaluator
+    internal class UtcNow : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UtcNow"/> class.

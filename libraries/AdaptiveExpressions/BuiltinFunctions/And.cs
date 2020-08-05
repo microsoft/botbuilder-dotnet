@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// or return false if at least one expression is false.
     /// </summary>
 #pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
-    public class And : ExpressionEvaluator
+    internal class And : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
         /// <summary>

@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Add a number of minutes to a timestamp.
     /// </summary>
-    public class AddMinutes : TimeTransformEvaluator
+    internal class AddMinutes : TimeTransformEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AddMinutes"/> class.

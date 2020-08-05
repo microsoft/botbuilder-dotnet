@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the current timestamp plus the specified time units.
     /// </summary>
-    public class GetFutureTime : ExpressionEvaluator
+    internal class GetFutureTime : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GetFutureTime"/> class.

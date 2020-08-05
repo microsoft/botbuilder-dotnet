@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return a timestamp in the specified format.
     /// </summary>
-    public class FormatDateTime : ExpressionEvaluator
+    internal class FormatDateTime : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatDateTime"/> class.

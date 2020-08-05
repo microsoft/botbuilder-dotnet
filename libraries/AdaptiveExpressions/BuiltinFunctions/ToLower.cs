@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return a string in lowercase format.
     /// If a character in the string doesn't have a lowercase version, that character stays unchanged in the returned string.
     /// </summary>
-    public class ToLower : StringTransformEvaluator
+    internal class ToLower : StringTransformEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ToLower"/> class.

@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Converts the specified string to title case.
     /// </summary>
-    public class TitleCase : StringTransformEvaluator
+    internal class TitleCase : StringTransformEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TitleCase"/> class.

@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Subtract a number of time units from a timestamp.
     /// </summary>
-    public class SubtractFromTime : ExpressionEvaluator
+    internal class SubtractFromTime : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SubtractFromTime"/> class.

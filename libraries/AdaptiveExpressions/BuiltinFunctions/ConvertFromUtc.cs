@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Convert a timestamp from Universal Time Coordinated (UTC) to a target time zone.
     /// </summary>
-    public class ConvertFromUtc : ExpressionEvaluator
+    internal class ConvertFromUtc : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConvertFromUtc"/> class.

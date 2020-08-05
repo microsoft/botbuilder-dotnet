@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return the starting position or index value of the last occurrence of a substring.
     /// This function is case-insensitive, and indexes start with the number 0.
     /// </summary>
-    public class LastIndexOf : ExpressionEvaluator
+    internal class LastIndexOf : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LastIndexOf"/> class.

@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the start of the day for a timestamp.
     /// </summary>
-    public class StartOfDay : ExpressionEvaluator
+    internal class StartOfDay : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StartOfDay"/> class.

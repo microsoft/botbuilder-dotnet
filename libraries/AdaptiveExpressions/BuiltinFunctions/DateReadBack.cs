@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Uses the date-time library to provide a date readback.
     /// </summary>
-    public class DateReadBack : ExpressionEvaluator
+    internal class DateReadBack : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DateReadBack"/> class.

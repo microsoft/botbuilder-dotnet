@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Add a number of days to a timestamp.
     /// </summary>
-    public class AddDays : TimeTransformEvaluator
+    internal class AddDays : TimeTransformEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AddDays"/> class.

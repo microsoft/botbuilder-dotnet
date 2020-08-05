@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Add a number of time units to a timestamp. 
     /// </summary>
-    public class AddToTime : ExpressionEvaluator
+    internal class AddToTime : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AddToTime"/> class.

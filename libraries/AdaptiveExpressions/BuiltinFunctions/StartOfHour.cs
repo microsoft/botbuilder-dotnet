@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the start of the hour for a timestamp.
     /// </summary>
-    public class StartOfHour : ExpressionEvaluator
+    internal class StartOfHour : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StartOfHour"/> class.

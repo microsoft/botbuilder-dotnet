@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Convert ticks to hours number.
     /// </summary>
-    public class TicksToHours : ExpressionEvaluator
+    internal class TicksToHours : ExpressionEvaluator
     {
         private const long TicksPerHour = 60 * 60 * 10000000L;
 

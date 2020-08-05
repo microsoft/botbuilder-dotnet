@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Converts the specified string to sentence case.
     /// </summary>
-    public class SentenceCase : StringTransformEvaluator
+    internal class SentenceCase : StringTransformEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SentenceCase"/> class.

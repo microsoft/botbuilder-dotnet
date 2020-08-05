@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the current timestamp minus the specified time units.
     /// </summary>
-    public class GetPastTime : ExpressionEvaluator
+    internal class GetPastTime : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GetPastTime"/> class.

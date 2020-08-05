@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Format number into required decimal numbers.
     /// </summary>
-    public class FormatNumber : ExpressionEvaluator
+    internal class FormatNumber : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatNumber"/> class.

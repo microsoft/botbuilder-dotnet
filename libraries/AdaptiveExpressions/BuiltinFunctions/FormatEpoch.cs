@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return a timestamp in the specified format from UNIX time (also know as Epoch time, POSIX time, UNIX Epoch time).
     /// </summary>
-    public class FormatEpoch : ExpressionEvaluator
+    internal class FormatEpoch : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatEpoch"/> class.

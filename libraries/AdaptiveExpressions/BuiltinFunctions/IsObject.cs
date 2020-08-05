@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Primitive objects include strings, numbers, and Booleans;
     /// complex types, like classes, contain properties.
     /// </summary>
-    public class IsObject : ExpressionEvaluator
+    internal class IsObject : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsObject"/> class.

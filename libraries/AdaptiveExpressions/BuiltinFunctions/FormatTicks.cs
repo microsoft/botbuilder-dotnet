@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return a timestamp in the specified format from ticks.
     /// </summary>
-    public class FormatTicks : ExpressionEvaluator
+    internal class FormatTicks : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatTicks"/> class.
