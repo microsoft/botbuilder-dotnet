@@ -7,12 +7,23 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
+    /// <summary>
+    /// Test Script action to assert that the bots' reply matches expectations.
+    /// </summary>
     [DebuggerDisplay("AssertReply{Exact ? \"[Exact]\" : string.Empty}:{GetConditionDescription()}")]
     public class AssertReply : AssertReplyActivity
     {
+        /// <summary>
+        /// Kind for the json object.
+        /// </summary>
         [JsonProperty("$kind")]
         public new const string Kind = "Microsoft.Test.AssertReply";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssertReply"/> class.
+        /// </summary>
+        /// <param name="path">path.</param>
+        /// <param name="line">line number.</param>
         [JsonConstructor]
         public AssertReply([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
             : base(path, line)

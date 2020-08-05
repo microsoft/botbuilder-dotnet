@@ -7,11 +7,19 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks
 {
+    /// <summary>
+    /// Mock UserToken with juse user id and token.
+    /// </summary>
     public class UserTokenBasicMock : UserTokenMock
     {
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.UserTokenBasicMock";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserTokenBasicMock"/> class.
+        /// </summary>
+        /// <param name="path">optional path.</param>
+        /// <param name="line">optional line.</param>
         [JsonConstructor]
         public UserTokenBasicMock([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
