@@ -40,5 +40,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>The number of milliseconds the prompt waits for the user to authenticate.</value>
         public int? Timeout { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="OAuthPrompt"/> should end upon
+        /// receiving an invalid message.
+        /// </summary>
+        /// <value>True if the <see cref="OAuthPrompt"/> should automatically end upon receiving
+        /// an invalid message.</value>
+        public bool EndOnInvalidMessage { get; set; }
     }
 }
