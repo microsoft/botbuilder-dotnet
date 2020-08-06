@@ -8,6 +8,9 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Skills
 {
+    /// <summary>
+    /// A Bot Framework client.
+    /// </summary>
     public abstract class BotFrameworkClient
     {
         /// <summary>

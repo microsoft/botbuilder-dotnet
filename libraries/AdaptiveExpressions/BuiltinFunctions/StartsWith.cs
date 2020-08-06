@@ -9,8 +9,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Check whether a string starts with a specific substring. Return true if the substring is found, or return false if not found.
     /// This function is case-insensitive.
     /// </summary>
-    public class StartsWith : ExpressionEvaluator
+    internal class StartsWith : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartsWith"/> class.
+        /// </summary>
         public StartsWith()
             : base(ExpressionType.StartsWith, Evaluator(), ReturnType.Boolean, Validator)
         {

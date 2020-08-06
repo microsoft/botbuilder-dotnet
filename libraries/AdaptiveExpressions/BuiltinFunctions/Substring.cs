@@ -8,8 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return characters from a string, starting from the specified position or index. Index values start with the number 0.
     /// </summary>
-    public class Substring : ExpressionEvaluator
+    internal class Substring : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Substring"/> class.
+        /// </summary>
         public Substring()
             : base(ExpressionType.Substring, EvalSubstring, ReturnType.String, Validator)
         {

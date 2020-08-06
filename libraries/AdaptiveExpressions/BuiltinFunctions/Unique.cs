@@ -9,8 +9,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Remove all duplicates from an array.
     /// </summary>
-    public class Unique : ExpressionEvaluator
+    internal class Unique : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Unique"/> class.
+        /// </summary>
         public Unique()
             : base(ExpressionType.Unique, Evaluator(), ReturnType.Array, Validator)
         {

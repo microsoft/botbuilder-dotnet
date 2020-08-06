@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -11,6 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
     /// object loading lifecycle, including the ability to intercept and provide alternate values
     /// to be considered by the converters.
     /// </summary>
+    [Obsolete("Deprecated in favor of IJsonLoadObserver.")]
     public interface IConverterObserver
     {
         /// <summary>

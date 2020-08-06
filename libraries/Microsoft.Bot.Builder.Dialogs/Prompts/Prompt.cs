@@ -231,7 +231,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="options">A prompt options object constructed from the options initially provided
         /// in the call to <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/>.</param>
         /// <param name="isRetry">true if this is the first time this prompt dialog instance
-        /// on the stack is prompting the user for input; otherwise, false.</param>
+        /// is on the stack is prompting the user for input; otherwise, false. Determines whether
+        /// <see cref="PromptOptions.Prompt"/> or <see cref="PromptOptions.RetryPrompt"/> should be used.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>

@@ -3,31 +3,47 @@
 
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Converts the specified string to title case.
+    /// TitleCase function takes a string as the first argument 
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
-    public class TitleCase : StringTransformEvaluator
+    internal class TitleCase : StringTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TitleCase"/> class.
+        /// </summary>
         public TitleCase()
             : base(ExpressionType.TitleCase, Function)
         {
         }
 
-        private static object Function(IReadOnlyList<object> args)
+        private static (object, string) Function(IReadOnlyList<object> args, Options options)
         {
-            var inputStr = (string)args[0];
-            if (string.IsNullOrEmpty(inputStr))
+            string result = null;
+            string error = null;
+            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
+            (locale, error) = FunctionUtils.DetermineLocale(args, locale, 2);
+
+            if (error == null)
             {
-                return string.Empty;
+                var inputStr = (string)args[0];
+                if (string.IsNullOrEmpty(inputStr))
+                {
+                    result = string.Empty;
+                }
+                else
+                {
+                    var ti = locale.TextInfo;
+                    result = ti.ToTitleCase(inputStr);
+                }
             }
-            else
-            {
-                var ti = CultureInfo.InvariantCulture.TextInfo;
-                return ti.ToTitleCase(inputStr);
-            }
+
+            return (result, error);
         }
     }
 }

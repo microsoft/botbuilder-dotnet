@@ -125,6 +125,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // - ${length(expandText(@answer))}
             var evaled = templates.Evaluate("template", scope);
             Assert.Equal("hello vivian".Length, evaled);
+
+            // Parse text content
+            evaled = templates.EvaluateText("${length(expandText(@answer))}", scope);
+            Assert.Equal("hello vivian".Length, evaled);
         }
 
         [Fact]

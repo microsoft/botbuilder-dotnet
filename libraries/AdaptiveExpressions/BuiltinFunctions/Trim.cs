@@ -8,8 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Remove leading and trailing whitespace from a string, and return the updated string.
     /// </summary>
-    public class Trim : StringTransformEvaluator
+    internal class Trim : StringTransformEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Trim"/> class.
+        /// </summary>
         public Trim()
             : base(ExpressionType.Trim, Function)
         {

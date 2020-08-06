@@ -9,8 +9,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the highest value from a list or array. The list or arary is inclusive at both ends.
     /// </summary>
-    public class Max : ExpressionEvaluator
+    internal class Max : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Max"/> class.
+        /// </summary>
         public Max()
             : base(ExpressionType.Max, Evaluator(), ReturnType.Number, FunctionUtils.ValidateAtLeastOne)
         {

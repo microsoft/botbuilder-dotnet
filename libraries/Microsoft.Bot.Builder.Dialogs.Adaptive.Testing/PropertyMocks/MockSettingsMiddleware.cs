@@ -10,13 +10,17 @@ using Microsoft.Extensions.Configuration;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
 {
     /// <summary>
-    /// Middleware used for mocking settings properties.
+    /// Middleware which injests mocked settings properties.
     /// </summary>
     public class MockSettingsMiddleware : IMiddleware
     {
         private readonly string prefix = $"{ScopePath.Settings}.";
         private readonly Dictionary<string, string> mockData = new Dictionary<string, string>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MockSettingsMiddleware"/> class.
+        /// </summary>
+        /// <param name="properties">properties to mock.</param>
         public MockSettingsMiddleware(List<PropertyMock> properties)
         {
             foreach (var property in properties)
@@ -47,6 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
             }
         }
 
+        /// <inheritdoc/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
             if (mockData.Count != 0)

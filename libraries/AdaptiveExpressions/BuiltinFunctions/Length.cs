@@ -6,8 +6,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the length of a string.
     /// </summary>
-    public class Length : ExpressionEvaluator
+    internal class Length : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Length"/> class.
+        /// </summary>
         public Length()
             : base(ExpressionType.Length, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnaryString)
         {

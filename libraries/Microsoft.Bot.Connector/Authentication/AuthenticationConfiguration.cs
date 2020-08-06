@@ -14,6 +14,12 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </remarks>
     public class AuthenticationConfiguration
     {
+        /// <summary>
+        /// Gets or sets an array of JWT endorsements.
+        /// </summary>
+        /// <value>
+        /// An array of JWT endorsements.
+        /// </value>
 #pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public string[] RequiredEndorsements { get; set; } = Array.Empty<string>();
 #pragma warning restore CA1819 // Properties should not return arrays

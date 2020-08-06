@@ -10,12 +10,19 @@ using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
 {
+    /// <summary>
+    /// Middleware to mock http requests with an adapter.
+    /// </summary>
     public class MockHttpRequestMiddleware : IMiddleware
     {
         private readonly HttpMessageHandler _httpMessageHandler;
 
-        private readonly HttpClient _httpClient; 
+        private readonly HttpClient _httpClient;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MockHttpRequestMiddleware"/> class.
+        /// </summary>
+        /// <param name="httpRequestMocks">mocks to use.</param>
         public MockHttpRequestMiddleware(List<HttpRequestMock> httpRequestMocks)
         {
             var handler = new MockHttpMessageHandler();
@@ -29,6 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
             _httpClient = client;
         }
 
+        /// <inheritdoc/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
             turnContext.TurnState.Add(_httpMessageHandler);

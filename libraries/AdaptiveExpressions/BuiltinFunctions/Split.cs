@@ -8,8 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return an array that contains substrings, separated by commas, based on the specified delimiter character in the original string.
     /// </summary>
-    public class Split : ExpressionEvaluator
+    internal class Split : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Split"/> class.
+        /// </summary>
         public Split()
             : base(ExpressionType.Split, Evaluator(), ReturnType.Array, Validator)
         {

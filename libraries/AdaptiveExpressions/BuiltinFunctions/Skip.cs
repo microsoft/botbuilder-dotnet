@@ -8,8 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Remove items from the front of a collection, and return all the other items.
     /// </summary>
-    public class Skip : ExpressionEvaluator
+    internal class Skip : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Skip"/> class.
+        /// </summary>
         public Skip()
             : base(ExpressionType.Skip, EvalSkip, ReturnType.Array, Validator)
         {

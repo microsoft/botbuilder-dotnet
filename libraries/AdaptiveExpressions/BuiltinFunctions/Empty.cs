@@ -12,8 +12,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// 3.input is zero size collection
     /// 4.input is an object with no property.
     /// </summary>
-    public class Empty : ComparisonEvaluator
+    internal class Empty : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Empty"/> class.
+        /// </summary>
         public Empty()
             : base(
                   ExpressionType.Empty,

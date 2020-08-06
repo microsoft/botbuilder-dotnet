@@ -12,9 +12,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// An XPath expression (referred to as XPath) helps you navigate an XML document structure so that you can select nodes or compute values in the XML content.
     /// </summary>
 #pragma warning disable CA1724 // Type names should not match namespaces (by design and we can't change this without breaking binary compat)
-    public class XPath : ExpressionEvaluator
+    internal class XPath : ExpressionEvaluator
 #pragma warning restore CA1724 // Type names should not match namespaces
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XPath"/> class.
+        /// </summary>
         public XPath()
             : base(ExpressionType.XPath, Evaluator(), ReturnType.Object, Validator)
         {

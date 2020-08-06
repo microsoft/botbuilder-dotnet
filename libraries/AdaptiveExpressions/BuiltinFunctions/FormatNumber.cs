@@ -3,14 +3,20 @@
 
 using System;
 using System.Globalization;
+using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Format number into required decimal numbers.
+    /// FormatNumber function takes a number as the first argument, a precision digits integer
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name..
     /// </summary>
-    public class FormatNumber : ExpressionEvaluator
+    internal class FormatNumber : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatNumber"/> class.
+        /// </summary>
         public FormatNumber()
             : base(ExpressionType.FormatNumber, Evaluator(), ReturnType.String, Validator)
         {
@@ -18,11 +24,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.ApplyWithError(
-                        args =>
+            return FunctionUtils.ApplyWithOptionsAndError(
+                        (args, options) =>
                         {
                             string result = null;
                             string error = null;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
                             if (!args[0].IsNumber())
                             {
                                 error = $"formatNumber first argument {args[0]} must be number";
@@ -35,21 +42,20 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             {
                                 error = $"formatNumber third agument {args[2]} must be a locale";
                             }
-                            else
+
+                            if (error == null)
+                            {
+                                (locale, error) = FunctionUtils.DetermineLocale(args, locale, 3);
+                            }
+
+                            if (error == null)
                             {
                                 var precision = 0;
                                 (precision, error) = FunctionUtils.ParseInt32(args[1]);
-                                try
+                                if (error == null)
                                 {
                                     var number = Convert.ToDouble(args[0], CultureInfo.InvariantCulture);
-                                    var locale = args.Count == 3 ? new CultureInfo(args[2] as string) : CultureInfo.InvariantCulture;
-                                    result = number.ToString("N" + precision, locale);
-                                }
-#pragma warning disable CA1031 // Do not catch general exception types (we are capturing the exception and returning it)
-                                catch
-#pragma warning restore CA1031 // Do not catch general exception types
-                                {
-                                    error = $"{args[3]} is not a valid locale for formatNumber";
+                                    result = number.ToString("N" + precision.ToString(CultureInfo.InvariantCulture), locale);
                                 }
                             }
 

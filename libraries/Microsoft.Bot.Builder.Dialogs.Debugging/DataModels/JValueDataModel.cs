@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-    public sealed class JValueDataModel : IDataModel
+    internal sealed class JValueDataModel : IDataModel
     {
         public static readonly IDataModel Instance = new JValueDataModel();
 

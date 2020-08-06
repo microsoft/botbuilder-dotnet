@@ -8,12 +8,15 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return a random integer from a specified range, which is inclusive only at the starting end.
     /// </summary>
-    public class Rand : ExpressionEvaluator
+    internal class Rand : ExpressionEvaluator
     {
         private static readonly Random Randomizer = new Random();
 
         private static readonly object _randomizerLock = new object();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rand"/> class.
+        /// </summary>
         public Rand()
             : base(ExpressionType.Rand, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
         {

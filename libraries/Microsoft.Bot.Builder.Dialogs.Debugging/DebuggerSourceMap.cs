@@ -6,25 +6,29 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Base;
+using Microsoft.Bot.Builder.Dialogs.Debugging.CodeModels;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class DebuggerSourceMap : ISourceMap, IBreakpoints
+    internal sealed class DebuggerSourceMap : ISourceMap, IBreakpoints
     {
-        private readonly ICodeModel codeModel;
-        private readonly object gate = new object();
-        private readonly Dictionary<object, SourceRange> sourceByItem = new Dictionary<object, SourceRange>(ReferenceEquality<object>.Instance);
-        private bool dirty = true;
+        private readonly ICodeModel _codeModel;
+        private readonly object _gate = new object();
+        private readonly HashSet<object> _items = new HashSet<object>(ReferenceEquality<object>.Instance);
 
-        private readonly IIdentifier<Row> rows = new Identifier<Row>();
-        private readonly HashSet<object> items = new HashSet<object>(ReferenceEquality<object>.Instance);
+        private readonly IIdentifier<Row> _rows = new Identifier<Row>();
+        private readonly Dictionary<object, SourceRange> _sourceByItem = new Dictionary<object, SourceRange>(ReferenceEquality<object>.Instance);
+        private bool _dirty = true;
 
         public DebuggerSourceMap(ICodeModel codeModel)
         {
-            this.codeModel = codeModel ?? throw new ArgumentNullException(nameof(codeModel));
+            _codeModel = codeModel ?? throw new ArgumentNullException(nameof(codeModel));
         }
 
-        public static bool Equals(Protocol.Range target, SourceRange source) =>
+        public static bool Equals(Range target, SourceRange source) =>
             (target.Source == null && source == null)
             || (PathEquals(target.Source.Path, source.Path)
                 && target.Line == source.StartPoint.LineIndex
@@ -32,12 +36,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 && target.Column == source.StartPoint.CharIndex
                 && target.EndColumn == source.EndPoint.CharIndex);
 
-        public static void Assign(Protocol.Range target, SourceRange source)
+        public static void Assign(Range target, SourceRange source)
         {
             if (source != null)
             {
                 target.Designer = source.Designer;
-                target.Source = new Protocol.Source(source.Path);
+                target.Source = new Source(source.Path);
                 target.Line = source.StartPoint.LineIndex;
                 target.EndLine = source.EndPoint.LineIndex;
                 target.Column = source.StartPoint.CharIndex;
@@ -54,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        public static void Assign(Protocol.Range target, string item, string more)
+        public static void Assign(Range target, string item, string more)
         {
             target.Item = item;
             target.More = more;
@@ -67,53 +71,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 throw new ArgumentOutOfRangeException(range.Path);
             }
 
-            lock (gate)
+            lock (_gate)
             {
-                sourceByItem[item] = range;
-                dirty = true;
+                _sourceByItem[item] = range;
+                _dirty = true;
             }
         }
 
         bool ISourceMap.TryGetValue(object item, out SourceRange range)
         {
-            lock (gate)
+            lock (_gate)
             {
                 if (item != null)
                 {
-                    return sourceByItem.TryGetValue(item, out range);
+                    return _sourceByItem.TryGetValue(item, out range);
                 }
-                else
-                {
-                    range = default(SourceRange);
-                    return false;
-                }
+
+                range = default;
+                return false;
             }
         }
 
         void IBreakpoints.Clear()
         {
-            lock (gate)
+            lock (_gate)
             {
-                this.rows.Clear();
-                this.items.Clear();
-                this.dirty = true;
+                _rows.Clear();
+                _items.Clear();
+                _dirty = true;
             }
         }
 
-        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints)
+        IReadOnlyList<Breakpoint> IBreakpoints.SetBreakpoints(Source source, IReadOnlyList<SourceBreakpoint> sourceBreakpoints)
         {
-            lock (gate)
+            lock (_gate)
             {
                 var path = source.Path;
-                foreach (var row in rows.Items)
+                foreach (var row in _rows.Items)
                 {
                     if (row.FunctionBreakpoint == null && PathEquals(row.Source.Path, path))
                     {
-                        rows.Remove(row);
+                        _rows.Remove(row);
                     }
                 }
 
-                var breakpoints = new List<Protocol.Breakpoint>(sourceBreakpoints.Count);
+                var breakpoints = new List<Breakpoint>(sourceBreakpoints.Count);
 
                 foreach (var sourceBreakpoint in sourceBreakpoints)
                 {
@@ -128,19 +130,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints)
+        IReadOnlyList<Breakpoint> IBreakpoints.SetBreakpoints(IReadOnlyList<FunctionBreakpoint> functionBreakpoints)
         {
-            lock (gate)
+            lock (_gate)
             {
-                foreach (var row in rows.Items)
+                foreach (var row in _rows.Items)
                 {
                     if (row.FunctionBreakpoint != null)
                     {
-                        rows.Remove(row);
+                        _rows.Remove(row);
                     }
                 }
 
-                var breakpoints = new List<Protocol.Breakpoint>(functionBreakpoints.Count);
+                var breakpoints = new List<Breakpoint>(functionBreakpoints.Count);
 
                 foreach (var functionBreakpoint in functionBreakpoints)
                 {
@@ -155,15 +157,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.ApplyUpdates()
+        IReadOnlyList<Breakpoint> IBreakpoints.ApplyUpdates()
         {
-            lock (gate)
+            lock (_gate)
             {
-                IReadOnlyList<Protocol.Breakpoint> updates = Array.Empty<Protocol.Breakpoint>();
-                if (dirty)
+                IReadOnlyList<Breakpoint> updates = Array.Empty<Breakpoint>();
+                if (_dirty)
                 {
                     updates = Update();
-                    dirty = false;
+                    _dirty = false;
                 }
 
                 return updates;
@@ -172,29 +174,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         bool IBreakpoints.IsBreakPoint(object item)
         {
-            lock (gate)
+            lock (_gate)
             {
-                return this.items.Contains(item);
+                return _items.Contains(item);
             }
         }
 
-        object IBreakpoints.ItemFor(Protocol.Breakpoint breakpoint)
+        object IBreakpoints.ItemFor(Breakpoint breakpoint)
         {
-            lock (gate)
+            lock (_gate)
             {
-                return this.rows[breakpoint.Id].Item;
+                return _rows[breakpoint.Id].Item;
             }
         }
 
         private static bool PathEquals(string one, string two)
         {
-            var ext1 = Path.GetExtension(one).ToLower();
+            var ext1 = Path.GetExtension(one).ToLowerInvariant();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // we want to be case insensitive on windows
-                one = one.ToLower();
-                two = two.ToLower();
+                one = one.ToLowerInvariant();
+                two = two.ToLowerInvariant();
             }
 
             // if it's resource path, we only care about resource name
@@ -210,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             var item = sourceItem.Key;
             var source = sourceItem.Value;
-            if (object.Equals(row.Item, item) && Equals(row.Breakpoint, source))
+            if (Equals(row.Item, item) && Equals(row.Breakpoint, source))
             {
                 return false;
             }
@@ -219,7 +221,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             row.Breakpoint.Verified = source != null;
             Assign(row.Breakpoint, source);
 
-            var name = this.codeModel.NameFor(row.Item);
+            var name = _codeModel.NameFor(row.Item);
             Assign(row.Breakpoint, name, null);
 
             return true;
@@ -230,7 +232,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             var breakpoint = row.Breakpoint;
             if (breakpoint.Id == 0)
             {
-                breakpoint.Id = this.rows.Add(row);
+                breakpoint.Id = _rows.Add(row);
             }
 
             IEnumerable<KeyValuePair<object, SourceRange>> options;
@@ -238,22 +240,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             var functionBreakpoint = row.FunctionBreakpoint;
             if (functionBreakpoint != null)
             {
-                options = from sourceItem in sourceByItem
-                          let item = sourceItem.Key
-                          let name = codeModel.NameFor(item)
-                          where name.IndexOf(functionBreakpoint.Name, StringComparison.CurrentCultureIgnoreCase) >= 0
-                          orderby name.Length
-                          select sourceItem;
+                options = from sourceItem in _sourceByItem
+                    let item = sourceItem.Key
+                    let name = _codeModel.NameFor(item)
+                    where name.IndexOf(functionBreakpoint.Name, StringComparison.CurrentCultureIgnoreCase) >= 0
+                    orderby name.Length
+                    select sourceItem;
             }
             else
             {
-                options = from sourceItem in sourceByItem
-                          let source = sourceItem.Value
-                          where PathEquals(source.Path, row.Source.Path)
-                          where source.StartPoint?.LineIndex <= row.SourceBreakpoint.Line && source.EndPoint?.LineIndex >= row.SourceBreakpoint.Line
-                          let distance = row.SourceBreakpoint.Line - source.StartPoint.LineIndex
-                          orderby distance
-                          select sourceItem;
+                options = from sourceItem in _sourceByItem
+                    let source = sourceItem.Value
+                    where PathEquals(source.Path, row.Source.Path)
+                    where source.StartPoint?.LineIndex <= row.SourceBreakpoint.Line && source.EndPoint?.LineIndex >= row.SourceBreakpoint.Line
+                    let distance = row.SourceBreakpoint.Line - source.StartPoint.LineIndex
+                    orderby distance
+                    select sourceItem;
             }
 
             options = options.ToArray();
@@ -264,27 +266,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private void RebuildItems()
         {
-            lock (gate)
+            lock (_gate)
             {
-                items.Clear();
-                foreach (var row in rows.Items)
+                _items.Clear();
+                foreach (var row in _rows.Items)
                 {
                     var item = row.Item;
                     if (item != null)
                     {
-                        items.Add(item);
+                        _items.Add(item);
                     }
                 }
             }
         }
 
-        private IReadOnlyList<Protocol.Breakpoint> Update()
+        private IReadOnlyList<Breakpoint> Update()
         {
-            lock (gate)
+            lock (_gate)
             {
-                var changes = new List<Protocol.Breakpoint>();
+                var changes = new List<Breakpoint>();
 
-                foreach (var row in rows.Items)
+                foreach (var row in _rows.Items)
                 {
                     if (TryUpdate(row))
                     {
@@ -299,30 +301,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                 return changes;
             }
-        }
-
-        public sealed class Row
-        {
-            public Row(Protocol.Source source, Protocol.SourceBreakpoint sourceBreakpoint)
-            {
-                Source = source;
-                SourceBreakpoint = sourceBreakpoint;
-            }
-
-            public Row(Protocol.FunctionBreakpoint functionBreakpoint)
-            {
-                FunctionBreakpoint = functionBreakpoint;
-            }
-
-            public Protocol.Source Source { get; }
-
-            public Protocol.SourceBreakpoint SourceBreakpoint { get; }
-
-            public Protocol.FunctionBreakpoint FunctionBreakpoint { get; }
-
-            public Protocol.Breakpoint Breakpoint { get; } = new Protocol.Breakpoint();
-
-            public object Item { get; set; }
         }
     }
 }

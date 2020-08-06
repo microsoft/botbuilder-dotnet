@@ -6,8 +6,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Sort elements in the collection in ascending order and return the sorted collection.
     /// </summary>
-    public class SortBy : ExpressionEvaluator
+    internal class SortBy : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SortBy"/> class.
+        /// </summary>
         public SortBy()
             : base(ExpressionType.SortBy, FunctionUtils.SortBy(false), ReturnType.Array, Validator)
         {

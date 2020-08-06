@@ -11,11 +11,19 @@ using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 {
+    /// <summary>
+    /// Mock http request in sequence order. The last response will be repeated.
+    /// </summary>
     public class HttpRequestSequenceMock : HttpRequestMock
     {
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.HttpRequestSequenceMock";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpRequestSequenceMock"/> class.
+        /// </summary>
+        /// <param name="path">optional path.</param>
+        /// <param name="line">optional line.</param>
         [JsonConstructor]
         public HttpRequestSequenceMock([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -50,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         /// The sequence of responses to reply.
         /// </value>
         [JsonProperty("responses")]
-        public List<HttpResponseMock> Responses { get;  } = new List<HttpResponseMock>();
+        public List<HttpResponseMock> Responses { get; } = new List<HttpResponseMock>();
 
         public override void Setup(MockHttpMessageHandler handler)
         {

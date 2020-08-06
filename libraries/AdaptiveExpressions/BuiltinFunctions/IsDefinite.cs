@@ -10,8 +10,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return true if a given TimexProperty or Timex expression refers to a valid date. Valid dates contain the year, month and dayOfMonth.
     /// </summary>
-    public class IsDefinite : ExpressionEvaluator
+    internal class IsDefinite : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsDefinite"/> class.
+        /// </summary>
         public IsDefinite()
             : base(ExpressionType.IsDefinite, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

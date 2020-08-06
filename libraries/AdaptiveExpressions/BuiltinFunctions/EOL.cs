@@ -8,8 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// End of line. Return \r\n in windows, and \n in unix.
     /// </summary>
-    public class EOL : ExpressionEvaluator
+    internal class EOL : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EOL"/> class.
+        /// </summary>
         public EOL()
             : base(ExpressionType.EOL, Evaluator(), ReturnType.String, Validator)
         {
