@@ -307,7 +307,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 case Channels.Cortana:
                 case Channels.Skype:
                 case Channels.Skypeforbusiness:
-                case Channels.Msteams:
                     return false;
             }
 
