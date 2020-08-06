@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="expressionParser">ExpressionParser to parse the expressions in the conent.</param>
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="options">List of strings representing the options during evaluating the templates.</param>
+        /// <param name="source">Templates source.</param>
         public Templates(
             IList<Template> templates = null,
             IList<TemplateImport> imports = null,
@@ -219,7 +220,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser expressionParser = null) => TemplatesParser.ParseText(content, id, importResolver, expressionParser).InjectToExpressionFunction();
 
         /// <summary>
-<<<<<<< HEAD
         /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
         /// </summary>
         /// <param name="resource">LG resource.</param>
@@ -233,9 +233,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Evaluate a template with given name and scope.
-=======
-        /// Evaluates a template with given name and scope.
->>>>>>> master
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">State visible in the evaluation.</param>
@@ -626,15 +623,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (result == null)
             {
-<<<<<<< HEAD
                 if (Path.IsPathRooted(Source))
                 {
                     result = Path.GetFileNameWithoutExtension(Source);
-=======
-                if (Path.IsPathRooted(Id))
-                {
-                    result = Path.GetFileNameWithoutExtension(Id);
->>>>>>> master
                 }
                 else
                 {
