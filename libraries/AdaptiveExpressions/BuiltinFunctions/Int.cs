@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return the integer version of a string.
     /// </summary>
 #pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)
-    public class Int : ExpressionEvaluator
+    internal class Int : ExpressionEvaluator
 #pragma warning restore CA1720 // Identifier contains type name
     {
         /// <summary>

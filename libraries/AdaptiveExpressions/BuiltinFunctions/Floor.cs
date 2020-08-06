@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Returns the largest integer less than or equal to the specified number.
     /// </summary>
-    public class Floor : NumberTransformEvaluator
+    internal class Floor : NumberTransformEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Floor"/> class.

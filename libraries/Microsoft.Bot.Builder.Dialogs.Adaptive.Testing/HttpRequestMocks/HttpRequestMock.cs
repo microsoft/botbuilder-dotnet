@@ -17,6 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         /// <param name="handler">The global handler.</param>
         public abstract void Setup(MockHttpMessageHandler handler);
 
+        /// <summary>
+        /// helper to register source path with debugger.
+        /// </summary>
+        /// <param name="path">optional path.</param>
+        /// <param name="line">optional line.</param>
         protected void RegisterSourcePath(string path, int line)
         {
             if (!string.IsNullOrEmpty(path))

@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Check JSON or a JSON string for nodes or values that match a path expression, and return the matching nodes.
     /// </summary>
-    public class JPath : ExpressionEvaluator
+    internal class JPath : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="JPath"/> class.

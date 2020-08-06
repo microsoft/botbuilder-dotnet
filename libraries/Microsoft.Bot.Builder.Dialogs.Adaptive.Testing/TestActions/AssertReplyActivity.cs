@@ -19,9 +19,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     [DebuggerDisplay("AssertReplyActivity:{GetConditionDescription()}")]
     public class AssertReplyActivity : TestAction
     {
+        /// <summary>
+        /// Kind for json serialization.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.AssertReplyActivity";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssertReplyActivity"/> class.
+        /// </summary>
+        /// <param name="path">optional path.</param>
+        /// <param name="line">optional line.</param>
         [JsonConstructor]
         public AssertReplyActivity([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {

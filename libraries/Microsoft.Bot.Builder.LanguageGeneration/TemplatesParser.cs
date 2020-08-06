@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// Parser to turn lg content into a <see cref="Templates"/>.
     /// </summary>
-    public static class TemplatesParser
+    internal static class TemplatesParser
     {
         /// <summary>
         /// Inline text id.
@@ -258,11 +258,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             private static readonly Regex IdentifierRegex = new Regex(@"^[0-9a-zA-Z_]+$");
             private static readonly Regex TemplateNamePartRegex = new Regex(@"^[a-zA-Z_][0-9a-zA-Z_]*$");
-            private readonly Templates templates;
+            private readonly Templates _templates;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="TemplatesTransformer"/> class.
+            /// </summary>
+            /// <param name="templates">Templates to transform.</param>
             public TemplatesTransformer(Templates templates)
             {
-                this.templates = templates;
+                _templates = templates;
             }
 
             /// <summary>
@@ -277,25 +281,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     Visit(parseTree);
                 }
 
-                for (var i = 0; i < templates.Count - 1; i++)
+                for (var i = 0; i < _templates.Count - 1; i++)
                 {
-                    templates[i].Body = RemoveTrailingNewline(templates[i].Body);
+                    _templates[i].Body = RemoveTrailingNewline(_templates[i].Body);
                 }
 
-                return this.templates;
+                return _templates;
             }
 
+            /// <inheritdoc/>
             public override object VisitErrorDefinition([NotNull] LGFileParser.ErrorDefinitionContext context)
             {
                 var lineContent = context.INVALID_LINE().GetText();
                 if (!string.IsNullOrWhiteSpace(lineContent))
                 {
-                    this.templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError($"Unexpected content: '{lineContent}'"), context));
+                    _templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError($"Unexpected content: '{lineContent}'"), context));
                 }
 
                 return null;
             }
 
+            /// <inheritdoc/>
             public override object VisitImportDefinition([NotNull] LGFileParser.ImportDefinitionContext context)
             {
                 var importStr = context.IMPORT().GetText();
@@ -306,14 +312,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var description = matchResult.Groups[1].Value?.Trim();
                     var id = matchResult.Groups[2].Value?.Trim();
 
-                    var sourceRange = new SourceRange(context, this.templates.Source);
+                    var sourceRange = new SourceRange(context, _templates.Source);
                     var import = new TemplateImport(description, id, sourceRange);
-                    this.templates.Imports.Add(import);
+                    _templates.Imports.Add(import);
                 }
 
                 return null;
             }
 
+            /// <inheritdoc/>
             public override object VisitOptionDefinition([NotNull] LGFileParser.OptionDefinitionContext context)
             {
                 var originalText = context.OPTION().GetText();
@@ -329,12 +336,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (!string.IsNullOrWhiteSpace(result))
                 {
-                    this.templates.Options.Add(result);
+                    _templates.Options.Add(result);
                 }
 
                 return null;
             }
 
+            /// <inheritdoc/>
             public override object VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
             {
                 var startLine = context.Start.Line;
@@ -343,23 +351,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var templateNameLine = context.templateNameLine().TEMPLATE_NAME_LINE().GetText();
                 var (templateName, parameters) = ExtractTemplateNameLine(templateNameLine);
 
-                if (this.templates.Any(u => u.Name == templateName))
+                if (_templates.Any(u => u.Name == templateName))
                 {
                     var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.DuplicatedTemplateInSameTemplate(templateName), context.templateNameLine());
-                    this.templates.Diagnostics.Add(diagnostic);
+                    _templates.Diagnostics.Add(diagnostic);
                 }
                 else
                 {
                     var templateBody = context.templateBody().GetText();
 
-                    var sourceRange = new SourceRange(context, this.templates.Source);
+                    var sourceRange = new SourceRange(context, _templates.Source);
                     var template = new Template(templateName, parameters, templateBody, sourceRange);
 
                     CheckTemplateName(templateName, context.templateNameLine());
                     CheckTemplateParameters(parameters, context.templateNameLine());
                     template.TemplateBodyParseTree = CheckTemplateBody(templateName, templateBody, context.templateBody(), startLine);
 
-                    this.templates.Add(template);
+                    _templates.Add(template);
                 }
 
                 return null;
@@ -370,7 +378,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (string.IsNullOrWhiteSpace(templateBody))
                 {
                     var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.NoTemplateBody(templateName), context, DiagnosticSeverity.Warning);
-                    this.templates.Diagnostics.Add(diagnostic);
+                    _templates.Diagnostics.Add(diagnostic);
                 }
                 else
                 {
@@ -380,7 +388,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     catch (TemplateException e)
                     {
-                        e.Diagnostics.ToList().ForEach(u => this.templates.Diagnostics.Add(u));
+                        e.Diagnostics.ToList().ForEach(u => _templates.Diagnostics.Add(u));
                     }
                 }
 
@@ -394,7 +402,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     if (!IdentifierRegex.IsMatch(parameter))
                     {
                         var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidParameter(parameter), context);
-                        this.templates.Diagnostics.Add(diagnostic);
+                        _templates.Diagnostics.Add(diagnostic);
                     }
                 }
             }
@@ -407,7 +415,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     if (!TemplateNamePartRegex.IsMatch(id))
                     {
                         var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.InvalidTemplateName(templateName), context);
-                        this.templates.Diagnostics.Add(diagnostic);
+                        _templates.Diagnostics.Add(diagnostic);
                         break;
                     }
                 }
@@ -461,7 +469,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var tokens = new CommonTokenStream(lexer);
                 var parser = new LGTemplateParser(tokens);
                 parser.RemoveErrorListeners();
-                var listener = new ErrorListener(this.templates.Source, lineOffset);
+                var listener = new ErrorListener(_templates.Source, lineOffset);
 
                 parser.AddErrorListener(listener);
                 parser.BuildParseTree = true;
@@ -471,7 +479,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private Diagnostic BuildTemplatesDiagnostic(string errorMessage, ParserRuleContext context, DiagnosticSeverity severity = DiagnosticSeverity.Error)
             {
-                return new Diagnostic(context.ConvertToRange(), errorMessage, severity, this.templates.Source);
+                return new Diagnostic(context.ConvertToRange(), errorMessage, severity, _templates.Source);
             }
         }
     }

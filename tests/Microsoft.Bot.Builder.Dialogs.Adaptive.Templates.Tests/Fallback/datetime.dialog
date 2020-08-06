@@ -83,7 +83,7 @@
         },
         {
           "$kind": "Microsoft.SendActivity",
-          "activity": "${convertFromUTC(user.date, 'Pacific Standard Time', 'D')}"
+          "activity": "${convertFromUTC(user.date, 'Pacific Standard Time', 'MM-dd-yyyy')}"
         },
         {
           "$kind": "Microsoft.SendActivity",

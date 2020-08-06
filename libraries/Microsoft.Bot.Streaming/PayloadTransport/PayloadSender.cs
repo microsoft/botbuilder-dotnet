@@ -24,15 +24,21 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
         private readonly byte[] _sendHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
         private readonly byte[] _sendContentBuffer = new byte[TransportConstants.MaxPayloadLength];
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PayloadSender"/> class.
+        /// </summary>
         public PayloadSender()
         {
             _sendQueue = new SendQueue<SendPacket>(this.WritePacketAsync);
         }
 
+        /// <inheritdoc/>
         public event DisconnectedEventHandler Disconnected;
 
+        /// <inheritdoc/>
         public bool IsConnected => _sender != null;
 
+        /// <inheritdoc/>
         public void Connect(ITransportSender sender)
         {
             if (_sender != null)
@@ -45,6 +51,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             _connectedEvent.Set();
         }
 
+        /// <inheritdoc/>
         public void SendPayload(Header header, Stream payload, bool isLengthKnown, Func<Header, Task> sentCallback)
         {
             var packet = new SendPacket()
@@ -57,6 +64,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             _sendQueue.Post(packet);
         }
 
+        /// <inheritdoc/>
         public void Disconnect(DisconnectedEventArgs e = null)
         {
             var didDisconnect = false;

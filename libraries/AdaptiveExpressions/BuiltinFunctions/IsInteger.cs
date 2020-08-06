@@ -6,7 +6,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return true if a given input is an integer number. Due to the alignment between C# and JavaScript, a number with an zero residue of its modulo 1 will be treated as an integer number.
     /// </summary>
-    public class IsInteger : ExpressionEvaluator
+    internal class IsInteger : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsInteger"/> class.

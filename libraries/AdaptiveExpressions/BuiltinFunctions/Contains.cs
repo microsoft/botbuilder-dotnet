@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// or return false if not found.
     /// This function is case-sensitive.
     /// </summary>
-    public class Contains : ExpressionEvaluator
+    internal class Contains : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Contains"/> class.

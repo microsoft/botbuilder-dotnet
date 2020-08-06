@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Returns time of day for a given timestamp.
     /// </summary>
-    public class GetTimeOfDay : ExpressionEvaluator
+    internal class GetTimeOfDay : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GetTimeOfDay"/> class.

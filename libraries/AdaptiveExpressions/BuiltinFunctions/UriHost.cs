@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the host value of a unified resource identifier (URI).
     /// </summary>
-    public class UriHost : ExpressionEvaluator
+    internal class UriHost : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UriHost"/> class.

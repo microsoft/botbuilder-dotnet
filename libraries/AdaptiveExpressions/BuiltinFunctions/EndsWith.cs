@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// or return false if not found.
     /// This function is case-insensitive.
     /// </summary>
-    public class EndsWith : ExpressionEvaluator
+    internal class EndsWith : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EndsWith"/> class.

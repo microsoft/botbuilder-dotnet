@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the result from adding numbers in a list.
     /// </summary>
-    public class Sum : ExpressionEvaluator
+    internal class Sum : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Sum"/> class.
