@@ -183,6 +183,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             var state = dc.ActiveDialog.State;
             var expires = (DateTime)state[PersistedExpires];
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
+
+            // If the incoming Activity is a message, or an Activity Type normally handled by OAuthPrompt,
+            // check to see if this OAuthPrompt Expiration has elapsed, and end the dialog if so.
             var isTimeoutActivityType = isMessage
                             || IsTokenResponseEvent(dc.Context)
                             || IsTeamsVerificationInvoke(dc.Context)
