@@ -27,43 +27,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 var existNames = new HashSet<string>();
                 foreach (var suffix in suffixs)
                 {
-                    if (string.IsNullOrEmpty(locale) || !string.IsNullOrEmpty(suffix))
+                    var resourcesWithSuchSuffix = allResources.Where(u => ParseLGFileName(u.Id).language.ToLowerInvariant() == suffix.ToLowerInvariant());
+                    foreach (var resourceWithSuchSuffix in resourcesWithSuchSuffix)
                     {
-                        var resourcesWithSuchSuffix = allResources.Where(u => ParseLGFileName(u.Id).language == suffix);
-                        foreach (var resourceWithSuchSuffix in resourcesWithSuchSuffix)
+                        var resourceName = resourceWithSuchSuffix.Id;
+                        var length = string.IsNullOrEmpty(suffix) ? 3 : 4;
+                        var prefixName = resourceName.Substring(0, resourceName.Length - suffix.Length - length);
+                        if (!existNames.Contains(prefixName))
                         {
-                            var resourceName = resourceWithSuchSuffix.Id;
-                            var length = string.IsNullOrEmpty(suffix) ? 3 : 4;
-                            var prefixName = resourceName.Substring(0, resourceName.Length - suffix.Length - length);
-                            if (!existNames.Contains(prefixName))
+                            existNames.Add(prefixName);
+                            if (!resourceMapping.ContainsKey(locale))
                             {
-                                existNames.Add(prefixName);
-                                if (!resourceMapping.ContainsKey(locale))
-                                {
-                                    resourceMapping.Add(locale, new List<Resource> { resourceWithSuchSuffix });
-                                }
-                                else
-                                {
-                                    resourceMapping[locale].Add(resourceWithSuchSuffix);
-                                }
+                                resourceMapping.Add(locale, new List<Resource> { resourceWithSuchSuffix });
+                            }
+                            else
+                            {
+                                resourceMapping[locale].Add(resourceWithSuchSuffix);
                             }
                         }
                     }
-                    else
+                }
+
+                if (resourceMapping.ContainsKey(locale))
+                {
+                    var resourcesWithEmptySuffix = allResources.Where(u => ParseLGFileName(u.Id).language.Length == 0);
+                    foreach (var resourceWithEmptySuffix in resourcesWithEmptySuffix)
                     {
-                        if (resourceMapping.ContainsKey(locale))
+                        var resourceName = resourceWithEmptySuffix.Id;
+                        var prefixName = resourceName.Substring(0, resourceName.Length - 3);
+                        if (!existNames.Contains(prefixName))
                         {
-                            var resourcesWithEmptySuffix = allResources.Where(u => ParseLGFileName(u.Id).language.Length == 0);
-                            foreach (var resourceWithEmptySuffix in resourcesWithEmptySuffix)
-                            {
-                                var resourceName = resourceWithEmptySuffix.Id;
-                                var prefixName = resourceName.Substring(0, resourceName.Length - 3);
-                                if (!existNames.Contains(prefixName))
-                                {
-                                    existNames.Add(prefixName);
-                                    resourceMapping[locale].Add(resourceWithEmptySuffix);
-                                }
-                            }
+                            existNames.Add(prefixName);
+                            resourceMapping[locale].Add(resourceWithEmptySuffix);
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
@@ -8,6 +9,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
     /// <summary>
     /// Marks a <see cref="JsonConverter"/> that allows registrations of <see cref="IConverterObserver"/>.
     /// </summary>
+    [Obsolete("Deprecated in favor of IObservableJsonConverter")]
     public interface IObservableConverter
     {
         /// <summary>

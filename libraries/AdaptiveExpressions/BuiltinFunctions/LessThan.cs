@@ -9,8 +9,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Check whether the first value is less than the second value.
     /// Return true if the first value is less, or return false if the first value is more.
     /// </summary>
-    public class LessThan : ComparisonEvaluator
+    internal class LessThan : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LessThan"/> class.
+        /// </summary>
         public LessThan()
             : base(
                   ExpressionType.LessThan,

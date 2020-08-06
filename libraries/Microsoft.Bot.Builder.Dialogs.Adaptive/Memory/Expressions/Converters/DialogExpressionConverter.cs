@@ -16,11 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// <summary>
     /// Converter which allows json to be expression to object or static object.
     /// </summary>
-    public class DialogExpressionConverter : JsonConverter<DialogExpression>, IObservableConverter
+    public class DialogExpressionConverter : JsonConverter<DialogExpression>, IObservableConverter, IObservableJsonConverter
     {
         private readonly InterfaceConverter<Dialog> converter;
         private readonly ResourceExplorer resourceExplorer;
-        private readonly List<IConverterObserver> observers = new List<IConverterObserver>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogExpressionConverter"/> class.
@@ -38,14 +37,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
         public override DialogExpression ReadJson(JsonReader reader, Type objectType, DialogExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             var jToken = JToken.Load(reader);
-
-            foreach (var observer in observers)
-            {
-                if (observer.OnBeforeLoadToken(jToken, out DialogExpression interceptResult))
-                {
-                    return interceptResult;
-                }
-            }
 
             DialogExpression result = null;
 
@@ -81,15 +72,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                 }
             }
 
-            foreach (var observer in observers)
-            {
-                if (observer.OnAfterLoadToken(jToken, result, out DialogExpression interceptedResult))
-                {
-                    interceptedResult.SetValue(result.Value);
-                    result = interceptedResult;
-                }
-            }
-
             return result;
         }
 
@@ -106,6 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
         }
 
         /// <inheritdoc/>
+        [Obsolete("Deprecated in favor of IJsonLoadObserver registration.")]
         public void RegisterObserver(IConverterObserver observer)
         {
             if (observer == null)
@@ -113,7 +96,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                 throw new ArgumentNullException(nameof(observer));
             }
 
-            this.observers.Add(observer);
+            // Create a wrapper for the deprecated type IConverterObserver.
+            // This supports backward compartibity.
+            RegisterObserver(new JsonLoadObserverWrapper(observer));
+        }
+
+        public void RegisterObserver(IJsonLoadObserver observer)
+        {
+            if (observer == null)
+            {
+                throw new ArgumentNullException(nameof(observer));
+            }
+
             this.converter.RegisterObserver(observer);
         }
     }

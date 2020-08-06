@@ -24,6 +24,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Streaming
 {
+    /// <summary>
+    /// A request handler that processes incoming requests sent over an IStreamingTransport 
+    /// and adheres to the Bot Framework Protocol v3 with Streaming Extensions.
+    /// </summary>
     public class StreamingRequestHandler : RequestHandler
     {
         private readonly IBot _bot;
@@ -144,6 +148,14 @@ namespace Microsoft.Bot.Builder.Streaming
             _conversations.Remove(conversationId);
         }
 
+        /// <summary>
+        /// Handles incoming requests.
+        /// </summary>
+        /// <param name="request">A <see cref="ReceiveRequest"/> for this handler to process.</param>
+        /// <param name="logger">Logger.</param>
+        /// <param name="context">Optional context to process the request within.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A <see cref="Task"/> that will produce a <see cref="StreamingResponse"/> on successful completion.</returns>
         public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger = null, object context = null, CancellationToken cancellationToken = default)
         {
             var response = new StreamingResponse();

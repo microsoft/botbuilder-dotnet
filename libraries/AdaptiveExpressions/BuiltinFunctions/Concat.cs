@@ -8,8 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Combine two or more strings, and return the combined string.
     /// </summary>
-    public class Concat : ExpressionEvaluator
+    internal class Concat : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Concat"/> class.
+        /// </summary>
         public Concat()
             : base(ExpressionType.Concat, Evaluator(), ReturnType.Array | ReturnType.String, FunctionUtils.ValidateAtLeastOne)
         {

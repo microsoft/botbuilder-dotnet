@@ -12,11 +12,9 @@
         },
         "userId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "ActivityId",
-            "description": "expression to an activityId to get the members. If none is defined then the current activity id will be used.",
-            "examples": [
-                "=$lastActivity"
-            ]
+            "title": "UserId",
+            "description": "Expression to an user to signout. Default is user.id.",
+            "default": "=user.id"
         },
         "connectionName": {
             "$ref": "schema:#/definitions/stringExpression",

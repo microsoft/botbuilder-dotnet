@@ -9,8 +9,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     ///  Mark a clause so that MostSpecificSelector will ignore it.
     ///  MostSpecificSelector considers A &amp; B to be more specific than A, but some clauses are unique and incomparable.
     /// </summary>
-    public class Ignore : ExpressionEvaluator
+    internal class Ignore : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ignore"/> class.
+        /// </summary>
         public Ignore()
             : base(ExpressionType.Ignore, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnaryBoolean)
         {

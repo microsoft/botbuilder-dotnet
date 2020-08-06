@@ -10,8 +10,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Flatten an array into non-array values. You can optionally set the maximum depth to flatten to.
     /// </summary>
-    public class Flatten : ExpressionEvaluator
+    internal class Flatten : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Flatten"/> class.
+        /// </summary>
         public Flatten()
             : base(ExpressionType.Flatten, Evaluator(), ReturnType.Array, Validator)
         {

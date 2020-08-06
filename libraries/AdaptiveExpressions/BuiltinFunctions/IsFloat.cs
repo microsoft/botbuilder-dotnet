@@ -7,8 +7,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return true if a given input is a floating-point number.
     /// Due to the alignment between C#and JavaScript, a number with an non-zero residue of its modulo 1 will be treated as a floating-point number.
     /// </summary>
-    public class IsFloat : ExpressionEvaluator
+    internal class IsFloat : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsFloat"/> class.
+        /// </summary>
         public IsFloat()
             : base(ExpressionType.IsFloat, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

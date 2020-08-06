@@ -6,8 +6,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return true if a given string is matches a specified regular expression pattern.
     /// </summary>
-    public class IsMatch : ExpressionEvaluator
+    internal class IsMatch : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsMatch"/> class.
+        /// </summary>
         public IsMatch()
             : base(ExpressionType.IsMatch, Evaluator(), ReturnType.Boolean, Validator)
         {

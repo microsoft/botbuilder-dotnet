@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -13,6 +14,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class TimeTransformEvaluator : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimeTransformEvaluator"/> class.
+        /// </summary>
+        /// <param name="type">Name of the built-in function.</param>
+        /// <param name="function">The time transformation function, it takes a DateTime object and an integer, returns a DateTime object.</param>
         public TimeTransformEvaluator(string type, Func<DateTime, int, DateTime> function)
             : base(type, Evaluator(function), ReturnType.String, Validator)
         {
@@ -20,7 +26,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static void Validator(Expression expression)
         {
-            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number);
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String, ReturnType.String }, ReturnType.String, ReturnType.Number);
         }
 
         private static EvaluateExpressionDelegate Evaluator(Func<DateTime, int, DateTime> function)
@@ -30,13 +36,19 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 object value = null;
                 string error = null;
                 IReadOnlyList<object> args;
+                var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
+                var format = FunctionUtils.DefaultDateTimeFormat;
                 (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+                if (error == null)
+                {
+                    (format, locale, error) = FunctionUtils.DetermineFormatAndLocale(args, format, locale, 4);
+                }
+
                 if (error == null)
                 {
                     if (args[1].IsInteger())
                     {
-                        var formatString = (args.Count == 3 && args[2] is string string1) ? string1 : FunctionUtils.DefaultDateTimeFormat;
-                        (value, error) = FunctionUtils.NormalizeToDateTime(args[0], dt => 
+                        (value, error) = FunctionUtils.NormalizeToDateTime(args[0], dt =>
                         {
                             var result = dt;
                             var (interval, error) = FunctionUtils.ParseInt32(args[1]);
@@ -50,7 +62,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
                         if (error == null)
                         {
-                            value = Convert.ToDateTime(value, CultureInfo.InvariantCulture).ToString(formatString, CultureInfo.InvariantCulture);
+                            value = Convert.ToDateTime(value, CultureInfo.InvariantCulture).ToString(format, locale);
                         }
                     }
                     else

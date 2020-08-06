@@ -38,74 +38,179 @@ namespace Microsoft.Bot.Builder
             _channelProvider = channelProvider;
         }
 
+        /// <summary>
+        /// Gets the channel provider that implements <see cref="IChannelProvider"/>.
+        /// </summary>
+        /// <value>
+        /// The channel provider that implements <see cref="IChannelProvider"/>.
+        /// </value>
         protected IChannelProvider ChannelProvider => _channelProvider;
 
+        /// <summary>
+        /// Sends an activity to the end of a conversation.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="activity">The activity to send.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ResourceResponse> HandleSendToConversationAsync(string authHeader, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnSendToConversationAsync(claimsIdentity, conversationId, activity, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Sends a reply to an activity.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="activityId">The activity Id the reply is to.</param>
+        /// <param name="activity">The activity to send.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ResourceResponse> HandleReplyToActivityAsync(string authHeader, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnReplyToActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Edits a previously sent existing activity.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="activityId">The activity Id to update.</param>
+        /// <param name="activity">The replacement activity.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ResourceResponse> HandleUpdateActivityAsync(string authHeader, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnUpdateActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Deletes an existing activity.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="activityId">The activity Id.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         public async Task HandleDeleteActivityAsync(string authHeader, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             await OnDeleteActivityAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Enumerates the members of an activity.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="activityId">The activity Id.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<IList<ChannelAccount>> HandleGetActivityMembersAsync(string authHeader, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnGetActivityMembersAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Create a new Conversation.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="parameters">Parameters to create the conversation from.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ConversationResourceResponse> HandleCreateConversationAsync(string authHeader, ConversationParameters parameters, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnCreateConversationAsync(claimsIdentity, parameters, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Lists the Conversations in which the bot has participated.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="continuationToken">A skip or continuation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ConversationsResult> HandleGetConversationsAsync(string authHeader, string conversationId, string continuationToken = default, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnGetConversationsAsync(claimsIdentity, conversationId, continuationToken, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Enumerates the members of a conversation.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<IList<ChannelAccount>> HandleGetConversationMembersAsync(string authHeader, string conversationId, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnGetConversationMembersAsync(claimsIdentity, conversationId, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Enumerates the members of a conversation one page at a time.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="pageSize">Suggested page size.</param>
+        /// <param name="continuationToken">A continuation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<PagedMembersResult> HandleGetConversationPagedMembersAsync(string authHeader, string conversationId, int? pageSize = default, string continuationToken = default, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnGetConversationPagedMembersAsync(claimsIdentity, conversationId, pageSize, continuationToken, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Deletes a member from a conversation.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="memberId">Id of the member to delete from this conversation.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task HandleDeleteConversationMemberAsync(string authHeader, string conversationId, string memberId, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             await OnDeleteConversationMemberAsync(claimsIdentity, conversationId, memberId, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Uploads the historic activities of the conversation.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="transcript">Transcript of activities.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ResourceResponse> HandleSendConversationHistoryAsync(string authHeader, string conversationId, Transcript transcript, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
             return await OnSendConversationHistoryAsync(claimsIdentity, conversationId, transcript, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Stores data in a compliant store when dealing with enterprises.
+        /// </summary>
+        /// <param name="authHeader">The authentication header.</param>
+        /// <param name="conversationId">The conversation Id.</param>
+        /// <param name="attachmentUpload">Attachment data.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public async Task<ResourceResponse> HandleUploadAttachmentAsync(string authHeader, string conversationId, AttachmentData attachmentUpload, CancellationToken cancellationToken = default)
         {
             var claimsIdentity = await AuthenticateAsync(authHeader).ConfigureAwait(false);
@@ -390,7 +495,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <remarks>
         /// 
-        /// Override this method to this is useful because it allows you to store data in a compliant store when dealing with enterprises.
+        /// Override this method to store data in a compliant store when dealing with enterprises.
         /// 
         /// The response is a ResourceResponse which contains an AttachmentId which is
         /// suitable for using with the attachments API.

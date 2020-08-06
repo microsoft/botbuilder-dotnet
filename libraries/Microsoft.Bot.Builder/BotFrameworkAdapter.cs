@@ -316,6 +316,15 @@ namespace Microsoft.Bot.Builder
             await ContinueConversationAsync(claimsIdentity, reference, audience, callback, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Sends a proactive message from the bot to a conversation.
+        /// </summary>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="audience">The target audience for the connector.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             if (claimsIdentity == null)
@@ -345,19 +354,16 @@ namespace Microsoft.Bot.Builder
                 context.TurnState.Add<BotCallbackHandler>(callback);
 
                 // Add audience to TurnContext.TurnState
-                context.TurnState.Add<string>(OAuthScopeKey, audience);
-
-                var appIdFromClaims = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+                context.TurnState.Add(OAuthScopeKey, audience);
 
                 // If we receive a valid app id in the incoming token claims, add the 
                 // channel service URL to the trusted services list so we can send messages back.
                 // the service URL for skills is trusted because it is applied by the SkillHandler based on the original request
                 // received by the root bot
+                var appIdFromClaims = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
                 if (!string.IsNullOrEmpty(appIdFromClaims))
                 {
-                    var isValidApp = await CredentialProvider.IsValidAppIdAsync(appIdFromClaims).ConfigureAwait(false);
-
-                    if (isValidApp)
+                    if (SkillValidation.IsSkillClaim(claimsIdentity.Claims) || await CredentialProvider.IsValidAppIdAsync(appIdFromClaims).ConfigureAwait(false))
                     {
                         AppCredentials.TrustServiceUrl(reference.ServiceUrl);
                     }
@@ -556,7 +562,7 @@ namespace Microsoft.Bot.Builder
                         catch (Exception ex)
 #pragma warning restore CA1031 // Do not catch general exception types
                         {
-                            Logger.LogError("Failed to fetch token before processing outgoing activity. " + ex.Message);
+                            Logger.LogError(ex, "Failed to fetch token before processing outgoing activity. " + ex.Message);
                         }
 
                         response = await ProcessOutgoingActivityAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);

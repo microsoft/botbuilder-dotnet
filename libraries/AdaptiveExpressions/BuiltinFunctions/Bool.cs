@@ -8,8 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the Boolean version of a value.
     /// </summary>
-    public class Bool : ComparisonEvaluator
+    internal class Bool : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Bool"/> class.
+        /// </summary>
         public Bool()
             : base(
                   ExpressionType.Bool,

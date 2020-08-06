@@ -316,7 +316,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual("invokeResponse", a.Type);
                 var response = ((Activity)a).Value as InvokeResponse;
                 Assert.IsNotNull(response);
-                Assert.AreEqual(409, response.Status);
+                Assert.AreEqual(412, response.Status);
                 var body = response.Body as TokenExchangeInvokeResponse;
                 Assert.AreEqual(connectionName, body.ConnectionName);
                 Assert.IsNotNull(body.FailureDetail);

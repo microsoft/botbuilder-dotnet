@@ -67,12 +67,30 @@ namespace AdaptiveExpressions.Properties
         {
         }
 
+        /// <summary>
+        /// Converts an integer value to an IntExpression instance.
+        /// </summary>
+        /// <param name="value">The integer value to convert.</param>
+#pragma warning disable CA2225 // Operator overloads have named alternates
         public static implicit operator IntExpression(int value) => new IntExpression(value);
 
+        /// <summary>
+        /// Converts a string value to an IntExpression instance.
+        /// </summary>
+        /// <param name="expression">The string value to convert.</param>
         public static implicit operator IntExpression(string expression) => new IntExpression(expression);
 
+        /// <summary>
+        /// Converts an Expression instance to an IntExpression instance.
+        /// </summary>
+        /// <param name="expression">The Expression instance to convert.</param>
         public static implicit operator IntExpression(Expression expression) => new IntExpression(expression);
 
+        /// <summary>
+        /// Converts a JSON Token to an IntExpression instance.
+        /// </summary>
+        /// <param name="expressionOrValue">The JSON Token to convert.</param>
         public static implicit operator IntExpression(JToken expressionOrValue) => new IntExpression(expressionOrValue);
+#pragma warning restore CA2225 // Operator overloads have named alternates
     }
 }

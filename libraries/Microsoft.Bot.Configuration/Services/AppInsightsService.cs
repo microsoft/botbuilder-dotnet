@@ -42,7 +42,9 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         /// <value>The Api Keys.</value>
         [JsonProperty("apiKeys")]
+#pragma warning disable CA2227 // Collection properties should be read only (this class is obsolete, we won't fix it)
         public Dictionary<string, string> ApiKeys { get; set; } = new Dictionary<string, string>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <inheritdoc/>
         public override void Encrypt(string secret)

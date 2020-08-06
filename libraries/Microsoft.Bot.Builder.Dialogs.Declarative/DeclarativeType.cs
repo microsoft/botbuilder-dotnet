@@ -62,6 +62,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
     /// <typeparam name="T">type.</typeparam>
     public class DeclarativeType<T> : DeclarativeType
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeclarativeType{T}"/> class.
+        /// </summary>
+        /// <param name="kind">$kind.</param>
         public DeclarativeType(string kind)
             : base(kind, typeof(T))
         {

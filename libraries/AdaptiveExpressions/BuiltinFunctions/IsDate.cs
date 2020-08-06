@@ -11,8 +11,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return true if a given TimexProperty or Timex expression refers to a valid date.
     /// Valid dates contain the month and dayOfMonth, or contain the dayOfWeek.
     /// </summary>
-    public class IsDate : ExpressionEvaluator
+    internal class IsDate : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsDate"/> class.
+        /// </summary>
         public IsDate()
             : base(ExpressionType.IsDate, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

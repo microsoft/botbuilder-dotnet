@@ -295,6 +295,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(message.Attachments[1].Name == attachmentName2, "Incorrect Attachment2 Name");
         }
 
+        [Fact]
         public void CarouselUnorderedAttachments()
         {
             var text = Guid.NewGuid().ToString();

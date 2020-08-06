@@ -9,8 +9,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return exponentiation of one number to another.
     /// </summary>
-    public class Power : MultivariateNumericEvaluator
+    internal class Power : MultivariateNumericEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Power"/> class.
+        /// </summary>
         public Power()
             : base(ExpressionType.Power, Evaluator, FunctionUtils.VerifyNumericListOrNumber)
         {
