@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the previous viable date of a timex expression based on the current date and user's timezone.
     /// </summary>
-    public class GetPreviousViableDate : ExpressionEvaluator
+    internal class GetPreviousViableDate : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GetPreviousViableDate"/> class.

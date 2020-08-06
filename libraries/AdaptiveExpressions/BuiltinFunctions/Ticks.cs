@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the ticks property value of a specified timestamp. A tick is 100-nanosecond interval.
     /// </summary>
-    public class Ticks : ExpressionEvaluator
+    internal class Ticks : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Ticks"/> class.

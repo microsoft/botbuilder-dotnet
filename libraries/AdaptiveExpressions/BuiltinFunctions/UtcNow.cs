@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// UtcNow function takes an optional format string whose default value "yyyy-MM-ddTHH:mm:ss.fffZ"
     /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
-    public class UtcNow : ExpressionEvaluator
+    internal class UtcNow : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UtcNow"/> class.

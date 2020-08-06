@@ -6,7 +6,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Operate on each element and return the new collection.
     /// </summary>
-    public class Foreach : ExpressionEvaluator
+    internal class Foreach : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Foreach"/> class.

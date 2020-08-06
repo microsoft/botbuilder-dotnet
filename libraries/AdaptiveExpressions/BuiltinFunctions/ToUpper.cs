@@ -13,7 +13,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// If a character in the string doesn't have an uppercase version, that character stays unchanged in the returned string.
     /// </summary>
-    public class ToUpper : StringTransformEvaluator
+    internal class ToUpper : StringTransformEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ToUpper"/> class.

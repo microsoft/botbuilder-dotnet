@@ -15,7 +15,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// an optional format string whose default value "yyyy-MM-ddTHH:mm:ss.fffZ"
     /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
-    public class ConvertFromUtc : ExpressionEvaluator
+    internal class ConvertFromUtc : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConvertFromUtc"/> class.
