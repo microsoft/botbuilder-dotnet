@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the string version of a uniform resource identifier (URI) encoded string, effectively decoding the URI-encoded string.
     /// </summary>
-    public class UriComponentToString : ExpressionEvaluator
+    internal class UriComponentToString : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UriComponentToString"/> class.

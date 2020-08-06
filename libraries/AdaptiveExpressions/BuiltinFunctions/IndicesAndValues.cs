@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// For arrays, the index is the position in the array.
     /// For objects, it is the key for the value.
     /// </summary>
-    public class IndicesAndValues : ExpressionEvaluator
+    internal class IndicesAndValues : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IndicesAndValues"/> class.

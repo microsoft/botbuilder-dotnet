@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the binary array of a base64-encoded string.
     /// </summary>
-    public class Base64ToBinary : ExpressionEvaluator
+    internal class Base64ToBinary : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Base64ToBinary"/> class.

@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return true if a given TimexProperty or Timex expression refers to the present.
     /// </summary>
-    public class IsPresent : ExpressionEvaluator
+    internal class IsPresent : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsPresent"/> class.

@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// TitleCase function takes a string as the first argument 
     /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
-    public class TitleCase : StringTransformEvaluator
+    internal class TitleCase : StringTransformEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TitleCase"/> class.

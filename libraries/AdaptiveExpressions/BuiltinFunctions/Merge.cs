@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Merge two object(json) into one object(json).
     /// </summary>
-    public class Merge : ExpressionEvaluator
+    internal class Merge : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Merge"/> class.

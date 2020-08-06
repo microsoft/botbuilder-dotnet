@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the result from subtracting the second number from the first number.
     /// </summary>
-    public class Subtract : MultivariateNumericEvaluator
+    internal class Subtract : MultivariateNumericEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Subtract"/> class.

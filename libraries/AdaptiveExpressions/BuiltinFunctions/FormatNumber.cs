@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// FormatNumber function takes a number as the first argument, a precision digits integer
     /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name..
     /// </summary>
-    public class FormatNumber : ExpressionEvaluator
+    internal class FormatNumber : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatNumber"/> class.

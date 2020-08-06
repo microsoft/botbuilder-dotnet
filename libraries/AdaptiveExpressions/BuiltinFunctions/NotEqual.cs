@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// return true if the two items are not equal.
     /// </summary>
-    public class NotEqual : ComparisonEvaluator
+    internal class NotEqual : ComparisonEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NotEqual"/> class.
