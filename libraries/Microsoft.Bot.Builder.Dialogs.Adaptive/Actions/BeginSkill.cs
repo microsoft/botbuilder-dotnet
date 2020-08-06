@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.BeginSkill";
 
-        // Used to cached DialogOptions for multi-turn calls across servers
+        // Used to cache DialogOptions for multi-turn calls across servers
         private readonly string _dialogOptionsStateKey = $"{typeof(BeginSkill).FullName}.DialogOptionsData";
 
         [JsonConstructor]
