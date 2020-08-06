@@ -24,16 +24,27 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.Apply(
+            return FunctionUtils.ApplyWithError(
                         args =>
                         {
+                            object result = null;
+                            string error = null;
                             using (var textReader = new StringReader(args[0].ToString()))
                             {
                                 using (var jsonReader = new JsonTextReader(textReader) { DateParseHandling = DateParseHandling.None })
                                 {
-                                    return JToken.ReadFrom(jsonReader);
+                                    try
+                                    {
+                                        result = JToken.ReadFrom(jsonReader);
+                                    }
+                                    catch (JsonReaderException err)
+                                    {
+                                        error = $"While parsing the value {args[0]}, an unexpected character was encountered. Path {err.Path}, line {err.LineNumber}, position {err.LinePosition}.";
+                                    }
                                 }
                             }
+
+                            return (result, error);
                         });
         }
 
