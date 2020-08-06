@@ -869,7 +869,7 @@ namespace AdaptiveExpressions.Tests
             Test("isMatch(getNextViableTime('TXX:40:20', 'Asia/Tokyo'), 'T[0-2][0-9]:40:20')", true),
             Test("isMatch(getNextViableTime('TXX:05:10'), 'T[0-2][0-9]:05:10')", true),
             Test("isMatch(getNextViableTime('TXX:05:10', 'Europe/Paris'), 'T[0-2][0-9]:05:10')", true),
-            Test("getPreviousViableTime('TXX:40:20')", "T10:40:20"),
+            Test("isMatch(getPreviousViableTime('TXX:40:20'), 'T[0-2][0-9]:40:20')", true),
             Test("isMatch(getPreviousViableTime('TXX:40:20', 'Eastern Standard Time'), 'T[0-2][0-9]:40:20')", true),
             Test("isMatch(getPreviousViableTime('TXX:05:10'), 'T[0-2][0-9]:05:10')", true),
             Test("isMatch(getPreviousViableTime('TXX:05:10', 'Central Standard Time'), 'T[0-2][0-9]:05:10')", true),
