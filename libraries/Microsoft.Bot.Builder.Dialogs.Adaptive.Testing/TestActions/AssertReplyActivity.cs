@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public List<string> Assertions { get; } = new List<string>();
 
         /// <summary>
-        /// Gets the description of the condition.
+        /// Gets the text to assert for an activity.
         /// </summary>
         /// <returns>String.</returns>
         public virtual string GetConditionDescription()
@@ -83,12 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             }
         }
 
-        /// <summary>
-        /// Executes the next async call.
-        /// </summary>
-        /// <param name="adapter">The adapter use for making the call.</param>
-        /// <param name="callback">The callback used when the response comes in.</param>
-        /// <returns>Async task.</returns>
+        /// <inheritdoc/>
         public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             var timeout = (int)this.Timeout;

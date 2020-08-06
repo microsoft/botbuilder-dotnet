@@ -74,10 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks
         [JsonProperty("magicCode")]
         public string MagicCode { get; set; }
 
-        /// <summary>
-        /// Initializes various properties.
-        /// </summary>
-        /// <param name="adapter">The adapter.</param>
+        /// <inheritdoc/>
         public override void Setup(TestAdapter adapter)
         {
             var conversation = adapter.Conversation;
