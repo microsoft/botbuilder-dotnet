@@ -68,13 +68,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (!(options is PromptOptions))
-            {
-                throw new ArgumentOutOfRangeException(nameof(options), "Prompt options are required for Prompt dialogs");
-            }
-
             // Ensure prompts have input hint set
-            var opt = (PromptOptions)options;
+            var opt = ObjectPath.MapValueTo<PromptOptions>(options);
             if (opt.Prompt != null && string.IsNullOrEmpty(opt.Prompt.InputHint))
             {
                 opt.Prompt.InputHint = InputHints.ExpectingInput;

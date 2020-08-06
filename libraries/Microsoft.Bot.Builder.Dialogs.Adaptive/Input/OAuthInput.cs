@@ -95,23 +95,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             PromptOptions opt = null;
             if (options != null)
             {
-                if (options is PromptOptions)
+                // Ensure prompts have input hint set
+                opt = ObjectPath.MapValueTo<PromptOptions>(options);
+                if (opt.Prompt != null && string.IsNullOrEmpty(opt.Prompt.InputHint))
                 {
-                    // Ensure prompts have input hint set
-                    opt = options as PromptOptions;
-                    if (opt.Prompt != null && string.IsNullOrEmpty(opt.Prompt.InputHint))
-                    {
-                        opt.Prompt.InputHint = InputHints.AcceptingInput;
-                    }
+                    opt.Prompt.InputHint = InputHints.AcceptingInput;
+                }
 
-                    if (opt.RetryPrompt != null && string.IsNullOrEmpty(opt.RetryPrompt.InputHint))
-                    {
-                        opt.RetryPrompt.InputHint = InputHints.AcceptingInput;
-                    }
+                if (opt.RetryPrompt != null && string.IsNullOrEmpty(opt.RetryPrompt.InputHint))
+                {
+                    opt.RetryPrompt.InputHint = InputHints.AcceptingInput;
                 }
             }
 
-            var op = OnInitializeOptions(dc, options);
+            var op = OnInitializeOptions(dc, opt);
             dc.State.SetValue(ThisPath.Options, op);
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
 
