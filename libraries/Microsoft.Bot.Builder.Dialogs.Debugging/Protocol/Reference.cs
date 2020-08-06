@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public abstract class Reference
+    internal abstract class Reference
     {
         public ulong Id { get; set; }
     }
