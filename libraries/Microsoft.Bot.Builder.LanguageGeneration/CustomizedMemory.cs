@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="path">Memory path.</param>
         /// <param name="value">Resolved value.</param>
-        /// <returns>True if the memory contains an element with the specified key; otherwise, false.</returns>
+        /// <returns>True if the memory contains an element with the specified key, otherwise, false.</returns>
         public bool TryGetValue(string path, out object value)
         {
             value = null;

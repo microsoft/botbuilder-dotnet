@@ -11,23 +11,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG parser error listener.
     /// </summary>
-    public class ErrorListener : BaseErrorListener
+    internal class ErrorListener : BaseErrorListener
     {
-        private readonly string source;
-        private readonly int lineOffset;
+        private readonly string _source;
+        private readonly int _lineOffset;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ErrorListener"/> class.
+        /// </summary>
+        /// <param name="errorSource">String value that represents the source of the error.</param>
+        /// <param name="lineOffset">Offset of the line where the error occurred.</param>
         public ErrorListener(string errorSource, int lineOffset = 0)
         {
-            source = errorSource;
-            this.lineOffset = lineOffset;
+            _source = errorSource;
+            _lineOffset = lineOffset;
         }
 
-        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
+        /// <inheritdoc/>
+        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException exception)
         {
-            var startPosition = new Position(lineOffset + line, charPositionInLine);
-            var stopPosition = new Position(lineOffset + line, charPositionInLine + offendingSymbol.StopIndex - offendingSymbol.StartIndex + 1);
+            var startPosition = new Position(_lineOffset + line, charPositionInLine);
+            var stopPosition = new Position(_lineOffset + line, charPositionInLine + offendingSymbol.StopIndex - offendingSymbol.StartIndex + 1);
             var range = new Range(startPosition, stopPosition);
-            var diagnostic = new Diagnostic(range, TemplateErrors.SyntaxError(msg), DiagnosticSeverity.Error, source);
+            var diagnostic = new Diagnostic(range, TemplateErrors.SyntaxError(msg), DiagnosticSeverity.Error, _source);
             throw new TemplateException(diagnostic.ToString(), new List<Diagnostic>() { diagnostic });
         }
     }
