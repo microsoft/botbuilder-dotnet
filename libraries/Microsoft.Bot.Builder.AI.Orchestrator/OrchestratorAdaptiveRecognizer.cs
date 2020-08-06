@@ -58,8 +58,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// </summary>
         /// <param name="modelPath">Path to NLR model.</param>
         /// <param name="snapshotPath">Path to snapshot.</param>
-        public OrchestratorAdaptiveRecognizer(string modelPath, string snapshotPath)
+        /// <param name="resolver">Label resolver.</param>
+        public OrchestratorAdaptiveRecognizer(string modelPath, string snapshotPath, ILabelResolver resolver = null)
         {
+            _resolver = resolver;
             if (modelPath == null)
             {
                 throw new ArgumentNullException($"Missing `ModelPath` information.");
@@ -205,7 +207,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                             });
 
                             // replace RecognizerResult with ChooseIntent => Amibgious recognizerResults as candidates. 
-                            recognizerResult = CreateChooseIntentResult(recognizerResults.ToDictionary(result => this.Id, result => result));
+                            recognizerResult = CreateChooseIntentResult(recognizerResults.ToDictionary(result => Guid.NewGuid().ToString(), result => result));
                         }
                     }
                 }
@@ -301,7 +303,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 throw new ArgumentNullException($"Missing `ShapshotPath` information.");
             }
 
-            if (orchestrator == null)
+            if (orchestrator == null && _resolver == null)
             {
                 var fullModelPath = Path.GetFullPath(PathUtils.NormalizePath(_modelPath));
 

@@ -205,6 +205,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bot3", "tests\Skills\Bot3\B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.Orchestrator", "libraries\Microsoft.Bot.Builder.AI.Orchestrator\Microsoft.Bot.Builder.AI.Orchestrator.csproj", "{19CE18FD-3F99-4994-B88E-7D32F9303547}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.Orchestrator.Tests", "tests\Microsoft.Bot.Builder.AI.Orchestrator.Tests\Microsoft.Bot.Builder.AI.Orchestrator.Tests.csproj", "{F0033458-4C9D-4D66-B58D-F49ABABE8030}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1425,6 +1427,22 @@ Global
 		{19CE18FD-3F99-4994-B88E-7D32F9303547}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{19CE18FD-3F99-4994-B88E-7D32F9303547}.Release-Windows|x64.ActiveCfg = Release|x64
 		{19CE18FD-3F99-4994-B88E-7D32F9303547}.Release-Windows|x64.Build.0 = Release|x64
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Debug|x64.Build.0 = Debug|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Debug-Windows|x64.ActiveCfg = Debug|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Debug-Windows|x64.Build.0 = Debug|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Release|x64.ActiveCfg = Release|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Release|x64.Build.0 = Release|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Release-Windows|x64.ActiveCfg = Release|Any CPU
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030}.Release-Windows|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1514,6 +1532,7 @@ Global
 		{36D6E1D7-2506-4096-8D76-55C3CCD32DFE} = {1024840D-8B5A-4E39-8F6D-F7430DD3749E}
 		{85463C41-8D08-4A9D-A475-68A83730431C} = {1024840D-8B5A-4E39-8F6D-F7430DD3749E}
 		{19CE18FD-3F99-4994-B88E-7D32F9303547} = {763168FA-A590-482C-84D8-2922F7ADB1A2}
+		{F0033458-4C9D-4D66-B58D-F49ABABE8030} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

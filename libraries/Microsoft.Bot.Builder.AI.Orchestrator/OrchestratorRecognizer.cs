@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <inheritdoc/>
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            var rec = new OrchestratorAdaptiveRecognizer()
+            var rec = new OrchestratorAdaptiveRecognizer
             {
                 Id = this.Id,
                 DetectAmbiguousIntents = this.DetectAmbiguousIntents,
