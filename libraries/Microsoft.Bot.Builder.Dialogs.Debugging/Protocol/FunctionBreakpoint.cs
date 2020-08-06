@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Protocol
 {
-    public sealed class FunctionBreakpoint
+    internal sealed class FunctionBreakpoint
     {
         public string Name { get; set; }
     }
