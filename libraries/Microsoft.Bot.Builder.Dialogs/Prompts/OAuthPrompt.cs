@@ -179,20 +179,24 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            // Recognize token
-            var recognized = await RecognizeTokenAsync(dc, cancellationToken).ConfigureAwait(false);
-
             // Check for timeout
             var state = dc.ActiveDialog.State;
             var expires = (DateTime)state[PersistedExpires];
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
-            var hasTimedOut = isMessage && DateTime.Compare(DateTime.Now, expires) > 0;
+            var isTimeoutActivityType = isMessage
+                            || IsTokenResponseEvent(dc.Context)
+                            || IsTeamsVerificationInvoke(dc.Context)
+                            || IsTokenExchangeRequestInvoke(dc.Context);
+            var hasTimedOut = isTimeoutActivityType && DateTime.Compare(DateTime.Now, expires) > 0;
 
             if (hasTimedOut)
             {
                 // if the token fetch request times out, complete the prompt with no result.
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
+
+            // Recognize token
+            var recognized = await RecognizeTokenAsync(dc, cancellationToken).ConfigureAwait(false);
 
             var promptState = state[PersistedState].CastTo<IDictionary<string, object>>();
             var promptOptions = state[PersistedOptions].CastTo<PromptOptions>();
@@ -303,6 +307,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 case Channels.Cortana:
                 case Channels.Skype:
                 case Channels.Skypeforbusiness:
+                case Channels.Msteams:
                     return false;
             }
 
