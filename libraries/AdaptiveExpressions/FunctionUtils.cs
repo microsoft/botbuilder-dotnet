@@ -14,6 +14,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions
 {
+    /// <summary>
+    /// Utility functions for Adaptive-Expressions.
+    /// </summary>
     public static class FunctionUtils
     {
         /// <summary>
@@ -583,6 +586,39 @@ namespace AdaptiveExpressions
             };
 
         /// <summary>
+        /// Generate an expression delegate that applies function after verifying all children.
+        /// </summary>
+        /// <param name="function">Function to apply.</param>
+        /// <param name="verify">Function to check each arg for validity.</param>
+        /// <returns>Delegate for evaluating an expression.</returns>
+        public static EvaluateExpressionDelegate ApplyWithOptionsAndError(Func<IReadOnlyList<object>, Options, (object, string)> function, VerifyExpression verify = null)
+            =>
+            (expression, state, options) =>
+            {
+                object value = null;
+                string error = null;
+                IReadOnlyList<object> args;
+                (args, error) = EvaluateChildren(expression, state, options, verify);
+                if (error == null)
+                {
+                    try
+                    {
+                        (value, error) = function(args, options);
+                    }
+#pragma warning disable CA1031 // Do not catch general exception types (caputure any exception which may happen in the delegate function and return it)
+                    catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
+                    {
+                        error = e.Message;
+                    }
+                }
+
+                value = ResolveValue(value);
+
+                return (value, error);
+            };
+
+        /// <summary>
         /// Generate an expression delegate that applies function on the accumulated value after verifying all children.
         /// </summary>
         /// <param name="function">Function to apply.</param>
@@ -1018,14 +1054,14 @@ namespace AdaptiveExpressions
         {
             if (expression.Children.Length != 3)
             {
-                throw new Exception($"foreach expect 3 parameters, found {expression.Children.Length}");
+                throw new ArgumentException($"foreach expects 3 parameters, found {expression.Children.Length}");
             }
 
             var second = expression.Children[1];
 
             if (!(second.Type == ExpressionType.Accessor && second.Children.Length == 1))
             {
-                throw new Exception($"Second parameter of foreach is not an identifier : {second}");
+                throw new ArgumentException($"Second parameter of foreach is not an identifier : {second}");
             }
         }
 
@@ -1069,6 +1105,65 @@ namespace AdaptiveExpressions
             return (result, error);
         }
 
+        internal static (CultureInfo, string) TryParseLocale(string locale)
+        {
+            CultureInfo result = null;
+            string error = null;
+            try
+            {
+                result = new CultureInfo(locale);
+            }
+            catch (CultureNotFoundException e)
+            {
+                error = e.Message;
+            }
+
+            return (result, error);
+        }
+
+        internal static (string, CultureInfo, string) DetermineFormatAndLocale(IReadOnlyList<object> args, string format, CultureInfo locale, int maxArgsLength)
+        {
+            string error = null;
+            if (maxArgsLength >= 2)
+            {
+                if (args.Count == maxArgsLength)
+                {
+                    // if the number of args equals to the maxArgsLength, the second last one is format, and the last one is locale
+                    format = args[maxArgsLength - 2] as string;
+                    (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
+                }
+                else if (args.Count == maxArgsLength - 1)
+                {
+                    // if the number of args equals to the maxArgsLength - 1, the last one is format,
+                    format = args[maxArgsLength - 2] as string;
+                }
+            }
+
+            return (format, locale, error);
+        }
+
+        internal static (CultureInfo, string) DetermineLocale(IReadOnlyList<object> args, CultureInfo locale, int maxArgsLength)
+        {
+            string error = null;
+            if (maxArgsLength >= 2)
+            {
+                // if the number of args equals to the maxArgsLength, the last one is locale
+                if (args.Count == maxArgsLength)
+                {
+                    if (args[maxArgsLength - 1] is string)
+                    {
+                        (locale, error) = TryParseLocale(args[maxArgsLength - 1] as string);
+                    } 
+                    else
+                    {
+                        error = $"{args[maxArgsLength - 1]} should be a locale string.";
+                    }
+                }
+            }
+
+            return (locale, error);
+        }
+
         internal static (object, string) ConvertTimeZoneFormat(string timezone)
         {
             object convertedTimeZone = null;
@@ -1097,13 +1192,13 @@ namespace AdaptiveExpressions
             return (convertedTimeZone, error);
         }
 
-        internal static (string, string) ReturnFormatTimeStampStr(DateTime datetime, string format)
+        internal static (string, string) ReturnFormatTimeStampStr(DateTime datetime, string format, CultureInfo locale)
         {
             string result = null;
             string error = null;
             try
             {
-                result = datetime.ToString(format, CultureInfo.InvariantCulture.DateTimeFormat);
+                result = datetime.ToString(format, locale);
             }
 #pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return generic message)
             catch

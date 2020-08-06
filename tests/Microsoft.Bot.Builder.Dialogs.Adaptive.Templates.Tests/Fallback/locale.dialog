@@ -1,0 +1,28 @@
+{
+    "$schema": "../../tests.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "generator": "test.lg",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${string(1.122)}"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${formatNumber(1.12345, 4)}"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${addDays('2018-01-02T02:00:00.000Z', 4, 'D')}"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${formatNumber(3.1415926, 5)}"
+          }
+        ]
+      }
+    ]
+  }

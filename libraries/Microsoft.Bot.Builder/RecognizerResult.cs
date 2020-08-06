@@ -66,7 +66,10 @@ namespace Microsoft.Bot.Builder
         public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Convert recognizer result.
+        /// </summary>
+        /// <param name="result">Result to convert.</param>
         public void Convert(dynamic result)
         {
             Text = result.Text;

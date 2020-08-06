@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +31,14 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public abstract class BotAdapter
     {
+        /// <summary>
+        /// The string value for the bot identity key.
+        /// </summary>
         public const string BotIdentityKey = "BotIdentity";
+
+        /// <summary>
+        /// The string value for the OAuth scope key.
+        /// </summary>
         public const string OAuthScopeKey = "Microsoft.Bot.Builder.BotAdapter.OAuthScope";
 
         /// <summary>
@@ -217,6 +225,20 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivityAsync()
             if (turnContext.Activity != null)
             {
+                if (turnContext.Activity.Locale != null)
+                {
+                    try
+                    {
+                        Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
+                        (turnContext as TurnContext).Locale = turnContext.Activity.Locale;
+                    }
+                    catch (CultureNotFoundException)
+                    {
+                        // if turnContext.Activity.Locale is invalid, then TurnContext.Locale will set to Thread.CurrentThread.CurrentCulture.Name as default. 
+                        (turnContext as TurnContext).Locale = Thread.CurrentThread.CurrentCulture.Name;
+                    }
+                }
+
                 try
                 {
                     await MiddlewareSet.ReceiveActivityWithStatusAsync(turnContext, callback, cancellationToken).ConfigureAwait(false);

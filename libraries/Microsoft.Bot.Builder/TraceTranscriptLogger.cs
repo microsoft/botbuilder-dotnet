@@ -17,11 +17,18 @@ namespace Microsoft.Bot.Builder
 
         private readonly bool _traceActivity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TraceTranscriptLogger"/> class.
+        /// </summary>
         public TraceTranscriptLogger()
             : this(true)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TraceTranscriptLogger"/> class.
+        /// </summary>
+        /// <param name="traceActivity">Indicates if trace information should be logged.</param>
         public TraceTranscriptLogger(bool traceActivity)
         {
             this._traceActivity = traceActivity;

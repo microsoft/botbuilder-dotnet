@@ -2,13 +2,14 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.Events
 {
-    public interface IEvents
+    internal interface IEvents
     {
 #pragma warning disable CA1819 // Properties should not return arrays (change it without breaking binary compat)
-        Protocol.ExceptionBreakpointFilter[] Filters
+        ExceptionBreakpointFilter[] Filters
 #pragma warning restore CA1819 // Properties should not return arrays
         {
             get;

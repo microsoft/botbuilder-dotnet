@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriPort : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriPort"/> class.
+        /// </summary>
         public UriPort()
             : base(ExpressionType.UriPort, Evaluator, ReturnType.Number, FunctionUtils.ValidateUnary)
         {

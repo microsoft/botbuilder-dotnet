@@ -14,7 +14,7 @@ namespace AdaptiveExpressions.Memory
         /// Set value to a given path.
         /// </summary>
         /// <param name="path">memory path.</param>
-        /// <param name="value">value to set.</param>
+        /// <param name="value">Value to set.</param>
         void SetValue(string path, object value);
 
         /// <summary>

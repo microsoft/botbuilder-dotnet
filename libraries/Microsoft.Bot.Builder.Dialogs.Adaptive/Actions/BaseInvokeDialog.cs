@@ -103,13 +103,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             foreach (var binding in bindingOptions)
             {
-                // evalute the value
-                var (value, error) = new ValueExpression(binding.Value).TryGetValue(dc.State);
+                JToken value = null;
+
+                // evaluate the value
+                var (val, error) = new ValueExpression(binding.Value).TryGetValue(dc.State);
 
                 if (error != null)
                 {
                     throw new Exception(error);
                 }
+
+                if (val != null)
+                {
+                    value = JToken.FromObject(val).DeepClone();
+                }
+
+                value = value?.ReplaceJTokenRecursively(dc.State);
 
                 // and store in options as the result
                 ObjectPath.SetPathValue(boundOptions, binding.Key, value);

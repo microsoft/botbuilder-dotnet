@@ -74,6 +74,10 @@ namespace AdaptiveExpressions.TriggerTrees
         /// </value>
         public IReadOnlyList<Clause> Clauses => _clauses;
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -81,6 +85,12 @@ namespace AdaptiveExpressions.TriggerTrees
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Determines the relationship between current instance and another Trigger instance.
+        /// </summary>
+        /// <param name="other">The other Trigger instance.</param>
+        /// <param name="comparers">The comparer dictionary.</param>
+        /// <returns>A RelationshipType value.</returns>
         public RelationshipType Relationship(Trigger other, Dictionary<string, IPredicateComparer> comparers)
         {
             RelationshipType result;
@@ -118,6 +128,15 @@ namespace AdaptiveExpressions.TriggerTrees
             return result;
         }
 
+        /// <summary>
+        /// Determines whether there is a member in the current Clause that matches the nodeClause parameter.
+        /// </summary>
+        /// <param name="nodeClause">The other Clause instance to match.</param>
+        /// <param name="state">The scope for looking up variables.</param>
+        /// <returns>
+        /// A boolean value indicating  whether there is a member matches.
+        /// Returns True if such member exists, otherwise returns False.
+        /// </returns>
         public bool Matches(Clause nodeClause, object state)
         {
             var found = false;
@@ -133,6 +152,13 @@ namespace AdaptiveExpressions.TriggerTrees
             return found;
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <param name="builder">A StringBuilder object.</param>
+        /// <param name="indent">
+        /// An integer represents the number of spaces at the start of a line. 
+        /// </param>
         protected void ToString(StringBuilder builder, int indent = 0)
         {
             builder.Append(' ', indent);

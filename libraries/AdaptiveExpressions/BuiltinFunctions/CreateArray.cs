@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class CreateArray : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateArray"/> class.
+        /// </summary>
         public CreateArray()
             : base(ExpressionType.CreateArray, Evaluator(), ReturnType.Array)
         {

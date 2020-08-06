@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-    public sealed class ReadOnlyDictionaryDataModel<TKey, TValue> : DataModelBase<IReadOnlyDictionary<TKey, TValue>, TKey, TValue>
+    internal sealed class ReadOnlyDictionaryDataModel<TKey, TValue> : DataModelBase<IReadOnlyDictionary<TKey, TValue>, TKey, TValue>
     {
         public ReadOnlyDictionaryDataModel(ICoercion coercion)
             : base(coercion)

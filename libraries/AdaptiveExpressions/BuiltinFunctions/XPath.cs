@@ -15,6 +15,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     public class XPath : ExpressionEvaluator
 #pragma warning restore CA1724 // Type names should not match namespaces
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XPath"/> class.
+        /// </summary>
         public XPath()
             : base(ExpressionType.XPath, Evaluator(), ReturnType.Object, Validator)
         {

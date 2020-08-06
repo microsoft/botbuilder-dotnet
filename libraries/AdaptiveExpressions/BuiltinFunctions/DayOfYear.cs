@@ -8,6 +8,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class DayOfYear : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DayOfYear"/> class.
+        /// </summary>
         public DayOfYear()
             : base(ExpressionType.DayOfYear, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {

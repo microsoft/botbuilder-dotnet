@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class SetProperty : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetProperty"/> class.
+        /// </summary>
         public SetProperty()
             : base(ExpressionType.SetProperty, Evaluator(), ReturnType.Object, Validator)
         {

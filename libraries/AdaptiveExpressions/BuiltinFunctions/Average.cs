@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Average : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Average"/> class.
+        /// </summary>
         public Average()
             : base(ExpressionType.Average, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {

@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class UriPathAndQuery : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriPathAndQuery"/> class.
+        /// </summary>
         public UriPathAndQuery()
             : base(ExpressionType.UriPathAndQuery, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {

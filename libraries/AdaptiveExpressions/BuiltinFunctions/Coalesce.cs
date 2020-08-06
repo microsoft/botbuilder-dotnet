@@ -11,6 +11,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class Coalesce : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Coalesce"/> class.
+        /// </summary>
         public Coalesce()
             : base(ExpressionType.Coalesce, Evaluator(), ReturnType.Object, FunctionUtils.ValidateAtLeastOne)
         {

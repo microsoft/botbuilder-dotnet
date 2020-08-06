@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Helper class containing string utility methods.
+    /// </summary>
     public static class StringUtils
     {
         /// <summary>

@@ -12,6 +12,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class IsPresent : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsPresent"/> class.
+        /// </summary>
         public IsPresent()
             : base(ExpressionType.IsPresent, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

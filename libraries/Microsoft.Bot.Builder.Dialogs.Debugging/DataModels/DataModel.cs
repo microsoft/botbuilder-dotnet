@@ -6,17 +6,17 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-    public sealed class DataModel : IDataModel
+    internal sealed class DataModel : IDataModel
     {
-        private readonly ICoercion coercion;
+        private readonly ICoercion _coercion;
 
-        private readonly Dictionary<Type, IDataModel> modelByType = new Dictionary<Type, IDataModel>();
+        private readonly Dictionary<Type, IDataModel> _modelByType = new Dictionary<Type, IDataModel>();
 
         public DataModel(ICoercion coercion)
         {
-            this.coercion = coercion ?? throw new ArgumentNullException(nameof(coercion));
+            _coercion = coercion ?? throw new ArgumentNullException(nameof(coercion));
         }
 
         int IDataModel.Rank => int.MaxValue;
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         string IDataModel.ToString(object context) => ModelFor(context).ToString(context);
 
         private IDataModel Create(Type definition, params Type[] typeArguments) =>
-            (IDataModel)Activator.CreateInstance(definition.MakeGenericType(typeArguments), this.coercion);
+            (IDataModel)Activator.CreateInstance(definition.MakeGenericType(typeArguments), _coercion);
 
         private IEnumerable<IDataModel> Options(Type type)
         {
@@ -90,13 +90,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             var type = context.GetType();
-            lock (modelByType)
+            lock (_modelByType)
             {
-                if (!modelByType.TryGetValue(type, out var model))
+                if (!_modelByType.TryGetValue(type, out var model))
                 {
                     var options = Options(type);
                     model = options.OrderByDescending(m => m.Rank).First();
-                    modelByType.Add(type, model);
+                    _modelByType.Add(type, model);
                 }
 
                 return model;

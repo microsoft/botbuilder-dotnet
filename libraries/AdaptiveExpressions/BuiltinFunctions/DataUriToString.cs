@@ -10,6 +10,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     public class DataUriToString : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataUriToString"/> class.
+        /// </summary>
         public DataUriToString()
             : base(ExpressionType.DataUriToString, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {

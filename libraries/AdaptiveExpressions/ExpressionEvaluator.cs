@@ -99,6 +99,10 @@ namespace AdaptiveExpressions
             }
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>String value represents the function signature. </returns>
         public override string ToString() => $"{Type} => {ReturnType}";
 
         /// <summary>
