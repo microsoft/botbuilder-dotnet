@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return the date of a specified timestamp in m/dd/yyyy format.
     /// </summary>
 #pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
-    public class Date : ExpressionEvaluator
+    internal class Date : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
         /// <summary>

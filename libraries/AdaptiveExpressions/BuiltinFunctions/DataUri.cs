@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return a data uniform resource identifier (URI) of a string.
     /// </summary>
-    public class DataUri : ExpressionEvaluator
+    internal class DataUri : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DataUri"/> class.

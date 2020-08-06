@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return an array from multiple inputs.
     /// </summary>
-    public class CreateArray : ExpressionEvaluator
+    internal class CreateArray : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateArray"/> class.

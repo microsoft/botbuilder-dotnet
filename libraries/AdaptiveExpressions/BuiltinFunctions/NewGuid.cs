@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return a new Guid string.
     /// </summary>
-    public class NewGuid : ExpressionEvaluator
+    internal class NewGuid : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NewGuid"/> class.

@@ -21,9 +21,24 @@ namespace AdaptiveExpressions.BuiltinFunctions
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringTransformEvaluator"/> class.
+        /// </summary>
+        /// <param name="type">Name of the built-in function.</param>
+        /// <param name="function">The string transformation function, it takes a list of objects, an <see cref="Options"/> instance and returns a (object, string) tuple.</param>
+        public StringTransformEvaluator(string type, Func<IReadOnlyList<object>, Options, (object, string)> function)
+            : base(type, Evaluator(function), ReturnType.String, expr => FunctionUtils.ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String))
+        {
+        }
+
         private static EvaluateExpressionDelegate Evaluator(Func<IReadOnlyList<object>, object> function)
         {
             return FunctionUtils.Apply(function, FunctionUtils.VerifyStringOrNull);
+        }
+
+        private static EvaluateExpressionDelegate Evaluator(Func<IReadOnlyList<object>, Options, (object, string)> function)
+        {
+            return FunctionUtils.ApplyWithOptionsAndError(function, FunctionUtils.VerifyStringOrNull);
         }
     }
 }

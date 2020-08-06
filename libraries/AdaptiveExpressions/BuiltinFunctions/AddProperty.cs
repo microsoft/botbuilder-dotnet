@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Add a property and its value, or name-value pair, to a JSON object, and return the updated object.
     /// If the object already exists at runtime the function throws an error.
     /// </summary>
-    public class AddProperty : ExpressionEvaluator
+    internal class AddProperty : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AddProperty"/> class.

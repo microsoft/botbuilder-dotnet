@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return a number of ticks that the two timestamp differs.
     /// </summary>
-    public class DateTimeDiff : ExpressionEvaluator
+    internal class DateTimeDiff : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DateTimeDiff"/> class.

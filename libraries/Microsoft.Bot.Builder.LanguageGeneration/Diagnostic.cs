@@ -35,7 +35,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class Diagnostic
     {
-        public Diagnostic(
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Diagnostic"/> class.
+        /// </summary>
+        /// <param name="range">Range where the error or warning occurred.</param>
+        /// <param name="message">Error message of the error or warning.</param>
+        /// <param name="severity">Severity of the error or warning.</param>
+        /// <param name="source">Source of the error or warning occurred.</param>
+        /// <param name="code">Code or identifier of the error or warning.</param>
+        internal Diagnostic(
             Range range,
             string message,
             DiagnosticSeverity severity = DiagnosticSeverity.Error,
@@ -89,6 +97,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public string Message { get; }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             // ignore error range if source is inline content

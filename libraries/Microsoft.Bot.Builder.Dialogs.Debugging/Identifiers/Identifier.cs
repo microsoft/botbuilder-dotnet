@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers
 {
-    public static class Identifier
+    internal static class Identifier
     {
         private const ulong More = 0x80;
         private const ulong Data = 0x7F;

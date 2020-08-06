@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return true if a given TimexProperty or Timex expression refers to a valid duration.
     /// </summary>
-    public class IsDuration : ExpressionEvaluator
+    internal class IsDuration : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsDuration"/> class.
