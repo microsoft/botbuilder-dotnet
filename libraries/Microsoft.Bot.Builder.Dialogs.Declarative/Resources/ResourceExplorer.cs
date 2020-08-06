@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             try
             {
-                var sourceContext = new SourceContext();
+                var sourceContext = new ResourceSourceContext();
                 var (jToken, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
 
                 using (new SourceScope(sourceContext, range))
@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // the same content, introducing potential bugs.
             // We explicitly pass advance: true in this case to mimic the behavior in Json.Net
             // Json.Net: https://github.com/JamesNK/Newtonsoft.Json/blob/9be95e0f6aedf5cdc108b058bf71f0839911e0c9/Src/Newtonsoft.Json/Serialization/JsonSerializerInternalReader.cs#L1791
-            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext, advance: true).ConfigureAwait(false);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
             {
@@ -578,35 +578,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return token.ToObject<T>(serializer);
         }
 
-        private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext)
+        private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, bool advance = false)
         {
             var text = await resource.ReadTextAsync().ConfigureAwait(false);
             using (var readerText = new StringReader(text))
             using (var readerJson = new JsonTextReader(readerText))
             {
-                var (token, range) = SourceScope.ReadTokenRange(readerJson, new SourceContext());
-
-                AutoAssignId(resource, token);
-
-                using (var newReader = new JTokenReader(token))
+                if (advance)
                 {
-                    var reader = token.CreateReader();
-
                     // Mimic the state in which Json.Net passes the readers. In some scenarios,
                     // Json.Net advances de readers by one.
                     // Example: https://github.com/JamesNK/Newtonsoft.Json/blob/9be95e0f6aedf5cdc108b058bf71f0839911e0c9/Src/Newtonsoft.Json/Serialization/JsonSerializerInternalReader.cs#L1791
-                    reader.Read();
-                    
-                    // Recalculate the token range to have consistent ranges.
-                    var (newToken, newRange) = SourceScope.ReadTokenRange(reader, sourceContext);
-
-                    if (resource is FileResource fileResource)
-                    {
-                        newRange.Path = fileResource.FullName;
-                    }
-
-                    return (newToken, newRange);
+                    readerJson.Read(); // Move to first token
                 }
+
+                var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
+
+                AutoAssignId(resource, token, sourceContext);
+
+                if (resource is FileResource fileResource)
+                {
+                    range.Path = fileResource.FullName;
+                }
+
+                return (token, range);
             }
         }
 
@@ -641,13 +636,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
-        private void AutoAssignId(Resource resource, JToken jToken)
+        private void AutoAssignId(Resource resource, JToken jToken, SourceContext sourceContext)
         {
-            if (jToken is JObject jObj)
+            if (sourceContext is ResourceSourceContext resourceSourceContext)
             {
-                if (!jObj.ContainsKey("id"))
+                if (jToken is JObject jObj && !jObj.ContainsKey("id") && !resourceSourceContext.ResourceIdMap.ContainsKey(jToken))
                 {
-                    jObj["id"] = resource.Id;
+                    resourceSourceContext.ResourceIdMap.Add(jToken, resource.Id);
                 }
             }
         }

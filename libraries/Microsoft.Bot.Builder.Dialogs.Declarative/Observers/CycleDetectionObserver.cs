@@ -46,14 +46,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
             var hashCode = Hash<T>(range);
 
             // Now analyze the stack to find cycles.
-            var visited = context.CallStack.AsQueryable();
-            
-            // The stack always has a duplicate entry for the root 
-            // because of the source scope being created in ResourceExplorer.LoadTypeAsync().
-            visited = visited.Reverse().Skip(1);
-
             // If the same source range appears twice in the stack, we have a cycle.
-            var isCycle = visited.Count(s => s.Equals(range)) > 1;
+            var isCycle = context.CallStack.Count(s => s.Equals(range)) > 1;
 
             if (isCycle && CycleDetectionPass == CycleDetectionPasses.PassOne)
             {
