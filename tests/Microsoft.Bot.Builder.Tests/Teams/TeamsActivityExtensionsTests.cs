@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [Fact]
         public void TeamsGetTeamId()
         {
-            // Arrange
+            // Arrange -- text
             var activity = new Activity { ChannelData = new TeamsChannelData { Team = new TeamInfo { Id = "team123" } } };
 
             // Act
