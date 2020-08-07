@@ -31,10 +31,11 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         private char Type { get; set; }
 
-#pragma warning disable UseAsyncSuffix // Use Async suffix  (we can't change this without breaking binary compat)
+        /// <summary>
         /// A task that initiates the process of disassembling the request and signals the <see cref="PayloadSender"/> to begin sending.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix  (we can't change this without breaking binary compat)
         public Task Disassemble()
 #pragma warning restore UseAsyncSuffix // Use Async suffix
         {

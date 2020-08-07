@@ -69,11 +69,12 @@ namespace Microsoft.Bot.Streaming.Payloads
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public abstract Task<StreamWrapper> GetStreamAsync();
 
-#pragma warning disable CA1801 // Review unused parameters
+        /// <summary>
         /// Begins the process of disassembling a payload and sending the resulting chunks to the <see cref="PayloadSender"/> to dispatch over the transport.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token. Not currently used.</param>
         /// <returns>A task representing the state of the disassembly.</returns>
+#pragma warning disable CA1801 // Review unused parameters
         public async Task DisassembleAsync(CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore CA1801 // Review unused parameters
         {

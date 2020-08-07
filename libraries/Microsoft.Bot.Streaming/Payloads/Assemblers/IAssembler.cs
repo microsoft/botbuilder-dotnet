@@ -11,12 +11,13 @@ namespace Microsoft.Bot.Streaming.Payloads
     /// </summary>
     public interface IAssembler
     {
-#pragma warning disable CA1716 // Identifiers should not match keywords (we can't change this without breaking binary compat)
+        /// <summary>
         /// Gets a value indicating whether true if the current segment is the final segment of the stream.
         /// </summary>
         /// <value>
         /// True or False.
         /// </value>
+#pragma warning disable CA1716 // Identifiers should not match keywords (we can't change this without breaking binary compat)
         bool End { get; }
 #pragma warning restore CA1716 // Identifiers should not match keywords
 

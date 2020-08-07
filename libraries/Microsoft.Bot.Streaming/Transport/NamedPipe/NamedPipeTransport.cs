@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
         /// Initializes a new instance of the <see cref="NamedPipeTransport"/> class.
         /// </summary>
         /// <param name="stream">The data stream over the Named Pipe.</param>
-		public NamedPipeTransport(PipeStream stream)
+        public NamedPipeTransport(PipeStream stream)
         {
             _stream = stream;
         }
