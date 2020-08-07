@@ -12,6 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
     /// </summary>
     public class HttpResponseMock
     {
+        /// <summary>
+        /// Types of response content.
+        /// </summary>
         public enum ResponseContentType
         {
             /// <summary>

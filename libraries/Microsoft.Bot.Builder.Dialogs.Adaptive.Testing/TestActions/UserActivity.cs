@@ -55,6 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("user")]
         public string User { get; set; }
 
+        /// <inheritdoc/>
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             if (this.Activity == null)

@@ -12,6 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks
     /// </summary>
     public class UserTokenBasicMock : UserTokenMock
     {
+        /// <summary>
+        /// The kind for this class.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.UserTokenBasicMock";
 
@@ -71,6 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks
         [JsonProperty("magicCode")]
         public string MagicCode { get; set; }
 
+        /// <inheritdoc/>
         public override void Setup(TestAdapter adapter)
         {
             var conversation = adapter.Conversation;
