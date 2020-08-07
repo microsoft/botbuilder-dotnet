@@ -1,5 +1,9 @@
+<!-- Contains common properties that apply to projects under the Libraries folder -->
 <Project>
-  <!-- Contains common properties that apply to projects under the Adapters folder -->
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003">
       <PrivateAssets>all</PrivateAssets>

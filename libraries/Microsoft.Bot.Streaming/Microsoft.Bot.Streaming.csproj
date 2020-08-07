@@ -9,7 +9,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Microsoft.Bot.Streaming.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -23,14 +22,15 @@
     <DebugType>Full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
- 
+
+  <PropertyGroup>
+    <!-- All the excludes below are addressed by https://github.com/microsoft/botbuilder-dotnet/pull/4335 we need to remove them once the PR is merged -->
+    <NoWarn>$(NoWarn);SX1309;CA1001;CA1031;CA1032;CA1052;CA1063;CA1064;CA1305;CA1716;CA1801;CA1816;CA1829;CA2000;CA2007;CA2200;CA2208;CA2213;CA2227;UseAsyncSuffix;UseConfigureAwait</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
     <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.1.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 </Project>
