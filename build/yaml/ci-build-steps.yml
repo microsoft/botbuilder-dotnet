@@ -29,6 +29,7 @@ steps:
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
     maximumCpuCount: true
+    logProjectEvents: false
 
 - script: |
    cd ..
