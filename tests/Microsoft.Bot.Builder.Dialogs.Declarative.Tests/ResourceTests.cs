@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 var resources = explorer.GetResources(".dialog").ToArray();
 
-                Assert.AreEqual(3, resources.Length);
+                Assert.AreEqual(4, resources.Length);
                 Assert.AreEqual($".dialog", Path.GetExtension(resources[0].Id));
 
                 resources = explorer.GetResources("foo").ToArray();
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 explorer.AddResourceProvider(new FolderResourceProvider(explorer, path));
 
                 // Load file using resource explorer
-                var resource = explorer.GetResource("test.dialog");
+                var resource = explorer.GetResource(resourceId);
 
                 // Read token range using resource explorer
                 var (jToken, range) = await explorer.ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
@@ -249,6 +249,99 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 // Verify ID was added
                 Assert.AreEqual(resourceId, sourceContext.DefaultIdMap[jToken]);
+            }
+        }
+
+        [TestMethod]
+        public async Task ResourceExplorer_ReadTokenRangeAdvance_AssignId()
+        {
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
+            var sourceContext = new ResourceSourceContext();
+            var resourcesFolder = "resources";
+            var resourceId = "test.dialog";
+
+            using (var explorer = new ResourceExplorer())
+            {
+                explorer.AddResourceProvider(new FolderResourceProvider(explorer, path));
+
+                // Load file using resource explorer
+                var resource = explorer.GetResource(resourceId);
+
+                // Read token range using resource explorer
+                var (jToken, range) = await explorer.ReadTokenRangeAsync(resource, sourceContext, advanceJsonReader: true).ConfigureAwait(false);
+
+                // Verify correct range
+                var expectedRange = new SourceRange()
+                {
+                    StartPoint = new SourcePoint(1, 1),
+                    EndPoint = new SourcePoint(13, 1),
+                    Path = Path.Join(Path.Join(path, resourcesFolder), resourceId)
+                };
+
+                Assert.AreEqual(expectedRange, range);
+
+                // Verify ID was added
+                Assert.AreEqual(resourceId, sourceContext.DefaultIdMap[jToken]);
+            }
+        }
+
+        [TestMethod]
+        public async Task ResourceExplorer_LoadType_VerifyTokenRangeAndIdAssigned()
+        {
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
+            var resourcesFolder = "resources";
+            var resourceId = "test.dialog";
+
+            using (var explorer = new ResourceExplorer())
+            {
+                explorer.AddResourceProvider(new FolderResourceProvider(explorer, path));
+
+                // Load file using resource explorer
+                var resource = explorer.GetResource(resourceId);
+                var dialog = await explorer.LoadTypeAsync<Dialog>(resource).ConfigureAwait(false);
+
+                // Verify correct range
+                var expectedRange = new SourceRange()
+                {
+                    StartPoint = new SourcePoint(1, 1),
+                    EndPoint = new SourcePoint(13, 1),
+                    Path = Path.Join(Path.Join(path, resourcesFolder), resourceId)
+                };
+
+                Assert.AreEqual(expectedRange, dialog.Source);
+
+                // Verify that the correct id was assigned
+                Assert.AreEqual(resourceId, dialog.Id);
+            }
+        }
+
+        [TestMethod]
+        public async Task ResourceExplorer_LoadType_VerifyTokenRangeAndIdHonored()
+        {
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
+            var resourcesFolder = "resources";
+            var resourceId = "testWithId.dialog";
+
+            using (var explorer = new ResourceExplorer())
+            {
+                explorer.AddResourceProvider(new FolderResourceProvider(explorer, path));
+
+                // Load file using resource explorer
+                var resource = explorer.GetResource(resourceId);
+                var dialog = await explorer.LoadTypeAsync<Dialog>(resource).ConfigureAwait(false);
+
+                // Verify correct range
+                var expectedRange = new SourceRange()
+                {
+                    StartPoint = new SourcePoint(1, 1),
+                    EndPoint = new SourcePoint(14, 1),
+                    Path = Path.Join(Path.Join(path, resourcesFolder), resourceId)
+                };
+
+                Assert.AreEqual(expectedRange, dialog.Source);
+
+                // Verify that the correct id was set
+                Assert.AreEqual("explicit-id", dialog.Id);
             }
         }
 
