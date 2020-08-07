@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Bot.Builder.Skills;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -17,6 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The the Microsoft app ID of the bot calling the skill.
         /// </value>
+        [JsonProperty("botId")]
         public string BotId { get; set; }
 
         /// <summary>
@@ -25,6 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The <see cref="BotFrameworkClient"/> used to call the remote skill.
         /// </value>
+        [JsonIgnore]
         public BotFrameworkClient SkillClient { get; set; }
 
         /// <summary>
@@ -33,6 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The callback Url for the skill host.
         /// </value>
+        [JsonProperty("skillHostEndpoint")]
         public Uri SkillHostEndpoint { get; set; }
 
         /// <summary>
@@ -41,6 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The <see cref="BotFrameworkSkill"/> that the dialog will call.
         /// </value>
+        [JsonProperty("skill")]
         public BotFrameworkSkill Skill { get; set; }
 
         /// <summary>
@@ -49,6 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// An instance of a <see cref="SkillConversationIdFactoryBase"/> used to generate conversation IDs for interacting with the skill.
         /// </value>
+        [JsonIgnore]
         public SkillConversationIdFactoryBase ConversationIdFactory { get; set; }
 
         /// <summary>
@@ -57,6 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The <see cref="ConversationState"/> to be used by the dialog.
         /// </value>
+        [JsonIgnore]
         public ConversationState ConversationState { get; set; }
 
         /// <summary>
@@ -65,6 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The OAuth Connection Name for the Parent Bot.
         /// </value>
+        [JsonProperty("connectionName")]
         public string ConnectionName { get; set; }
     }
 }
