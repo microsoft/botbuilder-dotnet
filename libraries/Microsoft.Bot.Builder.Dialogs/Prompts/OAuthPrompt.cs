@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 { Prompt<int>.AttemptCountKey, 0 },
             };
 
-            state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
+            state[PersistedExpires] = DateTime.UtcNow.AddMilliseconds(timeout);
             state[PersistedCaller] = CreateCallerInfo(dc.Context);
 
             // Attempt to get the users token
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             || IsTokenResponseEvent(dc.Context)
                             || IsTeamsVerificationInvoke(dc.Context)
                             || IsTokenExchangeRequestInvoke(dc.Context);
-            var hasTimedOut = isTimeoutActivityType && DateTime.Compare(DateTime.Now, expires) > 0;
+            var hasTimedOut = isTimeoutActivityType && DateTime.Compare(DateTime.UtcNow, expires) > 0;
 
             if (hasTimedOut)
             {
