@@ -13,6 +13,7 @@
     <Content Include="**/*.lg" />
     <Content Include="**/*.lu" />
     <Content Include="**/*.schema" />
+    <Content Include="**/*.uischema" />
   </ItemGroup>
 
   <ItemGroup>

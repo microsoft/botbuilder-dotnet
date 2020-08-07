@@ -8,8 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Evaluates an expression for truthiness.
     /// </summary>
-    public class Exists : ComparisonEvaluator
+    internal class Exists : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Exists"/> class.
+        /// </summary>
         public Exists()
             : base(
                   ExpressionType.Exists,

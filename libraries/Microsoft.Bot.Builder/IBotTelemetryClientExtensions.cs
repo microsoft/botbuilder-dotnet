@@ -2,6 +2,9 @@
 
 namespace Microsoft.Bot.Builder
 {
+    /// <summary>
+    /// Extension methods for <see cref="IBotTelemetryClient"/>.
+    /// </summary>
     public static class IBotTelemetryClientExtensions
     {
         /// <summary>

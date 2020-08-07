@@ -10,8 +10,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return true if a given TimexProperty or Timex expression refers to a valid time range Valid time ranges contain partOfDay.
     /// </summary>
-    public class IsTimeRange : ExpressionEvaluator
+    internal class IsTimeRange : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsTimeRange"/> class.
+        /// </summary>
         public IsTimeRange()
             : base(ExpressionType.IsTimeRange, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

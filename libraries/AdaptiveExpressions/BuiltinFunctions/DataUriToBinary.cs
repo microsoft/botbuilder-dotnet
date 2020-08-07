@@ -6,8 +6,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the binary version of a data uniform resource identifier (URI).
     /// </summary>
-    public class DataUriToBinary : ExpressionEvaluator
+    internal class DataUriToBinary : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataUriToBinary"/> class.
+        /// </summary>
         public DataUriToBinary()
             : base(ExpressionType.DataUriToBinary, Evaluator(), ReturnType.Object, FunctionUtils.ValidateUnary)
         {

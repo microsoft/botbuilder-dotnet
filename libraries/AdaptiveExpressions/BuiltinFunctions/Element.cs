@@ -10,8 +10,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// The indexing operator ([ ]) selects a single element from a sequence.
     /// Support number index for list or string index for object.
     /// </summary>
-    public class Element : ExpressionEvaluator
+    internal class Element : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Element"/> class.
+        /// </summary>
         public Element()
             : base(ExpressionType.Element, Evaluator, ReturnType.Object, FunctionUtils.ValidateBinary)
         {

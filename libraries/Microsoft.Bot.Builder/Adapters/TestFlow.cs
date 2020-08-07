@@ -110,6 +110,10 @@ namespace Microsoft.Bot.Builder.Adapters
                 this);
         }
 
+        /// <summary>
+        /// Creates a conversation update activity and process it the activity.
+        /// </summary>
+        /// <returns>A new <see cref="TestFlow"/> object.</returns>
         public TestFlow SendConversationUpdate()
         {
             return new TestFlow(
@@ -288,7 +292,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     }
                     else
                     {
-                        if (expected.AsMessageActivity().Text.Trim() != reply.AsMessageActivity().Text.Trim())
+                        if (expected.AsMessageActivity().Text?.Trim() != reply.AsMessageActivity().Text?.Trim())
                         {
                             if (description == null)
                             {

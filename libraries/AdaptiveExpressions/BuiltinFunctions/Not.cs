@@ -10,9 +10,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return true if the expression is false, or return false if true.
     /// </summary>
 #pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
-    public class Not : ExpressionEvaluator
+    internal class Not : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Not"/> class.
+        /// </summary>
         public Not()
             : base(ExpressionType.Not, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

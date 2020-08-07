@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-    public sealed class ReflectionDataModel<T> : DataModelBase<object, string, object>
+    internal sealed class ReflectionDataModel<T> : DataModelBase<object, string, object>
     {
         public ReflectionDataModel(ICoercion coercion)
             : base(coercion)

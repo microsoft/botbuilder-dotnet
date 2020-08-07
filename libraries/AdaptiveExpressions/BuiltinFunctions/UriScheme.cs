@@ -10,8 +10,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the scheme value of a unified resource identifier (URI).
     /// </summary>
-    public class UriScheme : ExpressionEvaluator
+    internal class UriScheme : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UriScheme"/> class.
+        /// </summary>
         public UriScheme()
             : base(ExpressionType.UriScheme, Evaluator, ReturnType.String, FunctionUtils.ValidateUnary)
         {

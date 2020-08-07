@@ -75,6 +75,16 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public void TestTurnContextLocale()
+        {
+            var c = new TurnContext(new SimpleAdapter(), new Activity());
+
+            c.Locale = "fr-FR";
+
+            Assert.Equal("fr-FR", c.Locale);
+        }
+
+        [Fact]
         public void CacheValueUsingGetAndSet()
         {
             var c = new TurnContext(new SimpleAdapter(), new Activity());

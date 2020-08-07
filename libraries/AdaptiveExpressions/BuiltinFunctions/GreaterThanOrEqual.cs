@@ -9,8 +9,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Check whether the first value is greater than or equal to the second value. Return true when the first value is greater or equal,
     /// or return false if the first value is less.
     /// </summary>
-    public class GreaterThanOrEqual : ComparisonEvaluator
+    internal class GreaterThanOrEqual : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GreaterThanOrEqual"/> class.
+        /// </summary>
         public GreaterThanOrEqual()
             : base(
                   ExpressionType.GreaterThanOrEqual,

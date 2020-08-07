@@ -13,8 +13,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Check whether both values, expressions, or objects are equivalent.
     /// Return true if both are equivalent, or return false if they're not equivalent.
     /// </summary>
-    public class Equal : ComparisonEvaluator
+    internal class Equal : ComparisonEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Equal"/> class.
+        /// </summary>
         public Equal()
             : base(
                   ExpressionType.Equal,

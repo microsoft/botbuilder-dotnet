@@ -8,8 +8,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the base64-encoded version of a string or byte array.
     /// </summary>
-    public class Base64 : ExpressionEvaluator
+    internal class Base64 : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Base64"/> class.
+        /// </summary>
         public Base64()
             : base(ExpressionType.Base64, Evaluator(), ReturnType.String, FunctionUtils.ValidateUnary)
         {

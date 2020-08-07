@@ -9,8 +9,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return the first non-null value from one or more parameters.
     /// Empty strings, empty arrays, and empty objects are not null.
     /// </summary>
-    public class Coalesce : ExpressionEvaluator
+    internal class Coalesce : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Coalesce"/> class.
+        /// </summary>
         public Coalesce()
             : base(ExpressionType.Coalesce, Evaluator(), ReturnType.Object, FunctionUtils.ValidateAtLeastOne)
         {

@@ -6,8 +6,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return true if a given input is an array.
     /// </summary>
-    public class IsArray : ExpressionEvaluator
+    internal class IsArray : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsArray"/> class.
+        /// </summary>
         public IsArray()
             : base(ExpressionType.IsArray, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {
