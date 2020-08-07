@@ -74,7 +74,9 @@ namespace Microsoft.Bot.Streaming.Payloads
         /// </summary>
         /// <param name="cancellationToken">A cancellation token. Not currently used.</param>
         /// <returns>A task representing the state of the disassembly.</returns>
+#pragma warning disable CA1801 // Review unused parameters
         public async Task DisassembleAsync(CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
         {
             var w = await GetStreamAsync().ConfigureAwait(false);
 
@@ -162,12 +164,12 @@ namespace Microsoft.Bot.Streaming.Payloads
                 isLengthKnown = true;
             }
 
-            Sender.SendPayload(header, Stream, isLengthKnown, OnSent);
+            Sender.SendPayload(header, Stream, isLengthKnown, OnSentAsync);
 
             return _taskCompletionSource.Task;
         }
 
-        private async Task OnSent(Header header)
+        private async Task OnSentAsync(Header header)
         {
             SendOffset += header.PayloadLength;
             IsEnd = header.End;

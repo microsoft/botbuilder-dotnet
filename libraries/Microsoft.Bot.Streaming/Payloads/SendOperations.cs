@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Streaming.Payloads
         {
             var disassembler = new RequestDisassembler(_payloadSender, id, request);
 
-            await disassembler.DisassembleAsync().ConfigureAwait(false);
+            await disassembler.DisassembleAsync(cancellationToken).ConfigureAwait(false);
 
             if (request.Streams != null)
             {
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Streaming.Payloads
                 {
                     var contentDisassembler = new ResponseMessageStreamDisassembler(_payloadSender, contentStream);
 
-                    tasks.Add(contentDisassembler.DisassembleAsync());
+                    tasks.Add(contentDisassembler.DisassembleAsync(cancellationToken));
                 }
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Streaming.Payloads
 
             if (response.Streams != null)
             {
-                var tasks = new List<Task>(response.Streams.Count());
+                var tasks = new List<Task>(response.Streams.Count);
                 foreach (var contentStream in response.Streams)
                 {
                     var contentDisassembler = new ResponseMessageStreamDisassembler(_payloadSender, contentStream);

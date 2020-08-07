@@ -10,7 +10,6 @@ namespace Microsoft.Bot.Streaming.Utilities
 {
     internal static class Background
     {
-#pragma warning disable IDE0022
         /// <summary>
         /// Register background task with ASP.Net hosting environment and trace exceptions
         /// Falls back to Thread pool if not running under ASP.Net.
@@ -28,9 +27,11 @@ namespace Microsoft.Bot.Streaming.Utilities
         /// </summary>
         /// <param name="task">background task to execute.</param>
         /// <param name="properties">name value pairs to trace if an exception is thrown.</param>
+#pragma warning disable CA1801 // Review unused parameters
         public static void Run(Func<CancellationToken, Task> task, IDictionary<string, object> properties = null)
+#pragma warning restore CA1801 // Review unused parameters
         {
-            Task.Run(() => TrackAsRequest(() => task(CancellationToken.None), properties));
+            Task.Run(() => TrackAsRequestAsync(() => task(CancellationToken.None)));
         }
 
         /// <summary>
@@ -50,10 +51,11 @@ namespace Microsoft.Bot.Streaming.Utilities
         /// <param name="task">Background task to execute.</param>
         /// <param name="spanDelay">The initial delay.</param>
         /// <param name="eventName">The event name to log individual execution failures.</param>
-        #pragma warning disable IDE0060
+#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
         public static void RunForever(Func<CancellationToken, Task<TimeSpan>> task, TimeSpan spanDelay, string eventName)
+#pragma warning restore CA1801 // Review unused parameters
         {
-            Background.Run(async token =>
+            Run(async token =>
             {
                 try
                 {
@@ -70,7 +72,9 @@ namespace Microsoft.Bot.Streaming.Utilities
                     {
                         spanDelay = await task(token).ConfigureAwait(false);
                     }
+#pragma warning disable CA1031 // Do not catch general exception types
                     catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                     }
 
@@ -85,20 +89,18 @@ namespace Microsoft.Bot.Streaming.Utilities
                 }
             });
         }
-#pragma warning restore IDE0060
 
-        #pragma warning disable IDE0060
-        private static async Task TrackAsRequest(Func<Task> task, IDictionary<string, object> properties)
+        private static async Task TrackAsRequestAsync(Func<Task> task)
         {
             try
             {
                 await task().ConfigureAwait(false);
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
             }
         }
-#pragma warning restore IDE0060
-#pragma warning restore IDE0022
     }
 }

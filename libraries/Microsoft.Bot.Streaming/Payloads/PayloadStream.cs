@@ -19,13 +19,13 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         private readonly SemaphoreSlim _dataAvailable = new SemaphoreSlim(0, int.MaxValue);
         private readonly object _syncLock = new object();
-        private long _producerLength = 0;       // total length
-        private long _consumerPosition = 0;     // read position
+        private long _producerLength;       // total length
+        private long _consumerPosition;     // read position
 
-        private byte[] _active = null;
-        private int _activeOffset = 0;
+        private byte[] _active;
+        private int _activeOffset;
 
-        private bool _end = false;
+        private bool _end;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PayloadStream"/> class.
@@ -131,11 +131,7 @@ namespace Microsoft.Bot.Streaming.Payloads
         /// </summary>
         public void Cancel()
         {
-            if (_assembler != null)
-            {
-                _assembler.Close();
-            }
-
+            _assembler?.Close();
             DoneProducing();
         }
 
@@ -211,6 +207,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             if (disposing)
             {
                 Cancel();
+                _dataAvailable?.Dispose();
             }
 
             base.Dispose(disposing);

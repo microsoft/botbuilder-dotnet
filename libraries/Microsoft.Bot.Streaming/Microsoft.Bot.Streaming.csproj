@@ -24,8 +24,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- All the excludes below are addressed by https://github.com/microsoft/botbuilder-dotnet/pull/4335 we need to remove them once the PR is merged -->
-    <NoWarn>$(NoWarn);SX1309;CA1001;CA1031;CA1032;CA1052;CA1063;CA1064;CA1305;CA1716;CA1801;CA1816;CA1829;CA2000;CA2007;CA2200;CA2208;CA2213;CA2227;UseAsyncSuffix;UseConfigureAwait</NoWarn>
+    <NoWarn>$(NoWarn);</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

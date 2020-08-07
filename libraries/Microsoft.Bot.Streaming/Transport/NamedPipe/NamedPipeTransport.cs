@@ -25,6 +25,9 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
 
         private readonly PipeStream _stream;
 
+        // To detect redundant calls to dispose
+        private bool _disposed;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedPipeTransport"/> class.
         /// </summary>
@@ -43,10 +46,13 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
             _stream.Close();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Disconnects the client and releases any related objects owned by the class.
+        /// </summary>
         public void Dispose()
         {
-            _stream.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <inheritdoc/>
@@ -89,6 +95,30 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                _stream?.Dispose();
+            }
+
+            _disposed = true;
         }
     }
 }
