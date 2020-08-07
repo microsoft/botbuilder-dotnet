@@ -13,7 +13,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Azure
+namespace Microsoft.Bot.Builder.Azure.Blobs
 {
     /// <summary>
     /// Implements <see cref="IStorage"/> using Azure Storage Blobs.

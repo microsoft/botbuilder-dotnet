@@ -14,7 +14,7 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Azure
+namespace Microsoft.Bot.Builder.Azure.Blobs
 {
     /// <summary>
     /// The blobs transcript store stores transcripts in an Azure Blob container.
