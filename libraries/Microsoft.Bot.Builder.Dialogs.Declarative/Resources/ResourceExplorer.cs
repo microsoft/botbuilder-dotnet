@@ -649,7 +649,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             {
                 if (jToken is JObject jObj && !jObj.ContainsKey("id") && !resourceSourceContext.DefaultIdMap.ContainsKey(jToken))
                 {
-                    resourceSourceContext.DefaultIdMap.TryAdd(jToken, resource.Id);
+                    resourceSourceContext.DefaultIdMap.Add(jToken, resource.Id);
                 }
             }
         }
