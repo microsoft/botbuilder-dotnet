@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         }
 
         [TestMethod]
-        public void TestFolderSource()
+        public async Task TestFolderSource()
         {
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
