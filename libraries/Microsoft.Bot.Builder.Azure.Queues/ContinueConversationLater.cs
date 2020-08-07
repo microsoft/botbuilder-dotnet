@@ -3,11 +3,9 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Azure.Storage.Queues;
 using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 
@@ -35,8 +33,6 @@ namespace Microsoft.Bot.Builder.Azure.Queues
         /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "AzureQueues.ContinueConversationLater";
-
-        private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContinueConversationLater"/> class.
@@ -121,28 +117,21 @@ namespace Microsoft.Bot.Builder.Azure.Queues
                 throw new ArgumentOutOfRangeException($"{nameof(Date)} must be in the future");
             }
 
+            // create ContinuationActivity from the conversation reference.
+            var activity = dc.Context.Activity.GetConversationReference().GetContinuationActivity();
+            activity.Value = Value.GetValue(dc.State);
+
             var visibility = date - DateTime.UtcNow;
             var ttl = visibility + TimeSpan.FromMinutes(2);
 
             var queueName = QueueName.GetValue(dc.State);
             var connectionString = ConnectionString.GetValue(dc.State);
-            var value = Value.GetValue(dc.State);
 
-            // create ContinuationActivity from the conversation reference.
-            var activity = dc.Context.Activity.GetConversationReference().GetContinuationActivity();
-            activity.Value = value;
+            var queueStorage = new QueuesStorage(connectionString, queueName);
+            var receipt = await queueStorage.QueueActivityAsync(activity, visibility, ttl, cancellationToken).ConfigureAwait(false);
 
-            var message = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, jsonSettings)));
-
-            QueueClient queueClient = new QueueClient(connectionString, queueName);
-            
-            await queueClient.CreateIfNotExistsAsync().ConfigureAwait(false);
-
-            // send ResumeConversation event, it will get posted back to us, giving us ability to process it and do the right thing.
-            var reciept = await queueClient.SendMessageAsync(message, visibility, ttl, cancellationToken).ConfigureAwait(false);
-            
             // return the receipt as the result.
-            return await dc.EndDialogAsync(result: reciept.Value, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(result: receipt, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
