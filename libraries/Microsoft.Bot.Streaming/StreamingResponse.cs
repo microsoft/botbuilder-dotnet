@@ -30,7 +30,9 @@ namespace Microsoft.Bot.Streaming
         /// <value>
         /// A <see cref="List{T}"/> of type <see cref="ResponseMessageStream"/>.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only
         public List<ResponseMessageStream> Streams { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Creates a response indicating the requested resource was not found.

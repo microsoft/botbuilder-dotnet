@@ -16,6 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
     /// </summary>
     public class HttpRequestSequenceMock : HttpRequestMock
     {
+        /// <summary>
+        /// The type of request.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.HttpRequestSequenceMock";
 
@@ -60,6 +63,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         [JsonProperty("responses")]
         public List<HttpResponseMock> Responses { get; } = new List<HttpResponseMock>();
 
+        /// <summary>
+        /// Configures the initial conditions.
+        /// </summary>
+        /// <param name="handler">The HttpMessageHandler.</param>
         public override void Setup(MockHttpMessageHandler handler)
         {
             var response = new SequenceResponseManager(Responses);

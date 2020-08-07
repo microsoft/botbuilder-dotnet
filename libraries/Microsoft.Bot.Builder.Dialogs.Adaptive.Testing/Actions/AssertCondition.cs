@@ -48,6 +48,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         [JsonProperty("description")]
         public StringExpression Description { get; set; }
 
+        /// <summary>
+        /// Begins the dialog.
+        /// </summary>
+        /// <param name="dc">The DialogContext.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>DialogTurnResult.</returns>
         public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             var (result, error) = Condition.TryEvaluate(dc.State);

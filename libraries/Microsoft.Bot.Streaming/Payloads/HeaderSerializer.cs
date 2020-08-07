@@ -10,7 +10,6 @@ using Microsoft.Bot.Streaming.Transport;
 namespace Microsoft.Bot.Streaming.Payloads
 {
     /// <summary>
-    ///
     /// The 48-byte, fixed size, header prefaces every payload. The header must always have the
     /// same shape, regardless of if its payload is a request, response, or content. It is a
     /// period-delimited ASCII-encoded string terminated with a newline. All headers must have
@@ -138,7 +137,9 @@ namespace Microsoft.Bot.Streaming.Payloads
         /// <param name="offset">Deprecated offset of header's starting location within the byte array.</param>
         /// <param name="count">The length of the byte array.</param>
         /// <returns>The <see cref="Header"/> deserialized from the byte array.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
         public static Header Deserialize(byte[] buffer, int offset, int count)
+#pragma warning restore CA1801 // Review unused parameters
         {
             if (count != TransportConstants.MaxHeaderLength)
             {

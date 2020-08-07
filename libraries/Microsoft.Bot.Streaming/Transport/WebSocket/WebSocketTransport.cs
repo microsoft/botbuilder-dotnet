@@ -16,6 +16,9 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
     {
         private readonly WebSocket _socket;
 
+        // To detect redundant calls to dispose
+        private bool _disposed;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketTransport"/> class.
         /// </summary>
@@ -40,7 +43,9 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
                         "Closed by the WebSocketTransport",
                         CancellationToken.None));
                 }
+#pragma warning disable CA1031 // Do not catch general exception types (ignore exceptions while the socket is being closed)
                 catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     // Any exception thrown here will be caused by the socket already being closed,
                     // which is the state we want to put it in by calling this method, which
@@ -50,9 +55,13 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Disposes the object and releases any related objects owned by the class.
+        /// </summary>
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <inheritdoc/>
@@ -66,7 +75,7 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
                     var result = await _socket.ReceiveAsync(memory, CancellationToken.None).ConfigureAwait(false);
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
-                        await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Socket closed", CancellationToken.None);
+                        await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Socket closed", CancellationToken.None).ConfigureAwait(false);
                         if (_socket.State == WebSocketState.Closed)
                         {
                             _socket.Dispose();
@@ -114,6 +123,30 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
             }
 
             return 0;
+        }
+        
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                _socket?.Dispose();
+            }
+
+            _disposed = true;
         }
     }
 }

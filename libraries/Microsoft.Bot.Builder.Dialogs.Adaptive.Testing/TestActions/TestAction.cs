@@ -22,6 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <returns>async task.</returns>
         public abstract Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback);
 
+        /// <summary>
+        /// Registers the path to file and callers line.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <param name="line">The callers line.</param>
         protected void RegisterSourcePath(string path, int line)
         {
             if (!string.IsNullOrEmpty(path))

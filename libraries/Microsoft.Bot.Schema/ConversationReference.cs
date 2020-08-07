@@ -91,32 +91,32 @@ namespace Microsoft.Bot.Schema
         public ChannelAccount User { get; set; }
 
         /// <summary>
-        /// Gets or sets bot participating in this conversation
+        /// Gets or sets (Optional) Bot participating in this conversation
         /// </summary>
         [JsonProperty(PropertyName = "bot")]
         public ChannelAccount Bot { get; set; }
 
         /// <summary>
-        /// Gets or sets conversation reference
+        /// Gets or sets Reference to the conversation
         /// </summary>
         [JsonProperty(PropertyName = "conversation")]
         public ConversationAccount Conversation { get; set; }
 
         /// <summary>
-        /// Gets or sets channel ID
+        /// Gets or sets ID of the channel in which the referenced conversation exists
         /// </summary>
         [JsonProperty(PropertyName = "channelId")]
         public string ChannelId { get; set; }
         
         /// <summary>
-        /// Gets or sets Locale
+        /// Gets or sets (Optional) A BCP-47 locale name for the referenced conversation
         /// </summary>
         [JsonProperty(PropertyName = "locale")]
         public string Locale { get; set; }
 
         /// <summary>
-        /// Gets or sets service endpoint where operations concerning the
-        /// referenced conversation may be performed
+        /// Gets or sets (Optional) Service endpoint where operations concerning
+        /// the referenced conversation may be performed
         /// </summary>
         [JsonProperty(PropertyName = "serviceUrl")]
         public string ServiceUrl { get; set; }    
