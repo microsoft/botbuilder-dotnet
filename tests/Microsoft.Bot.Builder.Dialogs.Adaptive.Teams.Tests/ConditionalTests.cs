@@ -1,15 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Schema;
 using Xunit;
-using dbg = System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 {
@@ -29,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         }
 
         public static ResourceExplorer ResourceExplorer { get; set; }
-        
+
         [Fact]
         public async Task ConditionalsTests_OnTeamActivityTypes()
         {
