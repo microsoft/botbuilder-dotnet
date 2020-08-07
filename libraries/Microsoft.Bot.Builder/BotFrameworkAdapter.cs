@@ -1238,7 +1238,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public virtual Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            return CreateConversationAsync(channelId, serviceUrl, credentials, conversationParameters, callback, cancellationToken);
+            return CreateConversationAsync(channelId, serviceUrl, (AppCredentials)credentials, conversationParameters, callback, cancellationToken);
         }
 
         /// <summary>
@@ -1317,7 +1317,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public virtual Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, ConversationReference reference, CancellationToken cancellationToken)
         {
-            return CreateConversationAsync(channelId, serviceUrl, credentials, conversationParameters, callback, reference, cancellationToken);
+            return CreateConversationAsync(channelId, serviceUrl, (AppCredentials)credentials, conversationParameters, callback, reference, cancellationToken);
         }
 
         /// <summary>
