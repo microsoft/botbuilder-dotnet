@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.IO;
 using Microsoft.Bot.Streaming.Transport;
 
@@ -72,16 +73,16 @@ namespace Microsoft.Bot.Streaming.Payloads
         /// </value>
         public bool End { get; set; }
 
-        private void ClampLength(int value, int max, int min)
+        private static void ClampLength(int value, int max, int min)
         {
             if (value > max)
             {
-                throw new InvalidDataException(string.Format("Length must be less than {0}", max));
+                throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture,  "Length must be less than {0}", max));
             }
 
             if (value < min)
             {
-                throw new InvalidDataException(string.Format("Length must be greater than {0}", min));
+                throw new InvalidDataException(string.Format(CultureInfo.InvariantCulture, "Length must be greater than {0}", min));
             }
         }
     }

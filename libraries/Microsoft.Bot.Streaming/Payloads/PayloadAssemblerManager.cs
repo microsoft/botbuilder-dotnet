@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Streaming.Payloads
             }
         }
 
-        private bool IsStreamPayload(Header header) => header.Type == PayloadTypes.Stream;
+        private static bool IsStreamPayload(Header header) => header.Type == PayloadTypes.Stream;
 
         private IAssembler CreatePayloadAssembler(Header header)
         {

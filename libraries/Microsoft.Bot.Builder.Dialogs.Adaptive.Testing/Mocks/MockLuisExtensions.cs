@@ -67,6 +67,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
                 .AddUserSecrets(userSecretId);
         }
 
+        /// <summary>
+        /// Creates a hash based on a given string.
+        /// </summary>
+        /// <param name="source">The string to be hashed.</param>
+        /// <returns>Unsigned int hash.</returns>
         public static uint StableHash(this string source)
         {
             uint hash;
