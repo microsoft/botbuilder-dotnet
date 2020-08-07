@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// <summary>
     /// Range represents a file, starting point and end point of text .
     /// </summary>
-    public class SourceRange
+    public class SourceRange : IEquatable<SourceRange>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceRange"/> class.
@@ -82,5 +82,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 StartPoint = StartPoint.DeepClone(),
                 EndPoint = EndPoint.DeepClone(),
             };
+
+        public override bool Equals(object obj)
+        {
+            // Auto-generated
+            return Equals(obj as SourceRange);
+        }
+
+        public bool Equals(SourceRange other)
+        {
+            // Auto-generated
+            return other != null &&
+                   Path == other.Path &&
+                   EqualityComparer<SourcePoint>.Default.Equals(StartPoint, other.StartPoint) &&
+                   EqualityComparer<SourcePoint>.Default.Equals(EndPoint, other.EndPoint);
+        }
+
+        public override int GetHashCode()
+        {
+            // Auto-generated
+            var hashCode = -65866367;
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(Path);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<SourcePoint>.Default.GetHashCode(StartPoint);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<SourcePoint>.Default.GetHashCode(EndPoint);
+            return hashCode;
+        }
     }
 }

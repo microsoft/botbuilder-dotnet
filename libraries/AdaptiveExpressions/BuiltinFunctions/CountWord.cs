@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the number of words in a string.
     /// </summary>
-    public class CountWord : ExpressionEvaluator
+    internal class CountWord : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CountWord"/> class.

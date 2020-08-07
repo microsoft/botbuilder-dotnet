@@ -2,14 +2,18 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return a string in lowercase format.
+    /// ToLower function takes a string as the first argument 
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// If a character in the string doesn't have a lowercase version, that character stays unchanged in the returned string.
     /// </summary>
-    public class ToLower : StringTransformEvaluator
+    internal class ToLower : StringTransformEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ToLower"/> class.
@@ -19,16 +23,26 @@ namespace AdaptiveExpressions.BuiltinFunctions
         {
         }
 
-        private static object Function(IReadOnlyList<object> args)
+        private static (object, string) Function(IReadOnlyList<object> args, Options options)
         {
-            if (args[0] == null)
+            string result = null;
+            string error = null;
+            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
+            (locale, error) = FunctionUtils.DetermineLocale(args, locale, 2);
+
+            if (error == null)
             {
-                return string.Empty;
+                if (args[0] == null)
+                {
+                    result = string.Empty;
+                }
+                else
+                {
+                    result = args[0].ToString().ToLower(locale);
+                }
             }
-            else
-            {
-                return args[0].ToString().ToLowerInvariant();
-            }
+
+            return (result, error);
         }
     }
 }

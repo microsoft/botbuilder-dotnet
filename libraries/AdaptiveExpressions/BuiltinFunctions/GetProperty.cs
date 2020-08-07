@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Retrieve the value of the specified property from the JSON object.
     /// </summary>
-    public class GetProperty : ExpressionEvaluator
+    internal class GetProperty : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GetProperty"/> class.

@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// To appear in the result, an item can appear in any collection passed to this function.
     /// If one or more items have the same name, the last item with that name appears in the result.
     /// </summary>
-    public class Union : ExpressionEvaluator
+    internal class Union : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Union"/> class.

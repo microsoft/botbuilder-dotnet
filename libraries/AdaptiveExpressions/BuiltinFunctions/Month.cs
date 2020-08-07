@@ -6,7 +6,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the month of the specified timestamp.
     /// </summary>
-    public class Month : ExpressionEvaluator
+    internal class Month : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Month"/> class.

@@ -10,6 +10,9 @@ using Microsoft.Bot.Streaming.Utilities;
 
 namespace Microsoft.Bot.Streaming.PayloadTransport
 {
+    /// <summary>
+    /// PayloadReceivers subscribe to incoming streams and manage the consumption of raw data as it comes in.
+    /// </summary>
     public class PayloadReceiver : IPayloadReceiver, IDisposable
     {
         private Func<Header, Stream> _getStream;
@@ -22,14 +25,20 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
         // To detect redundant calls to dispose
         private bool _disposed;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PayloadReceiver"/> class.
+        /// </summary>
         public PayloadReceiver()
         {
         }
 
+        /// <inheritdoc/>
         public event DisconnectedEventHandler Disconnected;
 
+        /// <inheritdoc/>
         public bool IsConnected => _receiver != null;
 
+        /// <inheritdoc/>
         public void Connect(ITransportReceiver receiver)
         {
             if (_receiver != null)
@@ -42,6 +51,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             RunReceive();
         }
 
+        /// <inheritdoc/>
         public void Subscribe(
             Func<Header, Stream> getStream,
             Action<Header, Stream, int> receiveAction)
@@ -50,6 +60,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             _receiveAction = receiveAction;
         }
 
+        /// <inheritdoc/>
         public void Disconnect(DisconnectedEventArgs e = null)
         {
             var didDisconnect = false;

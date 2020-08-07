@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Returns the smallest integral value that is greater than or equal to the specified number.
     /// </summary>
-    public class Ceiling : NumberTransformEvaluator
+    internal class Ceiling : NumberTransformEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Ceiling"/> class.

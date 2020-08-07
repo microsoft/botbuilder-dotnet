@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public static partial class Extensions
     {
+        /// <summary>
+        /// Regular expression for matching escaped characters.
+        /// </summary>
         public static readonly Regex EscapeRegex = new Regex(@"\\[^\r\n]?");
 
         /// <summary>
@@ -150,7 +153,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="context">Antlr parse context.</param>
         /// <param name="lineOffset">Line offset.</param>
         /// <returns>Range object.</returns>
-        public static Range ConvertToRange(this ParserRuleContext context, int lineOffset = 0)
+        internal static Range ConvertToRange(this ParserRuleContext context, int lineOffset = 0)
         {
             if (context == null)
             {

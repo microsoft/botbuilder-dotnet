@@ -8,9 +8,19 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Streaming.Transport.NamedPipes
 {
+    /// <summary>
+    /// For use when the wire transport is a Named Pipe.
+    /// </summary>
     public class NamedPipeTransport : ITransportSender, ITransportReceiver
     {
+        /// <summary>
+        /// The suffix of the Named Pipe used for incoming data.
+        /// </summary>
         public const string ServerIncomingPath = ".incoming";
+
+        /// <summary>
+        /// The suffix of the Named pipe used for outgoing data.
+        /// </summary>
         public const string ServerOutgoingPath = ".outgoing";
 
         private readonly PipeStream _stream;
@@ -18,13 +28,19 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
         // To detect redundant calls to dispose
         private bool _disposed;
 
-        public NamedPipeTransport(PipeStream stream)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NamedPipeTransport"/> class.
+        /// </summary>
+        /// <param name="stream">The data stream over the Named Pipe.</param>
+		public NamedPipeTransport(PipeStream stream)
         {
             _stream = stream;
         }
 
+        /// <inheritdoc/>
         public bool IsConnected => _stream.IsConnected;
 
+        /// <inheritdoc/>
         public void Close()
         {
             _stream.Close();
@@ -39,6 +55,7 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
             GC.SuppressFinalize(this);
         }
 
+        /// <inheritdoc/>
         public async Task<int> ReceiveAsync(byte[] buffer, int offset, int count)
         {
             try
@@ -57,6 +74,7 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
             return 0;
         }
 
+        /// <inheritdoc/>
         public async Task<int> SendAsync(byte[] buffer, int offset, int count)
         {
             try

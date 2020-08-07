@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the integer result from dividing two numbers. 
     /// </summary>
-    public class Divide : MultivariateNumericEvaluator
+    internal class Divide : MultivariateNumericEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Divide"/> class.

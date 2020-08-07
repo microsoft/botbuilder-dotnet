@@ -6,7 +6,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the day of the month from a timestamp.
     /// </summary>
-    public class DayOfMonth : ExpressionEvaluator
+    internal class DayOfMonth : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DayOfMonth"/> class.

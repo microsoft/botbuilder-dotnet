@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the last item from a collection.
     /// </summary>
-    public class Last : ExpressionEvaluator
+    internal class Last : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Last"/> class.

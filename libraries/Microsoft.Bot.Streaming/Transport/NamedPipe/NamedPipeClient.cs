@@ -12,6 +12,9 @@ using Microsoft.Bot.Streaming.Utilities;
 
 namespace Microsoft.Bot.Streaming.Transport.NamedPipes
 {
+    /// <summary>
+    /// An implementation of <see cref="IStreamingTransportClient"/> for use with Named Pipes.
+    /// </summary>
     public class NamedPipeClient : IStreamingTransportClient
     {
         private readonly string _baseName;

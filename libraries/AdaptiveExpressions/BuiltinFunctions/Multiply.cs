@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the product from multiplying two numbers.
     /// </summary>
-    public class Multiply : MultivariateNumericEvaluator
+    internal class Multiply : MultivariateNumericEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Multiply"/> class.

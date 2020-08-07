@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Streaming.Transport.WebSockets
 {
+    /// <summary>
+    /// An implementation of <see cref="ITransportSender"/> and <see cref="ITransportReceiver"/> for use with a WebSocket transport.
+    /// </summary>
     public class WebSocketTransport : ITransportSender, ITransportReceiver
     {
         private readonly WebSocket _socket;
@@ -16,13 +19,19 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         // To detect redundant calls to dispose
         private bool _disposed;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebSocketTransport"/> class.
+        /// </summary>
+        /// <param name="socket">The WebSocket to bind this transport to.</param>
         public WebSocketTransport(WebSocket socket)
         {
             _socket = socket;
         }
 
+        /// <inheritdoc/>
         public bool IsConnected => _socket.State == WebSocketState.Open;
 
+        /// <inheritdoc/>
         public void Close()
         {
             if (_socket.State == WebSocketState.Open)
@@ -55,6 +64,7 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
             GC.SuppressFinalize(this);
         }
 
+        /// <inheritdoc/>
         public async Task<int> ReceiveAsync(byte[] buffer, int offset, int count)
         {
             try
@@ -89,6 +99,7 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
             return 0;
         }
 
+        /// <inheritdoc/>
         public async Task<int> SendAsync(byte[] buffer, int offset, int count)
         {
             try
