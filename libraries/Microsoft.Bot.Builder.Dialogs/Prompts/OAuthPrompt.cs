@@ -218,6 +218,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
             }
+            else if (isMessage && _settings.EndOnInvalidMessage)
+            {
+                // If EndOnInvalidMessage is set, complete the prompt with no result.
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
 
             if (!dc.Context.Responded && isMessage && promptOptions?.RetryPrompt != null)
             {
