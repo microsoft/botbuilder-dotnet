@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public async Task MemoryStorage_UpdateObjectTest()
         {
-            await UpdateObjectTest(storage);
+            await UpdateObjectTest<Exception>(storage);
         }
 
         [Fact]
