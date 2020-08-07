@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Observers;
@@ -98,9 +99,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                         }
                     }
 
-                    T result = this.resourceExplorer.BuildType<T>(kind, jToken, serializer);
+                    var tokenToBuild = TryAssignId(jToken, sourceContext);
 
-                    // associate the most specific source context information with this item
+                    T result = this.resourceExplorer.BuildType<T>(kind, tokenToBuild, serializer);
+
+                    // Associate the most specific source context information with this item
                     if (sourceContext.CallStack.Count > 0)
                     {
                         range = sourceContext.CallStack.Peek().DeepClone();
@@ -170,6 +173,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             }
 
             this.observers.Add(observer);
+        }
+
+        private static JToken TryAssignId(JToken jToken, SourceContext sourceContext)
+        {
+            // This is the jToken we'll use to build the concrete type.
+            var tokenToBuild = jToken;
+
+            // If our JToken does not have an id, try to get an id from the resource explorer
+            // in a best-effort manner.
+            if (jToken is JObject jObj && !jObj.ContainsKey("id"))
+            {
+                // Check if we have an id registered for this token
+                if (sourceContext is ResourceSourceContext rsc && rsc.DefaultIdMap.ContainsKey(jToken))
+                {
+                    // Clone the token since we'll alter it from the file version.
+                    // If we don't clone, future ranges will be calculated based on the altered token.
+                    // which will end in a wrong source range.
+                    tokenToBuild = jToken.DeepClone();
+                    tokenToBuild["id"] = rsc.DefaultIdMap[jToken];
+                }
+            }
+
+            return tokenToBuild;
         }
     }
 }
