@@ -138,7 +138,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             DialogOptions.Skill.Id = DialogOptions.Skill.AppId = SkillAppId.GetValue(dc.State);
             DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint.GetValue(dc.State));
 
-            SaveDialogOptionsToState(dc.ActiveDialog);
+            // Store the initialized DialogOptions in state so we can restore these values when the dialog is resumed.
+            dc.ActiveDialog.State[_dialogOptionsStateKey] = DialogOptions;
 
             // Get the activity to send to the skill.
             Activity activity;
@@ -205,14 +206,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             return $"{GetType().Name}['{appId}','{activity}']";
-        }
-
-        /// <summary>
-        /// Stores the DialogOptions initialized during BeginDialog so they can be restored when the dialog is resumed.
-        /// </summary>
-        private void SaveDialogOptionsToState(DialogInstance instance)
-        {
-            instance.State[_dialogOptionsStateKey] = DialogOptions;
         }
 
         /// <summary>
