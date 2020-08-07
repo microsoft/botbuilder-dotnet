@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return an integer array that starts from a specified integer.
     /// </summary>
-    public class Range : ExpressionEvaluator
+    internal class Range : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Range"/> class.

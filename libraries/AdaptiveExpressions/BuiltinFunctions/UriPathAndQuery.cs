@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the path and query value of a unified resource identifier (URI).
     /// </summary>
-    public class UriPathAndQuery : ExpressionEvaluator
+    internal class UriPathAndQuery : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UriPathAndQuery"/> class.

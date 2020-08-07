@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Rounds a number value to the nearest integer.
     /// </summary>
-    public class Round : ExpressionEvaluator
+    internal class Round : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Round"/> class.

@@ -6,7 +6,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the day of the year from a timestamp.
     /// </summary>
-    public class DayOfYear : ExpressionEvaluator
+    internal class DayOfYear : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DayOfYear"/> class.

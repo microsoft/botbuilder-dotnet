@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Protocol
 {
-    public sealed class Source
+    internal sealed class Source
     {
         public Source(string path)
         {

@@ -10,7 +10,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the query value of a unified resource identifier (URI).
     /// </summary>
-    public class UriQuery : ExpressionEvaluator
+    internal class UriQuery : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UriQuery"/> class.

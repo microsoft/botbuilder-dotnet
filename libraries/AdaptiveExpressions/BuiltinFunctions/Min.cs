@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the lowest value from a set of numbers or an array.
     /// </summary>
-    public class Min : ExpressionEvaluator
+    internal class Min : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Min"/> class.

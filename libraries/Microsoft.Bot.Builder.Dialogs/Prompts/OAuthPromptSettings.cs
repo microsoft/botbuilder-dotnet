@@ -40,5 +40,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>The number of milliseconds the prompt waits for the user to authenticate.</value>
         public int? Timeout { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="OAuthPrompt"/> should end upon
+        /// receiving an invalid message.  Generally the <see cref="OAuthPrompt"/> will ignore
+        /// incoming messages from the user during the auth flow, if they are not related to the
+        /// auth flow.  This flag enables ending the <see cref="OAuthPrompt"/> rather than
+        /// ignoring the user's message.  Typically, this flag will be set to 'true', but is 'false'
+        /// by default for backwards compatibility.
+        /// </summary>
+        /// <value>True if the <see cref="OAuthPrompt"/> should automatically end upon receiving
+        /// an invalid message.</value>
+        public bool EndOnInvalidMessage { get; set; }
     }
 }

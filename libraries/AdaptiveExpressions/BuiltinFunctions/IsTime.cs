@@ -11,7 +11,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return true if a given TimexProperty or Timex expression refers to a valid time.
     /// Valid time contains hours, minutes and seconds.
     /// </summary>
-    public class IsTime : ExpressionEvaluator
+    internal class IsTime : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IsTime"/> class.

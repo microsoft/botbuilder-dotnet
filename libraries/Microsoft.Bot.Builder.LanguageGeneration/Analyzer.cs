@@ -12,13 +12,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// LG template analyzer.
     /// </summary>
-    public class Analyzer : LGTemplateParserBaseVisitor<AnalyzerResult>
+    internal class Analyzer : LGTemplateParserBaseVisitor<AnalyzerResult>
     {
-        private readonly Dictionary<string, Template> templateMap;
+        private readonly Dictionary<string, Template> _templateMap;
 
         private readonly IExpressionParser _expressionParser;
 
-        private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
+        private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Analyzer"/> class.
@@ -28,11 +28,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public Analyzer(List<Template> templates, ExpressionParser expressionParser)
         {
             Templates = templates;
-            templateMap = templates.ToDictionary(t => t.Name);
+            _templateMap = templates.ToDictionary(t => t.Name);
 
             // create an evaluator to leverage it's customized function look up for checking
             var evaluator = new Evaluator(Templates, expressionParser);
-            this._expressionParser = evaluator.ExpressionParser;
+            _expressionParser = evaluator.ExpressionParser;
         }
 
         /// <summary>
@@ -44,37 +44,40 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public List<Template> Templates { get; }
 
         /// <summary>
-        /// Analyzer a template to get the static analyzer results.
+        /// Analyzes a template to get the static analyzer results. 
+        /// Throws errors if certain errors detected <see cref="TemplateErrors"/>.
         /// </summary>
         /// <param name="templateName">Template name.</param>
         /// <returns>Analyze result including variables and template references.</returns>
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
-            if (!templateMap.ContainsKey(templateName))
+            if (!_templateMap.ContainsKey(templateName))
             {
                 throw new Exception(TemplateErrors.TemplateNotExist(templateName));
             }
 
-            if (evaluationTargetStack.Any(e => e.TemplateName == templateName))
+            if (_evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evaluation trace
-            evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
+            _evaluationTargetStack.Push(new EvaluationTarget(templateName, null));
 
             // we don't exclude parameters any more
             // because given we don't track down for templates have parameters
             // the only scenario that we are still analyzing an parameterized template is
             // this template is root template to analyze, in this we also don't have exclude parameters
-            var dependencies = Visit(templateMap[templateName].TemplateBodyParseTree);
-            evaluationTargetStack.Pop();
+            var dependencies = Visit(_templateMap[templateName].TemplateBodyParseTree);
+            _evaluationTargetStack.Pop();
 
             return dependencies;
         }
 
+        /// <inheritdoc/>
         public override AnalyzerResult VisitNormalBody([NotNull] LGTemplateParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
 
+        /// <inheritdoc/>
         public override AnalyzerResult VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var result = new AnalyzerResult();
@@ -88,6 +91,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
+        /// <inheritdoc/>
         public override AnalyzerResult VisitStructuredTemplateBody([NotNull] LGTemplateParser.StructuredTemplateBodyContext context)
         {
             var result = new AnalyzerResult();
@@ -109,6 +113,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
+        /// <inheritdoc/>
         public override AnalyzerResult VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
         {
             var result = new AnalyzerResult();
@@ -131,6 +136,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
+        /// <inheritdoc/>
         public override AnalyzerResult VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
         {
             var result = new AnalyzerResult();
@@ -152,6 +158,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
+        /// <inheritdoc/>
         public override AnalyzerResult VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var result = new AnalyzerResult();
@@ -197,13 +204,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new AnalyzerResult();
 
-            if (templateMap.ContainsKey(exp.Type))
+            if (_templateMap.ContainsKey(exp.Type))
             {
                 // template function
                 var templateName = exp.Type;
                 result.Union(new AnalyzerResult(templateReferences: new List<string>() { templateName }));
 
-                if (templateMap[templateName].Parameters.Count == 0)
+                if (_templateMap[templateName].Parameters.Count == 0)
                 {
                     result.Union(this.AnalyzeTemplate(templateName));
                 }

@@ -46,6 +46,31 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task GetLocaleFromActivity()
+        {
+            void ValidateResponses(Activity[] activities)
+            {
+                // no need to do anything.
+            }
+
+            var a = new SimpleAdapter(ValidateResponses);
+            var c = new TurnContext(a, new Activity());
+
+            var activityId = Guid.NewGuid().ToString();
+            var activity = TestMessage.Message();
+            activity.Id = activityId;
+            activity.Locale = "de-DE";
+
+            Task SimpleCallback(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                Assert.Equal("de-DE", ((TurnContext)turnContext).Locale);
+                return Task.CompletedTask;
+            }
+
+            await a.ProcessRequest(activity, SimpleCallback, default(CancellationToken));
+        }
+
+        [Fact]
         public async Task ContinueConversation_DirectMsgAsync()
         {
             bool callbackInvoked = false;

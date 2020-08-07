@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
+    /// <summary>
+    /// Defines debugging extension methods for the <see cref="BotAdapter"/> class.
+    /// </summary>
     public static class DebuggingBotAdapterExtensions
     {
         /// <summary>
