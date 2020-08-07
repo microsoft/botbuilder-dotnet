@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
+	ProjectSection(SolutionItems) = preProject
+		libraries\Directory.Build.props = libraries\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD743B78-D61F-4FBF-B620-FA83CE599A50}"
 	ProjectSection(SolutionItems) = preProject
@@ -28,9 +31,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Tests", "tests\Microsoft.Bot.Connector.Tests\Microsoft.Bot.Connector.Tests.csproj", "{BF414C86-DB3B-4022-9B29-DCE8AA954C12}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{276EBE79-A13A-46BD-A566-B01DC0477A9B}"
-	ProjectSection(SolutionItems) = preProject
-		libraries\integration\Directory.Build.props = libraries\integration\Directory.Build.props
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.Luis", "libraries\Microsoft.Bot.Builder.AI.LUIS\Microsoft.Bot.Builder.AI.Luis.csproj", "{67AA3C00-E2C5-4D13-BA5E-72EB0E5B8DAA}"
 EndProject
@@ -121,9 +121,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LuisV3.Tests", "tests\Microsoft.Bot.Builder.Ai.LUISV3.tests\Microsoft.Bot.Builder.AI.LuisV3.Tests.csproj", "{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{6230B915-B238-4E57-AAC4-06B4498F540F}"
-	ProjectSection(SolutionItems) = preProject
-		libraries\Adapters\Directory.Build.props = libraries\Adapters\Directory.Build.props
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Twilio", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Twilio\Microsoft.Bot.Builder.Adapters.Twilio.csproj", "{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}"
 EndProject
@@ -197,11 +194,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SSO", "SSO", "{AA545986-D3E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "End2End", "End2End", "{1024840D-8B5A-4E39-8F6D-F7430DD3749E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot1", "tests\Skills\Bot1\Bot1.csproj", "{2367D12D-2A9B-4F52-8948-78C1EDE9059A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bot1", "tests\Skills\Bot1\Bot1.csproj", "{2367D12D-2A9B-4F52-8948-78C1EDE9059A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot2", "tests\Skills\Bot2\Bot2.csproj", "{36D6E1D7-2506-4096-8D76-55C3CCD32DFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bot2", "tests\Skills\Bot2\Bot2.csproj", "{36D6E1D7-2506-4096-8D76-55C3CCD32DFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot3", "tests\Skills\Bot3\Bot3.csproj", "{85463C41-8D08-4A9D-A475-68A83730431C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bot3", "tests\Skills\Bot3\Bot3.csproj", "{85463C41-8D08-4A9D-A475-68A83730431C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
