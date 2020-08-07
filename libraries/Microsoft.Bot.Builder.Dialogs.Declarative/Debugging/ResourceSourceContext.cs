@@ -17,6 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Debugging
         /// <value>
         /// A mapping between <see cref="JToken" /> and their respective resource ids.
         /// </value>
-        internal Dictionary<JToken, string> ResourceIdMap { get; } = new Dictionary<JToken, string>(new JTokenEqualityComparer());
+        internal Dictionary<JToken, string> DefaultIdMap { get; } = new Dictionary<JToken, string>(new JTokenEqualityComparer());
     }
 }

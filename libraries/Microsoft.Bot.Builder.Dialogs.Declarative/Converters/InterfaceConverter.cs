@@ -185,13 +185,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             if (jToken is JObject jObj && !jObj.ContainsKey("id"))
             {
                 // Check if we have an id registered for this token
-                if (sourceContext is ResourceSourceContext rsc && rsc.ResourceIdMap.ContainsKey(jToken))
+                if (sourceContext is ResourceSourceContext rsc && rsc.DefaultIdMap.ContainsKey(jToken))
                 {
                     // Clone the token since we'll alter it from the file version.
                     // If we don't clone, future ranges will be calculated based on the altered token.
                     // which will end in a wrong source range.
                     tokenToBuild = jToken.DeepClone();
-                    tokenToBuild["id"] = rsc.ResourceIdMap[jToken];
+                    tokenToBuild["id"] = rsc.DefaultIdMap[jToken];
                 }
             }
 
