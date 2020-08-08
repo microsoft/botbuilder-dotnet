@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         /// <param name="dataConnectionString">Azure Storage connection string.</param>
         /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
         /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
-        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.All.</para>
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
         /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
         /// </param>
