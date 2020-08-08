@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
@@ -89,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
-        /// Gets or sets a value indicating whether to end the dialog when there are no actions to execute.
+        /// Gets or sets an expression indicating whether to end the dialog when there are no actions to execute.
         /// </summary>
         /// <remarks>
         /// If true, when there are no actions to execute, the current dialog will end
@@ -100,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </value>
         [DefaultValue(true)]
         [JsonProperty("autoEndDialog")]
-        public bool AutoEndDialog { get; set; } = true;
+        public BoolExpression AutoEndDialog { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the selector for picking the possible events to execute.
@@ -665,7 +666,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // Still processing assignments
                     return await ContinueActionsAsync(actionContext, null, cancellationToken).ConfigureAwait(false);
                 }
-                else if (ShouldEnd())
+                else if (this.AutoEndDialog.GetValue(actionContext.State))
                 {
                     actionContext.State.TryGetValue<object>(DefaultResultProperty, out var result);
                     return await actionContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
@@ -865,11 +866,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return false;
-        }
-
-        private bool ShouldEnd()
-        {
-            return AutoEndDialog;
         }
 
         private ActionContext ToActionContext(DialogContext dc)

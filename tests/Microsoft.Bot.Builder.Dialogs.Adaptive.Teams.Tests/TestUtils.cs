@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +12,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
-using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 {
@@ -21,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 
         public static IEnumerable<object[]> GetTestScripts(string relativeFolder)
         {
-            string testFolder = Path.GetFullPath(Path.Combine(RootFolder, PathUtils.NormalizePath(relativeFolder)));
+            var testFolder = Path.GetFullPath(Path.Combine(RootFolder, PathUtils.NormalizePath(relativeFolder)));
             return Directory.EnumerateFiles(testFolder, "*.test.dialog", SearchOption.AllDirectories).Select(s => new object[] { Path.GetFileName(s) }).ToArray();
         }
 
@@ -32,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
             var userState = new UserState(storage);
 
             var adapter = (TestAdapter)new TestAdapter(Channels.Msteams)
-                .Use(new RegisterClassMiddleware<IConfiguration>(TestUtils.DefaultConfiguration))
+                .Use(new RegisterClassMiddleware<IConfiguration>(DefaultConfiguration))
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
@@ -41,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 
             var script = resourceExplorer.LoadType<TestScript>(resourceId ?? $"{testName}.test.dialog");
             script.Configuration = configuration ?? new ConfigurationBuilder().AddInMemoryCollection().Build();
-            script.Description = script.Description ?? resourceId;
+            script.Description ??= resourceId;
             await script.ExecuteAsync(adapter: adapter, testName: testName, resourceExplorer: resourceExplorer).ConfigureAwait(false);
         }
 
@@ -54,10 +56,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
                 {
                     break;
                 }
-                else
-                {
-                    parent = Path.GetDirectoryName(parent);
-                }
+
+                parent = Path.GetDirectoryName(parent);
             }
 
             return parent;

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Observers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -164,25 +165,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             RegisterComponentTypes();
 
             string id = resource.Id;
-            if (resource is FileResource fileResource)
-            {
-                id = fileResource.FullName;
-            }
 
             try
             {
-                var sourceContext = new SourceContext();
-                var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+                var sourceContext = new ResourceSourceContext();
+                var (jToken, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+
                 using (new SourceScope(sourceContext, range))
                 {
-                    var result = Load<T>(json, sourceContext);
-
-                    if (result is Dialog dlg && !((JObject)json).ContainsKey("id"))
-                    {
-                        // if there is no jobject.id for the dialog, then the dialog id's should be resource.id
-                        dlg.Id = resource.Id;
-                    }
-
+                    var result = Load<T>(jToken, sourceContext);
                     return result;
                 }
             }
@@ -394,7 +385,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
-            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+            // When we load a reference and then pass the JsonReader to the converters, 
+            // the JsonReader needs to be in the same state as when received from the 
+            // Json.Net runtime. Otherwise, the source ranges will look different and not look like
+            // the same content, introducing potential bugs.
+            // We explicitly pass advance: true in this case to mimic the behavior in Json.Net
+            // Json.Net: https://github.com/JamesNK/Newtonsoft.Json/blob/9be95e0f6aedf5cdc108b058bf71f0839911e0c9/Src/Newtonsoft.Json/Serialization/JsonSerializerInternalReader.cs#L1791
+            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext, advanceJsonReader: true).ConfigureAwait(false);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
             {
@@ -426,6 +423,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             DebugSupport.SourceMap.Add(json, range);
 
             return json;
+        }
+
+        /// <summary>
+        /// Reads a <see cref="JToken"/> and <see cref="SourceRange"/> for a given resource.
+        /// </summary>
+        /// <param name="resource"><see cref="Resource"/> to read.</param>
+        /// <param name="sourceContext"><see cref="SourceContext"/> for the current operation.</param>
+        /// <param name="advanceJsonReader">Whether to advance the <see cref="JsonReader"/>.</param>
+        /// <returns>The resulting <see cref="JToken"/> and <see cref="SourceRange"/> for the requested resource.</returns>
+        internal async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, bool advanceJsonReader = false)
+        {
+            var text = await resource.ReadTextAsync().ConfigureAwait(false);
+            using (var readerText = new StringReader(text))
+            using (var readerJson = new JsonTextReader(readerText))
+            {
+                if (advanceJsonReader)
+                {
+                    // Mimic the state in which Json.Net passes the readers. In some scenarios,
+                    // Json.Net advances de readers by one.
+                    // Example: https://github.com/JamesNK/Newtonsoft.Json/blob/9be95e0f6aedf5cdc108b058bf71f0839911e0c9/Src/Newtonsoft.Json/Serialization/JsonSerializerInternalReader.cs#L1791
+                    readerJson.Read(); // Move to first token
+                }
+
+                var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
+
+                AutoAssignId(resource, token, sourceContext);
+
+                if (resource is FileResource fileResource)
+                {
+                    range.Path = fileResource.FullName;
+                }
+
+                return (token, range);
+            }
         }
 
         /// <summary>
@@ -536,7 +567,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             var converters = new List<JsonConverter>();
 
-            // get converters
+            // Get converters
             foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
             {
                 var result = component.GetConverters(this, sourceContext);
@@ -544,6 +575,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 {
                     converters.AddRange(result);
                 }
+            }
+
+            // Create a cycle detection observer
+            var cycleDetector = new CycleDetectionObserver();
+
+            // Register our cycle detector on the converters that support observer registration
+            foreach (var observableConverter in converters.Where(c => c is IObservableJsonConverter))
+            {
+                (observableConverter as IObservableJsonConverter).RegisterObserver(cycleDetector);
             }
 
             var serializer = JsonSerializer.Create(new JsonSerializerSettings()
@@ -561,24 +601,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             });
 
+            // Pass 1 of cycle detection. This pass fills the cycle detector cache excluding cycles.
+            var pass1Result = token.ToObject<T>(serializer);
+
+            cycleDetector.CycleDetectionPass = CycleDetectionPasses.PassTwo;
+
+            // Pass 2 of cycle detection. This pass stitches objects from the cache into the places
+            // where we found cycles.
+
             return token.ToObject<T>(serializer);
-        }
-
-        private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext)
-        {
-            var text = await resource.ReadTextAsync().ConfigureAwait(false);
-            using (var readerText = new StringReader(text))
-            using (var readerJson = new JsonTextReader(readerText))
-            {
-                var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
-
-                if (resource is FileResource fileResource)
-                {
-                    range.Path = fileResource.FullName;
-                }
-
-                return (token, range);
-            }
         }
 
         private void ResourceProvider_Changed(object sender, IEnumerable<Resource> resources)
@@ -608,6 +639,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                             this.OnChanged(changed);
                         }).ContinueWith(t => t.Status);
 #pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
+                }
+            }
+        }
+
+        private void AutoAssignId(Resource resource, JToken jToken, SourceContext sourceContext)
+        {
+            if (sourceContext is ResourceSourceContext resourceSourceContext)
+            {
+                if (jToken is JObject jObj && !jObj.ContainsKey("id") && !resourceSourceContext.DefaultIdMap.ContainsKey(jToken))
+                {
+                    resourceSourceContext.DefaultIdMap.Add(jToken, resource.Id);
                 }
             }
         }

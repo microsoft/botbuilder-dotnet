@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// If one or more items have the same name,
     /// the last item with that name appears in the result.
     /// </summary>
-    public class Intersection : ExpressionEvaluator
+    internal class Intersection : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Intersection"/> class.

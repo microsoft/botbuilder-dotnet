@@ -15,24 +15,33 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
     /// On Send: queues up sends and sends them along the transport.
     /// On Receive: receives a packet header and some bytes and dispatches it to the subscriber.
     /// </summary>
-    public class PayloadSender : IPayloadSender
+    public class PayloadSender : IPayloadSender, IDisposable
     {
         private readonly SendQueue<SendPacket> _sendQueue;
         private readonly EventWaitHandle _connectedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
         private ITransportSender _sender;
-        private bool _isDisconnecting = false;
+        private bool _isDisconnecting;
         private readonly byte[] _sendHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
         private readonly byte[] _sendContentBuffer = new byte[TransportConstants.MaxPayloadLength];
 
+        // To detect redundant calls to dispose
+        private bool _disposed;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PayloadSender"/> class.
+        /// </summary>
         public PayloadSender()
         {
             _sendQueue = new SendQueue<SendPacket>(this.WritePacketAsync);
         }
 
+        /// <inheritdoc/>
         public event DisconnectedEventHandler Disconnected;
 
+        /// <inheritdoc/>
         public bool IsConnected => _sender != null;
 
+        /// <inheritdoc/>
         public void Connect(ITransportSender sender)
         {
             if (_sender != null)
@@ -45,6 +54,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             _connectedEvent.Set();
         }
 
+        /// <inheritdoc/>
         public void SendPayload(Header header, Stream payload, bool isLengthKnown, Func<Header, Task> sentCallback)
         {
             var packet = new SendPacket()
@@ -57,6 +67,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             _sendQueue.Post(packet);
         }
 
+        /// <inheritdoc/>
         public void Disconnect(DisconnectedEventArgs e = null)
         {
             var didDisconnect = false;
@@ -75,7 +86,15 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                             didDisconnect = true;
                         }
                     }
+#pragma warning disable CA1031 // Do not catch general exception types
+
+                    // As ITransportSender is an extension point, we don't 
+                    // know what exceptions will be thrown by different implementations
+                    // of ITransportSender.Close(). We do want to ensure that Disconnect doesn't
+                    // stop the other resource cleanup, so we don't throw any exception.
+                    // TODO: Flow ILogger all the way here and start logging these exceptions.
                     catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                     }
 
@@ -94,11 +113,44 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             }
         }
 
+        /// <summary>
+        /// Disposes the object and releases any related objects owned by the class.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                _sender?.Dispose();
+                _sendQueue?.Dispose();
+                _connectedEvent?.Dispose();
+            }
+
+            _disposed = true;
+        }
+
         private async Task WritePacketAsync(SendPacket packet)
         {
             _connectedEvent.WaitOne();
-
-            DisconnectedEventArgs disconnectedArgs = null;
 
             try
             {
@@ -164,9 +216,11 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                     Background.Run(() => packet.SentCallback(packet.Header));
                 }
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
-                disconnectedArgs = new DisconnectedEventArgs()
+                var disconnectedArgs = new DisconnectedEventArgs()
                 {
                     Reason = e.Message,
                 };

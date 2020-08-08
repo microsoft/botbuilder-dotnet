@@ -16,9 +16,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
     /// </summary>
     public class HttpRequestSequenceMock : HttpRequestMock
     {
+        /// <summary>
+        /// The type of request.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.HttpRequestSequenceMock";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpRequestSequenceMock"/> class.
+        /// </summary>
+        /// <param name="path">optional path.</param>
+        /// <param name="line">optional line.</param>
         [JsonConstructor]
         public HttpRequestSequenceMock([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -53,8 +61,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         /// The sequence of responses to reply.
         /// </value>
         [JsonProperty("responses")]
-        public List<HttpResponseMock> Responses { get;  } = new List<HttpResponseMock>();
+        public List<HttpResponseMock> Responses { get; } = new List<HttpResponseMock>();
 
+        /// <summary>
+        /// Configures the initial conditions.
+        /// </summary>
+        /// <param name="handler">The HttpMessageHandler.</param>
         public override void Setup(MockHttpMessageHandler handler)
         {
             var response = new SequenceResponseManager(Responses);

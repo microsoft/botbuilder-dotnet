@@ -47,6 +47,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public SourceRange SourceRange { get; set; }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return $"[{Description}]({Id})";

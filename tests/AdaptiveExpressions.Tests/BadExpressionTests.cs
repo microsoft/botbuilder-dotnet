@@ -64,9 +64,12 @@ namespace AdaptiveExpressions.Tests
             Test("substring(hello, 0, 10)"), // the length of substring is out of the range of the original string
             Test("substring(hello, 0, 'hello')"), // length is not integer
             Test("toLower(one)"), // the parameter of toLower must be string
+            Test("toLower('hi', 1)"), // the second argument must be a locale string
             Test("toLower('hi', 1)"), // should have 1 param
+            Test("toLower('hi', locale, 1)"), // should have 1 or 2 params
             Test("toUpper(one)"), // the parameter of toUpper must be string
-            Test("toUpper('hi', 1)"), // should have 1 param
+            Test("toUpper('hi', 1)"), // the second argument must be a locale string
+            Test("toUpper('hi', locale, 1)"), // should have 1 or 2 params
             Test("trim(one)"), // the parameter of trim must be string
             Test("trim('hi', 1)"), // should have 1 param
             Test("endsWith(hello, one)"), // should have string params
@@ -91,10 +94,14 @@ namespace AdaptiveExpressions.Tests
             Test("lastIndexOf(hello, world, one)"), // should have two parameters
             Test("lastIndexOf(hello, one)"), // second parameter should be string
             Test("lastIndexOf(one, hello)"), // first parameter should be list or string
-            Test("sentenceCase(hello, hello)"), // should have one parameters
+            Test("sentenceCase(hello, locale, hello)"), // should have 1 or 2 parameters
             Test("sentenceCase(one)"), // first parameter should be string
-            Test("titleCase(hello, hello)"), // should have one parameters
+            Test("sentenceCase(hello, one)"), // the second parameter should be locale string
+            Test("titleCase(hello, locale, hello)"), // should have 1 or 2 parameters
             Test("titleCase(one)"), // first parameter should be string
+            Test("titleCase(hello, one)"), // the second parameter should be locale string
+            
+            //Test("titleCase(hello, hello)"), // On Mac OS, a wrong locale string won't throw an error.
             #endregion
 
             #region Logical comparison functions test
@@ -206,26 +213,26 @@ namespace AdaptiveExpressions.Tests
             Test("isPresent('world', 123445)"), // should have only one parameter
             Test("addDays('errortime', 1)"), // error datetime format
             Test("addDays(timestamp, 'hi')"), // second param should be integer
-            Test("addDays(timestamp)"), // should have 2 or 3 params
-            Test("addDays(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
+            Test("addDays(timestamp)"), // should have 2 or 3 or 4 params
+            Test("addDays(timestamp, 1, 'D', locale, hello)"), // should have 2 or 3 or 4 params
             Test("addDays(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("addDays(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addHours('errortime', 1)"), // error datetime format
             Test("addHours(timestamp, 'hi')"), // second param should be integer
             Test("addHours(timestamp)"), // should have 2 or 3 params
-            Test("addHours(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
+            Test("addHours(timestamp, 1,'yyyy', locale, 2)"), // should have 2 or 3 or 4 params
             Test("addHours(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("addHours(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addMinutes('errortime', 1)"), // error datetime format
             Test("addMinutes(timestamp, 'hi')"), // second param should be integer
             Test("addMinutes(timestamp)"), // should have 2 or 3 params
-            Test("addMinutes(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
+            Test("addMinutes(timestamp, 1,'yyyy', locale, 2)"), // should have 2 or 3 or 4 params
             Test("addMinutes(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("addMinutes(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addSeconds('errortime', 1)"), // error datetime format
             Test("addSeconds(timestamp, 'hi')"), // second param should be integer
-            Test("addSeconds(timestamp)"), // should have 2 or 3 params
-            Test("addSeconds(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
+            Test("addSeconds(timestamp)"), // should have 2 or 3 or 4 params
+            Test("addSeconds(timestamp, 1, 'yyyy', locale, 2)"), // should have 2 or 3 or 4 params
             Test("addSeconds(notISOTimestamp, 1)"), // not ISO datetime format
             Test("addSeconds(timestamp, 12345678901234)"), // the second parameter should be a 32-bit signed integer
             Test("dayOfMonth('errortime')"), // error datetime format
@@ -252,16 +259,20 @@ namespace AdaptiveExpressions.Tests
             Test("formatDateTime(notValidTimestamp3)"), // error datetime format
             Test("formatDateTime({})"), // error valid datetime
             Test("formatDateTime(timestamp, 1)"), // invalid format string
+            Test("formatDateTime(timestamp, 'yyyy', locale, hello)"), // should have 1 or 2 or 3params
             Test("formatEpoch('time')"), // error string
-            Test("formatEpoch(timestamp, 'yyyy', 1)"), // should have 1 or 2 params
+            Test("formatEpoch(timestamp, 'yyyy', locale, 1)"), // should have 1 or 2 or 3 params
             Test("formatTicks('string')"), // String is not valid
             Test("formatTicks(2.3)"), // float is not valid
             Test("formatTicks({})"), // object is not valid
+            Test("formatTicks({})"), // object is not valid
+            Test("formatTicks(9809789278, 'yyyy', locale, 1)"), // should have 1 or 2 or 3 params
             Test("subtractFromTime('errortime', 'yyyy', 1)"), // error datetime format
             Test("subtractFromTime(timestamp, 1, 'W')"), // error time unit
             Test("subtractFromTime(timestamp, timestamp, 'W')"), // error parameters format
             Test("subtractFromTime(timestamp, '1', 'Year')"), // second param should be integer
-            Test("subtractFromTime(timestamp, 'yyyy')"), // should have 3 or 4 params
+            Test("subtractFromTime(timestamp, 'yyyy')"), // should have 3 or 4 or 5 params
+            Test("subtractFromTime(timestamp, '1', 'Year', 'yyyy', locale, hello)"), // should have 3 or 4 or 5 params
             Test("subtractFromTime(notISOTimestamp, 1, 'Year')"), // not ISO datetime format
             Test("dateReadBack('errortime', 'errortime')"), // error datetime format
             Test("dateReadBack(timestamp)"), // shold have two params
@@ -272,34 +283,36 @@ namespace AdaptiveExpressions.Tests
             Test("getPastTime(1, 'W')"), // error time unit
             Test("getPastTime(timestamp, 'W')"), // error parameters format
             Test("getPastTime('yyyy', '1')"), // second param should be integer
-            Test("getPastTime('yyyy')"), // should have 2 or 3 params
+            Test("getPastTime('yyyy')"), // should have 2 or 3 or 4 params
+            Test("getPastTime(1, 'day', 'D', locale, hello)"), // should have 2 or 3 or 4 params
             Test("getFutureTime(1, 'W')"), // error time unit
             Test("getFutureTime(timestamp, 'W')"), // error parameters format
             Test("getFutureTime('yyyy', '1')"), // second param should be integer
-            Test("getFutureTime('yyyy')"), // should have 2 or 3 params
+            Test("getFutureTime('yyyy')"), // should have 2 or 3 or 4 params
+            Test("getFutureTime(1, 'day', 'D', locale, hello)"), // should have 2 or 3 or 4 params
+            Test("utcNow('D', locale, hello)"), // should have 0 or 1 or 2 params
             Test("convertFromUTC(notValidTimestamp, timezone)"), // not valid iso timestamp
             Test("convertFromUTC(timestamp, invalidTimezone,'D')"), // not valid timezone
             Test("convertFromUTC(timestamp, timezone, 'a')"),  // not valid format 
-            Test("convertFromUTC(timestamp, timezone, 'D', hello)"),  // should have 2 or 3 params
+            Test("convertFromUTC(timestamp, timezone, 'D', locale, hello)"),  // should have 2 or 3 or 4 params
             Test("convertToUTC(notValidTimestamp, timezone)"), // not valid timestamp
             Test("convertToUTC(timestamp, invalidTimezone, 'D')"), // not valid timezone
             Test("convertToUTC(timestamp, timezone, 'a')"),  // not valid format 
-            Test("convertToUTC(timestamp, timezone, 'D', hello)"),  // should have 2 or 3 params
+            Test("convertToUTC(timestamp, timezone, 'D', locale, hello)"),  // should have 2 or 3 or 4 params
             Test("addToTime(notValidTimeStamp, one, 'day')"), // not valid timestamp
             Test("addToTime(timeStamp, hello, 'day')"), // interval should be integer
             Test("addToTime(timeStamp, one, 'decade', 'D')"), // not valid time unit 
-            Test("addToTime(timeStamp, one, 'week', 'A')"), // not valid format
-            Test("addToTime(timeStamp, one, 'week', 'A', one)"), // should have 3 or 4 params
-            Test("convertTimeZone(notValidTimeStamp, 'UTC', timezone)"), // not valid timestamp
-            Test("convertTimeZone(timestamp2, invalidTimezone, timezone, 'D')"), // not valid source timezone
-            Test("convertTimeZone(timestamp2, timezone, invalidTimezone, 'D')"), // not valid destination timezone
-            Test("convertTimeZone(timestamp2, timezone, 'UTC', 'A')"), // not valid destination timezone
+            Test("addToTime(timeStamp, one, 'week', 'D')"), // not valid format
+            Test("addToTime(timeStamp, one, 'week', 'D', locale, one)"), // should have 3 or 4 or 5 params
             Test("startOfDay(notValidTimeStamp)"), // not valid timestamp
             Test("startOfDay(timeStamp, 'A')"), // not valid format
+            Test("startOfDay(timeStamp, 'D', 'de-DE', hello)"), // should have 1 or 2 or 3 params
             Test("startOfHour(notValidTimeStamp)"), // not valid timestamp
             Test("startOfHour(timeStamp, 'A')"), // not valid format
+            Test("startOfHour(timeStamp, 'D', 'de-DE', hello)"), // should have 1 or 2 or 3 params
             Test("startOfMonth(notValidTimeStamp)"), // not valid timestamp
             Test("startOfMonth(timeStamp, 'A')"), // not valid format
+            Test("startOfMonth(timeStamp, 'D', 'de-DE', hello)"), // should have 1 or 2 or 3 params
             Test("ticks(notValidTimeStamp)"), // not valid timestamp
             Test("ticksToDays(12.12)"), // not an integer
             Test("ticksToHours(timestamp)"), // not an integer
@@ -454,7 +467,7 @@ namespace AdaptiveExpressions.Tests
         /// <param name="input">Input.</param>
         /// <returns>object[].</returns>
         public static object[] Test(string input) => new object[] { input };
-                
+
         [Theory]
         [MemberData(nameof(SyntaxErrorExpressions))]
         public void ParseSyntaxErrors(string exp)
@@ -504,6 +517,7 @@ namespace AdaptiveExpressions.Tests
                 notValidTimestamp2 = "1521118800",
                 notValidTimestamp3 = "20181115",
                 relativeUri = "../catalog/shownew.htm?date=today",
+                locale = "en-US",
                 json1 = @"{
                           'Enabled': true,
                           'Roles': [ 'User', 'Admin' ]

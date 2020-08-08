@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 { Prompt<int>.AttemptCountKey, 0 },
             };
 
-            state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
+            state[PersistedExpires] = DateTime.UtcNow.AddMilliseconds(timeout);
             state[PersistedCaller] = CreateCallerInfo(dc.Context);
 
             // Attempt to get the users token
@@ -174,14 +174,18 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            // Recognize token
-            var recognized = await RecognizeTokenAsync(dc, cancellationToken).ConfigureAwait(false);
-
             // Check for timeout
             var state = dc.ActiveDialog.State;
             var expires = (DateTime)state[PersistedExpires];
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
-            var hasTimedOut = isMessage && DateTime.Compare(DateTime.Now, expires) > 0;
+
+            // If the incoming Activity is a message, or an Activity Type normally handled by OAuthPrompt,
+            // check to see if this OAuthPrompt Expiration has elapsed, and end the dialog if so.
+            var isTimeoutActivityType = isMessage
+                            || IsTokenResponseEvent(dc.Context)
+                            || IsTeamsVerificationInvoke(dc.Context)
+                            || IsTokenExchangeRequestInvoke(dc.Context);
+            var hasTimedOut = isTimeoutActivityType && DateTime.Compare(DateTime.UtcNow, expires) > 0;
 
             if (hasTimedOut)
             {
@@ -191,6 +195,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var promptState = state.MapValueTo<IDictionary<string, object>>(PersistedState);
             var promptOptions = state.MapValueTo<PromptOptions>(PersistedOptions);
+
+            // Recognize token
+            var recognized = await RecognizeTokenAsync(dc, cancellationToken).ConfigureAwait(false);
 
             // Increment attempt count
             // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
@@ -212,6 +219,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (isValid)
             {
                 return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
+            }
+            else if (isMessage && _settings.EndOnInvalidMessage)
+            {
+                // If EndOnInvalidMessage is set, complete the prompt with no result.
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             if (!dc.Context.Responded && isMessage && promptOptions?.RetryPrompt != null)

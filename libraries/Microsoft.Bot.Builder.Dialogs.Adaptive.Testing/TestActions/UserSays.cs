@@ -15,14 +15,22 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
     /// <summary>
-    /// Send an text to the bot.
+    /// Action to script sending text to the bot.
     /// </summary>
     [DebuggerDisplay("UserSays:{Text}")]
     public class UserSays : TestAction
     {
+        /// <summary>
+        /// Seralization of kind.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.UserSays";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserSays"/> class.
+        /// </summary>
+        /// <param name="path">path for source.</param>
+        /// <param name="line">line number in source.</param>
         [JsonConstructor]
         public UserSays([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -47,6 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("user")]
         public string User { get; set; }
 
+        /// <inheritdoc/>
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             if (this.Text == null)

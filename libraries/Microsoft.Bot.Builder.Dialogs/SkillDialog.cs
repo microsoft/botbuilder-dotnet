@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class SkillDialog : Dialog
     {
         private const string DeliverModeStateKey = "deliverymode";
+        private const string SkillConversationIdStateKey = "Microsoft.Bot.Builder.Dialogs.SkillDialog.SkillConversationId";
 
         public SkillDialog(SkillDialogOptions dialogOptions, string dialogId = null)
             : base(dialogId)
@@ -47,8 +48,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Store delivery mode and connection name in dialog state for later use.
             dc.ActiveDialog.State[DeliverModeStateKey] = dialogArgs.Activity.DeliveryMode;
 
+            // Create the conversationId and store it in the dialog context state so we can use it later
+            var skillConversationId = await CreateSkillConversationIdAsync(dc.Context, dc.Context.Activity, cancellationToken).ConfigureAwait(false);
+            dc.ActiveDialog.State[SkillConversationIdStateKey] = skillConversationId;
+
             // Send the activity to the skill.
-            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, cancellationToken).ConfigureAwait(false);
+            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, skillConversationId, cancellationToken).ConfigureAwait(false);
             if (eocActivity != null)
             {
                 return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
@@ -78,8 +83,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             skillActivity.DeliveryMode = dc.ActiveDialog.State[DeliverModeStateKey] as string;
 
+            var skillConversationId = (string)dc.ActiveDialog.State[SkillConversationIdStateKey];
+
             // Just forward to the remote skill
-            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, cancellationToken).ConfigureAwait(false);
+            var eocActivity = await SendToSkillAsync(dc.Context, skillActivity, skillConversationId, cancellationToken).ConfigureAwait(false);
             if (eocActivity != null)
             {
                 return await dc.EndDialogAsync(eocActivity.Value, cancellationToken).ConfigureAwait(false);
@@ -97,8 +104,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Apply conversation reference and common properties from incoming activity before sending.
             repromptEvent.ApplyConversationReference(turnContext.Activity.GetConversationReference(), true);
 
+            var skillConversationId = (string)instance.State[SkillConversationIdStateKey];
+
             // connection Name is not applicable for a RePrompt, as we don't expect as OAuthCard in response.
-            await SendToSkillAsync(turnContext, (Activity)repromptEvent, cancellationToken).ConfigureAwait(false);
+            await SendToSkillAsync(turnContext, (Activity)repromptEvent, skillConversationId, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
@@ -120,8 +129,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 activity.ChannelData = turnContext.Activity.ChannelData;
                 activity.Properties = turnContext.Activity.Properties;
 
+                var skillConversationId = (string)instance.State[SkillConversationIdStateKey];
+
                 // connection Name is not applicable for an EndDialog, as we don't expect as OAuthCard in response.
-                await SendToSkillAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);
+                await SendToSkillAsync(turnContext, activity, skillConversationId, cancellationToken).ConfigureAwait(false);
             }
 
             await base.EndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
@@ -165,7 +176,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return dialogArgs;
         }
 
-        private async Task<Activity> SendToSkillAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken)
+        private async Task<Activity> SendToSkillAsync(ITurnContext context, Activity activity, string skillConversationId, CancellationToken cancellationToken)
         {
             if (activity.Type == ActivityTypes.Invoke)
             {
@@ -173,8 +184,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // This makes sure that the dialog will receive the Invoke response from the skill and any other activities sent, including EoC.
                 activity.DeliveryMode = DeliveryModes.ExpectReplies;
             }
-
-            var skillConversationId = await CreateSkillConversationIdAsync(context, activity, cancellationToken).ConfigureAwait(false);
 
             // Always save state before forwarding
             // (the dialog stack won't get updated with the skillDialog and things won't work if you don't)

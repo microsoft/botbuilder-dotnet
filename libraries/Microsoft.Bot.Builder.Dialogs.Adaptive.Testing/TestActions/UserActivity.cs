@@ -20,9 +20,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     /// </summary>
     public class UserActivity : TestAction
     {
+        /// <summary>
+        /// Kind for the serialization.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.UserActivity";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserActivity"/> class.
+        /// </summary>
+        /// <param name="path">path to source.</param>
+        /// <param name="line">line number in source.</param>
         [JsonConstructor]
         public UserActivity([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -47,6 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("user")]
         public string User { get; set; }
 
+        /// <inheritdoc/>
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             if (this.Activity == null)
@@ -66,9 +75,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            
+
             await adapter.ProcessActivityAsync(activity, callback, default(CancellationToken)).ConfigureAwait(false);
-            
+
             sw.Stop();
             Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserActivity: {this.Activity.Text} ]");
         }

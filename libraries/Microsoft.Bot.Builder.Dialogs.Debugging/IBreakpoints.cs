@@ -3,21 +3,22 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public interface IBreakpoints
+    internal interface IBreakpoints
     {
         bool IsBreakPoint(object item);
 
-        object ItemFor(Protocol.Breakpoint breakpoint);
+        object ItemFor(Breakpoint breakpoint);
 
         void Clear();
 
-        IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints);
+        IReadOnlyList<Breakpoint> SetBreakpoints(Source source, IReadOnlyList<SourceBreakpoint> sourceBreakpoints);
 
-        IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints);
+        IReadOnlyList<Breakpoint> SetBreakpoints(IReadOnlyList<FunctionBreakpoint> functionBreakpoints);
 
-        IReadOnlyList<Protocol.Breakpoint> ApplyUpdates();
+        IReadOnlyList<Breakpoint> ApplyUpdates();
     }
 }

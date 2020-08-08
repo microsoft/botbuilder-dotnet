@@ -8,12 +8,23 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
+    /// <summary>
+    /// Assertion that reply from the bot matches one of options.
+    /// </summary>
     [DebuggerDisplay("AssertReplyOneOf:{GetConditionDescription()}")]
     public class AssertReplyOneOf : AssertReplyActivity
     {
+        /// <summary>
+        /// kind for serialization.
+        /// </summary>
         [JsonProperty("$kind")]
         public new const string Kind = "Microsoft.Test.AssertReplyOneOf";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssertReplyOneOf"/> class.
+        /// </summary>
+        /// <param name="path">path to source.</param>
+        /// <param name="line">line number in source.</param>
         [JsonConstructor]
         public AssertReplyOneOf([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
             : base(path, line)
@@ -39,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("exact")]
         public bool Exact { get; set; } = true;
 
+        /// <inheritdoc/>
         public override void ValidateReply(Activity activity)
         {
             bool found = false;
@@ -72,6 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             base.ValidateReply(activity);
         }
 
+        /// <inheritdoc/>
         public override string GetConditionDescription()
         {
             return string.Join("\n", this.Text);

@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Streaming.Payloads
                 stream.Position = 0;
 
                 // Execute the request on a seperate Task
-                Background.Run(() => ProcessResponse(stream));
+                Background.Run(() => ProcessResponseAsync(stream));
             }
 
             // else: still receiving data into the stream
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         public void Close() => _streamManager.CloseStream(Id);
 
-        private async Task ProcessResponse(Stream stream)
+        private async Task ProcessResponseAsync(Stream stream)
         {
             using (var textReader = new StreamReader(stream))
             {

@@ -19,9 +19,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     [DebuggerDisplay("AssertReplyActivity:{GetConditionDescription()}")]
     public class AssertReplyActivity : TestAction
     {
+        /// <summary>
+        /// Kind for json serialization.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.AssertReplyActivity";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssertReplyActivity"/> class.
+        /// </summary>
+        /// <param name="path">optional path.</param>
+        /// <param name="line">optional line.</param>
         [JsonConstructor]
         public AssertReplyActivity([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -50,11 +58,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("assertions")]
         public List<string> Assertions { get; } = new List<string>();
 
+        /// <summary>
+        /// Gets the text to assert for an activity.
+        /// </summary>
+        /// <returns>String.</returns>
         public virtual string GetConditionDescription()
         {
             return Description ?? string.Join("\n", Assertions);
         }
 
+        /// <summary>
+        /// Validates the reply of an activity.
+        /// </summary>
+        /// <param name="activity">The activity to verify.</param>
         public virtual void ValidateReply(Activity activity)
         {
             foreach (var assertion in Assertions)
@@ -67,6 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             }
         }
 
+        /// <inheritdoc/>
         public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             var timeout = (int)this.Timeout;

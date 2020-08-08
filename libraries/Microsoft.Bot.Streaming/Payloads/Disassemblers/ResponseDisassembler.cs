@@ -4,23 +4,41 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.PayloadTransport;
 
 namespace Microsoft.Bot.Streaming.Payloads
 {
+    /// <summary>
+    /// The <see cref="PayloadDisassembler"/> used for <see cref="StreamingResponse"/> payloads.
+    /// </summary>
     public class ResponseDisassembler : PayloadDisassembler
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResponseDisassembler"/> class.
+        /// </summary>
+        /// <param name="sender">The <see cref="PayloadSender"/> to send the disassembled data to.</param>
+        /// <param name="id">The ID of this disassembler.</param>
+        /// <param name="response">The response to be disassembled.</param>
         public ResponseDisassembler(IPayloadSender sender, Guid id, StreamingResponse response)
            : base(sender, id)
         {
             Response = response;
         }
 
+        /// <summary>
+        /// Gets the <see cref="StreamingResponse"/> to be disassembled.
+        /// </summary>
+        /// <value>
+        /// The <see cref="StreamingResponse"/> to be disassembled.
+        /// </value>
         public StreamingResponse Response { get; private set; }
 
+        /// <inheritdoc/>
         public override char Type => PayloadTypes.Response;
 
+        /// <inheritdoc/>
         public override Task<StreamWrapper> GetStreamAsync()
         {
             var payload = new ResponsePayload()

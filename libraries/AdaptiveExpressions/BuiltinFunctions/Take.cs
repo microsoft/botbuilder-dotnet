@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return items from the front of a collection.
     /// </summary>
-    public class Take : ExpressionEvaluator
+    internal class Take : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Take"/> class.

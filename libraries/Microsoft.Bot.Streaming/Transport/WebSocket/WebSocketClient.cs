@@ -22,7 +22,10 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         private readonly ProtocolAdapter _protocolAdapter;
         private readonly IPayloadSender _sender;
         private readonly IPayloadReceiver _receiver;
-        private bool _isDisconnecting = false;
+        private bool _isDisconnecting;
+
+        // To detect redundant calls to dispose
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketClient"/> class.
@@ -89,7 +92,7 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         /// <returns>A <see cref="Task"/> that will not resolve until the client stops listening for incoming messages.</returns>
         public async Task ConnectAsync(IDictionary<string, string> requestHeaders = null)
         {
-            await ConnectAsyncEx(requestHeaders);
+            await ConnectAsyncEx(requestHeaders).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -100,7 +103,9 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         /// </param>
         /// <param name="cancellationToken">An optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
         /// <returns>A <see cref="Task"/> that will not resolve until the client stops listening for incoming messages.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (we can't change this without breaking binary compat)
         public async Task ConnectAsyncEx(IDictionary<string, string> requestHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             if (IsConnected)
             {
@@ -117,7 +122,13 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
             }
 
             await clientWebSocket.ConnectAsync(new Uri(_url), cancellationToken).ConfigureAwait(false);
+
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
+            // We don't dispose the websocket, since WebSocketTransport is now
+            // the owner of the web socket.
             var socketTransport = new WebSocketTransport(clientWebSocket);
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
             // Listen for disconnected events.
             _sender.Disconnected += OnConnectionDisconnected;
@@ -168,9 +179,37 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         }
 
         /// <summary>
-        /// Method used to disconnect this client.
+        /// Disconnects the client and releases any related objects owned by the class.
         /// </summary>
-        public void Dispose() => Disconnect();
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                Disconnect();
+            }
+
+            _disposed = true;
+        }
 
         private void OnConnectionDisconnected(object sender, EventArgs e)
         {

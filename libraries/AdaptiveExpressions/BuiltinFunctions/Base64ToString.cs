@@ -9,7 +9,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return the string version of a base64-encoded string,
     /// effectively decoding the base64 string.
     /// </summary>
-    public class Base64ToString : ExpressionEvaluator
+    internal class Base64ToString : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Base64ToString"/> class.

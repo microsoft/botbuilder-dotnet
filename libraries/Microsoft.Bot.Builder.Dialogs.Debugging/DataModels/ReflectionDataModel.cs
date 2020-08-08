@@ -4,11 +4,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-#pragma warning disable CA1812 // Supressing error due to internal being used as intended
     internal sealed class ReflectionDataModel<T> : DataModelBase<object, string, object>
-#pragma warning restore CA1812 // Supressing error due to internal being used as intended
     {
         public ReflectionDataModel(ICoercion coercion)
             : base(coercion)

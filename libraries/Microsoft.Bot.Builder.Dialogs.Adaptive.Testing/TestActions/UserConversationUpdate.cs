@@ -15,12 +15,23 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
+    /// <summary>
+    /// Action to script sending a conversationUpdate activity to the bot.
+    /// </summary>
     [DebuggerDisplay("UserConversationUpdate")]
     public class UserConversationUpdate : TestAction
     {
+        /// <summary>
+        /// Kind for serialization.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.UserConversationUpdate";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserConversationUpdate"/> class.
+        /// </summary>
+        /// <param name="path">path for source.</param>
+        /// <param name="line">line number in source.</param>
         [JsonConstructor]
         public UserConversationUpdate([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -41,6 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("membersRemoved")]
         public List<string> MembersRemoved { get; } = new List<string>();
 
+        /// <inheritdoc/>
         public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             var activity = adapter.MakeActivity();

@@ -15,10 +15,19 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Streaming.Payloads
 {
+    /// <summary>
+    /// PayloadDisassemblers take data payloads and break them into chunks to be sent out over the transport and reassembled on the receiving side.
+    /// This allows for payload multiplexing and avoids a single large payload from blocking the transport.
+    /// </summary>
     public abstract class PayloadDisassembler
     {
         private TaskCompletionSource<bool> _taskCompletionSource;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PayloadDisassembler"/> class.
+        /// </summary>
+        /// <param name="sender">The <see cref="PayloadSender"/> used to send the disassembled payload chunks.</param>
+        /// <param name="id">The ID of this disassembler.</param>
         public PayloadDisassembler(IPayloadSender sender, Guid id)
         {
             Sender = sender;
@@ -26,8 +35,20 @@ namespace Microsoft.Bot.Streaming.Payloads
             _taskCompletionSource = new TaskCompletionSource<bool>();
         }
 
+        /// <summary>
+        /// Gets the one character type of the payload this disassembler is operating on. <see cref="TransportConstants"/>.
+        /// </summary>
+        /// <value>
+        /// The one character type of the payload this disassembler is operating on. <see cref="TransportConstants"/>.
+        /// </value>
         public abstract char Type { get; }
 
+        /// <summary>
+        /// Gets or sets the <see cref="JsonSerializer"/> for use by this disassembler. Used to set custom <see cref="SerializationSettings"/>.
+        /// </summary>
+        /// <value>
+        /// The <see cref="JsonSerializer"/> for use by this disassembler. Used to set custom <see cref="SerializationSettings"/>.
+        /// </value>
         protected static JsonSerializer Serializer { get; set; } = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
 
         private IPayloadSender Sender { get; set; }
@@ -42,9 +63,20 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         private bool IsEnd { get; set; } = false;
 
+        /// <summary>
+        /// Gets the stream this disassembler is operating on.
+        /// </summary>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public abstract Task<StreamWrapper> GetStreamAsync();
 
+        /// <summary>
+        /// Begins the process of disassembling a payload and sending the resulting chunks to the <see cref="PayloadSender"/> to dispatch over the transport.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token. Not currently used.</param>
+        /// <returns>A task representing the state of the disassembly.</returns>
+#pragma warning disable CA1801 // Review unused parameters
         public async Task DisassembleAsync(CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
         {
             var w = await GetStreamAsync().ConfigureAwait(false);
 
@@ -55,6 +87,11 @@ namespace Microsoft.Bot.Streaming.Payloads
             await SendAsync().ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Creates and returns the <see cref="StreamDescription"/> of the passed <see cref="ResponseMessageStream"/>.
+        /// </summary>
+        /// <param name="stream">The stream to create a <see cref="StreamDescription"/> for.</param>
+        /// <returns>The <see cref="StreamDescription"/> of the passed in <see cref="ResponseMessageStream"/>.</returns>
         protected static StreamDescription GetStreamDescription(ResponseMessageStream stream)
         {
             var description = new StreamDescription()
@@ -83,6 +120,13 @@ namespace Microsoft.Bot.Streaming.Payloads
             return description;
         }
 
+        /// <summary>
+        /// Serializes the item into the <see cref="MemoryStream"/> and exposes the length of the result.
+        /// </summary>
+        /// <typeparam name="T">The type of the item to be serialized.</typeparam>
+        /// <param name="item">The item to be serialized.</param>
+        /// <param name="stream">The <see cref="MemoryStream"/> to write the serialized data to.</param>
+        /// <param name="length">The length of the <see cref="MemoryStream"/> after the item has been serialized and the resulting data has been written to the stream.</param>
         protected static void Serialize<T>(T item, out MemoryStream stream, out int length)
         {
             stream = new MemoryStream();
@@ -120,12 +164,12 @@ namespace Microsoft.Bot.Streaming.Payloads
                 isLengthKnown = true;
             }
 
-            Sender.SendPayload(header, Stream, isLengthKnown, OnSent);
+            Sender.SendPayload(header, Stream, isLengthKnown, OnSentAsync);
 
             return _taskCompletionSource.Task;
         }
 
-        private async Task OnSent(Header header)
+        private async Task OnSentAsync(Header header)
         {
             SendOffset += header.PayloadLength;
             IsEnd = header.End;
