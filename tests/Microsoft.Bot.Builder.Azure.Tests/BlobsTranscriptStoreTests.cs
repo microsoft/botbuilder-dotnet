@@ -3,9 +3,9 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
+using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
@@ -14,19 +14,19 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [TestClass]
     [TestCategory("Storage")]
-    [TestCategory("Storage - BlobTranscripts")]
-    public class AzureBlobTranscriptStoreTests : TranscriptStoreBaseTests
+    [TestCategory("Storage - BlobsTranscriptStore")]
+    public class BlobsTranscriptStoreTests : TranscriptStoreBaseTests
     {
         public TestContext TestContext { get; set; }
 
         protected override string ContainerName
         {
-            get { return $"blobtranscript{TestContext.TestName.ToLower()}"; }
+            get { return $"blobstranscript{TestContext.TestName.ToLower()}"; }
         }
 
         protected override ITranscriptStore TranscriptStore
         {
-            get { return new AzureBlobTranscriptStore(BlobStorageEmulatorConnectionString, ContainerName); }
+            get { return new BlobsTranscriptStore(BlobStorageEmulatorConnectionString, ContainerName); }
         }
 
         [TestInitialize]
@@ -34,9 +34,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
-                await CloudStorageAccount.Parse(BlobStorageEmulatorConnectionString)
-                    .CreateCloudBlobClient()
-                    .GetContainerReference(ContainerName)
+                await new BlobContainerClient(BlobStorageEmulatorConnectionString, ContainerName)
                     .DeleteIfExistsAsync().ConfigureAwait(false);
             }
         }
@@ -46,9 +44,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
-                await CloudStorageAccount.Parse(BlobStorageEmulatorConnectionString)
-                    .CreateCloudBlobClient()
-                    .GetContainerReference(ContainerName)
+                await new BlobContainerClient(BlobStorageEmulatorConnectionString, ContainerName)
                     .DeleteIfExistsAsync().ConfigureAwait(false);
             }
         }
@@ -66,10 +62,20 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     await TranscriptStore.LogActivityAsync(a);
                     Assert.Fail("Should have thrown ");
                 }
-                catch (StorageException)
+                catch (System.Xml.XmlException xmlEx)
                 {
-                    return;
+                    // Unfortunately, Azure.Storage.Blobs v12.4.4 currently throws this XmlException for long keys :(
+                    if (xmlEx.Message == "'\"' is an unexpected token. Expecting whitespace. Line 1, position 50.")
+                    {
+                        return;
+                    }
                 }
+
+                //catch (RequestFailedException ex)
+                //when ((HttpStatusCode)ex.Status == HttpStatusCode.PreconditionFailed)
+                //{
+                //    return;
+                //}
 
                 Assert.Fail("Should have thrown ");
             }
@@ -81,18 +87,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
-                Assert.ThrowsException<FormatException>(() => new AzureBlobTranscriptStore("123", ContainerName));
+                Assert.ThrowsException<ArgumentNullException>(() =>
+                    new BlobsTranscriptStore(null, ContainerName));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new AzureBlobTranscriptStore((CloudStorageAccount)null, ContainerName));
+                    new BlobsTranscriptStore(BlobStorageEmulatorConnectionString, null));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new AzureBlobTranscriptStore((string)null, ContainerName));
+                    new BlobsTranscriptStore(string.Empty, ContainerName));
 
                 Assert.ThrowsException<ArgumentNullException>(() =>
-                    new AzureBlobTranscriptStore((CloudStorageAccount)null, null));
-
-                Assert.ThrowsException<ArgumentNullException>(() => new AzureBlobTranscriptStore((string)null, null));
+                    new BlobsTranscriptStore(BlobStorageEmulatorConnectionString, string.Empty));
             }
         }
     }
