@@ -45,9 +45,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
             // The token is characterized for the source range and the type expected for that source range.
             var hashCode = Hash<T>(range);
 
+            // Now analyze the stack to find cycles.
             // If the same source range appears twice in the stack, we have a cycle.
-            var isCycle = context.CallStack.ToList().Count(s =>
-                s.Equals(range)) > 1;
+            var isCycle = context.CallStack.Count(s => s.Equals(range)) > 1;
 
             if (isCycle && CycleDetectionPass == CycleDetectionPasses.PassOne)
             {
