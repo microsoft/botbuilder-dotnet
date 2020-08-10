@@ -31,7 +31,9 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 // In this context it makes for ugly code, but in the context of blocking an HTTP
                 // response until the the streaming connection has ended it creates an easier to
                 // follow user experience.
-                await reader.ConnectAsync();
+#pragma warning disable CS4014 // Should be resolved with https://github.com/microsoft/botbuilder-dotnet/issues/4421
+                reader.ConnectAsync();
+#pragma warning restore CS4014 
                 await writer.StartAsync();
 
                 // The writeStream can only connect to the readStream if the readStream is listening for new connections.
