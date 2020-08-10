@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null));
 
             // No Endpoint. Should throw.
-            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = "test",
                 CollectionId = "testId",
@@ -271,7 +271,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await UpdateObjectTest(_storage);
+                await UpdateObjectTest<DocumentClientException>(_storage);
             }
         }
 

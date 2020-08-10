@@ -168,14 +168,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             try
             {
-                var sourceContext = new SourceContext();
+                var sourceContext = new ResourceSourceContext();
                 var (jToken, range) = await ReadTokenRangeAsync(resource, sourceContext).ConfigureAwait(false);
+
                 using (new SourceScope(sourceContext, range))
                 {
-                    AutoAssignId(resource, jToken);
-
                     var result = Load<T>(jToken, sourceContext);
-
                     return result;
                 }
             }
@@ -393,7 +391,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // the same content, introducing potential bugs.
             // We explicitly pass advance: true in this case to mimic the behavior in Json.Net
             // Json.Net: https://github.com/JamesNK/Newtonsoft.Json/blob/9be95e0f6aedf5cdc108b058bf71f0839911e0c9/Src/Newtonsoft.Json/Serialization/JsonSerializerInternalReader.cs#L1791
-            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext, advance: true).ConfigureAwait(false);
+            var (json, range) = await ReadTokenRangeAsync(resource, sourceContext, advanceJsonReader: true).ConfigureAwait(false);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
             {
@@ -425,6 +423,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             DebugSupport.SourceMap.Add(json, range);
 
             return json;
+        }
+
+        /// <summary>
+        /// Reads a <see cref="JToken"/> and <see cref="SourceRange"/> for a given resource.
+        /// </summary>
+        /// <param name="resource"><see cref="Resource"/> to read.</param>
+        /// <param name="sourceContext"><see cref="SourceContext"/> for the current operation.</param>
+        /// <param name="advanceJsonReader">Whether to advance the <see cref="JsonReader"/>.</param>
+        /// <returns>The resulting <see cref="JToken"/> and <see cref="SourceRange"/> for the requested resource.</returns>
+        internal async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, bool advanceJsonReader = false)
+        {
+            var text = await resource.ReadTextAsync().ConfigureAwait(false);
+            using (var readerText = new StringReader(text))
+            using (var readerJson = new JsonTextReader(readerText))
+            {
+                if (advanceJsonReader)
+                {
+                    // Mimic the state in which Json.Net passes the readers. In some scenarios,
+                    // Json.Net advances de readers by one.
+                    // Example: https://github.com/JamesNK/Newtonsoft.Json/blob/9be95e0f6aedf5cdc108b058bf71f0839911e0c9/Src/Newtonsoft.Json/Serialization/JsonSerializerInternalReader.cs#L1791
+                    readerJson.Read(); // Move to first token
+                }
+
+                var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
+
+                AutoAssignId(resource, token, sourceContext);
+
+                if (resource is FileResource fileResource)
+                {
+                    range.Path = fileResource.FullName;
+                }
+
+                return (token, range);
+            }
         }
 
         /// <summary>
@@ -534,7 +566,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private T Load<T>(JToken token, SourceContext sourceContext)
         {
             var converters = new List<JsonConverter>();
-            
+
             // Get converters
             foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
             {
@@ -580,34 +612,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return token.ToObject<T>(serializer);
         }
 
-        private async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, bool advance = false)
-        {
-            var text = await resource.ReadTextAsync().ConfigureAwait(false);
-            using (var readerText = new StringReader(text))
-            using (var readerJson = new JsonTextReader(readerText))
-            {
-                if (advance)
-                {
-                    // We have the optional advance parameter to mimic the state
-                    // in which Json.Net passes the readers. In some scenarios,
-                    // Json.Net advances de readers by one.
-                    // Example: https://github.com/JamesNK/Newtonsoft.Json/blob/9be95e0f6aedf5cdc108b058bf71f0839911e0c9/Src/Newtonsoft.Json/Serialization/JsonSerializerInternalReader.cs#L1791
-                    readerJson.Read(); // Move to first token
-                }
-
-                var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
-
-                if (resource is FileResource fileResource)
-                {
-                    range.Path = fileResource.FullName;
-                }
-
-                AutoAssignId(resource, token);
-
-                return (token, range);
-            }
-        }
-
         private void ResourceProvider_Changed(object sender, IEnumerable<Resource> resources)
         {
             if (this.Changed != null)
@@ -639,13 +643,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
-        private void AutoAssignId(Resource resource, JToken jToken)
+        private void AutoAssignId(Resource resource, JToken jToken, SourceContext sourceContext)
         {
-            if (jToken is JObject jObj)
+            if (sourceContext is ResourceSourceContext resourceSourceContext)
             {
-                if (!jObj.ContainsKey("id"))
+                if (jToken is JObject jObj && !jObj.ContainsKey("id") && !resourceSourceContext.DefaultIdMap.ContainsKey(jToken))
                 {
-                    jObj["id"] = resource.Id;
+                    resourceSourceContext.DefaultIdMap.Add(jToken, resource.Id);
                 }
             }
         }
