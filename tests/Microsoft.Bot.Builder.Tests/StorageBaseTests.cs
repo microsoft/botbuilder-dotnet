@@ -63,7 +63,8 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal("1", storeItem.Id);
         }
 
-        protected async Task UpdateObjectTest(IStorage storage)
+        protected async Task UpdateObjectTest<T>(IStorage storage)
+            where T : Exception
         {
             var originalPocoItem = new PocoItem() { Id = "1", Count = 1 };
             var originalPocoStoreItem = new PocoStoreItem() { Id = "1", Count = 1 };
