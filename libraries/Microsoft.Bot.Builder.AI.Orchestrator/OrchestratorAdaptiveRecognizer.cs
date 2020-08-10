@@ -14,7 +14,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
-using Microsoft.Orchestrator;
+using Microsoft.BotFramework.Orchestrator;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public const string ResultProperty = "result";
 
         private const float UnknownIntentFilterScore = 0.4F;
-        private static Microsoft.Orchestrator.Orchestrator orchestrator = null;
+        private static BotFramework.Orchestrator.Orchestrator orchestrator = null;
         private string _modelPath;
         private string _snapshotPath;
         private ILabelResolver _resolver = null;
@@ -310,7 +310,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // Create Orchestrator 
                 try
                 {
-                    orchestrator = new Microsoft.Orchestrator.Orchestrator(fullModelPath);
+                    orchestrator = new BotFramework.Orchestrator.Orchestrator(fullModelPath);
                 }
                 catch (Exception ex)
                 {

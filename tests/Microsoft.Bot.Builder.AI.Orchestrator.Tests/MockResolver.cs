@@ -1,6 +1,9 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
-using Microsoft.Orchestrator;
+using Microsoft.BotFramework.Orchestrator;
 
 namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
 {
@@ -38,12 +41,22 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             throw new NotImplementedException();
         }
 
+        public string GetConfigJson()
+        {
+            throw new NotImplementedException();
+        }
+
         public IReadOnlyList<Result> Score(in string text)
         {
             return _score;
         }
 
         public IReadOnlyList<Result> Score(in string text, in LabelType labelType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetRuntimeParams(in string config_or_path, bool reset_all)
         {
             throw new NotImplementedException();
         }
