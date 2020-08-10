@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             var writeStream = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
-            new StreamingRequestHandler(new Microsoft.Bot.Streaming.UnitTests.Mocks.MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
             var reader = new NamedPipeClient(pipeName);
             var writer = new NamedPipeServer(pipeName, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName));
 
@@ -31,9 +31,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 // In this context it makes for ugly code, but in the context of blocking an HTTP
                 // response until the the streaming connection has ended it creates an easier to
                 // follow user experience.
-#pragma warning disable CS4014 // Should be resolved with https://github.com/microsoft/botbuilder-dotnet/issues/4421
-                reader.ConnectAsync();
-#pragma warning restore CS4014 
+                var connectTask = reader.ConnectAsync();
                 await writer.StartAsync();
 
                 // The writeStream can only connect to the readStream if the readStream is listening for new connections.
