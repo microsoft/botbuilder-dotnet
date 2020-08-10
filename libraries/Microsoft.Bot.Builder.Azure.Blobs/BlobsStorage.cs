@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
                                                     {
-                                                        TypeNameHandling = TypeNameHandling.None,
+                                                        TypeNameHandling = TypeNameHandling.All,
                                                     });
 
             // Triggers a check for the existence of the container
