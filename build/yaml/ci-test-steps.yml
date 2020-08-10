@@ -29,6 +29,7 @@ steps:
     projects: |
      Tests/**/*Tests.csproj
      !Tests/**/Microsoft.Bot.Builder.TestBot.Tests.csproj
+     !Tests/**/Microsoft.Bot.Builder.AI.Orchestrator.Tests.csproj
      
     arguments: '-v n  -f netcoreapp2.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
   condition: and(eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp21'))
@@ -40,6 +41,7 @@ steps:
     projects: |
      Tests/**/*Tests.csproj
      !Tests/**/Microsoft.Bot.Builder.TestBot.Tests.csproj
+     !Tests/**/Microsoft.Bot.Builder.AI.Orchestrator.Tests.csproj
      
     arguments: '-v n  -f netcoreapp2.1 --configuration debug --no-build --no-restore --filter TestCategory!=IgnoreInAutomatedBuild --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
   condition: and(eq(variables['BuildConfiguration'],'Debug-Windows'), eq(variables['BuildTarget'],'netcoreapp21'))
