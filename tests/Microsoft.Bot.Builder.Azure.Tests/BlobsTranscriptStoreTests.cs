@@ -71,12 +71,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     }
                 }
 
-                //catch (RequestFailedException ex)
-                //when ((HttpStatusCode)ex.Status == HttpStatusCode.PreconditionFailed)
-                //{
-                //    return;
-                //}
-
                 Assert.Fail("Should have thrown ");
             }
         }

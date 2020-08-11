@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
     public class QueuesStorage
     {
         private JsonSerializerSettings _jsonSettings;
-        private bool _createQueuIfNotExists = true;
+        private bool _createQueueIfNotExists = true;
         private readonly QueueClient _queueClient;
 
         /// <summary>
@@ -56,26 +56,26 @@ namespace Microsoft.Bot.Builder.Azure.Queues
         /// Queue and Activity, with option in the Activity.Value to Azure.Storage.Queues.
         /// </summary>
         /// <param name="activity">This is expected to be an <see cref="Activity"/> retrieved from a call to 
-        /// activity.GetConversationReference().GetContinuationActivity().  This enables restarting the conversaton
+        /// activity.GetConversationReference().GetContinuationActivity().  This enables restarting the conversation
         /// using BotAdapter.ContinueConversationAsync.</param>
-        /// <param name="visibilityTimeout">Default value of 0.  Cannot be larger than 7 days.</param>
+        /// <param name="visibilityTimeout">Default value of 0. Cannot be larger than 7 days.</param>
         /// <param name="timeToLive">Specifies the time-to-live interval for the message.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         /// <returns><see cref="SendReceipt"/> as a Json string, from the QueueClient SendMessageAsync operation.</returns>
         public async Task<string> QueueActivityAsync(Activity activity, TimeSpan? visibilityTimeout = null, TimeSpan? timeToLive = null,  CancellationToken cancellationToken = default)
         {
-            if (_createQueuIfNotExists)
+            if (_createQueueIfNotExists)
             {
                 // This is an optimization flag to check if the container creation call has been made.
                 // It is okay if this is called more than once.
-                _createQueuIfNotExists = false;
-                await _queueClient.CreateIfNotExistsAsync().ConfigureAwait(false);
+                _createQueueIfNotExists = false;
+                await _queueClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             var message = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, _jsonSettings)));
-            var reciept = await _queueClient.SendMessageAsync(message, visibilityTimeout, timeToLive, cancellationToken).ConfigureAwait(false);
+            var receipt = await _queueClient.SendMessageAsync(message, visibilityTimeout, timeToLive, cancellationToken).ConfigureAwait(false);
 
-            return JsonConvert.SerializeObject(reciept.Value);
+            return JsonConvert.SerializeObject(receipt.Value);
         }
     }
 }

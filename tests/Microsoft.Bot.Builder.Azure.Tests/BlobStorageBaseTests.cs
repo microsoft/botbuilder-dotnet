@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
     /// <summary>
-    /// Base tests for <seealso cref="BlobsTests"/> and <seealso cref="AzureBlobStorageTests"/>.
+    /// Base tests for <seealso cref="BlobsStorageTests"/> and <seealso cref="AzureBlobStorageTests"/>.
     /// </summary>
     public abstract class BlobStorageBaseTests : StorageBaseTests
     {

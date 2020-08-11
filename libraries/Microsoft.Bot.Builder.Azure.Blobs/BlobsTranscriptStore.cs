@@ -168,8 +168,9 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             do
             {
                 var resultSegment = _containerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
-                                    .AsPages(token);
-
+                                    .AsPages(token).ConfigureAwait(false);
+                
+                token = null;
                 await foreach (var blobPage in resultSegment)
                 {
                     foreach (BlobItem blobItem in blobPage.Values)
@@ -233,21 +234,20 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 throw new ArgumentNullException($"missing {nameof(channelId)}");
             }
 
-            string token;
+            string token = null;
             List<TranscriptInfo> conversations = new List<TranscriptInfo>();
             do
             {
-                token = null;
-
                 var resultSegment = _containerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/")
-                                    .AsPages(token);
+                                    .AsPages(token).ConfigureAwait(false);
+                token = null;
 
                 await foreach (var blobPage in resultSegment)
                 {
                     foreach (BlobItem blobItem in blobPage.Values)
                     {
                         // Unescape the Id we escaped when we saved it
-                        var conversation = new TranscriptInfo() { Id = Uri.UnescapeDataString(blobItem.Name.Split('/').Where(s => s.Length > 0).Last()), ChannelId = channelId };
+                        var conversation = new TranscriptInfo() { Id = Uri.UnescapeDataString(blobItem.Name.Split('/').Last(s => s.Length > 0)), ChannelId = channelId };
                         if (continuationToken != null)
                         {
                             if (conversation.Id == continuationToken)
@@ -271,8 +271,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             }
             while (!string.IsNullOrEmpty(token) && conversations.Count < PageSize);
 
-            var pagedResult = new PagedResult<TranscriptInfo>();
-            pagedResult.Items = conversations.ToArray();
+            var pagedResult = new PagedResult<TranscriptInfo>() { Items = conversations.ToArray() };
 
             if (pagedResult.Items.Length == PageSize)
             {
@@ -300,12 +299,12 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
             }
 
-            string token;
+            string token = null;
             do
             {
-                token = null;
                 var resultSegment = _containerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(channelId)}/{SanitizeKey(conversationId)}/")
-                                                            .AsPages(token);
+                                                            .AsPages(token).ConfigureAwait(false);
+                token = null;
 
                 await foreach (var blobPage in resultSegment)
                 {
@@ -329,12 +328,12 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 try
                 {
-                    string token;
+                    string token = null;
                     do
                     {
-                        token = null;
                         var resultSegment = _containerClient.Value.GetBlobsAsync(BlobTraits.Metadata, prefix: $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/")
-                                                            .AsPages(token);
+                                                            .AsPages(token).ConfigureAwait(false);
+                        token = null;
 
                         await foreach (var blobPage in resultSegment)
                         {
@@ -363,23 +362,17 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                         await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
                         continue;
                     }
-                    else
-                    {
-                        throw;
-                    }
+
+                    throw;
                 }
             }
         }
 
         private async Task<Activity> GetActivityFromBlobClientAsync(BlobClient blobClient)
         {
-            using (BlobDownloadInfo download = await blobClient.DownloadAsync().ConfigureAwait(false))
-            {
-                using (var jsonReader = new JsonTextReader(new StreamReader(download.Content)))
-                {
-                    return _jsonSerializer.Deserialize(jsonReader, typeof(Activity)) as Activity;
-                }
-            }
+            using BlobDownloadInfo download = await blobClient.DownloadAsync().ConfigureAwait(false);
+            using var jsonReader = new JsonTextReader(new StreamReader(download.Content));
+            return _jsonSerializer.Deserialize(jsonReader, typeof(Activity)) as Activity;
         }
 
         private async Task LogActivityToBlobClientAsync(IActivity activity, BlobClient blobClient, bool overwrite = false)
