@@ -73,8 +73,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(Options.WebexSecret)))
             {
                 var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(jsonPayload));
+#if NETSTANDARD
                 var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToUpperInvariant();
-
+#else
+                var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty, StringComparison.Ordinal).ToUpperInvariant();
+#endif
                 return signature == hash;
             }
 #pragma warning restore CA5350 // Webex API uses SHA1 as cryptographic algorithm.

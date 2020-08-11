@@ -146,8 +146,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             {
                 var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
 
+#if NETSTANDARD
                 var hash = string.Concat("v0=", BitConverter.ToString(hashArray).Replace("-", string.Empty)).ToUpperInvariant();
-
+#else
+                var hash = string.Concat("v0=", BitConverter.ToString(hashArray).Replace("-", string.Empty, StringComparison.Ordinal)).ToUpperInvariant();
+#endif
                 var retrievedSignature = request.Headers["X-Slack-Signature"].ToString().ToUpperInvariant();
 
                 return hash == retrievedSignature;

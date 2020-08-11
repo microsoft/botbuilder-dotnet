@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
     <Description>Library for connecting bots with Webex Teams API.</Description>
     <Summary>This library implements C# classes for the Webex Adapter</Summary>
   </PropertyGroup>
@@ -19,6 +19,10 @@
     <DebugType>Full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <PropertyGroup>
     <!-- CS8002: The Thrzn41.WebexTeams package isn't signed, so supress the warning. There seems to not be a way to supress this for ONLY Thrzn41.WebexTeams. -->
