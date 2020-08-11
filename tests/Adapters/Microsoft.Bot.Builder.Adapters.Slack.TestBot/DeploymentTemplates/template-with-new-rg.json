@@ -117,7 +117,7 @@
       ],
       "properties": {
         "expressionEvaluationOptions": {
-          "scope": "outner"
+          "scope": "inner"
         },
         "mode": "Incremental",
         "template": {
