@@ -318,11 +318,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 return values;
             }
 
-#if NETSTANDARD
             var pairs = query.Replace("+", "%20").Split('&');
-#else
-            var pairs = query.Replace("+", "%20", StringComparison.Ordinal).Split('&');
-#endif
             foreach (var p in pairs)
             {
                 var pair = p.Split('=');
