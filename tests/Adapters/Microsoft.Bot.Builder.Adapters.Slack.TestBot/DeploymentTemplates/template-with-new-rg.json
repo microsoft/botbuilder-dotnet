@@ -93,7 +93,6 @@
     }
   },
   "variables": {
-    "appServicePlanName": "[parameters('newAppServicePlanName')]",
     "resourcesLocation": "[parameters('newAppServicePlanLocation')]",
     "webAppName": "[if(empty(parameters('newWebAppName')), parameters('botId'), parameters('newWebAppName'))]",
     "siteHost": "[concat(variables('webAppName'), '.azurewebsites.net')]",
@@ -118,7 +117,7 @@
       ],
       "properties": {
         "expressionEvaluationOptions": {
-          "scope": "outer"
+          "scope": "outner"
         },
         "mode": "Incremental",
         "template": {
@@ -130,12 +129,12 @@
             {
               "comments": "Create a new App Service Plan",
               "type": "Microsoft.Web/serverfarms",
-              "name": "[variables('appServicePlanName')]",
+              "name": "[parameters('newAppServicePlanName')]",
               "apiVersion": "2018-02-01",
               "location": "[variables('resourcesLocation')]",
               "sku": "[parameters('newAppServicePlanSku')]",
               "properties": {
-                "name": "[variables('appServicePlanName')]"
+                "name": "[parameters('newAppServicePlanName')]"
               }
             },
             {
@@ -145,12 +144,12 @@
               "location": "[variables('resourcesLocation')]",
               "kind": "app",
               "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]"
+                "[resourceId('Microsoft.Web/serverfarms/', parameters('newAppServicePlanName'))]"
               ],
               "name": "[variables('webAppName')]",
               "properties": {
                 "name": "[variables('webAppName')]",
-                "serverFarmId": "[variables('appServicePlanName')]",
+                "serverFarmId": "[parameters('newAppServicePlanName')]",
                 "siteConfig": {
                   "appSettings": [
                     {
