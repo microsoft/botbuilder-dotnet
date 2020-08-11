@@ -61,8 +61,8 @@ namespace Microsoft.Bot.Builder.Azure.Queues
         /// <param name="visibilityTimeout">Default value of 0.  Cannot be larger than 7 days.</param>
         /// <param name="timeToLive">Specifies the time-to-live interval for the message.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
-        /// <returns><see cref="SendReceipt"/> from the QueueClient SendMessageAsync operation.</returns>
-        public async Task<SendReceipt> QueueActivityAsync(Activity activity, TimeSpan? visibilityTimeout = null, TimeSpan? timeToLive = null,  CancellationToken cancellationToken = default)
+        /// <returns><see cref="SendReceipt"/> as a Json string, from the QueueClient SendMessageAsync operation.</returns>
+        public async Task<string> QueueActivityAsync(Activity activity, TimeSpan? visibilityTimeout = null, TimeSpan? timeToLive = null,  CancellationToken cancellationToken = default)
         {
             if (_createQueuIfNotExists)
             {
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             var message = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, _jsonSettings)));
             var reciept = await _queueClient.SendMessageAsync(message, visibilityTimeout, timeToLive, cancellationToken).ConfigureAwait(false);
 
-            return reciept.Value;
+            return JsonConvert.SerializeObject(reciept.Value);
         }
     }
 }
