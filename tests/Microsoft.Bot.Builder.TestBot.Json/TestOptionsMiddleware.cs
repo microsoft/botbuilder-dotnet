@@ -9,10 +9,17 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
-    public class TestOptionsExtension : IMiddleware
+    public class TestOptionsMiddleware : IMiddleware
     {
         private static readonly string _setOptionsName = "Microsoft.SetTestOptions";
         private static readonly string _seedProperty = "seed";
+
+        private ConversationState conversationState;
+
+        public TestOptionsMiddleware(ConversationState conversationState)
+        {
+            this.conversationState = conversationState;
+        }
 
         /// <summary>
         /// Adds the associated object or service to the current turn context.
@@ -25,10 +32,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// <seealso cref="ITurnContext"/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
-            var testOptions = new TestOptions();
             if (turnContext.Activity.Type == ActivityTypes.Event &&
                 turnContext.Activity.Name == _setOptionsName)
             {
+                var testOptions = new TestOptions();
                 var randomObject = turnContext.Activity.Value;
                 if (randomObject != null)
                 {
@@ -40,16 +47,16 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         {
                             var seed = seedJValue.ToObject<int>();
                             testOptions.Random = new Random(seed);
+
+                            var accessor = conversationState.CreateProperty<TestOptions>(nameof(TestOptions));
+                            await accessor.SetAsync(turnContext, testOptions, cancellationToken);
+
+                            await conversationState.SaveChangesAsync(turnContext, true, cancellationToken);
                         }
                     }
                 }
             }
-            else if (testOptions.Random == null)
-            {
-                testOptions.Random = new Random();
-            }
 
-            turnContext.TurnState[TestOptions.Kind] = testOptions;
             await nextTurn(cancellationToken).ConfigureAwait(false);
         }
     }

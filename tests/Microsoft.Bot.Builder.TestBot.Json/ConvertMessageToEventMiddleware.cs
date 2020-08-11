@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     /// Support arbitrary event by hack.
     /// Message: {"event": "myevent", "value": "aaa"} => into event activity.
     /// </summary>
-    public class ConvertMessageToEvenExtension : IMiddleware
+    public class ConvertMessageToEventMiddleware : IMiddleware
     {
         /// <summary>
         /// Adds the associated object or service to the current turn context.

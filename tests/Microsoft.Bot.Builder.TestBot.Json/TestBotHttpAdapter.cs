@@ -21,6 +21,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             : base(configuration, credentialProvider)
         {
             this.Use(new RegisterClassMiddleware<IConfiguration>(configuration));
+            this.Use(new ConvertMessageToEventMiddleware());
+            this.Use(new TestOptionsMiddleware(conversationState));
             this.UseStorage(storage);
             this.UseBotState(userState, conversationState);
             this.UseDebugger(configuration.GetValue("debugport", 4712), logger: logger);

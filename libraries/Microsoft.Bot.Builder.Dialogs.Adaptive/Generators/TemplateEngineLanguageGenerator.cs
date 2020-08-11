@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 Locale = dialogContext.GetLocale(),
             };
 
-            var testOptions = dialogContext.Context.TurnState.Get<TestOptions>("Microsoft.SetTestOptions");
+            var testOptions = dialogContext.State.GetValue<TestOptions>("conversation.TestOptions");
             if (testOptions != null)
             {
                 lgOpt.Random = testOptions.Random;
