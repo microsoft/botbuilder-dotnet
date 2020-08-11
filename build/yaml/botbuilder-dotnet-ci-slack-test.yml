@@ -72,8 +72,15 @@ steps:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-     call az group create --location westus --name $(BotGroup)
-     call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)" --name "$(BotName)"
+     # Comment out either Option 1 or Option 2 below. Ultimately, both templates should be exercised to ensure they continue to work.
+     
+     # Option 1: Use the "new-rg" template:
+     call az deployment create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)"
+     
+     # Option 2: Use the "preexisting-rg" template:
+     #call az group create --location westus --name $(BotGroup)
+     #call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)" --name "$(BotName)"
+     
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot\PublishedBot.zip"
 
 - task: DotNetCoreCLI@2
