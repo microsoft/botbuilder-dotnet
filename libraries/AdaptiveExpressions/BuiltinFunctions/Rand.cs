@@ -10,8 +10,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     internal class Rand : ExpressionEvaluator
     {
-        private static readonly Random Randomizer = new Random();
-
         private static readonly object _randomizerLock = new object();
 
         /// <summary>
@@ -24,8 +22,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.ApplyWithError(
-                        args =>
+            return FunctionUtils.ApplyWithOptionsAndError(
+                        (args, options) =>
                         {
                             object value = null;
                             string error = null;
@@ -45,7 +43,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             {
                                 lock (_randomizerLock)
                                 {
-                                    value = Randomizer.Next(min, max);
+                                    value = options.Random.Next(min, max);
                                 }
                             }
 
