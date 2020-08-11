@@ -319,7 +319,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             var pairs = query.Replace("+", "%20").Split('&');
-
             foreach (var p in pairs)
             {
                 var pair = p.Split('=');
