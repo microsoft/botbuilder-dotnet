@@ -30,7 +30,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.1.14" />
+    <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
