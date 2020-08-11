@@ -160,7 +160,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var connectionName = "myConnection";
             var exchangeToken = "exch123";
-            var token = "abc123";
 
             activity.Value = JObject.FromObject(new TokenExchangeInvokeRequest()
             {
