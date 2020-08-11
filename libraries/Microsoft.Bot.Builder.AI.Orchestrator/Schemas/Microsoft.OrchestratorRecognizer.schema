@@ -36,20 +36,20 @@
             "description": "Recognizer returns ChooseIntent (disambiguation) if other intents are classified within this score of the top scoring intent.",
             "default": 0.05,
             "examples": [
-                "true",
+                "=true",
                 "=turn.scoreThreshold",
-                "=settings.orchestrator.disambigscorethreshold"
+                "=settings.orchestrator.disambigScoreThreshold"
             ]
         },
         "detectAmbiguousIntents": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "Threshold",
+            "title": "Detect ambiguous intents",
             "description": "If true, recognizer will look for ambiguous intents (intents with close recognition scores from top scoring intent).",
             "default": false,
             "examples": [
-                "true",
+                "=true",
                 "=turn.detectAmbiguousIntents",
-                "=settings.orchestrator.detectambiguousintents"
+                "=settings.orchestrator.detectAmbiguousIntents"
             ]
         }
     },
