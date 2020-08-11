@@ -39,19 +39,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// </summary>
         public const string DeferPrefix = "DeferToRecognizer_";
 
-        /// <summary>
-        /// Intent name that will be produced by this recognizer if the child recognizers do not have consensus for intents.
-        /// </summary>
-        public const string ChooseIntent = "ChooseIntent";
-
-        /// <summary>
-        /// Standard none intent that means none of the recognizers recognize the intent.
-        /// </summary>
-        /// <remarks>
-        /// If each recognizer returns no intents or None intents, then this recognizer will return None intent.
-        /// </remarks>
-        public const string NoneIntent = "None";
-
         [JsonConstructor]
         public CrossTrainedRecognizerSet([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(callerPath, callerLine)
@@ -167,8 +154,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     }
                     else
                     {
-                        // ambigious because we have 2 or more real intents, so return ChooseIntent
-                        return CreateChooseIntentResult(recognizerResults);
+                        // ambigious because we have 2 or more real intents, so return ChooseIntent, filter out redirect results and return ChooseIntent
+                        var recognizersWithRealIntents = recognizerResults
+                            .Where(kv => !IsRedirect(kv.Value.GetTopScoringIntent().intent))
+                            .ToDictionary(kv => kv.Key, kv => kv.Value);
+                        return CreateChooseIntentResult(recognizersWithRealIntents);
                     }
                 }
             }
@@ -183,45 +173,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             return new RecognizerResult()
             {
                 Text = recognizerResults.Values.First().Text,
-                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
-            };
-        }
-
-        private RecognizerResult CreateChooseIntentResult(Dictionary<string, RecognizerResult> recognizerResults)
-        {
-            string text = null;
-            List<JObject> candidates = new List<JObject>();
-
-            foreach (var recognizerResult in recognizerResults)
-            {
-                text = recognizerResult.Value.Text;
-                var (intent, score) = recognizerResult.Value.GetTopScoringIntent();
-                if (!IsRedirect(intent) && intent != NoneIntent)
-                {
-                    dynamic candidate = new JObject();
-                    candidate.id = recognizerResult.Key;
-                    candidate.intent = intent;
-                    candidate.score = score;
-                    candidate.result = JObject.FromObject(recognizerResult.Value);
-                    candidates.Add(candidate);
-                }
-            }
-
-            if (candidates.Any())
-            {
-                // return ChooseIntent with Candidtes array
-                return new RecognizerResult()
-                {
-                    Text = text,
-                    Intents = new Dictionary<string, IntentScore>() { { ChooseIntent, new IntentScore() { Score = 1.0 } } },
-                    Properties = new Dictionary<string, object>() { { "candidates", candidates } },
-                };
-            }
-
-            // just return a none intent
-            return new RecognizerResult()
-            {
-                Text = text,
                 Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
             };
         }
