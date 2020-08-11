@@ -321,6 +321,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             // Testing the deprecated method for backward compatibility.
 #pragma warning disable 618
+            [Obsolete]
             public override Task<string> CreateSkillConversationIdAsync(ConversationReference conversationReference, CancellationToken cancellationToken)
             {
 #pragma warning restore 618
@@ -332,6 +333,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             // Testing the deprecated method for backward compatibility.
 #pragma warning disable 618
+            [Obsolete]
             public override Task<ConversationReference> GetConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
             {
 #pragma warning restore 618
