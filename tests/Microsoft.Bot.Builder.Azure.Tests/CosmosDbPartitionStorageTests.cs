@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-                await UpdateObjectTest(_storage);
+                await UpdateObjectTest<CosmosException>(_storage);
             }
         }
 
