@@ -151,7 +151,7 @@
               "location": "[variables('resourcesLocation')]",
               "kind": "app",
               "dependsOn": [
-                "[resourceId(concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('groupName'), 'Microsoft.Web/serverfarms/'), variables('appServicePlanName'))]"
+                "[concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('groupName'), '/Microsoft.Web/serverfarms/', variables('appServicePlanName'))]"
               ],
               "name": "[variables('webAppName')]",
               "properties": {
