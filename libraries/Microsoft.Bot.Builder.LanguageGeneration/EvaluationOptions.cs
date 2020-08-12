@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             NullSubstitution = null;
             LineBreakStyle = null;
             Locale = null;
-            Random = null;
+            Random = new Random();
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             NullSubstitution = opt.NullSubstitution;
             LineBreakStyle = opt.LineBreakStyle;
             Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
-            Random = opt.Random;
+            Random = opt.Random ?? new Random();
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Random client.
         /// </value>
-        public Random Random { get; set; } = new Random();
+        public Random Random { get; set; }
 
         /// <summary>
         /// Gets or sets the option of a function to replace a null value. If nullSubstitution is specified,

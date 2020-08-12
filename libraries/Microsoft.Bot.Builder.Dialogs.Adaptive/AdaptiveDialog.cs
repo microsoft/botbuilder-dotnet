@@ -383,6 +383,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         activity = ObjectPath.GetPathValue<Activity>(dialogEvent, "Value");
                         break;
                     }
+
+                case AdaptiveEvents.SetTestOptions:
+                    {
+                        // We received an SetTestOptions event, set value into turn.activity
+                        actionContext.State.SetValue("conversation.testOptions", dialogEvent.Value);
+                        break;
+                    }
             }
 
             EnsureDependenciesInstalled();
