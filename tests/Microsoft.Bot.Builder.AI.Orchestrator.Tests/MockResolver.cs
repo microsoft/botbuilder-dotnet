@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
 {
     public class MockResolver : ILabelResolver
     {
-        private IReadOnlyList<Result> _score;
+        private readonly IReadOnlyList<Result> _score;
 
         public MockResolver(IReadOnlyList<Result> score)
         {
