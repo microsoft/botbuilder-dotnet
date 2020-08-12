@@ -14,7 +14,7 @@
             },
             {
               "$kind": "Microsoft.SendActivity",
-              "activity": "${rand(1, 10)}"
+              "activity": "test options: ${conversation.testOptions}"
             }
           ]
         }

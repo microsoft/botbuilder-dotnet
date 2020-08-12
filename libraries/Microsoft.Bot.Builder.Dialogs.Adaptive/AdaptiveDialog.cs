@@ -386,8 +386,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 case AdaptiveEvents.SetTestOptions:
                     {
-                        // We received an SetTestOptions event, set value into turn.activity
-                        actionContext.State.SetValue("conversation.testOptions", dialogEvent.Value);
+                        // We received an SetTestOptions event, set value into conversation.testOptions
+                        actionContext.State.SetValue(TestOptions.Kind, dialogEvent.Value);
                         break;
                     }
             }
