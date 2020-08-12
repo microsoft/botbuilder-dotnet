@@ -9,6 +9,11 @@
             "$ref": "schema:#/definitions/arrayExpression",
             "title": "Expected Properties",
             "description": "Properties expected from the user.",
+            "items": {
+                "type": "string",
+                "title": "Name",
+                "description": "Name of the property"
+            },
             "examples": [
                 [
                     "age",
@@ -17,11 +22,12 @@
             ]
         },
         "defaultOperation": {
-            "$ref": "schema:#/definitions/objectExpression",
+            "$ref": "schema:#/definitions/stringExpression",
             "title": "Default Operation",
-            "description": "Sets the default operation for each property and entity that will be used when no operation is recognized in the response to this Ask.",
+            "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
             "examples": [
-                { "number": "add" }
+                "Add()",
+                "Remove()"
             ]
         }
     }
