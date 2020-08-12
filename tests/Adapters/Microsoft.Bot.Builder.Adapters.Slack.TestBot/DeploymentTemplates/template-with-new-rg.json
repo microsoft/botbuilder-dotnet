@@ -104,7 +104,7 @@
     "webAppName": "[if(empty(parameters('newWebAppName')), parameters('botId'), parameters('newWebAppName'))]",
     "siteHost": "[concat(variables('webAppName'), '.azurewebsites.net')]",
     "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]",
-    "resourceGroupId": "subscription().id, '/resourceGroups/', parameters('groupName')"
+    "resourceGroupId": "[subscription().id, '/resourceGroups/', parameters('groupName')]"
   },
   "resources": [
     {
