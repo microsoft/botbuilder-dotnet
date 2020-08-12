@@ -42,7 +42,6 @@ variables:
 #  SlackTestBotSlackChannel: define this in Azure
 #  SlackTestBotSlackClientSigningSecret: define this in Azure
 #  SlackTestBotSlackVerificationToken: define this in Azure
-#  SubscriptionId: define this in Azure. GUID for the subscription.
 
 steps:
 - template: ci-build-steps.yml
