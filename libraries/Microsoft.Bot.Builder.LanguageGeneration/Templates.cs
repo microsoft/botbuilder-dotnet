@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Gets or sets id of this LG file.
         /// </summary>
         /// <value>
-        /// Id of this lg source.
+        /// Id of the lg resource.
         /// </value>
         public string Id { get; set; }
 
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Gets or sets source of this LG file.
         /// </summary>
         /// <value>
-        /// Source of this lg source. For file, is full path.
+        /// Source of the lg resource. Full path for lg file.
         /// </value>
         public string Source { get; set; }
 
