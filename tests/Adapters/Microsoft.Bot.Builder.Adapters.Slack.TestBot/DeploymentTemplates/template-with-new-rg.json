@@ -145,7 +145,7 @@
               "location": "[variables('resourcesLocation')]",
               "kind": "app",
               "dependsOn": [
-                "[resourceId(parameters('groupName'), 'Microsoft.Web/serverfarms/', variables('appServicePlanName'))]"
+                "[resourceId(resourceId('Microsoft.Resources/resourceGroups/', parameters('groupName')), 'Microsoft.Web/serverfarms/', variables('appServicePlanName'))]"
               ],
               "name": "[variables('webAppName')]",
               "properties": {
