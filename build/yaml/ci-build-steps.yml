@@ -7,7 +7,9 @@ steps:
 - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
   displayName: 'Tag build with package version'
   inputs:
-    tags: 'Version=$(ReleasePackageVersion)'
+    tags: 
+     ReleasePackageVersion=$(ReleasePackageVersion)
+     PreviewPackageVersion=$(PreviewPackageVersion)
   continueOnError: true
 
 - task: NuGetToolInstaller@0
