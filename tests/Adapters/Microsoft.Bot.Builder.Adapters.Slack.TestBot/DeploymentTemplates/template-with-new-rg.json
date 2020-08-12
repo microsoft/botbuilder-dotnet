@@ -93,6 +93,7 @@
     }
   },
   "variables": {
+    "appServicePlanName": "[parameters('newAppServicePlanName')]",
     "resourcesLocation": "[parameters('newAppServicePlanLocation')]",
     "webAppName": "[if(empty(parameters('newWebAppName')), parameters('botId'), parameters('newWebAppName'))]",
     "siteHost": "[concat(variables('webAppName'), '.azurewebsites.net')]",
@@ -117,24 +118,30 @@
       ],
       "properties": {
         "expressionEvaluationOptions": {
-          "scope": "outer"
+          "scope": "inner"
         },
         "mode": "Incremental",
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
           "contentVersion": "1.0.0.0",
           "parameters": {},
-          "variables": {},
+          "variables": {
+            "appServicePlanName": "[parameters('newAppServicePlanName')]",
+            "resourcesLocation": "[parameters('newAppServicePlanLocation')]",
+            "webAppName": "[if(empty(parameters('newWebAppName')), parameters('botId'), parameters('newWebAppName'))]",
+            "siteHost": "[concat(variables('webAppName'), '.azurewebsites.net')]",
+            "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]"
+          },
           "resources": [
             {
               "comments": "Create a new App Service Plan",
               "type": "Microsoft.Web/serverfarms",
-              "name": "[parameters('newAppServicePlanName')]",
+              "name": "[variables('appServicePlanName')]",
               "apiVersion": "2018-02-01",
               "location": "[variables('resourcesLocation')]",
               "sku": "[parameters('newAppServicePlanSku')]",
               "properties": {
-                "name": "[parameters('newAppServicePlanName')]"
+                "name": "[variables('appServicePlanName')]"
               }
             },
             {
@@ -144,12 +151,12 @@
               "location": "[variables('resourcesLocation')]",
               "kind": "app",
               "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms/', parameters('newAppServicePlanName'))]"
+                "[resourceId('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]"
               ],
               "name": "[variables('webAppName')]",
               "properties": {
                 "name": "[variables('webAppName')]",
-                "serverFarmId": "[parameters('newAppServicePlanName')]",
+                "serverFarmId": "[variables('appServicePlanName')]",
                 "siteConfig": {
                   "appSettings": [
                     {
