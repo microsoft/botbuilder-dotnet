@@ -7,12 +7,13 @@
     <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.AI.Orchestrator.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Microsoft.Bot.Builder.AI.Orchestrator.xml</DocumentationFile>
     <!-- TODO: Remove the Platforms element below once we support Any CPU for Orchestrator -->
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <PropertyGroup>
+    <!-- TODO: Change TargetFramework to netstandard2.0 once Orchestrator supports it -->
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.AI.Orchestrator</PackageId>
     <Description>This library implements .NET support for Orchestrator</Description>
