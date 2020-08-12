@@ -213,7 +213,7 @@
                 "storageResourceId": null
               },
               "dependsOn": [
-                "/subscriptions/174c5021-8109-4087-a3e2-a1de20420569/resourceGroups/NightlyTestSlackBotRG/providers/Microsoft.Web/sites/NightlyTestSlackBot"
+                "[concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('groupName'), '/providers/Microsoft.Web/sites/', variables('webAppName'))]"
               ]
             }
           ],
