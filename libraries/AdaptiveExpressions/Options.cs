@@ -15,7 +15,6 @@ namespace AdaptiveExpressions
         {
             this.NullSubstitution = null;
             this.Locale = Thread.CurrentThread.CurrentCulture.Name;
-            this.Random = new Random();
         }
 
         /// <summary>
@@ -26,7 +25,8 @@ namespace AdaptiveExpressions
         {
             this.NullSubstitution = opt.NullSubstitution;
             this.Locale = opt.Locale;
-            this.Random = opt.Random;
+            this.RandomSeed = opt.RandomSeed;
+            this.RandomValue = opt.RandomValue;
         }
 
         /// <summary>
@@ -46,11 +46,19 @@ namespace AdaptiveExpressions
         public string Locale { get; set; }
 
         /// <summary>
-        /// Gets or sets random client.
+        /// Gets or sets random seed.
         /// </summary>
         /// <value>
-        /// The random client.
+        /// The random seed.
         /// </value>
-        public Random Random { get; set; }
+        public int? RandomSeed { get; set; }
+
+        /// <summary>
+        /// Gets or sets random value.
+        /// </summary>
+        /// <value>
+        /// The random value.
+        /// </value>
+        public int? RandomValue { get; set; }
     }
 }

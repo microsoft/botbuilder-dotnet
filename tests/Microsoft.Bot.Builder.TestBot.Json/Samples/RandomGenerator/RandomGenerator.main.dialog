@@ -9,12 +9,27 @@
               "$kind": "Microsoft.EmitEvent",
               "eventName": "setTestOptions",
               "EventValue": {
-                "randomSeed":  100
+                "randomSeed": 100
               }
             },
             {
               "$kind": "Microsoft.SendActivity",
               "activity": "test options: ${conversation.testOptions}"
+            },
+            {
+              "$kind": "Microsoft.EmitEvent",
+              "eventName": "setTestOptions",
+              "EventValue": {
+                "randomValue": 20
+              }
+            },
+            {
+              "$kind": "Microsoft.SendActivity",
+              "activity": "test options: ${conversation.testOptions}"
+            },
+            {
+              "$kind": "Microsoft.SendActivity",
+              "activity": "${rand(1, 30)}"
             }
           ]
         }

@@ -461,7 +461,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
             var parse = this.ExpressionParser.Parse(exp);
-            var opt = new Options() { Locale = _lgOptions.Locale, Random = _lgOptions.Random };
+            var opt = new Options() { Locale = _lgOptions.Locale, RandomSeed = _lgOptions.RandomSeed, RandomValue = _lgOptions.RandomValue };
             opt.NullSubstitution = _lgOptions.NullSubstitution;
             return parse.TryEvaluate(scope, opt);
         }

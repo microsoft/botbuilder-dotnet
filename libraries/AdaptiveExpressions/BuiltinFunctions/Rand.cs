@@ -41,9 +41,18 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             }
                             else
                             {
-                                lock (_randomizerLock)
+                                if (options.RandomValue != null)
                                 {
-                                    value = options.Random.Next(min, max);
+                                    value = options.RandomValue;
+                                }
+                                else
+                                {
+                                    var random = options.RandomSeed == null ? new Random() : new Random(options.RandomSeed.Value);
+ 
+                                    lock (_randomizerLock)
+                                    {
+                                        value = random.Next(min, max);
+                                    }
                                 }
                             }
 

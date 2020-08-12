@@ -97,7 +97,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var testOptions = dialogContext.State.GetValue<TestOptions>(TestOptions.Kind);
             if (testOptions != null)
             {
-                lgOpt.Random = new Random(testOptions.RandomSeed);
+                lgOpt.RandomSeed = testOptions.RandomSeed;
+                lgOpt.RandomValue = testOptions.RandomValue;
             }
 
             try

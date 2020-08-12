@@ -473,7 +473,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
             string error;
             object value;
-            var opt = new Options() { Locale = _lgOptions.Locale };
+            var opt = new Options() { Locale = _lgOptions.Locale, RandomSeed = _lgOptions.RandomSeed, RandomValue = _lgOptions.RandomValue };
             opt.NullSubstitution = _lgOptions.NullSubstitution;
             (value, error) = parse.TryEvaluate(scope, opt);
 
