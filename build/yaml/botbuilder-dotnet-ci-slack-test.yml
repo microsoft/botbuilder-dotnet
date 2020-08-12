@@ -45,6 +45,17 @@ variables:
 #  SubscriptionId: define this in Azure. GUID for the subscription.
 
 steps:
+- template: ci-build-steps.yml
+
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet Publish TestBot'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\Microsoft.Bot.Builder.Adapters.Slack.TestBot.csproj'
+    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
+    modifyOutputPath: false
+
 - powershell: |
    echo '##vso[task.setvariable variable=AppId]$(SlackTestBotAppId)'
    echo '##vso[task.setvariable variable=AppSecret]$(SlackTestBotAppSecret)'
@@ -70,17 +81,6 @@ steps:
      :: Option 2: Use the "preexisting-rg" template:
      ::call az group create --location westus --name $(BotGroup)
      ::call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)" --name "$(BotName)"
-
-- template: ci-build-steps.yml
-
-- task: DotNetCoreCLI@2
-  displayName: 'Dotnet Publish TestBot'
-  inputs:
-    command: publish
-    publishWebProjects: false
-    projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\Microsoft.Bot.Builder.Adapters.Slack.TestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
-    modifyOutputPath: false
 
 - task: AzureCLI@1
   displayName: 'deploy bot'
