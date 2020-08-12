@@ -151,7 +151,7 @@
               "location": "[variables('resourcesLocation')]",
               "kind": "app",
               "dependsOn": [
-                "[concat('/subscriptions/', subscription().id, '/resourceGroups/', parameters('groupName'), '/providers/Microsoft.Web/serverFarms/', variables('appServicePlanName'))]"
+                "[concat(subscription().id, '/resourceGroups/', parameters('groupName'), '/providers/Microsoft.Web/serverFarms/', variables('appServicePlanName'))]"
               ],
               "name": "[variables('webAppName')]",
               "properties": {
@@ -213,7 +213,7 @@
                 "storageResourceId": null
               },
               "dependsOn": [
-                "[concat('/subscriptions/', subscription().id, '/resourceGroups/', parameters('groupName'), '/providers/Microsoft.Web/sites/', variables('webAppName'))]"
+                "[concat('subscription().id, '/resourceGroups/', parameters('groupName'), '/providers/Microsoft.Web/sites/', variables('webAppName'))]"
               ]
             }
           ],
