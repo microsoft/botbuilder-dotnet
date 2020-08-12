@@ -103,7 +103,8 @@
     "resourcesLocation": "[parameters('newAppServicePlanLocation')]",
     "webAppName": "[if(empty(parameters('newWebAppName')), parameters('botId'), parameters('newWebAppName'))]",
     "siteHost": "[concat(variables('webAppName'), '.azurewebsites.net')]",
-    "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]"
+    "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]",
+    "resourceGroupId":  ""
   },
   "resources": [
     {
@@ -213,7 +214,7 @@
                 "storageResourceId": null
               },
               "dependsOn": [
-                "[concat('subscription().id, '/resourceGroups/', parameters('groupName'), '/providers/Microsoft.Web/sites/', variables('webAppName'))]"
+                "[concat(subscription().id, '/resourceGroups/', parameters('groupName'), '/providers/Microsoft.Web/sites/', variables('webAppName'))]"
               ]
             }
           ],
