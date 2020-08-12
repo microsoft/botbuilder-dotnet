@@ -151,7 +151,7 @@
               "location": "[variables('resourcesLocation')]",
               "kind": "app",
               "dependsOn": [
-                "/subscriptions/174c5021-8109-4087-a3e2-a1de20420569/resourceGroups/NightlyTestSlackBotRG/providers/Microsoft.Web/serverFarms/NightlyTestSlackBot"
+                "[resourceId('/subscriptions/174c5021-8109-4087-a3e2-a1de20420569/resourceGroups/NightlyTestSlackBotRG', 'Microsoft.Web/serverfarms', 'NightlyTestSlackBot')]"
               ],
               "name": "[variables('webAppName')]",
               "properties": {
