@@ -2,6 +2,12 @@
   "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "subscriptionId": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the GUID of the subscription."
+      }
+    },
     "groupLocation": {
       "type": "string",
       "metadata": {
@@ -145,7 +151,7 @@
               "location": "[variables('resourcesLocation')]",
               "kind": "app",
               "dependsOn": [
-                "[resourceId(resourceId('Microsoft.Resources/resourceGroups/', parameters('groupName')), 'Microsoft.Web/serverfarms/', variables('appServicePlanName'))]"
+                "[resourceId(parameters('subscriptionId'), parameters('groupName'), 'Microsoft.Web/serverfarms/', variables('appServicePlanName'))]"
               ],
               "name": "[variables('webAppName')]",
               "properties": {
