@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Tests
             
             updatePocoStoreItem.Count = 123;
 
-            await Assert.ThrowsAsync<T>(() => storage.WriteAsync(
+            await Assert.ThrowsAnyAsync<Exception>(() => storage.WriteAsync(
                 new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } }));
 
             var reloadedStoreItems2 = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));

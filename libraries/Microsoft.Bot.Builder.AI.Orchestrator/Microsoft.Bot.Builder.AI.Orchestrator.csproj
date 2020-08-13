@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Version Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</Version>
+    <Version Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</Version>
+    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</PackageVersion>
+    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <Configurations>Debug;Release</Configurations>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Microsoft.Bot.Builder.AI.Orchestrator.xml</DocumentationFile>
+    <!-- TODO: Remove the Platforms element below once we support Any CPU for Orchestrator -->
+    <Platforms>x64</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- TODO: Change TargetFramework to netstandard2.0 once Orchestrator supports it -->
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PackageId>Microsoft.Bot.Builder.AI.Orchestrator</PackageId>
+    <Description>This library implements .NET support for Orchestrator</Description>
+    <Summary>This library implements .NET support for Orchestrator</Summary>
+    <ContentTargetFolders>content</ContentTargetFolders>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <!-- TODO: Remove the PlatformTarget element below once we support Any CPU for Orchestrator -->
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <!-- TODO: Remove the PropertyGroup below once we support Any CPU for Orchestrator -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="**/*.dialog" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
+    <Content Include="**/*.qna" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.BotFramework.Orchestrator" Version="4.10.0-daily.20200810.155802" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
+  </ItemGroup>
+
+</Project>

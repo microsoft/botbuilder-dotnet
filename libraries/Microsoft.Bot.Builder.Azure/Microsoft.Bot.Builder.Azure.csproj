@@ -36,17 +36,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="**/*.dialog" />
-    <Content Include="**/*.lg" />
-    <Content Include="**/*.lu" />
-    <Content Include="**/*.schema" />
-    <Content Include="**/*.uischema" />
-    <Content Include="**/*.qna" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.21" />
-    <PackageReference Include="Azure.Storage.Queues" Version="12.3.2" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.2.0" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.1.2" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="9.4.2" />
@@ -54,12 +44,9 @@
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />
   </ItemGroup>
 </Project>

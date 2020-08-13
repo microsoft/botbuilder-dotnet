@@ -195,10 +195,7 @@ namespace Microsoft.Bot.Builder.Azure
                     }
                 }
 
-                if (segment.ContinuationToken != null)
-                {
-                    token = segment.ContinuationToken;
-                }
+                token = segment.ContinuationToken;
             }
             while (token != null && blobs.Count < pageSize);
 
@@ -313,10 +310,7 @@ namespace Microsoft.Bot.Builder.Azure
                     await blob.DeleteIfExistsAsync().ConfigureAwait(false);
                 }
 
-                if (segment.ContinuationToken != null)
-                {
-                    token = segment.ContinuationToken;
-                }
+                token = segment.ContinuationToken;
             }
             while (token != null);
         }
@@ -376,7 +370,6 @@ namespace Microsoft.Bot.Builder.Azure
             var dirName = GetDirName(activity.ChannelId, activity.Conversation.Id);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
             BlobContinuationToken token = null;
-            List<CloudBlockBlob> blobs = new List<CloudBlockBlob>();
             do
             {
                 var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, 50, token, null, null).ConfigureAwait(false);
@@ -405,10 +398,7 @@ namespace Microsoft.Bot.Builder.Azure
                     }
                 }
 
-                if (segment.ContinuationToken != null)
-                {
-                    token = segment.ContinuationToken;
-                }
+                token = segment.ContinuationToken;
             }
             while (token != null);
 
