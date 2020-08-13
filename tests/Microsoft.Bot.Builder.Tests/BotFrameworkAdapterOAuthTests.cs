@@ -114,13 +114,8 @@ namespace Microsoft.Bot.Builder.Tests
                     };
                 },
                 new MockLogger());
-
             var originalActivity = CreateBasicActivity();
-
             var eventActivity = await ProcessOAuthCardTest(adapter, mockConnector, originalActivity, null, false);
-
-            // Wait a bit to let the polling Task run (enough for 3 potential polls)
-            await Task.Delay(3000);
 
             // Make sure it only polled once and it ended
             Assert.Equal(1, callCount);
@@ -156,11 +151,7 @@ namespace Microsoft.Bot.Builder.Tests
                 new MockLogger());
 
             var originalActivity = CreateBasicActivity();
-
             var eventActivity = await ProcessOAuthCardTest(adapter, mockConnector, originalActivity);
-
-            // Wait a bit to let the polling Task run (enough for 3 potential polls)
-            await Task.Delay(2000);
 
             // Make sure it only polled twice and it changed settings
             Assert.Equal(2, callCount);

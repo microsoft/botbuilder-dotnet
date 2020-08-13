@@ -27,7 +27,6 @@ namespace Microsoft.Bot.Builder.Tests
                     RelatesTo = context.Activity.RelatesTo
                 };
                 await context.SendActivityAsync(typingActivity);
-                await Task.Delay(50);
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
@@ -37,8 +36,6 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
-
-            await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
             Assert.Equal(6, pagedResult.Items.Length);
@@ -91,8 +88,6 @@ namespace Microsoft.Bot.Builder.Tests
                    .AssertReply("My Id is null.")
                  .StartTestAsync();
 
-            await Task.Delay(100);
-
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
             Assert.Equal(12, pagedResult.Items.Length);
             Assert.Equal("inbound message to TestFlow", pagedResult.Items[0].AsMessageActivity().Text);
@@ -137,8 +132,6 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("new response")
                 .StartTestAsync();
 
-            await Task.Delay(100);
-
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
             Assert.Equal(3, pagedResult.Items.Length);
             Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
@@ -177,8 +170,6 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("update")
                     .AssertReply("new response")
                 .StartTestAsync();
-
-            await Task.Delay(100);
 
             // Perform some queries
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, dateTimeStartOffset1.DateTime);
@@ -285,8 +276,6 @@ namespace Microsoft.Bot.Builder.Tests
                     .AssertReply("response")
                 .Send("deleteIt")
                 .StartTestAsync();
-
-            await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
             Assert.Equal(3, pagedResult.Items.Length);
