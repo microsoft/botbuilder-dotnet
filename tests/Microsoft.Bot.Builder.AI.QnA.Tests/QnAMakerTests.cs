@@ -1141,6 +1141,51 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_StrictFilters_Compound_OperationType()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var interceptHttp = new InterceptRequestHandler(mockHttp);
+            var oneFilteredOption = new QnAMakerOptions()
+            {
+                Top = 30,
+                StrictFilters = new Metadata[]
+                {
+                    new Metadata()
+                    {
+                        Name = "movie",
+                        Value = "disney",
+                    },
+                    new Metadata()
+                    {
+                        Name = "production",
+                        Value = "Walden",
+                    },
+                },
+                StrictFiltersCompoundOperationType = StrictFiltersCompoundOperationType.OR
+            };
+            var qna = GetQnAMaker(
+                            interceptHttp,
+                            new QnAMakerEndpoint
+                            {
+                                KnowledgeBaseId = _knowledgeBaseId,
+                                EndpointKey = _endpointKey,
+
+                                Host = _hostname,
+                            }, oneFilteredOption);
+            
+            var context = GetContext("up");
+            var noFilterResults1 = await qna.GetAnswersAsync(context, oneFilteredOption);
+            var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+
+            Assert.AreEqual(1, noFilterResults1.Length);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         [TestCategory("Telemetry")]
         public async Task Telemetry_NullTelemetryClient()
         {
@@ -1833,6 +1878,8 @@ namespace Microsoft.Bot.Builder.AI.Tests
             public Metadata[] MetadataBoost { get; set; }
 
             public float ScoreThreshold { get; set; }
-        }
+
+            public StrictFiltersCompoundOperationType StrictFiltersCompoundOperationType { get; set; }
+           }
     }
 }
