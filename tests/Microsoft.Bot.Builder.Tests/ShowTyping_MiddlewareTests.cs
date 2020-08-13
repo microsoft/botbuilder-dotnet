@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(2800));
+                await Task.Delay(TimeSpan.FromMilliseconds(2300));
 
                 // note the ShowTypingMiddleware should not cause the Responded flag to be set
                 Assert.False(context.Responded);

@@ -50,12 +50,12 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             sw.Start();
             await new TestFlow(new TestAdapter())
             .Send("hello")
-            .Delay(TimeSpan.FromSeconds(1.1))
+            .Delay(TimeSpan.FromMilliseconds(550))
             .Send("some text")
             .StartTestAsync();
             sw.Stop();
 
-            Assert.True(sw.Elapsed.TotalSeconds > 1, $"Delay broken, elapsed time {sw.Elapsed}?");
+            Assert.True(sw.Elapsed.TotalMilliseconds > 500, $"Delay broken, elapsed time {sw.Elapsed}?");
         }
 
         [Fact]
