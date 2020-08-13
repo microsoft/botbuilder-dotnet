@@ -14,6 +14,8 @@ using Twilio.Rest.Api.V2010.Account;
 
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
+    // NOTE: this class name is referenced in the Functiona Tests yaml file.
+    // Changes to this class name should also be done in the corresponding yaml file.
     [TestClass]
     [TestCategory("FunctionalTests")]
     [TestCategory("Adapters")]

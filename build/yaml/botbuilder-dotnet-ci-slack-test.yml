@@ -82,7 +82,7 @@ steps:
     command: test
     projects: |
      FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter SlackClientTest'
+    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter ClassName=Microsoft.Bot.Builder.FunctionalTests.SlackClientTests'
     workingDirectory: tests
 
 - task: AzureCLI@1

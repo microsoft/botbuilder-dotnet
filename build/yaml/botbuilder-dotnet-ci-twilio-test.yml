@@ -76,7 +76,7 @@ steps:
   inputs:
     command: test
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter TwilioNumberTests'
+    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter ClassName=Microsoft.Bot.Builder.FunctionalTests.TwilioNumberTests'
 
 - task: AzureCLI@1
   displayName: 'Delete resources'

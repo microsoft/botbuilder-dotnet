@@ -14,10 +14,12 @@ using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
+    // NOTE: this class name is referenced in the Functiona Tests yaml file.
+    // Changes to this class name should also be done in the corresponding yaml file.
     [TestClass]
     [TestCategory("FunctionalTests")]
     [TestCategory("Adapters")]
-    public class WebexClientTest
+    public class WebexClientTests
     {        
         private const string WebexUrlBase = "https://api.ciscospark.com/v1";
         private string _targetBotEmail;

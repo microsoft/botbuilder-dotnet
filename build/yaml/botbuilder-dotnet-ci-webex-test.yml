@@ -83,7 +83,7 @@ steps:
   inputs:
     command: test
     projects: 'FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter WebexClientTest'
+    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter ClassName=Microsoft.Bot.Builder.FunctionalTests.WebexClientTests'
 
 - task: AzureCLI@1
   displayName: 'Delete Resources'

@@ -12,10 +12,12 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
+    // NOTE: this class name is referenced in the Functiona Tests yaml file.
+    // Changes to this class name should also be done in the corresponding yaml file.
     [TestClass]
     [TestCategory("FunctionalTests")]
     [TestCategory("Adapters")]
-    public class SlackClientTest
+    public class SlackClientTests
     {
         private const string SlackUrlBase = "https://slack.com/api";
         private HttpClient _client;
