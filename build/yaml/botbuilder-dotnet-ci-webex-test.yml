@@ -31,7 +31,6 @@ variables:
   AppSecret: $(WebexTestBotAppSecret)
   BotGroup: $(WebexTestBotBotGroup)
   BotName: $(WebexTestBotBotName)
-  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'debug'
