@@ -119,6 +119,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <value>
         /// A value used for join operation of Metadata <see cref="Metadata"/>.
         /// </value>
+        [JsonProperty("strictFiltersCompoundOperationType")]
         public StrictFiltersCompoundOperationType StrictFiltersCompoundOperationType { get; set; }
     }
 }

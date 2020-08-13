@@ -112,6 +112,25 @@
                     "$ref": "schema:#/definitions/equalsExpression"
                 }
             ]
+        },
+        "strictFiltersCompoundOperationType": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "StrictFilters Compound Operation Type",
+            "description": "Type of Operation for Strict Filters.",
+            "oneOf": [
+                {
+                    "title": "StrictFiltersCompoundOperationType",
+                    "description": "StrictFiltersCompoundOperationType.",
+                    "enum": [
+                        "OR",
+                        "AND"
+                    ],
+                    "default": "AND"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
         }
     },
     "required": [
