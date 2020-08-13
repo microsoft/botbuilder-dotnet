@@ -118,7 +118,7 @@
             {
               "comments": "Create a Web App using the new App Service Plan",
               "type": "Microsoft.Web/sites",
-              "apiVersion": "2015-08-01",
+              "apiVersion": "2018-11-01",
               "location": "[variables('resourcesLocation')]",
               "kind": "app",
               "dependsOn": [

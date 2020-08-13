@@ -61,7 +61,7 @@ steps:
     azureSubscription: $(AzureSubscription)
     resourceGroupName: '$(LinuxTestBotBotGroup)'
     location: 'West US'
-    csmFile: FunctionalTests/ExportedTemplate/LinuxDotNet/template.json
+    csmFile: FunctionalTests/ExportedTemplate/LinuxDotNet/template-with-preexisting-rg.json
     overrideParameters: '-botName "$(LinuxTestBotBotName)" -appId "$(LinuxTestBotAppId)" -appSecret "$(LinuxTestBotAppSecret)"'
 
 - task: AzureCLI@1
