@@ -46,7 +46,7 @@ variables:
 #  FacebookTestBotFacebookAccessToken: define this in Azure
 #  FacebookTestBotFacebookAppSecret: define this in Azure
 #  FacebookTestBotFacebookVerifyToken: define this in Azure
-#  FacebookTestBotSenderId: define this in Azure
+#  FacebookTestBotSenderId: define this in Azure?: This var not needed in build 156862. Revisit this after the build's test is fixed & running.
 
 steps:
 - powershell: |
