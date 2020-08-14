@@ -29,6 +29,7 @@ pr: none # no pr trigger
 variables:
   AppId: $(FacebookTestBotAppId)
   AppSecret: $(FacebookTestBotAppSecret)
+  BOT_ENDPOINT: 'https://$(BotName).azurewebsites.net/api/messages'
   BotGroup: $(FacebookTestBotBotGroup)
   BotName: $(FacebookTestBotBotName)
   BuildPlatform: 'any cpu'
@@ -93,16 +94,17 @@ steps:
     inlineScript: |
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
 
-- powershell: |
-   echo '##vso[task.setvariable variable=BOT_ENDPOINT]https://$(BotName).azurewebsites.net/api/messages'
-  displayName: 'Set BOT_ENDPOINT environment variable'
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
     command: test
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
     arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter FacebookChatTest'
+  env:
+    BOT_ENDPOINT: $(BOT_ENDPOINT)
+    FacebookTestBotFacebookAccessToken: $(FacebookTestBotFacebookAccessToken)
+    FacebookTestBotFacebookAppSecret: $(FacebookTestBotFacebookAppSecret)
+    FacebookTestBotSenderId: $(FacebookTestBotSenderId)
 
 - task: AzureCLI@1
   displayName: 'Delete Azure resources'
