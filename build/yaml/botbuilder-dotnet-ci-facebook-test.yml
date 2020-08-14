@@ -29,7 +29,6 @@ pr: none # no pr trigger
 variables:
   AppId: $(FacebookTestBotAppId)
   AppSecret: $(FacebookTestBotAppSecret)
-  BOT_ENDPOINT: 'https://$(BotName).azurewebsites.net/api/messages'
   BotGroup: $(FacebookTestBotBotGroup)
   BotName: $(FacebookTestBotBotName)
   BuildPlatform: 'any cpu'
@@ -101,7 +100,7 @@ steps:
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
     arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter FacebookChatTest'
   env:
-    BOT_ENDPOINT: $(BOT_ENDPOINT)
+    BOT_ENDPOINT: 'https://$(BotName).azurewebsites.net/api/messages'
     FacebookTestBotFacebookAccessToken: $(FacebookTestBotFacebookAccessToken)
     FacebookTestBotFacebookAppSecret: $(FacebookTestBotFacebookAppSecret)
     FacebookTestBotSenderId: $(FacebookTestBotSenderId)
