@@ -15,5 +15,5 @@
 #GetMessage
 - This is an injected message
 
-#UserDataConcat()
-- ${user.name} : ${user.date}
+#UserDataConcat(name)
+- ${name} : ${user.date}

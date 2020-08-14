@@ -42,7 +42,7 @@
         },
         {
           "$kind": "Microsoft.SendActivity",
-          "activity": "${foo.UserDataConcat()}"
+          "activity": "${foo.UserDataConcat(user.name)}"
         }
       ]
     }
