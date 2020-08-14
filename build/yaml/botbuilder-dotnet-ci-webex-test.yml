@@ -101,7 +101,7 @@ steps:
     projects: 'FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
     arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter WebexClientTest'
   env:
-    WebexTestBotWebexRoomId: $(WebexTestBotWebexRoomId)
+    XXXWebexTestBotWebexRoomId: $(WebexTestBotWebexRoomId)
     WebexTestBotRefreshToken: $(WebexTestBotRefreshToken)
     WebexTestBotWebexIntegrationClientId: $(WebexTestBotWebexIntegrationClientId)
     WebexTestBotWebexIntegrationClientSecret: $(WebexTestBotWebexIntegrationClientSecret)
