@@ -139,7 +139,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 ExternalEntityRecognizer = ExternalEntityRecognizer,
                 PredictionOptions = options,
-                TelemetryClient = TelemetryClient
+                TelemetryClient = TelemetryClient,
+                IncludeAPIResults = options.IncludeAPIResults,
             };
         }
 

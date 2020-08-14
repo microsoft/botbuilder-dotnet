@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
 
         private readonly HttpClient _httpClient;
 
+        private Func<HttpRequestMessage, HttpResponseMessage> _fallback;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MockHttpRequestMiddleware"/> class.
         /// </summary>
@@ -31,6 +35,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
                 mock.Setup(handler);
             }
 
+            handler.Fallback.Respond((request) =>
+            {
+                if (_fallback != null)
+                {
+                    var result = _fallback(request);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+
+                return new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    RequestMessage = request,
+                };
+            });
+
             _httpMessageHandler = handler;
             var client = handler.ToHttpClient();
             _httpClient = client;
@@ -41,7 +62,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
         {
             turnContext.TurnState.Add(_httpMessageHandler);
             turnContext.TurnState.Add(_httpClient);
+            turnContext.TurnState.Add(this);
             await next(cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Set fallback.
+        /// </summary>
+        /// <param name="fallback">New fallback or null.</param>
+        public void SetFallback(Func<HttpRequestMessage, HttpResponseMessage> fallback)
+        {
+            _fallback = fallback;
         }
     }
 }

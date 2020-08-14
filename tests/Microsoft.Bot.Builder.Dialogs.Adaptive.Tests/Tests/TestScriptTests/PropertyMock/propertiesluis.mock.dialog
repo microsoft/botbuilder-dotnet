@@ -1,0 +1,18 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.PropertiesMock",
+    "assignments": [
+        {
+            "property": "settings.luis.lu",
+            "value": "00000000-0000-0000-0000-000000000000"
+        },
+        {
+            "property": "settings.luis.endpointKey",
+            "value": "00000000000000000000000000000000"
+        },
+        {
+            "property": "settings.luis.endpoint",
+            "value": "https://westus.api.cognitive.microsoft.com"
+        }
+    ]
+}

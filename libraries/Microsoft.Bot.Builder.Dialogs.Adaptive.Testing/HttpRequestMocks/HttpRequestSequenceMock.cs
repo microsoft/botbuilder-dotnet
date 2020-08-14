@@ -55,6 +55,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 #pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
+        /// Gets or sets the content to match partially against.
+        /// </summary>
+        /// <value>
+        /// Content.
+        /// </value>
+        [JsonProperty("content")]
+        public string Content { get; set; }
+
+        /// <summary>
         /// Gets the sequence of responses to reply. The last one will be repeated.
         /// </summary>
         /// <value>
@@ -79,6 +88,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
             else
             {
                 mocked = handler.When(new HttpMethod(Method.Value.ToString()), Url);
+            }
+
+            if (!string.IsNullOrEmpty(Content))
+            {
+                mocked = mocked.WithPartialContent(Content);
             }
 
             mocked.Respond(re => response.GetContent());

@@ -34,6 +34,8 @@
 
   <ItemGroup>
     <Folder Include="Tests\LuisRecognizerTests\cachedResponses\ExternalEntities_test_en_us_lu\" />
+    <Folder Include="Tests\TestScriptTests\LuisMock\" />
+    <Folder Include="Tests\TestScriptTests\LuisMock\cachedResponses\lu\" />
   </ItemGroup>
 
 </Project>
