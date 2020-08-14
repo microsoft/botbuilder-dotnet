@@ -154,7 +154,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "404 No matching mock handler for \"POST http://127.0.0.2\""
+            "text": "404 No matching mock handler for \"POST http://127.0.0.2/\""
         }
     ]
 }
