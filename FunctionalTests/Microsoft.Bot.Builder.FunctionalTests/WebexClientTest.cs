@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             _roomId = Environment.GetEnvironmentVariable("WebexTestBotWebexRoomId");
             if (string.IsNullOrWhiteSpace(_roomId))
             {
-                Assert.Fail("Assert.Inconclusive 'WebexTestBotWebexRoomId' not found.");
+                Assert.Fail("Environment variable 'WebexTestBotWebexRoomId' not found.");
             }
 
             _refreshToken = Environment.GetEnvironmentVariable("WebexTestBotRefreshToken");
