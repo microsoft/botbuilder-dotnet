@@ -84,6 +84,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
         {
             if (httpMessageHandler != null)
             {
+                // Call directly to avoid wrapping with HttpClient.
                 MethodInfo sendAsyncMethod = httpMessageHandler.GetType().GetMethod(
                     nameof(SendAsync),
                     BindingFlags.Instance | BindingFlags.NonPublic,
