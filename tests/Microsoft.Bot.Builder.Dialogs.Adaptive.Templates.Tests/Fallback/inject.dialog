@@ -13,6 +13,17 @@
         },
         {
           "$kind": "Microsoft.SetProperty",
+          "property": "user.name",
+          "value": "Jonathan"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.date",
+          "value": "2003-03-20"
+        },
+        
+        {
+          "$kind": "Microsoft.SetProperty",
           "property": "user.tasks",
           "value": [ "car", "washing", "food", "laundry" ]
         },
@@ -28,8 +39,11 @@
         {
           "$kind": "Microsoft.SendActivity",
           "activity": "${user.message}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${foo.UserDataConcat()}"
         }
-
       ]
     }
   ]

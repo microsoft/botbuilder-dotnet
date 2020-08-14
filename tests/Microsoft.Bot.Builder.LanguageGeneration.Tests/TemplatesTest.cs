@@ -1481,12 +1481,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestInjectLG()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("./InjectionTest/inject.lg"));
-            
-            var (evaled, error) = Expression.Parse("foo.bar()").TryEvaluate(null);
-            
+
+            var (evaled, error) = Expression.Parse("general.greeting()").TryEvaluate(new { name = "Alice" });
+            Assert.Equal("hi Alice", evaled.ToString());
+
+            (evaled, error) = Expression.Parse("general.yolo(8, 7)").TryEvaluate(new { name = "Alice" });
+            Assert.Equal("Alice have 15 cookies!", evaled.ToString());
+
+            (evaled, error) = Expression.Parse("general.addTwoNum(5,6)").TryEvaluate(new { a = 3, b = 1 });
+            Assert.Equal("11", evaled.ToString());
+
+            (evaled, error) = Expression.Parse("general.sumAll()").TryEvaluate(null);
+
             Assert.Equal("3", evaled.ToString());
 
-            (evaled, error) = Expression.Parse("foo.cool(2)").TryEvaluate(null);
+            (evaled, error) = Expression.Parse("general.cool(2)").TryEvaluate(null);
             Assert.Equal("3", evaled.ToString());
 
             (evaled, error) = Expression.Parse("common.looking()").TryEvaluate(null);

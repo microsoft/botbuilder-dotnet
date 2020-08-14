@@ -1,6 +1,6 @@
 ﻿> !# @strict = false
 > !# @namespace = foo
-> !# @Exports = GetList, Convert, GetProperty, GetMessage
+> !# @Exports = GetList, Convert, GetProperty, GetMessage, UserDataConcat
 
 
 # Convert(index, value)
@@ -14,3 +14,6 @@
 
 #GetMessage
 - This is an injected message
+
+#UserDataConcat()
+- ${user.name} : ${user.date}
