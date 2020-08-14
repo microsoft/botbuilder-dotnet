@@ -1487,7 +1487,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var memory1 = new StackedMemory();
             memory1.Push(new SimpleObjectMemory(new { name = "Alice" }));
-            memory1.Push(new SimpleObjectMemory(new { name = "Bob" }));
+            memory1.Push(new CustomizedMemory(new { name = "Bob" }));
             (evaled, error) = Expression.Parse("general.greeting()").TryEvaluate(memory1);
             Assert.Equal("hi Bob", evaled.ToString());
 
@@ -1496,7 +1496,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var memory2 = new StackedMemory();
             memory2.Push(new SimpleObjectMemory(new { name = "Alice" }));
-            memory2.Push(new SimpleObjectMemory(new { name = "Bob" }));
+            memory2.Push(new CustomizedMemory(new { name = "Bob" }));
             (evaled, error) = Expression.Parse("general.yolo(12, 12)").TryEvaluate(memory2);
             Assert.Equal("Bob have 24 cookies!", evaled.ToString());
 
