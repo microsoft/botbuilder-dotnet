@@ -1485,8 +1485,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var (evaled, error) = Expression.Parse("general.greeting()").TryEvaluate(new { name = "Alice" });
             Assert.Equal("hi Alice", evaled.ToString());
 
+            var memory1 = new StackedMemory();
+            memory1.Push(new SimpleObjectMemory(new { name = "Alice" }));
+            memory1.Push(new SimpleObjectMemory(new { name = "Bob" }));
+            (evaled, error) = Expression.Parse("general.greeting()").TryEvaluate(memory1);
+            Assert.Equal("hi Bob", evaled.ToString());
+
             (evaled, error) = Expression.Parse("general.yolo(8, 7)").TryEvaluate(new { name = "Alice" });
             Assert.Equal("Alice have 15 cookies!", evaled.ToString());
+
+            var memory2 = new StackedMemory();
+            memory2.Push(new SimpleObjectMemory(new { name = "Alice" }));
+            memory2.Push(new SimpleObjectMemory(new { name = "Bob" }));
+            (evaled, error) = Expression.Parse("general.yolo(12, 12)").TryEvaluate(memory2);
+            Assert.Equal("Bob have 24 cookies!", evaled.ToString());
 
             (evaled, error) = Expression.Parse("general.addTwoNum(5,6)").TryEvaluate(new { a = 3, b = 1 });
             Assert.Equal("11", evaled.ToString());
