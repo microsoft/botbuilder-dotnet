@@ -110,31 +110,31 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             _roomId = Environment.GetEnvironmentVariable("WebexTestBotWebexRoomId");
             if (string.IsNullOrWhiteSpace(_roomId))
             {
-                Assert.Fail("Environment variable 'WebexTestBotWebexRoomId' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotWebexRoomId' not found.");
             }
 
             _refreshToken = Environment.GetEnvironmentVariable("WebexTestBotRefreshToken");
             if (string.IsNullOrWhiteSpace(_refreshToken))
             {
-                Assert.Fail("Environment variable 'WebexTestBotRefreshToken' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotRefreshToken' not found.");
             }
 
             _integrationClientId = Environment.GetEnvironmentVariable("WebexTestBotWebexIntegrationClientId");
             if (string.IsNullOrWhiteSpace(_integrationClientId))
             {
-                Assert.Fail("Environment variable 'WebexTestBotWebexIntegrationClientId' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotWebexIntegrationClientId' not found.");
             }
 
             _integrationClientSecret = Environment.GetEnvironmentVariable("WebexTestBotWebexIntegrationClientSecret");
             if (string.IsNullOrWhiteSpace(_integrationClientSecret))
             {
-                Assert.Fail("Environment variable 'WebexTestBotWebexIntegrationClientSecret' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotWebexIntegrationClientSecret' not found.");
             }
 
             _targetBotEmail = Environment.GetEnvironmentVariable("WebexTestBotWebexBotUserName");
             if (string.IsNullOrWhiteSpace(_targetBotEmail))
             {
-                Assert.Fail("Environment variable 'WebexTestBotWebexBotUserName' not found.");
+                Assert.Inconclusive("Environment variable 'WebexTestBotWebexBotUserName' not found.");
             }
         }
     }
