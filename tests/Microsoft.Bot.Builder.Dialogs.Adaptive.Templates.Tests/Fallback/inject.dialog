@@ -14,7 +14,7 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.name",
-          "value": "Jonathan"
+          "value": "jonathan"
         },
         {
           "$kind": "Microsoft.SetProperty",
@@ -42,7 +42,15 @@
         },
         {
           "$kind": "Microsoft.SendActivity",
-          "activity": "${foo.UserDataConcat(user.name)}"
+          "activity": "${foo.WelcomeUser()}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${foo.UserDataConcat(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${foo.ShowTasks(foo.GetList(user.tasks))}"
         }
       ]
     }
