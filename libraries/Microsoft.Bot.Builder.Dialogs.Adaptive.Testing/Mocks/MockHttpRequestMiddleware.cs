@@ -46,8 +46,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
                     }
                 }
 
+                // Keep original behaviour
                 return new HttpResponseMessage(HttpStatusCode.NotFound)
                 {
+                    ReasonPhrase = $"No matching mock handler for \"{request.Method} {request.RequestUri}\"",
                     RequestMessage = request,
                 };
             });

@@ -99,6 +99,17 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${dialog.result.content.data}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "POST",
+                        "url": "http://127.0.0.2",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.statuscode} ${dialog.result.reasonphrase}"
                     }
                 ]
             }
@@ -140,6 +151,10 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "repeated ByteArray response"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "404 No matching mock handler for \"POST http://127.0.0.2\""
         }
     ]
 }
