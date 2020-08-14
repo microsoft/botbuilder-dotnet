@@ -131,32 +131,32 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 case "builtin.number":
                 case "builtin.ordinal": return Number(resolution.value);
                 case "builtin.percentage":
-                {
-                    var svalue = (string)resolution.value;
-                    if (svalue.EndsWith("%", StringComparison.Ordinal))
                     {
-                        svalue = svalue.Substring(0, svalue.Length - 1);
-                    }
+                        var svalue = (string)resolution.value;
+                        if (svalue.EndsWith("%", StringComparison.Ordinal))
+                        {
+                            svalue = svalue.Substring(0, svalue.Length - 1);
+                        }
 
-                    return Number(svalue);
-                }
+                        return Number(svalue);
+                    }
 
                 case "builtin.age":
                 case "builtin.dimension":
                 case "builtin.currency":
                 case "builtin.temperature":
-                {
-                    var units = (string)resolution.unit;
-                    var val = Number(resolution.value);
-                    var obj = new JObject();
-                    if (val != null)
                     {
-                        obj.Add("number", val);
-                    }
+                        var units = (string)resolution.unit;
+                        var val = Number(resolution.value);
+                        var obj = new JObject();
+                        if (val != null)
+                        {
+                            obj.Add("number", val);
+                        }
 
-                    obj.Add("units", units);
-                    return obj;
-                }
+                        obj.Add("units", units);
+                        return obj;
+                    }
 
                 default:
                     return resolution.value ?? (resolution.values != null ? JArray.FromObject(resolution.values) : resolution);
@@ -165,17 +165,17 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         internal static JObject ExtractEntityMetadata(EntityModel entity, string utterance)
         {
-            var start = (int)entity.StartIndex;
-            var end = (int)entity.EndIndex + 1;
+            var start = entity.StartIndex;
+            var end = entity.EndIndex + 1;
             dynamic obj = JObject.FromObject(new
             {
                 startIndex = start,
                 endIndex = end,
-                text = entity.Entity.Length == end - start ? entity.Entity : utterance.Substring(start, end - start),
+                text = GetText(entity, utterance, start, end),
                 type = entity.Type,
             });
 
-            if (entity.AdditionalProperties != null)
+            if (entity?.AdditionalProperties != null)
             {
                 if (entity.AdditionalProperties.TryGetValue("score", out var score))
                 {
@@ -191,6 +191,27 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             return obj;
+        }
+
+        internal static string GetText(EntityModel entity, string utterance, int start, int end)
+        {
+            string result;
+            var entitySize = end - start;
+
+            if (entity.Entity.Length == entitySize)
+            {
+                result = entity.Entity;
+            }
+            else if (utterance.Length <= entitySize)
+            {
+                result = utterance;
+            }
+            else
+            {
+                result = utterance.Substring(start, entitySize);
+            }
+
+            return result;
         }
 
         internal static string ExtractNormalizedEntityName(EntityModel entity)
