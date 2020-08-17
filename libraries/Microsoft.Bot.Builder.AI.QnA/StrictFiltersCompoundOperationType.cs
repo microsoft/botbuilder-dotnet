@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
-    /// Operation types for Search Filter.
+    /// Compound Filter for Metadata Join Expression.
     /// </summary>
     public enum StrictFiltersCompoundOperationType
     {

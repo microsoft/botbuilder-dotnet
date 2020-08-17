@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or Sets a value Compound Filter for Metadata Join Expression, for Search.
+        /// Gets or Sets a value of Compound Filter for Metadata Join Expression.
         /// </summary>
         /// [JsonProperty("strictFiltersCompoundOperationType")]
         /// <value>

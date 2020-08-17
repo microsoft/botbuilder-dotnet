@@ -122,8 +122,8 @@
                     "title": "StrictFiltersCompoundOperationType",
                     "description": "StrictFiltersCompoundOperationType.",
                     "enum": [
-                        "OR",
-                        "AND"
+                        "AND",
+                        "OR"
                     ],
                     "default": "AND"
                 },
