@@ -100,9 +100,15 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             var httpResponse = await client.SendAsync(request);
             var response = httpResponse.Content.ReadAsStringAsync().Result;
-            var kvPairs = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
-
-            _userAccessToken = kvPairs["access_token"];
+            try
+            {
+                var kvPairs = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
+                _userAccessToken = kvPairs["access_token"];
+            }
+            catch
+            {
+                throw new Exception($"RefreshAccessToken() failed: response = {response}");
+            }
         }
 
         private void GetEnvironmentVars()
