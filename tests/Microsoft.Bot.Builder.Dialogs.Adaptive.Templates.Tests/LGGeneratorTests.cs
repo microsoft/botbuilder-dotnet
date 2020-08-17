@@ -420,6 +420,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .Send("hello")
                 .AssertReply("[{\"Id\":0,\"Topic\":\"car\"},{\"Id\":1,\"Topic\":\"washing\"},{\"Id\":2,\"Topic\":\"food\"},{\"Id\":3,\"Topic\":\"laundry\"}]")
                 .AssertReply("This is an injected message")
+                .AssertReply("Hi Jonathan")
+                .AssertReply("Jonathan : 2003-03-20")
+                .AssertReply("Jonathan, your tasks: car, washing, food and laundry")
             .StartTestAsync();
         }
 
