@@ -941,7 +941,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return unrecognized;
         }
 
-        // Combine entity values and $instance meta-data
+        private void ExpandProperty(dynamic entities, dynamic instance, string op, string property, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
+        {
+            // Unwrap entities if any in property
+            for (var propertyIndex = 0; propertyIndex < entities.Count; ++propertyIndex)
+            {
+                var propertyChild = entities[propertyIndex];
+                if (propertyChild.Count == 0)
+                {
+                    // Plain property with no entities
+                    ExpandEntity(null, instance, op, property, turn, text, entityToInfo);
+                }
+                else
+                {
+                    // Property with entities
+                    foreach (var entityToken in propertyChild.Children())
+                    {
+                        ExpandEntity(entityToken, instance, op, property, turn, text, entityToInfo);
+                    }
+                }
+            }
+        }
+
+        // Combine entity values and $instance meta-data and expand out op/property
         private Dictionary<string, List<EntityInfo>> NormalizeEntities(ActionContext actionContext)
         {
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
@@ -950,47 +972,52 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 var turn = actionContext.State.GetValue<uint>(DialogPath.EventCounter);
                 var operations = dialogSchema.Schema[OperationsKey]?.ToObject<List<string>>() ?? new List<string>();
+                var properties = dialogSchema.Property.Children.Select((prop) => prop.Name).ToList<string>();
                 var metaData = entities[InstanceKey];
-                foreach (var entry in entities)
+                foreach (var entityToken in entities)
                 {
-                    var name = entry.Name;
-                    if (operations.Contains(name))
+                    var entityName = entityToken.Name;
+                    if (!entityName.StartsWith("$"))
                     {
-                        for (var i = 0; i < entry.Value.Count; ++i)
+                        if (operations.Contains(entityName))
                         {
-                            var composite = entry.Value[i];
-                            var childInstance = composite[InstanceKey];
-                            EntityInfo pname = null;
-                            if (composite.Count > 1)
+                            // Have an operation, unwrap property or entity children
+                            var op = entityName;
+                            for (var opIndex = 0; opIndex < entityToken.Value.Count; ++opIndex)
                             {
-                                // Find PROPERTYName so we can apply it to other entities
-                                foreach (var child in composite)
+                                var opChildren = entityToken.Value[opIndex];
+                                foreach (var opChild in opChildren)
                                 {
-                                    if (child.Name == PropertyNameKey)
+                                    var opInstance = opChild[InstanceKey];
+                                    if (properties.Contains(opChild.Name))
                                     {
-                                        // Expand PROPERTYName and fold single match into siblings span
-                                        // TODO: Would we ever need to handle multiple?
-                                        var infos = new Dictionary<string, List<EntityInfo>>();
-                                        ExpandEntity(child, childInstance, name, null, turn, text, infos);
-                                        pname = infos[PropertyNameKey].First();
-                                        break;
+                                        // Unwrap entities if any in property
+                                        ExpandProperty(opChild.Value, opInstance, op, opChild.Name, turn, text, entityToInfo);
+                                    }
+                                    else
+                                    {
+                                        // Direct entity children of op
+                                        foreach (var entityValue in opChild.Value)
+                                        {
+                                            ExpandEntity(entityValue, opInstance, op, null, turn, text, entityToInfo);
+                                        }
                                     }
                                 }
                             }
-
-                            foreach (var child in composite)
+                        }
+                        else if (properties.Contains(entityName))
+                        {
+                            // Top level properties with no op
+                            ExpandProperty(entityToken.Value, metaData[entityName], null, entityName, turn, text, entityToInfo);
+                        }
+                        else
+                        {
+                            // Plain top-level entities with no op/property
+                            for (var entityValueIndex = 0; entityValueIndex < entityToken.Value.Count; ++entityValueIndex)
                             {
-                                // Drop PROPERTYName if we are applying it to other entities
-                                if (pname == null || child.Name != PropertyNameKey)
-                                {
-                                    ExpandEntity(child, childInstance, name, pname, turn, text, entityToInfo);
-                                }
+                                ExpandEntity(entityToken.Value[entityValueIndex], metaData[entityValueIndex], null, null, turn, text, entityToInfo);
                             }
                         }
-                    }
-                    else
-                    {
-                        ExpandEntity(entry, metaData, null, null, turn, text, entityToInfo);
                     }
                 }
             }
@@ -1045,7 +1072,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return entityToInfo;
         }
 
-        private void ExpandEntity(dynamic entry, dynamic metaData, string op, EntityInfo propertyName, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
+        private void ExpandEntity(dynamic entry, dynamic metaData, string op, string property, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
         {
             var name = entry.Name;
             if (!name.StartsWith("$"))
@@ -1067,7 +1094,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         WhenRecognized = turn,
                         Name = name,
                         Value = val,
-                        Operation = op
+                        Operation = op,
+                        Property = property
                     };
                     if (instance != null)
                     {
@@ -1075,50 +1103,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         info.End = (int)instance.endIndex;
                         info.Text = (string)(instance.text ?? string.Empty);
                         info.Type = (string)(instance.type ?? null);
-                        info.Role = (string)(instance.role ?? null);
                         info.Score = (double)(instance.score ?? 0.0d);
                     }
 
-                    // Eventually this could be passed in
-                    info.Priority = info.Role == null ? 1 : 0;
+                    info.Priority = 0;
                     info.Coverage = (info.End - info.Start) / (double)text.Length;
-                    if (propertyName != null)
-                    {
-                        // Add property information to entities
-                        if (propertyName.Start < info.Start)
-                        {
-                            info.Start = propertyName.Start;
-                        }
-
-                        if (propertyName.End > info.End)
-                        {
-                            info.End = propertyName.End;
-                        }
-
-                        // Expand entity to include possible property names
-                        foreach (var property in propertyName.Value as JArray)
-                        {
-                            var newInfo = info.Clone() as EntityInfo;
-                            newInfo.Property = property.Value<string>();
-                            infos.Add(newInfo);
-                        }
-                    }
-                    else
-                    {
-                        if (op != null && name == PropertyNameKey)
-                        {
-                            foreach (var property in val as JArray)
-                            {
-                                var newInfo = info.Clone() as EntityInfo;
-                                newInfo.Property = property.Value<string>();
-                                infos.Add(newInfo);
-                            }
-                        }
-                        else
-                        {
-                            infos.Add(info);
-                        }
-                    }
                 }
             }
         }

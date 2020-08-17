@@ -68,13 +68,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public string Text { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the role the entity played in utterance.
-        /// </summary>
-        /// <value>Role of entity.</value>
-        [JsonProperty("role")]
-        public string Role { get; set; } = string.Empty;
-
-        /// <summary>
         /// Gets or sets type of entity.
         /// </summary>
         /// <value>Type of entity.</value>
