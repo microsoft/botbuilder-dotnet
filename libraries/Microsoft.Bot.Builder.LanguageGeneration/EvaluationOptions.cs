@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -44,8 +45,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             NullSubstitution = null;
             LineBreakStyle = null;
             Locale = null;
-            RandomSeed = null;
-            RandomValue = null;
         }
 
         /// <summary>
@@ -58,8 +57,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             NullSubstitution = opt.NullSubstitution;
             LineBreakStyle = opt.LineBreakStyle;
             Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
-            RandomSeed = opt.RandomSeed;
-            RandomValue = opt.RandomValue;
+            Properties = opt.Properties;
         }
 
         /// <summary>
@@ -122,20 +120,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Locale { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the random seed.
+        /// Gets or sets the additional properties.
         /// </summary>
         /// <value>
-        /// Random seed.
+        /// Additional properties.
         /// </value>
-        public int? RandomSeed { get; set; }
-
-        /// <summary>
-        /// Gets or sets the random value.
-        /// </summary>
-        /// <value>
-        /// Random value.
-        /// </value>
-        public int? RandomValue { get; set; }
+#pragma warning disable CA2227 // Collection properties should be read only
+        public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the option of a function to replace a null value. If nullSubstitution is specified,

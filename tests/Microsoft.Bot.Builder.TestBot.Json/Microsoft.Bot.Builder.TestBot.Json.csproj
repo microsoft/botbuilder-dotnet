@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <None Remove="Samples\QnAMakerBot\QnAMakerBot.main.dialog" />
-    <None Remove="Samples\RandomGenerator\RandomGenerator.main.dialog" />
   </ItemGroup>
 
   <ItemGroup>

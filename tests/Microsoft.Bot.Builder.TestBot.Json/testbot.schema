@@ -368,6 +368,9 @@
 			"$ref": "#/definitions/Microsoft.Test.UserSays"
 		},
 		{
+			"$ref": "#/definitions/Microsoft.Test.UserEvent"
+		},
+		{
 			"$ref": "#/definitions/Microsoft.Test.UserTyping"
 		},
 		{
@@ -9736,6 +9739,9 @@
 					"$ref": "#/definitions/Microsoft.Test.UserSays"
 				},
 				{
+					"$ref": "#/definitions/Microsoft.Test.UserEvent"
+				},
+				{
 					"$ref": "#/definitions/Microsoft.Test.UserTyping"
 				}
 			]
@@ -9965,6 +9971,48 @@
 					"type": "string",
 					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
 					"const": "Microsoft.Test.UserSays"
+				},
+				"$designer": {
+					"title": "Designer information",
+					"type": "object",
+					"description": "Extra information for the Bot Framework Composer."
+				}
+			}
+		},
+		"Microsoft.Test.UserEvent": {
+			"$role": "implements(Microsoft.Test.ITestAction)",
+			"title": "User Event",
+			"description": "Sends event to the bot from the user.",
+			"type": "object",
+			"required": [
+				"name",
+				"value",
+				"$kind"
+			],
+			"additionalProperties": false,
+			"patternProperties": {
+				"^\\$": {
+					"title": "Tooling property",
+					"description": "Open ended property for tooling."
+				}
+			},
+			"properties": {
+				"name": {
+					"type": "string",
+					"title": "Event Name",
+					"description": "Event name to send to the bot."
+				},
+				"value": {
+					"type": "object",
+					"title": "Event value",
+					"description": "Event value to send to the bot."
+				},
+				"$kind": {
+					"title": "Kind of dialog object",
+					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+					"type": "string",
+					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+					"const": "Microsoft.Test.UserEvent"
 				},
 				"$designer": {
 					"title": "Designer information",

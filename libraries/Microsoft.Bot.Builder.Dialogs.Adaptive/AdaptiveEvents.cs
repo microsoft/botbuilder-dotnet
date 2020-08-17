@@ -39,10 +39,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Raised when an entity should be assigned to a property.
         /// </summary>
         public const string AssignEntity = "assignEntity";
-
-        /// <summary>
-        /// Set test options.
-        /// </summary>
-        public const string SetTestOptions = "setTestOptions";
     }
 }

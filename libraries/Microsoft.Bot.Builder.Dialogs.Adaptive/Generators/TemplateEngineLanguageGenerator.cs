@@ -94,11 +94,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 Locale = dialogContext.GetLocale(),
             };
 
-            var testOptions = dialogContext.State.GetValue<TestOptions>(TestOptions.Kind);
+            var testOptions = dialogContext.State.GetValue<Dictionary<string, object>>("Conversation.TestOptions");
             if (testOptions != null)
             {
-                lgOpt.RandomSeed = testOptions.RandomSeed;
-                lgOpt.RandomValue = testOptions.RandomValue;
+                lgOpt.Properties = testOptions;
             }
 
             try

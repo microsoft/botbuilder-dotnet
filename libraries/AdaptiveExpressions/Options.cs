@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace AdaptiveExpressions
@@ -25,8 +26,7 @@ namespace AdaptiveExpressions
         {
             this.NullSubstitution = opt.NullSubstitution;
             this.Locale = opt.Locale;
-            this.RandomSeed = opt.RandomSeed;
-            this.RandomValue = opt.RandomValue;
+            this.Properties = opt.Properties;
         }
 
         /// <summary>
@@ -46,19 +46,14 @@ namespace AdaptiveExpressions
         public string Locale { get; set; }
 
         /// <summary>
-        /// Gets or sets random seed.
+        /// Gets or sets the additional properties.
         /// </summary>
         /// <value>
-        /// The random seed.
+        /// Additional properties.
         /// </value>
-        public int? RandomSeed { get; set; }
+#pragma warning disable CA2227 // Collection properties should be read only
+        public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
-        /// <summary>
-        /// Gets or sets random value.
-        /// </summary>
-        /// <value>
-        /// The random value.
-        /// </value>
-        public int? RandomValue { get; set; }
     }
 }

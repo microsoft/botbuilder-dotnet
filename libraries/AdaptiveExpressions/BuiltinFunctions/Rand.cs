@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -41,14 +42,26 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             }
                             else
                             {
-                                if (options.RandomValue != null)
+                                if (options.Properties.TryGetValue("randomValue", out var randomValue))
                                 {
-                                    value = options.RandomValue;
+                                    if (randomValue.IsInteger())
+                                    {
+                                        var randomValueNum = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
+                                        value = min + (randomValueNum % (max - min));
+                                    }
                                 }
                                 else
                                 {
-                                    var random = options.RandomSeed == null ? new Random() : new Random(options.RandomSeed.Value);
- 
+                                    var random = new Random();
+                                    if (options.Properties.TryGetValue("randomSeed", out var randomSeed))
+                                    {
+                                        if (randomSeed.IsInteger())
+                                        {
+                                            var seed = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
+                                            random = new Random(seed);
+                                        }
+                                    }
+
                                     lock (_randomizerLock)
                                     {
                                         value = random.Next(min, max);
