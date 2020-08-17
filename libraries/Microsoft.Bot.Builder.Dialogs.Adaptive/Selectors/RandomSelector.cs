@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -75,9 +77,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             if (candidates.Count > 0)
             {
                 int selection;
-                lock (_objectLock)
+                var (value, error) = Expression.Parse("Conversation.TestOptions").TryEvaluate<IDictionary<string, object>>(context.State);
+                if (error == null && value != null)
                 {
-                    selection = _rand.Next(candidates.Count);
+                    var customizedSeed = _seed == -1 ? null : (int?)_seed;
+                    selection = value.GeneratorMockRandom(0, candidates.Count, customizedSeed);
+                }
+                else
+                {
+                    lock (_objectLock)
+                    {
+                        selection = _rand.Next(candidates.Count);
+                    }
                 }
 
                 result.Add(candidates[selection]);
