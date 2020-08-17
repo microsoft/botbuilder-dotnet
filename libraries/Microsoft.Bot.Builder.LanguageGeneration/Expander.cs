@@ -586,8 +586,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var newScope = this.ConstructScope(templateName, args.ToList());
 
                 var value = this.ExpandTemplate(templateName, newScope);
-                var rd = new Random();
-                return value[rd.Next(value.Count)];
+                var randomValue = _lgOptions.Properties.GeneratorMockRandom(0, value.Count);
+                return value[randomValue];
             };
 
         // Evaluator for template(templateName, ...args) 

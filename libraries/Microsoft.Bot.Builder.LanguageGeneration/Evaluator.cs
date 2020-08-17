@@ -164,8 +164,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override object VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var normalTemplateStrs = context.templateString();
-            var rd = new Random();
-            return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)].normalTemplateString());
+            var randomValue = _lgOptions.Properties.GeneratorMockRandom(0, normalTemplateStrs.Length);
+            return Visit(normalTemplateStrs[randomValue].normalTemplateString());
         }
 
         /// <inheritdoc/>

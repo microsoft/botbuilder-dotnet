@@ -50,22 +50,20 @@ namespace AdaptiveExpressions.BuiltinFunctions
                                         value = min + (randomValueNum % (max - min));
                                     }
                                 }
-                                else
-                                {
-                                    var random = new Random();
-                                    if (options.Properties.TryGetValue("randomSeed", out var randomSeed))
-                                    {
-                                        if (randomSeed.IsInteger())
-                                        {
-                                            var seed = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
-                                            random = new Random(seed);
-                                        }
-                                    }
 
-                                    lock (_randomizerLock)
+                                var random = new Random();
+                                if (options.Properties.TryGetValue("randomSeed", out var randomSeed))
+                                {
+                                    if (randomSeed.IsInteger())
                                     {
-                                        value = random.Next(min, max);
+                                        var seed = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
+                                        random = new Random(seed);
                                     }
+                                }
+
+                                lock (_randomizerLock)
+                                {
+                                    value = random.Next(min, max);
                                 }
                             }
 

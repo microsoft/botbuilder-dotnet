@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using AdaptiveExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
@@ -19,6 +21,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Regular expression for matching escaped characters.
         /// </summary>
         public static readonly Regex EscapeRegex = new Regex(@"\\[^\r\n]?");
+
+        private static readonly object _randomizerLock = new object();
+
+        private static Random _random;
 
         /// <summary>
         /// If a value is pure Expression.
@@ -163,6 +169,46 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startPosition = new Position(lineOffset + context.Start.Line, context.Start.Column);
             var stopPosition = new Position(lineOffset + context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
             return new Range(startPosition, stopPosition);
+        }
+
+        /// <summary>
+        /// Generator random seed and value from properties.
+        /// If value is not null, the mock random value result would be: min + (value % (max - min)).
+        /// Else if seed is not null, the seed of the random would be fixed.
+        /// </summary>
+        /// <param name="properties">Properties.</param>
+        /// <param name="min">The inclusive lower bound of the random number returned.</param>
+        /// <param name="max">The exclusive upper bound of the random number returned. max must be greater than or equal to min.</param>
+        /// <returns>Random seed and value.</returns>
+        internal static int GeneratorMockRandom(this IDictionary<string, object> properties, int min, int max)
+        {
+            if (properties.TryGetValue("randomValue", out var randomValue))
+            {
+                if (randomValue.IsInteger())
+                {
+                    var randomValueNum = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
+                    return min + (randomValueNum % (max - min));
+                }
+            }
+
+            if (properties.TryGetValue("randomSeed", out var randomSeed))
+            {
+                if (randomSeed.IsInteger())
+                {
+                    var seed = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
+                    _random = new Random(seed);
+                }
+            }
+
+            lock (_randomizerLock)
+            {
+                if (_random == null)
+                {
+                    _random = new Random();
+                }
+
+                return _random.Next(min, max);
+            }
         }
     }
 }
