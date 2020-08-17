@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest;
+using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Connector
@@ -77,14 +78,17 @@ namespace Microsoft.Bot.Connector
             : this(baseUri, handlers)
         {
             this.Credentials = credentials;
-            if (customHttpClient != null)
-            {
-                this.HttpClient = customHttpClient;
 
-                // Note don't call AddDefaultRequestHeaders(HttpClient) here because the BotFrameworkAdapter
-                // called it. Updating DefaultRequestHeaders is not thread safe this is OK because the
-                // adapter should be a singleton.
+            if (customHttpClient == null)
+            {
+                return;
             }
+
+            // Note don't call AddDefaultRequestHeaders(HttpClient) here because the BotFrameworkAdapter
+            // called it. Updating DefaultRequestHeaders is not thread safe this is OK because the
+            // adapter should be a singleton.
+            // we should call InitializeHttpClient vs just swapping out the HttpClient. Additionally for future consideration if we have an HttpClientHandler we should not also have a customHttpClient or DelegatingHandlers.
+            this.HandleCustomHttpClient(customHttpClient, null, false, handlers);
         }
 
         /// <summary>
@@ -103,11 +107,13 @@ namespace Microsoft.Bot.Connector
             : this(baseUri, httpClientHandler, handlers)
         {
             this.Credentials = credentials;
-            if (customHttpClient != null)
+
+            if (customHttpClient == null)
             {
-                this.HttpClient = customHttpClient;
-                AddDefaultRequestHeaders(HttpClient);
+                return;
             }
+
+            this.HandleCustomHttpClient(customHttpClient, httpClientHandler, true, handlers);
         }
 
         /// <summary>Gets a description of the operating system of the Azure Bot Service.</summary>
@@ -193,6 +199,32 @@ namespace Microsoft.Bot.Connector
             var type = typeof(ConnectorClient).GetType();
             var assembly = type.GetTypeInfo().Assembly;
             return assembly.GetName().Version.ToString();
+        }
+
+        /// <summary>
+        /// Configures the <see cref="ConnectorClient"/> for a custom <see cref="System.Net.Http.HttpClient"/>.
+        /// </summary>
+        /// <param name="customHttpClient">HttpClient to be used for the ConnectorClient.</param>
+        /// <param name="httpClientHandler">HttpClientHandler to be used for ConnectorClient.</param>
+        /// <param name="addDefaultHeaders">Indicates if default headers should be add to the HttpClient.</param>
+        /// <param name="handlers">Collection of DelegatingHandler to be used for the ConnectorClient.</param>
+        private void HandleCustomHttpClient(HttpClient customHttpClient, HttpClientHandler httpClientHandler, bool addDefaultHeaders, params DelegatingHandler[] handlers)
+        {
+            // if we have an httpClientHandler we should not also have a customHttpClient. If we have a customHttpClient we should not have DelegatingHandlers.
+            if ((customHttpClient != null && httpClientHandler != null) || (customHttpClient != null && handlers != null && handlers.Length > 0))
+            {
+                throw new ArgumentException($"{nameof(customHttpClient)} should not be provided when {nameof(httpClientHandler)} and/or DelegatingHandlers are provided");
+            }
+
+            // we should call InitializeHttpClient vs just swapping out the HttpClient.
+            this.InitializeHttpClient(customHttpClient, httpClientHandler, handlers);
+
+            if (!addDefaultHeaders)
+            {
+                return;
+            }
+
+            AddDefaultRequestHeaders(HttpClient);
         }
 
         partial void CustomInitialize()

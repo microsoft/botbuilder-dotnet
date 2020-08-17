@@ -50,6 +50,7 @@ namespace Microsoft.Bot.Builder
 
         private static readonly HttpClient DefaultHttpClient = new HttpClient();
 
+        private readonly bool _isDefaultClient;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly AppCredentials _appCredentials;
@@ -107,6 +108,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="connectorClientRetryPolicy"/> is not <c>null</c> and
+        /// <paramref name="customHttpClient"/> is not<c>null</c>.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
         /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
         /// add additional middleware to the adapter after construction.
@@ -120,8 +124,14 @@ namespace Microsoft.Bot.Builder
             IMiddleware middleware = null,
             ILogger logger = null)
         {
+            if (connectorClientRetryPolicy != null && customHttpClient != null)
+            {
+                throw new ArgumentException($"{nameof(connectorClientRetryPolicy)} should not be provided if {nameof(customHttpClient)} is provided");
+            }
+
             CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             ChannelProvider = channelProvider;
+            _isDefaultClient = customHttpClient == null;
             _httpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             Logger = logger ?? NullLogger.Instance;
@@ -153,6 +163,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <exception cref="ArgumentNullException">throw ArgumentNullException.</exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="connectorClientRetryPolicy"/> is not <c>null</c> and
+        /// <paramref name="customHttpClient"/> is not<c>null</c>.</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
         /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
         /// add additional middleware to the adapter after construction.
@@ -166,9 +179,15 @@ namespace Microsoft.Bot.Builder
             IMiddleware middleware = null,
             ILogger logger = null)
         {
+            if (connectorClientRetryPolicy != null && customHttpClient != null)
+            {
+                throw new ArgumentException($"{nameof(connectorClientRetryPolicy)} should not be provided if {nameof(customHttpClient)} is provided");
+            }
+
             _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
             CredentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
             this.ChannelProvider = channelProvider;
+            _isDefaultClient = customHttpClient == null;
             _httpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             Logger = logger ?? NullLogger.Instance;
@@ -1599,19 +1618,23 @@ namespace Microsoft.Bot.Builder
             return _connectorClients.GetOrAdd(clientKey, (key) =>
             {
                 ConnectorClient connectorClient;
+
+                HttpClient customHttpClient = this._isDefaultClient ? null : this._httpClient;
+
                 if (appCredentials != null)
                 {
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: _httpClient);
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: customHttpClient);
                 }
                 else
                 {
                     var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
                         MicrosoftGovernmentAppCredentials.Empty :
                         MicrosoftAppCredentials.Empty;
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient);
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: customHttpClient);
                 }
 
-                if (_connectorClientRetryPolicy != null)
+                // this does not make any sense if we have provided default client. if you provide a client you cannot set retry policy
+                if (_connectorClientRetryPolicy != null && !_isDefaultClient)
                 {
                     connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
                 }

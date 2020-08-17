@@ -17,6 +17,9 @@ namespace Microsoft.Bot.Builder.Integration
     /// </summary>
     public class BotFrameworkOptions
     {
+        private HttpClient _httpClient;
+        private RetryPolicy _retryPolicy;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkOptions"/> class.
         /// </summary>
@@ -78,13 +81,37 @@ namespace Microsoft.Bot.Builder.Integration
         /// Gets or sets the retry policy to use in case of errors from Bot Framework Service.
         /// </summary>
         /// <value>The retry policy.</value>
-        public RetryPolicy ConnectorClientRetryPolicy { get; set; }
+        public RetryPolicy ConnectorClientRetryPolicy
+        {
+            get
+            {
+                return _retryPolicy;
+            }
+
+            set
+            {
+                _retryPolicy = value;
+                this.IsConnectorClientRetryPolicyValid();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="HttpClient"/> instance that should be used to make requests to the Bot Framework Service.
         /// </summary>
         /// <value>The HTTP client.</value>
-        public HttpClient HttpClient { get; set; }
+        public HttpClient HttpClient
+        {
+            get
+            {
+                return _httpClient;
+            }
+
+            set
+            {
+                _httpClient = value;
+                this.IsConnectorClientRetryPolicyValid();
+            }
+        }
 
         /// <summary>
         /// Gets or sets what paths should be used when exposing the various bot endpoints.
@@ -101,5 +128,19 @@ namespace Microsoft.Bot.Builder.Integration
         /// The general configuration settings for authentication.
         /// </value>
         public AuthenticationConfiguration AuthenticationConfiguration { get; set; } = new AuthenticationConfiguration();
+
+        /// <summary>
+        /// Provides validation of <see cref="ConnectorClientRetryPolicy"/> and <see cref="HttpClient"/> options.
+        /// If a <see cref="RetryPolicy"/> is provided you cannot also provide an <see cref="System.Net.Http.HttpClient"/> as these options cannot be used together.
+        /// The Rest Runtime will not be able to manipulate the policy if a client will be provided as well.
+        /// </summary>
+        /// <exception cref="ArgumentException">Throws when <see cref="_retryPolicy"/> and <see cref="_httpClient"/> are not <c>null</c>.</exception>
+        private void IsConnectorClientRetryPolicyValid()
+        {
+            if (_retryPolicy != null && _httpClient != null)
+            {
+                throw new ArgumentException($"{nameof(ConnectorClientRetryPolicy)} should not be provided if {nameof(HttpClient)} is provided");
+            }
+        }
     }
 }
