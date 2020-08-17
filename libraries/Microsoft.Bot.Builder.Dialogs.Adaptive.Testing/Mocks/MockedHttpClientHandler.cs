@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
     {
         private readonly HttpClient client;
         private readonly HttpMessageHandler httpMessageHandler;
+        private readonly MethodInfo httpMessageHandlerMethod;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MockedHttpClientHandler"/> class.
@@ -35,6 +36,14 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
         public MockedHttpClientHandler(HttpMessageHandler httpMessageHandler)
         {
             this.httpMessageHandler = httpMessageHandler;
+
+            // Call directly to avoid wrapping with HttpClient.
+            this.httpMessageHandlerMethod = httpMessageHandler.GetType().GetMethod(
+                    nameof(SendAsync),
+                    BindingFlags.Instance | BindingFlags.NonPublic,
+                    Type.DefaultBinder,
+                    new[] { typeof(HttpRequestMessage), typeof(CancellationToken) },
+                    null);
         }
 
         /// <summary>
@@ -84,14 +93,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
         {
             if (httpMessageHandler != null)
             {
-                // Call directly to avoid wrapping with HttpClient.
-                MethodInfo sendAsyncMethod = httpMessageHandler.GetType().GetMethod(
-                    nameof(SendAsync),
-                    BindingFlags.Instance | BindingFlags.NonPublic,
-                    Type.DefaultBinder,
-                    new[] { typeof(HttpRequestMessage), typeof(CancellationToken) },
-                    null);
-                return (Task<HttpResponseMessage>)sendAsyncMethod.Invoke(httpMessageHandler, new object[] { request, cancellationToken });
+                return (Task<HttpResponseMessage>)httpMessageHandlerMethod.Invoke(httpMessageHandler, new object[] { request, cancellationToken });
             }
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
