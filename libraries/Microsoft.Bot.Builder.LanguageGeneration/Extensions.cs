@@ -165,13 +165,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Random seed and value.</returns>
         public static int GeneratorMockRandom(this IDictionary<string, object> properties, int min, int max, int? seed = null)
         {
-            if (properties.TryGetValue("randomValue", out var randomValue))
+            if (properties.TryGetValue("randomValue", out var randomValue)
+                && randomValue.IsInteger())
             {
-                if (randomValue.IsInteger())
-                {
-                    var randomValueNum = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
-                    return min + (randomValueNum % (max - min));
-                }
+                var randomValueNum = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
+                return min + (randomValueNum % (max - min));
             }
 
             if (seed != null)

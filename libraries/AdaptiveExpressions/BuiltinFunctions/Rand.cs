@@ -42,28 +42,28 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             }
                             else
                             {
-                                if (options.Properties.TryGetValue("randomValue", out var randomValue))
+                                if (options.Properties.TryGetValue("randomValue", out var randomValue)
+                                && randomValue.IsInteger())
                                 {
-                                    if (randomValue.IsInteger())
-                                    {
-                                        var randomValueNum = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
-                                        value = min + (randomValueNum % (max - min));
-                                    }
+                                    var randomValueNum = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
+                                    value = min + (randomValueNum % (max - min));
                                 }
-
-                                var random = new Random();
-                                if (options.Properties.TryGetValue("randomSeed", out var randomSeed))
+                                else
                                 {
-                                    if (randomSeed.IsInteger())
+                                    var random = new Random();
+                                    if (options.Properties.TryGetValue("randomSeed", out var randomSeed))
                                     {
-                                        var seed = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
-                                        random = new Random(seed);
+                                        if (randomSeed.IsInteger())
+                                        {
+                                            var seed = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
+                                            random = new Random(seed);
+                                        }
                                     }
-                                }
 
-                                lock (_randomizerLock)
-                                {
-                                    value = random.Next(min, max);
+                                    lock (_randomizerLock)
+                                    {
+                                        value = random.Next(min, max);
+                                    }
                                 }
                             }
 
