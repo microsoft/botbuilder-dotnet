@@ -108,6 +108,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         public StringExpression RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
         /// <summary>
+        /// Gets or Sets a value of Compound Filter for Metadata Join Expression.
+        /// </summary>
+        /// [JsonProperty("strictFiltersCompoundOperationType")]
+        /// <value>
+        /// A value used for join operation of Metadata <see cref="Metadata"/>.
+        /// </value>
+        [JsonProperty("strictFiltersCompoundOperationType")]
+        public StrictFiltersCompoundOperationType StrictFiltersCompoundOperationType { get; set; }
+
+        /// <summary>
         /// Gets or sets the whether to include the dialog name metadata for QnA context.
         /// </summary>
         /// <value>
@@ -209,7 +219,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     Top = Top.GetValue(dialogContext.State),
                     QnAId = QnAId.GetValue(dialogContext.State),
                     RankerType = RankerType.GetValue(dialogContext.State),
-                    IsTest = IsTest
+                    IsTest = IsTest,
+                    StrictFiltersCompoundOperationType = StrictFiltersCompoundOperationType
                 },
                 null).ConfigureAwait(false);
 
