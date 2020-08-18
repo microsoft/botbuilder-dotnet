@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
     /// <summary>
     /// Middleware that catch "SetTestOptions" event and save into "Conversation.TestOptions".

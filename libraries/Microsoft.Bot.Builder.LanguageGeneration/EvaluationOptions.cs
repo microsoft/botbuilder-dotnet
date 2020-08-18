@@ -57,7 +57,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             NullSubstitution = opt.NullSubstitution;
             LineBreakStyle = opt.LineBreakStyle;
             Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
-            Properties = opt.Properties;
         }
 
         /// <summary>
@@ -118,16 +117,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// A CultureInfo or null object.
         /// </value>
         public string Locale { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets the additional properties.
-        /// </summary>
-        /// <value>
-        /// Additional properties.
-        /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only
-        public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the option of a function to replace a null value. If nullSubstitution is specified,

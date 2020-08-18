@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -11,65 +12,58 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     internal class Rand : ExpressionEvaluator
     {
-        private static readonly object _randomizerLock = new object();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Rand"/> class.
         /// </summary>
         public Rand()
-            : base(ExpressionType.Rand, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
+            : base(ExpressionType.Rand, Evaluator, ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
         {
         }
 
-        private static EvaluateExpressionDelegate Evaluator()
+        private static (object, string) Evaluator(Expression expression, IMemory state, Options options)
         {
-            return FunctionUtils.ApplyWithOptionsAndError(
-                        (args, options) =>
-                        {
-                            object value = null;
-                            string error = null;
-                            var min = 0;
-                            var max = 0;
-                            (min, error) = FunctionUtils.ParseInt32(args[0]);
-                            if (error == null)
-                            {
-                                (max, error) = FunctionUtils.ParseInt32(args[1]);
-                            }
+            object result = null;
+            object minValue;
+            string error;
+            (minValue, error) = expression.Children[0].TryEvaluate(state, options);
+            if (error != null)
+            {
+                return (result, error);
+            }
 
-                            if (min >= max)
-                            {
-                                error = $"{min} is not < {max} for rand";
-                            }
-                            else
-                            {
-                                if (options.Properties.TryGetValue("randomValue", out var randomValue)
-                                && randomValue.IsInteger())
-                                {
-                                    var randomValueNum = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
-                                    value = min + (randomValueNum % (max - min));
-                                }
-                                else
-                                {
-                                    var random = new Random();
-                                    if (options.Properties.TryGetValue("randomSeed", out var randomSeed))
-                                    {
-                                        if (randomSeed.IsInteger())
-                                        {
-                                            var seed = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
-                                            random = new Random(seed);
-                                        }
-                                    }
+            int minValueInt;
+            (minValueInt, error) = FunctionUtils.ParseInt32(minValue);
 
-                                    lock (_randomizerLock)
-                                    {
-                                        value = random.Next(min, max);
-                                    }
-                                }
-                            }
+            if (error != null)
+            {
+                return (result, error);
+            }
 
-                            return (value, error);
-                        },
-                        FunctionUtils.VerifyInteger);
+            object maxValue;
+            (maxValue, error) = expression.Children[1].TryEvaluate(state, options);
+            if (error != null)
+            {
+                return (result, error);
+            }
+
+            int maxValueInt;
+            (maxValueInt, error) = FunctionUtils.ParseInt32(maxValue);
+
+            if (error != null)
+            {
+                return (result, error);
+            }
+
+            if (minValueInt >= maxValueInt)
+            {
+                error = $"{minValueInt} is not < {maxValueInt} for rand";
+            }
+            else
+            {
+                result = state.RandomNext(minValueInt, maxValueInt);
+            }
+
+            return (result, error);
         }
     }
 }

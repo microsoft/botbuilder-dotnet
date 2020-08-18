@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override object VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var normalTemplateStrs = context.templateString();
-            var randomValue = _lgOptions.Properties.GeneratorMockRandom(0, normalTemplateStrs.Length);
+            var randomValue = CurrentTarget().Scope.RandomNext(0, normalTemplateStrs.Length);
             return Visit(normalTemplateStrs[randomValue].normalTemplateString());
         }
 
@@ -461,7 +461,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private (object value, string error) EvalByAdaptiveExpression(string exp, object scope)
         {
             var parse = this.ExpressionParser.Parse(exp);
-            var opt = new Options() { Locale = _lgOptions.Locale, Properties = _lgOptions.Properties };
+            var opt = new Options() { Locale = _lgOptions.Locale };
             opt.NullSubstitution = _lgOptions.NullSubstitution;
             return parse.TryEvaluate(scope, opt);
         }

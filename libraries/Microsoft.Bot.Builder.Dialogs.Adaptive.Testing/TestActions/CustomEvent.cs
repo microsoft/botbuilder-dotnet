@@ -15,24 +15,24 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
     /// <summary>
-    /// Action to script sending event to the bot.
+    /// Action to script sending custom event to the bot.
     /// </summary>
-    [DebuggerDisplay("UserEvent:{Name}")]
-    public class UserEvent : TestAction
+    [DebuggerDisplay("CustomEvent:{Name}")]
+    public class CustomEvent : TestAction
     {
         /// <summary>
         /// Seralization of kind.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.Test.UserEvent";
+        public const string Kind = "Microsoft.Test.CustomEvent";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserEvent"/> class.
+        /// Initializes a new instance of the <see cref="CustomEvent"/> class.
         /// </summary>
         /// <param name="path">path for source.</param>
         /// <param name="line">line number in source.</param>
         [JsonConstructor]
-        public UserEvent([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
+        public CustomEvent([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
             RegisterSourcePath(path, line);
         }
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             sw.Start();
             await adapter.ProcessActivityAsync(eventActivity, callback, default(CancellationToken)).ConfigureAwait(false);
             sw.Stop();
-            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserEvent: {this.Name} ]");
+            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing CustomEvent: {this.Name} ]");
         }
     }
 }

@@ -26,7 +26,6 @@ namespace AdaptiveExpressions
         {
             this.NullSubstitution = opt.NullSubstitution;
             this.Locale = opt.Locale;
-            this.Properties = opt.Properties;
         }
 
         /// <summary>
@@ -44,16 +43,5 @@ namespace AdaptiveExpressions
         /// The locale info.
         /// </value>
         public string Locale { get; set; }
-
-        /// <summary>
-        /// Gets or sets the additional properties.
-        /// </summary>
-        /// <value>
-        /// Additional properties.
-        /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only
-        public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
-#pragma warning restore CA2227 // Collection properties should be read only
-
     }
 }

@@ -473,7 +473,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
             string error;
             object value;
-            var opt = new Options() { Locale = _lgOptions.Locale, Properties = _lgOptions.Properties };
+            var opt = new Options() { Locale = _lgOptions.Locale };
             opt.NullSubstitution = _lgOptions.NullSubstitution;
             (value, error) = parse.TryEvaluate(scope, opt);
 
@@ -586,7 +586,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var newScope = this.ConstructScope(templateName, args.ToList());
 
                 var value = this.ExpandTemplate(templateName, newScope);
-                var randomValue = _lgOptions.Properties.GeneratorMockRandom(0, value.Count);
+                var randomValue = CurrentTarget().Scope.RandomNext(0, value.Count);
                 return value[randomValue];
             };
 

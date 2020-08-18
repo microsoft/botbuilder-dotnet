@@ -262,7 +262,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <remarks>This method does not modify the original <see cref="TestScript"/> object.</remarks>
         public TestScript Event(string name, object value, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
-            this.Script.Add(new UserEvent(path: path, line: line) { Name = name, Value = value });
+            this.Script.Add(new CustomEvent(path: path, line: line) { Name = name, Value = value });
             return this;
         }
 

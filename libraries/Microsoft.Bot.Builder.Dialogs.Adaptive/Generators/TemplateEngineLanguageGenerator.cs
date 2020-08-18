@@ -94,12 +94,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 Locale = dialogContext.GetLocale(),
             };
 
-            var testOptions = dialogContext.State.GetValue<Dictionary<string, object>>("Conversation.TestOptions");
-            if (testOptions != null)
-            {
-                lgOpt.Properties = testOptions;
-            }
-
             try
             {
                 return Task.FromResult(lg.EvaluateText(template, data, lgOpt));

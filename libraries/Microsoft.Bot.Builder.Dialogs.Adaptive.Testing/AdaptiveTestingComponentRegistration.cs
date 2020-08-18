@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             yield return new DeclarativeType<HttpRequestSequenceMock>(HttpRequestSequenceMock.Kind);
             yield return new DeclarativeType<UserTokenBasicMock>(UserTokenBasicMock.Kind);
             yield return new DeclarativeType<PropertiesMock>(PropertiesMock.Kind);
-            yield return new DeclarativeType<UserEvent>(UserEvent.Kind);
+            yield return new DeclarativeType<CustomEvent>(CustomEvent.Kind);
         }
 
         /// <inheritdoc/>

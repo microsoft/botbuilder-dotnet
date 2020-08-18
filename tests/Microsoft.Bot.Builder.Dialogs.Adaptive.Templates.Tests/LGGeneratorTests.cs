@@ -20,7 +20,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
+namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
 {
     public class LGGeneratorTests
     {

@@ -22,10 +22,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         public static readonly Regex EscapeRegex = new Regex(@"\\[^\r\n]?");
 
-        private static readonly object _randomizerLock = new object();
-
-        private static Random _random;
-
         /// <summary>
         /// If a value is pure Expression.
         /// </summary>
@@ -151,51 +147,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return errorPrefix;
-        }
-
-        /// <summary>
-        /// Generator random seed and value from properties.
-        /// If value is not null, the mock random value result would be: min + (value % (max - min)).
-        /// Else if seed is not null, the seed of the random would be fixed.
-        /// </summary>
-        /// <param name="properties">Properties.</param>
-        /// <param name="min">The inclusive lower bound of the random number returned.</param>
-        /// <param name="max">The exclusive upper bound of the random number returned. max must be greater than or equal to min.</param>
-        /// <param name="seed">user seed.</param>
-        /// <returns>Random seed and value.</returns>
-        public static int GeneratorMockRandom(this IDictionary<string, object> properties, int min, int max, int? seed = null)
-        {
-            if (properties.TryGetValue("randomValue", out var randomValue)
-                && randomValue.IsInteger())
-            {
-                var randomValueNum = Convert.ToInt32(randomValue, CultureInfo.InvariantCulture);
-                return min + (randomValueNum % (max - min));
-            }
-
-            if (seed != null)
-            {
-                _random = new Random(seed.Value);
-            }
-            else
-            {
-                if (properties.TryGetValue("randomSeed", out var randomSeed))
-                {
-                    if (randomSeed.IsInteger())
-                    {
-                        _random = new Random(Convert.ToInt32(randomValue, CultureInfo.InvariantCulture));
-                    }
-                }
-            }
-
-            lock (_randomizerLock)
-            {
-                if (_random == null)
-                {
-                    _random = new Random();
-                }
-
-                return _random.Next(min, max);
-            }
         }
 
         /// <summary>
