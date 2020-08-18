@@ -7361,25 +7361,6 @@
 						}
 					]
 				},
-				"strictFiltersCompoundOperationType": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "StrictFilters Compound Operation Type",
-					"description": "Type of Operation for Strict Filters.",
-					"oneOf": [
-						{
-							"title": "StrictFilters Compound Operation Type",
-							"description": "StrictFilters Compound Operation Type",
-							"enum": [
-								"AND",
-								"OR"
-							],
-							"default": "AND"
-						},
-						{
-							"$ref": "#/definitions/equalsExpression"
-						}
-					]
-				},
 				"$kind": {
 					"title": "Kind of dialog object",
 					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
