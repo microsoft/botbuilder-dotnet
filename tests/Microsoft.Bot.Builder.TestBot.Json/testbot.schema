@@ -7251,148 +7251,148 @@
 					"description": "Open ended property for tooling."
 				}
 			},
-			"properties": {
-				"knowledgeBaseId": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "KnowledgeBase Id",
-					"description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
-					"default": "=settings.qna.knowledgebaseid"
-				},
-				"endpointKey": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Endpoint Key",
-					"description": "Endpoint key for the QnA Maker KB.",
-					"default": "=settings.qna.endpointkey"
-				},
-				"hostname": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Hostname",
-					"description": "Hostname for your QnA Maker service.",
-					"default": "=settings.qna.hostname",
-					"examples": [
-						"https://yourserver.azurewebsites.net/qnamaker"
-					]
-				},
-				"noAnswer": {
-					"$kind": "Microsoft.IActivityTemplate",
-					"title": "Fallback answer",
-					"description": "Default answer to return when none found in KB.",
-					"default": "Sorry, I did not find an answer.",
-					"$ref": "#/definitions/Microsoft.IActivityTemplate"
-				},
-				"threshold": {
-					"$ref": "#/definitions/numberExpression",
-					"title": "Threshold",
-					"description": "Threshold score to filter results.",
-					"default": 0.3
-				},
-				"activeLearningCardTitle": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Active learning card title",
-					"description": "Title for active learning suggestions card.",
-					"default": "Did you mean:"
-				},
-				"cardNoMatchText": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Card no match text",
-					"description": "Text for no match option.",
-					"default": "None of the above."
-				},
-				"cardNoMatchResponse": {
-					"$kind": "Microsoft.IActivityTemplate",
-					"title": "Card no match response",
-					"description": "Custom response when no match option was selected.",
-					"default": "Thanks for the feedback.",
-					"$ref": "#/definitions/Microsoft.IActivityTemplate"
-				},
-				"strictFilters": {
-					"$ref": "#/definitions/arrayExpression",
-					"title": "Strict Filters",
-					"description": "Metadata filters to use when calling the QnA Maker KB.",
-					"items": {
-						"type": "object",
-						"title": "Metadata filter",
-						"description": "Metadata filter.",
-						"properties": {
-							"name": {
-								"type": "string",
-								"title": "Name",
-								"description": "Name of filter property.",
-								"maximum": 100
-							},
-							"value": {
-								"type": "string",
-								"title": "Value",
-								"description": "Value to filter on.",
-								"maximum": 100
-							}
-						}
-					}
-				},
-				"top": {
-					"$ref": "#/definitions/numberExpression",
-					"title": "Top",
-					"description": "The number of answers you want to retrieve.",
-					"default": 3
-				},
-				"isTest": {
-					"type": "boolean",
-					"title": "IsTest",
-					"description": "True, if pointing to Test environment, else false.",
-					"default": false
-				},
-				"rankerType": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "Ranker Type",
-					"description": "Type of Ranker.",
-					"oneOf": [
-						{
-							"title": "Standard ranker",
-							"description": "Standard ranker types.",
-							"enum": [
-								"default",
-								"questionOnly",
-								"autoSuggestQuestion"
-							],
-							"default": "default"
-						},
-						{
-							"$ref": "#/definitions/equalsExpression"
-						}
-					]
-				},
-				"strictFiltersCompoundOperationType": {
-					"$ref": "#/definitions/stringExpression",
-					"title": "StrictFilters Compound Operation Type",
-					"description": "Type of Operation for Strict Filters.",
-					"oneOf": [
-						{
-							"title": "StrictFiltersCompoundOperationType",
-							"description": "StrictFilters Compound Operation Type.",
-							"enum": [
-								"AND",
-								"OR"
-							],
-							"default": "AND"
-						},
-						{
-							"$ref": "#/definitions/equalsExpression"
-						}
-					]
-				},
-				"$kind": {
-					"title": "Kind of dialog object",
-					"description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-					"type": "string",
-					"pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-					"const": "Microsoft.QnAMakerDialog"
-				},
-				"$designer": {
-					"title": "Designer information",
-					"type": "object",
-					"description": "Extra information for the Bot Framework Composer."
-				}
-			}
+            "properties": {
+                "knowledgeBaseId": {
+                    "$ref": "#/definitions/stringExpression",
+                    "title": "KnowledgeBase Id",
+                    "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+                    "default": "=settings.qna.knowledgebaseid"
+                },
+                "endpointKey": {
+                    "$ref": "#/definitions/stringExpression",
+                    "title": "Endpoint Key",
+                    "description": "Endpoint key for the QnA Maker KB.",
+                    "default": "=settings.qna.endpointkey"
+                },
+                "hostname": {
+                    "$ref": "#/definitions/stringExpression",
+                    "title": "Hostname",
+                    "description": "Hostname for your QnA Maker service.",
+                    "default": "=settings.qna.hostname",
+                    "examples": [
+                        "https://yourserver.azurewebsites.net/qnamaker"
+                    ]
+                },
+                "noAnswer": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Fallback answer",
+                    "description": "Default answer to return when none found in KB.",
+                    "default": "Sorry, I did not find an answer.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "threshold": {
+                    "$ref": "#/definitions/numberExpression",
+                    "title": "Threshold",
+                    "description": "Threshold score to filter results.",
+                    "default": 0.3
+                },
+                "activeLearningCardTitle": {
+                    "$ref": "#/definitions/stringExpression",
+                    "title": "Active learning card title",
+                    "description": "Title for active learning suggestions card.",
+                    "default": "Did you mean:"
+                },
+                "cardNoMatchText": {
+                    "$ref": "#/definitions/stringExpression",
+                    "title": "Card no match text",
+                    "description": "Text for no match option.",
+                    "default": "None of the above."
+                },
+                "cardNoMatchResponse": {
+                    "$kind": "Microsoft.IActivityTemplate",
+                    "title": "Card no match response",
+                    "description": "Custom response when no match option was selected.",
+                    "default": "Thanks for the feedback.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "strictFilters": {
+                    "$ref": "#/definitions/arrayExpression",
+                    "title": "Strict Filters",
+                    "description": "Metadata filters to use when calling the QnA Maker KB.",
+                    "items": {
+                        "type": "object",
+                        "title": "Metadata filter",
+                        "description": "Metadata filter.",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "title": "Name",
+                                "description": "Name of filter property.",
+                                "maximum": 100
+                            },
+                            "value": {
+                                "type": "string",
+                                "title": "Value",
+                                "description": "Value to filter on.",
+                                "maximum": 100
+                            }
+                        }
+                    }
+                },
+                "top": {
+                    "$ref": "#/definitions/numberExpression",
+                    "title": "Top",
+                    "description": "The number of answers you want to retrieve.",
+                    "default": 3
+                },
+                "isTest": {
+                    "type": "boolean",
+                    "title": "IsTest",
+                    "description": "True, if pointing to Test environment, else false.",
+                    "default": false
+                },
+                "rankerType": {
+                    "$ref": "#/definitions/stringExpression",
+                    "title": "Ranker Type",
+                    "description": "Type of Ranker.",
+                    "oneOf": [
+                        {
+                            "title": "Standard ranker",
+                            "description": "Standard ranker types.",
+                            "enum": [
+                                "default",
+                                "questionOnly",
+                                "autoSuggestQuestion"
+                            ],
+                            "default": "default"
+                        },
+                        {
+                            "$ref": "#/definitions/equalsExpression"
+                        }
+                    ]
+                },
+                "strictFiltersCompoundOperationType": {
+                    "$ref": "schema:#/definitions/stringExpression",
+                    "title": "StrictFilters Compound Operation Type",
+                    "description": "Type of Operation for Strict Filters.",
+                    "oneOf": [
+                        {
+                            "title": "StrictFiltersCompoundOperationType",
+                            "description": "StrictFiltersCompoundOperationType.",
+                            "enum": [
+                                "OR",
+                                "AND"
+                            ],
+                            "default": "AND"
+                        },
+                        {
+                            "$ref": "schema:#/definitions/equalsExpression"
+                        }
+                    ]
+                },
+                "$kind": {
+                    "title": "Kind of dialog object",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.QnAMakerDialog"
+                },
+                "$designer": {
+                    "title": "Designer information",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Composer."
+                }
+            }
 		},
 		"Microsoft.QnAMakerRecognizer": {
 			"$role": "implements(Microsoft.IRecognizer)",
@@ -7535,6 +7535,24 @@
 							}
 						}
 					}
+				},
+				"strictFiltersCompoundOperationType": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "StrictFilters Compound Operation Type",
+					"description": "Type of Operation for Strict Filters.",
+					"oneOf": [
+						"title": "StrictFiltersCompoundOperationType",
+						"description": "Metadata filter to use when calling the QnA Maker KB.",
+						"enum": [
+								"AND",
+								"OR"
+							],
+							"default": "AND"
+						},
+						{
+							"$ref": "#/definitions/equalsExpression"
+						}
+					]
 				},
 				"context": {
 					"$ref": "#/definitions/objectExpression",
