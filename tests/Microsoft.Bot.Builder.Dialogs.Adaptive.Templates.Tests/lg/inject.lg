@@ -1,6 +1,6 @@
 ﻿> !# @strict = false
 > !# @namespace = foo
-> !# @Exports = GetList, Convert, GetProperty, GetMessage
+> !# @Exports = GetList, Convert, GetProperty, GetMessage, UserDataConcat, WelcomeUser, ShowTasks
 
 
 # Convert(index, value)
@@ -14,3 +14,14 @@
 
 #GetMessage
 - This is an injected message
+
+> Use both global and local memory
+#UserDataConcat(date)
+- ${sentenceCase(user.name)} : ${date}
+
+> Use global memory
+#WelcomeUser
+- Hi ${sentenceCase(user.name)}
+
+# ShowTasks(tasks)
+- ${sentenceCase(user.name)}, your tasks: ${join(foreach(tasks, task, task.value), ', ', ' and ')}
