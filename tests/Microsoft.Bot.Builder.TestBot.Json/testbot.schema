@@ -7536,6 +7536,24 @@
 						}
 					}
 				},
+				"strictFiltersCompoundOperationType": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "StrictFilters Compound Operation Type",
+					"description": "Type of Operation for Strict Filters.",
+					"oneOf": [
+						"title": "StrictFiltersCompoundOperationType",
+						"description": "Metadata filter to use when calling the QnA Maker KB.",
+						"enum": [
+								"AND",
+								"OR"
+							],
+							"default": "AND"
+						},
+						{
+							"$ref": "#/definitions/equalsExpression"
+						}
+					]
+				},
 				"context": {
 					"$ref": "#/definitions/objectExpression",
 					"title": "QnARequestContext",
