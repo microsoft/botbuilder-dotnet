@@ -5,14 +5,11 @@
     "httpRequestMocks": [
         "httpluis.mock"
     ],
-    "propertyMocks": [
-        "propertiesluis.mock"
-    ],
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "recognizer": {
             "$kind": "Microsoft.LuisRecognizer",
-            "applicationId": "=settings.luis.lu",
+            "applicationId": "=settings.luis.test_en_us_lu",
             "endpointKey": "=settings.luis.endpointKey",
             "endpoint": "=settings.luis.endpoint",
             "predictionOptions": {
@@ -34,7 +31,7 @@
                             "$kind": "Microsoft.AdaptiveDialog",
                             "recognizer": {
                                 "$kind": "Microsoft.LuisRecognizer",
-                                "applicationId": "=settings.luis.lu",
+                                "applicationId": "=settings.luis.test_en_us_lu",
                                 "endpointKey": "=settings.luis.endpointKey",
                                 "endpoint": "=settings.luis.endpoint"
                             },

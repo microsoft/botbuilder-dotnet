@@ -9147,10 +9147,24 @@
             "https://contoso.com"
           ]
         },
-        "content": {
+        "matchType": {
           "type": "string",
-          "title": "Content",
-          "description": "The content to match partially against.",
+          "title": "Body Match Type",
+          "description": "The match type for body.",
+          "enum": [
+            "Exact",
+            "Partial"
+          ],
+          "examples": [
+            "Exact",
+            "Partial"
+          ],
+          "default": "Partial"
+        },
+        "body": {
+          "type": "string",
+          "title": "Body",
+          "description": "The body to match against request's body.",
           "examples": [
             "content"
           ]

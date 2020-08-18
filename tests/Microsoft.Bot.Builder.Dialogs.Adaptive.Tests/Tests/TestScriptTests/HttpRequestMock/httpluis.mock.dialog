@@ -1,8 +1,9 @@
 ﻿{
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "post",
     "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
-    "content": "\"query\": \"overwrite\"",
+    "body": "\"query\": \"overwrite\"",
     "responses": [
         {
             "content": {

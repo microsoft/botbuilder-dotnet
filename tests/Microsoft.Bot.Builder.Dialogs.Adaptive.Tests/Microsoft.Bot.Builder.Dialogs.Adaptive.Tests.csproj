@@ -11,6 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Tests\TestScriptTests\LuisMock\cachedResponses\lu\**" />
+    <EmbeddedResource Remove="Tests\TestScriptTests\LuisMock\cachedResponses\lu\**" />
+    <None Remove="Tests\TestScriptTests\LuisMock\cachedResponses\lu\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
@@ -34,8 +40,6 @@
 
   <ItemGroup>
     <Folder Include="Tests\LuisRecognizerTests\cachedResponses\ExternalEntities_test_en_us_lu\" />
-    <Folder Include="Tests\TestScriptTests\LuisMock\" />
-    <Folder Include="Tests\TestScriptTests\LuisMock\cachedResponses\lu\" />
   </ItemGroup>
 
 </Project>

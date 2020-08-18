@@ -91,10 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task TestScriptTests_HttpRequestLuisMock()
         {
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>
-                    {
-                        { "luis:resources", luisMockDirectory },
-                    })
+                .UseMockLuisSettings(luisMockDirectory, "TestBot")
                 .Build();
 
             var resourceExplorer = new ResourceExplorer()
