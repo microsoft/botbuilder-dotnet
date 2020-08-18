@@ -89,10 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public override Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
-            var lgOpt = new EvaluationOptions()
-            {
-                Locale = dialogContext.GetLocale(),
-            };
+            var lgOpt = new EvaluationOptions() { Locale = dialogContext.GetLocale() };
 
             try
             {
