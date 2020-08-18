@@ -44,7 +44,7 @@ variables:
 #  WebexTestBotBotGroup: define this in Azure
 #  WebexTestBotBotName: define this in Azure
 #  WebexTestBotRefreshToken: define this in Azure
-#  WebexTestBotWebexBotAccessToken: define this in Azure
+#  WebexTestBotWebexBotAccessToken: define this in Azure. Expires in 90 days, i.e. Sunday, November 15, 2020
 #  WebexTestBotWebexBotUserName: define this in Azure
 #  WebexTestBotWebexIntegrationClientId: define this in Azure
 #  WebexTestBotWebexIntegrationClientSecret: define this in Azure
