@@ -7251,7 +7251,7 @@
 					"description": "Open ended property for tooling."
 				}
 			},
-            "properties": {
+			"properties": {
                 "knowledgeBaseId": {
                     "$ref": "#/definitions/stringExpression",
                     "title": "KnowledgeBase Id",
