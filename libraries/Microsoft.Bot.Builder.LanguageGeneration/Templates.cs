@@ -427,7 +427,34 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     if (curTemplates.Any(u => u.Name == templateName))
                     {
                         var newGlobalName = $"{curTemplates.Namespace}.{templateName}";
-                        Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, FunctionUtils.Apply(GlobalTemplateFunction(templateName)), ReturnType.Object));
+                        Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(
+                            newGlobalName, 
+                            (expression, state, options) =>
+                            {
+                                object result = null;
+                                var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
+                                var (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+                                if (error == null)
+                                {
+                                    var parameters = evaluator.TemplateMap[templateName].Parameters;
+                                    var newScope = parameters.Zip(args, (k, v) => new { k, v })
+                                        .ToDictionary(x => x.k, x => x.v);
+                                    var scope = new CustomizedMemory(state, new SimpleObjectMemory(newScope));
+                                    try
+                                    {
+                                        result = evaluator.EvaluateTemplate(templateName, scope);
+                                    }
+#pragma warning disable CA1031 // Do not catch general exception types
+                                    catch (Exception err)
+#pragma warning restore CA1031 // Do not catch general exception types
+                                    {
+                                        error = err.Message;
+                                    }
+                                }
+
+                                return (result, error);
+                            }, 
+                            ReturnType.Object));
                     }
                 }
             }
@@ -622,13 +649,5 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             return result;
         }
-
-        private Func<IReadOnlyList<object>, object> GlobalTemplateFunction(string templateName)
-        => (IReadOnlyList<object> args) =>
-        {
-            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
-            var newScope = evaluator.ConstructScope(templateName, args.ToList());
-            return evaluator.EvaluateTemplate(templateName, newScope);
-        };
     }
 }
