@@ -7789,24 +7789,24 @@
           "default": false
         },
         "rankerType": {
-            "$ref": "#/definitions/stringExpression",
-            "title": "Ranker Type",
-            "description": "Type of Ranker.",
-            "oneOf": [
-                {
-                    "title": "Standard ranker",
-                    "description": "Standard ranker types.",
-                    "enum": [
-                        "default",
-                        "questionOnly",
-                        "autoSuggestQuestion"
-                    ],
-                    "default": "default"
-                },
-                {
-                    "$ref": "#/definitions/equalsExpression"
-                }
-            ]
+          "$ref": "#/definitions/stringExpression",
+          "title": "Ranker Type",
+          "description": "Type of Ranker.",
+          "oneOf": [
+            {
+              "title": "Standard ranker",
+              "description": "Standard ranker types.",
+              "enum": [
+                "default",
+                "questionOnly",
+                "autoSuggestQuestion"
+              ],
+              "default": "default"
+            },
+            {
+              "$ref": "#/definitions/equalsExpression"
+            }
+          ]
         },
         "strictFiltersCompoundOperationType": {
             "$ref": "#/definitions/stringExpression",
