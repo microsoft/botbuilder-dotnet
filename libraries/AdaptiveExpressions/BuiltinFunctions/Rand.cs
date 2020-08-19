@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
+using AdaptiveExpressions.Memory;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -10,48 +12,58 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     internal class Rand : ExpressionEvaluator
     {
-        private static readonly Random Randomizer = new Random();
-
-        private static readonly object _randomizerLock = new object();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Rand"/> class.
         /// </summary>
         public Rand()
-            : base(ExpressionType.Rand, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
+            : base(ExpressionType.Rand, Evaluator, ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
         {
         }
 
-        private static EvaluateExpressionDelegate Evaluator()
+        private static (object, string) Evaluator(Expression expression, IMemory state, Options options)
         {
-            return FunctionUtils.ApplyWithError(
-                        args =>
-                        {
-                            object value = null;
-                            string error = null;
-                            var min = 0;
-                            var max = 0;
-                            (min, error) = FunctionUtils.ParseInt32(args[0]);
-                            if (error == null)
-                            {
-                                (max, error) = FunctionUtils.ParseInt32(args[1]);
-                            }
+            object result = null;
+            object minValue;
+            string error;
+            (minValue, error) = expression.Children[0].TryEvaluate(state, options);
+            if (error != null)
+            {
+                return (result, error);
+            }
 
-                            if (min >= max)
-                            {
-                                error = $"{min} is not < {max} for rand";
-                            }
-                            else
-                            {
-                                lock (_randomizerLock)
-                                {
-                                    value = Randomizer.Next(min, max);
-                                }
-                            }
+            int minValueInt;
+            (minValueInt, error) = FunctionUtils.ParseInt32(minValue);
 
-                            return (value, error);
-                        },
-                        FunctionUtils.VerifyInteger);
+            if (error != null)
+            {
+                return (result, error);
+            }
+
+            object maxValue;
+            (maxValue, error) = expression.Children[1].TryEvaluate(state, options);
+            if (error != null)
+            {
+                return (result, error);
+            }
+
+            int maxValueInt;
+            (maxValueInt, error) = FunctionUtils.ParseInt32(maxValue);
+
+            if (error != null)
+            {
+                return (result, error);
+            }
+
+            if (minValueInt >= maxValueInt)
+            {
+                error = $"{minValueInt} is not < {maxValueInt} for rand";
+            }
+            else
+            {
+                result = state.RandomNext(minValueInt, maxValueInt);
+            }
+
+            return (result, error);
         }
     }
 }
