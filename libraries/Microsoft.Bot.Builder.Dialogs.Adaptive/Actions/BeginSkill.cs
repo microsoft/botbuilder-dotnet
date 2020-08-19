@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Gets or sets interruption policy. 
         /// </summary>
         /// <value>
-        /// Bool or expression which evalutes to bool.
+        /// Bool or expression which evaluates to bool.
         /// </value>
         [JsonProperty("allowInterruptions")]
         public BoolExpression AllowInterruptions { get; set; }
