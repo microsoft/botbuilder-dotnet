@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "groupLocation": {
@@ -97,7 +97,8 @@
     "resourcesLocation": "[parameters('newAppServicePlanLocation')]",
     "webAppName": "[if(empty(parameters('newWebAppName')), parameters('botId'), parameters('newWebAppName'))]",
     "siteHost": "[concat(variables('webAppName'), '.azurewebsites.net')]",
-    "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]"
+    "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]",
+    "resourceGroupId": "[concat(subscription().id, '/resourceGroups/', parameters('groupName'))]"
   },
   "resources": [
     {
@@ -138,11 +139,11 @@
             {
               "comments": "Create a Web App using the new App Service Plan",
               "type": "Microsoft.Web/sites",
-              "apiVersion": "2015-08-01",
+              "apiVersion": "2018-11-01",
               "location": "[variables('resourcesLocation')]",
               "kind": "app",
               "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]"
+                "[concat(variables('resourceGroupId'), '/providers/Microsoft.Web/serverFarms/', variables('appServicePlanName'))]"
               ],
               "name": "[variables('webAppName')]",
               "properties": {
@@ -204,7 +205,7 @@
                 "storageResourceId": null
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
+                "[concat(variables('resourceGroupId'), '/providers/Microsoft.Web/sites/', variables('webAppName'))]"
               ]
             }
           ],
