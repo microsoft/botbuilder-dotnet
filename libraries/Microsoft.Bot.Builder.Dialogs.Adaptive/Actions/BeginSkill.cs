@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ITemplate<Activity> Activity { get; set; }
 
         /// <summary>
-        /// Gets or sets intteruption policy. 
+        /// Gets or sets interruption policy. 
         /// </summary>
         /// <value>
         /// Bool or expression which evalutes to bool.
