@@ -69,24 +69,6 @@
       "metadata": {
         "description": "The globally unique name of the Web App. Defaults to the value passed in for \"botId\"."
       }
-    },
-    "twilioNumber": {
-      "type": "string",
-      "metadata": {
-        "description": "The Twilio number to be used by the bot."
-      }
-    },
-    "twilioAccountSid": {
-      "type": "string",
-      "metadata": {
-        "description": "The Twilio account sid."
-      }
-    },
-    "twilioAuthToken": {
-      "type": "string",
-      "metadata": {
-        "description": "The Twilio authentication token." 
-      }
     }
   },
   "variables": {
@@ -94,7 +76,7 @@
     "resourcesLocation": "[parameters('newAppServicePlanLocation')]",
     "webAppName": "[if(empty(parameters('newWebAppName')), parameters('botId'), parameters('newWebAppName'))]",
     "siteHost": "[concat(variables('webAppName'), '.azurewebsites.net')]",
-    "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]",
+    "botEndpoint": "[concat('https://', variables('siteHost'), '/api/mybot')]",
     "resourceGroupId": "[concat(subscription().id, '/resourceGroups/', parameters('groupName'))]"
   },
   "resources": [
@@ -159,22 +141,6 @@
                     {
                       "name": "MicrosoftAppPassword",
                       "value": "[parameters('appSecret')]"
-                    },
-                    {
-                      "name": "TwilioNumber",
-                      "value": "[parameters('twilioNumber')]"
-                    },
-                    {
-                      "name": "TwilioAccountSid",
-                      "value": "[parameters('twilioAccountSid')]"
-                    },
-                    {
-                      "name": "TwilioAuthToken",
-                      "value": "[parameters('twilioAuthToken')]"
-                    },
-                    {
-                      "name": "TwilioValidationUrl",
-                      "value": "[concat('https://', parameters('botId'), '.azurewebsites.net/api/messages')]"
                     }
                   ],
                   "cors": {

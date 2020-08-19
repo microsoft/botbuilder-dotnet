@@ -27,11 +27,19 @@ trigger: # ci trigger
 pr: none # no pr trigger
 
 variables:
-  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
-  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
+  AppId: $(SlackTestBotAppId)
+  AppSecret: $(SlackTestBotAppSecret)
+  BotGroup: $(SlackTestBotBotGroup)
+  BotName: $(SlackTestBotBotName)
   BuildConfiguration: 'debug'
   BuildPlatform: 'any cpu'
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   Parameters.solution: Microsoft.Bot.Builder.sln
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
+  SlackBotToken: $(SlackTestBotSlackBotToken)
+  SlackChannel: $(SlackTestBotSlackChannel)
+  SlackClientSigningSecret: $(SlackTestBotSlackClientSigningSecret)
+  SlackVerificationToken: $(SlackTestBotSlackVerificationToken)
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  AzureSubscription: define this in Azure
 #  SlackTestBotAppId: define this in Azure
@@ -55,16 +63,16 @@ steps:
     arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
     modifyOutputPath: false
 
-- powershell: |
-   echo '##vso[task.setvariable variable=AppId]$(SlackTestBotAppId)'
-   echo '##vso[task.setvariable variable=AppSecret]$(SlackTestBotAppSecret)'
-   echo '##vso[task.setvariable variable=BotGroup]$(SlackTestBotBotGroup)'
-   echo '##vso[task.setvariable variable=BotName]$(SlackTestBotBotName)'
-   echo '##vso[task.setvariable variable=SlackBotToken]$(SlackTestBotSlackBotToken)'
-   echo '##vso[task.setvariable variable=SlackChannel]$(SlackTestBotSlackChannel)'
-   echo '##vso[task.setvariable variable=SlackClientSigningSecret]$(SlackTestBotSlackClientSigningSecret)'
-   echo '##vso[task.setvariable variable=SlackVerificationToken]$(SlackTestBotSlackVerificationToken)'
-  displayName: 'Set Environment Variables'
+#- powershell: |
+#   echo '##vso[task.setvariable variable=AppId]$(SlackTestBotAppId)'
+#   echo '##vso[task.setvariable variable=AppSecret]$(SlackTestBotAppSecret)'
+#   echo '##vso[task.setvariable variable=BotGroup]$(SlackTestBotBotGroup)'
+#   echo '##vso[task.setvariable variable=BotName]$(SlackTestBotBotName)'
+#   echo '##vso[task.setvariable variable=SlackBotToken]$(SlackTestBotSlackBotToken)'
+#   echo '##vso[task.setvariable variable=SlackChannel]$(SlackTestBotSlackChannel)'
+#   echo '##vso[task.setvariable variable=SlackClientSigningSecret]$(SlackTestBotSlackClientSigningSecret)'
+#   echo '##vso[task.setvariable variable=SlackVerificationToken]$(SlackTestBotSlackVerificationToken)'
+#  displayName: 'Set Environment Variables'
 
 - task: AzureCLI@1
   displayName: 'Create resources'
