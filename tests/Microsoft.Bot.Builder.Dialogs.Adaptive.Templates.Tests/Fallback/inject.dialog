@@ -13,6 +13,17 @@
         },
         {
           "$kind": "Microsoft.SetProperty",
+          "property": "user.name",
+          "value": "jonathan"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.date",
+          "value": "2003-03-20"
+        },
+        
+        {
+          "$kind": "Microsoft.SetProperty",
           "property": "user.tasks",
           "value": [ "car", "washing", "food", "laundry" ]
         },
@@ -28,8 +39,19 @@
         {
           "$kind": "Microsoft.SendActivity",
           "activity": "${user.message}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${foo.WelcomeUser()}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${foo.UserDataConcat(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${foo.ShowTasks(foo.GetList(user.tasks))}"
         }
-
       ]
     }
   ]

@@ -164,8 +164,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override object VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
         {
             var normalTemplateStrs = context.templateString();
-            var rd = new Random();
-            return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)].normalTemplateString());
+            var randomValue = CurrentTarget().Scope.RandomNext(0, normalTemplateStrs.Length);
+            return Visit(normalTemplateStrs[randomValue].normalTemplateString());
         }
 
         /// <inheritdoc/>
@@ -287,7 +287,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var parameters = TemplateMap[templateName].Parameters;
-            var currentScope = _evaluationTargetStack.Count > 0 ? CurrentTarget().Scope : new CustomizedMemory(null);
+            var currentScope = CurrentTarget().Scope;
 
             if (args.Count == 0)
             {

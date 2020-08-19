@@ -78,7 +78,7 @@
                                     "description": "Value to return when this choice is selected."
                                 },
                                 "action": {
-                                    "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/CardAction",
+                                    "$ref": "https://schemas.botframework.com/schemas/protocol/botframework.json#/definitions/CardAction",
                                     "title": "Action",
                                     "description": "Card action for the choice."
                                 },
