@@ -7485,6 +7485,25 @@
 						}
 					]
 				},
+				"strictFiltersCompoundOperationType": {
+					"title": "Strict Filters Compound OperationType",
+					"description": "Strict Filters Compound OperationType.",
+					"oneOf": [
+						{
+							"type": "string",
+							"title": "Strict Filters Compound OperationType",
+							"description": "Strict Filters Compound OperationType.",
+							"enum": [
+								"AND",
+								"OR"
+							],
+							"default": "AND"
+						},
+						{
+							"$ref": "#/definitions/equalsExpression"
+						}
+					]
+				},
 				"includeDialogNameInMetadata": {
 					"$ref": "#/definitions/booleanExpression",
 					"title": "Include Dialog Name",
