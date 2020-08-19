@@ -7789,24 +7789,43 @@
           "default": false
         },
         "rankerType": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Ranker Type",
-          "description": "Type of Ranker.",
-          "oneOf": [
-            {
-              "title": "Standard ranker",
-              "description": "Standard ranker types.",
-              "enum": [
-                "default",
-                "questionOnly",
-                "autoSuggestQuestion"
-              ],
-              "default": "default"
-            },
-            {
-              "$ref": "#/definitions/equalsExpression"
-            }
-          ]
+            "$ref": "#/definitions/stringExpression",
+            "title": "Ranker Type",
+            "description": "Type of Ranker.",
+            "oneOf": [
+                {
+                    "title": "Standard ranker",
+                    "description": "Standard ranker types.",
+                    "enum": [
+                        "default",
+                        "questionOnly",
+                        "autoSuggestQuestion"
+                    ],
+                    "default": "default"
+                },
+                {
+                    "$ref": "#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "strictFiltersCompoundOperationType": {
+            "$ref": "#/definitions/stringExpression",
+            "title": "StrictFiltersCompoundOperationType",
+            "description": "Strict Filters Compound Operation Type.",
+            "oneOf": [
+                {
+                    "title": "StrictFilters CompoundOperation Type",
+                    "description": "Strict Filters Compound Operation Type.",
+                    "enum": [
+                        "AND",
+                        "OR"
+                    ],
+                    "default": "AND"
+                },
+                {
+                    "$ref": "#/definitions/equalsExpression"
+                }
+            ]
         },
         "$kind": {
           "title": "Kind of dialog object",
