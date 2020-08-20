@@ -102,6 +102,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public async Task WaterfallStepParentIsWaterfallParent()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+            const string WATERFALL_PARENT_ID = "waterfall-parent-test-dialog";
+            var waterfallParent = new ComponentDialog(WATERFALL_PARENT_ID);
+
+            var steps = new WaterfallStep[]
+            {
+                async (step, cancellationToken) =>
+                {
+                    Assert.AreEqual(step.Parent.ActiveDialog.Id, waterfallParent.Id);
+                    await step.Context.SendActivityAsync("verified");
+                    return Dialog.EndOfTurn;
+                }
+            };
+            
+            waterfallParent.AddDialog(new WaterfallDialog(
+                "test",
+                steps));
+            waterfallParent.InitialDialogId = "test";
+            dialogs.Add(waterfallParent);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginDialogAsync(WATERFALL_PARENT_ID, null, cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("verified")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task WaterfallWithCallback()
         {
             var convoState = new ConversationState(new MemoryStorage());
