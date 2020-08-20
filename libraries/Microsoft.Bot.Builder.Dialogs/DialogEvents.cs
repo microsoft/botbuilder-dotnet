@@ -36,5 +36,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Event fired when there was an exception thrown in the system.
         /// </summary>
         public const string Error = "error";
+
+        /// <summary>
+        /// Event fired by LG library.
+        /// </summary>
+        public const string LGEvents = "lgEvents";
     }
 }
