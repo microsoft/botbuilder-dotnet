@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
                 mocked = handler.When(new HttpMethod(Method.Value.ToString()), Url);
             }
 
-            mocked.Respond(re => response.GetContent());
+            mocked.Respond(re => response.GetMessage());
         }
     }
 }
