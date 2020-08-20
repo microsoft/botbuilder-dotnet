@@ -12,12 +12,12 @@ pool:
 trigger: # ci trigger
   branches:
     include:
-     - master
+     - main
 
 pr: # pr trigger
   branches:
     include:
-     - master
+     - main
 
 variables:
   BuildConfiguration: debug
