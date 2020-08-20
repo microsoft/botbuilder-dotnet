@@ -75,6 +75,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     validHour = hour - 1;
                 }
 
+                if (validHour < 0)
+                {
+                    validHour += 24;
+                }
+
                 validMinute = parsed.Minute ?? 0;
                 validSecond = parsed.Second ?? 0;
                 result = TimexProperty.FromTime(new Time(validHour, validMinute, validSecond)).TimexValue;

@@ -64,7 +64,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         if (error == null)
                         {
                             var (year, month, day) = (convertedDateTime.Year, convertedDateTime.Month, convertedDateTime.Day);
-                            if (parsed.Month <= month || (parsed.Month == month && parsed.DayOfMonth < day))
+                            if (parsed.Month < month || (parsed.Month == month && parsed.DayOfMonth < day))
                             {
                                 validYear = year;
                             }
