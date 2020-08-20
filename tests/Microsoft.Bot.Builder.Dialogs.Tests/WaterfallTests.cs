@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
             const string WATERFALL_PARENT_ID = "waterfall-parent-test-dialog";
-            var waterfallParent = new WaterfallParentTestDialog(WATERFALL_PARENT_ID);
+            var waterfallParent = new ComponentDialog(WATERFALL_PARENT_ID);
 
             var steps = new WaterfallStep[]
             {
@@ -522,14 +522,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             public void TrackTrace(string message, Severity severityLevel, IDictionary<string, string> properties)
             {
                 throw new NotImplementedException();
-            }
-        }
-
-        private class WaterfallParentTestDialog : ComponentDialog
-        {
-            public WaterfallParentTestDialog(string dialogId)
-                : base(dialogId)
-            {
             }
         }
     }
