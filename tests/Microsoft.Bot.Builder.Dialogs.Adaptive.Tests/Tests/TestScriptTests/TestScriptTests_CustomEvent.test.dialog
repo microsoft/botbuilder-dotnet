@@ -50,7 +50,7 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "random value is 15" // 10 + (5 % (20 - 10)) = 15
+      "text": "random value is 15"
     },
     {
       "$kind": "Microsoft.Test.CustomEvent",
@@ -61,7 +61,7 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "random value is 15" // 10 + (5 % (20 - 10)) = 15
+      "text": "random value is 15"
     }
   ]
 }

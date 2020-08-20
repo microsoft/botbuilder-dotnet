@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 {
                     Assert.IsTrue(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
 
-                    // NOTE: This particular file is valid, but this validator cannot handle it
+                    // NOTE: Microsoft.SendActivity schema fails validation
                     if (!fileResource.FullName.Contains("Action_SendActivity.test.dialog"))
                     {
                         jtoken.Validate(Schema);
