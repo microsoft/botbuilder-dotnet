@@ -25,14 +25,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Gets the resource path.
-        /// </summary>
-        /// <value>
-        /// The full path to the resource on disk.
-        /// </value>
-        public string FullName { get; }
-
-        /// <summary>
         /// Open a stream to the resource.
         /// </summary>
         /// <returns>Stream for accesssing the content of the resource.</returns>
