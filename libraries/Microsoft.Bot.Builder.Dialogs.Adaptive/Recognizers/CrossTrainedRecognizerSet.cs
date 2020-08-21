@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 // we have a real intent and it's the first one we found.
                 if (consensusRecognizerId == null)
                 {
-                    if (intent != NoneIntent)
+                    if (intent != NoneIntent && !string.IsNullOrEmpty(intent))
                     {
                         consensusRecognizerId = recognizerId;
                     }
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     // we have a second recognizer result which is either none or real
 
                     // if one of them is None intent, then go with the other one.
-                    if (intent == NoneIntent)
+                    if (intent == NoneIntent || string.IsNullOrEmpty(intent))
                     {
                         // then we are fine with the one we have, just ignore this one
                         continue;
