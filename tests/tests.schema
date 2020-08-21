@@ -320,6 +320,9 @@
       "$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
     },
     {
+      "$ref": "#/definitions/Microsoft.Test.CustomEvent"
+    },
+    {
       "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
     },
     {
@@ -1109,7 +1112,7 @@
           "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded.",
           "oneOf": [
             {
-              "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/attachments/items",
+              "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/attachments/items",
               "title": "Object",
               "description": "Attachment object."
             },
@@ -1124,7 +1127,7 @@
           "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null.",
           "oneOf": [
             {
-              "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/attachments/items",
+              "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/attachments/items",
               "title": "Object",
               "description": "Attachment object."
             },
@@ -1450,6 +1453,16 @@
           "description": "The activity to send to the skill.",
           "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
+        "allowInterruptions": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Allow Interruptions",
+          "description": "A boolean expression that determines whether the parent should be allowed to interrupt the skill.",
+          "default": true,
+          "examples": [
+            true,
+            "=user.xyz"
+          ]
+        },
         "$kind": {
           "title": "Kind of dialog object",
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
@@ -1719,7 +1732,7 @@
                       "description": "Value to return when this choice is selected."
                     },
                     "action": {
-                      "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/suggestedActions/properties/actions/items",
+                      "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/suggestedActions/properties/actions/items",
                       "title": "Action",
                       "description": "Card action for the choice."
                     },
@@ -2171,7 +2184,7 @@
                       "description": "Value to return when this choice is selected."
                     },
                     "action": {
-                      "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/suggestedActions/properties/actions/items",
+                      "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/suggestedActions/properties/actions/items",
                       "title": "Action",
                       "description": "Card action for the choice."
                     },
@@ -3843,7 +3856,7 @@
               "title": "channelId"
             },
             "from": {
-              "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/membersAdded/items",
+              "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/membersAdded/items",
               "description": "Identifies the sender of the message.",
               "title": "from"
             },
@@ -3895,7 +3908,7 @@
               }
             },
             "recipient": {
-              "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/membersAdded/items",
+              "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/membersAdded/items",
               "description": "Identifies the recipient of the message.",
               "title": "recipient"
             },
@@ -3950,7 +3963,7 @@
               "type": "array",
               "title": "membersRemoved",
               "items": {
-                "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/membersAdded/items"
+                "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/membersAdded/items"
               }
             },
             "reactionsAdded": {
@@ -3978,7 +3991,7 @@
               "type": "array",
               "title": "reactionsRemoved",
               "items": {
-                "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/reactionsAdded/items"
+                "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/reactionsAdded/items"
               }
             },
             "topicName": {
@@ -4198,16 +4211,16 @@
                 },
                 "user": {
                   "description": "(Optional) User participating in this conversation",
-                  "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/membersAdded/items",
+                  "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/membersAdded/items",
                   "title": "user"
                 },
                 "bot": {
-                  "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/membersAdded/items",
+                  "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/membersAdded/items",
                   "description": "Bot participating in this conversation",
                   "title": "bot"
                 },
                 "conversation": {
-                  "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/conversation",
+                  "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/conversation",
                   "description": "Conversation reference",
                   "title": "conversation"
                 },
@@ -4299,7 +4312,7 @@
                   "type": "object",
                   "title": "entities",
                   "additionalProperties": {
-                    "$ref": "#/definitions/Microsoft.Ask/properties/activity/oneOf/1/properties/entities/items"
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate/oneOf/1/properties/entities/items"
                   }
                 }
               }
@@ -4566,10 +4579,10 @@
           "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
@@ -9106,6 +9119,48 @@
         }
       }
     },
+    "Microsoft.Test.CustomEvent": {
+      "$role": "implements(Microsoft.Test.ITestAction)",
+      "title": "User Event",
+      "description": "Sends event to the bot from the user.",
+      "type": "object",
+      "required": [
+        "name",
+        "value",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Event Name",
+          "description": "Event name to send to the bot."
+        },
+        "value": {
+          "type": "object",
+          "title": "Event value",
+          "description": "Event value to send to the bot."
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.Test.CustomEvent"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.Test.HttpRequestSequenceMock": {
       "$role": "implements(Microsoft.Test.IHttpRequestMock)",
       "title": "HttpRequest Sequence Mock",
@@ -9156,6 +9211,86 @@
             "title": "HttpResponseMock",
             "description": "Mocked http response.",
             "properties": {
+              "statusCode": {
+                "title": "Status Code",
+                "description": "The status code. Default is OK(200).",
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "title": "String Status Code",
+                    "description": "Use string as status code.",
+                    "enum": [
+                      "Continue",
+                      "SwitchingProtocols",
+                      "OK",
+                      "Created",
+                      "Accepted",
+                      "NonAuthoritativeInformation",
+                      "NoContent",
+                      "ResetContent",
+                      "PartialContent",
+                      "Ambiguous",
+                      "MultipleChoices",
+                      "Moved",
+                      "MovedPermanently",
+                      "Found",
+                      "Redirect",
+                      "RedirectMethod",
+                      "SeeOther",
+                      "NotModified",
+                      "UseProxy",
+                      "Unused",
+                      "RedirectKeepVerb",
+                      "TemporaryRedirect",
+                      "BadRequest",
+                      "Unauthorized",
+                      "PaymentRequired",
+                      "Forbidden",
+                      "NotFound",
+                      "MethodNotAllowed",
+                      "NotAcceptable",
+                      "ProxyAuthenticationRequired",
+                      "RequestTimeout",
+                      "Conflict",
+                      "Gone",
+                      "LengthRequired",
+                      "PreconditionFailed",
+                      "RequestEntityTooLarge",
+                      "RequestUriTooLong",
+                      "UnsupportedMediaType",
+                      "RequestedRangeNotSatisfiable",
+                      "ExpectationFailed",
+                      "UpgradeRequired",
+                      "InternalServerError",
+                      "NotImplemented",
+                      "BadGateway",
+                      "ServiceUnavailable",
+                      "GatewayTimeout",
+                      "HttpVersionNotSupported"
+                    ],
+                    "examples": [
+                      "OK"
+                    ]
+                  },
+                  {
+                    "type": "number",
+                    "title": "Number Status Code",
+                    "description": "Use number as status code.",
+                    "examples": [
+                      200
+                    ]
+                  }
+                ],
+                "default": "OK"
+              },
+              "reasonPhrase": {
+                "type": "string",
+                "title": "Reason Phrase",
+                "description": "The reason phrase.",
+                "examples": [
+                  "Server is stolen."
+                ]
+              },
               "contentType": {
                 "type": "string",
                 "title": "ContentType",
@@ -9258,6 +9393,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.CustomEvent"
         },
         {
           "$ref": "#/definitions/Microsoft.Test.UserActivity"

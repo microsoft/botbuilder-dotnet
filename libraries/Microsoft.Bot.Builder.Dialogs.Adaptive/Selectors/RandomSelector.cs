@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Newtonsoft.Json;
 
@@ -21,10 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         private List<OnCondition> _conditionals;
         private bool _evaluate;
-        private Random _rand;
-        private int _seed = -1;
-        private readonly object _objectLock = new object();
-        
+
         /// <summary>
         /// Gets or sets optional seed for random number generator.
         /// </summary>
@@ -33,24 +32,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// Optional seed for random number generator.
         /// </value>
         [JsonProperty("seed")]
-        public int Seed
-        {
-            get => _seed;
-            set
-            {
-                _seed = value;
-                _rand = new Random(_seed);
-            }
-        }
+        public int Seed { get; set; } = -1;
 
         public override void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             _conditionals = conditionals.ToList();
             _evaluate = evaluate;
-            if (_rand == null)
-            {
-                _rand = _seed == -1 ? new Random() : new Random(_seed);
-            }
         }
 
         public override Task<IReadOnlyList<OnCondition>> SelectAsync(ActionContext context, CancellationToken cancellationToken = default)
@@ -74,11 +61,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             var result = new List<OnCondition>();
             if (candidates.Count > 0)
             {
-                int selection;
-                lock (_objectLock)
+                var memory = MemoryFactory.Create(context.State);
+                int? customizedSeed = null;
+                if (Seed != -1)
                 {
-                    selection = _rand.Next(candidates.Count);
+                    customizedSeed = Seed;
                 }
+
+                var selection = memory.RandomNext(0, candidates.Count, customizedSeed);
 
                 result.Add(candidates[selection]);
             }
