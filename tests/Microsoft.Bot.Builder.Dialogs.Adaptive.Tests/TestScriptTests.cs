@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 #pragma warning disable SA1201 // Elements should appear in the correct order
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -70,6 +71,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task TestScriptTests_AssertReply_Assertions_Failed()
+        {
+            try
+            {
+                await TestUtils.RunTestScript(ResourceExplorer);
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(e.Message.Contains("\"text\": \"hi User1\""));
+            }
+        }
+
+        [TestMethod]
         public async Task TestScriptTests_AssertReply_Exact()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
@@ -99,6 +113,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
 
             await TestUtils.RunTestScript(resourceExplorer, configuration: config);
+        }
+
+        [TestMethod]
+        public async Task TestScriptTests_CustomEvent()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
         }
 
         [TestMethod]

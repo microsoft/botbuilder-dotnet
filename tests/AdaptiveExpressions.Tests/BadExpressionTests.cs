@@ -175,7 +175,6 @@ namespace AdaptiveExpressions.Tests
             Test("mod(5.5, 2)"), //  param should be integer
             Test("mod(5, 2.1)"), //  param should be integer
             Test("mod(5, 2.1 ,3)"), //  need two params
-            Test("rand(5, 6.1)"), //  param should be integer
             Test("rand(5)"), //  need two params
             Test("rand(7, 6)"), //  minvalue cannot be greater than maxValue
             Test("rand(21223123221322, 10)"), // the first parameter should be a 32-bit signed integer

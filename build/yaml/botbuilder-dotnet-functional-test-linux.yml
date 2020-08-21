@@ -12,7 +12,7 @@ trigger: # ci trigger
   batch: true
   branches:
     include:
-     - master
+     - main
   paths:
     include:
       - '*'
@@ -27,7 +27,6 @@ trigger: # ci trigger
 pr: none # no pr trigger
 
 variables:
-  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
@@ -61,7 +60,7 @@ steps:
     azureSubscription: $(AzureSubscription)
     resourceGroupName: '$(LinuxTestBotBotGroup)'
     location: 'West US'
-    csmFile: FunctionalTests/ExportedTemplate/LinuxDotNet/template.json
+    csmFile: FunctionalTests/ExportedTemplate/LinuxDotNet/template-with-preexisting-rg.json
     overrideParameters: '-botName "$(LinuxTestBotBotName)" -appId "$(LinuxTestBotAppId)" -appSecret "$(LinuxTestBotAppSecret)"'
 
 - task: AzureCLI@1
@@ -79,7 +78,7 @@ steps:
    git add .
    git commit -m "cibuildtest"
    git remote add azure https://$(AzureDeploymentUser):$(AzureDeploymentPassword)@$(LinuxTestBotBotName).scm.azurewebsites.net:443/$(LinuxTestBotBotName).git
-   git push azure master
+   git push azure main
   workingDirectory: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot'
   displayName: 'Git bot deployment'
 

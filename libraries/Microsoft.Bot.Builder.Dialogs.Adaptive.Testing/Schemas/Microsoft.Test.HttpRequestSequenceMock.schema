@@ -63,6 +63,86 @@
                 "title": "HttpResponseMock",
                 "description": "Mocked http response.",
                 "properties": {
+                    "statusCode": {
+                        "title": "Status Code",
+                        "description": "The status code. Default is OK(200).",
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "title": "String Status Code",
+                                "description": "Use string as status code.",
+                                "enum": [
+                                    "Continue",
+                                    "SwitchingProtocols",
+                                    "OK",
+                                    "Created",
+                                    "Accepted",
+                                    "NonAuthoritativeInformation",
+                                    "NoContent",
+                                    "ResetContent",
+                                    "PartialContent",
+                                    "Ambiguous",
+                                    "MultipleChoices",
+                                    "Moved",
+                                    "MovedPermanently",
+                                    "Found",
+                                    "Redirect",
+                                    "RedirectMethod",
+                                    "SeeOther",
+                                    "NotModified",
+                                    "UseProxy",
+                                    "Unused",
+                                    "RedirectKeepVerb",
+                                    "TemporaryRedirect",
+                                    "BadRequest",
+                                    "Unauthorized",
+                                    "PaymentRequired",
+                                    "Forbidden",
+                                    "NotFound",
+                                    "MethodNotAllowed",
+                                    "NotAcceptable",
+                                    "ProxyAuthenticationRequired",
+                                    "RequestTimeout",
+                                    "Conflict",
+                                    "Gone",
+                                    "LengthRequired",
+                                    "PreconditionFailed",
+                                    "RequestEntityTooLarge",
+                                    "RequestUriTooLong",
+                                    "UnsupportedMediaType",
+                                    "RequestedRangeNotSatisfiable",
+                                    "ExpectationFailed",
+                                    "UpgradeRequired",
+                                    "InternalServerError",
+                                    "NotImplemented",
+                                    "BadGateway",
+                                    "ServiceUnavailable",
+                                    "GatewayTimeout",
+                                    "HttpVersionNotSupported"
+                                ],
+                                "examples": [
+                                    "OK"
+                                ]
+                            },
+                            {
+                                "type": "number",
+                                "title": "Number Status Code",
+                                "description": "Use number as status code.",
+                                "examples": [
+                                    200
+                                ]
+                            }
+                        ],
+                        "default": "OK"
+                    },
+                    "reasonPhrase": {
+                        "type": "string",
+                        "title": "Reason Phrase",
+                        "description": "The reason phrase.",
+                        "examples": [
+                            "Server is stolen."
+                        ]
+                    },
                     "contentType": {
                         "type": "string",
                         "title": "ContentType",

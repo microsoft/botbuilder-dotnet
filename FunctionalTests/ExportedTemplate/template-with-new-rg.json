@@ -69,27 +69,6 @@
       "metadata": {
         "description": "The globally unique name of the Web App. Defaults to the value passed in for \"botId\"."
       }
-    },
-    "slackVerificationToken": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "The slack verification token, taken from the Slack page after create an app"
-      }
-    },
-    "slackBotToken": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "The slack bot token, taken from the Slack page after create an app"
-      }
-    },
-    "slackClientSigningSecret": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "The slack client signing secret, taken from the Slack page after create an app"
-      }
     }
   },
   "variables": {
@@ -97,7 +76,7 @@
     "resourcesLocation": "[parameters('newAppServicePlanLocation')]",
     "webAppName": "[if(empty(parameters('newWebAppName')), parameters('botId'), parameters('newWebAppName'))]",
     "siteHost": "[concat(variables('webAppName'), '.azurewebsites.net')]",
-    "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]",
+    "botEndpoint": "[concat('https://', variables('siteHost'), '/api/mybot')]",
     "resourceGroupId": "[concat(subscription().id, '/resourceGroups/', parameters('groupName'))]"
   },
   "resources": [
@@ -162,18 +141,6 @@
                     {
                       "name": "MicrosoftAppPassword",
                       "value": "[parameters('appSecret')]"
-                    },
-                    {
-                      "name": "SlackVerificationToken",
-                      "value": "[parameters('slackVerificationToken')]"
-                    },
-                    {
-                      "name": "SlackBotToken",
-                      "value": "[parameters('slackBotToken')]"
-                    },
-                    {
-                      "name": "SlackClientSigningSecret",
-                      "value": "[parameters('slackClientSigningSecret')]"
                     }
                   ],
                   "cors": {

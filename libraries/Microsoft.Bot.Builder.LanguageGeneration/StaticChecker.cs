@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (_templates.AllTemplates.Count == 0)
             {
-                var diagnostic = new Diagnostic(Range.DefaultRange, TemplateErrors.NoTemplate, DiagnosticSeverity.Warning, _templates.Id);
+                var diagnostic = new Diagnostic(Range.DefaultRange, TemplateErrors.NoTemplate, DiagnosticSeverity.Warning, _templates.Source);
                 result.Add(diagnostic);
                 return result;
             }
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         var startLine = template.SourceRange.Range.Start.Line;
                         var range = new Range(startLine, 0, startLine, template.Name.Length + 1);
-                        var diagnostic = new Diagnostic(range, TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.SourceRange.Source), source: _templates.Id);
+                        var diagnostic = new Diagnostic(range, TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.SourceRange.Source), source: _templates.Source);
                         templateDiagnostics.Add(diagnostic);
                     }
                 }
@@ -397,7 +397,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var range = context == null ? new Range(1 + lineOffset, 0, 1 + lineOffset, 0) : context.ConvertToRange(lineOffset);
-            return new Diagnostic(range, templateNameInfo + message, severity, _templates.Id);
+            return new Diagnostic(range, templateNameInfo + message, severity, _templates.Source);
         }
     }
 }

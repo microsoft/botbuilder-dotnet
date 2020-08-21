@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
         [Fact]
         public void TemplatesInputs()
         {
-            var enTemplates = Templates.ParseText("[import](1.lg)\r\n # template\r\n - hi", "abc", ConstantResolver);
+            var enTemplates = Templates.ParseResource(new LGResource("abc", "abc", "[import](1.lg)\r\n # template\r\n - hi"), ConstantResolver);
             var templatesDict = new Dictionary<string, Templates>
             {
                 { "en", enTemplates },
@@ -90,9 +90,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
             Assert.Equal("content with id: 1.lg from source: abc", result);
         }
 
-        private static (string content, string id) ConstantResolver(string sourceId, string resourceId)
+        private static LGResource ConstantResolver(LGResource lgResource, string resourceId)
         {
-            return ($"# myTemplate\r\n - content with id: {resourceId} from source: {sourceId}", sourceId + resourceId);
+            var id = lgResource.Id + resourceId;
+            var content = $"# myTemplate\r\n - content with id: {resourceId} from source: {lgResource.Id}";
+            return new LGResource(id, id, content);
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
@@ -14,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
     public class SequenceResponseManager
     {
         private int _id;
-        private List<HttpResponseMockContent> _contents = new List<HttpResponseMockContent>();
+        private List<HttpResponseMockMessage> _messages = new List<HttpResponseMockMessage>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SequenceResponseManager"/> class.
@@ -26,34 +24,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
             _id = 0;
             if (responses == null || responses.Count == 0)
             {
-                // Create an empty content for response.
-                _contents.Add(new HttpResponseMockContent());
+                // Create a default message for response.
+                _messages.Add(new HttpResponseMockMessage());
             }
             else
             {
                 foreach (var response in responses)
                 {
-                    _contents.Add(new HttpResponseMockContent(response));
+                    _messages.Add(new HttpResponseMockMessage(response));
                 }
             }
         }
 
         /// <summary>
-        /// Return the content in sequence order. The last one will be repeated.
+        /// Return the message in sequence order. The last one will be repeated.
         /// </summary>
         /// <returns>
-        /// The HttpContent.
+        /// The HttpResponseMessage.
         /// </returns>
-        public HttpContent GetContent()
+        public HttpResponseMessage GetMessage()
         {
-            var result = _contents[_id];
-            if (_id < _contents.Count - 1)
+            var result = _messages[_id];
+            if (_id < _messages.Count - 1)
             {
                 _id++;
             }
 
-            // We create a new one here in case the consumer will dispose the content object.
-            return result.GetHttpContent();
+            // We create a new one here in case the consumer will dispose the object.
+            return result.GetMessage();
         }
     }
 }
