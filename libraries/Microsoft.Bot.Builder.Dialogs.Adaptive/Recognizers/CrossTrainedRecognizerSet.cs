@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 // we have a real intent and it's the first one we found.
                 if (consensusRecognizerId == null)
                 {
-                    if (intent != NoneIntent || string.IsNullOrEmpty(intent))
+                    if (intent != NoneIntent && !string.IsNullOrEmpty(intent))
                     {
                         consensusRecognizerId = recognizerId;
                     }
