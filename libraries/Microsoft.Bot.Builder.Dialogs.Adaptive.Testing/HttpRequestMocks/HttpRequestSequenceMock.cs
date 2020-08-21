@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
                 }
             }
 
-            mocked.Respond(re => response.GetContent());
+            mocked.Respond(re => response.GetMessage());
         }
     }
 }
