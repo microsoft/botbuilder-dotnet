@@ -781,7 +781,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private async Task<bool> ProcessQueuesAsync(ActionContext actionContext, CancellationToken cancellationToken)
         {
             DialogEvent evt;
-            bool handled = false;
+            bool handled;
             var assignments = EntityAssignments.Read(actionContext);
             var nextAssignment = assignments.NextAssignment();
             if (nextAssignment != null)
@@ -941,29 +941,141 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return unrecognized;
         }
 
-        private void ExpandProperty(dynamic entities, dynamic instance, string op, string property, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
+        // Expand object that contains entities which can be op, property or leaf entity
+        private void ExpandEntityObject(
+            JObject entities, string op, string property, JObject rootInstance, List<string> operations, List<string> properties, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
         {
-            // Unwrap entities if any in property
-            for (var propertyIndex = 0; propertyIndex < entities.Count; ++propertyIndex)
+            foreach (var token in entities)
             {
-                var propertyChild = entities[propertyIndex];
-                if (propertyChild.Count == 0)
+                var entityName = token.Key;
+                var instances = entities[InstanceKey][entityName] as JArray;
+                ExpandEntities(entityName, token.Value as JArray, instances, rootInstance, op, property, operations, properties, turn, text, entityToInfo);
+            }
+        }
+
+        // Expand the array of entities for a particular entity
+        private void ExpandEntities(
+            string name, JArray entities, JArray instances, JObject rootInstance, string op, string property, List<string> operations, List<string> properties, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
+        {
+            if (!name.StartsWith("$", StringComparison.InvariantCulture))
+            {
+                string entityName = null;
+                var isOp = false;
+                var isProperty = false;
+                if (operations.Contains(name))
                 {
-                    // Plain property with no entities
-                    ExpandEntity(null, instance, op, property, turn, text, entityToInfo);
+                    op = name;
+                    isOp = true;
+                }
+                else if (properties.Contains(name))
+                {
+                    property = name;
+                    isProperty = true;
                 }
                 else
                 {
-                    // Property with entities
-                    foreach (var entityToken in propertyChild.Children())
+                    entityName = name;
+                }
+
+                for (var entityIndex = 0; entityIndex < entities.Count; ++entityIndex)
+                {
+                    var entity = entities[entityIndex];
+                    var instance = instances[entityIndex] as JObject;
+                    var root = rootInstance ?? instance;
+                    if (entityName != null)
                     {
-                        ExpandEntity(entityToken, instance, op, property, turn, text, entityToInfo);
+                        ExpandEntity(entityName, entity, instance, root, op, property, turn, text, entityToInfo);
+                    }
+                    else if (entity is JObject entityObject)
+                    {
+                        if (entityObject.Count == 0)
+                        {
+                            if (isOp)
+                            {
+                                // Handle operator with no children
+                                ExpandEntity(op, entity, instance, root, op, property, turn, text, entityToInfo);
+                            }
+                            else if (isProperty)
+                            {
+                                // Handle property with no children
+                                ExpandEntity(property, entity, instance, root, op, property, turn, text, entityToInfo);
+                            }
+                        }
+                        else
+                        {
+                            ExpandEntityObject(entityObject, op, property, root, operations, properties, turn, text, entityToInfo);
+                        }
                     }
                 }
             }
         }
 
+        // Expand a leaf entity into EntityInfo.
+        private void ExpandEntity(string name, object value, dynamic instance, dynamic rootInstance, string op, string property, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
+        {
+            if (instance != null && rootInstance != null)
+            {
+                if (!entityToInfo.TryGetValue(name, out List<EntityInfo> infos))
+                {
+                    infos = new List<EntityInfo>();
+                    entityToInfo[name] = infos;
+                }
+
+                var info = new EntityInfo
+                {
+                    WhenRecognized = turn,
+                    Name = name,
+                    Value = value,
+                    Operation = op,
+                    Property = property,
+                    Start = (int)rootInstance.startIndex,
+                    End = (int)rootInstance.endIndex,
+                    Text = (string)(rootInstance.text ?? string.Empty),
+                    Type = (string)(instance.type ?? null),
+                    Score = (double)(instance.score ?? 0.0d),
+                    Priority = 0,
+                };
+
+                info.Coverage = (info.End - info.Start) / (double)text.Length;
+                infos.Add(info);
+            }
+        }
+
         // Combine entity values and $instance meta-data and expand out op/property
+        // Structure of entities.  
+        //{
+        //  "<op>": [
+        //    // Op property
+        //    {
+        //      "<property>": [
+        //        // Property without entities
+        //        {},
+        //        // Property with entities
+        //        {
+        //          "<entity>": [],
+        //          "$instance": []
+        //        }
+        //      ],
+        //      "$instance": []
+        //    },
+        //    // Op entity
+        //    {
+        //    "<entity> ": [],
+        //      "$instance": []
+        //    }
+        //  ],
+        //  // Direct property
+        //  "<property>": [
+        //    {},
+        //    {
+        //    "<entity>": [],
+        //      "$instance": []
+        //    }
+        //  ],
+        //  // Direct entity
+        //  "<entity>": [],
+        //  "$instance": []
+        //}
         private Dictionary<string, List<EntityInfo>> NormalizeEntities(ActionContext actionContext)
         {
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
@@ -973,53 +1085,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var turn = actionContext.State.GetValue<uint>(DialogPath.EventCounter);
                 var operations = dialogSchema.Schema[OperationsKey]?.ToObject<List<string>>() ?? new List<string>();
                 var properties = dialogSchema.Property.Children.Select((prop) => prop.Name).ToList<string>();
-                var metaData = entities[InstanceKey];
-                foreach (var entityToken in entities)
-                {
-                    var entityName = entityToken.Name;
-                    if (!entityName.StartsWith("$"))
-                    {
-                        if (operations.Contains(entityName))
-                        {
-                            // Have an operation, unwrap property or entity children
-                            var op = entityName;
-                            for (var opIndex = 0; opIndex < entityToken.Value.Count; ++opIndex)
-                            {
-                                var opChildren = entityToken.Value[opIndex];
-                                foreach (var opChild in opChildren)
-                                {
-                                    var opInstance = opChild[InstanceKey];
-                                    if (properties.Contains(opChild.Name))
-                                    {
-                                        // Unwrap entities if any in property
-                                        ExpandProperty(opChild.Value, opInstance, op, opChild.Name, turn, text, entityToInfo);
-                                    }
-                                    else
-                                    {
-                                        // Direct entity children of op
-                                        foreach (var entityValue in opChild.Value)
-                                        {
-                                            ExpandEntity(entityValue, opInstance, op, null, turn, text, entityToInfo);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else if (properties.Contains(entityName))
-                        {
-                            // Top level properties with no op
-                            ExpandProperty(entityToken.Value, metaData[entityName], null, entityName, turn, text, entityToInfo);
-                        }
-                        else
-                        {
-                            // Plain top-level entities with no op/property
-                            for (var entityValueIndex = 0; entityValueIndex < entityToken.Value.Count; ++entityValueIndex)
-                            {
-                                ExpandEntity(entityToken.Value[entityValueIndex], metaData[entityValueIndex], null, null, turn, text, entityToInfo);
-                            }
-                        }
-                    }
-                }
+                ExpandEntityObject(entities, null, null, null, operations, properties, turn, text, entityToInfo);
             }
 
             // When there are multiple possible resolutions for the same entity that overlap, pick the one that covers the
@@ -1072,46 +1138,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return entityToInfo;
         }
 
-        private void ExpandEntity(dynamic entry, dynamic metaData, string op, string property, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
-        {
-            var name = entry.Name;
-            if (!name.StartsWith("$"))
-            {
-                var values = entry.Value;
-                var instances = metaData?[name];
-                for (var i = 0; i < values.Count; ++i)
-                {
-                    var val = values[i];
-                    var instance = instances?[i];
-                    if (!entityToInfo.TryGetValue(name, out List<EntityInfo> infos))
-                    {
-                        infos = new List<EntityInfo>();
-                        entityToInfo[name] = infos;
-                    }
-
-                    var info = new EntityInfo
-                    {
-                        WhenRecognized = turn,
-                        Name = name,
-                        Value = val,
-                        Operation = op,
-                        Property = property
-                    };
-                    if (instance != null)
-                    {
-                        info.Start = (int)instance.startIndex;
-                        info.End = (int)instance.endIndex;
-                        info.Text = (string)(instance.text ?? string.Empty);
-                        info.Type = (string)(instance.type ?? null);
-                        info.Score = (double)(instance.score ?? 0.0d);
-                    }
-
-                    info.Priority = 0;
-                    info.Coverage = (info.End - info.Start) / (double)text.Length;
-                }
-            }
-        }
-
+        // TODO: Probably should be assign operation in here as well, in we eventually wanted to expand to possible operations.
+        // Cases:
+        // ~op, ~prop, entity -> Assign default op and all possible properties
+        // ~op, prop, ~entity -> Assign default op?
+        // ~op, prop, entity -> Assign default op
+        // op, ~prop, ~entity -> Emit 
+        // op, prop, ~entity -> Emit
+        // op, prop, entity --> Emit
         // Generate possible entity to property mappings
         private IEnumerable<EntityAssignment> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
