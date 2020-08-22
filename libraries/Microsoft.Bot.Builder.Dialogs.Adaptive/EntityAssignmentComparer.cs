@@ -36,16 +36,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             int comparison = Array.IndexOf(eventPreference, x.Event).CompareTo(Array.IndexOf(eventPreference, y.Event));
             if (comparison == 0)
             {
-                // Unexpected before expected
-                comparison = x.IsExpected.CompareTo(y.IsExpected);
+                // Order by operations
+                comparison = Array.IndexOf(operationPreference, x.Operation).CompareTo(Array.IndexOf(operationPreference, y.Operation));
                 if (comparison == 0)
                 {
-                    // Order by history
-                    comparison = x.Entity.WhenRecognized.CompareTo(y.Entity.WhenRecognized);
+                    // Unexpected before expected
+                    comparison = x.IsExpected.CompareTo(y.IsExpected);
                     if (comparison == 0)
                     {
-                        // Order by operations
-                        comparison = Array.IndexOf(operationPreference, x.Operation).CompareTo(Array.IndexOf(operationPreference, y.Operation));
+                        // Order by history
+                        comparison = x.Entity.WhenRecognized.CompareTo(y.Entity.WhenRecognized);
                     }
                 }
             }

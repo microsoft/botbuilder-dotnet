@@ -35,11 +35,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private const string AdaptiveKey = "_adaptive";
         private const string DefaultOperationKey = "$defaultOperation";
         private const string ExpectedOnlyKey = "$expectedOnly";
-        private const string EntitiesKey = "$entities";
         private const string InstanceKey = "$instance";
         private const string NoneIntentKey = "None";
         private const string OperationsKey = "$operations";
-        private const string PropertyNameKey = "PROPERTYName";
         private const string UtteranceKey = "utterance";
 
         // unique key for change tracking of the turn state (TURN STATE ONLY)
@@ -993,12 +991,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             if (isOp)
                             {
                                 // Handle operator with no children
-                                ExpandEntity(op, entity, instance, root, op, property, turn, text, entityToInfo);
+                                ExpandEntity(op, null, instance, root, op, property, turn, text, entityToInfo);
                             }
                             else if (isProperty)
                             {
                                 // Handle property with no children
-                                ExpandEntity(property, entity, instance, root, op, property, turn, text, entityToInfo);
+                                ExpandEntity(property, null, instance, root, op, property, turn, text, entityToInfo);
                             }
                         }
                         else
@@ -1153,7 +1151,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var usedEntityType = new HashSet<string> { UtteranceKey };
             var usedEntity = new HashSet<EntityInfo>();
 
+            // Build map from entity to possible expected properties
+            var entityToExpected = new Dictionary<string, List<string>>();
+            foreach (var property in expected)
+            {
+                foreach (var entity in dialogSchema.PathToSchema(property).Entities)
+                {
+                    if (!entityToExpected.TryGetValue(entity, out var expectedProperties))
+                    {
+                        expectedProperties = new List<string>();
+                        entityToExpected[entity] = expectedProperties;
+                    }
+
+                    expectedProperties.Add(property);
+                }
+            }
+
             // Emit entities that already have a property
+            // If property is in entityToExpected, then convert property to entity with expected properties as properties
             foreach (var alternatives in entities.Values)
             {
                 foreach (var alternative in alternatives)
@@ -1161,13 +1176,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     if (alternative.Property != null)
                     {
                         usedEntity.Add(alternative);
-                        yield return new EntityAssignment
+                        if (entityToExpected.TryGetValue(alternative.Property, out var properties))
                         {
-                            Entity = alternative,
-                            Property = alternative.Property,
-                            Operation = alternative.Operation,
-                            IsExpected = expected.Contains(alternative.Property)
-                        };
+                            // Property name is expected so rename and emit
+                            foreach (var property in properties)
+                            {
+                                var entity = alternative.Clone() as EntityInfo;
+                                entity.Property = property;
+                                yield return new EntityAssignment
+                                {
+                                    Entity = entity,
+                                    Property = entity.Property,
+                                    Operation = entity.Operation,
+                                    IsExpected = true
+                                };
+                            }
+                        }
+                        else
+                        {
+                            // Property corresponds directly to expected
+                            yield return new EntityAssignment
+                            {
+                                Entity = alternative,
+                                Property = alternative.Property,
+                                Operation = alternative.Operation,
+                                IsExpected = expected.Contains(alternative.Property)
+                            };
+                        }
                     }
                 }
             }
@@ -1200,10 +1235,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             // Unassigned entities
-            var entityPreferences = EntityPreferences(null);
             foreach (var entry in entities)
             {
-                if (!usedEntityType.Contains(entry.Key) && entityPreferences.Contains(entry.Key))
+                if (!usedEntityType.Contains(entry.Key))
                 {
                     foreach (var entity in entry.Value)
                     {
@@ -1260,28 +1294,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        private IReadOnlyList<string> EntityPreferences(string property)
-        {
-            IReadOnlyList<string> result;
-            if (property == null)
-            {
-                if (dialogSchema.Schema.ContainsKey(EntitiesKey))
-                {
-                    result = dialogSchema.Schema[EntitiesKey].ToObject<List<string>>();
-                }
-                else
-                {
-                    result = new List<string> { PropertyNameKey };
-                }
-            }
-            else
-            {
-                result = dialogSchema.PathToSchema(property).Entities;
-            }
-
-            return result;
-        }
-
         // Have each property pick which overlapping entity is the best one
         private IEnumerable<EntityAssignment> RemoveOverlappingPerProperty(IEnumerable<EntityAssignment> candidates)
         {
@@ -1289,7 +1301,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                               group candidate by candidate.Property;
             foreach (var propChoices in perProperty)
             {
-                var entityPreferences = EntityPreferences(propChoices.Key);
+                var entityPreferences = dialogSchema.PathToSchema(propChoices.Key).Entities;
                 var choices = propChoices.ToList();
 
                 // Assume preference by order listed in mappings
@@ -1396,12 +1408,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     existing.Dequeue(actionContext);
                     lastEvent = null;
                 }
-                else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Operation == null && candidate.Entity.Name == PropertyNameKey)
+                else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Operation == null && candidate.Property != null)
                 {
-                    // NOTE: This assumes the existence of an entity named PROPERTYName for resolving this ambiguity
                     choices = existing.NextAssignment().Alternatives.ToList();
-                    var property = (candidate.Entity.Value as JArray)?[0]?.ToObject<string>();
-                    var choice = choices.Find(p => p.Property == property);
+                    var choice = choices.Find(p => p.Property == candidate.Property);
                     if (choice != null)
                     {
                         // Resolve choice, pretend it was expected and add to assignments
@@ -1453,7 +1463,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return usedEntities.ToList();
         }
 
-        // a replaces b when it refers to the same singleton property and is newer or later in same utterance and it is not over PROPERTYName
+        // a replaces b when it refers to the same singleton property and is newer or later in same utterance and it is not a bare property
         // -1 a replaces b
         //  0 no replacement
         // +1 b replaces a
@@ -1464,7 +1474,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 foreach (var bAlt in b.Alternatives)
                 {
-                    if (aAlt.Property == bAlt.Property && aAlt.Entity.Name != PropertyNameKey && bAlt.Entity.Name != PropertyNameKey)
+                    if (aAlt.Property == bAlt.Property && aAlt.Entity.Value != null && bAlt.Entity.Value != null)
                     {
                         var prop = dialogSchema.PathToSchema(aAlt.Property);
                         if (!prop.IsArray)
