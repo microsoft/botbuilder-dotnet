@@ -366,6 +366,7 @@ namespace AdaptiveExpressions.Tests
             #endregion
 
             #region string interpolation test
+            Test("``", string.Empty),
             Test("`hi`", "hi"),
             Test(@"`hi\``", "hi`"),
             Test("`${world}`", "world"),
