@@ -249,7 +249,7 @@ namespace AdaptiveExpressions
 
             public override Expression VisitStringInterpolationAtom([NotNull] ExpressionAntlrParser.StringInterpolationAtomContext context)
             {
-                var children = new List<Expression>();
+                var children = new List<Expression>() { string.Empty };
                 foreach (var child in context.stringInterpolation().children)
                 {
                     if (child is ITerminalNode node)
@@ -273,12 +273,6 @@ namespace AdaptiveExpressions
                         var text = EvalEscape(child.GetText());
                         children.Add(Expression.ConstantExpression(text));
                     }
-                }
-
-                // If there is nothing in the string interpolation, add a empty string to the children list.
-                if (children.Count == 0)
-                {
-                    children.Add(string.Empty);
                 }
 
                 return MakeExpression(ExpressionType.Concat, children.ToArray());
