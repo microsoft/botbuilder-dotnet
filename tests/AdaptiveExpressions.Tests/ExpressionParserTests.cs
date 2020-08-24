@@ -672,6 +672,7 @@ namespace AdaptiveExpressions.Tests
             Test("int('10')", 10),
             Test("int(12345678912345678 + 1)", 12345678912345679),
             Test("string('str')", "str"),
+            Test("string('str\"')", "str\""),
             Test("string(one)", "1"),
             Test("string(bool(1))", "true"),
             Test("string(bag.set)", "{\"four\":4.0}"),
