@@ -275,6 +275,12 @@ namespace AdaptiveExpressions
                     }
                 }
 
+                // If there is nothing in the string interpolation, add a empty string to the children list.
+                if (children.Count == 0)
+                {
+                    children.Add(string.Empty);
+                }
+
                 return MakeExpression(ExpressionType.Concat, children.ToArray());
             }
 
