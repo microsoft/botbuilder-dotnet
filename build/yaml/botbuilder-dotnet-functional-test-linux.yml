@@ -78,7 +78,7 @@ steps:
    git add .
    git commit -m "cibuildtest"
    git remote add azure https://$(AzureDeploymentUser):$(AzureDeploymentPassword)@$(LinuxTestBotBotName).scm.azurewebsites.net:443/$(LinuxTestBotBotName).git
-   git push azure main
+   git push azure master
   workingDirectory: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot'
   displayName: 'Git bot deployment'
 
