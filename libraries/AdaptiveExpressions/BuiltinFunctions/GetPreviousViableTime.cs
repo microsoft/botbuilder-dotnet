@@ -79,10 +79,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     validHour += 24;
                 }
-                else if (validHour >= 24)
-                {
-                    validHour -= 24;
-                }
 
                 validMinute = parsed.Minute ?? 0;
                 validSecond = parsed.Second ?? 0;

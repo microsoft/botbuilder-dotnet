@@ -8,8 +8,8 @@
             "type": "string"
         },
         {
-            "$ref": "https://raw.githubusercontent.com/microsoft/botframework-sdk/master/schemas/protocol/botframework.json#/definitions/Activity",
-            "required":[
+            "$ref": "https://schemas.botframework.com/schemas/protocol/botframework.json#/definitions/Activity",
+            "required": [
                 "type"
             ]
         }

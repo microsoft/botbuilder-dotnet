@@ -68,12 +68,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("Multiline.lg"));
             string evaled = templates.Evaluate("template1").ToString();
-            var generatedTemplates = Templates.ParseText(evaled);
+            var generatedTemplates = Templates.ParseResource(new LGResource(string.Empty, string.Empty, evaled));
             var result = generatedTemplates.Evaluate("generated1");
             Assert.Equal("hi", result);
 
             evaled = templates.Evaluate("template2", new { evaluateNow = "please input" }).ToString();
-            generatedTemplates = Templates.ParseText(evaled);
+            generatedTemplates = Templates.ParseResource(new LGResource(string.Empty, string.Empty, evaled));
             result = generatedTemplates.Evaluate("generated2", new { name = "jack" });
             Assert.Equal("please input jack", result.ToString().Trim());
         }
@@ -461,7 +461,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.True(evaled == "Hi 2" || evaled == "Hello 2");
 
             // Assert 6.lg of relative path is imported from text.
-            templates = Templates.ParseText("[import](./6.lg)\r\n# basicTemplate\r\n- Hi\r\n- Hello\r\n", GetExampleFilePath("xx.lg"));
+            templates = Templates.ParseResource(new LGResource(GetExampleFilePath("xx.lg"), GetExampleFilePath("xx.lg"), "[import](./6.lg)\r\n# basicTemplate\r\n- Hi\r\n- Hello\r\n"));
 
             Assert.Equal(8, templates.AllTemplates.Count());
             evaled = templates.Evaluate("basicTemplate", null).ToString();

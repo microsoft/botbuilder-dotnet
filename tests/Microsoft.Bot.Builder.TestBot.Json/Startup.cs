@@ -72,6 +72,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             var resourceExplorer = new ResourceExplorer().AddFolder(this.Configuration.GetValue<string>("BotRoot"));
             services.AddSingleton(resourceExplorer);
 
+            // Pass configuration to bot
+            services.AddSingleton(this.Configuration);
+
             // Create the bot  In this case the ASP Controller is expecting an IBot.
             services.AddSingleton<IBot, TestBot>();
         }
