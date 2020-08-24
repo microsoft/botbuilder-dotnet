@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// Defines Dialog Dependencies interface for enumerating child dialogs.
+    /// </summary>
     public interface IDialogDependencies
     {
         /// <summary>
