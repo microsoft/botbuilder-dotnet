@@ -906,7 +906,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var utterance = activity?.AsMessageActivity()?.Text;
 
                 // Utterance is a special entity that corresponds to the full utterance
-                entities[UtteranceKey] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = UtteranceKey, Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
+                entities[UtteranceKey] = new List<EntityInfo>
+                {
+                    new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = UtteranceKey, Score = 0.0, Type = "string", Value = utterance, Text = utterance }
+                };
                 var recognized = AssignEntities(actionContext, entities, assignments, lastEvent);
                 var unrecognized = SplitUtterance(utterance, recognized);
 
@@ -979,7 +982,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     var entity = entities[entityIndex];
                     var instance = instances[entityIndex] as JObject;
-                    var root = rootInstance ?? instance;
+                    var root = rootInstance;
+                    if (root == null)
+                    {
+                        // Keep the root entity name and position to help with overlap
+                        root = instance.DeepClone() as JObject;
+                        root["type"] = $"{name}{entityIndex}";
+                    }
+
                     if (entityName != null)
                     {
                         ExpandEntity(entityName, entity, instance, root, op, property, turn, text, entityToInfo);
@@ -1028,6 +1038,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     Property = property,
                     Start = (int)rootInstance.startIndex,
                     End = (int)rootInstance.endIndex,
+                    RootEntity = rootInstance.type,
                     Text = (string)(rootInstance.text ?? string.Empty),
                     Type = (string)(instance.type ?? null),
                     Score = (double)(instance.score ?? 0.0d),
@@ -1176,7 +1187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     if (alternative.Property != null)
                     {
                         usedEntity.Add(alternative);
-                        if (entityToExpected.TryGetValue(alternative.Property, out var properties))
+                        if (entityToExpected.TryGetValue(alternative.Property, out var properties) && alternative.Operation == null)
                         {
                             // Property name is expected so rename and emit
                             foreach (var property in properties)
@@ -1234,14 +1245,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
             }
 
-            // Unassigned entities
+            // Entities with an operation, but no property
             foreach (var entry in entities)
             {
                 if (!usedEntityType.Contains(entry.Key))
                 {
                     foreach (var entity in entry.Value)
                     {
-                        if (!usedEntity.Contains(entity))
+                        if (!usedEntity.Contains(entity) && entity.Operation != null)
                         {
                             yield return new EntityAssignment
                             {
@@ -1285,15 +1296,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        // Remove any entities that overlap a selected entity
-        private void RemoveOverlappingEntities(EntityInfo entity, Dictionary<string, List<EntityInfo>> entities)
-        {
-            foreach (var infos in entities.Values)
-            {
-                infos.RemoveAll(e => e.Overlaps(entity));
-            }
-        }
-
         // Have each property pick which overlapping entity is the best one
         private IEnumerable<EntityAssignment> RemoveOverlappingPerProperty(IEnumerable<EntityAssignment> candidates)
         {
@@ -1323,7 +1325,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                         if (candidate != null)
                         {
-                            // Remove any overlapping entities
+                            // Remove any overlapping entities without a common root
                             choices.RemoveAll(choice => choice.Entity.Overlaps(candidate.Entity));
                             yield return candidate;
                         }
@@ -1411,7 +1413,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Operation == null && candidate.Property != null)
                 {
                     choices = existing.NextAssignment().Alternatives.ToList();
-                    var choice = choices.Find(p => p.Property == candidate.Property);
+                    var choice = choices.Find(p => p.Property == candidate.Entity.Name);
                     if (choice != null)
                     {
                         // Resolve choice, pretend it was expected and add to assignments

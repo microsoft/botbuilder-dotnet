@@ -75,6 +75,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public string Type { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets root entity where this entity was found.
+        /// </summary>
+        /// <value>Root entity name plus index.</value>
+        [JsonProperty("rootEntity")]
+        public string RootEntity { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets relative priority of entity compared to other entities with 0 being highest priority.
         /// </summary>
         /// <value>Relative priority of entity.</value>
@@ -101,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="entity">Entity to compare.</param>
         /// <returns>True if entities overlap.</returns>
         public bool Overlaps(EntityInfo entity)
-            => Start <= entity.End && End >= entity.Start;
+            => (entity == this || entity.RootEntity != RootEntity) && Start <= entity.End && End >= entity.Start;
 
         /// <summary>
         /// True if entities come from exactly the same text in the utterance.
@@ -117,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="entity">Entity to compare.</param>
         /// <returns>True if entity text completely covers other entity text.</returns>
         public bool Covers(EntityInfo entity)
-            => Start <= entity.Start && End >= entity.End && End - Start > entity.End - entity.Start;
+            => (entity == this || entity.RootEntity != RootEntity) && Start <= entity.Start && End >= entity.End && End - Start > entity.End - entity.Start;
 
         public override string ToString()
             => $"{Operation}({Name}:{Value}) P{Priority} {Score} {Coverage}";

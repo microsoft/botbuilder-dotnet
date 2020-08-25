@@ -10,9 +10,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     /// <remarks>
     /// Compare by event: AssignEntity, ChooseProperty, ChooseEntity
-    /// Then unexpected before expected
-    /// Then by oldest first
-    /// Then by order of operations passed in.
+    /// Then by operations in order from schema (usually within AssignEntity).
+    /// Then by unexpected before expected.
+    /// Then by oldest turn first.
+    /// Then by minimum position in utterance.
     /// </remarks>
     public class EntityAssignmentComparer : Comparer<EntityAssignment>
     {
@@ -46,6 +47,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         // Order by history
                         comparison = x.Entity.WhenRecognized.CompareTo(y.Entity.WhenRecognized);
+                        if (comparison == 0)
+                        {
+                            // Order by position in utterance
+                            comparison = x.Entity.Start.CompareTo(y.Entity.Start);
+                        }
                     }
                 }
             }
