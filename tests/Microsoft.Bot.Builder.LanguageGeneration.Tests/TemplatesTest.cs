@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal(evaledArray, actualArr);
 
             var evaledMultilineResult = templates.Evaluate("evalMultiLineObj");
-            Assert.Equal(evaledMultilineResult, "{\"a\":1,\"b\":2,\"c\":3}");
+            Assert.Equal(evaledMultilineResult, "{\"a\":1,\"b\":2,\"c\":{\"d\":4,\"e\":5}}");
         }
 
         [Fact]
