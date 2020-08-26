@@ -48,13 +48,6 @@ variables:
 #  FacebookTestBotSenderId: define this in Azure?: This var not needed in build 156862. Revisit this after the build's test is fixed & running.
 
 steps:
-- task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
-  displayName: 'Tag build if DeleteResourceGroup is false'
-  inputs:
-    tags: 'DeleteResourceGroup: $(DeleteResourceGroup)'
-  condition: and(succeeded(), eq(variables['DeleteResourceGroup'], 'false'))
-  continueOnError: true
-
 - powershell: |
    # Set values in appsettings.json file.
    $file = "$(Build.SourcesDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\appsettings.json";
