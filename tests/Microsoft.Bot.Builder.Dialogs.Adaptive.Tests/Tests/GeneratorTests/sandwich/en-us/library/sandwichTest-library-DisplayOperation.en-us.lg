@@ -1,79 +1,23 @@
+[sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
 
-# displayOperation(op) 
+# displayOperation(op, property, text)
+- ${operationName(op)} "${text}"" to ${getPropertyNameText(property)}
+
+# operationName(op) 
 - SWITCH: ${op}
-    - CASE: ${'AddToQuantity'} 
-        - add to quantity
-    - CASE: ${'RemoveFromQuantity'} 
-        - remove from quantity
-    - CASE: ${'ShowQuantity'} 
-        - show quantity
-    - CASE: ${'ClearQuantity'} 
-        - clear quantity
-    - CASE: ${'AddToLength'} 
-        - add to length
-    - CASE: ${'RemoveFromLength'} 
-        - remove from length
-    - CASE: ${'ShowLength'} 
-        - show length
-    - CASE: ${'ClearLength'} 
-        - clear length
-    - CASE: ${'AddToName'} 
-        - add to name
-    - CASE: ${'RemoveFromName'} 
-        - remove from name
-    - CASE: ${'ShowName'} 
-        - show name
-    - CASE: ${'ClearName'} 
-        - clear name
-    - CASE: ${'AddToBread'} 
-        - add to bread
-    - CASE: ${'RemoveFromBread'} 
-        - remove from bread
-    - CASE: ${'ShowBread'} 
-        - show bread
-    - CASE: ${'ClearBread'} 
-        - clear bread
-    - CASE: ${'AddToMeat'} 
-        - add to meat
-    - CASE: ${'RemoveFromMeat'} 
-        - remove from meat
-    - CASE: ${'ShowMeat'} 
-        - show meat
-    - CASE: ${'ClearMeat'} 
-        - clear meat
-    - CASE: ${'AddToCheese'} 
-        - add to cheese
-    - CASE: ${'RemoveFromCheese'} 
-        - remove from cheese
-    - CASE: ${'ShowCheese'} 
-        - show cheese
-    - CASE: ${'ClearCheese'} 
-        - clear cheese
-    - CASE: ${'AddToToppings'} 
-        - add to toppings
-    - CASE: ${'RemoveFromToppings'} 
-        - remove from toppings
-    - CASE: ${'ShowToppings'} 
-        - show toppings
-    - CASE: ${'ClearToppings'} 
-        - clear toppings
-    - CASE: ${'AddToSauces'} 
-        - add to sauces
-    - CASE: ${'RemoveFromSauces'} 
-        - remove from sauces
-    - CASE: ${'ShowSauces'} 
-        - show sauces
-    - CASE: ${'ClearSauces'} 
-        - clear sauces
-    - CASE: ${'AddToPrice'} 
-        - add to price
-    - CASE: ${'RemoveFromPrice'} 
-        - remove from price
-    - CASE: ${'ShowPrice'} 
-        - show price
-    - CASE: ${'ClearPrice'} 
-        - clear price
+    - CASE: ${'Add()'}
+        - add
+    - CASE: ${'Remove()'}
+        - remove
+    - CASE: ${'Clear()'}
+        - clear
+    - CASE: ${'Show()'}
+        - show
+    - CASE: ${'Help()'}
+        - help
+    - CASE: ${'Change()'}
+        - change
     - DEFAULT: 
         - I don't understand ${op}
 
-> Generator: 29fa30c20bbfe8f26caced247f5da41a
+> Generator: 44a37b073115fb1a3a4bd9ff8a4a3361

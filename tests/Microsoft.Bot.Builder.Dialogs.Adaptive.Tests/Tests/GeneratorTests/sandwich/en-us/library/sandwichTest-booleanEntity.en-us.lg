@@ -1,5 +1,5 @@
 
-# booleanEntity(value)
+# booleanEntity_getValueText(value)
 - SWITCH: ${value}
 - CASE: ${'true'}
     - true  
@@ -8,4 +8,4 @@
 - DEFAULT:
     - no value
 
-> Generator: 943be502d744d4f2b5af9825ff530f4a
+> Generator: b749087723c6a5c0ebcc8a2dfae02e9c

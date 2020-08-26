@@ -2,7 +2,7 @@
 [sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
 [sandwichTest-library-Choose.en-us.lg](sandwichTest-library-Choose.en-us.lg)
 
-# SaucesEntity(value) 
+# SaucesEntity_getValueText(value) 
 - SWITCH: ${value}
 
   - CASE: ${'pepper'} 
@@ -23,9 +23,9 @@
 
 
 
-# chooseSaucesEntity
-- ${chooseEnumArrayEntity('Sauces')}
+# SaucesEntity_getChooseEntityText
+- ${getChooseEnumArrayEntityText('Sauces')}
 
 
 
-> Generator: aca4822f71c6bb5ec969bc8071ae35dc
+> Generator: b5a9358178ee06401e8099cf520d813e

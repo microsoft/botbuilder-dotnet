@@ -3,14 +3,17 @@
 [sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
 [sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
 
-# AskSauces
-- ${askEnumArray('Sauces')}
+> Template for prompting the user for the 'Sauces' property.
+# Sauces_getPromptText
+- What values do you want to add for ${Sauces_getPropertyNameText()}?
 
-> How to display the name of Sauces
-# SaucesName
+
+> Template for generating display text for the name of the 'Sauces' property.
+# Sauces_getPropertyNameText
 - sauces
 
-# Sauces(values)
-- ${enumArrayValue('Sauces', values)}
+> Template for generating display text for the value of the 'Sauces' property.
+# Sauces_getValueText(values)
+- ${getEnumArrayValueText('Sauces', values)}
 
-> Generator: d44ffb25c21a9f251c770d3ca7240be0
+> Generator: 3b13b24a37bb16bf3a13adc9d0f6913c

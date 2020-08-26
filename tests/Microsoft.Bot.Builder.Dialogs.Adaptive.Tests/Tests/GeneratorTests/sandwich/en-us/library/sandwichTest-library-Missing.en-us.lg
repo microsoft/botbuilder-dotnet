@@ -1,43 +1,53 @@
 [sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
-
 [sandwichTest-library-Help.en-us.lg](sandwichTest-library-Help.en-us.lg)
 
-
-# askEnum(property)
+# getEnumPromptText(property)
 - ```
-${askHelp()}
-Which value do you want for ${displayName(property)}?
+${getAutoHelpText()}
+Which value do you want for ${getPropertyNameText(property)}?
 ```
 
-# askEnumArray(property)
+# getEnumArrayPromptText(property)
 - ```
-${askHelp()}
-What values do you want to add for ${displayName(property)}?
+${getAutoHelpText()}
+What values do you want to add for ${getPropertyNameText(property)}?
 ```
 
-# askNumber(property)
+# getIntegerPromptText(property)
+- ${getNumberPromptText(property)}
+
+# getNumberPromptText(property)
 - IF: ${dialogClass.schema.properties[property].minimum && dialogClass.schema.properties[property].maximum}
-- Enter a number for ${displayName(property)} between ${dialogClass.schema.properties[property].minimum} and ${dialogClass.schema.properties[property].maximum}
+- Enter a number for ${getPropertyNameText(property)} between ${dialogClass.schema.properties[property].minimum} and ${dialogClass.schema.properties[property].maximum}
 - ELSEIF:  ${dialogClass.schema.properties[property].minimum}
-- Enter a number for ${displayName(property)} that is greater than ${dialogClass.schema.properties[property].minimum}
+- Enter a number for ${getPropertyNameText(property)} that is greater than ${dialogClass.schema.properties[property].minimum}
 - ELSEIF: ${dialogClass.schema.properties[property].maximum}
-- Enter a number for ${displayName(property)} that is less than ${dialogClass.schema.properties[property].maximum}
+- Enter a number for ${getPropertyNameText(property)} that is less than ${dialogClass.schema.properties[property].maximum}
 - ELSE:
-- Enter a number for ${displayName(property)}
+- Enter a number for ${getPropertyNameText(property)}
 
-# askString(property)
+# getStringPromptText(property)
 - ```
-${askHelp()}
-Enter a value for ${displayName(property)}
+${getAutoHelpText()}
+Enter a value for ${getPropertyNameText(property)}
 ```
 
-# askBoolean(property)
-- ```
-${askHelp()}
-Enter a value for ${displayName(property)}: true or false
+# getStringArrayPromptText(property)
+-```
+${getAutoHelpText()}
+What values do you want to add for ${getPropertyNameText(property)}?
 ```
 
-# enumArrayValue(property, values)
-- ${if(isArray(values), join(foreach(values, value, template(`${property}Entity`, value)), ', '), template(`${property}Entity`, values))}
+# getBooleanPromptText(property)
+- ```
+${getAutoHelpText()}
+Enter a value for ${getPropertyNameText(property)}: true or false
+```
 
-> Generator: 20d5d3135c663c9eeb9096a435f6000a
+# getArrayValueText(property, values)
+- ${if(values, if(isArray(values), join(values, ', '), values), 'no value')}
+
+# getEnumArrayValueText(property, values)
+- ${if(isArray(values), join(foreach(values, value, template(`${property}Entity_getValueText`, value)), ', '), template(`${property}Entity_getValueText`, values))}
+
+> Generator: fba6156e59ade1c0824da70a290b137e

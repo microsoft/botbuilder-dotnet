@@ -2,7 +2,7 @@
 [sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
 [sandwichTest-library-Choose.en-us.lg](sandwichTest-library-Choose.en-us.lg)
 
-# MeatEntity(value) 
+# MeatEntity_getValueText(value) 
 - SWITCH: ${value}
   - CASE: ${'bacon'} 
     - bacon
@@ -24,8 +24,8 @@
     - no value
 
 
-# chooseMeatEntity
-- ${chooseEnumEntity('Meat')}
+# MeatEntity_getChooseEntityText
+- ${getChooseEnumEntityText('Meat')}
 
 
-> Generator: ce7ce83ffbc010340891f8a60d739bfd
+> Generator: f1f7c63833c38223945a0edef1d8f1dd

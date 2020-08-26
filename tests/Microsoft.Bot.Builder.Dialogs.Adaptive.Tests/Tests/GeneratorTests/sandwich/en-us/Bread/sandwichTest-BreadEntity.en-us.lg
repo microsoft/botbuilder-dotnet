@@ -2,7 +2,7 @@
 [sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
 [sandwichTest-library-Choose.en-us.lg](sandwichTest-library-Choose.en-us.lg)
 
-# BreadEntity(value) 
+# BreadEntity_getValueText(value) 
 - SWITCH: ${value}
   - CASE: ${'multiGrainWheat'} 
     - multi grain wheat
@@ -16,8 +16,8 @@
     - no value
 
 
-# chooseBreadEntity
-- ${chooseEnumEntity('Bread')}
+# BreadEntity_getChooseEntityText
+- ${getChooseEnumEntityText('Bread')}
 
 
-> Generator: 00c4aca20ca764a7d06fa6cc8c21f35f
+> Generator: fdffa688af5ab94c230221b733efda9c

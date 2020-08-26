@@ -2,19 +2,18 @@
 [sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
 [sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
 
-# AskPrice
-- ${askString('Price')}
+> Template for prompting the user for the 'Price' property.
+# Price_getPromptText
+- Enter a value for ${Price_getPropertyNameText()}
 
 
-> How to display the name of Price
-# PriceName
+> Template for generating display text for the name of the 'Price' property.
+# Price_getPropertyNameText
 - price
 
-# Price(val)
-- IF: ${val}
-- ${join(foreach(indicesAndValues(val), entry, entry.value), ' ')}
-- ELSE:
-- no value
+> Template for generating display text for the value of the 'Price' property.
+# Price_getValueText(val)
+- ${getValueText(val)}
 
 
-> Generator: c6029213cb52671b66027f005c82bbb4
+> Generator: e44781c2c93f718dcce20f993cb6512a

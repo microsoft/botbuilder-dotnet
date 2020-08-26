@@ -3,16 +3,18 @@
 [sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
 [sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
 
-# AskBread
-- ${askEnum('Bread')}
+> Template for prompting the user for the 'Bread' property.
+# Bread_getPromptText
+- Which value do you want for ${Bread_getPropertyNameText()}?
 
 
-> How to display the name of Bread
-# BreadName
+> Template for generating display text for the name of the 'Bread' property.
+# Bread_getPropertyNameText
 - bread
 
-# Bread(val)
-- ${BreadEntity(val)}
+> Template for generating display text for the value of the 'Bread' property.
+# Bread_getValueText(val)
+- ${BreadEntity_getValueText(val)}
 
 
-> Generator: 52089fa1651771003285760fc587c89f
+> Generator: 7dd2a3ef0c5fb1fa00106eb946323517

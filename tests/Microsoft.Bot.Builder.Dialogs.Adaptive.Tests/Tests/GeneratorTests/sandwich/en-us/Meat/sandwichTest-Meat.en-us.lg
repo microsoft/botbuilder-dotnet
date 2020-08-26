@@ -3,16 +3,18 @@
 [sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
 [sandwichTest-library-Missing.en-us.lg](sandwichTest-library-Missing.en-us.lg)
 
-# AskMeat
-- ${askEnum('Meat')}
+> Template for prompting the user for the 'Meat' property.
+# Meat_getPromptText
+- Which value do you want for ${Meat_getPropertyNameText()}?
 
 
-> How to display the name of Meat
-# MeatName
+> Template for generating display text for the name of the 'Meat' property.
+# Meat_getPropertyNameText
 - meat
 
-# Meat(val)
-- ${MeatEntity(val)}
+> Template for generating display text for the value of the 'Meat' property.
+# Meat_getValueText(val)
+- ${MeatEntity_getValueText(val)}
 
 
-> Generator: ad63364bbae30782c17982c48e36e124
+> Generator: 70eab71a0ad31546c85c39495bdebe1f

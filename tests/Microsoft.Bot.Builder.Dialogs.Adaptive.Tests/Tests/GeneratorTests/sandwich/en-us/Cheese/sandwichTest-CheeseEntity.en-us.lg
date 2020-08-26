@@ -2,7 +2,7 @@
 [sandwichTest-library.en-us.lg](sandwichTest-library.en-us.lg)
 [sandwichTest-library-Choose.en-us.lg](sandwichTest-library-Choose.en-us.lg)
 
-# CheeseEntity(value) 
+# CheeseEntity_getValueText(value) 
 - SWITCH: ${value}
   - CASE: ${'american'} 
     - american
@@ -24,8 +24,8 @@
     - no value
 
 
-# chooseCheeseEntity
-- ${chooseEnumEntity('Cheese')}
+# CheeseEntity_getChooseEntityText
+- ${getChooseEnumEntityText('Cheese')}
 
 
-> Generator: 41bfcaa1691897dbd7fc1539c520102c
+> Generator: fdbc05881de8dc727b54d58bae580e5d
