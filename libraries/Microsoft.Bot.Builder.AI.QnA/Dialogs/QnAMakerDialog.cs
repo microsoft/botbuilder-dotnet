@@ -505,6 +505,62 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 CardNoMatchResponse = await this.CardNoMatchResponse.BindAsync(dc).ConfigureAwait(false)
             };
         }
+
+        /// <summary>
+        /// Displays the QnA result to the user.
+        /// </summary>
+        /// <param name="stepContext">The <see cref="WaterfallStepContext"/> for the current step of the current waterfall dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual async Task<DialogTurnResult> DisplayQnAResultAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
+            var reply = stepContext.Context.Activity.Text;
+
+            if (reply.Equals(dialogOptions.ResponseOptions.CardNoMatchText, StringComparison.OrdinalIgnoreCase))
+            {
+                var activity = dialogOptions.ResponseOptions.CardNoMatchResponse;
+                if (activity == null)
+                {
+                    await stepContext.Context.SendActivityAsync(DefaultCardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    await stepContext.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+
+                return await stepContext.EndDialogAsync().ConfigureAwait(false);
+            }
+
+            // If previous QnAId is present, replace the dialog
+            var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);
+            if (previousQnAId > 0)
+            {
+                // restart the waterfall to step 0
+                return await RunStepAsync(stepContext, index: 0, reason: DialogReason.BeginCalled, result: null, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
+            // If response is present then show that response, else default answer.
+            if (stepContext.Result is List<QueryResult> response && response.Count > 0)
+            {
+                await stepContext.Context.SendActivityAsync(response.First().Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                var activity = dialogOptions.ResponseOptions.NoAnswer;
+                if (activity == null)
+                {
+                    await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    await stepContext.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+            }
+
+            return await stepContext.EndDialogAsync().ConfigureAwait(false);
+        }
         
         private static void ResetOptions(DialogContext dc, QnAMakerDialogOptions dialogOptions)
         {
@@ -692,55 +748,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
             }
 
             return await stepContext.NextAsync(stepContext.Result, cancellationToken).ConfigureAwait(false);
-        }
-
-        private async Task<DialogTurnResult> DisplayQnAResultAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
-            var reply = stepContext.Context.Activity.Text;
-
-            if (reply.Equals(dialogOptions.ResponseOptions.CardNoMatchText, StringComparison.OrdinalIgnoreCase))
-            {
-                var activity = dialogOptions.ResponseOptions.CardNoMatchResponse;
-                if (activity == null)
-                {
-                    await stepContext.Context.SendActivityAsync(DefaultCardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
-                else
-                {
-                    await stepContext.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
-
-                return await stepContext.EndDialogAsync().ConfigureAwait(false);
-            }
-
-            // If previous QnAId is present, replace the dialog
-            var previousQnAId = ObjectPath.GetPathValue<int>(stepContext.ActiveDialog.State, PreviousQnAId, 0);
-            if (previousQnAId > 0)
-            {
-                // restart the waterfall to step 0
-                return await RunStepAsync(stepContext, index: 0, reason: DialogReason.BeginCalled, result: null, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-
-            // If response is present then show that response, else default answer.
-            if (stepContext.Result is List<QueryResult> response && response.Count > 0)
-            {
-                await stepContext.Context.SendActivityAsync(response.First().Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                var activity = dialogOptions.ResponseOptions.NoAnswer;
-                if (activity == null)
-                {
-                    await stepContext.Context.SendActivityAsync(DefaultNoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
-                else
-                {
-                    await stepContext.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
-            }
-
-            return await stepContext.EndDialogAsync().ConfigureAwait(false);
         }
 
         internal class ValueProperty
