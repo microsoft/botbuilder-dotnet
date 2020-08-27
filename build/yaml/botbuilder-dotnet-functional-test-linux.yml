@@ -12,7 +12,7 @@ trigger: # ci trigger
   batch: true
   branches:
     include:
-     - master
+     - main
   paths:
     include:
       - '*'
@@ -27,8 +27,7 @@ trigger: # ci trigger
 pr: none # no pr trigger
 
 variables:
-  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
-  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
@@ -61,7 +60,7 @@ steps:
     azureSubscription: $(AzureSubscription)
     resourceGroupName: '$(LinuxTestBotBotGroup)'
     location: 'West US'
-    csmFile: FunctionalTests/ExportedTemplate/LinuxDotNet/template.json
+    csmFile: FunctionalTests/ExportedTemplate/LinuxDotNet/template-with-preexisting-rg.json
     overrideParameters: '-botName "$(LinuxTestBotBotName)" -appId "$(LinuxTestBotAppId)" -appSecret "$(LinuxTestBotAppSecret)"'
 
 - task: AzureCLI@1

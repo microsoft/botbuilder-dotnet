@@ -33,6 +33,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     /// <seealso cref="TestAdapter"/>
     public class TestScript
     {
+        /// <summary>
+        /// Sets the Kind for this class. 
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.Script";
 
@@ -149,7 +152,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 .Use(new RegisterClassMiddleware<IConfiguration>(this.Configuration))
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
+                .Use(new SetTestOptionsMiddleware());
             
             adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
             return adapter;
@@ -235,6 +239,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             return this;
         }
 
+        /// <summary>
+        /// Sends conversation update.
+        /// </summary>
+        /// <param name="path">Optional path to caller file. </param>
+        /// <param name="line">Optional number for the caller's line.</param>
+        /// <returns>Modified TestScript.</returns>
         public TestScript SendConversationUpdate([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
             this.Script.Add(new UserConversationUpdate(path: path, line: line));
@@ -252,6 +262,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public TestScript Delay(uint ms, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
             this.Script.Add(new UserDelay(path: path, line: line) { Timespan = ms });
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a user options.
+        /// </summary>
+        /// <param name="name">test event name.</param>
+        /// <param name="value">test event value.</param>
+        /// <param name="path">path.</param>
+        /// <param name="line">line number.</param>
+        /// <returns>A new <see cref="TestScript"/> object that appends a delay to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestScript"/> object.</remarks>
+        public TestScript Event(string name, object value, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
+        {
+            this.Script.Add(new CustomEvent(path: path, line: line) { Name = name, Value = value });
             return this;
         }
 

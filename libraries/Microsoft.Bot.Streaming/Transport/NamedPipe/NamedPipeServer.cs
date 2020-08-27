@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
     /// <summary>
     /// A server for use with the Bot Framework Protocol V3 with Streaming Extensions and an underlying Named Pipe transport.
     /// </summary>
-    public class NamedPipeServer : IStreamingTransportServer
+    public class NamedPipeServer : IStreamingTransportServer, IDisposable
     {
         private readonly string _baseName;
         private readonly RequestHandler _requestHandler;
@@ -25,6 +25,9 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
         private readonly bool _autoReconnect;
         private object _syncLock = new object();
         private bool _isDisconnecting = false;
+
+        // To detect redundant calls to dispose
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedPipeServer"/> class.
@@ -83,8 +86,15 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
             var outgoingServer = new NamedPipeServerStream(outgoingPipeName, PipeDirection.Out, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             await outgoingServer.WaitForConnectionAsync().ConfigureAwait(false);
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
+            // Ownership of the disposable transports is passed to the 
+            // sender and receiver, which now need to take care of 
+            // disposing them when the time is right.
             _sender.Connect(new NamedPipeTransport(outgoingServer));
             _receiver.Connect(new NamedPipeTransport(incomingServer));
+
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
         /// <summary>
@@ -115,8 +125,52 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
         /// </summary>
         public void Disconnect()
         {
-            _sender.Disconnect();
-            _receiver.Disconnect();
+            _sender?.Disconnect();
+            _receiver?.Disconnect();
+        }
+
+        /// <summary>
+        /// Disposes the object and releases any related objects owned by the class.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                Disconnect();
+
+                // Dispose managed objects owned by the class here.
+
+                if (_sender is IDisposable disposableSender)
+                {
+                    disposableSender?.Dispose();
+                }
+
+                if (_receiver is IDisposable disposableReceiver)
+                {
+                    disposableReceiver?.Dispose();
+                }
+            }
+
+            _disposed = true;
         }
 
         private void OnConnectionDisconnected(object sender, EventArgs e)

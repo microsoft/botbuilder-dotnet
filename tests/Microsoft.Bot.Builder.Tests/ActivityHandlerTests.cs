@@ -572,6 +572,48 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task TestInstallationUpdateAddAsync()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.InstallationUpdate,
+                Action = "add"
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInstallationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnInstallationUpdateAddAsync", bot.Record[1]);
+        }
+
+        [Fact]
+        public async Task TestInstallationUpdateRemoveAsync()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.InstallationUpdate,
+                Action = "remove"
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInstallationUpdateActivityAsync", bot.Record[0]);
+            Assert.Equal("OnInstallationUpdateRemoveAsync", bot.Record[1]);
+        }
+
+        [Fact]
         public async Task TestUnrecognizedActivityType()
         {
             // Arrange
@@ -763,6 +805,18 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new HealthCheckResponse());
+            }
+
+            protected override Task OnInstallationUpdateAddAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnInstallationUpdateAddAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnInstallationUpdateRemoveAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnInstallationUpdateRemoveAsync(turnContext, cancellationToken);
             }
         }
 

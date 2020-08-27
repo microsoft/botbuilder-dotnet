@@ -8,11 +8,22 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
 {
+    /// <summary>
+    /// Dialog action which allows you to add assertions into your dialog flow.
+    /// </summary>
     public class AssertCondition : Dialog
     {
+        /// <summary>
+        /// Kind to use for serialization.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.AssertCondition";
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssertCondition"/> class.
+        /// </summary>
+        /// <param name="path">optional path.</param>
+        /// <param name="line">optional line.</param>
         [JsonConstructor]
         public AssertCondition([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -37,6 +48,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
         [JsonProperty("description")]
         public StringExpression Description { get; set; }
 
+        /// <summary>
+        /// Begins the dialog.
+        /// </summary>
+        /// <param name="dc">The DialogContext.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>DialogTurnResult.</returns>
         public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             var (result, error) = Condition.TryEvaluate(dc.State);

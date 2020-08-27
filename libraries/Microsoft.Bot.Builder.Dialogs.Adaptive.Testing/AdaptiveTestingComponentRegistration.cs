@@ -15,8 +15,12 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
+    /// <summary>
+    /// Component registration for AdaptiveTesting resources.
+    /// </summary>
     public class AdaptiveTestingComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
+        /// <inheritdoc/>
         public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Action
@@ -35,8 +39,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             yield return new DeclarativeType<HttpRequestSequenceMock>(HttpRequestSequenceMock.Kind);
             yield return new DeclarativeType<UserTokenBasicMock>(UserTokenBasicMock.Kind);
             yield return new DeclarativeType<PropertiesMock>(PropertiesMock.Kind);
+            yield return new DeclarativeType<CustomEvent>(CustomEvent.Kind);
         }
 
+        /// <inheritdoc/>
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield return new InterfaceConverter<TestAction>(resourceExplorer, sourceContext);

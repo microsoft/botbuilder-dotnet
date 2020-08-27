@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
 
             // Create a mock skill client to intercept calls and capture what is sent.
-            var mockSkillClient = CreateMockSkillClient(CaptureAction, 200);
+            var mockSkillClient = CreateMockSkillClient(CaptureAction);
 
             // Use Memory for conversation state
             var conversationState = new ConversationState(new MemoryStorage());
@@ -77,10 +77,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             activityToSend.Text = Guid.NewGuid().ToString();
             var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
+            Assert.AreEqual(0, ((SimpleConversationIdFactory)dialogOptions.ConversationIdFactory).CreateCount);
+            
             // Send something to the dialog to start it
             await client.SendActivityAsync<Activity>("irrelevant");
 
             // Assert results and data sent to the SkillClient for fist turn
+            Assert.AreEqual(1, ((SimpleConversationIdFactory)dialogOptions.ConversationIdFactory).CreateCount);
             Assert.AreEqual(dialogOptions.BotId, fromBotIdSent);
             Assert.AreEqual(dialogOptions.Skill.AppId, toBotIdSent);
             Assert.AreEqual(dialogOptions.Skill.SkillEndpoint.ToString(), toUriSent.ToString());
@@ -89,6 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // Send a second message to continue the dialog
             await client.SendActivityAsync<Activity>("Second message");
+            Assert.AreEqual(1, ((SimpleConversationIdFactory)dialogOptions.ConversationIdFactory).CreateCount);
 
             // Assert results for second turn
             Assert.AreEqual("Second message", activitySent.Text);
@@ -215,11 +219,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldInterceptOAuthCardsForSso()
         {
             var connectionName = "connectionName";
-            var firstResponse = new ExpectedReplies(new List<Activity>() { CreateOAuthCardAttachmentActivity("https://test") });
+            var firstResponse = new ExpectedReplies(new List<Activity> { CreateOAuthCardAttachmentActivity("https://test") });
             var mockSkillClient = new Mock<BotFrameworkClient>();
             mockSkillClient
                 .SetupSequence(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 200, Body = firstResponse }))
+                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies>
+                {
+                    Status = 200,
+                    Body = firstResponse
+                }))
                 .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 200 }));
 
             var conversationState = new ConversationState(new MemoryStorage());
@@ -266,11 +274,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ShouldNotInterceptOAuthCardsForEmptyToken()
         {
-            var firstResponse = new ExpectedReplies(new List<Activity>() { CreateOAuthCardAttachmentActivity("https://test") });
+            var firstResponse = new ExpectedReplies(new List<Activity> { CreateOAuthCardAttachmentActivity("https://test") });
             var mockSkillClient = new Mock<BotFrameworkClient>();
             mockSkillClient
                 .Setup(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 200, Body = firstResponse }));
+                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies>
+                {
+                    Status = 200,
+                    Body = firstResponse
+                }));
 
             var conversationState = new ConversationState(new MemoryStorage());
             var dialogOptions = CreateSkillDialogOptions(conversationState, mockSkillClient);
@@ -278,7 +290,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = CreateSendActivity();
             var testAdapter = new TestAdapter(Channels.Test)
-            .Use(new AutoSaveStateMiddleware(conversationState));
+                .Use(new AutoSaveStateMiddleware(conversationState));
             var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
             // Don't add exchangeable token to test adapter
@@ -320,15 +332,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ShouldNotInterceptOAuthCardsForBadRequest()
         {
             var connectionName = "connectionName";
-            var firstResponse = new ExpectedReplies(new List<Activity>() { CreateOAuthCardAttachmentActivity("https://test") });
+            var firstResponse = new ExpectedReplies(new List<Activity> { CreateOAuthCardAttachmentActivity("https://test") });
             var mockSkillClient = new Mock<BotFrameworkClient>();
             mockSkillClient
                 .SetupSequence(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 200, Body = firstResponse }))
+                .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies>
+                {
+                    Status = 200,
+                    Body = firstResponse
+                }))
                 .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = 409 }));
 
             var conversationState = new ConversationState(new MemoryStorage());
-            var dialogOptions = SkillDialogTests.CreateSkillDialogOptions(conversationState, mockSkillClient, connectionName);
+            var dialogOptions = CreateSkillDialogOptions(conversationState, mockSkillClient, connectionName);
 
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = CreateSendActivity();
@@ -343,21 +359,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private static Activity CreateOAuthCardAttachmentActivity(string uri)
         {
-            var oauthCard = new OAuthCard()
-            {
-                TokenExchangeResource = new TokenExchangeResource()
-                {
-                    Uri = uri
-                }
-            };
-            var attachment = new Attachment()
+            var oauthCard = new OAuthCard { TokenExchangeResource = new TokenExchangeResource { Uri = uri } };
+            var attachment = new Attachment
             {
                 ContentType = OAuthCard.ContentType,
                 Content = JObject.FromObject(oauthCard)
             };
 
             var attachmentActivity = MessageFactory.Attachment(attachment);
-            attachmentActivity.Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString() };
+            attachmentActivity.Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString() };
             attachmentActivity.From = new ChannelAccount("blah", "name");
 
             return attachmentActivity as Activity;
@@ -397,14 +407,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 mockSkillClient
                     .Setup(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                    .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = returnStatus, Body = activityList }))
+                    .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies>
+                    {
+                        Status = returnStatus,
+                        Body = activityList
+                    }))
                     .Callback(captureAction);
             }
             else
             {
                 mockSkillClient
                     .Setup(x => x.PostActivityAsync<ExpectedReplies>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                    .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies> { Status = returnStatus, Body = activityList }));
+                    .Returns(Task.FromResult(new InvokeResponse<ExpectedReplies>
+                    {
+                        Status = returnStatus,
+                        Body = activityList
+                    }));
             }
 
             return mockSkillClient;
@@ -423,8 +441,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             private readonly ConcurrentDictionary<string, SkillConversationReference> _conversationRefs = new ConcurrentDictionary<string, SkillConversationReference>();
 
+            // Helper property to assert how many times is CreateSkillConversationIdAsync called.
+            public int CreateCount { get; private set; }
+
             public override Task<string> CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions options, CancellationToken cancellationToken)
             {
+                CreateCount++;
+
                 var key = (options.Activity.Conversation.Id + options.Activity.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
                 _conversationRefs.GetOrAdd(key, new SkillConversationReference
                 {

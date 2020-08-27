@@ -292,7 +292,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     }
                     else
                     {
-                        if (expected.AsMessageActivity().Text.Trim() != reply.AsMessageActivity().Text.Trim())
+                        if (expected.AsMessageActivity().Text?.Trim() != reply.AsMessageActivity().Text?.Trim())
                         {
                             if (description == null)
                             {

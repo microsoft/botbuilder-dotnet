@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-    public sealed class ScalarDataModel : IDataModel
+    internal sealed class ScalarDataModel : IDataModel
     {
         public static readonly IDataModel Instance = new ScalarDataModel();
 

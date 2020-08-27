@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// <summary>
     /// SourcePoint represents the line and character index into the source code or declarative object backing an object in memory.
     /// </summary>
-    public class SourcePoint
+    public class SourcePoint : IEquatable<SourcePoint>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SourcePoint"/> class.
@@ -89,5 +89,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public override string ToString() => $"{LineIndex}:{CharIndex}";
 
         public SourcePoint DeepClone() => new SourcePoint() { LineIndex = LineIndex, CharIndex = CharIndex };
+
+        public override bool Equals(object obj)
+        {
+            // Auto-generated
+            return Equals(obj as SourcePoint);
+        }
+
+        public bool Equals(SourcePoint other)
+        {
+            // Auto-generated
+            return other != null &&
+                   LineIndex == other.LineIndex &&
+                   CharIndex == other.CharIndex;
+        }
+
+        public override int GetHashCode()
+        {
+            // Auto-generated
+            var hashCode = 1680727000;
+            hashCode = (hashCode * -1521134295) + LineIndex.GetHashCode();
+            hashCode = (hashCode * -1521134295) + CharIndex.GetHashCode();
+            return hashCode;
+        }
     }
 }

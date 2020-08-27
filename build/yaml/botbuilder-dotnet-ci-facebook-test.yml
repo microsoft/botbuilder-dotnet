@@ -12,7 +12,7 @@ trigger: # ci trigger
   batch: true
   branches:
     include:
-     - master
+     - main
   paths:
     include:
       - '*'
@@ -27,10 +27,13 @@ trigger: # ci trigger
 pr: none # no pr trigger
 
 variables:
-  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
-  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+  AppId: $(FacebookTestBotAppId)
+  AppSecret: $(FacebookTestBotAppSecret)
+  BotGroup: $(FacebookTestBotBotGroup)
+  BotName: $(FacebookTestBotBotName)
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'debug'
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   Parameters.solution: Microsoft.Bot.Builder.sln
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  FacebookTestBotAppId: define this in Azure
@@ -42,7 +45,7 @@ variables:
 #  FacebookTestBotFacebookAccessToken: define this in Azure
 #  FacebookTestBotFacebookAppSecret: define this in Azure
 #  FacebookTestBotFacebookVerifyToken: define this in Azure
-#  FacebookTestBotSenderId: define this in Azure
+#  FacebookTestBotSenderId: define this in Azure?: This var not needed in build 156862. Revisit this after the build's test is fixed & running.
 
 steps:
 - powershell: |
@@ -68,17 +71,30 @@ steps:
     modifyOutputPath: false
 
 - task: AzureCLI@1
-  displayName: 'Create resources, deploy bot'
+  displayName: 'Create resources'
   inputs:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-     call az group create --location westus --name $(FacebookTestBotBotGroup)
-     call az deployment group create --resource-group "$(FacebookTestBotBotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(FacebookTestBotAppSecret)" botId="$(FacebookTestBotBotName)" botSku=F0 newAppServicePlanName="$(FacebookTestBotBotName)" newWebAppName="$(FacebookTestBotBotName)" appServicePlanLocation="westus" facebookVerifyToken="verifyToken" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)" --name "$(FacebookTestBotBotName)"
-     call az webapp deployment source config-zip --resource-group "$(FacebookTestBotBotGroup)" --name "$(FacebookTestBotBotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
+     :: Comment out either Option 1 or Option 2 below. Ultimately, both templates should be exercised to ensure they continue to work.
+     
+     :: Option 1: Use the "new-rg" template:
+     call az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)"
+     
+     :: Option 2: Use the "preexisting-rg" template:
+     call az group create --location westus --name $(BotGroup)
+     call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" facebookVerifyToken="verifyToken" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)" --name "$(BotName)"
+
+- task: AzureCLI@1
+  displayName: 'Deploy the bot'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: |
+     call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
 
 - powershell: |
-   echo '##vso[task.setvariable variable=BOT_ENDPOINT]https://$(FacebookTestBotBotName).azurewebsites.net/api/messages'
+   echo '##vso[task.setvariable variable=BOT_ENDPOINT]https://$(BotName).azurewebsites.net/api/messages'
   displayName: 'Set BOT_ENDPOINT environment variable'
 
 - task: DotNetCoreCLI@2
@@ -93,5 +109,5 @@ steps:
   inputs:
     azureSubscription: '$(AzureSubscription)'
     scriptLocation: inlineScript
-    inlineScript: 'call az group delete -n "$(FacebookTestBotBotGroup)" --yes'
+    inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))

@@ -26,6 +26,8 @@ namespace Microsoft.Bot.Streaming
         /// <value>
         /// A <see cref="List{T}"/> of type <see cref="IContentStream"/> containing information on streams attached to this response.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<IContentStream> Streams { get; set; } = new List<IContentStream>();
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

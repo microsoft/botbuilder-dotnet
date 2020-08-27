@@ -20,6 +20,8 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class TurnContext : ITurnContext, IDisposable
     {
+        private const string TurnLocale = "turn.locale";
+
         private readonly IList<SendActivitiesHandler> _onSendActivities = new List<SendActivitiesHandler>();
         private readonly IList<UpdateActivityHandler> _onUpdateActivity = new List<UpdateActivityHandler>();
         private readonly IList<DeleteActivityHandler> _onDeleteActivity = new List<DeleteActivityHandler>();
@@ -50,6 +52,16 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <value>The services registered on this context object.</value>
         public TurnContextStateCollection TurnState { get; } = new TurnContextStateCollection();
+
+        /// <summary>
+        /// Gets or sets the locale on this context object.
+        /// </summary>
+        /// <value>The string of locale on this context object.</value>
+        public string Locale
+        {
+            get => this.TurnState.Get<string>(TurnLocale);
+            set { this.TurnState.Set(TurnLocale, value); }
+        }
 
         /// <summary>
         /// Gets the activity associated with this turn; or <c>null</c> when processing

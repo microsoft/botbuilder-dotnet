@@ -13,16 +13,19 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
     /// <summary>
     /// A server for use with the Bot Framework Protocol V3 with Streaming Extensions and an underlying WebSocket transport.
     /// </summary>
-    public class WebSocketServer : IStreamingTransportServer
+    public class WebSocketServer : IStreamingTransportServer, IDisposable
     {
         private readonly RequestHandler _requestHandler;
         private readonly RequestManager _requestManager;
         private readonly ProtocolAdapter _protocolAdapter;
         private readonly IPayloadSender _sender;
         private readonly IPayloadReceiver _receiver;
-        private readonly WebSocketTransport _websocketTransport;
+        private readonly WebSocketTransport _webSocketTransport;
         private TaskCompletionSource<string> _closedSignal;
         private bool _isDisconnecting = false;
+
+        // To detect redundant calls to dispose
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketServer"/> class.
@@ -37,7 +40,7 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
                 throw new ArgumentNullException(nameof(socket));
             }
 
-            _websocketTransport = new WebSocketTransport(socket);
+            _webSocketTransport = new WebSocketTransport(socket);
             _requestHandler = requestHandler ?? throw new ArgumentNullException(nameof(requestHandler));
             _requestManager = new RequestManager();
             _sender = new PayloadSender();
@@ -70,8 +73,8 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         public Task StartAsync()
         {
             _closedSignal = new TaskCompletionSource<string>();
-            _sender.Connect(_websocketTransport);
-            _receiver.Connect(_websocketTransport);
+            _sender.Connect(_webSocketTransport);
+            _receiver.Connect(_webSocketTransport);
             return _closedSignal.Task;
         }
 
@@ -83,7 +86,6 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         /// <param name="request">The <see cref="StreamingRequest"/> to send.</param>
         /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
         /// <returns>A <see cref="Task"/> of type <see cref="ReceiveResponse"/> handling the send operation.</returns>
-#pragma warning disable IDE0034
         public Task<ReceiveResponse> SendAsync(StreamingRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (request == null)
@@ -104,8 +106,56 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         /// </summary>
         public void Disconnect()
         {
-            _sender.Disconnect();
-            _receiver.Disconnect();
+            _sender?.Disconnect();
+            _receiver?.Disconnect();
+        }
+
+        /// <summary>
+        /// Disposes the object and releases any related objects owned by the class.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                Disconnect();
+
+                // Dispose managed objects owned by the class here.
+                if (_webSocketTransport != null)
+                {
+                    _webSocketTransport.Dispose();
+                }
+
+                if (_sender is IDisposable disposableSender)
+                {
+                    disposableSender?.Dispose();
+                }
+
+                if (_receiver is IDisposable disposableReceiver)
+                {
+                    disposableReceiver?.Dispose();
+                }
+            }
+
+            _disposed = true;
         }
 
         private void OnConnectionDisconnected(object sender, EventArgs e)

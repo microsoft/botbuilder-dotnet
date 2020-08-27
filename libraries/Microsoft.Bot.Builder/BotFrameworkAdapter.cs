@@ -354,19 +354,16 @@ namespace Microsoft.Bot.Builder
                 context.TurnState.Add<BotCallbackHandler>(callback);
 
                 // Add audience to TurnContext.TurnState
-                context.TurnState.Add<string>(OAuthScopeKey, audience);
-
-                var appIdFromClaims = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+                context.TurnState.Add(OAuthScopeKey, audience);
 
                 // If we receive a valid app id in the incoming token claims, add the 
                 // channel service URL to the trusted services list so we can send messages back.
                 // the service URL for skills is trusted because it is applied by the SkillHandler based on the original request
                 // received by the root bot
+                var appIdFromClaims = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
                 if (!string.IsNullOrEmpty(appIdFromClaims))
                 {
-                    var isValidApp = await CredentialProvider.IsValidAppIdAsync(appIdFromClaims).ConfigureAwait(false);
-
-                    if (isValidApp)
+                    if (SkillValidation.IsSkillClaim(claimsIdentity.Claims) || await CredentialProvider.IsValidAppIdAsync(appIdFromClaims).ConfigureAwait(false))
                     {
                         AppCredentials.TrustServiceUrl(reference.ServiceUrl);
                     }
@@ -565,7 +562,7 @@ namespace Microsoft.Bot.Builder
                         catch (Exception ex)
 #pragma warning restore CA1031 // Do not catch general exception types
                         {
-                            Logger.LogError("Failed to fetch token before processing outgoing activity. " + ex.Message);
+                            Logger.LogError(ex, "Failed to fetch token before processing outgoing activity. " + ex.Message);
                         }
 
                         response = await ProcessOutgoingActivityAsync(turnContext, activity, cancellationToken).ConfigureAwait(false);
@@ -1245,7 +1242,34 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
-        public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public virtual Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            return CreateConversationAsync(channelId, serviceUrl, (AppCredentials)credentials, conversationParameters, callback, cancellationToken);
+        }
+
+        /// <summary>
+        /// Creates a conversation on the specified channel.
+        /// </summary>
+        /// <param name="channelId">The ID for the channel.</param>
+        /// <param name="serviceUrl">The channel's service URL endpoint.</param>
+        /// <param name="credentials">The application credentials for the bot.</param>
+        /// <param name="conversationParameters">The conversation information to use to
+        /// create the conversation.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>To start a conversation, your bot must know its account information
+        /// and the user's account information on that channel.
+        /// Most _channels only support initiating a direct message (non-group) conversation.
+        /// <para>The adapter attempts to create a new conversation on the channel, and
+        /// then sends a <c>conversationUpdate</c> activity through its middleware pipeline
+        /// to the <paramref name="callback"/> method.</para>
+        /// <para>If the conversation is established with the
+        /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
+        /// will contain the ID of the new conversation.</para>
+        /// </remarks>
+        public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, AppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             var connectorClient = CreateConnectorClient(serviceUrl, credentials);
 
@@ -1297,7 +1321,35 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
-        public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, ConversationReference reference, CancellationToken cancellationToken)
+        public virtual Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, ConversationReference reference, CancellationToken cancellationToken)
+        {
+            return CreateConversationAsync(channelId, serviceUrl, (AppCredentials)credentials, conversationParameters, callback, reference, cancellationToken);
+        }
+
+        /// <summary>
+        /// Creates a conversation on the specified channel. Overload receives a ConversationReference including the tenant.
+        /// </summary>
+        /// <param name="channelId">The ID for the channel.</param>
+        /// <param name="serviceUrl">The channel's service URL endpoint.</param>
+        /// <param name="credentials">The application credentials for the bot.</param>
+        /// <param name="conversationParameters">The conversation information to use to
+        /// create the conversation.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="reference">A conversation reference that contains the tenant.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>To start a conversation, your bot must know its account information
+        /// and the user's account information on that channel.
+        /// Most _channels only support initiating a direct message (non-group) conversation.
+        /// <para>The adapter attempts to create a new conversation on the channel, and
+        /// then sends a <c>conversationUpdate</c> activity through its middleware pipeline
+        /// to the <paramref name="callback"/> method.</para>
+        /// <para>If the conversation is established with the
+        /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
+        /// will contain the ID of the new conversation.</para>
+        /// </remarks>
+        public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, AppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, ConversationReference reference, CancellationToken cancellationToken)
         {
             if (reference.Conversation != null)
             {

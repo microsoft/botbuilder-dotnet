@@ -15,20 +15,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     internal class StaticChecker : LGTemplateParserBaseVisitor<List<Diagnostic>>
     {
-        private readonly ExpressionParser baseExpressionParser;
-        private readonly Templates templates;
-        private Template currentTemplate;
+        private readonly ExpressionParser _baseExpressionParser;
+        private readonly Templates _templates;
+        private Template _currentTemplate;
 
         private IExpressionParser _expressionParser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StaticChecker"/> class.
         /// </summary>
-        /// <param name="templates">The templates wihch would be checked.</param>
+        /// <param name="templates">Templates wihch would be checked.</param>
         public StaticChecker(Templates templates)
         {
-            this.templates = templates;
-            baseExpressionParser = templates.ExpressionParser;
+            _templates = templates;
+            _baseExpressionParser = templates.ExpressionParser;
         }
 
         // Create a property because we want this to be lazy loaded
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (_expressionParser == null)
                 {
                     // create an evaluator to leverage it's customized function look up for checking
-                    var evaluator = new Evaluator(templates.AllTemplates.ToList(), baseExpressionParser);
+                    var evaluator = new Evaluator(_templates.AllTemplates.ToList(), _baseExpressionParser);
                     _expressionParser = evaluator.ExpressionParser;
                 }
 
@@ -48,34 +48,34 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Return error messages list.
+        /// Returns a list of Diagnostic instances.
         /// </summary>
         /// <returns>Report result.</returns>
         public List<Diagnostic> Check()
         {
             var result = new List<Diagnostic>();
 
-            if (templates.AllTemplates.Count == 0)
+            if (_templates.AllTemplates.Count == 0)
             {
-                var diagnostic = new Diagnostic(Range.DefaultRange, TemplateErrors.NoTemplate, DiagnosticSeverity.Warning, templates.Id);
+                var diagnostic = new Diagnostic(Range.DefaultRange, TemplateErrors.NoTemplate, DiagnosticSeverity.Warning, _templates.Source);
                 result.Add(diagnostic);
                 return result;
             }
 
-            foreach (var template in templates)
+            foreach (var template in _templates)
             {
-                currentTemplate = template;
+                _currentTemplate = template;
                 var templateDiagnostics = new List<Diagnostic>();
 
                 // checker duplicated in different files
-                foreach (var reference in templates.References)
+                foreach (var reference in _templates.References)
                 {
                     var sameTemplates = reference.Where(u => u.Name == template.Name);
                     foreach (var sameTemplate in sameTemplates)
                     {
                         var startLine = template.SourceRange.Range.Start.Line;
                         var range = new Range(startLine, 0, startLine, template.Name.Length + 1);
-                        var diagnostic = new Diagnostic(range, TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.SourceRange.Source), source: templates.Id);
+                        var diagnostic = new Diagnostic(range, TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.SourceRange.Source), source: _templates.Source);
                         templateDiagnostics.Add(diagnostic);
                     }
                 }
@@ -389,15 +389,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             DiagnosticSeverity severity = DiagnosticSeverity.Error,
             ParserRuleContext context = null)
         {
-            var lineOffset = this.currentTemplate != null ? this.currentTemplate.SourceRange.Range.Start.Line : 0;
+            var lineOffset = _currentTemplate != null ? _currentTemplate.SourceRange.Range.Start.Line : 0;
             var templateNameInfo = string.Empty;
-            if (this.currentTemplate != null && this.currentTemplate.Name.StartsWith(Templates.InlineTemplateIdPrefix, StringComparison.InvariantCulture))
+            if (_currentTemplate != null && _currentTemplate.Name.StartsWith(Templates.InlineTemplateIdPrefix, StringComparison.InvariantCulture))
             {
-                templateNameInfo = $"[{this.currentTemplate.Name}]";
+                templateNameInfo = $"[{_currentTemplate.Name}]";
             }
 
             var range = context == null ? new Range(1 + lineOffset, 0, 1 + lineOffset, 0) : context.ConvertToRange(lineOffset);
-            return new Diagnostic(range, templateNameInfo + message, severity, templates.Id);
+            return new Diagnostic(range, templateNameInfo + message, severity, _templates.Source);
         }
     }
 }

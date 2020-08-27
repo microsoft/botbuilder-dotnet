@@ -5,40 +5,40 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.Base
 {
-    public sealed class ReaderWriterLock : IDisposable
+    internal sealed class ReaderWriterLock : IDisposable
     {
-        private readonly SemaphoreSlim reader;
-        private readonly SemaphoreSlim writer;
-        private int readers = 0;
+        private readonly SemaphoreSlim _reader;
+        private readonly SemaphoreSlim _writer;
+        private int _readers;
 
         public ReaderWriterLock(bool writer = false)
         {
-            this.reader = new SemaphoreSlim(1, 1);
-            this.writer = new SemaphoreSlim(writer ? 0 : 1, 1);
+            _reader = new SemaphoreSlim(1, 1);
+            _writer = new SemaphoreSlim(writer ? 0 : 1, 1);
         }
 
         public void Dispose()
         {
-            reader.Dispose();
-            writer.Dispose();
+            _reader.Dispose();
+            _writer.Dispose();
         }
 
-        public async Task<bool> TryEnterReadAsync(CancellationToken token)
+        public async Task<bool> TryEnterReadAsync(CancellationToken cancellationToken)
         {
-            using (await reader.WithWaitAsync(token).ConfigureAwait(false))
+            using (await _reader.WithWaitAsync(cancellationToken).ConfigureAwait(false))
             {
-                bool acquired = true;
+                var acquired = true;
 
-                if (readers == 0)
+                if (_readers == 0)
                 {
-                    acquired = await writer.WaitAsync(TimeSpan.Zero).ConfigureAwait(false);
+                    acquired = await _writer.WaitAsync(TimeSpan.Zero, cancellationToken).ConfigureAwait(false);
                 }
 
                 if (acquired)
                 {
-                    ++readers;
+                    ++_readers;
                 }
 
                 return acquired;
@@ -47,24 +47,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public async Task ExitReadAsync(CancellationToken token)
         {
-            using (await reader.WithWaitAsync(token).ConfigureAwait(false))
+            using (await _reader.WithWaitAsync(token).ConfigureAwait(false))
             {
-                --readers;
-                if (readers == 0)
+                --_readers;
+                if (_readers == 0)
                 {
-                    writer.Release();
+                    _writer.Release();
                 }
             }
         }
 
         public async Task EnterWriteAsync(CancellationToken token)
         {
-            await writer.WaitAsync(token).ConfigureAwait(false);
+            await _writer.WaitAsync(token).ConfigureAwait(false);
         }
 
         public void ExitWrite()
         {
-            writer.Release();
+            _writer.Release();
         }
     }
 }

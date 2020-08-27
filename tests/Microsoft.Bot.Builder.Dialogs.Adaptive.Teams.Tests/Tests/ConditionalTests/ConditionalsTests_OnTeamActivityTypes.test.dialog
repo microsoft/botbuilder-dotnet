@@ -74,6 +74,16 @@
                 ]
             },
             {
+                "$kind": "Teams.OnChannelRestored",
+                "condition": "turn.activity.text == 'OnChannelRestored'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnChannelRestored"
+                    }
+                ]
+            },
+            {
                 "$kind": "Teams.OnFileConsent",
                 "condition": "turn.activity.text == 'OnFileConsent'",
                 "actions": [
@@ -84,7 +94,7 @@
                 ]
             },
             {
-                "$kind":"Teams.OnMessagingExtensionCardButtonClicked",
+                "$kind": "Teams.OnMessagingExtensionCardButtonClicked",
                 "condition": "turn.activity.text == 'OnCardButtonClicked'",
                 "actions": [
                     {
@@ -184,12 +194,62 @@
                 ]
             },
             {
+                "$kind": "Teams.OnTeamArchived",
+                "condition": "turn.activity.text == 'OnTeamArchived'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamArchived"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTeamDeleted",
+                "condition": "turn.activity.text == 'OnTeamDeleted'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamDeleted"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTeamHardDeleted",
+                "condition": "turn.activity.text == 'OnTeamHardDeleted'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamHardDeleted"
+                    }
+                ]
+            },
+            {
                 "$kind": "Teams.OnTeamRenamed",
                 "condition": "turn.activity.text == 'OnTeamRenamed'",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "OnTeamRenamed"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTeamRestored",
+                "condition": "turn.activity.text == 'OnTeamRestored'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamRestored"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTeamUnarchived",
+                "condition": "turn.activity.text == 'OnTeamUnarchived'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamUnarchived"
                     }
                 ]
             }
@@ -264,6 +324,20 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "OnChannelRenamed"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnChannelRestored",
+                "channelData": {
+                    "eventType": "channelRestored"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnChannelRestored"
         },
         {
             "$kind": "Microsoft.Test.UserActivity",
@@ -412,6 +486,48 @@
             "$kind": "Microsoft.Test.UserActivity",
             "activity": {
                 "type": "conversationUpdate",
+                "text": "OnTeamArchived",
+                "channelData": {
+                    "eventType": "teamArchived"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamArchived"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnTeamDeleted",
+                "channelData": {
+                    "eventType": "teamDeleted"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamDeleted"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnTeamHardDeleted",
+                "channelData": {
+                    "eventType": "teamHardDeleted"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamHardDeleted"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
                 "text": "OnTeamRenamed",
                 "channelData": {
                     "eventType": "teamRenamed"
@@ -421,6 +537,34 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "OnTeamRenamed"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnTeamRestored",
+                "channelData": {
+                    "eventType": "teamRestored"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamRestored"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnTeamUnarchived",
+                "channelData": {
+                    "eventType": "teamUnarchived"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamUnarchived"
         }
     ]
 }

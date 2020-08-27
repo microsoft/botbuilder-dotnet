@@ -47,12 +47,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="lgText">lg template text.</param>
         /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
+        [Obsolete("This method will soon be deprecated. Use LGResource as the first parameter instead.")]
         public TemplateEngineLanguageGenerator(string lgText, string id, Dictionary<string, IList<Resource>> resourceMapping)
         {
             this.Id = id ?? DEFAULTLABEL;
             var (_, locale) = LGResourceLoader.ParseLGFileName(id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lg = LanguageGeneration.Templates.ParseText(lgText ?? string.Empty, Id, importResolver);
+            var lgResource = new LGResource(Id, Id, lgText ?? string.Empty);
+            this.lg = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
         }
 
         /// <summary>
@@ -60,6 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="filePath">lg template file absolute path.</param>
         /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
+        [Obsolete("This method will soon be deprecated. Use LGResource as the first parameter instead.")]
         public TemplateEngineLanguageGenerator(string filePath, Dictionary<string, IList<Resource>> resourceMapping)
         {
             filePath = PathUtils.NormalizePath(filePath);
@@ -67,7 +70,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-            this.lg = LanguageGeneration.Templates.ParseFile(filePath, importResolver);
+            var resource = new LGResource(Id, filePath, File.ReadAllText(filePath));
+            this.lg = LanguageGeneration.Templates.ParseResource(resource, importResolver);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
+        /// <param name="resource">Resource.</param>
+        /// <param name="resourceMapping">template resource loader delegate (locale) -> <see cref="ImportResolverDelegate"/>.</param>
+        public TemplateEngineLanguageGenerator(Resource resource, Dictionary<string, IList<Resource>> resourceMapping)
+        {
+            this.Id = resource.Id;
+
+            var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
+            var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
+            var content = resource.ReadTextAsync().GetAwaiter().GetResult();
+            var lgResource = new LGResource(Id, resource.FullName, content);
+            this.lg = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
         }
 
         /// <summary>
@@ -89,9 +109,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public override Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
+            var lgOpt = new EvaluationOptions() { Locale = dialogContext.GetLocale() };
+
             try
             {
-                return Task.FromResult(lg.EvaluateText(template, data));
+                return Task.FromResult(lg.EvaluateText(template, data, lgOpt));
             }
             catch (Exception err)
             {

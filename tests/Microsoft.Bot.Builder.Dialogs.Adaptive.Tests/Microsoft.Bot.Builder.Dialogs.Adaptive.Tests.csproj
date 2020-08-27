@@ -32,8 +32,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Tests\LuisRecognizerTests\cachedResponses\ExternalEntities_test_en_us_lu\" />
-  </ItemGroup>
-
 </Project>

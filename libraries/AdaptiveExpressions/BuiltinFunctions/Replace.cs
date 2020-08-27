@@ -8,7 +8,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// and return the result string.
     /// This function is case-sensitive.
     /// </summary>
-    public class Replace : ExpressionEvaluator
+    internal class Replace : ExpressionEvaluator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Replace"/> class.

@@ -12,6 +12,9 @@ using Microsoft.Bot.Streaming.Utilities;
 
 namespace Microsoft.Bot.Streaming.Transport.NamedPipes
 {
+    /// <summary>
+    /// An implementation of <see cref="IStreamingTransportClient"/> for use with Named Pipes.
+    /// </summary>
     public class NamedPipeClient : IStreamingTransportClient
     {
         private readonly string _baseName;
@@ -21,8 +24,11 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
         private readonly RequestManager _requestManager;
         private readonly ProtocolAdapter _protocolAdapter;
         private readonly bool _autoReconnect;
-        private object _syncLock = new object();
-        private bool _isDisconnecting = false;
+        private readonly object _syncLock = new object();
+        private bool _isDisconnecting;
+
+        // To detect redundant calls to dispose
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedPipeClient"/> class.
@@ -109,8 +115,14 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
             var incoming = new NamedPipeClientStream(".", incomingPipeName, PipeDirection.In, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             await incoming.ConnectAsync().ConfigureAwait(false);
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
+            // We don't dispose the websocket, since NamedPipeTransport is now
+            // the owner of the web socket.
             _sender.Connect(new NamedPipeTransport(outgoing));
             _receiver.Connect(new NamedPipeTransport(incoming));
+
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
         /// <summary>
@@ -141,14 +153,52 @@ namespace Microsoft.Bot.Streaming.Transport.NamedPipes
         /// </summary>
         public void Disconnect()
         {
-            _sender.Disconnect();
-            _receiver.Disconnect();
+            _sender?.Disconnect();
+            _receiver?.Disconnect();
         }
 
         /// <summary>
-        /// Method used to disconnect this client.
+        /// Disconnects the client and releases any related objects owned by the class.
         /// </summary>
-        public void Dispose() => Disconnect();
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                Disconnect();
+
+                if (_sender is IDisposable disposableSender)
+                {
+                    disposableSender?.Dispose();
+                }
+
+                if (_receiver is IDisposable disposableReceiver)
+                {
+                    disposableReceiver?.Dispose();
+                }
+            }
+
+            _disposed = true;
+        }
 
         private void OnConnectionDisconnected(object sender, EventArgs e)
         {

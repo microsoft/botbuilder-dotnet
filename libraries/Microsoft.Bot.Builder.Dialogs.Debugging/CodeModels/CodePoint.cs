@@ -3,11 +3,10 @@
 
 using System;
 using AdaptiveExpressions;
-using Microsoft.Bot.Builder.Dialogs;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.CodeModels
 {
-    public sealed class CodePoint : ICodePoint
+    internal sealed class CodePoint : ICodePoint
     {
         public CodePoint(ICodeModel codeModel, DialogContext dialogContext, object item, string more)
         {

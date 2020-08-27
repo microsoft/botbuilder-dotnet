@@ -145,9 +145,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(Options.SlackClientSigningSecret)))
             {
                 var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
-
                 var hash = string.Concat("v0=", BitConverter.ToString(hashArray).Replace("-", string.Empty)).ToUpperInvariant();
-
                 var retrievedSignature = request.Headers["X-Slack-Signature"].ToString().ToUpperInvariant();
 
                 return hash == retrievedSignature;
