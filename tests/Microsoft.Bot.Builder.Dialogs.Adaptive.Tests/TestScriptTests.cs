@@ -122,6 +122,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task TestScriptTests_HttpRequestQnAMakerDialogMock()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task TestScriptTests_CustomEvent()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
