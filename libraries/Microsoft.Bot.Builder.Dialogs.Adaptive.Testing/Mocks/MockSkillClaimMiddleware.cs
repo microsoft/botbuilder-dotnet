@@ -77,6 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
             LeafSkill
         }
 
+        /// <inheritdoc/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
             turnContext.TurnState.Add(BotAdapter.BotIdentityKey, claimsIdentity);

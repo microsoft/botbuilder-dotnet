@@ -9593,6 +9593,12 @@
             "$ref": "#/definitions/Microsoft.Test.IPropertyMock"
           }
         },
+        "calledAsLeafSkill": {
+          "type": "boolean",
+          "title": "Called As Leaf Skill",
+          "description": "Enable mock this script to be called as a leaf skill (default is false)",
+          "default": false
+        },
         "script": {
           "type": "array",
           "title": "Test actions",
