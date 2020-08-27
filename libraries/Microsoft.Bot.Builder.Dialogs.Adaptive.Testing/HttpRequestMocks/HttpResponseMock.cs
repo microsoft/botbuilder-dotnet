@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.ComponentModel;
+using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -29,6 +30,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
             /// </summary>
             ByteArray
         }
+
+        /// <summary>
+        /// Gets or sets the status code.
+        /// </summary>
+        /// <value>
+        /// The status code. Default is OK(200).
+        /// </value>
+        [DefaultValue(HttpStatusCode.OK)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty("statusCode")]
+        public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
+
+        /// <summary>
+        /// Gets or sets the reason phrase.
+        /// </summary>
+        /// <value>
+        /// The reason phrase.
+        /// </value>
+        [JsonProperty("reasonPhrase")]
+        public string ReasonPhrase { get; set; }
 
         /// <summary>
         /// Gets or sets the content type.
