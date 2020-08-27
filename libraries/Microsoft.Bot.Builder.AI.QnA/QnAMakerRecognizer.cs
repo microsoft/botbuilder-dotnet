@@ -270,6 +270,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 return Task.FromResult(qnaClient);
             }
 
+            var httpClient = dc.Context.TurnState.Get<HttpClient>();
+            if (httpClient == null)
+            {
+                httpClient = HttpClient;
+            }
+
             var (epKey, error) = EndpointKey.TryGetValue(dc.State);
             var (hn, error2) = HostName.TryGetValue(dc.State);
             var (kbId, error3) = KnowledgeBaseId.TryGetValue(dc.State);
@@ -282,7 +288,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 KnowledgeBaseId = kbId ?? throw new InvalidOperationException($"Unable to get a value for {nameof(KnowledgeBaseId)} from state. {error3}")
             };
 
-            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), HttpClient, TelemetryClient, logPersonalInfo));
+            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), httpClient, TelemetryClient, logPersonalInfo));
         }
     }
 }
