@@ -19,7 +19,7 @@ IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' WHITESPACE* { !sta
 
 TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { _tokenStartCharPositionInLine == 0}? { startTemplate = true; };
 
-INLINE_MULTILINE: WHITESPACE* '-' WHITESPACE* '```' ~('\r'|'\n')* '```'{ startTemplate && _tokenStartCharPositionInLine == 0 }?;
+INLINE_MULTILINE: WHITESPACE* '-' WHITESPACE* '```' ~('\r'|'\n')* '```' WHITESPACE* { startTemplate && _tokenStartCharPositionInLine == 0 }?;
 
 MULTILINE_PREFIX: WHITESPACE* '-' WHITESPACE* '```' ~('\r'|'\n')* { startTemplate && _tokenStartCharPositionInLine == 0 }? -> pushMode(MULTILINE_MODE);
 
