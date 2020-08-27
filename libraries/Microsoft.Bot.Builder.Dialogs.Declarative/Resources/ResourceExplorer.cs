@@ -449,12 +449,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
 
                 AutoAssignId(resource, token, sourceContext);
-
-                if (resource is FileResource fileResource)
-                {
-                    range.Path = fileResource.FullName;
-                }
-
+                range.Path = resource.FullName ?? resource.Id;
                 return (token, range);
             }
         }
