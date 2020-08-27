@@ -21,7 +21,7 @@
                 },
                 {
                     "$kind": "Microsoft.HttpRequest",
-                    "url": "http://petstore.swagger.io/v2/pet",
+                    "url": "https://petstore.swagger.io/v2/pet",
                     "method": "POST",
                     "headers": {
                         "test": "test",
@@ -58,7 +58,7 @@
                 },
                 {
                     "$kind": "Microsoft.HttpRequest",
-                    "url": "http://petstore.swagger.io/v2/pet/${$id2}",
+                    "url": "https://petstore.swagger.io/v2/pet/${$id2}",
                     "method": "GET",
                     "resultProperty": "dialog.getResponse"
                 },

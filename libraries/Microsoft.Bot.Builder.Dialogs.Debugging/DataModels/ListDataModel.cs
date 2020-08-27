@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-    public sealed class ListDataModel<T> : DataModelBase<IList<T>, int, T>
+    internal sealed class ListDataModel<T> : DataModelBase<IList<T>, int, T>
     {
         public ListDataModel(ICoercion coercion)
             : base(coercion)

@@ -1,55 +1,57 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 {
+    /// <summary>
+    /// Manage Sequence Response for HttpRequestSequenceMock.
+    /// </summary>
     public class SequenceResponseManager
     {
         private int _id;
-        private List<HttpContent> _contents;
+        private List<HttpResponseMockMessage> _messages = new List<HttpResponseMockMessage>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SequenceResponseManager"/> class.
+        /// Return the list of mocks in sequence order. The last one will be repeated.
+        /// </summary>
+        /// <param name="responses">The list of HttpResponseMock.</param>
         public SequenceResponseManager(List<HttpResponseMock> responses)
         {
             _id = 0;
             if (responses == null || responses.Count == 0)
             {
-                _contents = new List<HttpContent>()
-                {
-                    new StringContent(string.Empty)
-                };
+                // Create a default message for response.
+                _messages.Add(new HttpResponseMockMessage());
             }
             else
             {
-                _contents = responses.Select(r =>
+                foreach (var response in responses)
                 {
-                    switch (r.ContentType)
-                    {
-                        case HttpResponseMock.ContentTypes.String:
-                            return (HttpContent)new StringContent(r.Content == null ? string.Empty : r.Content.ToString());
-                        case HttpResponseMock.ContentTypes.ByteArray:
-                            var bytes = Convert.FromBase64String(r.Content == null ? string.Empty : r.Content.ToString());
-                            return (HttpContent)new ByteArrayContent(bytes);
-                        default:
-                            throw new NotSupportedException($"{r.ContentType} is not supported yet!");
-                    }
-                }).ToList();
+                    _messages.Add(new HttpResponseMockMessage(response));
+                }
             }
         }
 
-        public HttpContent GetContent()
+        /// <summary>
+        /// Return the message in sequence order. The last one will be repeated.
+        /// </summary>
+        /// <returns>
+        /// The HttpResponseMessage.
+        /// </returns>
+        public HttpResponseMessage GetMessage()
         {
-            var result = _contents[_id];
-            if (_id < _contents.Count - 1)
+            var result = _messages[_id];
+            if (_id < _messages.Count - 1)
             {
                 _id++;
             }
 
-            return result;
+            // We create a new one here in case the consumer will dispose the object.
+            return result.GetMessage();
         }
     }
 }

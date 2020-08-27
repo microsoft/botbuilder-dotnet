@@ -3,15 +3,21 @@
 
 using System;
 using System.Globalization;
-using System.Linq;
+using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
     /// Return a timestamp in the specified format.
+    /// FormatDateTime function takes a timestamp string,
+    /// an optional format string whose default value "yyyy-MM-ddTHH:mm:ss.fffZ"
+    /// and an optional locale string whose default value is Thread.CurrentThread.CurrentCulture.Name.
     /// </summary>
-    public class FormatDateTime : ExpressionEvaluator
+    internal class FormatDateTime : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatDateTime"/> class.
+        /// </summary>
         public FormatDateTime()
             : base(ExpressionType.FormatDateTime, Evaluator(), ReturnType.String, Validator)
         {
@@ -19,23 +25,30 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.ApplyWithError(
-                        args =>
+            return FunctionUtils.ApplyWithOptionsAndError(
+                        (args, options) =>
                         {
                             object result = null;
                             string error = null;
                             var timestamp = args[0];
-                            if (timestamp is string tsString)
+                            var format = FunctionUtils.DefaultDateTimeFormat;
+                            var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
+                            (format, locale, error) = FunctionUtils.DetermineFormatAndLocale(args, format, locale, 3);
+
+                            if (error == null)
                             {
-                                (result, error) = ParseTimestamp(tsString, dt => dt.ToString(args.Count == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture));
-                            }
-                            else if (timestamp is DateTime dt)
-                            {
-                                result = dt.ToString(args.Count == 2 ? args[1].ToString() : FunctionUtils.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
-                            }
-                            else
-                            {
-                                error = $"formatDateTime has invalid first argument {timestamp}";
+                                if (timestamp is string tsString)
+                                {
+                                    (result, error) = ParseTimestamp(tsString, dt => dt.ToString(format, locale));
+                                }
+                                else if (timestamp is DateTime dt)
+                                {
+                                    result = dt.ToString(format, locale);
+                                }
+                                else
+                                {
+                                    error = $"formatDateTime has invalid first argument {timestamp}";
+                                }
                             }
 
                             return (result, error);
@@ -64,7 +77,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static void Validator(Expression expression)
         {
-            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.Object);
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String, ReturnType.String }, ReturnType.Object);
         }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,7 +61,7 @@ namespace Microsoft.Bot.Builder.Azure
             this.Container = new Lazy<CloudBlobContainer>(
                 () =>
             {
-                containerName = containerName.ToLower();
+                containerName = containerName.ToLowerInvariant();
                 var blobClient = storageAccount.CreateCloudBlobClient();
                 NameValidator.ValidateContainerName(containerName);
                 var container = blobClient.GetContainerReference(containerName);
@@ -173,7 +174,7 @@ namespace Microsoft.Bot.Builder.Azure
 
                 foreach (var blob in segment.Results.Cast<CloudBlockBlob>())
                 {
-                    if (DateTime.Parse(blob.Metadata["Timestamp"]).ToUniversalTime() >= startDate)
+                    if (DateTime.Parse(blob.Metadata["Timestamp"], CultureInfo.InvariantCulture).ToUniversalTime() >= startDate)
                     {
                         if (continuationToken != null)
                         {
@@ -194,10 +195,7 @@ namespace Microsoft.Bot.Builder.Azure
                     }
                 }
 
-                if (segment.ContinuationToken != null)
-                {
-                    token = segment.ContinuationToken;
-                }
+                token = segment.ContinuationToken;
             }
             while (token != null && blobs.Count < pageSize);
 
@@ -312,10 +310,7 @@ namespace Microsoft.Bot.Builder.Azure
                     await blob.DeleteIfExistsAsync().ConfigureAwait(false);
                 }
 
-                if (segment.ContinuationToken != null)
-                {
-                    token = segment.ContinuationToken;
-                }
+                token = segment.ContinuationToken;
             }
             while (token != null);
         }
@@ -326,7 +321,7 @@ namespace Microsoft.Bot.Builder.Azure
             blobReference.Metadata["Id"] = activity.Id;
             blobReference.Metadata["FromId"] = activity.From.Id;
             blobReference.Metadata["RecipientId"] = activity.Recipient.Id;
-            blobReference.Metadata["Timestamp"] = activity.Timestamp.Value.ToString("O");
+            blobReference.Metadata["Timestamp"] = activity.Timestamp.Value.ToString("O", CultureInfo.InvariantCulture);
             using (var blobStream = await blobReference.OpenWriteAsync().ConfigureAwait(false))
             {
                 using (var jsonWriter = new JsonTextWriter(new StreamWriter(blobStream)))
@@ -340,7 +335,7 @@ namespace Microsoft.Bot.Builder.Azure
 
         private static string GetBlobName(IActivity activity)
         {
-            var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{activity.Timestamp.Value.Ticks.ToString("x")}-{SanitizeKey(activity.Id)}.json";
+            var blobName = $"{SanitizeKey(activity.ChannelId)}/{SanitizeKey(activity.Conversation.Id)}/{activity.Timestamp.Value.Ticks.ToString("x", CultureInfo.InvariantCulture)}-{SanitizeKey(activity.Id)}.json";
             NameValidator.ValidateBlobName(blobName);
             return blobName;
         }
@@ -375,7 +370,6 @@ namespace Microsoft.Bot.Builder.Azure
             var dirName = GetDirName(activity.ChannelId, activity.Conversation.Id);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
             BlobContinuationToken token = null;
-            List<CloudBlockBlob> blobs = new List<CloudBlockBlob>();
             do
             {
                 var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, 50, token, null, null).ConfigureAwait(false);
@@ -404,10 +398,7 @@ namespace Microsoft.Bot.Builder.Azure
                     }
                 }
 
-                if (segment.ContinuationToken != null)
-                {
-                    token = segment.ContinuationToken;
-                }
+                token = segment.ContinuationToken;
             }
             while (token != null);
 

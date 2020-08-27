@@ -357,12 +357,7 @@ namespace Microsoft.Bot.Schema
         public bool? HistoryDisclosed { get; set; }
 
         /// <summary>
-        /// Gets or sets a locale name for the contents of the text field.
-        /// The locale name is a combination of an ISO 639 two- or three-letter
-        /// culture code associated with a language
-        /// and an ISO 3166 two-letter subculture code associated with a
-        /// country or region.
-        /// The locale name can also correspond to a valid BCP-47 language tag.
+        /// Gets or sets a BCP-47 locale name for the contents of the text field.
         /// </summary>
         /// <value>
         /// A locale for the activity.

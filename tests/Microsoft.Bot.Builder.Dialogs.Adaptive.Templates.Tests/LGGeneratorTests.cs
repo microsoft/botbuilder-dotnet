@@ -3,6 +3,7 @@
 #pragma warning disable SA1402
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,6 +41,30 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestLGResourceGroup()
+        {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+
+            // use LG file as entrance
+            var lgResourceGroup = LGResourceLoader.GroupByLocale(resourceExplorer);
+
+            Assert.Contains(string.Empty, lgResourceGroup.Keys.ToList());
+            var resourceNames = lgResourceGroup[string.Empty].Select(u => u.Id);
+            Assert.Equal(8, resourceNames.Count());
+            Assert.Subset(new HashSet<string>() { "a.lg", "b.lg", "c.lg", "inject.lg", "NormalStructuredLG.lg", "root.lg", "subDialog.lg", "test.lg" }, new HashSet<string>(resourceNames));
+
+            Assert.Contains("en-us", lgResourceGroup.Keys.ToList());
+            resourceNames = lgResourceGroup["en-us"].Select(u => u.Id);
+            Assert.Equal(8, resourceNames.Count());
+            Assert.Subset(new HashSet<string>() { "a.en-US.lg", "b.en-us.lg", "c.en.lg", "inject.lg", "NormalStructuredLG.lg", "root.lg", "subDialog.lg", "test.en-US.lg" }, new HashSet<string>(resourceNames));
+
+            Assert.Contains("en", lgResourceGroup.Keys.ToList());
+            resourceNames = lgResourceGroup["en"].Select(u => u.Id);
+            Assert.Equal(8, resourceNames.Count());
+            Assert.Subset(new HashSet<string>() { "a.lg", "b.lg", "c.en.lg", "inject.lg", "NormalStructuredLG.lg", "root.lg", "subDialog.lg", "test.en.lg" }, new HashSet<string>(resourceNames));
+        }
+
+        [Fact]
         public async Task TestMultiLangImport()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
@@ -48,7 +73,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var lgResourceGroup = LGResourceLoader.GroupByLocale(resourceExplorer);
 
             var resource = resourceExplorer.GetResource("a.en-US.lg") as FileResource;
-            var generator = new TemplateEngineLanguageGenerator(resource.FullName, lgResourceGroup);
+            var generator = new TemplateEngineLanguageGenerator(resource, lgResourceGroup);
             var result = await generator.GenerateAsync(GetDialogContext(), "${templatea()}", null);
             Assert.Equal("from a.en-us.lg", result);
 
@@ -65,7 +90,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.True(ex.Message.Contains("greeting does not have an evaluator"));
 
             resource = resourceExplorer.GetResource("a.lg") as FileResource;
-            generator = new TemplateEngineLanguageGenerator(resource.FullName, lgResourceGroup);
+            generator = new TemplateEngineLanguageGenerator(resource, lgResourceGroup);
 
             result = await generator.GenerateAsync(GetDialogContext(), "${templatea()}", null);
             Assert.Equal("from a.lg", result);
@@ -172,12 +197,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var lg = new MultiLanguageGenerator();
             var multilanguageresources = LGResourceLoader.GroupByLocale(resourceExplorer);
-            lg.LanguageGenerators[string.Empty] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg").ReadTextAsync().Result, "test.lg", multilanguageresources);
-            lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.de.lg").ReadTextAsync().Result, "test.de.lg", multilanguageresources);
-            lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en.lg").ReadTextAsync().Result, "test.en.lg", multilanguageresources);
-            lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-US.lg").ReadTextAsync().Result, "test.en-US.lg", multilanguageresources);
-            lg.LanguageGenerators["en-GB"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-GB.lg").ReadTextAsync().Result, "test.en-GB.lg", multilanguageresources);
-            lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.fr.lg").ReadTextAsync().Result, "test.fr.lg", multilanguageresources);
+            lg.LanguageGenerators[string.Empty] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg"), multilanguageresources);
+            lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.de.lg"), multilanguageresources);
+            lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en.lg"), multilanguageresources);
+            lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-US.lg"), multilanguageresources);
+            lg.LanguageGenerators["en-GB"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-GB.lg"), multilanguageresources);
+            lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.fr.lg"),  multilanguageresources);
 
             // test targeted in each language
             Assert.Equal("english-us", await lg.GenerateAsync(GetDialogContext(locale: "en-us"), "${test()}", null));
@@ -395,6 +420,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .Send("hello")
                 .AssertReply("[{\"Id\":0,\"Topic\":\"car\"},{\"Id\":1,\"Topic\":\"washing\"},{\"Id\":2,\"Topic\":\"food\"},{\"Id\":3,\"Topic\":\"laundry\"}]")
                 .AssertReply("This is an injected message")
+                .AssertReply("Hi Jonathan")
+                .AssertReply("Jonathan : 2003-03-20")
+                .AssertReply("Jonathan, your tasks: car, washing, food and laundry")
+                .AssertReply("2")
+            .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task TestLocaleInExpression()
+        {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+            DialogManager dm = new DialogManager()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration("test.lg");
+            dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("locale.dialog");
+            await CreateFlow(async (turnContext, cancellationToken) =>
+            {
+                (turnContext as TurnContext).Locale = "de-DE";
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+            .Send("hola")
+            .AssertReply("1,122")
+            .AssertReply("1,1235")
+            .AssertReply("Samstag, 6. Januar 2018")
+            .AssertReply("3,14159")
             .StartTestAsync();
         }
 
@@ -427,7 +477,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .AssertReply("2017-01-01T08:00:00.000Z")
                 .AssertReply("morning")
                 .AssertReply("tomorrow")
-                .AssertReply("Monday, 01 January 2018")
+                .AssertReply("01-01-2018")
                 .AssertReply("2018-01-01T16:00:00.000Z")
                 .AssertReply("2018-01-20T00:00:00.000Z")
                 .AssertReply("2018-01-20T08:00:00.000Z")

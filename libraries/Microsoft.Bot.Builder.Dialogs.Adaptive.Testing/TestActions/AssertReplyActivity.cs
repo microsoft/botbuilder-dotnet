@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,9 +19,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     [DebuggerDisplay("AssertReplyActivity:{GetConditionDescription()}")]
     public class AssertReplyActivity : TestAction
     {
+        /// <summary>
+        /// Kind for json serialization.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.AssertReplyActivity";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssertReplyActivity"/> class.
+        /// </summary>
+        /// <param name="path">optional path.</param>
+        /// <param name="line">optional line.</param>
         [JsonConstructor]
         public AssertReplyActivity([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -43,49 +52,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public uint Timeout { get; set; } = 3000;
 
         /// <summary>
-        /// Gets or sets the assertions.
+        /// Gets the assertions.
         /// </summary>
         /// <value>The expressions for assertions.</value>
         [JsonProperty("assertions")]
-        public List<string> Assertions { get; set; }
+        public List<string> Assertions { get; } = new List<string>();
 
+        /// <summary>
+        /// Gets the text to assert for an activity.
+        /// </summary>
+        /// <returns>String.</returns>
         public virtual string GetConditionDescription()
         {
             return Description ?? string.Join("\n", Assertions);
         }
 
+        /// <summary>
+        /// Validates the reply of an activity.
+        /// </summary>
+        /// <param name="activity">The activity to verify.</param>
         public virtual void ValidateReply(Activity activity)
         {
-            if (this.Assertions != null)
+            foreach (var assertion in Assertions)
             {
-                foreach (var assertion in this.Assertions)
+                var (result, error) = Expression.Parse(assertion).TryEvaluate<bool>(activity);
+                if (result != true)
                 {
-                    var (result, error) = Expression.Parse(assertion).TryEvaluate<bool>(activity);
-                    if (result != true)
-                    {
-                        throw new Exception($"{this.Description} {assertion} {activity}");
-                    }
+                    throw new Exception($"{Description} {assertion}\n{JsonConvert.SerializeObject(activity, Formatting.Indented)}");
                 }
             }
         }
 
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
+        /// <inheritdoc/>
+        public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             var timeout = (int)this.Timeout;
 
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 timeout = int.MaxValue;
             }
 
-            CancellationTokenSource cts = new CancellationTokenSource();
-            cts.CancelAfter((int)timeout);
-            IActivity replyActivity = await adapter.GetNextReplyAsync(cts.Token).ConfigureAwait(false);
-
-            if (replyActivity != null)
+            using (var cts = new CancellationTokenSource())
             {
-                ValidateReply((Activity)replyActivity);
-                return;
+                cts.CancelAfter((int)timeout);
+                var replyActivity = await adapter.GetNextReplyAsync(cts.Token).ConfigureAwait(false);
+
+                if (replyActivity != null)
+                {
+                    ValidateReply((Activity)replyActivity);
+                    return;
+                }
             }
         }
     }

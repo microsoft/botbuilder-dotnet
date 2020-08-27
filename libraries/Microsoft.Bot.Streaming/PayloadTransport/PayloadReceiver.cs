@@ -10,7 +10,10 @@ using Microsoft.Bot.Streaming.Utilities;
 
 namespace Microsoft.Bot.Streaming.PayloadTransport
 {
-    public class PayloadReceiver : IPayloadReceiver
+    /// <summary>
+    /// PayloadReceivers subscribe to incoming streams and manage the consumption of raw data as it comes in.
+    /// </summary>
+    public class PayloadReceiver : IPayloadReceiver, IDisposable
     {
         private Func<Header, Stream> _getStream;
         private Action<Header, Stream, int> _receiveAction;
@@ -19,14 +22,23 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
         private readonly byte[] _receiveHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
         private readonly byte[] _receiveContentBuffer = new byte[TransportConstants.MaxPayloadLength];
 
+        // To detect redundant calls to dispose
+        private bool _disposed;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PayloadReceiver"/> class.
+        /// </summary>
         public PayloadReceiver()
         {
         }
 
+        /// <inheritdoc/>
         public event DisconnectedEventHandler Disconnected;
 
+        /// <inheritdoc/>
         public bool IsConnected => _receiver != null;
 
+        /// <inheritdoc/>
         public void Connect(ITransportReceiver receiver)
         {
             if (_receiver != null)
@@ -39,6 +51,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             RunReceive();
         }
 
+        /// <inheritdoc/>
         public void Subscribe(
             Func<Header, Stream> getStream,
             Action<Header, Stream, int> receiveAction)
@@ -47,6 +60,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             _receiveAction = receiveAction;
         }
 
+        /// <inheritdoc/>
         public void Disconnect(DisconnectedEventArgs e = null)
         {
             var didDisconnect = false;
@@ -64,7 +78,15 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                             didDisconnect = true;
                         }
                     }
+#pragma warning disable CA1031 // Do not catch general exception types
+
+                    // As ITransportReceiver is an extension point, we don't 
+                    // know what exceptions will be thrown by different implementations
+                    // of ITransportReceiver.Close(). We do want to ensure that Disconnect doesn't
+                    // stop the other resource cleanup, so we don't throw any exception.
+                    // TODO: Flow ILogger all the way here and start logging these exceptions.
                     catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                     }
 
@@ -82,12 +104,44 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             }
         }
 
+        /// <summary>
+        /// Disposes the object and releases any related objects owned by the class.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                _receiver?.Dispose();
+            }
+
+            _disposed = true;
+        }
+
         private void RunReceive() => Background.Run(ReceivePacketsAsync);
 
         private async Task ReceivePacketsAsync()
         {
             bool isClosed = false;
-            int length;
             DisconnectedEventArgs disconnectArgs = null;
 
             while (_receiver != null && _receiver.IsConnected && !isClosed)
@@ -97,6 +151,7 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                 {
                     // read the header
                     int headerOffset = 0;
+                    int length;
                     while (headerOffset < TransportConstants.MaxHeaderLength)
                     {
                         length = await _receiver.ReceiveAsync(_receiveHeaderBuffer, headerOffset, TransportConstants.MaxHeaderLength - headerOffset).ConfigureAwait(false);
@@ -164,7 +219,9 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                         Reason = de.Reason,
                     };
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     isClosed = true;
                     disconnectArgs = new DisconnectedEventArgs()

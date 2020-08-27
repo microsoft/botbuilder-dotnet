@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 { Prompt<int>.AttemptCountKey, 0 },
             };
 
-            state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
+            state[PersistedExpires] = DateTime.UtcNow.AddMilliseconds(timeout);
             state[PersistedCaller] = CreateCallerInfo(dc.Context);
 
             // Attempt to get the users token
@@ -179,20 +179,27 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            // Recognize token
-            var recognized = await RecognizeTokenAsync(dc, cancellationToken).ConfigureAwait(false);
-
             // Check for timeout
             var state = dc.ActiveDialog.State;
             var expires = (DateTime)state[PersistedExpires];
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
-            var hasTimedOut = isMessage && DateTime.Compare(DateTime.Now, expires) > 0;
+
+            // If the incoming Activity is a message, or an Activity Type normally handled by OAuthPrompt,
+            // check to see if this OAuthPrompt Expiration has elapsed, and end the dialog if so.
+            var isTimeoutActivityType = isMessage
+                            || IsTokenResponseEvent(dc.Context)
+                            || IsTeamsVerificationInvoke(dc.Context)
+                            || IsTokenExchangeRequestInvoke(dc.Context);
+            var hasTimedOut = isTimeoutActivityType && DateTime.Compare(DateTime.UtcNow, expires) > 0;
 
             if (hasTimedOut)
             {
                 // if the token fetch request times out, complete the prompt with no result.
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
+
+            // Recognize token
+            var recognized = await RecognizeTokenAsync(dc, cancellationToken).ConfigureAwait(false);
 
             var promptState = state[PersistedState].CastTo<IDictionary<string, object>>();
             var promptOptions = state[PersistedOptions].CastTo<PromptOptions>();
@@ -217,6 +224,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (isValid)
             {
                 return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
+            }
+            else if (isMessage && _settings.EndOnInvalidMessage)
+            {
+                // If EndOnInvalidMessage is set, complete the prompt with no result.
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             if (!dc.Context.Responded && isMessage && promptOptions?.RetryPrompt != null)
@@ -300,7 +312,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             switch (channelId)
             {
-                case Channels.Msteams:
                 case Channels.Cortana:
                 case Channels.Skype:
                 case Channels.Skypeforbusiness:
@@ -308,6 +319,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return true;
+        }
+
+        private static bool ChannelRequiresSignInLink(string channelId)
+        {
+            switch (channelId)
+            {
+                case Channels.Msteams:
+                    return true;
+            }
+
+            return false;
         }
 
         private static async Task SendInvokeResponseAsync(ITurnContext turnContext, HttpStatusCode statusCode, object body = null, CancellationToken cancellationToken = default)
@@ -385,7 +407,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         cardActionType = ActionTypes.OpenUrl;
                     }
                 }
-                else
+                else if (!ChannelRequiresSignInLink(turnContext.Activity.ChannelId))
                 {
                     value = null;
                 }
@@ -572,7 +594,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         await SendInvokeResponseAsync(
                             turnContext,
-                            HttpStatusCode.Conflict,
+                            HttpStatusCode.PreconditionFailed,
                             new TokenExchangeInvokeResponse
                             {
                                 Id = tokenExchangeRequest.Id,

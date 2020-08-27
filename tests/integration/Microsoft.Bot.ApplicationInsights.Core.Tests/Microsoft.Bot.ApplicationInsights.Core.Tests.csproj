@@ -1,15 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
+    <TargetFramework Condition="'$(BuildTarget)' == 'netcoreapp21'">netcoreapp2.1</TargetFramework>
+    <TargetFramework Condition="'$(BuildTarget)' == 'netcoreapp31'">netcoreapp3.1</TargetFramework>
+    <TargetFrameworks Condition="'$(BuildTarget)' == ''">netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <FrameworkReference  Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.0.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.6" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
@@ -17,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />

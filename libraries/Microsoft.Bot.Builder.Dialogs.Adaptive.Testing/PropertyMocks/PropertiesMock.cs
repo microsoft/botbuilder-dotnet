@@ -12,9 +12,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
     /// </summary>
     public class PropertiesMock : PropertyMock
     {
+        /// <summary>
+        /// Kind to serialize.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.PropertiesMock";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertiesMock"/> class.
+        /// </summary>
+        /// <param name="path">optional path.</param>
+        /// <param name="line">optional line.</param>
         [JsonConstructor]
         public PropertiesMock([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -22,12 +30,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks
         }
 
         /// <summary>
-        /// Gets or sets property assignments.
+        /// Gets the property assignments.
         /// </summary>
         /// <value>
         /// Property assignments as property=value pairs. In first match first use order.
         /// </value>
         [JsonProperty("assignments")]
-        public List<PropertyAssignment> Assignments { get; set; } = new List<PropertyAssignment>();
+        public List<PropertyAssignment> Assignments { get; } = new List<PropertyAssignment>();
     }
 }

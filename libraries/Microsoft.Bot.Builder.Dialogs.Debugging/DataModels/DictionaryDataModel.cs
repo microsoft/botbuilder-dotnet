@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-    public sealed class DictionaryDataModel<TKey, TValue> : DataModelBase<IDictionary<TKey, TValue>, TKey, TValue>
+    internal class DictionaryDataModel<TKey, TValue> : DataModelBase<IDictionary<TKey, TValue>, TKey, TValue>
     {
         public DictionaryDataModel(ICoercion coercion)
             : base(coercion)

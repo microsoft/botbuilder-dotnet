@@ -6,8 +6,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return true if a given input is a Boolean.
     /// </summary>
-    public class IsBoolean : ExpressionEvaluator
+    internal class IsBoolean : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsBoolean"/> class.
+        /// </summary>
         public IsBoolean()
             : base(ExpressionType.IsBoolean, Evaluator(), ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

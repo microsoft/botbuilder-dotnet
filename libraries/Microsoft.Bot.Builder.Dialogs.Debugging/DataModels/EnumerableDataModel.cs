@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-    public sealed class EnumerableDataModel<T> : DataModelBase<IEnumerable<T>, int, T>
+    internal sealed class EnumerableDataModel<T> : DataModelBase<IEnumerable<T>, int, T>
     {
         public EnumerableDataModel(ICoercion coercion)
             : base(coercion)

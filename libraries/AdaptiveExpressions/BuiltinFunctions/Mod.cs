@@ -10,9 +10,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return the remainder from dividing two numbers. 
     /// </summary>
 #pragma warning disable CA1716 // Identifiers should not match keywords (by design and can't break binary compat, excluding)
-    public class Mod : ExpressionEvaluator
+    internal class Mod : ExpressionEvaluator
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Mod"/> class.
+        /// </summary>
         public Mod()
             : base(ExpressionType.Mod, Evaluator(), ReturnType.Number, FunctionUtils.ValidateBinaryNumber)
         {

@@ -25,14 +25,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Gets the resource path.
-        /// </summary>
-        /// <value>
-        /// The full path to the resource on disk.
-        /// </value>
-        public string FullName { get; }
-
-        /// <summary>
         /// Open a stream to the resource.
         /// </summary>
         /// <returns>Stream for accesssing the content of the resource.</returns>
@@ -66,6 +58,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return new MemoryStream(content);
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
             return this.Id;

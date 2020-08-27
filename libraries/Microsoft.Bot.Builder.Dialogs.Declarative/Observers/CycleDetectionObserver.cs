@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
@@ -11,12 +13,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
     /// <see cref="IConverterObserver"/> dedicated to find cycles and properly aid in the type-loading
     /// of cyclical graphs.
     /// </summary>
-    internal class CycleDetectionObserver : IConverterObserver
+    /// <remarks>
+    /// Cycles are detected by analyzing the call stack. On the 2 pass algorithm, the first pass loads and 
+    /// caches until a cycle is found in the stack. The second pass connects the loaded pieces together.
+    /// </remarks>
+    internal class CycleDetectionObserver : IJsonLoadObserver
     {
         private readonly Dictionary<int, object> cache = new Dictionary<int, object>();
-        private readonly HashSet<int> visitedPassOne = new HashSet<int>();
-        private readonly HashSet<int> visitedPassTwo = new HashSet<int>();
-
+        
         /// <summary>
         /// Gets or sets the current pass of the algorithm.
         /// </summary>
@@ -25,44 +29,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
         /// </value>
         public CycleDetectionPasses CycleDetectionPass { get; set; } = CycleDetectionPasses.PassOne;
 
-        /// <inheritdoc/>
-        public bool OnBeforeLoadToken<T>(JToken token, out T result)
+        /// <summary>
+        /// Notifies <see cref="IConverterObserver"/> instances before type-loading a <see cref="JToken"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the concrete object to be built.</typeparam>
+        /// <param name="context">Source context for the current token.</param>
+        /// <param name="range">Source range for the current token.</param>
+        /// <param name="token">Token to be used to build the object.</param>
+        /// <param name="result">Output parameter for observer to provide its result to the converter.</param>
+        /// <returns>True if the observer provides a result and False if not.</returns>
+        public bool OnBeforeLoadToken<T>(SourceContext context, SourceRange range, JToken token, out T result)
             where T : class
         {
-            // The deep hash code provides a pseudo-unique id for a given token
-            var hashCode = Hash<T>(token);
+            // The deep hash code provides a pseudo-unique id for a given token.
+            // The token is characterized for the source range and the type expected for that source range.
+            var hashCode = Hash<T>(range);
 
-            // Pass 1: We track the already visited objects' hash in the 'visited' collection
-            // If we've already visited this hash code and we are still in pass 1, no need to revisit.
-            if (visitedPassOne.Contains(hashCode) && CycleDetectionPass == CycleDetectionPasses.PassOne) 
+            // Now analyze the stack to find cycles.
+            // If the same source range appears twice in the stack, we have a cycle.
+            var isCycle = context.CallStack.Count(s => s.Equals(range)) > 1;
+
+            if (isCycle && CycleDetectionPass == CycleDetectionPasses.PassOne)
             {
-                // If we already have a hydrated object for this hash code, 
-                // there is no cycle, just repetition of the object in different parts of the object tree. 
-                // We can get it from the cache but we don't necessarily want it to be the same reference.
-                // In pass 2 when we connect cycles, we won't actually clone because at that point we do want 
-                // to conserve references.
-                if (cache.ContainsKey(hashCode))
-                {
-                    result = ObjectPath.Clone<T>(cache[hashCode] as T);
-                }
-
-                // If we don't have a cached value for this hash code, we send null as the value.
-                // Pass 2 will exist with the purpose of filling in these nulled values with the 
-                // references discovered and cached during pass 1
-                else
-                {
-                    result = null;
-                }
-
+                // If we found a cycle, stop iterating and set the value to null in pass 1.
+                result = null;
                 return true;
             }
 
-            if (CycleDetectionPass == CycleDetectionPasses.PassTwo) 
+            if (CycleDetectionPass == CycleDetectionPasses.PassTwo)
             {
                 // If we already visited this item in pass 2 means we found a loop.
                 // Since in pass 1 we should have filled the cache with the missing objects,
                 // now we just bring the items from pass 1 to stitch the full object together
-                if (visitedPassTwo.Contains(hashCode))
+                if (isCycle)
                 {
                     // We found a loop and we have the final value in the cache. Return that value.
                     if (cache.ContainsKey(hashCode))
@@ -79,47 +78,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
 
                     return true;
                 }
-
-                visitedPassTwo.Add(hashCode);
             }
 
-            visitedPassOne.Add(hashCode);
+            // When no cycle was detected, we return false to avoid interfering with regular loading.
             result = null;
             return false;
         }
 
-        /// <inheritdoc/>
-        public bool OnAfterLoadToken<T>(JToken token, T loaded, out T result)
+        /// <summary>
+        /// Notifies <see cref="IConverterObserver"/> instances after type-loading a <see cref="JToken"/> into the 
+        /// provided instance of <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the concrete object that was built.</typeparam>
+        /// <param name="context">Source context for the current token.</param>
+        /// <param name="range">Source range for the current token.</param>
+        /// <param name="token">Token used to build the object.</param>
+        /// <param name="loaded">Object that was built using the token.</param>
+        /// <param name="result">Output parameter for observer to provide its result to the converter.</param>
+        /// <returns>True if the observer provides a result and False if not.</returns>
+        public bool OnAfterLoadToken<T>(SourceContext context, SourceRange range, JToken token, T loaded, out T result)
             where T : class
         {
             // The deep hash code provides a pseudo-unique id for a given token
-            var hashCode = Hash<T>(token);
+            var hashCode = Hash<T>(range);
 
             // In pass 1, after we build an object, we add it to the cache.
-            if (CycleDetectionPass == CycleDetectionPasses.PassOne) 
+            if (CycleDetectionPass == CycleDetectionPasses.PassOne)
             {
                 cache[hashCode] = loaded;
                 result = null;
                 return false;
             }
 
-            // In pass 2, we track the objects that we visited to avoid
-            // infinite loops in pass 2. If we have a value in the cache,
-            // we prefer the cache value.
+            // In pass 2, no action or interference is required.
             else
             {
-                visitedPassTwo.Add(hashCode);
-                
                 result = null;
                 return false;
             }
         }
 
-        private static int Hash<T>(JToken jToken)
+        private static int Hash<T>(SourceRange range)
         {
             // The same json may resolve to two types. The cache key should include
             // type information.
-            return CombineHashCodes(new[] { jToken.GetHashCode(), typeof(T).GetHashCode() });
+            return CombineHashCodes(
+                new[]
+                {
+                    range.GetHashCode(),
+                    typeof(T).GetHashCode()
+                });
         }
 
         private static int CombineHashCodes(IEnumerable<int> hashCodes)

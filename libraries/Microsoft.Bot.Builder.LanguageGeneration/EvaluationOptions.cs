@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -24,29 +25,42 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     }
 
     /// <summary>
-    /// Options for evaluation of LG template <see cref="EvaluationOptions"/> class.
+    /// Options for evaluating LG templates.
     /// </summary>
     public class EvaluationOptions
     {
         private static readonly Regex NullKeyReplaceStrRegex = new Regex(@"\${\s*path\s*}");
-        private readonly string strictModeKey = "@strict";
-        private readonly string replaceNullKey = "@replaceNull";
-        private readonly string lineBreakKey = "@lineBreakStyle";
+        private readonly string _strictModeKey = "@strict";
+        private readonly string _replaceNullKey = "@replaceNull";
+        private readonly string _lineBreakKey = "@lineBreakStyle";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
+        /// </summary>
         public EvaluationOptions()
         {
-            this.StrictMode = null;
-            this.NullSubstitution = null;
-            this.LineBreakStyle = null;
+            StrictMode = null;
+            NullSubstitution = null;
+            LineBreakStyle = null;
+            Locale = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
+        /// </summary>
+        /// <param name="opt">Instance to copy initial settings from.</param>
         public EvaluationOptions(EvaluationOptions opt)
         {
-            this.StrictMode = opt.StrictMode;
-            this.NullSubstitution = opt.NullSubstitution;
-            this.LineBreakStyle = opt.LineBreakStyle;
+            StrictMode = opt.StrictMode;
+            NullSubstitution = opt.NullSubstitution;
+            LineBreakStyle = opt.LineBreakStyle;
+            Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
+        /// </summary>
+        /// <param name="optionsList">List of strings containing the options from a LG file.</param>
         public EvaluationOptions(IList<string> optionsList)
         {
             if (optionsList != null)
@@ -58,20 +72,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         var index = option.IndexOf('=');
                         var key = option.Substring(0, index).Trim();
                         var value = option.Substring(index + 1).Trim();
-                        if (key == strictModeKey)
+                        if (key == _strictModeKey)
                         {
-                            if (value.ToLower() == "true")
+                            if (value.ToLowerInvariant() == "true")
                             {
                                 StrictMode = true;
                             }
                         }
-                        else if (key == replaceNullKey)
+                        else if (key == _replaceNullKey)
                         {
                             NullSubstitution = (path) => NullKeyReplaceStrRegex.Replace(value, $"{path}");
                         }
-                        else if (key == lineBreakKey)
+                        else if (key == _lineBreakKey)
                         {
-                            LineBreakStyle = value.ToLower() == LGLineBreakStyle.Markdown.ToString().ToLower() ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
+                            LineBreakStyle = value.ToLowerInvariant() == LGLineBreakStyle.Markdown.ToString().ToLowerInvariant() ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
                         }
                     }
                 }
@@ -95,6 +109,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public bool? StrictMode { get; set; } = null;
 
         /// <summary>
+        /// Gets or sets the locale for evaluating LG.
+        /// </summary>
+        /// <value>
+        /// A CultureInfo or null object.
+        /// </value>
+        public string Locale { get; set; } = null;
+
+        /// <summary>
         /// Gets or sets the option of a function to replace a null value. If nullSubstitution is specified,
         /// LG evaluator will not throw null exception even the strictMode is on. 
         /// </summary>
@@ -107,8 +129,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Merge a incoming option to current option. If a property in incoming option is not null while it is null in current
         /// option, then the value of this property will be overwritten.
         /// </summary>
-        /// <param name="opt">The incoming option for merging.</param>
-        /// <returns>The result after merging.</returns>
+        /// <param name="opt">Incoming option for merging.</param>
+        /// <returns>Result after merging.</returns>
         public EvaluationOptions Merge(EvaluationOptions opt)
         {
             var properties = typeof(EvaluationOptions).GetProperties();

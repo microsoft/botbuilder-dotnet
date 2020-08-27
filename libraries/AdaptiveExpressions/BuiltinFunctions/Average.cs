@@ -10,8 +10,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the number average of a numeric array.
     /// </summary>
-    public class Average : ExpressionEvaluator
+    internal class Average : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Average"/> class.
+        /// </summary>
         public Average()
             : base(ExpressionType.Average, Evaluator(), ReturnType.Number, FunctionUtils.ValidateUnary)
         {

@@ -10,8 +10,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return true if a given TimexProperty or Timex expression refers to a valid date range.
     /// </summary>
-    public class IsDateRange : ExpressionEvaluator
+    internal class IsDateRange : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IsDateRange"/> class.
+        /// </summary>
         public IsDateRange()
             : base(ExpressionType.IsDateRange, Evaluator, ReturnType.Boolean, FunctionUtils.ValidateUnary)
         {

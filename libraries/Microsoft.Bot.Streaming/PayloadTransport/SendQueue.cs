@@ -21,6 +21,9 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly int _timeoutSeconds;
 
+        // To detect redundant calls to dispose
+        private bool _disposed;
+
         public SendQueue(Func<T, Task> action, int timeoutSeconds = 30)
         {
             _action = action;
@@ -33,19 +36,48 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
             PostInternal(item);
         }
 
+        /// <summary>
+        /// Disposes the object and releases any related objects owned by the class.
+        /// </summary>
         public void Dispose()
         {
-            _cts.Cancel();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            // Wait for thread to drain
-            if (!_completionEvent.WaitOne(_timeoutSeconds * 1000))
+        /// <summary>
+        /// Disposes objected used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
             {
-                // AppInsights.TrackEvent("SendQueue.Dispose: _completionEvent timeout!!!", "Timeout Seconds".PairWith(timeoutSeconds));
+                return;
             }
 
-            _completionEvent.Dispose();
-            _semaphore.Dispose();
-            _cts.Dispose();
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                _cts?.Cancel();
+
+                // Wait for thread to drain
+                if (_completionEvent != null && !_completionEvent.WaitOne(_timeoutSeconds * 1000))
+                {
+                    // TODO:  Flow ILogger to this layer.
+                    // AppInsights.TrackEvent("SendQueue.Dispose: _completionEvent timeout!!!", "Timeout Seconds".PairWith(timeoutSeconds));
+                }
+
+                _completionEvent?.Dispose();
+                _semaphore?.Dispose();
+                _cts?.Dispose();
+            }
+
+            _disposed = true;
         }
 
         private void PostInternal(object item)
@@ -107,16 +139,17 @@ namespace Microsoft.Bot.Streaming.PayloadTransport
                             // Invoke operation
                             await _action((T)obj).ConfigureAwait(false);
                         }
+#pragma warning disable CA1031 // Do not catch general exception types
+
+                        // We don't want to stop this loop because of any kind of exception for now
                         catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
                         {
+                            // TODO: Flow ILogger to this layer and log these exceptions.
                             // AppInsights.TrackException(e);
                         }
                     }
                 }
-            }
-            catch (Exception)
-            {
-                // AppInsights.TrackException(e);
             }
             finally
             {

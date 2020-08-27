@@ -8,9 +8,25 @@
       "actions": [
         {
           "$kind": "Microsoft.SetProperty",
+          "property": "user.obj",
+          "value": "=json('{\"SR\":{\"Q1\":\"\",\"Q2\":\"2\"}}')"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
           "property": "user.message",
           "value": "=foo.GetMessage()"
         },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.name",
+          "value": "jonathan"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.date",
+          "value": "2003-03-20"
+        },
+        
         {
           "$kind": "Microsoft.SetProperty",
           "property": "user.tasks",
@@ -28,8 +44,23 @@
         {
           "$kind": "Microsoft.SendActivity",
           "activity": "${user.message}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${foo.WelcomeUser()}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${foo.UserDataConcat(user.date)}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${foo.ShowTasks(foo.GetList(user.tasks))}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${user.obj.SR.Q2}"
         }
-
       ]
     }
   ]

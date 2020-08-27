@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// activities like an event to be received.The validator can ignore received activities until
     /// the expected activity type is received.
     /// </remarks>
-    public abstract class ActivityPrompt : Dialog
+    public class ActivityPrompt : Dialog
     {
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
-            await OnPromptAsync(turnContext, state, options, true, cancellationToken).ConfigureAwait(false);
+            await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

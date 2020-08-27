@@ -1,0 +1,14 @@
+{
+    "$schema": "../../tests.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "explicit-id",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnIntent",
+            "actions": [
+                "test2.dialog",
+                "test3.dialog"
+            ]
+        }
+    ]
+}

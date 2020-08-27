@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.TraceExtensions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -47,6 +48,31 @@ namespace Microsoft.Bot.Builder.Dialogs
         public virtual Dialog FindDialog(string dialogId)
         {
             return this.Dialogs.Find(dialogId);
+        }
+
+        /// <summary>
+        /// Called when an event has been raised, using `DialogContext.emitEvent()`, by either the current dialog or a dialog that the current dialog started.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>True if the event is handled by the current dialog and bubbling should stop.</returns>
+        public override async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            var handled = await base.OnDialogEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
+
+            // Trace unhandled "versionChanged" events.
+            if (!handled && e.Name == DialogEvents.VersionChanged)
+            {
+                var traceMessage = $"Unhandled dialog event: {e.Name}. Active Dialog: {dc.ActiveDialog.Id}";
+
+                dc.Dialogs.TelemetryClient.TrackTrace(traceMessage, Severity.Warning, null);
+
+                await dc.Context.TraceActivityAsync(traceMessage, cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
+            return handled;
         }
 
         /// <summary>

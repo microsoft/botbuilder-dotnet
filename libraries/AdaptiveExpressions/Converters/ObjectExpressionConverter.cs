@@ -14,8 +14,21 @@ namespace AdaptiveExpressions.Converters
     /// <typeparam name="T">The property type to construct.</typeparam>
     public class ObjectExpressionConverter<T> : JsonConverter<ObjectExpression<T>>
     {
+        /// <summary>
+        /// Gets a value indicating whether this Converter can read JSON.
+        /// </summary>
+        /// <value>true if this Converter can read JSON; otherwise, false.</value>
         public override bool CanRead => true;
 
+        /// <summary>
+        /// Reads the JSON representation of the object.
+        /// </summary>
+        /// <param name="reader">The Newtonsoft.Json.JsonReader to read from.</param>
+        /// <param name="objectType">Type of the object.</param>
+        /// <param name="existingValue">The existing value of object being read.</param>
+        /// <param name="hasExistingValue">A boolean value indicating whether there is an existing value of object to be read.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        /// <returns>A ObjectExpression instance.</returns>
         public override ObjectExpression<T> ReadJson(JsonReader reader, Type objectType, ObjectExpression<T> existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.ValueType == typeof(string))
@@ -28,6 +41,12 @@ namespace AdaptiveExpressions.Converters
             }
         }
 
+        /// <summary>
+        /// Writes the JSON representation of the object.
+        /// </summary>
+        /// <param name="writer">The Newtonsoft.Json.JsonWriter to write to.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, ObjectExpression<T> value, JsonSerializer serializer)
         {
             if (value.ExpressionText != null)

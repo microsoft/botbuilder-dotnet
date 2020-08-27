@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<OnTeamsChannelCreated>(OnTeamsChannelCreated.Kind);
             yield return new DeclarativeType<OnTeamsChannelDeleted>(OnTeamsChannelDeleted.Kind);
             yield return new DeclarativeType<OnTeamsChannelRenamed>(OnTeamsChannelRenamed.Kind);
+            yield return new DeclarativeType<OnTeamsChannelRestored>(OnTeamsChannelRestored.Kind);
             yield return new DeclarativeType<OnTeamsFileConsent>(OnTeamsFileConsent.Kind);
             yield return new DeclarativeType<OnTeamsMessagingExtensionCardButtonClicked>(OnTeamsMessagingExtensionCardButtonClicked.Kind);
             yield return new DeclarativeType<OnTeamsMessagingExtensionConfigurationQuerySettingUrl>(OnTeamsMessagingExtensionConfigurationQuerySettingUrl.Kind);
@@ -30,9 +31,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<OnTeamsO365ConnectorCardAction>(OnTeamsO365ConnectorCardAction.Kind);
             yield return new DeclarativeType<OnTeamsTaskModuleFetch>(OnTeamsTaskModuleFetch.Kind);
             yield return new DeclarativeType<OnTeamsTaskModuleSubmit>(OnTeamsTaskModuleSubmit.Kind);
+            yield return new DeclarativeType<OnTeamsTeamArchived>(OnTeamsTeamArchived.Kind);
+            yield return new DeclarativeType<OnTeamsTeamDeleted>(OnTeamsTeamDeleted.Kind);
+            yield return new DeclarativeType<OnTeamsTeamHardDeleted>(OnTeamsTeamHardDeleted.Kind);
             yield return new DeclarativeType<OnTeamsTeamRenamed>(OnTeamsTeamRenamed.Kind);
-        
-            yield break;
+            yield return new DeclarativeType<OnTeamsTeamRestored>(OnTeamsTeamRestored.Kind);
+            yield return new DeclarativeType<OnTeamsTeamUnarchived>(OnTeamsTeamUnarchived.Kind);
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)

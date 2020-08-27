@@ -7,10 +7,8 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
@@ -19,11 +17,9 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -32,11 +28,13 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         private IStatePropertyAccessor<DialogState> dialogStateAccessor;
         private DialogManager dialogManager;
         private readonly ResourceExplorer resourceExplorer;
+        private IConfiguration configuration;
 
-        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory)
+        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory, IConfiguration configuration)
         {
             this.dialogStateAccessor = conversationState.CreateProperty<DialogState>("RootDialogState");
             this.resourceExplorer = resourceExplorer;
+            this.configuration = configuration;
 
             // auto reload dialogs when file changes
             this.resourceExplorer.Changed += (e, resources) =>
@@ -86,8 +84,9 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             Dialog lastDialog = null;
             var choices = new ChoiceSet();
+            var dialogName = configuration["dialog"];
 
-            foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
+            foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => dialogName != null ? r.Id == dialogName : r.Id.EndsWith(".main.dialog")))
             {
                 try
                 {

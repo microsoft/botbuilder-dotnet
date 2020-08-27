@@ -11,9 +11,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// Return the JavaScript Object Notation (JSON) type value or object of a string or XML.
     /// </summary>
 #pragma warning disable CA1724 // Type names should not match namespaces (by design and we can't change this without breaking binary compat)
-    public class Json : ExpressionEvaluator
+    internal class Json : ExpressionEvaluator
 #pragma warning restore CA1724 // Type names should not match namespaces
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Json"/> class.
+        /// </summary>
         public Json()
             : base(ExpressionType.Json, Evaluator(), ReturnType.Object, Validator)
         {
@@ -21,16 +24,27 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.Apply(
+            return FunctionUtils.ApplyWithError(
                         args =>
                         {
+                            object result = null;
+                            string error = null;
                             using (var textReader = new StringReader(args[0].ToString()))
                             {
                                 using (var jsonReader = new JsonTextReader(textReader) { DateParseHandling = DateParseHandling.None })
                                 {
-                                    return JToken.ReadFrom(jsonReader);
+                                    try
+                                    {
+                                        result = JToken.ReadFrom(jsonReader);
+                                    }
+                                    catch (JsonReaderException err)
+                                    {
+                                        error = $"Unexpected character at Path {err.Path}, line {err.LineNumber}, position {err.LinePosition} when parsing {args[0]}.";
+                                    }
                                 }
                             }
+
+                            return (result, error);
                         });
         }
 

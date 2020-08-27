@@ -11,8 +11,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Filter on each element and return the new collection of filtered elements which match a specific condition.
     /// </summary>
-    public class Where : ExpressionEvaluator
+    internal class Where : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Where"/> class.
+        /// </summary>
         public Where()
             : base(ExpressionType.Where, Evaluator, ReturnType.Array, FunctionUtils.ValidateForeach)
         {

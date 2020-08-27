@@ -15,12 +15,23 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
+    /// <summary>
+    /// Action to script sending a conversationUpdate activity to the bot.
+    /// </summary>
     [DebuggerDisplay("UserConversationUpdate")]
     public class UserConversationUpdate : TestAction
     {
+        /// <summary>
+        /// Kind for serialization.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.UserConversationUpdate";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserConversationUpdate"/> class.
+        /// </summary>
+        /// <param name="path">path for source.</param>
+        /// <param name="line">line number in source.</param>
         [JsonConstructor]
         public UserConversationUpdate([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -28,24 +39,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         }
 
         /// <summary>
-        /// Gets or sets the members added names.
+        /// Gets the members added names.
         /// </summary>
         /// <value>The members names.</value>
         [JsonProperty("membersAdded")]
-        public List<string> MembersAdded { get; set; }
+        public List<string> MembersAdded { get; } = new List<string>();
 
         /// <summary>
-        /// Gets or sets the members removed names.
+        /// Gets the members removed names.
         /// </summary>
         /// <value>The members names.</value>
         [JsonProperty("membersRemoved")]
-        public List<string> MembersRemoved { get; set; }
+        public List<string> MembersRemoved { get; } = new List<string>();
 
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
+        /// <inheritdoc/>
+        public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             var activity = adapter.MakeActivity();
             activity.Type = ActivityTypes.ConversationUpdate;
-            if (this.MembersAdded != null)
+            if (this.MembersAdded.Any())
             {
                 activity.MembersAdded = new List<ChannelAccount>();
                 foreach (var member in MembersAdded)
@@ -54,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 }
             }
 
-            if (this.MembersRemoved != null)
+            if (this.MembersRemoved.Any())
             {
                 activity.MembersRemoved = new List<ChannelAccount>();
 

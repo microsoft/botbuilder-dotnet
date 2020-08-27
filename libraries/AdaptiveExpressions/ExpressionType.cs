@@ -9,6 +9,7 @@ namespace AdaptiveExpressions
     public static class ExpressionType
     {
         // Math
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public const string Add = "+";
         public const string Subtract = "-";
         public const string Multiply = "*";
@@ -120,6 +121,10 @@ namespace AdaptiveExpressions
         public const string IsTimeRange = "isTimeRange";
         public const string IsDateRange = "isDateRange";
         public const string IsPresent = "isPresent";
+        public const string GetNextViableDate = "getNextViableDate";
+        public const string GetPreviousViableDate = "getPreviousViableDate";
+        public const string GetNextViableTime = "getNextViableTime";
+        public const string GetPreviousViableTime = "getPreviousViableTime";
 
         // Conversions
 #pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)
@@ -208,5 +213,6 @@ namespace AdaptiveExpressions
         /// but all such rules would be incomparable because they counter is per-rule. 
         /// </remarks>
         public const string Ignore = "ignore";
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }

@@ -13,8 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <CodeAnalysisRuleSet Condition="'$(OS)' == 'Windows_NT'">$(SolutionDir)\BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(OS)' != 'Windows_NT'">$(SolutionDir)/BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +33,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AssemblyOriginatorKeyFile>$(SolutionDir)\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <AssemblyOriginatorKeyFile>$(SolutionDir)\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>

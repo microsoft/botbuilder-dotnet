@@ -9,8 +9,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Remove a property from an object and return the updated object.
     /// </summary>
-    public class RemoveProperty : ExpressionEvaluator
+    internal class RemoveProperty : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveProperty"/> class.
+        /// </summary>
         public RemoveProperty()
             : base(ExpressionType.RemoveProperty, Evaluator(), ReturnType.Object, Validator)
         {

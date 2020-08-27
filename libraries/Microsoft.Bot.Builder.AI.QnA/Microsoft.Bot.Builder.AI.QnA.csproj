@@ -7,7 +7,6 @@
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.AI.QnA.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -27,25 +26,19 @@
     <Content Include="**/*.lg" />
     <Content Include="**/*.lu" />
     <Content Include="**/*.schema" />
+    <Content Include="**/*.uischema" />
     <Content Include="**/*.qna" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AdaptiveExpressions" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="AdaptiveExpressions" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Configuration" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(IsBuildServer)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>

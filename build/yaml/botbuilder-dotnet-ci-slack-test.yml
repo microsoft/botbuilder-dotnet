@@ -12,7 +12,7 @@ trigger: # ci trigger
   batch: true
   branches:
     include:
-     - master
+     - main
   paths:
     include:
       - '*'
@@ -27,11 +27,19 @@ trigger: # ci trigger
 pr: none # no pr trigger
 
 variables:
-  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
-  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
+  AppId: $(SlackTestBotAppId)
+  AppSecret: $(SlackTestBotAppSecret)
+  BotGroup: $(SlackTestBotBotGroup)
+  BotName: $(SlackTestBotBotName)
   BuildConfiguration: 'debug'
   BuildPlatform: 'any cpu'
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   Parameters.solution: Microsoft.Bot.Builder.sln
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
+  SlackBotToken: $(SlackTestBotSlackBotToken)
+  SlackChannel: $(SlackTestBotSlackChannel)
+  SlackClientSigningSecret: $(SlackTestBotSlackClientSigningSecret)
+  SlackVerificationToken: $(SlackTestBotSlackVerificationToken)
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  AzureSubscription: define this in Azure
 #  SlackTestBotAppId: define this in Azure
@@ -55,25 +63,38 @@ steps:
     arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
     modifyOutputPath: false
 
-- powershell: |
-   echo '##vso[task.setvariable variable=AppId]$(SlackTestBotAppId)'
-   echo '##vso[task.setvariable variable=AppSecret]$(SlackTestBotAppSecret)'
-   echo '##vso[task.setvariable variable=BotGroup]$(SlackTestBotBotGroup)'
-   echo '##vso[task.setvariable variable=BotName]$(SlackTestBotBotName)'
-   echo '##vso[task.setvariable variable=SlackBotToken]$(SlackTestBotSlackBotToken)'
-   echo '##vso[task.setvariable variable=SlackChannel]$(SlackTestBotSlackChannel)'
-   echo '##vso[task.setvariable variable=SlackClientSigningSecret]$(SlackTestBotSlackClientSigningSecret)'
-   echo '##vso[task.setvariable variable=SlackVerificationToken]$(SlackTestBotSlackVerificationToken)'
-  displayName: 'Set Environment Variables'
+#- powershell: |
+#   echo '##vso[task.setvariable variable=AppId]$(SlackTestBotAppId)'
+#   echo '##vso[task.setvariable variable=AppSecret]$(SlackTestBotAppSecret)'
+#   echo '##vso[task.setvariable variable=BotGroup]$(SlackTestBotBotGroup)'
+#   echo '##vso[task.setvariable variable=BotName]$(SlackTestBotBotName)'
+#   echo '##vso[task.setvariable variable=SlackBotToken]$(SlackTestBotSlackBotToken)'
+#   echo '##vso[task.setvariable variable=SlackChannel]$(SlackTestBotSlackChannel)'
+#   echo '##vso[task.setvariable variable=SlackClientSigningSecret]$(SlackTestBotSlackClientSigningSecret)'
+#   echo '##vso[task.setvariable variable=SlackVerificationToken]$(SlackTestBotSlackVerificationToken)'
+#  displayName: 'Set Environment Variables'
 
 - task: AzureCLI@1
-  displayName: 'Create resources, deploy bot'
+  displayName: 'Create resources'
   inputs:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-     call az group create --location westus --name $(BotGroup)
-     call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)" --name "$(BotName)"
+     :: Comment out either Option 1 or Option 2 below. Ultimately, both templates should be exercised to ensure they continue to work.
+     
+     :: Option 1: Use the "new-rg" template:
+     call az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)"
+     
+     :: Option 2: Use the "preexisting-rg" template:
+     ::call az group create --location westus --name $(BotGroup)
+     ::call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)" --name "$(BotName)"
+
+- task: AzureCLI@1
+  displayName: 'Deploy the bot'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    scriptLocation: inlineScript
+    inlineScript: |
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot\PublishedBot.zip"
 
 - task: DotNetCoreCLI@2
@@ -91,4 +112,4 @@ steps:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
-  condition: always()
+  condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))

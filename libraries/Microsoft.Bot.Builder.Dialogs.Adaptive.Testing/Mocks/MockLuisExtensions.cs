@@ -11,6 +11,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.AI.Luis.Testing
 {
+    /// <summary>
+    /// Helper extensions for mocking luis.
+    /// </summary>
     public static class MockLuisExtensions
     {
         private static readonly Encoding UTF8 = new UTF8Encoding();
@@ -64,6 +67,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
                 .AddUserSecrets(userSecretId);
         }
 
+        /// <summary>
+        /// Creates a hash based on a given string.
+        /// </summary>
+        /// <param name="source">The string to be hashed.</param>
+        /// <returns>Unsigned int hash.</returns>
         public static uint StableHash(this string source)
         {
             uint hash;

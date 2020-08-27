@@ -9,8 +9,11 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// <summary>
     /// Return the result from adding two or more numbers (pure number case) or concatting two or more strings (other case).
     /// </summary>
-    public class Add : ExpressionEvaluator
+    internal class Add : ExpressionEvaluator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Add"/> class.
+        /// </summary>
         public Add()
             : base(ExpressionType.Add, Evaluator(), ReturnType.String | ReturnType.Number, Validator)
         {

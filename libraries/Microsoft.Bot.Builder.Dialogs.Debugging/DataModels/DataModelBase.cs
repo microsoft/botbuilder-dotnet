@@ -6,15 +6,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.DataModels
 {
-    public abstract class DataModelBase<TContext, TName, TValue> : IDataModel
+    internal abstract class DataModelBase<TContext, TName, TValue> : IDataModel
     {
-        private readonly ICoercion coercion;
+        private readonly ICoercion _coercion;
 
         protected DataModelBase(ICoercion coercion)
         {
-            this.coercion = coercion ?? throw new ArgumentNullException(nameof(coercion));
+            _coercion = coercion ?? throw new ArgumentNullException(nameof(coercion));
         }
 
         public abstract int Rank { get; }
@@ -35,16 +35,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public abstract IEnumerable<TName> Names(TContext context);
 
-        public virtual string ToString(TContext context) => (context is ICollection collection)
+        public virtual string ToString(TContext context) => context is ICollection collection
             ? $"Count = {collection.Count}"
             : context.ToString();
-
-        bool IDataModel.IsScalar(object context) => IsScalar((TContext)context);
-
+        
+        bool IDataModel.IsScalar(object context) => IsScalar((TContext)context);   
+       
         string IDataModel.ToString(object context) => ToString((TContext)context);
 
         IEnumerable<object> IDataModel.Names(object context) => Names((TContext)context).Cast<object>();
 
-        protected T Coerce<T>(object item) => (T)this.coercion.Coerce(item, typeof(T));
+        protected T Coerce<T>(object item) => (T)_coercion.Coerce(item, typeof(T));
     }
 }

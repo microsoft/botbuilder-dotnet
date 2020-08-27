@@ -1,32 +1,33 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using dbg = System.Diagnostics;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 {
-    [TestClass]
     public class ConditionalTests
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
-
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public ConditionalTests()
         {
+            ComponentRegistration.Add(new DeclarativeComponentRegistration());
+            ComponentRegistration.Add(new DialogsComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveComponentRegistration());
+            ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());
+            ComponentRegistration.Add(new TeamsComponentRegistration());
+
             ResourceExplorer = new ResourceExplorer()
                 .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(ConditionalTests)), monitorChanges: false);
         }
-        
-        [TestMethod]
+
+        public static ResourceExplorer ResourceExplorer { get; set; }
+
+        [Fact]
         public async Task ConditionalsTests_OnTeamActivityTypes()
         {
             await TestUtils.RunTestScript(ResourceExplorer);

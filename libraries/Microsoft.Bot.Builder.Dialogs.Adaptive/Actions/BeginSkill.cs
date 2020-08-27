@@ -22,6 +22,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.BeginSkill";
 
+        // Used to cache DialogOptions for multi-turn calls across servers
+        private readonly string _dialogOptionsStateKey = $"{typeof(BeginSkill).FullName}.DialogOptionsData";
+
         [JsonConstructor]
         public BeginSkill([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(new SkillDialogOptions())
@@ -116,6 +119,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("activity")]
         public ITemplate<Activity> Activity { get; set; }
 
+        /// <summary>
+        /// Gets or sets interruption policy. 
+        /// </summary>
+        /// <value>
+        /// Bool or expression which evaluates to bool.
+        /// </value>
+        [JsonProperty("allowInterruptions")]
+        public BoolExpression AllowInterruptions { get; set; }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (Disabled != null && Disabled.GetValue(dc.State))
@@ -135,12 +147,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             DialogOptions.Skill.Id = DialogOptions.Skill.AppId = SkillAppId.GetValue(dc.State);
             DialogOptions.Skill.SkillEndpoint = new Uri(SkillEndpoint.GetValue(dc.State));
 
+            // Store the initialized DialogOptions in state so we can restore these values when the dialog is resumed.
+            dc.ActiveDialog.State[_dialogOptionsStateKey] = DialogOptions;
+
             // Get the activity to send to the skill.
             Activity activity;
             if (ActivityProcessed.GetValue(dc.State))
             {
                 // The parent consumed the activity in context, use the Activity property to start the skill.
-                activity = await Activity.BindAsync(dc).ConfigureAwait(false);
+                activity = await Activity.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -154,6 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
+            LoadDialogOptions(dc.Context, dc.ActiveDialog);
             if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation)
             {
                 // Capture the result of the dialog if the property is set
@@ -164,6 +180,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             return base.ContinueDialogAsync(dc, cancellationToken);
+        }
+
+        public override Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
+        {
+            LoadDialogOptions(turnContext, instance);
+            return base.RepromptDialogAsync(turnContext, instance, cancellationToken);
+        }
+
+        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+        {
+            LoadDialogOptions(dc.Context, dc.ActiveDialog);
+            return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
+        }
+
+        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
+        {
+            LoadDialogOptions(turnContext, instance);
+            return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
         }
 
         protected override string OnComputeId()
@@ -180,7 +214,53 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 activity = StringUtils.Ellipsis(Activity?.ToString().Trim(), 30);
             }
 
-            return $"{this.GetType().Name}['{appId}','{activity}']";
+            return $"{GetType().Name}['{appId}','{activity}']";
+        }
+
+        protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
+            {
+                // Ask parent to perform recognition
+                await dc.Parent.EmitEventAsync(AdaptiveEvents.RecognizeUtterance, value: dc.Context.Activity, bubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                // Should we allow interruptions
+                var canInterrupt = true;
+                if (this.AllowInterruptions != null)
+                {
+                    var (allowInterruptions, error) = this.AllowInterruptions.TryGetValue(dc.State);
+                    canInterrupt = error == null && allowInterruptions;
+                }
+
+                // Stop bubbling if interruptions ar NOT allowed
+                return !canInterrupt;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Regenerates the <see cref="SkillDialog.DialogOptions"/> based on the values used during the BeingDialog call.
+        /// </summary>
+        /// <remarks>
+        /// The dialog can be resumed in another server or after redeploying the bot, this code ensure that the options used are the ones
+        /// used to call BeginDialog.
+        /// Also, if ContinueConversation or other methods are called on a server different than the one where BeginDialog was called,
+        /// DialogOptions will be empty and this code will make sure it has the right value.
+        /// </remarks>
+        private void LoadDialogOptions(ITurnContext context, DialogInstance instance)
+        {
+            var dialogOptions = (SkillDialogOptions)instance.State[_dialogOptionsStateKey];
+
+            DialogOptions.BotId = dialogOptions.BotId;
+            DialogOptions.SkillHostEndpoint = dialogOptions.SkillHostEndpoint;
+            DialogOptions.ConversationIdFactory = context.TurnState.Get<SkillConversationIdFactoryBase>() ?? throw new NullReferenceException("Unable to locate SkillConversationIdFactoryBase in HostContext");
+            DialogOptions.SkillClient = context.TurnState.Get<BotFrameworkClient>() ?? throw new NullReferenceException("Unable to locate BotFrameworkClient in HostContext");
+            DialogOptions.ConversationState = context.TurnState.Get<ConversationState>() ?? throw new NullReferenceException($"Unable to get an instance of {nameof(ConversationState)} from TurnState.");
+            DialogOptions.ConnectionName = dialogOptions.ConnectionName;
+
+            // Set the skill to call
+            DialogOptions.Skill = dialogOptions.Skill;
         }
     }
 }

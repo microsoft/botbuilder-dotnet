@@ -11,12 +11,23 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 {
+    /// <summary>
+    /// Action to script sending typing activity to bot.
+    /// </summary>
     [DebuggerDisplay("UserTyping")]
     public class UserTyping : TestAction
     {
+        /// <summary>
+        /// Kind to serialize.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Test.UserTyping";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserTyping"/> class.
+        /// </summary>
+        /// <param name="path">path for source.</param>
+        /// <param name="line">line number in source.</param>
         [JsonConstructor]
         public UserTyping([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
@@ -32,6 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         [JsonProperty("user")]
         public string User { get; set; }
 
+        /// <inheritdoc/>
         public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
         {
             var typing = adapter.MakeActivity();

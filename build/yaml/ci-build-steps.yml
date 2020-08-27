@@ -2,16 +2,6 @@ steps:
 - powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
   displayName: 'Display env vars'
 
-- task: UseDotNet@2
-  displayName: 'Use .Net Core sdk 2.1.x'
-  inputs:
-    version: 2.1.x
-
-- task: UseDotNet@2
-  displayName: 'Use .Net Core sdk 3.1.x'
-  inputs:
-    version: 3.1.x
-
 # Variables ReleasePackageVersion and PreviewPackageVersion are consumed by projects in Microsoft.Bot.Builder.sln.
 # For the signed build, they should be settable at queue time. To set that up, define the variables in Azure on the Variables tab.
 - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
@@ -38,6 +28,8 @@ steps:
     msbuildArgs: '$(MSBuildArguments)'
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
+    maximumCpuCount: true
+    logProjectEvents: false
 
 - script: |
    cd ..

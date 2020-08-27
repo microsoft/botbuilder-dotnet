@@ -127,12 +127,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
 
-            diagnostics = Templates.ParseText("#Demo2\r\n- ${createArray(1,\r\n, 2,3)").Diagnostics;
+            diagnostics = Templates.ParseResource(new LGResource(string.Empty, string.Empty, "#Demo2\r\n- ${createArray(1,\r\n, 2,3)")).Diagnostics;
             Assert.Equal(1, diagnostics.Count);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
 
-            diagnostics = Templates.ParseText("#Demo4\r\n- ${createArray(1,\r\n2,3)\r\n> this is a comment").Diagnostics;
+            diagnostics = Templates.ParseResource(new LGResource(string.Empty, string.Empty, "#Demo4\r\n- ${createArray(1,\r\n2,3)\r\n> this is a comment")).Diagnostics;
             Assert.Equal(1, diagnostics.Count);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
             Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [Fact]
         public void AddTextWithWrongId()
         {
-            var diagnostics = Templates.ParseText("[import](xx.lg) \r\n # t \n - hi", "a.lg").Diagnostics;
+            var diagnostics = Templates.ParseResource(new LGResource("a.lg", "a.lg", "[import](xx.lg) \r\n # t \n - hi")).Diagnostics;
             Assert.Equal(1, diagnostics.Count);
             Assert.True(diagnostics[0].Message.Contains("Could not find file"));
         }

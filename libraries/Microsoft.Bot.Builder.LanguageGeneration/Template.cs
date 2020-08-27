@@ -55,7 +55,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Parameter list of this template.
         /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
         public List<string> Parameters { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets text format of Body of this template. All content except Name and Parameters.
@@ -73,6 +75,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public LGTemplateParser.BodyContext TemplateBodyParseTree { get; set; }
 
+        /// <inheritdoc/>
         public override string ToString() => $"[{Name}({string.Join(", ", Parameters)})]\"{Body}\"";
     }
 }
