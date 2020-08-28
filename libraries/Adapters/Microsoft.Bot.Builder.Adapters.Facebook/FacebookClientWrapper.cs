@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Handover;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
@@ -86,8 +87,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                         var stringResponse = JsonConvert.DeserializeObject<FacebookResponseOk>(responseBody);
                         return stringResponse.MessageId;
                     }
+                    else
+                    {
+                        // Return error info
+                        return res.ToString();
+                    }
 
-                    return string.Empty;
+                    //return string.Empty;
                 }
             }
         }
