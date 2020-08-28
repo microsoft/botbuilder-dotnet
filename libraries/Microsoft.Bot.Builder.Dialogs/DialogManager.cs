@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string LastAccess = "_lastAccess";
         private string _rootDialogId;
         private readonly string _dialogStateProperty;
+        private readonly object _lock = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogManager"/> class.
@@ -105,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Lazy initialize rootdialog so it can refer to assets like LG function templates
             if (_rootDialogId == null)
             {
-                lock (Dialogs)
+                lock (_lock)
                 {
                     if (_rootDialogId == null)
                     {
