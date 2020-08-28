@@ -4576,10 +4576,10 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
@@ -7863,19 +7863,19 @@
           "$ref": "#/definitions/stringExpression",
           "title": "KnowledgeBase Id",
           "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
-          "default": "settings.qna.knowledgebaseid"
+          "default": "=settings.qna.knowledgebaseid"
         },
         "endpointKey": {
           "$ref": "#/definitions/stringExpression",
           "title": "Endpoint Key",
           "description": "Endpoint key for the QnA Maker KB.",
-          "default": "settings.qna.endpointkey"
+          "default": "=settings.qna.endpointkey"
         },
         "hostname": {
           "$ref": "#/definitions/stringExpression",
           "title": "Hostname",
           "description": "Hostname for your QnA Maker service.",
-          "default": "settings.qna.hostname",
+          "default": "=settings.qna.hostname",
           "examples": [
             "https://yourserver.azurewebsites.net/qnamaker"
           ]

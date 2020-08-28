@@ -13,7 +13,7 @@
         "recognizer": {
             "$kind": "Microsoft.QnAMakerRecognizer",
             "knowledgeBaseId": "dummy-id",
-            "hostName": "https://dummy-hostname.azurewebsites.net/qnamaker",
+            "hostname": "https://dummy-hostname.azurewebsites.net/qnamaker",
             "endpointKey": "dummy-key"
         },
         "triggers": [

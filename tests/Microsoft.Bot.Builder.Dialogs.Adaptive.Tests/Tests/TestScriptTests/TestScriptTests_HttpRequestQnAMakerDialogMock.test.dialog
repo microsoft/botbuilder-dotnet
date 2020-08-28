@@ -15,7 +15,7 @@
                     {
                         "$kind": "Microsoft.QnAMakerDialog",
                         "knowledgeBaseId": "dummy-id",
-                        "hostName": "https://dummy-hostname.azurewebsites.net/qnamaker",
+                        "hostname": "https://dummy-hostname.azurewebsites.net/qnamaker",
                         "endpointKey": "dummy-key",
                         "noAnswer": "No match found, please ask another question.",
                         "cardNoMatchText": "None of the above."
