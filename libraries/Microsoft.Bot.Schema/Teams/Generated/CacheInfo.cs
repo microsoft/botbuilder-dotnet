@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class CacheInfo
     {
         /// <summary>
-        /// Initializes a new instance of the CacheInfo class.
+        /// Initializes a new instance of the <see cref="CacheInfo"/> class.
         /// </summary>
         public CacheInfo()
         {
@@ -20,9 +20,9 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the CacheInfo class.
+        /// Initializes a new instance of the <see cref="CacheInfo"/> class.
         /// </summary>
-        /// <param name="cacheType">Type of Cache Info</param>
+        /// <param name="cacheType">Type of Cache Info.</param>
         /// <param name="cacheDuration">Duration of the Cached Info.</param>
         public CacheInfo(string cacheType = default(string), int cacheDuration = default(int))
         {
@@ -32,21 +32,22 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets cache type.
         /// </summary>
+        /// <value>The type of cache for this object.</value>
         [JsonProperty(PropertyName = "cacheType")]
         public string CacheType { get; set; }
 
         /// <summary>
         /// Gets or sets cache duration.
         /// </summary>
+        /// <value>The time in seconds for which the cached object should remain in the cache.</value>
         [JsonProperty(PropertyName = "cacheDuration")]
         public int CacheDuration { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }
