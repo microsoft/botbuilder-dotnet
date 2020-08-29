@@ -34,10 +34,12 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="task">The JSON for the Adaptive card to appear in the
         /// task module.</param>
         /// <param name="composeExtension">A <see cref="MessagingExtensionResult"/> that initializes the current object's ComposeExension property.</param>
-        public MessagingExtensionActionResponse(TaskModuleResponseBase task = default(TaskModuleResponseBase), MessagingExtensionResult composeExtension = default(MessagingExtensionResult))
+        /// <param name="cacheInfo">Cache information for this Messaging Extension Action Response.</param>
+        public MessagingExtensionActionResponse(TaskModuleResponseBase task = default(TaskModuleResponseBase), MessagingExtensionResult composeExtension = default(MessagingExtensionResult), CacheInfo cacheInfo = default(CacheInfo))
         {
             Task = task;
             ComposeExtension = composeExtension;
+            CacheInfo = cacheInfo;
             CustomInit();
         }
 
@@ -59,5 +61,10 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "composeExtension")]
         public MessagingExtensionResult ComposeExtension { get; set; }
 
+        /// <summary>
+        /// Gets or sets the CacheInfo for this MessagingExtensionActionResponse.
+        /// </summary>
+        [JsonProperty(PropertyName = "cacheInfo")]
+        public CacheInfo CacheInfo { get; set; }
     }
 }
