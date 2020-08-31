@@ -613,6 +613,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             switch (channelId)
             {
+                case Channels.Msteams:
                 case Channels.Cortana:
                 case Channels.Skype:
                 case Channels.Skypeforbusiness:
