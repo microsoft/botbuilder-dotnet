@@ -19,6 +19,10 @@
 /tests/Microsoft.Bot.Builder.TestBot*/**                                            @gabog @mrivera-ms
 /build/**                                                                           @microsoft/bb-dotnet
 
+# Specific Test Projects
+/tests/Microsoft.Bot.Builder.TestBot.Json/**                                        @chrimc62 @tomlm @microsoft/bf-adaptive
+/tests/Microsoft.Bot.Builder.TestProtocol/**                                        @gabog @microsoft/bf-skills
+
 # Adapters
 /libraries/Adapters/**                                                              @garypretty
 /tests/Adapters/**                                                                  @garypretty  
