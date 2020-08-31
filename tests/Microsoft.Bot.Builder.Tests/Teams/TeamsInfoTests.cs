@@ -266,10 +266,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 var cancelToken = new CancellationToken();
                 var reference = await TeamsInfo.SendMessageToTeamsChannelAsync(turnContext, message, channelId, creds, cancelToken);
 
-                Assert.Equal(reference.Item1.ActivityId, "activityId123");
-                Assert.Equal(reference.Item1.ChannelId, channelId);
-                Assert.Equal(reference.Item1.ServiceUrl, turnContext.Activity.ServiceUrl);
-                Assert.Equal(reference.Item2, "activityId123");
+                Assert.Equal("activityId123", reference.Item1.ActivityId);
+                Assert.Equal(channelId, reference.Item1.ChannelId);
+                Assert.Equal(turnContext.Activity.ServiceUrl, reference.Item1.ServiceUrl);
+                Assert.Equal("activityId123", reference.Item2);
             }
 
             private async Task CallGetTeamDetailsAsync(ITurnContext turnContext)
