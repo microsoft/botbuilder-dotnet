@@ -321,8 +321,9 @@ namespace AdaptiveExpressions.Tests
         public static HashSet<string> OneTwo { get; set; } = new HashSet<string> { "one", "two" };
 
         public static IEnumerable<object[]> Data => new[]
-        {
+        { 
             #region locale specific tests
+            
             //on *nix OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("replace(addHours(timestamp, 2, '', 'de-DE'), '20', '')", "15.03.18 15:00:00"),
@@ -383,6 +384,12 @@ namespace AdaptiveExpressions.Tests
             Test("json(`{\"foo\":${{text:\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("json(`{\"foo\":${{\"text\":\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("`{expr: hello all}`", "{expr: hello all}"),
+            Test("`${hello}\n\n${world}`", "hello\n\nworld"),
+            Test("`${hello}\r\n${world}`", "hello\r\nworld"),
+            Test("`\n\n${world}`", "\n\nworld"),
+            Test("`\r\n${world}`", "\r\nworld"),
+            Test("`${hello}\n\n`", "hello\n\n"),
+            Test("`${hello}\r\n`", "hello\r\n"),
             #endregion
 
             #region SetPathToProperty test

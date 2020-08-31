@@ -263,6 +263,9 @@ namespace AdaptiveExpressions
                             case ExpressionAntlrParser.ESCAPE_CHARACTER:
                                 children.Add(Expression.ConstantExpression(EvalEscape(node.GetText().Replace("\\`", "`").Replace("\\$", "$"))));
                                 break;
+                            case ExpressionAntlrParser.EOL:
+                                children.Add(Expression.ConstantExpression(node.GetText()));
+                                break;
                             default:
                                 break;
                         }
@@ -270,6 +273,7 @@ namespace AdaptiveExpressions
                     else
                     {
                         // text content
+                        
                         var text = EvalEscape(child.GetText());
                         children.Add(Expression.ConstantExpression(text));
                     }
