@@ -741,7 +741,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
         // The version parameter controls where in the expected json the luisResult is put.  This allows multiple endpoint responses like from
         // LUIS V2 and V3 endpoints.  You should run V3 first since it sometimes adds more information that V2.
         // NOTE: The same oracle files are shared between Luis and LuisPreview in order to ensure the mapping is the same.
-        internal async Task TestJson<T>(string file, ITurnContext turnContext = null)
+        private async Task TestJson<T>(string file, ITurnContext turnContext = null)
             where T : IRecognizerConvert, new()
         {
             GetEnvironmentVars();
