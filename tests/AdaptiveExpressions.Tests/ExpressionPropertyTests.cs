@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             TestWithData(JObject.FromObject(data));
         }
 
-        internal void TestWithData(object data)
+        private void TestWithData(object data)
         {
             TestExpressionPropertyWithValue<byte>("ByteNum", 1, data);
             TestExpressionPropertyWithValue<byte>("=ByteNum", 1, data);
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             TestExpressionPropertyWithValue<List<string>>("=createArray('a','b','c')", list, data);
         }
 
-        internal void TestExpressionPropertyWithValue<T>(string value, T expected, object memory = null)
+        private void TestExpressionPropertyWithValue<T>(string value, T expected, object memory = null)
         {
             var ep = new ExpressionProperty<T>(value);
             var (result, error) = ep.TryGetValue(memory ?? new object());
