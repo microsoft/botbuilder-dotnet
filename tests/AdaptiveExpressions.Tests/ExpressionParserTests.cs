@@ -1008,6 +1008,7 @@ namespace AdaptiveExpressions.Tests
             Test("addProperty({}, 'name', user.name).name", null),
             Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"]}"),
             Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"],\"Age\":36}"),
+            Test("merge(callstack[1], callstack[2]).z", 1),
             #endregion
 
             #region  Memory access

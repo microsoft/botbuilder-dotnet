@@ -24,14 +24,16 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 object result = null;
                 string error = null;
-                if (args[0] is JObject && args[1] is JObject)
+                var arg0 = FunctionUtils.ConvertToJToken(args[0]);
+                var arg1 = FunctionUtils.ConvertToJToken(args[1]);
+                if (arg0 is JObject && arg1 is JObject)
                 {
-                    (args[0] as JObject).Merge(args[1] as JObject, new JsonMergeSettings
+                    (arg0 as JObject).Merge(arg1 as JObject, new JsonMergeSettings
                     {
                         MergeArrayHandling = MergeArrayHandling.Replace
                     });
 
-                    result = args[0];
+                    result = arg0;
                 }
                 else
                 {
