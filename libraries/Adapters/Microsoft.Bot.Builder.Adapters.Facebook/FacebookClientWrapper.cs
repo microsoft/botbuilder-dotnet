@@ -89,9 +89,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     }
                     else
                     {
-                        // Return error info -- Debug BH
-                        //return res.ToString();
-                        throw new Exception($"SendMessageAsync(): {res.ToString()}");
+                        throw new HttpRequestException($"SendMessageAsync(): {res.ToString()}");
                     }
 
                     //return string.Empty;
