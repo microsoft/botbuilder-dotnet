@@ -84,7 +84,7 @@ steps:
      :: Option 2: Use the "preexisting-rg" template:
      call az group create --location westus --name $(BotGroup)
      :: --mode Complete deletes an existing bot so it gets replaced in the next task. --mode Incremental (the default) does not.
-     call az deployment group create --mode Complete --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" facebookVerifyToken="$(FacebookTestBotFacebookVerifyToken)" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)" --name "$(BotName)"
+     call az deployment group create --mode Incremental --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" facebookVerifyToken="$(FacebookTestBotFacebookVerifyToken)" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)" --name "$(BotName)"
 
 - task: AzureCLI@1
   displayName: 'Deploy the bot'
