@@ -105,9 +105,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 var kvPairs = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
                 _userAccessToken = kvPairs["access_token"];
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception($"RefreshAccessToken() failed: response = {response}");
+                throw new Exception($"RefreshAccessToken() failed: response = {response}", e);
             }
         }
 
