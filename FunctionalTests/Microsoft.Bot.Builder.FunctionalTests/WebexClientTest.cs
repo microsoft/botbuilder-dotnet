@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             }
             catch (Exception e)
             {
-                throw new Exception($"RefreshAccessToken() failed: response = {response}", e);
+                throw new Exception($"RefreshAccessToken() failed: response = {response}", e); 
             }
         }
 
