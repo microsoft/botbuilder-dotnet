@@ -89,10 +89,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     }
                     else
                     {
+                        // In Azure view this exception via Application Insights/Failures.
                         throw new HttpRequestException($"SendMessageAsync(): {res.ToString()}");
                     }
-
-                    //return string.Empty;
                 }
             }
         }
