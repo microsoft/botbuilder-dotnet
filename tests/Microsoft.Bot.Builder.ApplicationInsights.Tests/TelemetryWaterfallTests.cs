@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation("Waterfall"))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(Waterfall)))
                 .Use(new AutoSaveStateMiddleware(convoState));
             
             var telemetryClient = new Mock<IBotTelemetryClient>();
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation("WaterfallWithCallback"))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(WaterfallWithCallback)))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation("EnsureEndDialogCalled"))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(EnsureEndDialogCalled)))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation("EnsureCancelDialogCalled"))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(EnsureCancelDialogCalled)))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
