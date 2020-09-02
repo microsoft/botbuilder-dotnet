@@ -129,10 +129,16 @@ namespace Microsoft.Bot.Builder.Streaming
                     context.TurnState.Add<IIdentity>(BotIdentityKey, ClaimsIdentity);
                 }
 
-                var connectorClient = CreateStreamingConnectorClient(activity, requestHandler);
-                context.TurnState.Add(connectorClient);
+                using (var connectorClient = CreateStreamingConnectorClient(activity, requestHandler))
+                {
+                    // Add connector client to be used throughout the turn
+                    context.TurnState.Add(connectorClient);
 
-                await RunPipelineAsync(context, callbackHandler, cancellationToken).ConfigureAwait(false);
+                    await RunPipelineAsync(context, callbackHandler, cancellationToken).ConfigureAwait(false);
+
+                    // Cleanup connector client 
+                    context.TurnState.Set<IConnectorClient>(null);
+                }
 
                 if (activity.Type == ActivityTypes.Invoke)
                 {

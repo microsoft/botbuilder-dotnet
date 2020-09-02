@@ -750,9 +750,11 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(credentials));
             }
 
-            var connectorClient = CreateConnectorClient(serviceUrl, credentials);
-            var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
-            return results;
+            using (var connectorClient = CreateConnectorClient(serviceUrl, credentials))
+            {
+                var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
+                return results;
+            }
         }
 
         /// <summary>
