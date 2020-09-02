@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-#pragma warning disable SA1201 // Elements should appear in the correct order
 
 using System;
 using System.Collections.Generic;
@@ -18,25 +17,19 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.Tests
 {
-    [TestClass]
     public class QnAMakerRecognizerTests
     {
         private const string _knowledgeBaseId = "dummy-id";
         private const string _endpointKey = "dummy-key";
         private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
-        public static ResourceExplorer ResourceExplorer { get; set; }
-
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public QnAMakerRecognizerTests()
         {
             var parent = Environment.CurrentDirectory;
             while (!string.IsNullOrEmpty(parent))
@@ -54,6 +47,8 @@ namespace Microsoft.Bot.Builder.AI.Tests
             ResourceExplorer = new ResourceExplorer()
                 .AddFolder(parent, monitorChanges: false);
         }
+
+        public static ResourceExplorer ResourceExplorer { get; set; }
 
         public AdaptiveDialog QnAMakerRecognizer_DialogBase()
         {
@@ -74,28 +69,28 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return CreateQnAMakerActionDialog(mockHttp);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerRecognizer_WithTopNAnswer()
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
 
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_TopNAnswer.json")));
 
-            await CreateFlow(rootDialog)
+            await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithTopNAnswer))
             .Send("QnaMaker_TopNAnswer")
                 .AssertReply(response.Answers[0].Answer)
                 .AssertReply("done")
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerRecognizer_WithAnswer()
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
 
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnsAnswer.json")));
 
-            await CreateFlow(rootDialog)
+            await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithAnswer))
             .Send("QnaMaker_ReturnsAnswer")
                 .AssertReply(response.Answers[0].Answer)
                 .AssertReply("done")
@@ -104,48 +99,47 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerRecognizer_WithNoAnswer()
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json")));
 
-            await CreateFlow(rootDialog)
+            await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithNoAnswer))
             .Send("QnaMaker_ReturnsNoAnswer")
                 .AssertReply("Wha?")
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerRecognizer_WithIntent()
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
 
-            await CreateFlow(rootDialog)
+            await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithIntent))
             .Send("QnaMaker_ReturnsAnswerWithIntent")
                 .AssertReply("DeferToRecognizer_xxx")
             .StartTestAsync();
         }
 
-        private TestFlow CreateFlow(Dialog rootDialog)
+        private TestFlow CreateFlow(Dialog rootDialog, string testName)
         {
             var storage = new MemoryStorage();
             var userState = new UserState(storage);
             var conversationState = new ConversationState(storage);
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(testName));
             adapter
                 .UseStorage(storage)
                 .UseBotState(userState, conversationState)
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(false)));
 
-            DialogManager dm = new DialogManager(rootDialog)
+            var dm = new DialogManager(rootDialog)
                 .UseResourceExplorer(ResourceExplorer)
                 .UseLanguageGeneration();
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken).ConfigureAwait(false);
             });
         }
 
@@ -153,70 +147,70 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var client = new HttpClient(mockHttp);
 
-            var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
-            var knowlegeBaseId = "dummy-id";
-            var endpointKey = "dummy-key";
+            const string host = "https://dummy-hostname.azurewebsites.net/qnamaker";
+            const string knowledgeBaseId = "dummy-id";
+            const string endpointKey = "dummy-key";
 
             var rootDialog = new AdaptiveDialog("outer")
             {
                 AutoEndDialog = false,
-                Recognizer = new QnAMakerRecognizer()
+                Recognizer = new QnAMakerRecognizer
                 {
-                    KnowledgeBaseId = knowlegeBaseId,
+                    KnowledgeBaseId = knowledgeBaseId,
                     HostName = host,
                     EndpointKey = endpointKey,
                     HttpClient = client
                 },
-                Triggers = new List<OnCondition>()
+                Triggers = new List<OnCondition>
                 {
-                    new OnQnAMatch()
+                    new OnQnAMatch
                     {
-                        Actions = new List<Dialog>()
+                        Actions = new List<Dialog>
                         {
-                            new SendActivity()
+                            new SendActivity
                             {
                                 Activity = new ActivityTemplate("${@answer}")
                             },
-                            new AssertCondition()
+                            new AssertCondition
                             {
                                 Condition = "count(turn.recognized.entities.answer) == 1",
                                 Description = "If there is a match there should only be 1 answer"
                             },
-                            new AssertCondition()
+                            new AssertCondition
                             {
                                 Condition = "turn.recognized.entities.$instance.answer[0].startIndex == 0",
                                 Description = "startIndex should be 0",
                             },
-                            new AssertCondition()
+                            new AssertCondition
                             {
                                 Condition = "turn.recognized.entities.$instance.answer[0].endIndex != null",
                                 Description = "endIndex should not be null",
                             },
-                            new AssertCondition()
+                            new AssertCondition
                             {
                                 Condition = "turn.recognized.answers[0].answer != null",
                                 Description = "There should be answers object"
                             },
-                            new SendActivity()
+                            new SendActivity
                             {
                                 Activity = new ActivityTemplate("done")
                             }
                         }
                     },
-                    new OnIntent()
+                    new OnIntent
                     {
                         Intent = "DeferToRecognizer_xxx",
-                        Actions = new List<Dialog>()
+                        Actions = new List<Dialog>
                         {
-                            new SendActivity()
+                            new SendActivity
                             {
                                 Activity = new ActivityTemplate("DeferToRecognizer_xxx")
                             }
                         }
                     },
-                    new OnUnknownIntent()
+                    new OnUnknownIntent
                     {
-                        Actions = new List<Dialog>()
+                        Actions = new List<Dialog>
                         {
                             new SendActivity("Wha?")
                         }
