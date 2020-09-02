@@ -38,8 +38,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string Error = "error";
 
         /// <summary>
-        /// Event fired by LG library.
+        /// Custom event.
         /// </summary>
-        public const string LGEvents = "lgEvents";
+        public const string Custom = "custom";
     }
 }

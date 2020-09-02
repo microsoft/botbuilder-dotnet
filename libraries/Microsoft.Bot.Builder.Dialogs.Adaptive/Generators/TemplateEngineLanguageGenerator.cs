@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             if (eventArgs is BeginTemplateEvaluationArgs || eventArgs is BeginExpressionEvaluationArgs)
             {
                 // Send debugger event
-                await dialogContext.GetDebugger().StepAsync(dialogContext, sender, DialogEvents.LGEvents, cancellationToken).ConfigureAwait(false);
+                await dialogContext.GetDebugger().StepAsync(dialogContext, sender, DialogEvents.Custom, cancellationToken).ConfigureAwait(false);
             }
             else if (eventArgs is MessageArgs message && dialogContext.GetDebugger() is IDebugger dda)
             {
