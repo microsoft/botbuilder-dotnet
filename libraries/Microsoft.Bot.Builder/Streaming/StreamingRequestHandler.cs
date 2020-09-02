@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Streaming
             string body;
             try
             {
-                body = request.ReadBodyAsString();
+                body = await request.ReadBodyAsStringAsync().ConfigureAwait(false);
             }
 #pragma warning disable CA1031 // Do not catch general exception types (we log the exception and continue execution)
             catch (Exception ex)
