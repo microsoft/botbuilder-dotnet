@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         [Fact]
         public void WaterfallWithActionsNull()
         {
-            Assert.ThrowsAny<ArgumentNullException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
             {
                 var telemetryClient = new Mock<IBotTelemetryClient>();
                 var waterfall = new WaterfallDialog("test") { TelemetryClient = telemetryClient.Object };
