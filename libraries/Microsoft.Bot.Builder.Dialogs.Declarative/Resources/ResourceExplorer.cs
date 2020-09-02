@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private readonly ResourceExplorerOptions options;
 
         private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
+        private List<IComponentDeclarativeTypes> declarativeTypes;
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<Resource> changedResources = new ConcurrentBag<Resource>();
         private bool typesLoaded = false;
@@ -59,6 +60,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
         /// </summary>
+        /// <param name="providers">The list of resource providers to initialize the current instance.</param>
+        /// <param name="declarativeTypes">A list of declarative types to use. Falls back to <see cref="ComponentRegistration.Components" /> if set to null.</param>
+        public ResourceExplorer(IEnumerable<ResourceProvider> providers, IEnumerable<IComponentDeclarativeTypes> declarativeTypes)
+            : this(new ResourceExplorerOptions() { Providers = providers, DeclarativeTypes = declarativeTypes })
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
+        /// </summary>
         /// <param name="options">Configuration optiosn for <see cref="ResourceExplorer"/>.</param>
         public ResourceExplorer(ResourceExplorerOptions options)
         {
@@ -67,6 +78,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             if (options.Providers != null)
             {
                 this.resourceProviders = options.Providers.ToList();
+            }
+
+            if (options.DeclarativeTypes != null)
+            {
+                this.declarativeTypes = options.DeclarativeTypes.ToList();
             }
         }
 
@@ -515,6 +531,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             Changed?.Invoke(this, resources);
         }
 
+        private IEnumerable<IComponentDeclarativeTypes> GetComponentRegistrations()
+        {
+            return this.declarativeTypes ?? ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>();
+        }
+
         private void RegisterTypeInternal(string kind, Type type, ICustomDeserializer loader = null)
         {
             // Default loader if none specified
@@ -563,7 +584,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     // this can be reentrant, and we only want to do once.
                     this.typesLoaded = true;
 
-                    foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
+                    foreach (var component in GetComponentRegistrations())
                     {
                         if (component != null)
                         {
