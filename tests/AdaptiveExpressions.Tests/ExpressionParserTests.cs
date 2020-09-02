@@ -383,6 +383,12 @@ namespace AdaptiveExpressions.Tests
             Test("json(`{\"foo\":${{text:\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("json(`{\"foo\":${{\"text\":\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("`{expr: hello all}`", "{expr: hello all}"),
+            Test("`${hello}\n\n${world}`", "hello\n\nworld"),
+            Test("`${hello}\r\n${world}`", "hello\r\nworld"),
+            Test("`\n\n${world}`", "\n\nworld"),
+            Test("`\r\n${world}`", "\r\nworld"),
+            Test("`${hello}\n\n`", "hello\n\n"),
+            Test("`${hello}\r\n`", "hello\r\n"),
             #endregion
 
             #region SetPathToProperty test
