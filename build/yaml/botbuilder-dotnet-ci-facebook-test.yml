@@ -48,16 +48,16 @@ variables:
 #  FacebookTestBotSenderId: define this in Azure?: This var not needed in build 156862. Revisit this after the build's test is fixed & running.
 
 steps:
-- powershell: |
-   # Set values in appsettings.json file.
-   $file = "$(Build.SourcesDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\appsettings.json";
-   
-   $content = Get-Content -Raw $file | ConvertFrom-Json;
-   $content.FacebookVerifyToken = "$(FacebookTestBotFacebookVerifyToken)";
-   $content.FacebookAppSecret = "$(FacebookTestBotFaceBookAppSecret)";
-   $content.FacebookAccessToken = "$(FacebookTestBotFacebookAccessToken)";
-   $content | ConvertTo-Json | Set-Content $file;
-  displayName: 'Set values in appsettings.json file.'
+#- powershell: |
+#   # Set values in appsettings.json file.
+#   $file = "$(Build.SourcesDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\appsettings.json";
+#   
+#   $content = Get-Content -Raw $file | ConvertFrom-Json;
+#   $content.FacebookVerifyToken = "$(FacebookTestBotFacebookVerifyToken)";
+#   $content.FacebookAppSecret = "$(FacebookTestBotFaceBookAppSecret)";
+#   $content.FacebookAccessToken = "$(FacebookTestBotFacebookAccessToken)";
+#   $content | ConvertTo-Json | Set-Content $file;
+#  displayName: 'Set values in appsettings.json file'
 
 - template: ci-build-steps.yml
 
