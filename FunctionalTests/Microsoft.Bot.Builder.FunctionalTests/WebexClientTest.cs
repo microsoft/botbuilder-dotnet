@@ -100,14 +100,14 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             var httpResponse = await client.SendAsync(request);
             var response = httpResponse.Content.ReadAsStringAsync().Result;
-            try
+            if (httpResponse.StatusCode == HttpStatusCode.OK)
             {
                 var kvPairs = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
                 _userAccessToken = kvPairs["access_token"];
             }
-            catch (Exception e)
+            else
             {
-                throw new Exception($"RefreshAccessToken() failed: response = {response}", e); 
+                throw new HttpRequestException($"RefreshAccessToken() failed: response = {response}");
             }
         }
 
