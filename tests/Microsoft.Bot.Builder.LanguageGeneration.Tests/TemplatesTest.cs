@@ -76,6 +76,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             generatedTemplates = Templates.ParseResource(new LGResource(string.Empty, string.Empty, evaled));
             result = generatedTemplates.Evaluate("generated2", new { name = "jack" });
             Assert.Equal("please input jack", result.ToString().Trim());
+
+            evaled = templates.Evaluate("template3").ToString();
+            Assert.Equal("markdown\n## Manage the knowledge base\n", evaled.Replace("\r\n", "\n"));
+
+            evaled = templates.Evaluate("template4").ToString();
+            Assert.Equal("## Manage the knowledge base", evaled);
+
+            evaled = templates.Evaluate("template5").ToString();
+            Assert.Equal(string.Empty, evaled);
         }
 
         [Fact]
@@ -106,6 +115,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("template").ToString();
             Assert.True(evaled == "15", $"Evaled is {evaled}");
+
+            var evaledObj = templates.Evaluate("crtObj");
+            var json = @"{'a': 1,
+            'c': 3,
+            'b': 2}";
+            Assert.Equal(evaledObj, JObject.Parse(json));
+
+            var evaledArray = templates.Evaluate("crtArr");
+            var actualArr = new List<object>() { 1, 2, 3, 4 };
+            Assert.Equal(evaledArray, actualArr);
+
+            var evaledMultilineResult = templates.Evaluate("evalMultiLineObj");
+            Assert.Equal(evaledMultilineResult, "{\"a\":1,\"b\":2,\"c\":{\"d\":4,\"e\":5}}");
         }
 
         [Fact]

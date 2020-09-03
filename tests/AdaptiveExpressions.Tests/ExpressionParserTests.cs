@@ -383,6 +383,12 @@ namespace AdaptiveExpressions.Tests
             Test("json(`{\"foo\":${{text:\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("json(`{\"foo\":${{\"text\":\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("`{expr: hello all}`", "{expr: hello all}"),
+            Test("`${hello}\n\n${world}`", "hello\n\nworld"),
+            Test("`${hello}\r\n${world}`", "hello\r\nworld"),
+            Test("`\n\n${world}`", "\n\nworld"),
+            Test("`\r\n${world}`", "\r\nworld"),
+            Test("`${hello}\n\n`", "hello\n\n"),
+            Test("`${hello}\r\n`", "hello\r\n"),
             #endregion
 
             #region SetPathToProperty test
@@ -711,6 +717,10 @@ namespace AdaptiveExpressions.Tests
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
             Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
             Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
+            Test("jsonStringify(json('{\"a\":\"b\"}'))", "{\"a\":\"b\"}"),
+            Test("jsonStringify('a')", "\"a\""),
+            Test("jsonStringify(null)", "null"),
+            Test("jsonStringify({a:'b'})", "{\"a\":\"b\"}"),
             Test("formatNumber(20.0000, 2, 'en-US')", "20.00"),
             Test("formatNumber(12.123, 2, 'en-US')", "12.12"),
             Test("formatNumber(1.551, 2, 'en-US')", "1.55"),
@@ -1008,6 +1018,7 @@ namespace AdaptiveExpressions.Tests
             Test("addProperty({}, 'name', user.name).name", null),
             Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"]}"),
             Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"],\"Age\":36}"),
+            Test("merge(callstack[1], callstack[2]).z", 1),
             #endregion
 
             #region  Memory access

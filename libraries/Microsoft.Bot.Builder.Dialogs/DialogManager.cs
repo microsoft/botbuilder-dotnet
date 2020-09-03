@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string LastAccess = "_lastAccess";
         private string _rootDialogId;
         private readonly string _dialogStateProperty;
+        private readonly object _lock = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogManager"/> class.
@@ -69,33 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// Root dialog to use to start conversation.
         /// </value>
-        public Dialog RootDialog
-        {
-            get
-            {
-                if (_rootDialogId != null)
-                {
-                    return Dialogs.Find(_rootDialogId);
-                }
-
-                return null;
-            }
-
-            set
-            {
-                Dialogs = new DialogSet();
-                if (value != null)
-                {
-                    _rootDialogId = value.Id;
-                    Dialogs.TelemetryClient = value.TelemetryClient;
-                    Dialogs.Add(value);
-                }
-                else
-                {
-                    _rootDialogId = null;
-                }
-            }
-        }
+        public Dialog RootDialog { get; set; }
 
         /// <summary>
         /// Gets or sets global dialogs that you want to have be callable.
@@ -128,6 +103,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>result of the running the logic against the activity.</returns>
         public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, CancellationToken cancellationToken = default)
         {
+            // Lazy initialize rootdialog so it can refer to assets like LG function templates
+            if (_rootDialogId == null)
+            {
+                lock (_lock)
+                {
+                    if (_rootDialogId == null)
+                    {
+                        _rootDialogId = RootDialog.Id;
+                        Dialogs.TelemetryClient = RootDialog.TelemetryClient;
+                        Dialogs.Add(RootDialog);
+                    }
+                }
+            }
+
             var botStateSet = new BotStateSet();
 
             // Preload TurnState with DM TurnState.

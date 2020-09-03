@@ -51,19 +51,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             // if we have a reply
             if (!string.IsNullOrEmpty(this.Text))
             {
+                var description = this.Description != null ? this.Description + "\n" : string.Empty;
+                var message = $"${description}Text '{activity.Text}' didn't match expected text: {this.Text}'";
                 if (this.Exact)
                 {
                     // Normalize line endings to work on windows and mac
                     if (activity.AsMessageActivity()?.Text.Replace("\r", string.Empty) != this.Text.Replace("\r", string.Empty))
                     {
-                        throw new Exception(this.Description ?? $"Text '{activity.Text}' didn't match expected text: {this.Text}'");
+                        throw new Exception(message);
                     }
                 }
                 else
                 {
                     if (activity.AsMessageActivity()?.Text.ToLowerInvariant().Trim().Contains(this.Text.ToLowerInvariant().Trim()) == false)
                     {
-                        throw new Exception(this.Description ?? $"Text '{activity.Text}' didn't match expected text: '{this.Text}'");
+                        throw new Exception(message);
                     }
                 }
             }
