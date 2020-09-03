@@ -24,7 +24,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
             return FunctionUtils.Apply(
                 (args) =>
                 {
-                    return JsonConvert.SerializeObject(args[0]);
+                    var result = JsonConvert.SerializeObject(args[0]);
+                    return result;
                 });
         }
     }
