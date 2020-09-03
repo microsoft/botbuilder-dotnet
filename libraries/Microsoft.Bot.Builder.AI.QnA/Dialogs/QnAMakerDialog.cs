@@ -512,7 +512,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         /// <param name="stepContext">stepContext.</param>
         /// <param name="cancellationToken">cancellationToken.</param>
         /// <returns>An object of Task of type <see cref="DialogTurnResult"></see>.</returns>
-        protected async Task<DialogTurnResult> DisplayQnAResultAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        protected virtual async Task<DialogTurnResult> DisplayQnAResultAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var dialogOptions = ObjectPath.GetPathValue<QnAMakerDialogOptions>(stepContext.ActiveDialog.State, Options);
             var reply = stepContext.Context.Activity.Text;
