@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -21,7 +22,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="authHeader">The http auth header.</param>
         /// <param name="credentialProvider">The credential provider.</param>
         /// <param name="httpClient">The httpClient to use for making calls to teh auth service.</param>
+        /// <param name="logger">A ILogger to use while performing authentication.</param>
         /// <returns>Asynchronous Task with Authentication results.</returns>
-        Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, ICredentialProvider credentialProvider, HttpClient httpClient);
+        Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, ICredentialProvider credentialProvider, HttpClient httpClient, ILogger logger);
     }
 }
