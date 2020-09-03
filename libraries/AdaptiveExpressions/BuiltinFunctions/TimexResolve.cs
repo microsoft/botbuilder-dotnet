@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
@@ -42,8 +43,15 @@ namespace AdaptiveExpressions.BuiltinFunctions
             if (error == null)
             {
                 var formatedTimex = TimexFormat.Format(parsed);
-                var resolvedValues = TimexResolver.Resolve(new string[] { formatedTimex });
-                value = resolvedValues.Values[0].Value;
+                try
+                {
+                    var resolvedValues = TimexResolver.Resolve(new string[] { formatedTimex });
+                    value = resolvedValues.Values[0].Value;
+                } 
+                catch (ArgumentException err)
+                {
+                    error = $"{args[0]} in {expression} is not a valid argument. {err.Message}";
+                }
             }
 
             return (value, error);

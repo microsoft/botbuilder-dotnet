@@ -335,6 +335,7 @@ namespace AdaptiveExpressions.Tests
             Test("timex.resolve(one)"), // should have string or TimexProperty arguments
             Test("timex.resolve('T14', 'Asia/Tokyo')"), // should only have one parameter
             Test("timex.resolve('12-20')"), // should have a valid TimexPropterty after parsing
+            Test("timex.resolve('XXXX-WXX-6')"), // not a valid argument
             #endregion
 
             #region uri parsing function test
